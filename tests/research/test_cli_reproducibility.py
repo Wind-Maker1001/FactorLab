@@ -114,7 +114,10 @@ def test_run_manifest_records_lifecycle_outputs_failures_and_seed(tmp_path, monk
     run = RunManifest(config, "unit-test", {"flag": "value"})
     running = json.loads(run.path.read_text(encoding="utf-8"))
     assert running["status"] == "running"
-    assert running["git_commit"] == "abc123"
+    # A user's project Git identity must not impersonate the executing package.
+    from factorlab._identity import software_identity
+    assert running["git_commit"] == software_identity()["git_commit"]
+    assert running["project_git_commit"] == "abc123"
     assert running["git_dirty"] is True
     assert running["git_diff_sha256"] == "d" * 64
     assert running["package_versions"] == {"numpy": "fixture"}
@@ -224,11 +227,10 @@ def test_audit_cli_success_creates_completed_manifest(tmp_path, monkeypatch):
     assert payload["command"] == "audit"
     assert payload["status"] == "success"
     assert payload["completed_at"] is not None
-    assert payload["outputs"]["architecture_audit"].endswith(
-        "docs\\research\\ARCHITECTURE_AUDIT.md"
-    ) or payload["outputs"]["architecture_audit"].endswith(
-        "docs/research/ARCHITECTURE_AUDIT.md"
-    )
+    assert payload["architecture_audit"]["protocol"] == "FACTORLAB_NAMESPACE_MIGRATION_V1"
+    assert payload["architecture_audit"]["source_sha256"]
+    assert payload["architecture_audit"]["resource_sha256"]
+    assert payload["formal_admission"] == "FORMAL_ADMISSION_BLOCKED"
 
 
 def test_audit_cli_failure_after_config_is_persisted(tmp_path, monkeypatch):
@@ -237,6 +239,7 @@ def test_audit_cli_failure_after_config_is_persisted(tmp_path, monkeypatch):
     monkeypatch.setattr(
         "factorlab.reproducibility.package_versions", lambda: {}
     )
+    monkeypatch.setattr("factorlab._identity.package_root", lambda: tmp_path / "missing-package")
 
     assert cli.main(["audit", "--config", "unused.yaml"]) == 1
     manifests = _manifest_files(config)
@@ -244,7 +247,7 @@ def test_audit_cli_failure_after_config_is_persisted(tmp_path, monkeypatch):
     payload = json.loads(manifests[0].read_text(encoding="utf-8"))
     assert payload["status"] == "failed"
     assert payload["completed_at"] is not None
-    assert "Architecture audit artifacts missing" in payload["error"]
+    assert "Installed software audit resources missing" in payload["error"]
 
 
 def test_config_load_failure_returns_two_before_manifest_location_is_known(

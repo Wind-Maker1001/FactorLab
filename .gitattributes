@@ -14,3 +14,12 @@ docs/research/evidence/factor-discovery-private-v1/** -text whitespace=cr-at-eol
 docs/research/evidence/factor-discovery-synthetic-v2/** -text whitespace=cr-at-eol
 docs/research/evidence/factor-discovery-private-v2/** -text whitespace=cr-at-eol
 
+# New source layout; historical byte policies above remain unmodified.
+src/factorlab/** text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+tests/research/fixtures/** -filter -diff -merge -text
+tests/fixtures/research/** -filter -diff -merge -text
+

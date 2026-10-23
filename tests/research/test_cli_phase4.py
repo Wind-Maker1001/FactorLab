@@ -105,7 +105,9 @@ def _config(tmp_path, *, end=date(2026, 9, 22)):
         ),
         portfolio=PortfolioConfig(top_k=2, rebalance_days=5),
     )
-    object.__setattr__(config, "repo_root", Path(tmp_path))
+    # Keep generated data isolated, while the code root must identify the
+    # implementation actually executing this source-only Forward fixture.
+    object.__setattr__(config, "repo_root", Path(__file__).resolve().parents[2])
     object.__setattr__(config, "config_path", Path(tmp_path) / "phase4.yaml")
     config.validate()
     return config

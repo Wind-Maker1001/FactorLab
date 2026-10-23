@@ -795,6 +795,8 @@ def _load_verified_membership(
 def command_audit(config: ResearchConfig, run: RunManifest) -> None:
     from factorlab._identity import software_identity
     identity = software_identity()
+    if not identity["source_sha256"] or not identity["resource_sha256"]:
+        raise FactorLabError("Installed software audit resources missing")
     run.payload["architecture_audit"] = identity
     run.payload["formal_admission"] = "FORMAL_ADMISSION_BLOCKED"
     LOGGER.info("FactorLab software identity audited: %d modules; formal admission BLOCKED",

@@ -1,0 +1,66 @@
+name: FactorLab independent candidate
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  software:
+    name: Software ${{ matrix.os }} Python ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-24.04]
+        python: ['3.13', '3.14']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    env:
+      MPLBACKEND: Agg
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install controlled core and test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt
+      - name: Install independent package
+        run: python -m pip install --no-deps .
+      - run: python -m pip check
+      - name: Execute declared software and rejection domains
+        run: python tools/ci/run_checks.py --suite runtime --output local-ci/runtime
+      - name: Build wheel and sdist
+        run: python -m build --outdir local-ci/distributions
+      - name: Run public synthetic CLI
+        run: factorlab demo --output local-ci/synthetic-demo
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: factorlab-${{ matrix.os }}-${{ matrix.python }}
+          path: local-ci/
+          if-no-files-found: error
+  complete-upstream-contracts:
+    name: Preserved upstream security and history (release requirement)
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt
+      - run: python -m pip install --no-deps .
+      - name: Execute every preserved contract; missing trust is a failure, never success
+        run: python tools/ci/run_checks.py --suite full --output local-ci/full
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: complete-upstream-contracts
+          path: local-ci/full/
