@@ -9,6 +9,7 @@ prune docs/migration
 prune .github
 prune qbot
 prune tools
+recursive-include tools/security *.py
 prune local-cache
 prune local-envs
 prune local-runs

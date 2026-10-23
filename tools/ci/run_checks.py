@@ -1,4 +1,8 @@
-"""Portable local/GitHub CI entry point. Full scope never hides blocked tests."""
+"""Independent software acceptance and separately retained upstream diagnostics.
+
+Software selection is explicit and mapped to archived contracts in docs/security.
+Neither software success nor historical success issues financial authorization.
+"""
 import argparse
 import hashlib
 import json
@@ -37,7 +41,7 @@ PUBLISHED_HISTORY = {
     'tests/research/test_factor_discovery_delivery.py':'upstream historical publication including private-input lineage',
 }
 TEST_ROOTS = ['tests/research','tests/model_readiness','tests/market_structure',
-              'tests/market_admission','tests/minute_data','tests/evidence','tests/migration']
+              'tests/market_admission','tests/minute_data','tests/evidence','tests/migration', 'tests/security']
 ARCHIVE_UNIT_FUNCTIONS = [
     'test_real_objects_validate_only_recorded_scope',
     'test_synthetic_repository_is_independent',
@@ -71,7 +75,7 @@ def runtime_targets():
 
 def validation_inputs():
     files = {p for directory in ('src/factorlab', 'tests', 'configs', 'requirements', 'tools/ci',
-                                'examples/research', 'tools/migration', '.github/workflows', 'docs/user')
+                                'examples/research', 'tools/migration', 'tools/security', '.github/workflows', 'docs/user')
              for p in (ROOT/directory).rglob('*')
              if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
     files.update(ROOT/name for name in ('pyproject.toml','MANIFEST.in','README.md','LICENSE',
@@ -83,12 +87,13 @@ def validation_inputs():
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument('--suite',choices=('runtime','full'),default='runtime')
+    p.add_argument('--suite',choices=('software','runtime','full'),default='software')
     p.add_argument('--output',type=Path,required=True)
     args=p.parse_args()
     output=args.output.resolve()
     output.mkdir(parents=True,exist_ok=False)
-    targets = runtime_targets() if args.suite=='runtime' else TEST_ROOTS
+    software = args.suite in ('software', 'runtime')
+    targets = runtime_targets() if software else TEST_ROOTS
     for name in targets:
         if not (ROOT/name.split('::',1)[0]).exists():
             raise FileNotFoundError('declared CI target missing: '+name)
@@ -98,7 +103,7 @@ def main():
         temp_parent=output/'tmp-parent'
     temp_parent.mkdir(parents=True,exist_ok=True)
     env=dict(os.environ,MPLBACKEND='Agg',PYTHONUTF8='1',COVERAGE_FILE=str(output/'.coverage'))
-    deselections = ['--deselect='+node for node in HISTORY_NODES] if args.suite=='runtime' else []
+    deselections = ['--deselect='+node for node in HISTORY_NODES] if software else []
     command=[sys.executable,'-m','pytest',*targets,*deselections,'--continue-on-collection-errors','-q',
              '--basetemp='+str(temp_parent/'pytest'), '--junitxml='+str(output/'tests.xml'),
              '--cov=factorlab','--cov-report=xml:'+str(output/'coverage.xml')]
@@ -118,11 +123,12 @@ def main():
             'subject_sha':start_sha,
             'end_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'validation_inputs_unchanged':inputs_unchanged,'validation_input_sha256':after,
-            'history_nodes_deferred_to_full_job':HISTORY_NODES if args.suite=='runtime' else [],
-            'upstream_bound_security_deferred_to_required_full_job':UPSTREAM_BOUND if args.suite=='runtime' else {},
-            'published_history_deferred_to_required_full_job':PUBLISHED_HISTORY if args.suite=='runtime' else {},
+            'historical_archive_nodes':HISTORY_NODES if software else [],
+            'historical_archive_controls':UPSTREAM_BOUND if software else {},
+            'historical_archive_publications':PUBLISHED_HISTORY if software else {},
             'source_sha256':source,'formal_admission':'FORMAL_ADMISSION_BLOCKED',
-            'scope':'runtime domains only' if args.suite=='runtime' else 'all preserved upstream tests plus migration tests',
+            'scope':'independent software and V1 security; archive is a separate acceptance' if software else 'unmodified upstream diagnostic plus independent tests',
+            'independent_trust_root_authorization':'BLOCKED',
             'remote_github_actions_execution':bool(os.environ.get('GITHUB_ACTIONS'))}
     (output/'receipt.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(args.suite,report['status'],'exit',code,'evidence:',output)

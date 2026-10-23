@@ -31,7 +31,7 @@ namespaces = true
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-testpaths = ["tests/research", "tests/model_readiness", "tests/market_structure", "tests/market_admission", "tests/minute_data", "tests/evidence", "tests/migration"]
+testpaths = ["tests/research", "tests/model_readiness", "tests/market_structure", "tests/market_admission", "tests/minute_data", "tests/evidence", "tests/migration", "tests/security"]
 python_files = ["test_*.py"]
 addopts = '-ra -m "not network"'
 markers = ["network: external services excluded from offline acceptance", "integration: crosses subsystems", "slow: long running"]

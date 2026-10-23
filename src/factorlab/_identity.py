@@ -56,6 +56,5 @@ def software_identity():
 
 
 def assert_migration_admitted():
-    from factorlab.errors import ProviderError
-    raise ProviderError('MARKET DATA QUALIFICATION REQUIRED: FORMAL_ADMISSION_BLOCKED; '
-                        'MIGRATION_TRUST_ROOT_UNREVIEWED; independent authorization required')
+    from factorlab.security import assert_independent_admission
+    assert_independent_admission()

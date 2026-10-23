@@ -25,3 +25,8 @@ tests/fixtures/research/** -filter -diff -merge -text
 docs/migration/evidence/environments/*.original.txt -filter -diff -merge -text
 docs/migration/evidence/upstream-verifiers/*.py -filter -diff -merge -text
 
+# Independent V1 review material uses explicit raw-byte identities.
+docs/security/v1/** -filter -diff -merge -text
+MANIFEST.in text eol=lf
+SECURITY.md text eol=lf
+
