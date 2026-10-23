@@ -51,7 +51,12 @@ def code_evidence():
         path.relative_to(repo).as_posix(): file_sha256(path) for path in sorted(paths)
     }
 
+    from factorlab._identity import package_root, software_identity
+    source_git = software_identity()["git_commit"]
+
     def git(*args):
+        if source_git is None:
+            return None
         try:
             return subprocess.check_output(
                 ["git", *args],
@@ -61,7 +66,7 @@ def code_evidence():
                 stderr=subprocess.DEVNULL,
             ).strip()
         except (subprocess.CalledProcessError, OSError):
-            return "UNAVAILABLE"
+            return None
 
     versions = {}
     for name in ("numpy", "pandas", "scipy", "pyarrow", "pytest"):
@@ -74,7 +79,7 @@ def code_evidence():
         "source_digest": digest(hashes),
         "git_head": git("rev-parse", "HEAD"),
         "git_branch": git("branch", "--show-current"),
-        "source_tree_dirty": bool(
+        "source_tree_dirty": (None if source_git is None else bool(
             git(
                 "status",
                 "--porcelain",
@@ -83,7 +88,7 @@ def code_evidence():
                 "src/factorlab",
                 "tests/research",
             )
-        ),
+        )),
         "python": sys.version,
         "platform": platform.platform(),
         "dependencies": versions,

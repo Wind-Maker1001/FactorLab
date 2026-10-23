@@ -13,7 +13,7 @@ license-files = ["LICENSE"]
 dependencies = [
     "numpy>=1.26.4,<2.4", "pandas>=2.2.3,<3", "scipy>=1.13.1,<1.17",
     "scikit-learn>=1.5.2,<1.8", "pyarrow>=17,<23", "matplotlib>=3.8.4,<3.11",
-    "PyYAML>=6.0.2,<7", "lightgbm>=4.5,<4.7", "xgboost>=2.1.4,<3.2", "tzdata>=2026.4",
+    "PyYAML>=6.0.2,<7", "lightgbm>=4.5,<4.7", "xgboost==2.1.4", "tzdata>=2026.4",
 ]
 
 [project.optional-dependencies]

@@ -2891,7 +2891,11 @@ def _forward_identity(
         raise FactorLabError("forward.activation_date is required")
     contract = forward_contract_sha256(config)
     identifier = activation_id(config.forward.activation_date, contract)
-    source = research_source_sha256(config.repo_root or Path.cwd())
+    from factorlab._identity import package_root
+    context = config.repo_root or Path.cwd()
+    if (context / "src/factorlab").resolve() != package_root():
+        raise FactorLabError("Forward source root does not match the executing FactorLab package")
+    source = research_source_sha256(context)
     return provenance, contract, identifier, source
 
 

@@ -265,10 +265,8 @@ def run_synthetic(output, frequencies=(5, 15, 30), seed=20261018):
         catalog_sha256=digest(registry.catalog()),
         python=sys.version,
         tested_commit=software_identity()["git_commit"],
-        dependencies={
-            p: importlib.metadata.version(p)
-            for p in ("numpy", "pandas", "pytest", "coverage")
-        },
+        dependencies=__import__("factorlab.reproducibility", fromlist=["package_versions"]).package_versions(
+            ("numpy", "pandas", "pytest", "coverage")),
         artifacts={
             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(output.iterdir())

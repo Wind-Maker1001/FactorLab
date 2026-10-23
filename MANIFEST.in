@@ -1,0 +1,18 @@
+include LICENSE README.md pyproject.toml MANIFEST.in
+recursive-include src/factorlab *.py *.yaml
+recursive-include configs/research *.yaml
+recursive-include requirements *.txt
+recursive-include tests *.py *.json *.parquet *.csv
+recursive-include docs/user *.md
+recursive-include examples/research *.py
+prune docs/migration
+prune .github
+prune qbot
+prune tools
+prune local-cache
+prune local-envs
+prune local-runs
+prune local-runtimes
+prune local-tmp
+prune local-tools
+global-exclude __pycache__ *.py[cod] *.log *.xml *.ipynb

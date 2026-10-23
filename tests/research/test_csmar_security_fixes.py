@@ -128,8 +128,8 @@ def test_each_executable_dependency_and_config_change_invalidates_old_identity(t
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / name, target)
     ref, _ = fixture(tmp_path / "sources")
-    monkeypatch.setattr(factorlab, "__file__", str(clone / "qbot/research/__init__.py"))
-    monkeypatch.setattr(fingerprint, "__file__", str(clone / "qbot/research/data/csmar/fingerprint.py"))
+    monkeypatch.setattr(factorlab, "__file__", str(clone / "src/factorlab/__init__.py"))
+    monkeypatch.setattr(fingerprint, "__file__", str(clone / "src/factorlab/data/csmar/fingerprint.py"))
     old = {role: sha256(json_bytes(fingerprint.implementation_manifest(role))) for role in ("parser", "qualification")}
     assert old["parser"] == ref["parser_sha256"]
     target = clone / path
@@ -144,8 +144,8 @@ def test_relative_paths_disambiguate_same_named_modules():
     manifest = fingerprint.implementation_manifest("qualification")
     paths = [entry["path"] for entry in manifest["files"]]
     assert len(paths) == len(set(paths))
-    assert "qbot/research/data/adjustment/validation.py" in paths
-    assert "qbot/research/data/corporate_actions/validation.py" in paths
+    assert "src/factorlab/data/adjustment/validation.py" in paths
+    assert "src/factorlab/data/corporate_actions/validation.py" in paths
     for path in paths:
         assert not Path(path).is_absolute() and "\\" not in path
-    assert manifest["contract"] == "csmar-implementation-path-closure-v2"
+    assert manifest["contract"] == "factorlab-csmar-implementation-path-closure-v1"

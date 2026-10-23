@@ -70,6 +70,10 @@ def _run(output, namespace, input_root, seed, started):
     inputs = build_inputs(seed) if input_root is None else {
         name: pd.read_parquet(Path(input_root)/(name+'.parquet'))
         for name in ('bars','benchmark','membership','status','listings','calendar')}
+    if input_root is not None:
+        generated = build_inputs(seed)
+        for name in inputs:
+            pd.testing.assert_frame_equal(inputs[name], generated[name], check_exact=True)
     for name, frame in inputs.items():
         frame.to_parquet(output/(name+'.parquet'), index=False)
     calendar = pd.DatetimeIndex(inputs['calendar'].date)
@@ -102,7 +106,8 @@ def _run(output, namespace, input_root, seed, started):
         'formal_admission':False,'forward_allowed':False,'live_allowed':False,
         'safety':['NO LIVE MONEY','PIT_UNVERIFIED','FORMAL_ADMISSION_BLOCKED'],
         'python':platform.python_version(), 'implementation':namespace,
-        'seed':seed, 'factor_names':factors, 'models':{}}
+        'seed':seed, 'factor_names':factors, 'models':{},
+        'software_identity':importlib.import_module(namespace+'._identity').software_identity()}
     for name, options in model_options.items():
         destination = output/name
         result = validation.WalkForwardRunner(

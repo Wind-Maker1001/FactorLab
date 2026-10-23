@@ -49,7 +49,11 @@ def peak_memory_bytes():
 
 
 def stat_key(info):
-    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+    # Windows st_ctime is deprecated and stat/fstat can expose different
+    # meanings on newer CPython. Preserve the old creation-time contract
+    # explicitly; file ID, length, mtime, link checks and two hashes remain.
+    from factorlab._filesystem import stat_identity
+    return stat_identity(info)
 
 
 def digest_stream(stream):

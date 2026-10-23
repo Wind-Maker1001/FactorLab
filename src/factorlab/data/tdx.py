@@ -68,7 +68,7 @@ def read_snapshot(path: Path, boundary: Path) -> Tuple[bytes, str]:
         content = handle.read()
         after = os.fstat(handle.fileno())
     end = safe_path(path, boundary).stat()
-    identity = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+    from factorlab._filesystem import stat_identity as identity
     if not (identity(before) == identity(opened) == identity(after) == identity(end)):
         raise TdxError("SOURCE_CHANGED_DURING_READ: %s" % target)
     return content, hashlib.sha256(content).hexdigest()

@@ -40,6 +40,9 @@ def implementation_manifest(kind):
         prefix = "src/factorlab/"
         if not path.startswith(prefix):
             raise ValueError("implementation source outside factorlab")
+        csmar = prefix + "data/csmar/"
+        if path.startswith(csmar):
+            return package / path[len(csmar):]
         return root / path[len(prefix):]
 
     files = {}
