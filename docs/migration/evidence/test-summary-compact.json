@@ -1,0 +1,227 @@
+[
+  {
+    "path": "docs/migration/evidence/archive-reference314-r1.xml",
+    "sha256": "9a96fef43946becbb9c414eaf2fe8c9c2932bdd551d01145d18a4f4231d8dd45",
+    "passed": 33,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 33
+  },
+  {
+    "path": "docs/migration/evidence/baseline/full-suite-r2.xml",
+    "sha256": "8b3a5fd47e7b79ef62fc0d6dea360d8213340ffe7c87729302673d914b5c4b5a",
+    "passed": 4183,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 4183
+  },
+  {
+    "path": "docs/migration/evidence/baseline/full-suite.xml",
+    "sha256": "8a594a09c09913a3e41099148b42a8f82c4030ed4d4b37d31d2fcad02e3b640a",
+    "passed": 2825,
+    "failed": 0,
+    "errors": 1358,
+    "skipped": 0,
+    "cases": 4183
+  },
+  {
+    "path": "docs/migration/evidence/cli-port-r2.xml",
+    "sha256": "28624f98bec6c5dc50a829e8b20d13224e88249868f92b275e1aad0874fe076f",
+    "passed": 62,
+    "failed": 3,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 65
+  },
+  {
+    "path": "docs/migration/evidence/cli-port-r3.xml",
+    "sha256": "09b91483f074d5d4262e98652bb53f133388605c4f08a4eb5d5c227b226ff47e",
+    "passed": 25,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 25
+  },
+  {
+    "path": "docs/migration/evidence/compat-final-r1.xml",
+    "sha256": "df1c9b0b18b1d45b1bf9b7ab4127c8868824ff363c25c5a7e1892b91c72767b5",
+    "passed": 426,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 426
+  },
+  {
+    "path": "docs/migration/evidence/csmar-final-r1.xml",
+    "sha256": "d022ae638a93466838be7d0686f7645e4ae885b8d71f5a7001dfeff5b1a60232",
+    "passed": 227,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 227
+  },
+  {
+    "path": "docs/migration/evidence/factorlab314-full-r2.xml",
+    "sha256": "c99df20b418fda3a59be406156ce5664d9b3bed47ce4f4e7c7391ba51fdbd3e1",
+    "passed": 3915,
+    "failed": 75,
+    "errors": 169,
+    "skipped": 0,
+    "cases": 4159
+  },
+  {
+    "path": "docs/migration/evidence/factorlab314-smoke-r1.xml",
+    "sha256": "348cd1d570f6f5446b4d1cb451f8486577cfdef34f855edbe482215d30ef9d01",
+    "passed": 130,
+    "failed": 12,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 142
+  },
+  {
+    "path": "docs/migration/evidence/final-seven-guards-r1.xml",
+    "sha256": "25c057b01e27a7b715db67b2b68922cbeefcf7e8b1e9f822ab7e6353c96560a8",
+    "passed": 7,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 7
+  },
+  {
+    "path": "docs/migration/evidence/forward-hash-final-r2.xml",
+    "sha256": "2b086b269ff97640670d7a3dddd5c47e3a04dfe2b65b3115c1691fae0cc75163",
+    "passed": 12,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 12
+  },
+  {
+    "path": "docs/migration/evidence/identity-reference-final-r1.xml",
+    "sha256": "c7854a8c7ebdabf63fa6f77a5a3da2440eb555f3b07fce44fd20fe017f15ebe9",
+    "passed": 337,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 337
+  },
+  {
+    "path": "docs/migration/evidence/legacy39-suite.xml",
+    "sha256": "9c34df4ef60b0d71120b957b950cc4786c97f737c2fa99027671d2e1408c086f",
+    "passed": 936,
+    "failed": 1,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 937
+  },
+  {
+    "path": "docs/migration/evidence/migration-negative-r1.xml",
+    "sha256": "0451b3c7b15d4ff1a7d1b390a500152c708318629ec49a858b1cfbf532d4792c",
+    "passed": 4,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 4
+  },
+  {
+    "path": "docs/migration/evidence/namespace-port313-r1.xml",
+    "sha256": "0e259d9727f20362ae965c325cf76f6ccf012a0f0b2480c73a45bd8e60305fd7",
+    "passed": 1,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 1
+  },
+  {
+    "path": "docs/migration/evidence/namespace-port314-r1.xml",
+    "sha256": "910e2aed95cfcb8c3d26b45029d9d76414a026286a76fa589354fdb84cf970e7",
+    "passed": 1,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 1
+  },
+  {
+    "path": "docs/migration/evidence/path-port-r2.xml",
+    "sha256": "de8737f1f50bf01959c718b275b88f57adb87ae5fef9591f7355f8fc9d58e48d",
+    "passed": 30,
+    "failed": 8,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 38
+  },
+  {
+    "path": "docs/migration/evidence/path-port-r3.xml",
+    "sha256": "023566ff3a0c22570166874a42a52543c91db31f7a8ca4a593a4d96743b90590",
+    "passed": 54,
+    "failed": 8,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 62
+  },
+  {
+    "path": "docs/migration/evidence/path-port-r4.xml",
+    "sha256": "e35c124215ef4415ee120c45ed90266a743fca595489f631b04eb957c150d3ae",
+    "passed": 96,
+    "failed": 10,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 106
+  },
+  {
+    "path": "local-ci/full314-final-r1/tests.xml",
+    "sha256": "21ded1cd78768eb5acc16715f1b707ea52d3c5e956671a9dd4c889003dca7773",
+    "passed": 3945,
+    "failed": 51,
+    "errors": 169,
+    "skipped": 0,
+    "cases": 4165
+  },
+  {
+    "path": "local-ci/full314-final-r4/tests.xml",
+    "sha256": "0340077aa2688fc8f09994e2b484f8000aedc1b1810ce0b14da8be9fe557da86",
+    "passed": 3980,
+    "failed": 50,
+    "errors": 136,
+    "skipped": 0,
+    "cases": 4166
+  },
+  {
+    "path": "local-ci/runtime313-final-r4/tests.xml",
+    "sha256": "7ef8a9d8cd28af408150b50296e99f9bb055d4d1b6badb79dc2fa9772cb82e9c",
+    "passed": 3915,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 3915
+  },
+  {
+    "path": "local-ci/runtime314-final-r2/tests.xml",
+    "sha256": "eb1ad240f252e703903d600b47e463ebc3e4c075619d42b5e9d6529b748416e6",
+    "passed": 3880,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 3880
+  },
+  {
+    "path": "local-ci/runtime314-final-r5/tests.xml",
+    "sha256": "1615ad03b96b689dd5b887c1772487fa522f894ab979566798d237f7b025c235",
+    "passed": 3915,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 3915
+  },
+  {
+    "path": "local-ci/runtime314-r1/tests.xml",
+    "sha256": "4da18a0b96c809ce76b089b7cf713b39626183b1b69fbb469d2bccddfdc91126",
+    "passed": 2680,
+    "failed": 12,
+    "errors": 0,
+    "skipped": 0,
+    "cases": 2692
+  }
+]

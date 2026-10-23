@@ -1,0 +1,986 @@
+{
+  "status": "REVIEWED_FAIL_WITH_EXPLICIT_BLOCKERS",
+  "scope": "Actual final full-r4 exception messages and traces, not module catalog alone; no financial/control authorization.",
+  "junit_path": "local-ci/full314-final-r4/tests.xml",
+  "junit_sha256": "0340077aa2688fc8f09994e2b484f8000aedc1b1810ce0b14da8be9fe557da86",
+  "counts": {
+    "passed": 3980,
+    "failed": 50,
+    "errors": 136,
+    "skipped": 0,
+    "deselected": 2
+  },
+  "method": "Parsed all186 nonpassing records; reviewed24 distinct module/message groups and collection/fixture traceback branches. Original missing Git objects also checked by actual git cat-file -e.",
+  "category_counts": {
+    "UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING": {
+      "error": 136,
+      "failure": 4
+    },
+    "HISTORICAL_PUBLICATION_NOT_CARRIED": {
+      "failure": 37
+    },
+    "ORIGINAL_GIT_OBJECT_UNAVAILABLE_IN_INDEPENDENT_REPO": {
+      "failure": 2
+    },
+    "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT": {
+      "failure": 7
+    }
+  },
+  "distinct_message_groups": [
+    {
+      "kind": "error",
+      "module": "",
+      "message": "collection failure",
+      "category": "UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING",
+      "cases": [
+        {
+          "name": "tests.market_admission.test_revision_contract",
+          "trace_sha256": "e76993e2dc5089b5682964e75de7d24a88f7f4ffa236ba4c6b65c2e68c80eee4"
+        }
+      ]
+    },
+    {
+      "kind": "error",
+      "module": "tests.research.status_candidate.test_preservation",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\.github\\\\workflows\\\\market-admission.yml'\"",
+      "category": "UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING",
+      "cases": [
+        {
+          "name": "test_prior_control_versions_and_source_closure_remain_exact",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_status_or_historical_control_change_is_rejected[source]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_status_or_historical_control_change_is_rejected[newline]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_status_or_historical_control_change_is_rejected[predecessor]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_old_version_cannot_be_selected_by_new_package",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_versioned_registry_literals_remain_finite[current]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_versioned_registry_literals_remain_finite[predecessor]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        }
+      ]
+    },
+    {
+      "kind": "error",
+      "module": "tests.research.test_c01_preservation",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\.github\\\\workflows\\\\market-admission.yml'\"",
+      "category": "UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING",
+      "cases": [
+        {
+          "name": "test_unknown_version_ref_and_fallback_are_rejected[UNKNOWN]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unknown_version_ref_and_fallback_are_rejected[]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unknown_version_ref_and_fallback_are_rejected[main]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unknown_version_ref_and_fallback_are_rejected[HEAD]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unknown_version_ref_and_fallback_are_rejected[LEGACY_MAIN_V1]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unregistered_source_receipt_and_test_changes_are_rejected[qbot/research/data/market_qualification.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unregistered_source_receipt_and_test_changes_are_rejected[qbot/research/factors/registry.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unregistered_source_receipt_and_test_changes_are_rejected[docs/research/evidence/ci-runtime-optimization-v1/baseline-collection.json]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unregistered_source_receipt_and_test_changes_are_rejected[docs/research/evidence/pit-phase1-20261018-v1/delivery-assembly-receipt.json]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unregistered_source_receipt_and_test_changes_are_rejected[tests/research/test_five_year_frozen_baseline.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_old_golden_change_is_rejected",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_unregistered_new_protected_file_is_rejected",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_registry_claims_cannot_authorize_changed_content[source_commit-0000000000000000000000000000000000000000]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_registry_claims_cannot_authorize_changed_content[source_commit-refs/heads/main]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_registry_claims_cannot_authorize_changed_content[version-UNKNOWN]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_registry_claims_cannot_authorize_changed_content[migration_postimages-value3]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_registry_claims_cannot_authorize_changed_content[financial_recertification-True]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_registry_claims_cannot_authorize_changed_content[approved-True]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_controls_are_rechecked_after_module_load[.github/scripts/ci/research_checks.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_controls_are_rechecked_after_module_load[.github/scripts/ci/security_admission_revision.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_controls_are_rechecked_after_module_load[.github/scripts/ci/c01_preservation.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_controls_are_rechecked_after_module_load[docs/research/evidence/c01-solo-v1/trust-anchor.json]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_controls_are_rechecked_after_module_load[.github/workflows/market-admission.yml]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_legacy_current_control_mixing_is_rejected[.github/scripts/ci/research_checks.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_legacy_current_control_mixing_is_rejected[docs/research/evidence/c01-solo-v1/trust-anchor.json]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_missing_pit_does_not_gain_admission_after_version_registration",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        }
+      ]
+    },
+    {
+      "kind": "error",
+      "module": "tests.research.test_c01_source_reachability",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\.github\\\\workflows\\\\market-admission.yml'\"",
+      "category": "UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING",
+      "cases": [
+        {
+          "name": "test_squash_fresh_clone_without_source_objects_preserves_and_refuses_finance",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_untrusted_source_manifest_changes_are_rejected[source_commit]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_untrusted_source_manifest_changes_are_rejected[source_changes]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_untrusted_source_manifest_changes_are_rejected[source_closure]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_untrusted_source_manifest_changes_are_rejected[sha256]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_untrusted_source_manifest_changes_are_rejected[blob]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_untrusted_source_manifest_changes_are_rejected[path]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_untrusted_source_manifest_changes_are_rejected[mode]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_registry_and_anchor_rehash_cannot_replace_trusted_workflow_pin",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_manifest_reconstruction_requires_exact_finite_consistent_entries[count]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_manifest_reconstruction_requires_exact_finite_consistent_entries[noop]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_manifest_reconstruction_requires_exact_finite_consistent_entries[path]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_manifest_reconstruction_requires_exact_finite_consistent_entries[mode]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_manifest_reconstruction_requires_exact_finite_consistent_entries[blob]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_manifest_reconstruction_requires_exact_finite_consistent_entries[sha256]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_manifest_reconstruction_requires_exact_finite_consistent_entries[inventory]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_actual_file_and_mode_changes_are_rejected[delete]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_actual_file_and_mode_changes_are_rejected[rename]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_actual_file_and_mode_changes_are_rejected[content]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_actual_file_and_mode_changes_are_rejected[migration]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_actual_file_and_mode_changes_are_rejected[git_mode]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_actual_file_and_mode_changes_are_rejected[runtime_bytes]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_tracked_symlink_mode_is_rejected_without_following_target",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_source_content_rejects_unregistered_or_changed_source",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_control_file_modes_are_authenticated[.github/scripts/ci/c01_preservation.py]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_control_file_modes_are_authenticated[.github/workflows/market-admission.yml]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        },
+        {
+          "name": "test_control_file_modes_are_authenticated[docs/research/evidence/c01-solo-v1/trust-anchor.json]",
+          "trace_sha256": "80cc51347ef1fc9b5b1513cbf6494926ce34aa7b673d9a1f4d49bd49ca5d6d24"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_exploratory_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\exploratory-factor-v1\\\\receipt.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_shipped_publication_survives_checkout_with_verified_derived_hashes[exploratory-factor-v1]",
+          "trace_sha256": "0a60a5b2b41644f62dd0f659c7243e86fee5925282f0be0e99cfee4d01f0ebad"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_exploratory_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\exploratory-factor-v2\\\\receipt.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_shipped_publication_survives_checkout_with_verified_derived_hashes[exploratory-factor-v2]",
+          "trace_sha256": "2e0d43860824d29d1c304ac835de15dc575486f26d7163e3250e1b23b25f520d"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_exploratory_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\exploratory-factor-v1\\\\summary.md'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_shipped_report_and_all_pngs_keep_exploratory_disclosures[exploratory-factor-v1]",
+          "trace_sha256": "ac9cf15e3b2d310e3c082098a25db3e2919941042e8dc83015f793d23c36642d"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_exploratory_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\exploratory-factor-v2\\\\summary.md'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_shipped_report_and_all_pngs_keep_exploratory_disclosures[exploratory-factor-v2]",
+          "trace_sha256": "197f84e214490ac8bd6a17130d918a0fde0bd71eeebc538be095dc8f001d4ffe"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_exploratory_statistical_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\exploratory-statistical-audit-v3\\\\receipt.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_complete_real_audit_receipt_and_fixed_families_survive_checkout",
+          "trace_sha256": "83f3999e31a90360b5f73d241e94a48293f5136dbe6fb7eba79b4f7ed9756bd8"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_exploratory_statistical_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\exploratory-statistical-audit-v3\\\\quintile_daily.csv'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_all_quintile_days_and_unmatured_tail_are_explicit_without_private_ids",
+          "trace_sha256": "bb7d30560cc274c534ae9a6b0c1887616f2d0000b325e1f7a5ae1669f9d1b0ec"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_exploratory_statistical_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\exploratory-statistical-audit-v3\\\\report.md'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_chinese_report_and_four_figures_have_all_six_disclosures",
+          "trace_sha256": "8a520e84a89ee6fa3d22e71963c706bcb476683d6008efddf4b507db89f7c0e8"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_factor_discovery_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\factor-discovery-synthetic-v2\\\\receipt.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_committed_public_package_receipt_expressions_and_aggregate_schema[synthetic]",
+          "trace_sha256": "8648502a7425e922b99eb220ec18d2b1c83b4346297557ed462a8cb044d97041"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_factor_discovery_delivery",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\factor-discovery-private-v2\\\\receipt.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_committed_public_package_receipt_expressions_and_aggregate_schema[private]",
+          "trace_sha256": "3d3d171a497ada1a64312a56e378ab31426deb5bd77e2584b994ca030fa530d8"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_factor_discovery_integration",
+      "message": "AssertionError: \nassert 128 == 0\n +  where 128 = CompletedProcess(args=['git', 'diff', '--exit-code', '48ea4dd8c1876c1515f3172c9bb2e812f20ebe82', '--', 'qbot/research/...istical-audit-v3'], returncode=128, stdout=b'', stderr=b'fatal: bad object 48ea4dd8c1876c1515f3172c9bb2e812f20ebe82\\n').returncode",
+      "category": "ORIGINAL_GIT_OBJECT_UNAVAILABLE_IN_INDEPENDENT_REPO",
+      "cases": [
+        {
+          "name": "test_old_factor_golden_configs_and_historical_artifacts_unchanged",
+          "trace_sha256": "a3170fcd0881fefc77ae373dfe65dd5812e4324d88aa66ae0d4399b58046eff9"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_five_year_frozen_baseline",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\five-year-data-feasibility-v1\\\\frozen-baseline.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_original_research_evidence_and_factor_parameters_are_frozen",
+          "trace_sha256": "6804d99097205406ffaa5f2da0c75106efba134c3f64634bf34012aea9f684d4"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_pit_event_evidence",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\five-year-data-feasibility-v1\\\\pit-events.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_existing_public_metadata_stays_unknown_without_original_bytes",
+          "trace_sha256": "cd16c84b4fb1e3fb07f3ad3f1cc23a5f560c58a2016c192da56d555c7e45c50c"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_pit_event_evidence",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\pit-effective-membership-evidence-v1\\\\baseline-receipt.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_public_receipts_bind_exact_published_bytes_across_checkouts",
+          "trace_sha256": "c836332b7cf3b3764e1a94c1e169d8a3572d4b53c1bc45b0f7d7781b4c5dc9f8"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.research.test_tdx_delivery_seal",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\tdx-data-quality-v2\\\\delivery-files.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_all_published_tdx_files_in_clean_checkout",
+          "trace_sha256": "8affd1a120ced7c0998bfadc90938c4a57983bb122922a2f2e393e3f51d67bea"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.model_readiness.test_source_identity",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\evidence\\\\model-readiness-source-v2\\\\original-head-forensics.json'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_historical_git_blobs_and_eol_map_reconstruct_original_raw_receipt",
+          "trace_sha256": "caa5f6c3627330a62fcca621b27439601372d19b915611b3785f3998db507716"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.market_structure.test_c01_publication_safety",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\.github\\\\workflows\\\\market-admission.yml'",
+      "category": "UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING",
+      "cases": [
+        {
+          "name": "test_exact_source_literal_inventory_rejects_added_paths[qbot/research/data/csmar/binding.py]",
+          "trace_sha256": "c06e3e916272abb414e3f36e7dd312b48f0677cbfe66dd4753ad9b59318da4bf"
+        },
+        {
+          "name": "test_exact_source_literal_inventory_rejects_added_paths[qbot/research/data/csmar/fingerprint.py]",
+          "trace_sha256": "f92de221b2468c36278a7ca5d0c2a76751903ca47762458c28e54511012fc77c"
+        },
+        {
+          "name": "test_exact_source_literal_inventory_rejects_added_paths[qbot/research/data/csmar/native.py]",
+          "trace_sha256": "74a57518882dd5a60276fc9fac0349a240e8c5da7d0aff53b1b5ff159bc5c09e"
+        },
+        {
+          "name": "test_exact_source_literal_inventory_rejects_added_paths[tests/research/test_csmar_source_binding.py]",
+          "trace_sha256": "46444760dcb15df1d0e4d09aac90c42796d9aeb5e2d473212a7b094cfc404a58"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.market_structure.test_delivery",
+      "message": "subprocess.CalledProcessError: Command '['git', 'diff', '39eecf869c9c2075ba3f6e3c76aeba3338c63432', '--name-only', '--diff-filter=MDR']' returned non-zero exit status 128.",
+      "category": "ORIGINAL_GIT_OBJECT_UNAVAILABLE_IN_INDEPENDENT_REPO",
+      "cases": [
+        {
+          "name": "test_protected_tracked_content_is_unchanged",
+          "trace_sha256": "80383a3bdf464976fe263e5fb09338616acfa3a19cfeb5c0fd1cee7445a87ebd"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.market_structure.test_publication_scope_audit",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\docs\\\\research\\\\market_structure\\\\evidence\\\\v2\\\\red\\\\red-tests.log'",
+      "category": "HISTORICAL_PUBLICATION_NOT_CARRIED",
+      "cases": [
+        {
+          "name": "test_frozen_publication_survives_real_git_topologies[original]",
+          "trace_sha256": "c89135064a359a0f521f99557d8e4b3287f58bb167fd6ec7b683a18992d1e096"
+        },
+        {
+          "name": "test_frozen_publication_survives_real_git_topologies[squashed-retained]",
+          "trace_sha256": "ca2af6d06ea12f9e2f2d28d740ff011928ba470758b1997d8c8ad09c5f62e915"
+        },
+        {
+          "name": "test_frozen_publication_survives_real_git_topologies[squashed-discarded]",
+          "trace_sha256": "599be9bfb08fe4552e6a36348068eea67132e071d7fe3d7de89974afab167431"
+        },
+        {
+          "name": "test_exact_archive_passes_in_both_modes[False]",
+          "trace_sha256": "a1c343dabe3f81138a5f0e120f94d0fa0a01672bc73460f9282e62853abcedee"
+        },
+        {
+          "name": "test_exact_archive_passes_in_both_modes[True]",
+          "trace_sha256": "8d9bf43474ceb3be75daf5984685b6a1c69a24ec1bb5a9848a7e58aa01756377"
+        },
+        {
+          "name": "test_changed_legacy_bytes_lose_exception",
+          "trace_sha256": "8ab69be0fa8341755c846d34fdb325dca7fa7bb969a7c18a04935aeee837f250"
+        },
+        {
+          "name": "test_changed_utf8_document_loses_path_exception",
+          "trace_sha256": "d8148220c31bf08e0fd03be2f91c447a18851d137ec7f6600428b15d8d0437c3"
+        },
+        {
+          "name": "test_new_path_cannot_claim_a_frozen_file_hash",
+          "trace_sha256": "64937d80fc99e2fc959caae86a4c87c699f034fc7fb180fe3dd458460ff69f27"
+        },
+        {
+          "name": "test_frozen_manifest_digest_mismatch_is_blocked",
+          "trace_sha256": "ea12e70b6c79addce75c03030b6724d19e560fed7681e4cd547c73da91f63846"
+        },
+        {
+          "name": "test_matching_current_hash_still_requires_frozen_source_membership",
+          "trace_sha256": "aac1d53ecbc34cb2afd4b24e10d2ac87cd209644878c4354651ed9e1bd88760c"
+        },
+        {
+          "name": "test_new_file_under_archival_directory_is_not_exempt",
+          "trace_sha256": "402b80c449e14524de2ac89e740054a2265a4b462dee68bb88489092aef7c12a"
+        },
+        {
+          "name": "test_new_actual_machine_path_is_blocked",
+          "trace_sha256": "1748aabb4759d2082b9d39473ddabea8e6b836c98cc5d5ebebad931cb771a394"
+        },
+        {
+          "name": "test_rule_version_cannot_select_a_different_baseline",
+          "trace_sha256": "6f481a4de449d161d844ecbe213d1bae5f9f8f1fe82a6360ebf1b99ebcdac051"
+        },
+        {
+          "name": "test_legacy_log_requires_frozen_text_attribute",
+          "trace_sha256": "70338af0e61b444744b49ae19038211bf74557369ea9f77ab69dc9f2dafcc1e5"
+        },
+        {
+          "name": "test_unexpected_match_count_invalidates_exception",
+          "trace_sha256": "e34c43e8d7e4d67f681c17d2c13770820966ae52ce73e35470910d25bc48030c"
+        },
+        {
+          "name": "test_rehashed_rule_file_cannot_grant_exception",
+          "trace_sha256": "aedaf25c019927b2a7657beb5c329819cacc042747e41faa119abad4894c0bd1"
+        },
+        {
+          "name": "test_noncanonical_rule_paths_are_rejected[.]",
+          "trace_sha256": "05ab844f719a8dd0dc55671874a751561f37e57c98aa58096c6408291475a15e"
+        },
+        {
+          "name": "test_noncanonical_rule_paths_are_rejected[../file]",
+          "trace_sha256": "9105eb2ebf88496865613840b68df66d432492240eecea1cbc1b599da3e2830f"
+        },
+        {
+          "name": "test_noncanonical_rule_paths_are_rejected[a/../file]",
+          "trace_sha256": "9710fb640a4ced92099b400f7463fdb38d0c792a85f7fcd9ec6c38e8dab01767"
+        },
+        {
+          "name": "test_noncanonical_rule_paths_are_rejected[/file]",
+          "trace_sha256": "43bd7b169132ed527357c4c06027407d2da1d9138b19298ffa8447c147f3fd1e"
+        },
+        {
+          "name": "test_noncanonical_rule_paths_are_rejected[a//file]",
+          "trace_sha256": "f884347169a603b58b49fb15648ea3cd04b4081aa384047241f7921d96b2e48f"
+        },
+        {
+          "name": "test_noncanonical_rule_paths_are_rejected[a\\\\file]",
+          "trace_sha256": "947b52291c104749772c5768d2904cecabe10e71d394712ed20cfbd2f85b43d1"
+        },
+        {
+          "name": "test_noncanonical_rule_paths_are_rejected[a/./file]",
+          "trace_sha256": "cbf0b2e1c4ca52e734dfc3a22219115c9e98eb8311c197b94fce68a01731fd6a"
+        }
+      ]
+    },
+    {
+      "kind": "failure",
+      "module": "tests.market_admission.test_p1_review",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\qbot\\\\research\\\\cli.py'",
+      "category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "cases": [
+        {
+          "name": "test_checker_and_receipt_cannot_jointly_self_authorize",
+          "trace_sha256": "6fdedabc85f8f13fa39f1fe781fec3dd8e0aecdc856106d745e7b623ecaad0fc"
+        },
+        {
+          "name": "test_changed_checker_is_rejected_before_any_candidate_code_executes[append]",
+          "trace_sha256": "3a3feea9ad07eef20709ae4f5ed5e375a2b5c182f84cbcb465e33d75413d3717"
+        },
+        {
+          "name": "test_changed_checker_is_rejected_before_any_candidate_code_executes[execute]",
+          "trace_sha256": "43e80640b8721c0833a03254d8570b98aaa525cc25e3a017f1d5dc11476eec95"
+        },
+        {
+          "name": "test_changed_checker_is_rejected_before_any_candidate_code_executes[delete]",
+          "trace_sha256": "188e519cd81db64bf6fb8e46504adf05aeeed5f18d225bfbff38b66ff244559b"
+        },
+        {
+          "name": "test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[controller]",
+          "trace_sha256": "7bbd95b90d30ee5964649b2759c646b13d178120c0b61f70ee9e62783903b5ff"
+        },
+        {
+          "name": "test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[anchor]",
+          "trace_sha256": "45effb3d859e6305b614f0691439815192304a5578ad99fca21e24745100382a"
+        },
+        {
+          "name": "test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[joint_reanchor]",
+          "trace_sha256": "5a205a92af987abdf664eec21855d7ac821e5dc30f398aa53968914e6d4d2a8e"
+        }
+      ]
+    },
+    {
+      "kind": "error",
+      "module": "tests.evidence.test_pit_archive_verifiers",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Code\\\\FactorLab-independent-candidate\\\\.github\\\\workflows\\\\market-admission.yml'\"",
+      "category": "UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING",
+      "cases": [
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/workspace/alice/repo-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/workspace/alice/repo-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/workspace/alice/repo-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/root/secret-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/root/secret-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/root/secret-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/tmp/build-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/tmp/build-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/tmp/build-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/var/cache/private-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/var/cache/private-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/var/cache/private-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/opt/research-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/opt/research-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/opt/research-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/srv/evidence-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/srv/evidence-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/srv/evidence-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/Volumes/alice/archive-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/Volumes/alice/archive-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/Volumes/alice/archive-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/data/research-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/data/research-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/data/research-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/unlisted_mount_928/alice-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/unlisted_mount_928/alice-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/unlisted_mount_928/alice-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/\\u79c1\\u6709\\u6302\\u8f7d/\\u7814\\u7a76-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/\\u79c1\\u6709\\u6302\\u8f7d/\\u7814\\u7a76-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/\\u79c1\\u6709\\u6302\\u8f7d/\\u7814\\u7a76-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/secret-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/secret-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/secret-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/.hidden-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/.hidden-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/.hidden-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/2026/10/18-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/2026/10/18-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[/2026/10/18-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[C:/Users/alice/repo-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[C:/Users/alice/repo-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[C:/Users/alice/repo-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[D:\\\\private\\\\receipt.json-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[D:\\\\private\\\\receipt.json-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[D:\\\\private\\\\receipt.json-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[\\\\\\\\server\\\\share\\\\private-md]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[\\\\\\\\server\\\\share\\\\private-json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_rehashed_public_file_rejects_paths[\\\\\\\\server\\\\share\\\\private-py]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_json_escapes_cannot_hide_paths[/new_volume/private-\\\\/]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_json_escapes_cannot_hide_paths[/new_volume/private-\\\\u002f]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_json_escapes_cannot_hide_paths[/root/secret-\\\\/]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_json_escapes_cannot_hide_paths[/root/secret-\\\\u002f]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_json_escapes_cannot_hide_paths[/-\\\\/]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_json_escapes_cannot_hide_paths[/-\\\\u002f]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[https://example.org/workspace/alice?date=2026/10/18]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[http://example.org:8080/tmp/build]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[ftp://example.org/root/archive]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[wss://example.org/unknown/mount]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[custom+v2://example.org/root/resource]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[s3://research-bucket/2026/10/18]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[ssh://git@example.org/workspace/repo]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[docs/research/evidence.json]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[./tmp/build]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[../root/secret]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[<REPO>/data/research]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[${QBOT_DATA_DIR}/tdx]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[**/__pycache__/]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[2026/10/18]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[2026-10-18]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[2021/01/01\\u20132026/10/18]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_urls_relative_paths_and_dates_pass[Formal/Forward BLOCKED; NO LIVE MONEY]",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_manifest_strings_are_scanned",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_python_suffix_requires_relative_expression",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_python_string_escapes_are_decoded",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        },
+        {
+          "name": "test_decoded_json_keys_are_scanned",
+          "trace_sha256": "2c3aa6a4fc254c1e0ac7bd37648633761af7ad271628e01f1ad449fe293f1308"
+        }
+      ]
+    }
+  ],
+  "unresolved_failure_causes": [],
+  "ordinary_runtime_implementation_failures_observed": [],
+  "engineering_gap": "7 pinned-control attack fixtures require old qbot/research/cli.py preimages. Their layout migration is not complete; resolve within independently reviewed control replay, not by changing original pins or authorizing FactorLab.",
+  "not_collected_original_cases": 27,
+  "collection_error_records": 1,
+  "full_suite_status": "FAIL",
+  "independent_root": "BLOCKED_INDEPENDENT_REVIEW_REQUIRED",
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+  "pit": "PIT_UNVERIFIED",
+  "live_money": "NO LIVE MONEY",
+  "readonly_secondary_review": {
+    "agent": "dependency_audit",
+    "scope": "Read all186 actual final XML nonpassing message/trace records; not financial or migrated-root authorization.",
+    "all186_causes_confirmed": true,
+    "unclassified": 0,
+    "new_math_model_os_failures_observed": 0
+  },
+  "test_bodies_not_reached_due_to_setup_errors": 135,
+  "control_attack_assertions_not_reached_due_to_old_fixture_layout": 7
+}

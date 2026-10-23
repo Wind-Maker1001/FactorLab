@@ -1,0 +1,81 @@
+{
+  "scope": "Named objective deliverables presence only; outcome gates are in individual reports",
+  "files": {
+    "BASELINE_AUDIT.md": {
+      "exists": true,
+      "bytes": 1616,
+      "sha256": "f9efccd516ced352e6c0ff6d204d90cd25b92d5c44375ed941dbabca33d01d13"
+    },
+    "BASELINE_ENVIRONMENT.json": {
+      "exists": true,
+      "bytes": 2465,
+      "sha256": "86a9e3eb11b466123f701e11133c5d58643ef5de345f9b9899d65a712fd827c4"
+    },
+    "BASELINE_TEST_RESULTS.md": {
+      "exists": true,
+      "bytes": 2319,
+      "sha256": "18bfdf9ba14a6c622df59c40e152a2d8df93498685dc58a666c846d27b03a22a"
+    },
+    "EXTRACTION_DEPENDENCY_GRAPH.md": {
+      "exists": true,
+      "bytes": 2998,
+      "sha256": "1d0b226f7e93e3abf8293be4f166cae6f2bbd62a3092faa7e2f5570a6e9bdc8a"
+    },
+    "EXTRACTION_FILE_MANIFEST.json": {
+      "exists": true,
+      "bytes": 301121,
+      "sha256": "b8ac9a52d6595e2fd4f7472ee0f6b8fccb39652e82faf258f9065190059eb8f5"
+    },
+    "MIGRATION_CHANGELOG.md": {
+      "exists": true,
+      "bytes": 3209,
+      "sha256": "eb75bdcacedc3f1663bb41f4046300ae6a7ea56ca34ed773e6ee6ef22ba6da30"
+    },
+    "PYTHON_UPGRADE_COMPATIBILITY.md": {
+      "exists": true,
+      "bytes": 2880,
+      "sha256": "ce4641dd39e6f0811fd42cabaa880a73fe3ab557edad71f808c96beb650d759f"
+    },
+    "DEPENDENCY_LOCK_REPORT.md": {
+      "exists": true,
+      "bytes": 1973,
+      "sha256": "d19cd3919ccd4f2eae2c370c945689ccf53da7a962c8a7df89b0c769f85e7238"
+    },
+    "CROSS_VERSION_NUMERICAL_VALIDATION.md": {
+      "exists": true,
+      "bytes": 2043,
+      "sha256": "2b1af9ac1ca2df6b0b29ceae687c2937256ec5d7206f1b920bd3a11cbfbd570b"
+    },
+    "BEHAVIOR_EQUIVALENCE_REPORT.md": {
+      "exists": true,
+      "bytes": 4014,
+      "sha256": "e0468275a86e877190d64f115bdce46e0009faa68be06c6b45608eec4a425b38"
+    },
+    "SECURITY_ADMISSION_MIGRATION.md": {
+      "exists": true,
+      "bytes": 4020,
+      "sha256": "27bf7d202b30f70735a0e6ba451f0a8dc2c912b2c2df0a821b91935c03f35f6b"
+    },
+    "PACKAGING_VALIDATION.md": {
+      "exists": true,
+      "bytes": 3545,
+      "sha256": "4de01df312f4d5864f75d5676296d62cd46a9656434e2870bd8e4e59ed518f78"
+    },
+    "INDEPENDENT_CI_REPORT.md": {
+      "exists": true,
+      "bytes": 8824,
+      "sha256": "a5858c329bd4d3486d428bf84d8bd788b05b93f495deffe0282985b7cb4ab2cf"
+    },
+    "LICENSE_AND_PUBLICATION_AUDIT.md": {
+      "exists": true,
+      "bytes": 3151,
+      "sha256": "20432660dc911423627724d1a8c0edee6a6b1293426b8ffd46174430817ffd40"
+    },
+    "RELEASE_READINESS.md": {
+      "exists": true,
+      "bytes": 5167,
+      "sha256": "32294836b58415a9d0b031c69ebb8b8afcdcd4b68e7be4901e4860fbbdf13302"
+    }
+  },
+  "status": "PASS_PRESENCE_ONLY"
+}

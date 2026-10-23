@@ -1,0 +1,9 @@
+{
+  "status": "FAIL_INSTALLER_NETWORK_ATTEMPT",
+  "cause": "PyPI tzdata TLS handshake EOF after3 retries; not a package ABI/test failure",
+  "original_log": "docs/migration/evidence/packaging-ci314-final-r6.log",
+  "preserved_partial_environment": "local-build-archives/packaging-ci-r6-network-failure",
+  "retry_log": "docs/migration/evidence/packaging-ci314-final-r6-retry1.log",
+  "retry_method": "uv0.9.5 with existing cache and UV_OFFLINE=1; fresh output environments",
+  "scope": "Failed logs and partial environment retained; no old receipt or pass conclusion overwritten"
+}

@@ -1,0 +1,77 @@
+{
+  "status": "PASS_INVENTORY_ACCOUNTED_WITH_BLOCKED_COLLECTION",
+  "baseline_cases": 4183,
+  "final_junit_entries_including_collection_error": 4166,
+  "baseline_not_collected": [
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "function": "test_revision_preserves_all_legacy_collection_and_outcome_requirements",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "function": "test_every_authorized_file_still_rejects_unregistered_bytes",
+      "count": 19
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "function": "test_rewriting_the_receipt_cannot_self_authorize_changes",
+      "count": 4
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "function": "test_archival_view_requires_exact_current_security_and_original_preimages",
+      "count": 3
+    }
+  ],
+  "added_or_expanded": [
+    {
+      "module": "",
+      "function": "tests.market_admission.test_revision_contract",
+      "count": 1
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "function": "test_each_executable_dependency_and_config_change_invalidates_old_identity",
+      "count": 2
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "function": "test_migration_refuses_even_a_forged_all_pass_internal_report",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "function": "test_forward_cannot_hash_a_different_tree_as_the_executing_package",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "function": "test_supplied_real_or_changed_files_cannot_be_stamped_synthetic",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "function": "test_new_identity_is_explicitly_non_authorizing_and_includes_resources",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "function": "test_source_identity_ignores_external_git_overrides",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "function": "test_discovery_failed_git_status_is_unknown",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "function": "test_immutable_archive_verifier_reference_cannot_load_changed_bytes",
+      "count": 1
+    }
+  ],
+  "baseline_junit_sha256": "8b3a5fd47e7b79ef62fc0d6dea360d8213340ffe7c87729302673d914b5c4b5a",
+  "final_junit_sha256": "0340077aa2688fc8f09994e2b484f8000aedc1b1810ce0b14da8be9fe557da86",
+  "scope": "Functions and parameter counts, not an assertion that blocked security cases passed."
+}

@@ -1,0 +1,1 @@
+Interrupted before acceptance: XGBoost controlled dependency replacement was still pending. This round is NOT valid final-environment evidence. Preserve its original log.

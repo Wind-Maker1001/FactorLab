@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "scope": "Actual isolated -I processes outside checkout, current175 source bytes and23 runtime pins; source/wheel/sdist installs",
+  "environments": [
+    {
+      "environment": "wheel-r6",
+      "python": "local-ci\\packaging314-final-r7\\wheel\\Scripts\\python.exe",
+      "base_prefix": "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none",
+      "source_module_count": 175,
+      "all175_source_hashes_match_current": true,
+      "all23_locked_core_versions_match": true,
+      "git_identity": null,
+      "legacy_available": false,
+      "original_worktree_on_sys_path": false,
+      "sys_path": [
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\python314.zip",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\DLLs",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\Lib",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none",
+        "D:\\Code\\FactorLab-independent-candidate\\local-ci\\packaging314-final-r7\\wheel",
+        "D:\\Code\\FactorLab-independent-candidate\\local-ci\\packaging314-final-r7\\wheel\\Lib\\site-packages"
+      ]
+    },
+    {
+      "environment": "sdist-r6",
+      "python": "local-ci\\packaging314-final-r7\\sdist\\Scripts\\python.exe",
+      "base_prefix": "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none",
+      "source_module_count": 175,
+      "all175_source_hashes_match_current": true,
+      "all23_locked_core_versions_match": true,
+      "git_identity": null,
+      "legacy_available": false,
+      "original_worktree_on_sys_path": false,
+      "sys_path": [
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\python314.zip",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\DLLs",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\Lib",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none",
+        "D:\\Code\\FactorLab-independent-candidate\\local-ci\\packaging314-final-r7\\sdist",
+        "D:\\Code\\FactorLab-independent-candidate\\local-ci\\packaging314-final-r7\\sdist\\Lib\\site-packages"
+      ]
+    },
+    {
+      "environment": "pip-source",
+      "python": "local-envs\\pip-source314\\Scripts\\python.exe",
+      "base_prefix": "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none",
+      "source_module_count": 175,
+      "all175_source_hashes_match_current": true,
+      "all23_locked_core_versions_match": true,
+      "git_identity": null,
+      "legacy_available": false,
+      "original_worktree_on_sys_path": false,
+      "sys_path": [
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\python314.zip",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\DLLs",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none\\Lib",
+        "D:\\Code\\FactorLab-independent-candidate\\local-runtimes\\cpython-3.14.0-windows-x86_64-none",
+        "D:\\Code\\FactorLab-independent-candidate\\local-envs\\pip-source314",
+        "D:\\Code\\FactorLab-independent-candidate\\local-envs\\pip-source314\\Lib\\site-packages"
+      ]
+    }
+  ],
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED"
+}

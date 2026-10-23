@@ -1,0 +1,2239 @@
+{
+  "schema": "FACTORLAB_NUMERICAL_COMPARISON_V1",
+  "tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-12
+  },
+  "baseline": "local-runs\\legacy39-numerical-r1",
+  "candidate": "local-runs\\factorlab314-numerical-r2",
+  "status": "PASS",
+  "artifacts": [
+    {
+      "artifact": "factors.parquet",
+      "left_shape": [
+        3490,
+        34
+      ],
+      "right_shape": [
+        3490,
+        34
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "open": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "close": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "high": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "low": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_open": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_close": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_high": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_low": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_open": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_close": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_high": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_low": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "volume": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "amount": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_factor": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_status": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "REV1": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "REV5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MOM20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MOM60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOL5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOL20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOL60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "TURN5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "TURN20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOLUME_RATIO": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "AMIHU20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "PRICE_MA20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MA5_MA20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MA20_MA60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "dataset.parquet",
+      "left_shape": [
+        2620,
+        58
+      ],
+      "right_shape": [
+        2620,
+        58
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "open": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "close": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "high": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "low": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_open": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_close": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_high": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_low": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_open": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_close": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_high": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_low": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "volume": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "amount": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "adj_factor": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_status": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "REV1": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "REV5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MOM20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MOM60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOL5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOL20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOL60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "TURN5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "TURN20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "VOLUME_RATIO": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "AMIHU20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "PRICE_MA20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MA5_MA20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "MA20_MA60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "STOCK_FWD_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "BENCHMARK_FWD_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "EXCESS_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "INDEX_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "INDEX_RET20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "INDEX_RET60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "INDEX_VOL20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_REV1": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_REV5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_MOM20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_MOM60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_VOL5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_VOL20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_VOL60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_TURN5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_TURN20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_VOLUME_RATIO": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_AMIHU20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_PRICE_MA20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_MA5_MA20": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "raw_MA20_MA60": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "factor_score/predictions.parquet",
+      "left_shape": [
+        440,
+        11
+      ],
+      "right_shape": [
+        440,
+        11
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "EXCESS_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score": {
+          "max_absolute_difference": 2.6645352591003757e-15,
+          "mean_absolute_difference": 3.845881946240581e-16,
+          "missing_mask_equal": true
+        },
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "factor_score/daily.parquet",
+      "left_shape": [
+        44,
+        19
+      ],
+      "right_shape": [
+        44,
+        19
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "universe_size": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "scored_observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "prediction_ic": {
+          "max_absolute_difference": 2.220446049250313e-16,
+          "mean_absolute_difference": 5.961140671993029e-17,
+          "missing_mask_equal": true
+        },
+        "prediction_rank_ic": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_bottom_spread": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "factor_score/fast_nav.parquet",
+      "left_shape": [
+        49,
+        12
+      ],
+      "right_shape": [
+        49,
+        12
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 3.3306690738754696e-16,
+          "mean_absolute_difference": 5.890979314337566e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 3.3306690738754696e-16,
+          "mean_absolute_difference": 5.664403186863044e-17,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 2.3283064365386963e-10,
+          "mean_absolute_difference": 6.177139525510827e-11,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 2.220446049250313e-16,
+          "mean_absolute_difference": 3.398641912117826e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 1.0842021724855044e-19,
+          "mean_absolute_difference": 2.2126574948683762e-21,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 1.6653345369377348e-16,
+          "mean_absolute_difference": 3.398641912117826e-18,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "factor_score/fast_trades.parquet",
+      "left_shape": [
+        36,
+        16
+      ],
+      "right_shape": [
+        36,
+        16
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 1.7763568394002505e-15,
+          "mean_absolute_difference": 3.371788445157883e-16,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "previous_weight": {
+          "max_absolute_difference": 5.551115123125783e-17,
+          "mean_absolute_difference": 4.625929269271485e-18,
+          "missing_mask_equal": true
+        },
+        "target_weight": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 5.820766091346741e-11,
+          "mean_absolute_difference": 8.084397349092696e-12,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 1.4210854715202004e-14,
+          "mean_absolute_difference": 1.1842378929335002e-15,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 5.861977570020827e-14,
+          "mean_absolute_difference": 4.835638062811793e-15,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 5.861977570020827e-14,
+          "mean_absolute_difference": 5.625129991434126e-15,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "factor_score/execution_nav.parquet",
+      "left_shape": [
+        49,
+        14
+      ],
+      "right_shape": [
+        49,
+        14
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_orders": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "factor_score/execution_trades.parquet",
+      "left_shape": [
+        36,
+        17
+      ],
+      "right_shape": [
+        36,
+        17
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 1.7763568394002505e-15,
+          "mean_absolute_difference": 3.371788445157883e-16,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "requested_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash_after": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "factor_score/execution_rejections.parquet",
+      "left_shape": [
+        0,
+        9
+      ],
+      "right_shape": [
+        0,
+        9
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {}
+    },
+    {
+      "artifact": "ridge/predictions.parquet",
+      "left_shape": [
+        440,
+        11
+      ],
+      "right_shape": [
+        440,
+        11
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "EXCESS_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score": {
+          "max_absolute_difference": 3.5561831257524545e-17,
+          "mean_absolute_difference": 8.1492577837365e-18,
+          "missing_mask_equal": true
+        },
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "selected_alpha": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "ridge/daily.parquet",
+      "left_shape": [
+        44,
+        19
+      ],
+      "right_shape": [
+        44,
+        19
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "universe_size": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "scored_observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "prediction_ic": {
+          "max_absolute_difference": 1.3877787807814457e-15,
+          "mean_absolute_difference": 6.388710583287766e-16,
+          "missing_mask_equal": true
+        },
+        "prediction_rank_ic": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_bottom_spread": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "ridge/fast_nav.parquet",
+      "left_shape": [
+        49,
+        12
+      ],
+      "right_shape": [
+        49,
+        12
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 2.220446049250313e-16,
+          "mean_absolute_difference": 2.2657612747452175e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 2.220446049250313e-16,
+          "mean_absolute_difference": 2.0391851472706958e-17,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 2.3283064365386963e-10,
+          "mean_absolute_difference": 4.03889892052631e-11,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 4.440892098500626e-16,
+          "mean_absolute_difference": 4.531522549490435e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 2.168404344971009e-19,
+          "mean_absolute_difference": 4.4253149897367524e-21,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 1.1102230246251565e-16,
+          "mean_absolute_difference": 2.2657612747452172e-18,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "ridge/fast_trades.parquet",
+      "left_shape": [
+        34,
+        16
+      ],
+      "right_shape": [
+        34,
+        16
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 3.5561831257524545e-17,
+          "mean_absolute_difference": 9.412481082614897e-18,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "previous_weight": {
+          "max_absolute_difference": 5.551115123125783e-17,
+          "mean_absolute_difference": 3.2653618371328133e-18,
+          "missing_mask_equal": true
+        },
+        "target_weight": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 5.820766091346741e-11,
+          "mean_absolute_difference": 5.135970080600066e-12,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 1.4210854715202004e-14,
+          "mean_absolute_difference": 8.359326303060002e-16,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 1.4210854715202004e-14,
+          "mean_absolute_difference": 8.359326303060002e-16,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "ridge/execution_nav.parquet",
+      "left_shape": [
+        49,
+        14
+      ],
+      "right_shape": [
+        49,
+        14
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_orders": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "ridge/execution_trades.parquet",
+      "left_shape": [
+        31,
+        17
+      ],
+      "right_shape": [
+        31,
+        17
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 3.5561831257524545e-17,
+          "mean_absolute_difference": 9.902379842034273e-18,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "requested_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash_after": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "ridge/execution_rejections.parquet",
+      "left_shape": [
+        0,
+        9
+      ],
+      "right_shape": [
+        0,
+        9
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {}
+    },
+    {
+      "artifact": "lightgbm/predictions.parquet",
+      "left_shape": [
+        440,
+        11
+      ],
+      "right_shape": [
+        440,
+        11
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "EXCESS_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "lightgbm/daily.parquet",
+      "left_shape": [
+        44,
+        19
+      ],
+      "right_shape": [
+        44,
+        19
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "universe_size": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "scored_observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "prediction_ic": {
+          "max_absolute_difference": 2.220446049250313e-16,
+          "mean_absolute_difference": 4.691638491846365e-17,
+          "missing_mask_equal": true
+        },
+        "prediction_rank_ic": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_bottom_spread": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "lightgbm/fast_nav.parquet",
+      "left_shape": [
+        49,
+        12
+      ],
+      "right_shape": [
+        49,
+        12
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 1.1102230246251565e-16,
+          "mean_absolute_difference": 2.4923374022197392e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 1.1102230246251565e-16,
+          "mean_absolute_difference": 2.4923374022197392e-17,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 1.1641532182693481e-10,
+          "mean_absolute_difference": 2.6134051838699652e-11,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 2.220446049250313e-16,
+          "mean_absolute_difference": 5.664403186863044e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "lightgbm/fast_trades.parquet",
+      "left_shape": [
+        30,
+        16
+      ],
+      "right_shape": [
+        30,
+        16
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "previous_weight": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "target_weight": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "lightgbm/execution_nav.parquet",
+      "left_shape": [
+        49,
+        14
+      ],
+      "right_shape": [
+        49,
+        14
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_orders": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "lightgbm/execution_trades.parquet",
+      "left_shape": [
+        30,
+        17
+      ],
+      "right_shape": [
+        30,
+        17
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "requested_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash_after": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "lightgbm/execution_rejections.parquet",
+      "left_shape": [
+        0,
+        9
+      ],
+      "right_shape": [
+        0,
+        9
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {}
+    },
+    {
+      "artifact": "xgboost/predictions.parquet",
+      "left_shape": [
+        440,
+        11
+      ],
+      "right_shape": [
+        440,
+        11
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "EXCESS_RET5": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "xgboost/daily.parquet",
+      "left_shape": [
+        44,
+        19
+      ],
+      "right_shape": [
+        44,
+        19
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "fold": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "universe_size": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "scored_observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "observations": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "score_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "prediction_ic": {
+          "max_absolute_difference": 3.3306690738754696e-16,
+          "mean_absolute_difference": 4.002677293148758e-17,
+          "missing_mask_equal": true
+        },
+        "prediction_rank_ic": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_k_future_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_bottom_spread": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_count": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "top_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "bottom_label_coverage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "xgboost/fast_nav.parquet",
+      "left_shape": [
+        49,
+        12
+      ],
+      "right_shape": [
+        49,
+        12
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 3.3306690738754696e-16,
+          "mean_absolute_difference": 8.609892844031826e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 3.3306690738754696e-16,
+          "mean_absolute_difference": 8.609892844031826e-17,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 2.3283064365386963e-10,
+          "mean_absolute_difference": 8.315380130495344e-11,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 2.220446049250313e-16,
+          "mean_absolute_difference": 4.304946422015913e-17,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 1.0842021724855044e-19,
+          "mean_absolute_difference": 4.632751629880663e-21,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 1.1102230246251565e-16,
+          "mean_absolute_difference": 3.628758291584137e-18,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "xgboost/fast_trades.parquet",
+      "left_shape": [
+        31,
+        16
+      ],
+      "right_shape": [
+        31,
+        16
+      ],
+      "exact": false,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "previous_weight": {
+          "max_absolute_difference": 5.551115123125783e-17,
+          "mean_absolute_difference": 1.4325458382260084e-17,
+          "missing_mask_equal": true
+        },
+        "target_weight": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 5.820766091346741e-11,
+          "mean_absolute_difference": 1.502133184863675e-11,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 2.842170943040401e-14,
+          "mean_absolute_difference": 1.8336586729292908e-15,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 5.861977570020827e-14,
+          "mean_absolute_difference": 5.608416956654823e-15,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 1.1368683772161603e-13,
+          "mean_absolute_difference": 8.337416778475369e-15,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "xgboost/execution_nav.parquet",
+      "left_shape": [
+        49,
+        14
+      ],
+      "right_shape": [
+        49,
+        14
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "strategy_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "excess_nav": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "portfolio_value": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "strategy_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "benchmark_return": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost_rate": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "turnover": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "holdings": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_orders": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "xgboost/execution_trades.parquet",
+      "left_shape": [
+        31,
+        17
+      ],
+      "right_shape": [
+        31,
+        17
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {
+        "score": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "rank": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "requested_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "executed_shares": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "execution_price": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "trade_notional": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "commission": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "stamp_duty": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transfer_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "side_fee": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "slippage": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "transaction_cost": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        },
+        "cash_after": {
+          "max_absolute_difference": 0.0,
+          "mean_absolute_difference": 0.0,
+          "missing_mask_equal": true
+        }
+      }
+    },
+    {
+      "artifact": "xgboost/execution_rejections.parquet",
+      "left_shape": [
+        0,
+        9
+      ],
+      "right_shape": [
+        0,
+        9
+      ],
+      "exact": true,
+      "status": "PASS",
+      "numeric": {}
+    }
+  ],
+  "safety": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+}

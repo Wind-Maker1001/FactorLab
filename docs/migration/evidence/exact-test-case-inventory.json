@@ -1,0 +1,375 @@
+{
+  "status": "PASS_EXACT_PARAMETER_INVENTORY_WITH_BLOCKED_COLLECTION",
+  "scope": "Exact testcase class/name identity; only runtime CSMAR executing-source parameters receive explicit path migration. Historical-control parameter strings are not rewritten.",
+  "baseline_cases": 4183,
+  "final_junit_entries_including_one_collection_error": 4166,
+  "baseline_sha256": "8b3a5fd47e7b79ef62fc0d6dea360d8213340ffe7c87729302673d914b5c4b5a",
+  "final_junit_sha256": "0340077aa2688fc8f09994e2b484f8000aedc1b1810ce0b14da8be9fe557da86",
+  "parameter_identity_mappings": [
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[configs/research/csi500_5y.yaml]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/resources/csi500_5y.yaml]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/__init__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/__init__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/__init__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/__init__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/adjustment/__init__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/adjustment/__init__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/adjustment/contracts.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/adjustment/contracts.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/adjustment/engine.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/adjustment/engine.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/adjustment/validation.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/adjustment/validation.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/admission.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/admission.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/assemble.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/assemble.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/cache.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/cache.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/calendar.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/calendar.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/corporate_actions/__init__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/corporate_actions/__init__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/corporate_actions/contracts.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/corporate_actions/contracts.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/corporate_actions/validation.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/corporate_actions/validation.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/csmar/__init__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/csmar/__init__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/csmar/__main__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/csmar/__main__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/csmar/binding.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/csmar/binding.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/csmar/fingerprint.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/csmar/fingerprint.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/csmar/native.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/csmar/native.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/csmar/profiles.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/csmar/profiles.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/evidence.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/evidence.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/market_qualification.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/market_qualification.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/providers/__init__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/providers/__init__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/providers/akshare.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/providers/akshare.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/providers/base.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/providers/base.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/providers/local.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/providers/local.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/schema.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/schema.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/tdx.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/tdx.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/data/units.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/data/units.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/errors.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/errors.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/universe/__init__.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/universe/__init__.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/universe/base.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/universe/base.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/universe/csi500.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/universe/csi500.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/universe/identity.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/universe/identity.py]"
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "original": "test_each_executable_dependency_and_config_change_invalidates_old_identity[qbot/research/universe/status.py]",
+      "candidate": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/universe/status.py]"
+    }
+  ],
+  "not_collected": [
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_revision_preserves_all_legacy_collection_and_outcome_requirements",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[.github/scripts/ci/frozen_engineering_migration.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[.github/scripts/ci/validate_execution.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[.github/workflows/pit-archive-evidence.yml]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[examples/research/review_yhh30m_release.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[qbot/research/cli.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[qbot/research/data/admission.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[qbot/research/data/providers/base.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[qbot/research/data/providers/local.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/conftest.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/evidence/test_pit_archive_verifiers.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/market_admission/test_admission.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/market_admission/test_p1_review.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/market_admission/test_revision_contract.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/market_structure/test_delivery.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/model_readiness/test_comparison_contract.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/research/test_cli_forward_evaluation.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/research/test_cli_phase2.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/research/test_five_year_frozen_baseline.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_every_authorized_file_still_rejects_unregistered_bytes[tests/research/test_phase1_file_pipeline.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_rewriting_the_receipt_cannot_self_authorize_changes[source_scope]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_rewriting_the_receipt_cannot_self_authorize_changes[coverage]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_rewriting_the_receipt_cannot_self_authorize_changes[base]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_rewriting_the_receipt_cannot_self_authorize_changes[postimage]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_archival_view_requires_exact_current_security_and_original_preimages[qbot/research/cli.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_archival_view_requires_exact_current_security_and_original_preimages[qbot/research/data/providers/base.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.market_admission.test_revision_contract",
+      "name": "test_archival_view_requires_exact_current_security_and_original_preimages[qbot/research/data/providers/local.py]",
+      "count": 1
+    }
+  ],
+  "added": [
+    {
+      "module": "",
+      "name": "tests.market_admission.test_revision_contract",
+      "count": 1
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "name": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/_filesystem.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.research.test_csmar_security_fixes",
+      "name": "test_each_executable_dependency_and_config_change_invalidates_old_identity[src/factorlab/_identity.py]",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "name": "test_migration_refuses_even_a_forged_all_pass_internal_report",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "name": "test_forward_cannot_hash_a_different_tree_as_the_executing_package",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "name": "test_supplied_real_or_changed_files_cannot_be_stamped_synthetic",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "name": "test_new_identity_is_explicitly_non_authorizing_and_includes_resources",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "name": "test_source_identity_ignores_external_git_overrides",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "name": "test_discovery_failed_git_status_is_unknown",
+      "count": 1
+    },
+    {
+      "module": "tests.migration.test_independent_boundary",
+      "name": "test_immutable_archive_verifier_reference_cannot_load_changed_bytes",
+      "count": 1
+    }
+  ],
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED"
+}
