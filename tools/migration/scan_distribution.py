@@ -3,7 +3,7 @@ import argparse
 import ast
 import hashlib
 import json
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import stat
 import tarfile
@@ -16,6 +16,17 @@ PATTERNS = {
     'slack_token': rb'\bxox[baprs]-[0-9]{10,}-[A-Za-z0-9-]{10,}\b',
 }
 ROOT=Path(__file__).resolve().parents[2]
+
+
+def safe_archive_path(name):
+    # Archive paths use POSIX separators, regardless of the validation host.
+    stripped=name[:-1] if name.endswith('/') else name
+    path=PurePosixPath(stripped)
+    return bool(stripped and not any(c in '<>:"\\|?*' or ord(c)<32 or ord(c)==127 for c in stripped) and
+                not path.is_absolute() and not PureWindowsPath(stripped).drive and
+                path.as_posix()==stripped and all(p not in ('','.','..') and p==p.rstrip(' .') and
+                not re.match(r'(?i)^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)',p)
+                for p in stripped.split('/')))
 
 
 def scan(directory, output):
@@ -47,11 +58,12 @@ def scan(directory, output):
                 members={m.name:archive.extractfile(m).read() for m in archive if m.isfile()}
         else:
             continue
+        for name in names:
+            if not safe_archive_path(name):
+                findings.append({'file':name,'reason':'unsafe archive path'})
         parquet=[]
         for name, body in members.items():
             path=PurePosixPath(name)
-            if path.is_absolute() or '..' in path.parts:
-                findings.append({'file':name,'reason':'unsafe archive path'})
             if any(part in ('qbot','local-private-archive','data','results') for part in path.parts):
                 # factorlab/data is production code, not supplier data.
                 if not ('factorlab' in path.parts and path.parts[path.parts.index('factorlab')+1]=='data'):

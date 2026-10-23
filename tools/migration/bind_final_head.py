@@ -11,14 +11,14 @@ ROOT=Path(__file__).resolve().parents[2]
 def main():
     current=runpy.run_path(str(ROOT/'tools/ci/run_checks.py'),run_name='final_binding_catalog')['validation_inputs']()
     jobs=[]
-    for name in ('runtime314-final-r3','runtime313-final-r2','full314-final-r2'):
+    for name in ('runtime314-final-r4','runtime313-final-r3','full314-final-r3'):
         receipt=json.loads((ROOT/'local-ci'/name/'receipt.json').read_text(encoding='utf-8'))
         assert receipt['validation_inputs_unchanged'] and receipt['validation_input_sha256']==current
         subprocess.run(['git','diff','--exit-code',receipt['subject_sha'],'HEAD','--','examples/research'],cwd=ROOT,check=True,stdout=subprocess.DEVNULL)
         assert not subprocess.check_output(['git','status','--porcelain','--','examples/research'],cwd=ROOT).strip()
         jobs.append({'job':name,'tested_sha':receipt['subject_sha'],'result':receipt['status'],
                      'validation_inputs_match_final_head_worktree':True,'example_git_content_unchanged':True})
-    packaging=json.loads((ROOT/'local-ci/packaging314-final-r5/receipt.json').read_text(encoding='utf-8'))
+    packaging=json.loads((ROOT/'local-ci/packaging314-final-r6/receipt.json').read_text(encoding='utf-8'))
     for name,digest in packaging['validation_scripts_sha256'].items():
         assert hashlib.sha256((ROOT/'tools/migration'/name).read_bytes()).hexdigest()==digest
     status=subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True).strip()

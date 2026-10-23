@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import stat
 import subprocess
+from types import ModuleType
 
 import pytest
 
@@ -40,7 +41,16 @@ def publication(historical_contracts):
 
 @pytest.fixture
 def migration():
-    return load_module("pit_migration", ROOT / MIG / "verify_migration.py")
+    # Exact immutable upstream bytes, supplied as a private test reference.
+    # No financial controller/receipt is re-signed or modified by this loader.
+    path = ROOT / "docs/migration/evidence/upstream-verifiers/verify_migration.py"
+    body = path.read_bytes()
+    if hashlib.sha256(body).hexdigest() != 'b211d3202b6bf159e5ea585b37469b745584889523b477f13722f0ee834cdb99':
+        raise ValueError('immutable upstream archive verifier identity mismatch')
+    module = ModuleType('pit_migration')
+    module.__file__ = str(path)
+    exec(compile(body, str(path), 'exec'), module.__dict__)
+    return module
 
 
 def inject(publication, monkeypatch, tmp_path, payload, kind="md", escape=""):

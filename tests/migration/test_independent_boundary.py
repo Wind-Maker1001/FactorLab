@@ -80,3 +80,10 @@ def test_discovery_failed_git_status_is_unknown(monkeypatch):
         raise subprocess.CalledProcessError(1, args[0])
     monkeypatch.setattr(receipts.subprocess, 'check_output', unavailable)
     assert receipts.code_evidence()['source_tree_dirty'] is None
+
+
+def test_immutable_archive_verifier_reference_cannot_load_changed_bytes(monkeypatch):
+    from tests.evidence.test_pit_archive_verifiers import migration
+    monkeypatch.setattr(Path, 'read_bytes', lambda self: b'changed verifier bytes')
+    with pytest.raises(ValueError, match='immutable upstream archive verifier identity'):
+        migration.__wrapped__()

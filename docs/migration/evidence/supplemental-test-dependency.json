@@ -1,0 +1,10 @@
+{
+  "scope": "Immutable original first-party test reference only, not a migrated financial authorization controller",
+  "baseline": "0ec7af5870c54a0ee202fbceeb97b7d87c293411",
+  "source_path": "docs/research/evidence/pit-release-migration-20261018-v1/verify_migration.py",
+  "git_blob": "d06ff1cc5d1f66e022a9f08e2ef486de646db363",
+  "raw_sha256": "b211d3202b6bf159e5ea585b37469b745584889523b477f13722f0ee834cdb99",
+  "candidate_path": "docs/migration/evidence/upstream-verifiers/verify_migration.py",
+  "license_scope": "Unresolved upstream documentation scope; local review only, excluded from wheel/sdist",
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED"
+}

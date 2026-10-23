@@ -25,6 +25,17 @@ def main():
         'credential':('factorlab/test_fixture.py',b"key = 'ghp_"+b'A'*36+b"'\n"),
         'legacy_import':('factorlab/test_fixture.py',b'import qbot.engine\n'),
         'parent_path':('../outside.py',b'# synthetic attack\n'),
+        'windows_drive':('C:/outside.py',b'# synthetic attack\n'),
+        'windows_relative_drive':('C:outside.py',b'# synthetic attack\n'),
+        'windows_backslash':('factorlab\\..\\outside.py',b'# synthetic attack\n'),
+        'unc_path':('\\\\server\\share\\outside.py',b'# synthetic attack\n'),
+        'alternate_stream':('factorlab/data.txt:stream',b'synthetic attack'),
+        'redundant_separator':('factorlab//demo.py',b'# synthetic attack\n'),
+        'dot_alias':('factorlab/./demo.py',b'# synthetic attack\n'),
+        'unsafe_directory':('../outside/',b''),
+        'windows_device':('factorlab/CON.txt',b'synthetic attack'),
+        'windows_trailing_dot':('factorlab/demo.py.',b'# synthetic attack\n'),
+        'windows_trailing_space':('factorlab/demo.py ',b'# synthetic attack\n'),
         'unbound_golden':('tests/research/fixtures/factor_golden/real.parquet',b'synthetic unbound sentinel'),
         'duplicate_zip':('duplicate',b''),
         'zip_link':('factorlab/link.py',b'../../outside'),
@@ -66,7 +77,7 @@ def main():
             raise AssertionError('archive attack accepted: '+label)
         results.append({'case':label,'status':'PASS_REJECTED'})
     (output/'receipt.json').write_text(json.dumps({'status':'PASS','cases':results,
-        'scope':'seven synthetic archive mutations; not financial certification'},indent=2),encoding='utf-8')
+        'scope':'synthetic archive mutations; not financial certification'},indent=2),encoding='utf-8')
     print('PASS:',len(results),'synthetic archive attacks rejected')
 
 

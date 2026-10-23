@@ -23,7 +23,7 @@ HISTORY_NODES = [
 UPSTREAM_BOUND = {
     'tests/research/test_c01_preservation.py':'independently pinned upstream control/preimages unavailable',
     'tests/research/test_c01_source_reachability.py':'upstream independent trust/source objects unavailable',
-    'tests/evidence/test_pit_archive_verifiers.py':'upstream independently pinned archive verifier unavailable',
+    'tests/evidence/test_pit_archive_verifiers.py':'mixed:33 immutable-verifier synthetic unit cases selected below;75 historical publication controls require original independent root',
     'tests/market_admission/test_revision_contract.py':'module-level upstream independent checker unavailable',
     'tests/market_structure/test_c01_publication_safety.py':'upstream pinned literal inventory unavailable',
     'tests/market_structure/test_publication_scope_audit.py':'upstream frozen publication controls unavailable',
@@ -38,6 +38,22 @@ PUBLISHED_HISTORY = {
 }
 TEST_ROOTS = ['tests/research','tests/model_readiness','tests/market_structure',
               'tests/market_admission','tests/minute_data','tests/evidence','tests/migration']
+ARCHIVE_UNIT_FUNCTIONS = [
+    'test_real_objects_validate_only_recorded_scope',
+    'test_synthetic_repository_is_independent',
+    'test_verifier_ignores_inherited_repository_overrides',
+    'test_foreign_alternates_cannot_supply_missing_object',
+    'test_verifier_ignores_inherited_config_routing',
+    'test_missing_commit_is_not_success',
+    'test_missing_original_objects_are_not_success',
+    'test_shallow_checkout_is_not_success',
+    'test_available_objects_with_inconsistent_history_fail',
+    'test_missing_intermediate_history_remains_not_run',
+    'test_inconsistent_receipt_fails',
+    'test_protected_tree_change_is_rejected',
+    'test_bad_receipt_cli_reports_fail',
+    'test_missing_git_is_not_run',
+]
 
 
 def runtime_targets():
@@ -49,6 +65,7 @@ def runtime_targets():
         'tests/market_admission/test_p1_review.py::test_sparse_qualified_keys_still_reject_missing_changed_and_prelisting_rows',
         'tests/research/status_candidate/test_preservation.py::test_source_identity_includes_the_integrated_adapter',
     ]
+    result += ['tests/evidence/test_pit_archive_verifiers.py::'+name for name in ARCHIVE_UNIT_FUNCTIONS]
     return result
 
 
@@ -59,6 +76,7 @@ def validation_inputs():
              if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
     files.update(ROOT/name for name in ('pyproject.toml','MANIFEST.in','README.md','LICENSE',
                                         'CONTRIBUTING.md','SECURITY.md','.gitattributes','.gitignore'))
+    files.add(ROOT/'docs/migration/evidence/upstream-verifiers/verify_migration.py')
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(files)}
 
