@@ -117,7 +117,7 @@ def test_research_source_digest_is_deterministic_and_content_bound(tmp_path):
     source = tmp_path / "src" / "factorlab"
     requirements = tmp_path / "pyproject.toml"
     source.mkdir(parents=True)
-    requirements.parent.mkdir(parents=True)
+    requirements.parent.mkdir(parents=True, exist_ok=True)
     (source / "b.py").write_text("B = 2\n", encoding="utf-8")
     (source / "a.py").write_text("A = 1\n", encoding="utf-8")
     requirements.write_text("pandas==2.2.3\n", encoding="utf-8")
@@ -132,7 +132,7 @@ def test_research_source_digest_rejects_linked_source_file(tmp_path):
     source = tmp_path / "src" / "factorlab"
     requirements = tmp_path / "pyproject.toml"
     source.mkdir(parents=True)
-    requirements.parent.mkdir(parents=True)
+    requirements.parent.mkdir(parents=True, exist_ok=True)
     requirements.write_text("pytest==8.3.5\n", encoding="utf-8")
     target = tmp_path / "outside.py"
     target.write_text("SECRET = True\n", encoding="utf-8")

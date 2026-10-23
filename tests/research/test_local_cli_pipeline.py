@@ -272,7 +272,9 @@ def test_relative_import_paths_use_repository_root_from_another_cwd(
         "status_path",
         "listings_path",
     ):
-        relative_files[name] = os.path.relpath(files[name], config.repo_root)
+        # Exercise parent components even when the configured temp directory
+        # happens to be inside the checkout on this machine.
+        relative_files[name] = os.path.join("configs", "..", os.path.relpath(files[name], config.repo_root))
         assert not Path(relative_files[name]).is_absolute()
         assert ".." in Path(relative_files[name]).parts
     unrelated_cwd = tmp_path / "unrelated-cwd"

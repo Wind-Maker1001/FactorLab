@@ -215,7 +215,9 @@ def test_integrity_failures_stop_before_next_symbol_and_leave_fatal_evidence(
     receipt = unresolved[0]
     assert receipt["context"]["symbol"] == SYMBOLS[0]
     assert receipt["context"]["run_id"] == run["run_id"]
-    assert receipt["context"]["git_commit"] == GIT_COMMIT
+    from factorlab._identity import software_identity
+    assert receipt["context"]["git_commit"] == software_identity()["git_commit"]
+    assert run["project_git_commit"] == GIT_COMMIT
     assert receipt["fatal"]["error_type"] == type(exception).__name__
     assert receipt["fatal"]["error_message"] == str(exception)
     assert receipt["context"]["start"] == context["benchmark"]["date"].min().date().isoformat()

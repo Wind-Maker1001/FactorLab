@@ -31,8 +31,8 @@ def test_prior_control_versions_and_source_closure_remain_exact(control):
 def test_source_identity_includes_the_integrated_adapter():
     snapshot = source_snapshot(ROOT)
     paths = {r['path'] for r in snapshot['files']}
-    assert 'qbot/research/universe/historical_status.py' in paths
-    assert 'qbot/research/universe/status_candidate/adapter.py' in paths
+    assert 'src/factorlab/universe/historical_status.py' in paths
+    assert 'src/factorlab/universe/status_candidate/adapter.py' in paths
     assert snapshot['canonical_sha256'] == snapshot['git_canonical_sha256']
 
 

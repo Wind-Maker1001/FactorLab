@@ -116,7 +116,7 @@ def main(argv=None):
                "code_head": git("rev-parse", "HEAD"), "branch": git("branch", "--show-current"),
                "working_tree_changes_present": bool(git("status", "--porcelain", "--untracked-files=normal")),
                "entrypoint_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-               "checker_sha256": hashlib.sha256((root / "qbot/research/universe/event_evidence.py").read_bytes()).hexdigest(),
+               "checker_sha256": hashlib.sha256(Path(__import__("factorlab.universe.event_evidence", fromlist=["__file__"]).__file__).read_bytes()).hexdigest(),
                "python": platform.python_version(), "archive_root": str(Path(args.archive_root).resolve()),
                "inputs": inputs, "outputs": artifacts, "source_checks": result["source_checks"],
                "outcome": result["outcome"], "network_requests": 0,

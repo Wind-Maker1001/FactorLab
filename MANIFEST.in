@@ -1,4 +1,4 @@
-include LICENSE README.md pyproject.toml MANIFEST.in
+include LICENSE README.md CONTRIBUTING.md SECURITY.md pyproject.toml MANIFEST.in
 recursive-include src/factorlab *.py *.yaml
 recursive-include configs/research *.yaml
 recursive-include requirements *.txt

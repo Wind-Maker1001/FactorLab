@@ -191,8 +191,11 @@ def test_csv_history_background_statistics_and_png_metadata_agree(tmp_path):
         assert len(axis.patches) == len(result.spells)
         for patch, spell in zip(axis.patches, result.spells.itertuples()):
             assert patch.get_gid() == "spell-%d-%s" % (spell.spell_id, spell.regime)
-            assert patch.get_xy()[:, 0].min() == pytest.approx(mdates.date2num(spell.start))
-            assert patch.get_xy()[:, 0].max() == pytest.approx(mdates.date2num(spell.plot_end))
+            # axvspan is a Rectangle in newer Matplotlib and a Polygon in
+            # older versions. Compare the same data-coordinate bounds.
+            x = patch.get_path().transformed(patch.get_patch_transform()).vertices[:, 0]
+            assert x.min() == pytest.approx(mdates.date2num(spell.start))
+            assert x.max() == pytest.approx(mdates.date2num(spell.plot_end))
         assert "NOT predictive returns" in axis.get_title()
     finally:
         plt.close(figure)

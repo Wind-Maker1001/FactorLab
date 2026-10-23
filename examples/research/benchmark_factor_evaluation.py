@@ -24,7 +24,7 @@ from factorlab.config import load_config
 from factorlab.metrics import factor as optimized
 from factorlab.reports.generator import write_factor_report
 from factorlab.reproducibility import RunManifest
-from tests.research.reference import factor_reference as reference
+from tests.research.frozen_reference import reference
 from tests.research.reference.compare import TABLES, ATOL, RTOL, assert_evaluation_equal
 
 

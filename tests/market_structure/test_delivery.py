@@ -18,7 +18,7 @@ from factorlab.exploratory.market_structure.runner import (
 from factorlab.exploratory.market_structure.contracts import ContractError
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "qbot/research/exploratory/market_structure"
+SOURCE = ROOT / "src/factorlab/exploratory/market_structure"
 
 
 @pytest.fixture(scope="module")

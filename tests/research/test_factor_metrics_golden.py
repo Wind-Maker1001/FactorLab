@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 
 from factorlab.metrics.factor import evaluate_factors
-from tests.research.reference import factor_reference as reference
+from tests.research.frozen_reference import reference
 from tests.research.reference.compare import ATOL, RTOL, TABLES, assert_evaluation_equal
 
 
