@@ -13,8 +13,11 @@ evidence, without counting historical reports as new test success.
 
 Baseline full-suite round 1 has setup errors because the selected basetemp
 parent initially did not exist. Preserve its log and XML. Round 2 uses a
-created same-drive parent. Neither concurrent round is a performance benchmark.
-Results are recorded separately when each process completes.
+created same-drive parent. Neither round is a controlled performance benchmark.
+Round 2 completed: 4183 passed, 2 network tests deselected, 88 warnings,
+3557.59 seconds. Round 1 completed with 2825 passed and 1358 setup errors;
+it is invalid for acceptance, not a successful baseline. Raw logs and JUnit
+are preserved locally; BASELINE_TEST_RESULTS.md identifies both rounds.
 
 162 research Python modules were parsed by static audit. No imports from Qbot
 Legacy were found in production research. The minute-data tests/examples do

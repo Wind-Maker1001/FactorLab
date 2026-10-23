@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "original_head_before": "aab509be694811ce27e22452fb161a5c38ae9a46",
+  "original_head_after": "aab509be694811ce27e22452fb161a5c38ae9a46",
+  "original_status_unchanged": true,
+  "protected_file_count": 171,
+  "changed_protected_files": [],
+  "changed_golden_or_reference_files": [],
+  "golden_metadata": [
+    {
+      "kind": "factor_golden",
+      "synthetic_only": true
+    },
+    {
+      "kind": "adjustment_golden",
+      "synthetic_only": true
+    }
+  ],
+  "scope": "named protected research source and pending PIT evidence; not a scan of account files"
+}

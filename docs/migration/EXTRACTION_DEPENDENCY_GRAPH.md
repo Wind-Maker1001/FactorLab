@@ -29,6 +29,16 @@ wheel, build; black/flake8 for development. Suppliers: AKShare/BaoStock;
 PDF/workbook parsing: pypdf/openpyxl; HTTP libraries are provider dependencies.
 GUI, brokerage SDKs, Qlib and Backtrader are not part of the extracted tree.
 
+Actual AST direct imports and per-module internal transitive closures for all
+171 baseline production modules (162 research plus9 adapter) and175 candidate
+modules are in evidence/static-import-dependency-audit.json. Baseline dynamic
+imports target requests/urllib3 exception modules,AKShare,LightGBM,XGBoost.
+Candidate also has internal FactorLab imports and the synthetic runner's
+nonliteral namespace helper (defaults to factorlab, no CLI namespace option).
+These nonliteral sites are explicit; static analysis alone does not prove
+arbitrary dynamic targets. Separate isolated175-module import and offline
+synthetic executions establish the tested default runtime independence.
+
 ## Physical and identity dependencies requiring migration
 
 * config/loader.py:31-41 discovers an ancestor containing qbot/ and README.
@@ -47,5 +57,8 @@ GUI, brokerage SDKs, Qlib and Backtrader are not part of the extracted tree.
 
 market-admission.yml pins a separate trust anchor; research_checks.py verifies
 its checker before loading it. C-01 has frozen legacy/source/reviewed commits.
-All old control bytes were retained unmodified. The candidate cannot approve
-its own control migration. Independent review remains a release blocker.
+The original baseline Git control objects/pins remain unmodified. Candidate
+archive exports of three controllers have EOL conversion; they are not the same
+raw trusted bytes. Both identities are now separately bound. The candidate
+cannot approve its own control migration. Independent review remains a release
+blocker; see GIT_OBJECT_VS_ARCHIVE_BYTE_IDENTITY.md.

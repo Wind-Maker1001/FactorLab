@@ -1,0 +1,266 @@
+{
+  "status": "PASS",
+  "baseline": "0ec7af5870c54a0ee202fbceeb97b7d87c293411",
+  "modules": [
+    {
+      "original": "qbot/research/backtest/__init__.py",
+      "candidate": "src/factorlab/backtest/__init__.py",
+      "original_git_blob_sha256": "919fef740de163c0fcf9a65e96019a609d013b76abda5588584cc99864a73673",
+      "recorded_archive_sha256": "3d946ac3f9886f5d384f9e500e3f6400e04cfae9747c644799ed51376b3f9a37",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/backtest/execution.py",
+      "candidate": "src/factorlab/backtest/execution.py",
+      "original_git_blob_sha256": "a39f64ed1ddae30d5308a8827755d0b333f50d35d4908fb267040c336603c6c5",
+      "recorded_archive_sha256": "a20d018d74062e384cf5d5e78a9cb28b6d373813a93d628f2d1799b2c9a437cd",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/backtest/fast.py",
+      "candidate": "src/factorlab/backtest/fast.py",
+      "original_git_blob_sha256": "94e479f2d7e627531438d237b61c09f18d6d3f4deb2021f2cc99b1085bc3e172",
+      "recorded_archive_sha256": "e95a9c16e7884824fcde7775077ec6927a7f43bd340452d208512a06efa084e0",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/backtest/fees.py",
+      "candidate": "src/factorlab/backtest/fees.py",
+      "original_git_blob_sha256": "e03454511de72f1e0819139a6244f7582e5b2bfd262058c31b9069c5755e9bb2",
+      "recorded_archive_sha256": "a366f58729cad0821a6e856c9d856f312591835b1afb152e870f0b101f7435cc",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/backtest/rules.py",
+      "candidate": "src/factorlab/backtest/rules.py",
+      "original_git_blob_sha256": "b6cfaee470b1bda7d52c053c1e61edc414e921784bdf337f23f3a0a9842f81c9",
+      "recorded_archive_sha256": "b03b86afc409d6215dcf8de6f59a1d89790e15622da6099a5b0d8d8364d8cdb2",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/dataset/__init__.py",
+      "candidate": "src/factorlab/dataset/__init__.py",
+      "original_git_blob_sha256": "4434f1a19039deea6a33e0fa3da93ff3091571c660ba0f3f3a70efcdb0478f2f",
+      "recorded_archive_sha256": "4c4176e4fe36fa05ef0cbd0e278e3ccd196d400dbbc1b3ff287e1bbaff056553",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/dataset/builder.py",
+      "candidate": "src/factorlab/dataset/builder.py",
+      "original_git_blob_sha256": "9616fd2f9c88ae69e734c7079e7ac73eda50bb019ea56ddee037f3e708de20a7",
+      "recorded_archive_sha256": "d4733592c908e0698d1102437305e23a3affa4d78ce62d70eaeb8f8fdbbfb8c2",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/__init__.py",
+      "candidate": "src/factorlab/factors/__init__.py",
+      "original_git_blob_sha256": "d712e4e3508c79152ec04216a9b861b7a971c2a01027dbb3646ee3a85e56a8ca",
+      "recorded_archive_sha256": "64abd8e958661e46fbdab702a095c0d1b78edfe22c8a58bca2c89b7ef2f33774",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/base.py",
+      "candidate": "src/factorlab/factors/base.py",
+      "original_git_blob_sha256": "2d8df0c244a9eab0dd89116b4cf7d059c10b1b2a17affdf5107e5d633048cfc3",
+      "recorded_archive_sha256": "303b39a76aadb21df67cf00346eb0f3b13e08ce1758683c99996b1c8f4ce20e0",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/liquidity.py",
+      "candidate": "src/factorlab/factors/liquidity.py",
+      "original_git_blob_sha256": "907687423618e3ee5bf970862806c457ad0bc9f6e0fcab88858e252ac80f6040",
+      "recorded_archive_sha256": "61b0e7904075ac6330e447db6f5258c62f35450902f628bd26edbca49578f78e",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/momentum.py",
+      "candidate": "src/factorlab/factors/momentum.py",
+      "original_git_blob_sha256": "e2bd3e785e57bc91cd0dbba3c968556b65d51024bcdc1d46c3c0b99090ccf38f",
+      "recorded_archive_sha256": "671fe8c64e8807f7a07dab8b54808209d0ff141206d834ddb4c7a7ff7f0b96bd",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/preprocess.py",
+      "candidate": "src/factorlab/factors/preprocess.py",
+      "original_git_blob_sha256": "c3cd9ac017a22b6ab3f0a985a61c9aedaf35452fd820b21fb287f9e18ce7324d",
+      "recorded_archive_sha256": "22e11ef944293aaf1a75a4382e952c2ca20713d4ff5b88ca77b8df04911a3142",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/registry.py",
+      "candidate": "src/factorlab/factors/registry.py",
+      "original_git_blob_sha256": "1c793b4ff8911211f1cde7c2d0490eee05a5dc8eb4f85c427963834ec8cfc1ed",
+      "recorded_archive_sha256": "2fb411a638d3e5becfe05c7afa83eff3973e4ce6199631425d64b44e5df8e029",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/reversal.py",
+      "candidate": "src/factorlab/factors/reversal.py",
+      "original_git_blob_sha256": "13cce355911029dc25c3c983338da7330373477f687c427008fa092113366d16",
+      "recorded_archive_sha256": "780fc3485e2281b4bd2d730014cdfd0032a21a5bc1b0d8ee7f9b031bd38f2e3f",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/trend.py",
+      "candidate": "src/factorlab/factors/trend.py",
+      "original_git_blob_sha256": "f81cf1d425014955598026c903e47f4d341661b98464d53bac05366b9eab3746",
+      "recorded_archive_sha256": "ac8e207819b50196211c0d15c3a5f0a279eefa7c01baea1f6472c4c0aabdda8d",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/factors/volatility.py",
+      "candidate": "src/factorlab/factors/volatility.py",
+      "original_git_blob_sha256": "6d9420e8307775ad3eb8fb18f93dff4ab21d78c4bd49f95b3c76081bb3e157a6",
+      "recorded_archive_sha256": "a530cffa1e8d3213be63660fad6fea67158c449ca30eb043c2a56bf474f5338b",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/labels/__init__.py",
+      "candidate": "src/factorlab/labels/__init__.py",
+      "original_git_blob_sha256": "c2c01fbefd781443f7e0d69c3a95720eb6999c898a5f925dd4d8c86ee3b242c3",
+      "recorded_archive_sha256": "17f01652863eb9160764c946b50ee68e040e9d426e5b3c27e727f85ff894eccb",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/labels/forward_return.py",
+      "candidate": "src/factorlab/labels/forward_return.py",
+      "original_git_blob_sha256": "1e923e4c34b69f66eb81122bc15bc22dc8b043fd4715281e9bfd4d57cb57e7a2",
+      "recorded_archive_sha256": "e0c5975aa93da9e2f7b807926a85dceeb85963ead8956bd49de61c26c97c15a0",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/metrics/__init__.py",
+      "candidate": "src/factorlab/metrics/__init__.py",
+      "original_git_blob_sha256": "42e6ef93926fed80babacc416174cdef2e129954d6406ecdacd0a2969095ee65",
+      "recorded_archive_sha256": "a99010588f46dcae0a44f4265b843e37c9f6af1b7fa8cdbf1ecbaa12389e09b0",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/metrics/_factor_arrays.py",
+      "candidate": "src/factorlab/metrics/_factor_arrays.py",
+      "original_git_blob_sha256": "076a6f076ebac8a1a776a1e24d793de88cb9aec04182fb47bcb9c310eb059ee8",
+      "recorded_archive_sha256": "93fa09b0f545773e8ec02f648f6685812dae66575f7314f356b872b570aa69be",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/metrics/factor.py",
+      "candidate": "src/factorlab/metrics/factor.py",
+      "original_git_blob_sha256": "b2c689adea80c1e9016966fee3467cb2935130385a30d1bce023052ab8da2488",
+      "recorded_archive_sha256": "157358d5cce55fb8cf0813395c008c5a404183efd79b9e3dbfbe8c5ea6d64390",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/metrics/portfolio.py",
+      "candidate": "src/factorlab/metrics/portfolio.py",
+      "original_git_blob_sha256": "081ab76734c6b0c98c3b56e1e9938266437f4743db9c6775cd8392f0bf8c32c8",
+      "recorded_archive_sha256": "7f10aa07099db11e23d0158ec2ed2347cd4df54d8a50606a49c263fab956fab0",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/metrics/prediction.py",
+      "candidate": "src/factorlab/metrics/prediction.py",
+      "original_git_blob_sha256": "05f1a96a0a1d5e29ec2a46a1c0e0af02d61d18db2be721c7370856fe6b846606",
+      "recorded_archive_sha256": "11d8a4cb073057b09455baa6770e9c1411335382ff7e5a7ffbf7ef1bb230dcb7",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/metrics/risk.py",
+      "candidate": "src/factorlab/metrics/risk.py",
+      "original_git_blob_sha256": "d960e73fa466034b03ab3c5446172661fdad0a8c5c4d42dad862834966d2d8a0",
+      "recorded_archive_sha256": "a005218563bb1a5be7208ad5e4207fb2d2c642d18da8312c9da17ad2fc1e30dd",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/metrics/robustness.py",
+      "candidate": "src/factorlab/metrics/robustness.py",
+      "original_git_blob_sha256": "b310bbbc914b2baf19dd521e8cf0d3692b8311ed06f967f7dca17d1524afbb47",
+      "recorded_archive_sha256": "5b6d0c3fcd7203b0ec54872542a6a04eb95534a4a63d233775c3a9acd5d0aa50",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/models/__init__.py",
+      "candidate": "src/factorlab/models/__init__.py",
+      "original_git_blob_sha256": "e2acc69540b2ebbb4389508090a84685c33435f5fb404a84e390fef2cf2a0c46",
+      "recorded_archive_sha256": "5286b696901d04b9f64b4e61d8eb1c321fe065d22a5fd33b485b9bc420ece9fc",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/models/base.py",
+      "candidate": "src/factorlab/models/base.py",
+      "original_git_blob_sha256": "b86e7753b98865a4438c64ff5d9e5da6aa7d74974207c4653afb99c6fc247c47",
+      "recorded_archive_sha256": "2ea3182cc8273d17296970e645198ded235c6ede0beffb74d6007c220ff567ce",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/models/factor_score.py",
+      "candidate": "src/factorlab/models/factor_score.py",
+      "original_git_blob_sha256": "82b545275b19fda5df6339dfbd26964ee88e0a9a737e94e2660e6b753655c588",
+      "recorded_archive_sha256": "e5b39c8433f824290acc9ce2a3245bccce00c7340686a407eb09d77718e05c3d",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/models/lightgbm.py",
+      "candidate": "src/factorlab/models/lightgbm.py",
+      "original_git_blob_sha256": "b5ea1f8082916dd5667d0cc98c297d48b45b20515a4823d56e72ee769e81d05c",
+      "recorded_archive_sha256": "8d078b521fe4a77e508cebf3d50fad0efeda1044601c1b923e378bedd774c560",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/models/ridge.py",
+      "candidate": "src/factorlab/models/ridge.py",
+      "original_git_blob_sha256": "c4d118d93804fb671fa46c4b04a951db5012418d9e7e22ca7190d473fb390ece",
+      "recorded_archive_sha256": "1b79192fc3733e5be7e3b5c81b3debb495e5bf9b29e7d693b16a60e5ac7989e4",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/models/xgboost.py",
+      "candidate": "src/factorlab/models/xgboost.py",
+      "original_git_blob_sha256": "5b6be8a863a02f58fd26a6342b5ceabd0fa9adc5c2dbf20d69c3cad0140d7f58",
+      "recorded_archive_sha256": "f4bcd80495d009ac7be17b6be0e4c23eab3c45946853bc1c9fccc868a1d68dd0",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/portfolio/__init__.py",
+      "candidate": "src/factorlab/portfolio/__init__.py",
+      "original_git_blob_sha256": "39b3f63409e7bd92386f2d9fcc0a4b5328ec53c3f80ec0bd1c42af6b9e62a334",
+      "recorded_archive_sha256": "8694949b96514544e87b900084bcd03860ea7335598a38c115ac9776fab347ec",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/portfolio/topk.py",
+      "candidate": "src/factorlab/portfolio/topk.py",
+      "original_git_blob_sha256": "6bff0aca74a784a34d8dcfe62e18c1931e7f77a8d9ef74c12aa8faf17da6eec6",
+      "recorded_archive_sha256": "52d34bf6778481a378e5c4c8dfaa290af7f8042bb769f39e7e9981f5c2a0d027",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/portfolio/weights.py",
+      "candidate": "src/factorlab/portfolio/weights.py",
+      "original_git_blob_sha256": "b3d94a705c8edee639cee4b49ec9834f3f602990b5ce7613ddc9a8d9b70f9996",
+      "recorded_archive_sha256": "945fa4b78802c3def8865bf3a390746edb98cc3a40ab8a83a5352e4f0aa47de2",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/validation/__init__.py",
+      "candidate": "src/factorlab/validation/__init__.py",
+      "original_git_blob_sha256": "7b7a2c403a7a5e55e0322a0eebd65551198ac6ad650106d901b8edb4c2112557",
+      "recorded_archive_sha256": "75c6b5b21086cc1987a01afdaa0bb2e59b202925c5aaa24ba444aedbeaf5afc2",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/validation/splitter.py",
+      "candidate": "src/factorlab/validation/splitter.py",
+      "original_git_blob_sha256": "c21cb6c3d4189833ae83ef8c905591a2421931b148a583b782149d115699bee1",
+      "recorded_archive_sha256": "f6ef7e2fb20935343eb5eec594448c7988080c1d2efa1217382dc4bdfaf0c503",
+      "status": "PASS"
+    },
+    {
+      "original": "qbot/research/validation/walk_forward.py",
+      "candidate": "src/factorlab/validation/walk_forward.py",
+      "original_git_blob_sha256": "5336e7911c342be1e960765a77962fb3f47e08643acf0eb325c0f3bd6385dd92",
+      "recorded_archive_sha256": "b4db5e3f37744553a43a48bee25b97bbaba147435c5d317eca70816e9e065e16",
+      "status": "PASS"
+    }
+  ],
+  "scope": "Selected core math domains, AST with import package names normalized only; not authorization."
+}
