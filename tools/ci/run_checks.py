@@ -18,7 +18,6 @@ HISTORY_NODES = [
     'tests/research/test_pit_event_evidence.py::test_existing_public_metadata_stays_unknown_without_original_bytes',
     'tests/research/test_pit_event_evidence.py::test_public_receipts_bind_exact_published_bytes_across_checkouts',
     'tests/research/test_tdx_delivery_seal.py::test_all_published_tdx_files_in_clean_checkout',
-    'tests/market_structure/test_delivery.py::test_source_cli_help_and_namespace_packaging_limit_are_explicit',
     'tests/market_structure/test_delivery.py::test_protected_tracked_content_is_unchanged',
 ]
 UPSTREAM_BOUND = {
@@ -54,10 +53,12 @@ def runtime_targets():
 
 
 def validation_inputs():
-    files = {p for directory in ('src/factorlab', 'tests', 'configs', 'requirements', 'tools/ci')
+    files = {p for directory in ('src/factorlab', 'tests', 'configs', 'requirements', 'tools/ci',
+                                'examples/research', 'tools/migration', '.github/workflows', 'docs/user')
              for p in (ROOT/directory).rglob('*')
              if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
-    files.add(ROOT/'pyproject.toml')
+    files.update(ROOT/name for name in ('pyproject.toml','MANIFEST.in','README.md','LICENSE',
+                                        'CONTRIBUTING.md','SECURITY.md','.gitattributes','.gitignore'))
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(files)}
 

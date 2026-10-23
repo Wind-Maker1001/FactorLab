@@ -14,3 +14,4 @@ docs/migration/evidence/**/*.log
 docs/migration/evidence/**/*.xml
 docs/migration/evidence/*.log
 docs/migration/evidence/*.xml
+docs/migration/evidence/test-summary.json

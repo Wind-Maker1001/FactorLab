@@ -1,5 +1,0 @@
-Downloading cpython-3.14.0-windows-x86_64-none (download) (20.9MiB)
- Downloading cpython-3.14.0-windows-x86_64-none (download)
-Installed Python 3.14.0 in 8.21s
- + cpython-3.14.0-windows-x86_64-none (python3.14.exe)
-warning: `C:\Users\qwe13\.local\bin` is not on your PATH. To use installed Python executables, run `$env:PATH = "C:\Users\qwe13\.local\bin;$env:PATH"` or `uv python update-shell`.

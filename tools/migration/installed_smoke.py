@@ -7,18 +7,19 @@ from pathlib import Path
 import socket
 import sys
 
-import factorlab
-
-
 def denied(*args, **kwargs):
     raise AssertionError('installed import attempted network access')
 
 
 socket.socket.connect = denied
 socket.create_connection = denied
+import factorlab
+
 root = Path(factorlab.__file__).resolve().parent
 assert 'site-packages' in root.parts
 assert importlib.util.find_spec('qbot') is None, 'Legacy namespace leaked into installed wheel'
+for dependency in ('pytest','coverage','akshare','baostock'):
+    assert importlib.util.find_spec(dependency) is None, 'unexpected non-core dependency: '+dependency
 failed, imported = {}, []
 for path in sorted(root.rglob('*.py')):
     relative = path.relative_to(root).with_suffix('')

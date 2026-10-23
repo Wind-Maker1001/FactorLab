@@ -45,6 +45,8 @@ def main():
         except ET.ParseError:
             reports.append({'path':str(path.relative_to(ROOT)),'status':'INCOMPLETE_NOT_ACCEPTANCE'})
     (EVIDENCE/'test-summary.json').write_text(json.dumps(reports,indent=2),encoding='utf-8')
+    compact=[{k:v for k,v in report.items() if k!='nonpassing'} for report in reports]
+    (EVIDENCE/'test-summary-compact.json').write_text(json.dumps(compact,indent=2),encoding='utf-8')
     env={'python':sys.version,'executable':sys.executable,'platform':platform.platform(),
          'packages':{d.metadata['Name']:d.version for d in importlib.metadata.distributions()}}
     (EVIDENCE/('environment-'+platform.python_version()+'.json')).write_text(json.dumps(env,indent=2),encoding='utf-8')

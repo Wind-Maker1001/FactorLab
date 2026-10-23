@@ -37,6 +37,10 @@ jobs:
         run: python -m build --outdir local-ci/distributions
       - name: Run public synthetic CLI
         run: factorlab demo --output local-ci/synthetic-demo
+      - name: Test archive publication rejection cases
+        run: python tools/migration/check_distribution_rejections.py local-ci/distributions local-ci/archive-attacks
+      - name: Validate clean wheel/sdist installs, offline imports, CLI, demo and publication boundary
+        run: python tools/migration/packaging_ci.py local-ci/distributions local-ci/packaging
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

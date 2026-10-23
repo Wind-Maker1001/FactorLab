@@ -8,7 +8,7 @@ import sys
 
 import pandas as pd
 import pytest
-from setuptools import find_packages
+from setuptools import find_namespace_packages
 
 from factorlab.exploratory.market_structure.contracts import BASELINE
 from factorlab.exploratory.market_structure.runner import (
@@ -87,7 +87,7 @@ def test_receipt_detects_changed_artifact_and_extra_file(delivered, tmp_path):
 
 
 def test_source_cli_help_and_namespace_packaging_limit_are_explicit():
-    assert sys.version_info[:2] == (3, 9)
+    assert sys.version_info[:2] in ((3, 13), (3, 14))
     assert not (SOURCE / "__init__.py").exists()
     result = subprocess.run(
         [sys.executable, "-m", "factorlab.exploratory.market_structure", "--help"],
@@ -96,12 +96,10 @@ def test_source_cli_help_and_namespace_packaging_limit_are_explicit():
         text=True,
     )
     assert result.returncode == 0 and "REAL_RESEARCH_BLOCKED" in result.stdout
-    assert "factorlab.exploratory.market_structure" not in find_packages(
-        where=str(ROOT)
-    )
-    assert "research.exploratory.market_structure" not in find_packages(
-        where=str(ROOT / "qbot")
-    )
+    packages = find_namespace_packages(where=str(ROOT / 'src'), include=['factorlab*'])
+    assert 'factorlab.exploratory.market_structure' in packages
+    assert 'factorlab.diagnostics.model_readiness' in packages
+    assert not any(name=='qbot' or name.startswith('qbot.') for name in packages)
 
 
 def test_namespace_main_dispatch_and_invalid_frequency(monkeypatch, tmp_path, capsys):

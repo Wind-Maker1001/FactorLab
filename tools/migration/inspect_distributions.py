@@ -23,9 +23,19 @@ with tarfile.open(sdist) as archive:
     source_names = [m.name for m in archive if m.isfile()]
     assert not any('/docs/migration/' in name or '/qbot/' in name or '/local-' in name or
                    name.endswith(('.log','.xml','.ipynb','.pyc')) for name in source_names)
+    prefix=source_names[0].split('/',1)[0]+'/'
+    expected_source={p for directory in ('src/factorlab','tests','configs/research','examples/research','docs/user','requirements')
+                     for p in (ROOT/directory).rglob('*')
+                     if p.is_file() and '__pycache__' not in p.parts and
+                     p.suffix in ('.py','.yaml','.json','.parquet','.csv','.md','.txt')}
+    for path in expected_source:
+        member=prefix+path.relative_to(ROOT).as_posix()
+        assert member in source_names, 'sdist omits current file: '+member
+        assert archive.extractfile(member).read()==path.read_bytes(), 'stale sdist bytes: '+member
 report = {'status':'PASS','wheel':{'file':wheel.name,'sha256':hashlib.sha256(wheel.read_bytes()).hexdigest(),
            'python_module_count':len(python),'members':sorted(names)},
           'sdist':{'file':sdist.name,'sha256':hashlib.sha256(sdist.read_bytes()).hexdigest(),
+                   'current_source_test_example_files_verified':len(expected_source),
                    'members':source_names},
           'scope':'Artifact content inspection only; installation execution is separate.'}
 (ROOT/('docs/migration/evidence/distribution-inventory-'+directory.name+'.json')).write_text(json.dumps(report,indent=2),encoding='utf-8')

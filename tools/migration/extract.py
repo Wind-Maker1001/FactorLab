@@ -1,7 +1,9 @@
-"""Extract only reviewed Git objects from the immutable migration baseline.
+"""Export reviewed tracked paths from the immutable migration baseline.
 
 No working-tree data, vendor responses, credentials, or historical report
-rewrites. The manifest records both original Git blob and SHA-256 identities.
+rewrites. source_blob is the raw Git object ID; source_sha256 is the archive
+export SHA256, which can include Windows EOL conversion. The supplemental
+bind_git_blob_identities.py independently adds the original raw blob SHA256.
 """
 import hashlib
 import io
@@ -54,7 +56,7 @@ def main():
     (DEST / 'docs/migration/EXTRACTION_FILE_MANIFEST.json').write_text(
         json.dumps({'baseline': REV, 'files': manifest,
                     'excluded': 'All upstream data/results and unreviewed historical docs; no credentials read.'}, indent=2), encoding='utf-8')
-    print('extracted', len(manifest), 'immutable Git blobs')
+    print('exported', len(manifest), 'baseline-tracked files; source_sha256 binds exported bytes')
 
 
 if __name__ == '__main__':
