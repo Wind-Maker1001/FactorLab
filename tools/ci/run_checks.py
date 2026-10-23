@@ -102,9 +102,11 @@ def main():
     if os.name=='nt':
         temp_parent=output/'tmp-parent'
     temp_parent.mkdir(parents=True,exist_ok=True)
-    env=dict(os.environ,MPLBACKEND='Agg',PYTHONUTF8='1',COVERAGE_FILE=str(output/'.coverage'))
+    env=dict(os.environ,MPLBACKEND='Agg',PYTHONUTF8='1',COVERAGE_FILE=str(output/'.coverage'),
+             FACTORLAB_TEST_JOURNAL=str(output/'phase-observations.jsonl'))
     deselections = ['--deselect='+node for node in HISTORY_NODES] if software else []
     command=[sys.executable,'-m','pytest',*targets,*deselections,'--continue-on-collection-errors','-q',
+             '-p','tools.security.journal',
              '--basetemp='+str(temp_parent/'pytest'), '--junitxml='+str(output/'tests.xml'),
              '--cov=factorlab','--cov-report=xml:'+str(output/'coverage.xml')]
     start_sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()

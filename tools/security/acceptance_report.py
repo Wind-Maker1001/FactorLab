@@ -34,6 +34,7 @@ def cases(path):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--archive", type=Path, required=True)
+    p.add_argument("--archive-extra", type=Path, action="append", default=[])
     p.add_argument("--job", type=Path, action="append", default=[])
     p.add_argument("--output", type=Path, default=ROOT / "docs/security/evidence")
     a = p.parse_args()
@@ -47,6 +48,15 @@ def main():
     expected = {(g["module"], c["name"]): (g, c)
                 for g in review["distinct_message_groups"] for c in g["cases"]}
     archived = cases(a.archive/"tests.xml")
+    archive_runs = []
+    archive_observation = {key:a.archive.relative_to(ROOT).as_posix() for key in archived}
+    for directory in [a.archive, *a.archive_extra]:
+        found = cases(directory/"tests.xml")
+        archive_runs.append({"path":directory.relative_to(ROOT).as_posix(),
+            "counts":dict(Counter(found.values())), "junit_sha256":digest(directory/"tests.xml"),
+            "log_sha256":digest(directory/"tests.log")})
+        archived.update(found)
+        archive_observation.update({key:directory.relative_to(ROOT).as_posix() for key in found})
     jobs = []
     executed = {}
     for directory in a.job:
@@ -97,8 +107,10 @@ def main():
             rows.append({"id": len(rows)+1, "module": key[0], "name": key[1],
                          "original_outcome": kind.upper(), "original_category": category,
                          "trace_sha256": case["trace_sha256"], "classification": classification,
-                         "original_assertion_reached": not (kind=="error" or category=="PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT"),
+                         "original_execution_phase": "COLLECTION" if not key[0] else "SETUP_ERROR" if kind=="error" else "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION" if category=="PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT" else "TEST_BODY_FAILURE",
                          "archival_replay": archive_status, "v1_contract": replacement,
+                         "archival_observation":archive_observation.get(key, a.archive.relative_to(ROOT).as_posix()),
+                         "new_security_obligation":category in ("UPSTREAM_INDEPENDENT_CONTROL_WORKFLOW_MISSING", "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT"),
                          "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
                          "v1_suite": "PASS" if new_security and set(new_security.values())=={"PASS"} else "NOT_RUN",
                          "disposition": "PASS" if archive_status=="PASS" else "PARTIAL" if archive_status=="FAIL" else "NOT_RUN",
@@ -112,8 +124,9 @@ def main():
         writer = csv.DictWriter(f, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
     archive_receipt = json.loads((a.archive/"receipt.json").read_bytes()) if (a.archive/"receipt.json").is_file() else {}
     seven = [r for r in rows if r["original_category"]=="PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT"]
-    write("archive-acceptance.json", {"status":archive_receipt.get("status","NOT_RUN"),
+    write("archive-acceptance.json", {"status":"PASS" if archived and set(archived.values())=={"PASS"} and archive_receipt.get("source_unchanged") and not archive_receipt.get("snapshot_changed_files") else "PARTIAL",
           "counts":dict(Counter(archived.values())), "seven_preimage_attacks":seven,
+          "observed_runs":archive_runs, "aggregation":"Actual named-case observations; later explicit reruns replace only matching cases. Original failed run receipts and logs remain unchanged.",
           "original_collection_error_cases_recovered":sum(1 for m,n in archived if m=="tests.market_admission.test_revision_contract"),
           "source_commit":archive_receipt.get("source_commit"), "source_unchanged":archive_receipt.get("source_unchanged"),
           "snapshot_changed_files":archive_receipt.get("snapshot_changed_files"),
