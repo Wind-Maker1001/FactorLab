@@ -495,7 +495,7 @@
     "tools/security/acceptance_report.py": "4f8aa819f69f7eea3398cedb3276676654ecd60f9da350de65a4bdd593563265",
     "tools/security/archive_replay.py": "b11f1971adc6f2f134d106d333398b34491cee6a8fd73d551f0d4873b1da72d0",
     "tools/security/fixed_validator.py": "4d12491aa114a48d83997feb90dfaf60b094d4151814b914ed8541668b38674c",
-    "tools/security/journal.py": "7f957d56a607613d693c571d248fa7aa3b448bf8aca7bc15bbe5d16adf230e2b",
+    "tools/security/journal.py": "5fc8f2fd1ef0300c6e9aef5dd4a0219feee7fc25d3489d7d9d888d89946dd2de",
     "tools/security/seal_review_material.py": "b0bb963449ac69718256ae550abec46a0120898d14f7899a4536a1916d06cd67"
   },
   "project": "FactorLab",
