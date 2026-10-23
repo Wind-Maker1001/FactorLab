@@ -244,6 +244,8 @@ class RunManifest:
         command: str,
         arguments: Optional[Dict[str, Any]] = None,
     ) -> None:
+        from factorlab._identity import software_identity, source_context_root
+        identity = software_identity()
         now = datetime.now(timezone.utc)
         self.run_id = "%s-%s-%s" % (
             now.strftime("%Y%m%dT%H%M%S.%fZ"),
@@ -261,14 +263,15 @@ class RunManifest:
             except (OSError, ValueError, AttributeError):
                 universe_version = None
         self.payload: Dict[str, Any] = {
-            "software_identity": __import__("factorlab._identity", fromlist=["software_identity"]).software_identity(),
+            "software_identity": identity,
             "run_id": self.run_id,
             "timestamp": now.isoformat(),
             "completed_at": None,
             "command": command,
             "arguments": arguments or {},
             "status": "running",
-            "git_commit": git_commit(config.repo_root or Path.cwd()),
+            "git_commit": identity["git_commit"],
+            "project_git_commit": git_commit(config.repo_root or Path.cwd()),
             "upstream_audit_commit": "f0425ae4ae8bd02b79656b8f7039f4cd6874095e",
             "config_path": str(config.config_path) if config.config_path else None,
             "config": config.to_dict(),
@@ -284,7 +287,8 @@ class RunManifest:
             "failures": {},
             "outputs": {},
         }
-        self.payload.update(git_worktree_state(config.repo_root or Path.cwd()))
+        self.payload.update(git_worktree_state(source_context_root()) if identity["git_commit"] else
+                            {"git_dirty": None, "git_diff_sha256": None})
         _atomic_json(self.payload, self.path)
 
     def add_output(self, name: str, value: Any) -> None:

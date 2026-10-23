@@ -38,6 +38,9 @@ def software_identity():
     return {'protocol':MIGRATION_PROTOCOL,'software_name':'FactorLab','package':'factorlab',
             'version':version,'migration_baseline':BASELINE_SHA,'git_commit':commit,
             'source_sha256':files,'identity_is_authorization':False,
+            'installation_layout':'SOURCE_CHECKOUT' if root/'src/factorlab' == package else 'INSTALLED_PACKAGE',
+            'resource_sha256':{p.relative_to(package).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
+                               for p in sorted((package/'resources').glob('*.yaml'))},
             'formal_admission':'FORMAL_ADMISSION_BLOCKED',
             'trust_root_review':'BLOCKED_INDEPENDENT_REVIEW_REQUIRED'}
 

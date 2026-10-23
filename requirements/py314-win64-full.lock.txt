@@ -15,6 +15,7 @@ curl_cffi==0.16.3
 cycler==0.12.1
 decorator==5.3.1
 et_xmlfile==2.0.0
+factorlab @ file:///D:/Code/FactorLab-independent-candidate
 flake8==7.3.0
 fonttools==4.67.0
 html5lib==1.1
@@ -65,5 +66,5 @@ tzdata==2026.4
 urllib3==2.8.0
 webencodings==0.6.1
 wheel==0.45.1
-xgboost==3.1.1
+xgboost==2.1.4
 xlrd==2.0.2

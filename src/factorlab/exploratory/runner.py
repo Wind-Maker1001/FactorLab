@@ -529,12 +529,8 @@ def _code_evidence():
         str(path.relative_to(root)).replace("\\", "/"): sha256_file(path)
         for path in paths
     }
-    try:
-        revision = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=str(root), text=True
-        ).strip()
-    except (OSError, subprocess.CalledProcessError):
-        revision = "unavailable"
+    from factorlab._identity import software_identity
+    revision = software_identity()["git_commit"]
     return {
         "git_revision_at_run": revision,
         "source_sha256": hashes,

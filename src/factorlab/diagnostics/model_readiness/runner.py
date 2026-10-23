@@ -74,6 +74,12 @@ def run_acceptance(output, size="small", seed=42, probes=True):
     symbols, sessions = (12, 300) if size == "small" else (500, 1200)
     output.mkdir(parents=True, exist_ok=True)
     root = source_context_root()
+    if software_identity()["installation_layout"] != "SOURCE_CHECKOUT":
+        save_json(output / "readiness.json", {
+            "software_acceptance": "NOT_RUN", "formal_experiment_readiness": "BLOCKED",
+            "reason": "SOURCE_CHECKOUT_REQUIRED: Git-bound diagnostics require committed source; use factorlab demo for installed software",
+        })
+        raise SourceIntegrityError("SOURCE_CHECKOUT_REQUIRED: model readiness requires committed source")
     source_start = source_snapshot(root)
     save_json(output / "source-start.json", source_start)
     report = {
