@@ -17,10 +17,10 @@ import pytest
 import requests
 import yaml
 
-from qbot.research import cli
-from qbot.research.config import load_config
-from qbot.research.data import ParquetBarCache
-from qbot.research.errors import FactorLabError
+from factorlab import cli
+from factorlab.config import load_config
+from factorlab.data import ParquetBarCache
+from factorlab.errors import FactorLabError
 
 
 SYMBOLS = ("600000.SH", "000001.SZ")

@@ -6,13 +6,13 @@ import inspect
 
 import pytest
 
-from qbot.research.exploratory.factor_discovery.contracts import (
+from factorlab.exploratory.factor_discovery.contracts import (
     DiscoveryConfig,
     DiscoveryError,
     ErrorCode,
 )
-from qbot.research.exploratory.factor_discovery.generator import generate_candidates
-from qbot.research.factors.registry import FACTOR_REGISTRY
+from factorlab.exploratory.factor_discovery.generator import generate_candidates
+from factorlab.factors.registry import FACTOR_REGISTRY
 
 
 def _identity(result):

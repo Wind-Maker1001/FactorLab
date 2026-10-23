@@ -17,14 +17,14 @@ from pathlib import Path
 from typing import Optional, Sequence
 from urllib.parse import unquote, urlsplit
 
-from qbot.research.config import load_config
-from qbot.research.errors import FactorLabError, ProviderError
-from qbot.research.reproducibility import RunManifest
-from qbot.research.universe import notice_pdf
-from qbot.research.universe.browser_observations import read_browser_notice
-from qbot.research.universe.notice_attachments import discover_notice_attachments
-from qbot.research.universe.notice_pdf import PDF_TABLE_CONTRACT, review_csi500_pdf_pages
-from qbot.research.universe.official_sources import OfficialNoticeSource
+from factorlab.config import load_config
+from factorlab.errors import FactorLabError, ProviderError
+from factorlab.reproducibility import RunManifest
+from factorlab.universe import notice_pdf
+from factorlab.universe.browser_observations import read_browser_notice
+from factorlab.universe.notice_attachments import discover_notice_attachments
+from factorlab.universe.notice_pdf import PDF_TABLE_CONTRACT, review_csi500_pdf_pages
+from factorlab.universe.official_sources import OfficialNoticeSource
 
 
 LOGGER = logging.getLogger(__name__)

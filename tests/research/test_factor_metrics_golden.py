@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.metrics.factor import evaluate_factors
+from factorlab.metrics.factor import evaluate_factors
 from tests.research.reference import factor_reference as reference
 from tests.research.reference.compare import ATOL, RTOL, TABLES, assert_evaluation_equal
 
@@ -185,7 +185,7 @@ def test_stored_golden_tables_and_member_traces():
         frame, dates = golden_input(case)
         expected = reference.FactorEvaluation(**{name: pd.read_parquet(root / case / (name + ".parquet")) for name in TABLES})
         assert_evaluation_equal(evaluate_factors(frame, ["F2", "F1"], calendar=dates, group_column="REGIME"), expected)
-        from qbot.research.metrics._factor_arrays import _quantile_codes, _top_positions
+        from factorlab.metrics._factor_arrays import _quantile_codes, _top_positions
         for trace in json.loads((root / case / "traces.json").read_text(encoding="utf-8")):
             cross = frame.loc[frame.date.eq(pd.Timestamp(trace["date"]))]
             values = cross[trace["factor"]].to_numpy()
@@ -196,7 +196,7 @@ def test_stored_golden_tables_and_member_traces():
 
 @pytest.mark.parametrize("size,quantiles", [(n, q) for n in range(2, 65) for q in (2, 3, 5, 7) if n >= q])
 def test_ordinal_qcut_and_stable_top_members_match_original_primitives(size, quantiles):
-    from qbot.research.metrics._factor_arrays import _quantile_codes, _top_positions
+    from factorlab.metrics._factor_arrays import _quantile_codes, _top_positions
     values = np.random.default_rng(size).integers(-3, 4, size=size).astype(float)
     series = pd.Series(values, index=np.arange(size) // 2)
     expected = pd.qcut(series.rank(method="first"), q=quantiles, labels=False)

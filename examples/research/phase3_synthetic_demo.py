@@ -24,7 +24,7 @@ import uuid
 import numpy as np
 import pandas as pd
 
-from qbot.research.backtest import (
+from factorlab.backtest import (
     ExecutionBacktestConfig,
     FastBacktestConfig,
     FeeSchedule,
@@ -32,19 +32,19 @@ from qbot.research.backtest import (
     run_execution_backtest,
     run_fast_backtest,
 )
-from qbot.research.market import build_market_regime_features
-from qbot.research.metrics import (
+from factorlab.market import build_market_regime_features
+from factorlab.metrics import (
     RobustnessOptions, calculate_portfolio_metrics, evaluate_model_robustness,
     evaluate_predictions,
 )
-from qbot.research.reports import (
+from factorlab.reports import (
     write_model_comparison_report,
     write_model_report,
 )
-from qbot.research.reproducibility import (
+from factorlab.reproducibility import (
     git_commit, git_worktree_state, package_versions, set_random_seed,
 )
-from qbot.research.validation import (
+from factorlab.validation import (
     ExpandingWalkForwardSplitter, WalkForwardRunner, diagnostic_frame_sha256,
 )
 

@@ -13,12 +13,12 @@ from types import SimpleNamespace
 import pandas as pd
 import pytest
 
-from qbot.research.data.admission import assert_formal_market_admission
-from qbot.research.data.corporate_actions import select_events
-from qbot.research.data.evidence import table_sha256
-from qbot.research.data.market_qualification import load_qualification, publish_qualification
-from qbot.research.data.providers.base import MarketQualificationEvidence
-from qbot.research.errors import ProviderError
+from factorlab.data.admission import assert_formal_market_admission
+from factorlab.data.corporate_actions import select_events
+from factorlab.data.evidence import table_sha256
+from factorlab.data.market_qualification import load_qualification, publish_qualification
+from factorlab.data.providers.base import MarketQualificationEvidence
+from factorlab.errors import ProviderError
 from tests.research.market_data_fixture import qualification_inputs
 
 

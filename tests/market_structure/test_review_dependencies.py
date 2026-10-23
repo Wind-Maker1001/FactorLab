@@ -5,10 +5,10 @@ from dataclasses import replace
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.market_structure.contracts import ContractError, digest
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.registry import build_default_registry
-from qbot.research.exploratory.market_structure.store import AsOfStore
+from factorlab.exploratory.market_structure.contracts import ContractError, digest
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.registry import build_default_registry
+from factorlab.exploratory.market_structure.store import AsOfStore
 
 
 class ReadGuard(AsOfStore):
@@ -196,7 +196,7 @@ def test_mixed_requests_equal_separate_values_with_explicit_union_trace(manual):
 
 
 def test_context_trace_is_separate_from_feature_inputs(manual):
-    from qbot.research.exploratory.market_structure.synthetic import make_record
+    from factorlab.exploratory.market_structure.synthetic import make_record
 
     record = make_record(
         "context",

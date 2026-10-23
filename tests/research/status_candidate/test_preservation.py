@@ -6,7 +6,7 @@ import subprocess
 
 import pytest
 
-from qbot.research.diagnostics.model_readiness.source_identity import source_snapshot
+from factorlab.diagnostics.model_readiness.source_identity import source_snapshot
 from tests.research.test_c01_preservation import candidate, control  # noqa: F401
 from tests.market_structure.test_c01_publication_safety import collected_attacks
 from examples.research.review_yhh30m_release import c01_literal_inventory

@@ -11,10 +11,10 @@ import urllib.error
 import pytest
 
 from examples.research import collect_exchange_article, collect_official_notices, review_browser_notices as example
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.errors import ProviderError
-from qbot.research.universe.browser_observations import REPRESENTATION, TRANSPORT, read_browser_notice
-from qbot.research.universe.official_sources import DETAIL_URL, OfficialNoticeSource
+from factorlab.config import PathsConfig, load_config
+from factorlab.errors import ProviderError
+from factorlab.universe.browser_observations import REPRESENTATION, TRANSPORT, read_browser_notice
+from factorlab.universe.official_sources import DETAIL_URL, OfficialNoticeSource
 from tests.research.test_notice_review import notice as synthetic_notice
 
 

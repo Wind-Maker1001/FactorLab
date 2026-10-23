@@ -2,8 +2,8 @@
 
 import pytest
 
-from qbot.research.errors import ProviderError
-from qbot.research.universe.notice_pdf import PDF_TABLE_CONTRACT, review_csi500_pdf_pages
+from factorlab.errors import ProviderError
+from factorlab.universe.notice_pdf import PDF_TABLE_CONTRACT, review_csi500_pdf_pages
 
 
 HEAD = "中证 500 指数样本调整名单：\n调出名单 调入名单\n证券代码 证券名称 证券代码 证券名称\n"

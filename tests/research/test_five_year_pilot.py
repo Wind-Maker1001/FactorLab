@@ -10,10 +10,10 @@ import pandas as pd
 import pytest
 import requests
 
-from qbot.research.data.providers.akshare import AKShareProvider
-from qbot.research.errors import CacheError
-from qbot.research.exploratory import five_year as pilot
-from qbot.research.exploratory.contract import manifest_version, sha256_file
+from factorlab.data.providers.akshare import AKShareProvider
+from factorlab.errors import CacheError
+from factorlab.exploratory import five_year as pilot
+from factorlab.exploratory.contract import manifest_version, sha256_file
 
 
 DATES = ["2021-03-08", "2021-03-09", "2021-09-13", "2021-09-14",
@@ -468,7 +468,7 @@ def test_concurrent_entry_fails_before_recorder_http_or_evidence_mutation(semant
     script = """
 from pathlib import Path
 import sys
-from qbot.research.exploratory import five_year as pilot
+from factorlab.exploratory import five_year as pilot
 def hold(*args, **kwargs):
     Path(sys.argv[2]).write_text('whole pilot entry locked', encoding='utf-8')
     sys.stdin.readline()

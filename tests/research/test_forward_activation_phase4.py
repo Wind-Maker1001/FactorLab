@@ -6,13 +6,13 @@ import inspect
 
 import pytest
 
-import qbot.research.forward.activation as activation_module
-from qbot.research.forward.activation import (
+import factorlab.forward.activation as activation_module
+from factorlab.forward.activation import (
     ForwardActivationError,
     load_forward_activation,
     register_forward_activation,
 )
-from qbot.research.forward.integrity import (
+from factorlab.forward.integrity import (
     ForwardIntegrityError,
     ForwardWorkflowLockError,
     research_source_sha256,
@@ -114,8 +114,8 @@ def test_activation_rejects_symlinked_evidence_ancestor(tmp_path):
 
 
 def test_research_source_digest_is_deterministic_and_content_bound(tmp_path):
-    source = tmp_path / "qbot" / "research"
-    requirements = tmp_path / "dev" / "requirements-research.txt"
+    source = tmp_path / "src" / "factorlab"
+    requirements = tmp_path / "pyproject.toml"
     source.mkdir(parents=True)
     requirements.parent.mkdir(parents=True)
     (source / "b.py").write_text("B = 2\n", encoding="utf-8")
@@ -129,8 +129,8 @@ def test_research_source_digest_is_deterministic_and_content_bound(tmp_path):
 
 
 def test_research_source_digest_rejects_linked_source_file(tmp_path):
-    source = tmp_path / "qbot" / "research"
-    requirements = tmp_path / "dev" / "requirements-research.txt"
+    source = tmp_path / "src" / "factorlab"
+    requirements = tmp_path / "pyproject.toml"
     source.mkdir(parents=True)
     requirements.parent.mkdir(parents=True)
     requirements.write_text("pytest==8.3.5\n", encoding="utf-8")

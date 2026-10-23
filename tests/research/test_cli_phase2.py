@@ -13,8 +13,8 @@ import pytest
 # These tests verify orchestration, not the truth of synthetic market evidence.
 pytestmark = pytest.mark.usefixtures("synthetic_cli_admission")
 
-from qbot.research import cli
-from qbot.research.config import (
+from factorlab import cli
+from factorlab.config import (
     DataConfig,
     EvaluationConfig,
     FactorScoreConfig,
@@ -31,8 +31,8 @@ from qbot.research.config import (
     XGBoostConfig,
     XGBoostParameters,
 )
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.errors import FactorLabError
+from factorlab.data.schema import canonicalize_bars
+from factorlab.errors import FactorLabError
 
 
 def _provenance():

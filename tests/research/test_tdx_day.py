@@ -8,7 +8,7 @@ import struct
 import numpy as np
 import pytest
 
-from qbot.research.data.tdx import (
+from factorlab.data.tdx import (
     DAY_DTYPE, TdxError, audit_day, classify, discover, raw_frame, safe_path,
 )
 

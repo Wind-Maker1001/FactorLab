@@ -8,8 +8,8 @@ from pathlib import Path
 import platform
 import subprocess
 
-from qbot.research.errors import ProviderError
-from qbot.research.universe.event_evidence import (
+from factorlab.errors import ProviderError
+from factorlab.universe.event_evidence import (
     check_event_evidence, event_source_references, unavailable_baseline_replay_result,
     verify_local_source,
 )

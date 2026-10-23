@@ -4,9 +4,9 @@ from dataclasses import replace
 
 import pytest
 
-from qbot.research.exploratory.market_structure.contracts import ContractError
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.store import AsOfStore
+from factorlab.exploratory.market_structure.contracts import ContractError
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.store import AsOfStore
 
 
 def test_non_string_fact_identity_is_rejected_at_construction(manual):

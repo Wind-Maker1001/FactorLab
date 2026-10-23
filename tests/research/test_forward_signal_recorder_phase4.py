@@ -8,8 +8,8 @@ import json
 import pandas as pd
 import pytest
 
-from qbot.research.forward import signal_recorder as recorder_module
-from qbot.research.forward.signal_recorder import (
+from factorlab.forward import signal_recorder as recorder_module
+from factorlab.forward.signal_recorder import (
     FORWARD_SIGNAL_COLUMNS,
     SignalLockTimeoutError,
     SignalRecorder,

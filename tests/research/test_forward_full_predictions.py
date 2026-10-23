@@ -14,8 +14,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.forward import signal_recorder as module
-from qbot.research.forward.signal_recorder import (
+from factorlab.forward import signal_recorder as module
+from factorlab.forward.signal_recorder import (
     FORWARD_PREDICTION_COLUMNS, FULL_ELIGIBLE_CROSS_SECTION, TOP_K_ONLY,
     SignalRecorder, SignalValidationError, SignalVersionConflictError,
     finalize_signal_record, load_prediction_record, load_signal_record, record_signals,

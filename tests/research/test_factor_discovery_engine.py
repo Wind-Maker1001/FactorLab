@@ -7,18 +7,18 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.factor_discovery.contracts import (
+from factorlab.exploratory.factor_discovery.contracts import (
     DiscoveryConfig,
     DiscoveryError,
     ErrorCode,
     Node,
 )
-from qbot.research.exploratory.factor_discovery.engine import (
+from factorlab.exploratory.factor_discovery.engine import (
     ExpressionEngine,
     compile_expression,
     normalize_ast,
 )
-from qbot.research.exploratory.factor_discovery.synthetic import make_synthetic_data
+from factorlab.exploratory.factor_discovery.synthetic import make_synthetic_data
 
 
 def f(name):
@@ -94,7 +94,7 @@ def test_calendar_gap_not_compressed_or_forward_filled(bars):
 
 
 def test_every_candidate_invariant_to_future_prices_with_no_stock_crosstalk():
-    from qbot.research.exploratory.factor_discovery.generator import generate_candidates
+    from factorlab.exploratory.factor_discovery.generator import generate_candidates
 
     frame, _, dates = make_synthetic_data(stock_count=3, sessions=180)
     altered = frame.copy()
@@ -316,7 +316,7 @@ def test_static_limits_cache_operation_and_windows_portable_clock_budgets(
     engine = ExpressionEngine(frame, dates, config)
     clock = iter((0.0, 2.0, 3.0))
     monkeypatch.setattr(
-        "qbot.research.exploratory.factor_discovery.engine.time.perf_counter",
+        "factorlab.exploratory.factor_discovery.engine.time.perf_counter",
         lambda: next(clock),
     )
     output = engine.compute(compile_expression(node, config))

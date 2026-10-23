@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from qbot.research.data.providers.akshare import AKShareProvider, ProviderError
-from qbot.research.errors import ProviderNetworkError
+from factorlab.data.providers.akshare import AKShareProvider, ProviderError
+from factorlab.errors import ProviderNetworkError
 
 
 def _vendor_frame(multiplier=1.0, include_turnover=True):

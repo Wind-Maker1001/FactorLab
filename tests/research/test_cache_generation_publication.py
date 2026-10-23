@@ -14,9 +14,9 @@ import time
 import pandas as pd
 import pytest
 
-from qbot.research.data.cache import ParquetBarCache
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.errors import CacheError
+from factorlab.data.cache import ParquetBarCache
+from factorlab.data.schema import canonicalize_bars
+from factorlab.errors import CacheError
 
 
 SYMBOL = "600000.SH"
@@ -371,7 +371,7 @@ def _child_holding_lock(root, ready):
     script = (
         "import sys\n"
         "from pathlib import Path\n"
-        "from qbot.research.data.cache import ParquetBarCache\n"
+        "from factorlab.data.cache import ParquetBarCache\n"
         "cache = ParquetBarCache(Path(sys.argv[1]))\n"
         "with cache._writer_lock('600000.SH'):\n"
         "    Path(sys.argv[2]).write_text('locked', encoding='utf-8')\n"
@@ -664,8 +664,8 @@ def test_empty_lock_process_stress_preserves_all_concurrent_merges(tmp_path, rou
         "import sys\n"
         "from pathlib import Path\n"
         "import pandas as pd\n"
-        "from qbot.research.data.cache import ParquetBarCache\n"
-        "from qbot.research.data.schema import canonicalize_bars\n"
+        "from factorlab.data.cache import ParquetBarCache\n"
+        "from factorlab.data.schema import canonicalize_bars\n"
         "root, ready = Path(sys.argv[1]), Path(sys.argv[2])\n"
         "date, close = sys.argv[3], float(sys.argv[4])\n"
         "cache = ParquetBarCache(root)\n"

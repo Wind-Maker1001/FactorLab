@@ -127,7 +127,7 @@ class PerformanceRecorder:
             if hasattr(module, "_PreparedFactors"):
                 cls = module._PreparedFactors
                 stack.enter_context(patch.object(cls, "create", staticmethod(self.wrap(cls.create, "prepare_workspace"))))
-                from qbot.research.metrics import _factor_arrays as kernels
+                from factorlab.metrics import _factor_arrays as kernels
                 for name in ("_pearson_finite", "_rank_finite"):
                     original = getattr(kernels, name)
                     def coefficient(*args, _fn=original, _name=name, **kwargs):
@@ -151,7 +151,7 @@ class PerformanceRecorder:
     def instrument_report(self):
         import pandas as pd
         from matplotlib.figure import Figure
-        from qbot.research.reports import generator
+        from factorlab.reports import generator
         with ExitStack() as stack:
             for name in ("_bar_plot", "_correlation_plot", "_quantile_plot", "_regime_plot"):
                 stack.enter_context(patch.object(generator, name, self.wrap(getattr(generator, name), "report" + name)))

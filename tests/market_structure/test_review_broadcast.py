@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.market_structure.adapters import ResearchFeatureAdapter
-from qbot.research.exploratory.market_structure.contracts import ContractError
-from qbot.research.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.adapters import ResearchFeatureAdapter
+from factorlab.exploratory.market_structure.contracts import ContractError
+from factorlab.exploratory.market_structure.features import compute_features
 from tests.market_structure.test_review_red_cases import target_index
 
 

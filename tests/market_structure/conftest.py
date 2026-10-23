@@ -5,12 +5,12 @@ from dataclasses import dataclass
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.market_structure.contracts import (
+from factorlab.exploratory.market_structure.contracts import (
     ComputeRequest,
     FLOW_DEFINITION,
 )
-from qbot.research.exploratory.market_structure.store import AsOfStore, Session
-from qbot.research.exploratory.market_structure.synthetic import make_record
+from factorlab.exploratory.market_structure.store import AsOfStore, Session
+from factorlab.exploratory.market_structure.synthetic import make_record
 
 
 @dataclass

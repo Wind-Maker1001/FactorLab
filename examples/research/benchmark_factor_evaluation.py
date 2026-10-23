@@ -20,10 +20,10 @@ import numpy as np
 import pandas as pd
 
 from examples.research.factor_performance import PerformanceRecorder, environment_details
-from qbot.research.config import load_config
-from qbot.research.metrics import factor as optimized
-from qbot.research.reports.generator import write_factor_report
-from qbot.research.reproducibility import RunManifest
+from factorlab.config import load_config
+from factorlab.metrics import factor as optimized
+from factorlab.reports.generator import write_factor_report
+from factorlab.reproducibility import RunManifest
 from tests.research.reference import factor_reference as reference
 from tests.research.reference.compare import TABLES, ATOL, RTOL, assert_evaluation_equal
 
@@ -37,7 +37,7 @@ def sha256_file(path):
 
 
 def sources():
-    from qbot.research.metrics import _factor_arrays
+    from factorlab.metrics import _factor_arrays
     return {"reference": sha256_file(reference.__file__), "optimized": sha256_file(optimized.__file__),
             "array_kernels": sha256_file(_factor_arrays.__file__), "benchmark": sha256_file(__file__),
             "measurement": sha256_file(Path(__file__).with_name("factor_performance.py"))}

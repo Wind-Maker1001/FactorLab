@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.data.schema import (
+from factorlab.data.schema import (
     CANONICAL_BAR_COLUMNS,
     SchemaError,
     canonicalize_bars,

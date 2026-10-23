@@ -12,10 +12,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.data.market_qualification import load_qualification
-from qbot.research.data.providers.local import LocalParquetProvider
-from qbot.research.errors import DataQualityError, ProviderError
-from qbot.research.exploratory.contract import (
+from factorlab.data.market_qualification import load_qualification
+from factorlab.data.providers.local import LocalParquetProvider
+from factorlab.errors import DataQualityError, ProviderError
+from factorlab.exploratory.contract import (
     ExploratoryContractError,
     REQUIRED_MARKERS,
     assert_exploratory_only,
@@ -25,13 +25,13 @@ from qbot.research.exploratory.contract import (
     validate_dataset_frames,
     validate_manifest,
 )
-from qbot.research.factors.registry import FACTOR_REGISTRY, compute_factors
-from qbot.research.forward.model_bundle import BundleIntegrityError, load_model_bundle
-from qbot.research.forward.signal_recorder import (
+from factorlab.factors.registry import FACTOR_REGISTRY, compute_factors
+from factorlab.forward.model_bundle import BundleIntegrityError, load_model_bundle
+from factorlab.forward.signal_recorder import (
     SignalValidationError,
     load_signal_record,
 )
-from qbot.research.labels.forward_return import build_forward_excess_return_labels
+from factorlab.labels.forward_return import build_forward_excess_return_labels
 
 
 def synthetic_frames(size=20, periods=165):
@@ -450,7 +450,7 @@ def test_all_fourteen_factors_are_invariant_to_future_input_mutation(synthetic_d
 
 
 def test_exploratory_quantile_boundaries_exclude_missing_future_labels():
-    from qbot.research.exploratory.runner import (
+    from factorlab.exploratory.runner import (
         FACTOR_NAMES,
         evaluate_exploratory_factors,
     )
@@ -479,7 +479,7 @@ def test_exploratory_quantile_boundaries_exclude_missing_future_labels():
 
 
 def test_insufficient_cross_section_has_no_fabricated_ic_or_quintiles():
-    from qbot.research.exploratory.runner import (
+    from factorlab.exploratory.runner import (
         FACTOR_NAMES,
         evaluate_exploratory_factors,
     )
@@ -504,7 +504,7 @@ def test_insufficient_cross_section_has_no_fabricated_ic_or_quintiles():
 def test_real_runner_rejects_synthetic_fixture_and_marks_blocked(
     synthetic_dataset, tmp_path
 ):
-    from qbot.research.exploratory.runner import run_research
+    from factorlab.exploratory.runner import run_research
 
     result = run_research(synthetic_dataset[0], output_root=tmp_path / "exploratory")
     assert result.status == "BLOCKED"
@@ -512,7 +512,7 @@ def test_real_runner_rejects_synthetic_fixture_and_marks_blocked(
 
 
 def test_runner_factors_regimes_and_sample_do_not_depend_on_future_rows():
-    from qbot.research.exploratory.runner import FACTOR_NAMES, analyze_frames
+    from factorlab.exploratory.runner import FACTOR_NAMES, analyze_frames
 
     bars, benchmark, calendar, manifest, sample = synthetic_frames(size=21)
     manifest["sample"] = sample
@@ -543,7 +543,7 @@ def test_runner_factors_regimes_and_sample_do_not_depend_on_future_rows():
 
 
 def test_runner_reindexes_missing_session_without_skipping_calendar_offsets():
-    from qbot.research.exploratory.runner import analyze_frames
+    from factorlab.exploratory.runner import analyze_frames
 
     bars, benchmark, calendar, manifest, sample = synthetic_frames(size=21)
     manifest["sample"] = sample
@@ -567,7 +567,7 @@ def test_runner_reindexes_missing_session_without_skipping_calendar_offsets():
     "missing", ["one_warmup_security", "all_turnover", "benchmark_warmup"]
 )
 def test_required_real_inputs_cannot_be_replaced_by_later_window_history(missing):
-    from qbot.research.exploratory.runner import analyze_frames
+    from factorlab.exploratory.runner import analyze_frames
 
     bars, benchmark, calendar, manifest, sample = synthetic_frames()
     manifest["sample"] = sample
@@ -586,7 +586,7 @@ def test_required_real_inputs_cannot_be_replaced_by_later_window_history(missing
 
 
 def test_label_eligibility_adapter_keeps_temporal_diagnostics_on_full_calendar():
-    from qbot.research.exploratory.runner import (
+    from factorlab.exploratory.runner import (
         FACTOR_NAMES,
         evaluate_exploratory_factors,
     )
@@ -635,7 +635,7 @@ def test_label_eligibility_adapter_keeps_temporal_diagnostics_on_full_calendar()
 def test_receipt_hash_and_exploratory_boundaries_survive_reader_checks(
     synthetic_dataset, tmp_path, tamper
 ):
-    from qbot.research.exploratory.runner import run_research, verify_receipt
+    from factorlab.exploratory.runner import run_research, verify_receipt
 
     result = run_research(synthetic_dataset[0], output_root=tmp_path / "exploratory")
     receipt_path = result.output_dir / "receipt.json"
@@ -731,8 +731,8 @@ def test_unreadable_manifest_has_contract_error_and_cli_blocked_report(
     tmp_path, capsys, manifest_bytes
 ):
     """Broken input produces a failure report with zero empirical results."""
-    from qbot.research.exploratory.__main__ import main
-    from qbot.research.exploratory.runner import verify_receipt
+    from factorlab.exploratory.__main__ import main
+    from factorlab.exploratory.runner import verify_receipt
 
     path = tmp_path / "unreadable-manifest.json"
     path.write_bytes(manifest_bytes)
@@ -763,8 +763,8 @@ def test_cli_turns_deserialization_contract_failure_into_blocked(
     """Mock only a reader failure; never admit generated data as real prices."""
     from pathlib import Path
 
-    from qbot.research.exploratory import runner
-    from qbot.research.exploratory.__main__ import main
+    from factorlab.exploratory import runner
+    from factorlab.exploratory.__main__ import main
 
     reason = "SYNTHETIC_TEST_ONLY mocked input reader failure: unreadable bars parquet"
 

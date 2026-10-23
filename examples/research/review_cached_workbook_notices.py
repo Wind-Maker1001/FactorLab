@@ -19,13 +19,13 @@ from urllib.parse import unquote, urlsplit
 import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 
-from qbot.research.config import load_config
-from qbot.research.errors import ProviderError
-from qbot.research.reproducibility import RunManifest
-from qbot.research.universe import notice_workbook
-from qbot.research.universe.notice_attachments import discover_notice_attachments
-from qbot.research.universe.notice_workbook import WORKBOOK_TABLE_CONTRACT, review_csi500_workbook_values
-from qbot.research.universe.official_sources import OfficialNoticeSource
+from factorlab.config import load_config
+from factorlab.errors import ProviderError
+from factorlab.reproducibility import RunManifest
+from factorlab.universe import notice_workbook
+from factorlab.universe.notice_attachments import discover_notice_attachments
+from factorlab.universe.notice_workbook import WORKBOOK_TABLE_CONTRACT, review_csi500_workbook_values
+from factorlab.universe.official_sources import OfficialNoticeSource
 
 
 LOGGER = logging.getLogger(__name__)

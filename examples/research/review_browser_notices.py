@@ -14,13 +14,13 @@ import logging
 from pathlib import Path
 from typing import Optional, Sequence
 
-from qbot.research.config import load_config
-from qbot.research.errors import FactorLabError, ProviderError
-from qbot.research.reproducibility import RunManifest
-from qbot.research.universe.browser_observations import read_browser_notice
-from qbot.research.universe.notice_review import review_csi500_notice
-from qbot.research.universe.notice_attachments import discover_notice_attachments
-from qbot.research.universe.official_sources import OfficialAccessDeniedError, OfficialNoticeSource
+from factorlab.config import load_config
+from factorlab.errors import FactorLabError, ProviderError
+from factorlab.reproducibility import RunManifest
+from factorlab.universe.browser_observations import read_browser_notice
+from factorlab.universe.notice_review import review_csi500_notice
+from factorlab.universe.notice_attachments import discover_notice_attachments
+from factorlab.universe.official_sources import OfficialAccessDeniedError, OfficialNoticeSource
 
 
 LOGGER = logging.getLogger(__name__)

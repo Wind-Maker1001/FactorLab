@@ -7,11 +7,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.backtest.fast import FastBacktestResult
-from qbot.research.metrics.prediction import PredictionEvaluation, evaluate_predictions
-from qbot.research.reports import model as report
-from qbot.research.validation.splitter import ExpandingWalkForwardSplitter
-from qbot.research.validation.walk_forward import WalkForwardRunner, diagnostic_frame_sha256
+from factorlab.backtest.fast import FastBacktestResult
+from factorlab.metrics.prediction import PredictionEvaluation, evaluate_predictions
+from factorlab.reports import model as report
+from factorlab.validation.splitter import ExpandingWalkForwardSplitter
+from factorlab.validation.walk_forward import WalkForwardRunner, diagnostic_frame_sha256
 
 
 _FIELDS = ("diagnostic_predictions", "diagnostic_daily", "diagnostic_summary", "diagnostic_audit")

@@ -14,12 +14,12 @@ from pathlib import Path
 import re
 from typing import Optional, Sequence
 
-from qbot.research.config import load_config
-from qbot.research.errors import FactorLabError, ProviderError
-from qbot.research.reproducibility import RunManifest
-from qbot.research.universe.browser_observations import read_browser_notice
-from qbot.research.universe.official_sources import DETAIL_URL, OfficialNoticeSource
-from qbot.research.universe.source_coverage import audit_notice_coverage
+from factorlab.config import load_config
+from factorlab.errors import FactorLabError, ProviderError
+from factorlab.reproducibility import RunManifest
+from factorlab.universe.browser_observations import read_browser_notice
+from factorlab.universe.official_sources import DETAIL_URL, OfficialNoticeSource
+from factorlab.universe.source_coverage import audit_notice_coverage
 
 
 LOGGER = logging.getLogger(__name__)

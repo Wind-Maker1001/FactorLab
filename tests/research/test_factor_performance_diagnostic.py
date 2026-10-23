@@ -13,8 +13,8 @@ import pytest
 from examples.research import benchmark_factor_evaluation as benchmark
 from examples.research import scale_factor_pipeline as scale
 from examples.research.factor_performance import PerformanceRecorder
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.metrics import factor
+from factorlab.config import PathsConfig, load_config
+from factorlab.metrics import factor
 from tests.research.test_factor_metrics_golden import golden_input
 from tests.research.reference.compare import assert_evaluation_equal
 

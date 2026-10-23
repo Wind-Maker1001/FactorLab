@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 
 from examples.research.audit_pit_event_evidence import audit, main
-from qbot.research.errors import ProviderError
-from qbot.research.universe.event_evidence import check_event_evidence, verify_local_source
+from factorlab.errors import ProviderError
+from factorlab.universe.event_evidence import check_event_evidence, verify_local_source
 
 
 def fixture(tmp_path):

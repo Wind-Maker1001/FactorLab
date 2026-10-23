@@ -8,9 +8,9 @@ from types import SimpleNamespace
 import pandas as pd
 import pytest
 
-from qbot.research.cli import _load_verified_membership
-from qbot.research.errors import PointInTimeUniverseError
-import qbot.research.universe.csi500 as pit
+from factorlab.cli import _load_verified_membership
+from factorlab.errors import PointInTimeUniverseError
+import factorlab.universe.csi500 as pit
 
 
 @pytest.fixture

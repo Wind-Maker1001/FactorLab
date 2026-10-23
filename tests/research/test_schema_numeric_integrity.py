@@ -4,13 +4,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.data.schema import (
+from factorlab.data.schema import (
     ADJ_FACTOR_ATOL, ADJ_FACTOR_RTOL, NUMERIC_BAR_COLUMNS,
     canonicalize_bars, validate_bars,
 )
-from qbot.research.errors import SchemaError
-from qbot.research.factors.registry import get_factor
-from qbot.research.labels.forward_return import build_forward_excess_return_labels
+from factorlab.errors import SchemaError
+from factorlab.factors.registry import get_factor
+from factorlab.labels.forward_return import build_forward_excess_return_labels
 
 
 def _bars(periods=1):

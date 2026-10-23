@@ -6,13 +6,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.backtest.fast import FastBacktestConfig, run_fast_backtest
-from qbot.research.backtest.fees import FeeRule, FeeSchedule
-from qbot.research.config import FeesConfig, StampDutyPeriod
-from qbot.research.errors import ConfigurationError, SchemaError
-from qbot.research.metrics.portfolio import calculate_portfolio_metrics
-from qbot.research.portfolio.topk import rebalance_dates, select_top_k
-from qbot.research.portfolio.weights import equal_weights
+from factorlab.backtest.fast import FastBacktestConfig, run_fast_backtest
+from factorlab.backtest.fees import FeeRule, FeeSchedule
+from factorlab.config import FeesConfig, StampDutyPeriod
+from factorlab.errors import ConfigurationError, SchemaError
+from factorlab.metrics.portfolio import calculate_portfolio_metrics
+from factorlab.portfolio.topk import rebalance_dates, select_top_k
+from factorlab.portfolio.weights import equal_weights
 
 
 SYMBOLS = ["000001.SZ", "600000.SH", "600001.SH"]

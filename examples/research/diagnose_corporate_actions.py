@@ -5,11 +5,11 @@ from dataclasses import asdict
 import json
 from pathlib import Path
 
-from qbot.research.data.corporate_actions.sources.akshare import SinaFactorSource, parse_sina_factors
-from qbot.research.data.corporate_actions.sources.local_tdx import LocalTdxActionSource
-from qbot.research.data.corporate_actions.sources.official import OfficialNoticeEvidenceSource
-from qbot.research.data.corporate_actions.store import publish_snapshot
-from qbot.research.errors import FactorLabError
+from factorlab.data.corporate_actions.sources.akshare import SinaFactorSource, parse_sina_factors
+from factorlab.data.corporate_actions.sources.local_tdx import LocalTdxActionSource
+from factorlab.data.corporate_actions.sources.official import OfficialNoticeEvidenceSource
+from factorlab.data.corporate_actions.store import publish_snapshot
+from factorlab.errors import FactorLabError
 
 
 def main(argv=None) -> int:

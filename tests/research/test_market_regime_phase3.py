@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.errors import SchemaError
-from qbot.research.market.regime import (
+from factorlab.errors import SchemaError
+from factorlab.market.regime import (
     MARKET_FEATURE_COLUMNS,
     build_market_regime_features,
     compute_market_regime,

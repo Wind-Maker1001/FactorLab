@@ -11,14 +11,14 @@ from xml.sax.saxutils import escape
 import pandas as pd
 import pytest
 
-from qbot.research.data.csmar import native, profiles
-from qbot.research.data.csmar.binding import (
+from factorlab.data.csmar import native, profiles
+from factorlab.data.csmar.binding import (
     parser_sha256, publish_diagnostic, reference, replay, verify_candidate, write_candidate,
 )
-from qbot.research.data.evidence import archive_bytes, json_bytes, sha256
-from qbot.research.data.market_qualification import _reparse_raw, _unbound_real_roles
-from qbot.research.errors import DataQualityError, ProviderError
-from qbot.research.data.tdx import TdxError
+from factorlab.data.evidence import archive_bytes, json_bytes, sha256
+from factorlab.data.market_qualification import _reparse_raw, _unbound_real_roles
+from factorlab.errors import DataQualityError, ProviderError
+from factorlab.data.tdx import TdxError
 from tests.research.market_data_fixture import qualification_inputs
 
 
@@ -224,7 +224,7 @@ def test_candidate_replays_originals_and_cannot_become_v2(tmp_path):
     assert artifact.bytes < 10000
     replayed = verify_candidate(path, source_root=tmp_path, scratch=tmp_path)
     pd.testing.assert_frame_equal(result.raw, replayed.raw)
-    from qbot.research.data.market_qualification import load_qualification
+    from factorlab.data.market_qualification import load_qualification
     with pytest.raises(DataQualityError):
         load_qualification(path, stocks=result.raw, benchmark=result.raw)
 
@@ -250,7 +250,7 @@ def test_candidate_adversarial_changes(tmp_path, change):
         value["source_binding"] = "PASS"
         path.write_bytes(json_bytes(value))
     if change == "forged_pass":
-        from qbot.research.data.market_qualification import load_qualification
+        from factorlab.data.market_qualification import load_qualification
         with pytest.raises(DataQualityError):
             load_qualification(path, stocks=result.raw, benchmark=result.raw)
     else:
@@ -304,7 +304,7 @@ def test_actual_original_bytes_change_while_native_rows_are_consumed(tmp_path, m
 
 @pytest.mark.parametrize("target", ["manifest", "reference"])
 def test_actual_candidate_or_reference_changes_during_verification(tmp_path, monkeypatch, target):
-    import qbot.research.data.csmar.binding as binding
+    import factorlab.data.csmar.binding as binding
     ref, _ = fixture(tmp_path)
     path, artifact, _ = write_candidate(ref, source_root=tmp_path, scratch=tmp_path, output_root=tmp_path / "candidate")
     original = binding.replay
@@ -328,7 +328,7 @@ def test_xml_entity_formula_and_resource_limits(tmp_path, monkeypatch):
 
 
 def test_complete_existing_qualification_recipe_copies_only_reference_and_rechecks_external_zip(tmp_path, monkeypatch):
-    from qbot.research.data.market_qualification import load_qualification, publish_qualification
+    from factorlab.data.market_qualification import load_qualification, publish_qualification
     i, keys, dates, stocks, benchmark = qualification_inputs(tmp_path)
     _, sheets = fixture(tmp_path)
     header, names, units = sheets["sheet1"][:3]
@@ -349,7 +349,7 @@ def test_complete_existing_qualification_recipe_copies_only_reference_and_rechec
 
 
 def test_selected_byte_budget_and_unconfigured_operator_root(tmp_path, monkeypatch):
-    import qbot.research.data.csmar.binding as binding
+    import factorlab.data.csmar.binding as binding
     ref, _ = fixture(tmp_path)
     monkeypatch.setattr(binding, "MAX_SELECTED_ESTIMATED_BYTES", 1)
     with pytest.raises(DataQualityError, match="byte budget"):
@@ -412,10 +412,10 @@ def test_diagnostic_uses_existing_provider_and_still_rejects_formal(tmp_path, mo
         stocks["adj_" + f] = stocks[f]
     stocks["adj_factor"] = 1.0
     stocks["turnover"] = 0.01
-    from qbot.research.data.schema import CANONICAL_BAR_COLUMNS
+    from factorlab.data.schema import CANONICAL_BAR_COLUMNS
     sp = tmp_path / "stocks.parquet"
     stocks[list(CANONICAL_BAR_COLUMNS)].to_parquet(sp, index=False)
-    import qbot.research.data.providers.local as local
+    import factorlab.data.providers.local as local
     original_publish = local.publish_local_market_data
     def changed_caller_input(snapshot, *args, **kwargs):
         assert Path(snapshot) != sp
@@ -424,8 +424,8 @@ def test_diagnostic_uses_existing_provider_and_still_rejects_formal(tmp_path, mo
     monkeypatch.setattr(local, "publish_local_market_data", changed_caller_input)
     published = publish_diagnostic(rp, bp, sp, source_root=root, scratch=tmp_path, output_root=tmp_path / "bundle")
     assert published["schema_version"] == 1
-    from qbot.research.data.providers.local import LocalParquetProvider
-    from qbot.research.data.admission import assert_formal_market_admission
+    from factorlab.data.providers.local import LocalParquetProvider
+    from factorlab.data.admission import assert_formal_market_admission
     provider = LocalParquetProvider(tmp_path / "bundle/local")
     observed = provider.get_daily_bars("000001.SZ", "2024-01-02", "2024-01-02")
     assert len(observed) == 1 and observed.close.tolist() == [10.5]

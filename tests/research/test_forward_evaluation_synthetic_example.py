@@ -14,9 +14,9 @@ import requests
 from pandas.testing import assert_frame_equal
 
 from examples.research import forward_evaluation_synthetic_demo as demo
-from qbot.research.forward.integrity import ForwardIntegrityError
-from qbot.research.forward.signal_recorder import load_signal_record
-from qbot.research.reports.forward import (
+from factorlab.forward.integrity import ForwardIntegrityError
+from factorlab.forward.signal_recorder import load_signal_record
+from factorlab.reports.forward import (
     ForwardEvaluationReportError, load_forward_evaluation_report,
 )
 

@@ -2,8 +2,8 @@
 
 import pytest
 
-from qbot.research.errors import ProviderError
-from qbot.research.universe.notice_review import mentions_csi500, review_csi500_notice, visible_html_text
+from factorlab.errors import ProviderError
+from factorlab.universe.notice_review import mentions_csi500, review_csi500_notice, visible_html_text
 
 
 def table(rows=None, heading="中证500指数样本调整名单："):

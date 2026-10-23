@@ -13,13 +13,13 @@ import pandas as pd
 import pytest
 
 from examples.research import diagnose_market_regime as example
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.data.cache import ParquetBarCache
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.diagnostics.market_regime import DIAGNOSTIC_REGIMES, diagnose_market_regime
-from qbot.research.errors import SchemaError
-from qbot.research.market.regime import build_market_regime_features
-from qbot.research.reports.market_regime import _build_history_figure, _build_statistics_figure, write_market_regime_report
+from factorlab.config import PathsConfig, load_config
+from factorlab.data.cache import ParquetBarCache
+from factorlab.data.schema import canonicalize_bars
+from factorlab.diagnostics.market_regime import DIAGNOSTIC_REGIMES, diagnose_market_regime
+from factorlab.errors import SchemaError
+from factorlab.market.regime import build_market_regime_features
+from factorlab.reports.market_regime import _build_history_figure, _build_statistics_figure, write_market_regime_report
 
 
 def benchmark(prices):

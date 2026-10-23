@@ -9,10 +9,10 @@ from pathlib import Path
 from typing import Optional, Sequence
 from urllib.parse import urljoin
 
-from qbot.research.config import load_config
-from qbot.research.errors import FactorLabError
-from qbot.research.reproducibility import RunManifest
-from qbot.research.universe.official_sources import OfficialNoticeSource
+from factorlab.config import load_config
+from factorlab.errors import FactorLabError
+from factorlab.reproducibility import RunManifest
+from factorlab.universe.official_sources import OfficialNoticeSource
 
 
 class _Links(HTMLParser):

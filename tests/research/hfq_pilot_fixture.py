@@ -11,8 +11,8 @@ import json
 import numpy as np
 import pandas as pd
 
-from qbot.research.data.evidence import sha256
-from qbot.research.data.tdx import DAY_DTYPE
+from factorlab.data.evidence import sha256
+from factorlab.data.tdx import DAY_DTYPE
 
 
 FIXTURE_DATES = ("2025-07-09", "2025-07-10", "2025-07-11", "2025-07-14",

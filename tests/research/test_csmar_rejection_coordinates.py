@@ -7,9 +7,9 @@ import xml.etree.ElementTree as ET
 
 import pytest
 
-from qbot.research.data.csmar import binding, native, profiles
-from qbot.research.data.evidence import sha256
-from qbot.research.errors import DataQualityError
+from factorlab.data.csmar import binding, native, profiles
+from factorlab.data.evidence import sha256
+from factorlab.errors import DataQualityError
 from tests.research.test_csmar_source_binding import fixture, parse, xlsx
 
 

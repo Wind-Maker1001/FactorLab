@@ -7,14 +7,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from qbot.research.data.adjustment import AdjustmentAnchor, SourceAdjustmentContract, build_hfq
-from qbot.research.data.adjustment.contracts import AFFINE
-from qbot.research.data.corporate_actions import CorporateAction, EventCoverage, SourceSnapshot, select_events
-from qbot.research.data.evidence import snapshot_file, table_sha256
-from qbot.research.data.market_qualification import AdjustmentInput, QualificationInputs
-from qbot.research.data.schema import CANONICAL_BAR_COLUMNS
-from qbot.research.data.units import UnitContract
-from qbot.research.universe.identity import IdentitySnapshot, SecurityIdentity
+from factorlab.data.adjustment import AdjustmentAnchor, SourceAdjustmentContract, build_hfq
+from factorlab.data.adjustment.contracts import AFFINE
+from factorlab.data.corporate_actions import CorporateAction, EventCoverage, SourceSnapshot, select_events
+from factorlab.data.evidence import snapshot_file, table_sha256
+from factorlab.data.market_qualification import AdjustmentInput, QualificationInputs
+from factorlab.data.schema import CANONICAL_BAR_COLUMNS
+from factorlab.data.units import UnitContract
+from factorlab.universe.identity import IdentitySnapshot, SecurityIdentity
 
 
 def cutoffs(dates):
@@ -102,7 +102,7 @@ def qualification_inputs(tmp_path, periods=8):
                                   pd.DataFrame({"date": dates}), artifact, artifact, artifact,
                                   expected_member_count=1, synthetic_only=True,
                                   research_start=str(dates.min().date()), research_end=str(dates.max().date()))
-    from qbot.research.data.assemble import assemble_market_data
+    from factorlab.data.assemble import assemble_market_data
     result = build(source, snap, artifact)
     tables = assemble_market_data(source, {"fixture-security": result}, turnover, identity, units,
                                   source_version="synthetic-v1", signal_as_of=cutoffs(dates), benchmark=benchmark)

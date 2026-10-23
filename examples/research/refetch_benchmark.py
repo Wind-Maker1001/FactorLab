@@ -23,15 +23,15 @@ from typing import Any, Dict, Optional, Sequence
 
 import pandas as pd
 
-from qbot.research.cli import _benchmark_request_start, _select_benchmark_with_warmup
-from qbot.research.config import ResearchConfig, load_config
-from qbot.research.data.cache import ParquetBarCache
-from qbot.research.data.calendar import TradingCalendar
-from qbot.research.data.providers.akshare import AKShareProvider
-from qbot.research.data.providers.base import MarketDataProvider
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.errors import ConfigurationError, DataQualityError, FactorLabError
-from qbot.research.reproducibility import RunManifest, set_random_seed
+from factorlab.cli import _benchmark_request_start, _select_benchmark_with_warmup
+from factorlab.config import ResearchConfig, load_config
+from factorlab.data.cache import ParquetBarCache
+from factorlab.data.calendar import TradingCalendar
+from factorlab.data.providers.akshare import AKShareProvider
+from factorlab.data.providers.base import MarketDataProvider
+from factorlab.data.schema import canonicalize_bars
+from factorlab.errors import ConfigurationError, DataQualityError, FactorLabError
+from factorlab.reproducibility import RunManifest, set_random_seed
 
 
 LOGGER = logging.getLogger(__name__)

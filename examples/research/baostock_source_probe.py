@@ -30,9 +30,9 @@ import sys
 from typing import Any, Dict, Optional, Sequence, Tuple
 import zipfile
 
-from qbot.research.config import ResearchConfig, load_config
-from qbot.research.errors import ConfigurationError, DataQualityError, FactorLabError
-from qbot.research.reproducibility import RunManifest, set_random_seed
+from factorlab.config import ResearchConfig, load_config
+from factorlab.errors import ConfigurationError, DataQualityError, FactorLabError
+from factorlab.reproducibility import RunManifest, set_random_seed
 
 
 SDK_VERSION = "0.9.4"

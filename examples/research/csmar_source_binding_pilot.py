@@ -17,11 +17,11 @@ import sys
 
 import pandas as pd
 
-from qbot.research.data.csmar.binding import parser_sha256, reference, runtime
-from qbot.research.data.csmar.profiles import SOURCE_ID
-from qbot.research.data.evidence import SourceArtifact, json_bytes, sha256, utc_now
-from qbot.research.data.market_qualification import QualificationInputs, publish_qualification
-from qbot.research.universe.identity import IdentitySnapshot
+from factorlab.data.csmar.binding import parser_sha256, reference, runtime
+from factorlab.data.csmar.profiles import SOURCE_ID
+from factorlab.data.evidence import SourceArtifact, json_bytes, sha256, utc_now
+from factorlab.data.market_qualification import QualificationInputs, publish_qualification
+from factorlab.universe.identity import IdentitySnapshot
 
 
 def hash_file(path):
@@ -91,8 +91,8 @@ def main():
         ref_path.write_bytes(json_bytes(ref))
         kwargs = ["--source-root", str(args.source_root), "--scratch", str(scratch)]
         candidate = args.output / family / "candidate.json"
-        commands = [[sys.executable, "-B", "-m", "qbot.research.data.csmar", "build", str(ref_path), *kwargs, "--output", str(candidate.parent)],
-                    [sys.executable, "-B", "-m", "qbot.research.data.csmar", "verify", str(candidate), *kwargs]]
+        commands = [[sys.executable, "-B", "-m", "factorlab.data.csmar", "build", str(ref_path), *kwargs, "--output", str(candidate.parent)],
+                    [sys.executable, "-B", "-m", "factorlab.data.csmar", "verify", str(candidate), *kwargs]]
         runs = []
         for n, command in enumerate(commands):
             print(json.dumps({"family": family, "step": "build" if n == 0 else "independent_verify", "status": "STARTED"}), flush=True)
@@ -138,7 +138,7 @@ def main():
     # isolated pilot directory only; LocalParquetProvider refuses its admission.
     qualification = publish_qualification(inputs, keys, dates, stocks=raw, benchmark=benchmark_raw,
                                           output_root=args.output / "partial-qualification")
-    from qbot.research.data.market_qualification import QualificationReport
+    from factorlab.data.market_qualification import QualificationReport
     report = QualificationReport(**json.loads(qualification.read_bytes())["report"])
     if report.stages["RAW"] != "PASS" or report.formal_admission or report.execution_admission:
         raise RuntimeError("unexpected qualification boundary result")

@@ -7,16 +7,16 @@ import pandas as pd
 import numpy as np
 import pytest
 
-import qbot.research.universe.status as status_module
-from qbot.research.errors import SecurityStatusDataError
-from qbot.research.universe.status import (
+import factorlab.universe.status as status_module
+from factorlab.errors import SecurityStatusDataError
+from factorlab.universe.status import (
     BAOSTOCK_SECURITY_SOURCE_VERSION,
     import_security_data,
     load_verified_security_data,
     publish_security_data,
     validate_security_data,
 )
-from qbot.research.universe.csi500 import dataframe_sha256, validate_daily_membership
+from factorlab.universe.csi500 import dataframe_sha256, validate_daily_membership
 
 
 def _universe_sha256(membership):

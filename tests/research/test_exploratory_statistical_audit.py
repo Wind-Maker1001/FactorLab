@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.contract import ExploratoryContractError, sha256_file
-from qbot.research.exploratory.statistical_audit.statistics import (
+from factorlab.exploratory.contract import ExploratoryContractError, sha256_file
+from factorlab.exploratory.statistical_audit.statistics import (
     bootstrap_summary,
     contrast,
     hac_fit,
@@ -19,9 +19,9 @@ from qbot.research.exploratory.statistical_audit.statistics import (
     run_count,
     sample_means,
 )
-from qbot.research.exploratory.statistical_audit.quintiles import compare_quintiles
-from qbot.research.exploratory.statistical_audit.inputs import load_frozen
-from qbot.research.exploratory.statistical_audit.delivery import (
+from factorlab.exploratory.statistical_audit.quintiles import compare_quintiles
+from factorlab.exploratory.statistical_audit.inputs import load_frozen
+from factorlab.exploratory.statistical_audit.delivery import (
     MARKERS,
     PUBLIC_FILES,
     identity,
@@ -29,8 +29,8 @@ from qbot.research.exploratory.statistical_audit.delivery import (
     verify_audit,
     write_receipt,
 )
-from qbot.research.exploratory.statistical_audit.__main__ import run
-from qbot.research.metrics.factor import evaluate_factors
+from factorlab.exploratory.statistical_audit.__main__ import run
+from factorlab.metrics.factor import evaluate_factors
 
 
 def test_hac_against_independent_bartlett_loop_and_missing_calendar_positions():
@@ -288,9 +288,9 @@ def test_audit_cannot_be_promoted_even_with_recomputed_semantic_hash(tmp_path, u
 
 
 def test_existing_formal_and_forward_readers_reject_audit_receipt(tmp_path):
-    from qbot.research.data.market_qualification import load_qualification
-    from qbot.research.errors import DataQualityError
-    from qbot.research.forward.signal_recorder import (
+    from factorlab.data.market_qualification import load_qualification
+    from factorlab.errors import DataQualityError
+    from factorlab.forward.signal_recorder import (
         load_signal_record,
         SignalValidationError,
     )
@@ -330,7 +330,7 @@ def test_public_quintile_diagnostic_omits_enumerable_bucket_commitments():
 def test_old_bucket_hash_column_is_rejected_even_with_valid_artifact_hash(
     tmp_path, private_column
 ):
-    from qbot.research.exploratory.statistical_audit.schemas import CSV_COLUMNS
+    from factorlab.exploratory.statistical_audit.schemas import CSV_COLUMNS
 
     root = private_package(tmp_path)
     columns = CSV_COLUMNS["quintile_daily.csv"] + [private_column]
@@ -364,7 +364,7 @@ def test_code_version_failure_produces_blocked_not_an_unhandled_exception(
     tmp_path, monkeypatch
 ):
     import subprocess
-    from qbot.research.exploratory.statistical_audit import __main__ as audit_main
+    from factorlab.exploratory.statistical_audit import __main__ as audit_main
 
     def fail():
         raise subprocess.CalledProcessError(1, ["git", "merge-base"])
@@ -405,8 +405,8 @@ def test_frozen_lineage_failure_is_rejected_before_replay(
     tmp_path, monkeypatch, failure
 ):
     from copy import deepcopy
-    from qbot.research.exploratory.statistical_audit import inputs
-    from qbot.research.exploratory.statistical_audit import __main__ as audit_main
+    from factorlab.exploratory.statistical_audit import inputs
+    from factorlab.exploratory.statistical_audit import __main__ as audit_main
 
     private = tmp_path / "private"
     private.mkdir()

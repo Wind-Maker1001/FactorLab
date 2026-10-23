@@ -24,19 +24,19 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 
-from qbot.research.config.models import (
+from factorlab.config.models import (
     DataConfig, PathsConfig, ProjectConfig, ResearchConfig, UniverseConfig,
 )
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.forward.evaluation import evaluate_forward_predictions
-from qbot.research.forward.evidence import FIRST_ON_TIME, select_forward_prediction_records
-from qbot.research.forward.integrity import assert_no_link_components
-from qbot.research.forward.signal_recorder import SignalRecorder, finalize_signal_record
-from qbot.research.reports.forward import (
+from factorlab.data.schema import canonicalize_bars
+from factorlab.forward.evaluation import evaluate_forward_predictions
+from factorlab.forward.evidence import FIRST_ON_TIME, select_forward_prediction_records
+from factorlab.forward.integrity import assert_no_link_components
+from factorlab.forward.signal_recorder import SignalRecorder, finalize_signal_record
+from factorlab.reports.forward import (
     finalize_forward_evaluation_report, load_forward_evaluation_report,
     write_forward_evaluation_report,
 )
-from qbot.research.reproducibility import RunManifest, set_random_seed
+from factorlab.reproducibility import RunManifest, set_random_seed
 
 
 LOGGER = logging.getLogger(__name__)

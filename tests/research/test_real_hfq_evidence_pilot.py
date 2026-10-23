@@ -35,8 +35,8 @@ def test_synthetic_bytes_replay_without_network_or_production_writes(monkeypatch
     def forbidden(*args, **kwargs):
         raise AssertionError("offline pilot attempted production/network work")
     monkeypatch.setattr(socket.socket, "connect", forbidden)
-    from qbot.research.data.cache import ParquetBarCache
-    from qbot.research.data.adjustment import engine
+    from factorlab.data.cache import ParquetBarCache
+    from factorlab.data.adjustment import engine
     monkeypatch.setattr(ParquetBarCache, "update", forbidden)
     monkeypatch.setattr(engine, "build_hfq", forbidden)
     result = pilot.replay(evidence)
@@ -147,8 +147,8 @@ def test_notice_review_cannot_bind_another_document(tmp_path, evidence):
 
 
 def test_windows_receipt_path_replays_portably_and_traversal_is_refused(evidence):
-    from qbot.research.data.evidence import sha256
-    from qbot.research.data.tdx import TdxError
+    from factorlab.data.evidence import sha256
+    from factorlab.data.tdx import TdxError
     content = (evidence / "sources/tencent-hfq.bin").read_bytes()
     assert pilot.read_bound(evidence, "sources\\tencent-hfq.bin", sha256(content)) == content
     with pytest.raises(TdxError):
@@ -227,7 +227,7 @@ def test_acquisition_ids_are_unique_and_closed_before_replay(tmp_path, evidence,
 
 @pytest.mark.parametrize("mutation", ["synthetic_locator", "real_locator", "wrapper"])
 def test_sina_foreign_symbol_never_enters_pilot_step(tmp_path, evidence, mutation):
-    from qbot.research.data.evidence import sha256
+    from factorlab.data.evidence import sha256
     root = tmp_path / "evidence"
     shutil.copytree(evidence, root)
     path = root / "acquisition.json"
@@ -281,7 +281,7 @@ def test_real_origin_request_is_bound_before_vendor_labels(tmp_path, evidence, i
 
 
 def test_different_factor_step_is_observed_without_claiming_agreement(tmp_path, evidence):
-    from qbot.research.data.evidence import sha256
+    from factorlab.data.evidence import sha256
     root = tmp_path / "evidence"
     shutil.copytree(evidence, root)
     content = b'var sh600000hfq={"total":2,"data":[{"d":"2024-07-18","f":"2"},{"d":"2025-07-16","f":"2"}]};'

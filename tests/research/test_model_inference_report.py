@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.metrics.robustness import RobustnessOptions, evaluate_model_robustness
-from qbot.research.reports.model import ModelReportError, write_model_comparison_report
+from factorlab.metrics.robustness import RobustnessOptions, evaluate_model_robustness
+from factorlab.reports.model import ModelReportError, write_model_comparison_report
 
 
 @pytest.fixture

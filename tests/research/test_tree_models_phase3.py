@@ -6,11 +6,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.models import (
+from factorlab.models import (
     LightGBMResearchModel,
     XGBoostResearchModel,
 )
-from qbot.research.validation import (
+from factorlab.validation import (
     ExpandingWalkForwardSplitter,
     WalkForwardRunError,
     WalkForwardRunner,

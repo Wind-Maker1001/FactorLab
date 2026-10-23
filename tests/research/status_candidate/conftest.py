@@ -2,7 +2,7 @@
 from pathlib import Path
 import json
 import pytest
-from qbot.research.universe.status_candidate.ingest import sha256
+from factorlab.universe.status_candidate.ingest import sha256
 ROOT=Path(__file__).resolve().parent
 def write_json(path,obj):
     path.write_text(json.dumps(obj,sort_keys=True,ensure_ascii=False),encoding="utf-8")

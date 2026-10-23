@@ -3,8 +3,8 @@
 import argparse
 from pathlib import Path
 
-from qbot.research.data.tdx import TdxError
-from qbot.research.data.tdx_staging import run_audit
+from factorlab.data.tdx import TdxError
+from factorlab.data.tdx_staging import run_audit
 
 
 def main(argv=None):

@@ -9,13 +9,13 @@ import json
 
 import pytest
 
-from qbot.research import cli
-from qbot.research.data.download_status import (
+from factorlab import cli
+from factorlab.data.download_status import (
     assert_no_unresolved,
     list_unresolved,
 )
-from qbot.research.errors import DataQualityError
-from qbot.research.reproducibility import RunManifest
+from factorlab.errors import DataQualityError
+from factorlab.reproducibility import RunManifest
 from tests.research.test_cli_download_contract import (
     SYMBOLS,
     _seed_complete_cache,

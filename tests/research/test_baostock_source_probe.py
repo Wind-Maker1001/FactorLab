@@ -14,12 +14,12 @@ import zipfile
 import pytest
 
 from examples.research import baostock_source_probe as probe
-from qbot.research.config import (
+from factorlab.config import (
     DataConfig, PathsConfig, ProjectConfig, ResearchConfig, UniverseConfig,
     discover_repository_root,
 )
-from qbot.research.errors import ConfigurationError, DataQualityError
-from qbot.research.reproducibility import validate_provenance
+from factorlab.errors import ConfigurationError, DataQualityError
+from factorlab.reproducibility import validate_provenance
 
 
 @pytest.fixture

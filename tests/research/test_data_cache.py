@@ -3,9 +3,9 @@ import json
 import pandas as pd
 import pytest
 
-from qbot.research.data.cache import ParquetBarCache
-from qbot.research.data.schema import canonicalize_bars, empty_bars
-from qbot.research.errors import CacheError
+from factorlab.data.cache import ParquetBarCache
+from factorlab.data.schema import canonicalize_bars, empty_bars
+from factorlab.errors import CacheError
 
 
 def _bars(dates, closes=None):

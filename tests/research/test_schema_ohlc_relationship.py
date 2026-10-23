@@ -3,8 +3,8 @@
 import pandas as pd
 import pytest
 
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.errors import SchemaError
+from factorlab.data.schema import canonicalize_bars
+from factorlab.errors import SchemaError
 
 
 def _bar(high, low):

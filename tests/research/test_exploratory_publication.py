@@ -9,9 +9,9 @@ import json
 
 import pytest
 
-from qbot.research.exploratory.contract import ExploratoryContractError, sha256_file
-from qbot.research.exploratory.publication import publish_derived, verify_publication
-from qbot.research.exploratory.runner import run_research, verify_receipt
+from factorlab.exploratory.contract import ExploratoryContractError, sha256_file
+from factorlab.exploratory.publication import publish_derived, verify_publication
+from factorlab.exploratory.runner import run_research, verify_receipt
 
 
 def write_receipt(path, payload):

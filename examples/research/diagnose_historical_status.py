@@ -4,8 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from qbot.research.data.evidence import SourceArtifact
-from qbot.research.universe.historical_status import HistoricalStatus
+from factorlab.data.evidence import SourceArtifact
+from factorlab.universe.historical_status import HistoricalStatus
 
 
 def main():

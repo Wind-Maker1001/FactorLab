@@ -9,8 +9,8 @@ import urllib.error
 import pytest
 
 from examples.research import download_cached_notice_attachments as example
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.universe.official_sources import OfficialNoticeSource
+from factorlab.config import PathsConfig, load_config
+from factorlab.universe.official_sources import OfficialNoticeSource
 from tests.research.test_official_sources import detail, Response
 
 

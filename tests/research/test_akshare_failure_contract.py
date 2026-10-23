@@ -11,8 +11,8 @@ import pytest
 import requests
 import urllib3
 
-from qbot.research.data.providers.akshare import AKShareProvider
-from qbot.research.errors import (
+from factorlab.data.providers.akshare import AKShareProvider
+from factorlab.errors import (
     CacheError,
     DataQualityError,
     ProviderError,

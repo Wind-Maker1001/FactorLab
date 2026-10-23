@@ -9,7 +9,7 @@ Run from the repository root::
     python -m examples.research.phase4_synthetic_demo \
         --output results/examples/phase4_synthetic
 
-The program calls only the low-level :mod:`qbot.research.forward` APIs.  It
+The program calls only the low-level :mod:`factorlab.forward` APIs.  It
 does not invoke the research CLI, a PIT store, a data vendor, a broker, or the
 network.  To preserve any prior artifacts, an existing non-empty output
 directory is rejected and is never deleted or cleaned automatically.
@@ -29,7 +29,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 
-from qbot.research.forward import (
+from factorlab.forward import (
     SignalRecord,
     SignalRecorder,
     classify_forward_timing,

@@ -7,13 +7,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.metrics.prediction import evaluate_predictions
-from qbot.research.models.factor_score import FactorScoreModel
-from qbot.research.models.lightgbm import LightGBMResearchModel
-from qbot.research.models.ridge import RidgeResearchModel
-from qbot.research.models.xgboost import XGBoostResearchModel
-from qbot.research.validation import ExpandingWalkForwardSplitter
-from qbot.research.validation import walk_forward as wf
+from factorlab.metrics.prediction import evaluate_predictions
+from factorlab.models.factor_score import FactorScoreModel
+from factorlab.models.lightgbm import LightGBMResearchModel
+from factorlab.models.ridge import RidgeResearchModel
+from factorlab.models.xgboost import XGBoostResearchModel
+from factorlab.validation import ExpandingWalkForwardSplitter
+from factorlab.validation import walk_forward as wf
 
 
 def _dataset():

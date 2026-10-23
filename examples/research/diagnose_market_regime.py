@@ -14,12 +14,12 @@ import uuid
 import numpy as np
 import pandas as pd
 
-from qbot.research.config import load_config
-from qbot.research.data.cache import ParquetBarCache
-from qbot.research.diagnostics.market_regime import DISCLAIMER, diagnose_market_regime
-from qbot.research.errors import ConfigurationError, DataQualityError
-from qbot.research.reports.market_regime import write_market_regime_report
-from qbot.research.reproducibility import _atomic_json, git_commit, git_worktree_state, package_versions
+from factorlab.config import load_config
+from factorlab.data.cache import ParquetBarCache
+from factorlab.diagnostics.market_regime import DISCLAIMER, diagnose_market_regime
+from factorlab.errors import ConfigurationError, DataQualityError
+from factorlab.reports.market_regime import write_market_regime_report
+from factorlab.reproducibility import _atomic_json, git_commit, git_worktree_state, package_versions
 
 
 def _sha256(path: Path) -> str:

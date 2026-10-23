@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research import cli
-from qbot.research.config import (
+from factorlab import cli
+from factorlab.config import (
     DataConfig,
     EvaluationConfig,
     ForwardConfig,
@@ -23,11 +23,11 @@ from qbot.research.config import (
     RidgeConfig,
     UniverseConfig,
 )
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.errors import FactorLabError
-from qbot.research.forward import load_model_bundle, load_prediction_record
-import qbot.research.forward.activation as activation_module
-import qbot.research.forward.model_bundle as model_bundle_module
+from factorlab.data.schema import canonicalize_bars
+from factorlab.errors import FactorLabError
+from factorlab.forward import load_model_bundle, load_prediction_record
+import factorlab.forward.activation as activation_module
+import factorlab.forward.model_bundle as model_bundle_module
 
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")

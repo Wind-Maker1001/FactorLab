@@ -5,14 +5,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import qbot.research.exploratory.market_structure.diagnostics as module
-from qbot.research.exploratory.market_structure.contracts import ContractError
-from qbot.research.exploratory.market_structure.diagnostics import (
+import factorlab.exploratory.market_structure.diagnostics as module
+from factorlab.exploratory.market_structure.contracts import ContractError
+from factorlab.exploratory.market_structure.diagnostics import (
     RedundancyPolicy,
     diagnose_features,
     structural_diagnostics,
 )
-from qbot.research.exploratory.market_structure.registry import (
+from factorlab.exploratory.market_structure.registry import (
     MarketStructureRegistry,
     build_default_registry,
 )

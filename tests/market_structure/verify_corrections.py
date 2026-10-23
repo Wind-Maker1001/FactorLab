@@ -12,8 +12,8 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import pandas as pd
 
-from qbot.research.exploratory.market_structure.contracts import MARKERS, json_bytes
-from qbot.research.exploratory.market_structure.runner import verify_receipt
+from factorlab.exploratory.market_structure.contracts import MARKERS, json_bytes
+from factorlab.exploratory.market_structure.runner import verify_receipt
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEWED = "b30256dd9e24c3db99be5d63d4b3b4d9113b0872"

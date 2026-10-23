@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.labels.forward_return import build_forward_excess_return_labels
+from factorlab.labels.forward_return import build_forward_excess_return_labels
 
 
 def _label_inputs(periods=10):

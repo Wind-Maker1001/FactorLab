@@ -8,8 +8,8 @@ import urllib.error
 
 import pytest
 
-from qbot.research.errors import CacheError, ProviderError, ProviderNetworkError
-from qbot.research.universe.official_sources import OfficialAccessDeniedError, OfficialNoticeSource
+from factorlab.errors import CacheError, ProviderError, ProviderNetworkError
+from factorlab.universe.official_sources import OfficialAccessDeniedError, OfficialNoticeSource
 
 
 class Response(io.BytesIO):

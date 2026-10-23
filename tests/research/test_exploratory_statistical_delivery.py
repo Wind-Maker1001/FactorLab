@@ -5,13 +5,13 @@ from pathlib import Path
 import pandas as pd
 from PIL import Image
 
-from qbot.research.exploratory.statistical_audit.delivery import (
+from factorlab.exploratory.statistical_audit.delivery import (
     MARKERS,
     PUBLIC_FILES,
     verify_audit,
 )
-from qbot.research.exploratory.statistical_audit.inputs import DATA_VERSION
-from qbot.research.exploratory.runner import FACTOR_NAMES
+from factorlab.exploratory.statistical_audit.inputs import DATA_VERSION
+from factorlab.exploratory.runner import FACTOR_NAMES
 
 
 EVIDENCE = (

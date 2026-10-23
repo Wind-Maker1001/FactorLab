@@ -6,12 +6,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.market_structure.diagnostics import (
+from factorlab.exploratory.market_structure.diagnostics import (
     RedundancyPolicy,
     diagnose_features,
 )
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.store import AsOfStore
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.store import AsOfStore
 from tests.market_structure.test_diagnostics import panel
 
 

@@ -8,13 +8,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research import cli
-from qbot.research.config import (
+from factorlab import cli
+from factorlab.config import (
     DataConfig, EvaluationConfig, MarketRegimeConfig, PortfolioConfig,
     ProjectConfig, ResearchConfig, UniverseConfig,
 )
-from qbot.research.errors import FactorLabError
-from qbot.research.metrics import evaluate_predictions
+from factorlab.errors import FactorLabError
+from factorlab.metrics import evaluate_predictions
 
 
 @pytest.fixture

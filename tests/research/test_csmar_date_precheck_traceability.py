@@ -5,8 +5,8 @@ import re
 
 import pytest
 
-from qbot.research.data.csmar import binding, profiles
-from qbot.research.errors import DataQualityError
+from factorlab.data.csmar import binding, profiles
+from factorlab.errors import DataQualityError
 from tests.research.test_csmar_rejection_coordinates import assert_location, original_fixture
 from tests.research.test_csmar_source_binding import fixture, parse
 

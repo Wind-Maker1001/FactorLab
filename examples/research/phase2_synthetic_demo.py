@@ -23,14 +23,14 @@ import uuid
 import numpy as np
 import pandas as pd
 
-from qbot.research.backtest import FastBacktestConfig, FeeSchedule, run_fast_backtest
-from qbot.research.metrics import calculate_portfolio_metrics, evaluate_predictions
-from qbot.research.reports import (
+from factorlab.backtest import FastBacktestConfig, FeeSchedule, run_fast_backtest
+from factorlab.metrics import calculate_portfolio_metrics, evaluate_predictions
+from factorlab.reports import (
     write_model_comparison_report,
     write_model_report,
 )
-from qbot.research.reproducibility import set_random_seed
-from qbot.research.validation import ExpandingWalkForwardSplitter, WalkForwardRunner
+from factorlab.reproducibility import set_random_seed
+from factorlab.validation import ExpandingWalkForwardSplitter, WalkForwardRunner
 
 
 WARNING = "SYNTHETIC SOFTWARE DEMO ONLY - NOT A RESEARCH RESULT"

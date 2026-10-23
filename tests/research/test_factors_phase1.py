@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.factors.preprocess import preprocess_cross_sections
-from qbot.research.factors.registry import FACTOR_REGISTRY, compute_factors
+from factorlab.factors.preprocess import preprocess_cross_sections
+from factorlab.factors.registry import FACTOR_REGISTRY, compute_factors
 
 
 FACTOR_NAMES = [

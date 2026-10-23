@@ -130,14 +130,14 @@ s=importlib.util.spec_from_file_location('isolated_controller',r/'.github/script
 m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 c=m.load_security_revision(r);v=c.validate_preservation(r);c.load_revision(r)
 assert len(v['source_closure'])==35 and not v['financial_recertification']
-from qbot.research.data.admission import assert_formal_market_admission
-from qbot.research.data.evidence import sha256
-from qbot.research.data.market_qualification import load_qualification,publish_qualification
-from qbot.research.data.providers.base import MarketQualificationEvidence
-from qbot.research.errors import ProviderError
+from factorlab.data.admission import assert_formal_market_admission
+from factorlab.data.evidence import sha256
+from factorlab.data.market_qualification import load_qualification,publish_qualification
+from factorlab.data.providers.base import MarketQualificationEvidence
+from factorlab.errors import ProviderError
 from tests.research.market_data_fixture import qualification_inputs
-import qbot.research,tests.research.market_data_fixture
-assert Path(qbot.research.__file__).resolve().is_relative_to(r)
+import factorlab,tests.research.market_data_fixture
+assert Path(factorlab.__file__).resolve().is_relative_to(r)
 assert Path(tests.research.market_data_fixture.__file__).resolve().is_relative_to(r)
 from examples.research.review_yhh30m_release import review
 publication=review(r,c.LEGACY)

@@ -11,9 +11,9 @@ from zipfile import ZipFile
 import pytest
 
 from examples.research import review_cached_workbook_notices as example
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.errors import ProviderError
-from qbot.research.universe.official_sources import OfficialNoticeSource
+from factorlab.config import PathsConfig, load_config
+from factorlab.errors import ProviderError
+from factorlab.universe.official_sources import OfficialNoticeSource
 from tests.research.test_notice_workbook import OTHER, sheet
 from tests.research.test_official_sources import Response, detail
 

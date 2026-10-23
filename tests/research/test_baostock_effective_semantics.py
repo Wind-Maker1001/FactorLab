@@ -6,8 +6,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from qbot.research.errors import PointInTimeUniverseError
-from qbot.research.universe import csi500
+from factorlab.errors import PointInTimeUniverseError
+from factorlab.universe import csi500
 
 
 QUERY_DATE = pd.Timestamp("2024-01-02")

@@ -15,16 +15,16 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
-from qbot.research.data.providers.local import _strict_bars
-from qbot.research.data.providers.base import MarketDataProvider
-from qbot.research.errors import ProviderError
-from qbot.engineering.yhh30m import CONTRACT, SCHEMA, IntradayDataError, IntradayParquetProvider
-from qbot.engineering.yhh30m.__main__ import main
-from qbot.engineering.yhh30m.contract import FLAGS, RAW_COLUMNS, json_bytes
-from qbot.engineering.yhh30m.conversion import convert
-from qbot.engineering.yhh30m.normalize import DayValidator
-from qbot.engineering.yhh30m.source import file_sha, load_inventory
-from qbot.engineering.yhh30m.storage import verify_partition, writer_lock
+from factorlab.data.providers.local import _strict_bars
+from factorlab.data.providers.base import MarketDataProvider
+from factorlab.errors import ProviderError
+from factorlab.engineering.yhh30m import CONTRACT, SCHEMA, IntradayDataError, IntradayParquetProvider
+from factorlab.engineering.yhh30m.__main__ import main
+from factorlab.engineering.yhh30m.contract import FLAGS, RAW_COLUMNS, json_bytes
+from factorlab.engineering.yhh30m.conversion import convert
+from factorlab.engineering.yhh30m.normalize import DayValidator
+from factorlab.engineering.yhh30m.source import file_sha, load_inventory
+from factorlab.engineering.yhh30m.storage import verify_partition, writer_lock
 
 
 def raw_rows(day, *, anomalies=False):
@@ -206,7 +206,7 @@ def test_corrupt_publication_rejected_on_read_or_resume(tmp_path, target):
 
 
 def test_atomic_failure_and_resume_reuses_completed_month(tmp_path, monkeypatch):
-    import qbot.engineering.yhh30m.conversion as module
+    import factorlab.engineering.yhh30m.conversion as module
     source, audit = fixture_bundle(tmp_path)
     original = module.convert_source
     def fail_on_second_month(source, item, *args):
@@ -305,7 +305,7 @@ def test_price_anomalies_flagged_and_symbol_normalization_preserves_vendor(tmp_p
 
 
 def test_atomic_rename_failure_never_exposes_unverified_partition(tmp_path, monkeypatch):
-    import qbot.engineering.yhh30m.conversion as module
+    import factorlab.engineering.yhh30m.conversion as module
     source, audit = fixture_bundle(tmp_path)
     out = tmp_path / "out"
     def fail_publish(*args):
@@ -322,7 +322,7 @@ def test_os_lock_releases_after_abrupt_process_exit(tmp_path):
     out = tmp_path / "lock"
     out.mkdir()
     script = ("from pathlib import Path; import os; "
-              "from qbot.engineering.yhh30m.storage import writer_lock; "
+              "from factorlab.engineering.yhh30m.storage import writer_lock; "
               "guard=writer_lock(Path(os.environ['YHH_TEST_LOCK_ROOT'])); "
               "guard.__enter__(); os._exit(0)")
     import os

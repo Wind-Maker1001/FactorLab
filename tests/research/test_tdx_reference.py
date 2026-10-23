@@ -8,8 +8,8 @@ import pandas as pd
 import pytest
 
 from examples.research.verify_tdx_samples import REFERENCE_COLUMNS, compare_samples
-from qbot.research.data.tdx import TdxError
-from qbot.research.data.tdx_staging import run_audit
+from factorlab.data.tdx import TdxError
+from factorlab.data.tdx_staging import run_audit
 
 
 @pytest.fixture

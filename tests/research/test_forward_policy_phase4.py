@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from qbot.research.forward.policy import (
+from factorlab.forward.policy import (
     ForwardTimingError,
     classify_forward_timing,
 )

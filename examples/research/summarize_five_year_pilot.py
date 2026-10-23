@@ -11,10 +11,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from qbot.research.data.tdx import audit_day, safe_path
-from qbot.research.data.tdx_staging import write_new
-from qbot.research.exploratory.contract import sha256_file
-from qbot.research.exploratory.five_year import verify_pilot
+from factorlab.data.tdx import audit_day, safe_path
+from factorlab.data.tdx_staging import write_new
+from factorlab.exploratory.contract import sha256_file
+from factorlab.exploratory.five_year import verify_pilot
 from examples.research.five_year_supplier_probe import response_rows
 
 

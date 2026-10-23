@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.universe.csi500 import validate_daily_membership
+from factorlab.data.schema import canonicalize_bars
+from factorlab.universe.csi500 import validate_daily_membership
 
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "research"

@@ -5,9 +5,9 @@ from dataclasses import replace
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.market_structure.contracts import ContractError, instant
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.store import AsOfStore
+from factorlab.exploratory.market_structure.contracts import ContractError, instant
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.store import AsOfStore
 
 
 @pytest.mark.parametrize("value", [1, False, "", " ", ["id"], {"id": 1}])

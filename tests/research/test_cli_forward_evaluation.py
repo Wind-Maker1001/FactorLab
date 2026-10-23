@@ -11,19 +11,19 @@ import pytest
 
 pytestmark = pytest.mark.usefixtures("synthetic_cli_admission")
 
-from qbot.research import cli
-from qbot.research.config import (
+from factorlab import cli
+from factorlab.config import (
     DataConfig, EvaluationConfig, ForwardConfig, PathsConfig,
     PortfolioConfig, ProjectConfig, ResearchConfig, UniverseConfig,
 )
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.errors import FactorLabError
-from qbot.research.forward.signal_recorder import SignalRecorder, finalize_signal_record
-from qbot.research.reports.forward import (
+from factorlab.data.schema import canonicalize_bars
+from factorlab.errors import FactorLabError
+from factorlab.forward.signal_recorder import SignalRecorder, finalize_signal_record
+from factorlab.reports.forward import (
     ForwardEvaluationReportError, finalize_forward_evaluation_report,
     load_forward_evaluation_report,
 )
-from qbot.research.reproducibility import RunManifest
+from factorlab.reproducibility import RunManifest
 
 
 DAY = date(2026, 9, 24)
@@ -268,7 +268,7 @@ def test_main_records_dates_and_finalizes_only_successful_evaluation(context, mo
 def test_main_marks_failed_report_finalization_without_formal_receipt(context, monkeypatch):
     config, _ = context
     monkeypatch.setattr(cli, "load_config", lambda *args: config)
-    import qbot.research.reports.forward as report_module
+    import factorlab.reports.forward as report_module
     monkeypatch.setattr(report_module, "finalize_forward_evaluation_report",
                         lambda *args: (_ for _ in ()).throw(OSError("synthetic completion disk failure")))
     assert cli.main(["evaluate-forward", "--config", "synthetic.yaml", "--as-of", "2026-10-09"]) == 1

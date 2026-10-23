@@ -3,9 +3,9 @@
 import pandas as pd
 import pytest
 
-from qbot.research.dataset.builder import DatasetBuildOptions, DatasetBuilder
-from qbot.research.errors import SchemaError
-from qbot.research.universe.filters import UniverseFilterConfig
+from factorlab.dataset.builder import DatasetBuildOptions, DatasetBuilder
+from factorlab.errors import SchemaError
+from factorlab.universe.filters import UniverseFilterConfig
 
 
 def _dataset_inputs(periods=10):

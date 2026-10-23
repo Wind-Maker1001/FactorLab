@@ -2,12 +2,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.data.calendar import (
+from factorlab.data.calendar import (
     SchemaError,
     TradingCalendar,
     reindex_bars_to_calendar,
 )
-from qbot.research.data.schema import canonicalize_bars
+from factorlab.data.schema import canonicalize_bars
 
 
 def _bars(dates):

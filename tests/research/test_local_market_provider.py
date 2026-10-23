@@ -11,14 +11,14 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from qbot.research.data.providers import local
-from qbot.research.data.providers.local import (
+from factorlab.data.providers import local
+from factorlab.data.providers.local import (
     LOCAL_MARKET_CONTRACTS,
     LocalParquetProvider,
     publish_local_market_data,
 )
-from qbot.research.data.schema import CANONICAL_BAR_COLUMNS, NUMERIC_BAR_COLUMNS
-from qbot.research.errors import PointInTimeUniverseRequiredError, ProviderError
+from factorlab.data.schema import CANONICAL_BAR_COLUMNS, NUMERIC_BAR_COLUMNS
+from factorlab.errors import PointInTimeUniverseRequiredError, ProviderError
 
 
 def _bars(symbol, dates, multiplier=1.0):

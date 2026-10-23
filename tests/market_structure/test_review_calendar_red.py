@@ -4,10 +4,10 @@ from dataclasses import replace
 
 import pytest
 
-from qbot.research.exploratory.market_structure.contracts import ContractError
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.store import AsOfStore, window_requests
-from qbot.research.exploratory.market_structure.synthetic import make_synthetic_data
+from factorlab.exploratory.market_structure.contracts import ContractError
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.store import AsOfStore, window_requests
+from factorlab.exploratory.market_structure.synthetic import make_synthetic_data
 
 
 def test_group_string_cannot_prove_complete_empty_taxonomy(manual):

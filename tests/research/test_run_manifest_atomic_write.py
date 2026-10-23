@@ -10,10 +10,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from qbot.research.config import (
+from factorlab.config import (
     DataConfig, PathsConfig, ProjectConfig, ResearchConfig, UniverseConfig,
 )
-import qbot.research.reproducibility as reproducibility
+import factorlab.reproducibility as reproducibility
 
 
 def _windows_error(code):

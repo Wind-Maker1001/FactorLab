@@ -11,10 +11,10 @@ import sys
 import pandas as pd
 import pytest
 
-import qbot.research
-from qbot.research.data.csmar import binding, fingerprint
-from qbot.research.data.evidence import json_bytes, sha256
-from qbot.research.errors import DataQualityError
+import factorlab
+from factorlab.data.csmar import binding, fingerprint
+from factorlab.data.evidence import json_bytes, sha256
+from factorlab.errors import DataQualityError
 from tests.research.test_csmar_source_binding import fixture, parse
 
 
@@ -121,14 +121,14 @@ DEPENDENCIES = sorted({entry["path"] for role in ("parser", "qualification")
 
 @pytest.mark.parametrize("path", DEPENDENCIES)
 def test_each_executable_dependency_and_config_change_invalidates_old_identity(tmp_path, monkeypatch, path):
-    root = Path(qbot.research.__file__).resolve().parents[2]
+    root = Path(factorlab.__file__).resolve().parents[2]
     clone = tmp_path / "clone"
     for name in DEPENDENCIES:
         target = clone / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / name, target)
     ref, _ = fixture(tmp_path / "sources")
-    monkeypatch.setattr(qbot.research, "__file__", str(clone / "qbot/research/__init__.py"))
+    monkeypatch.setattr(factorlab, "__file__", str(clone / "qbot/research/__init__.py"))
     monkeypatch.setattr(fingerprint, "__file__", str(clone / "qbot/research/data/csmar/fingerprint.py"))
     old = {role: sha256(json_bytes(fingerprint.implementation_manifest(role))) for role in ("parser", "qualification")}
     assert old["parser"] == ref["parser_sha256"]

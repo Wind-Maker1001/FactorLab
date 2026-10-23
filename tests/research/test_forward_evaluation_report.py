@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.reports import forward as report
+from factorlab.reports import forward as report
 
 
 def test_forward_date_plots_use_readable_rotated_ticks(monkeypatch):

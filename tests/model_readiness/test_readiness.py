@@ -6,13 +6,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.diagnostics.model_readiness.checks import assert_folds, statistical_probes
-from qbot.research.diagnostics.model_readiness.profiling import Recorder
-from qbot.research.diagnostics.model_readiness.runner import run_acceptance
-from qbot.research.diagnostics.model_readiness.synthetic import (
+from factorlab.diagnostics.model_readiness.checks import assert_folds, statistical_probes
+from factorlab.diagnostics.model_readiness.profiling import Recorder
+from factorlab.diagnostics.model_readiness.runner import run_acceptance
+from factorlab.diagnostics.model_readiness.synthetic import (
     MODELS, TARGET, build_dataset, generate_inputs,
 )
-from qbot.research.metrics.robustness import RobustnessOptions, evaluate_model_robustness
+from factorlab.metrics.robustness import RobustnessOptions, evaluate_model_robustness
 
 
 @pytest.fixture(scope="module")

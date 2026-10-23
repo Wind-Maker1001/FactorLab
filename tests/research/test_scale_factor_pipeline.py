@@ -10,9 +10,9 @@ import pandas as pd
 import pytest
 
 from examples.research import scale_factor_pipeline as example
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.data.schema import validate_bars
-from qbot.research.errors import ConfigurationError
+from factorlab.config import PathsConfig, load_config
+from factorlab.data.schema import validate_bars
+from factorlab.errors import ConfigurationError
 
 
 @pytest.fixture

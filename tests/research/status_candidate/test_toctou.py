@@ -4,11 +4,11 @@ from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 import pytest
-import qbot.research.universe.status_candidate.adapter as adapter_module
-import qbot.research.universe.status_candidate.ingest as ingest
-from qbot.research.universe.status_candidate import Adapter,EvidenceError,CertificationRejected,require_claim
-from qbot.research.universe.status_candidate.__main__ import run
-from qbot.research.universe.status_candidate.ingest import sha256
+import factorlab.universe.status_candidate.adapter as adapter_module
+import factorlab.universe.status_candidate.ingest as ingest
+from factorlab.universe.status_candidate import Adapter,EvidenceError,CertificationRejected,require_claim
+from factorlab.universe.status_candidate.__main__ import run
+from factorlab.universe.status_candidate.ingest import sha256
 
 def writej(p,v):p.write_text(json.dumps(v,ensure_ascii=False,sort_keys=True),encoding='utf-8')
 def repin(f):

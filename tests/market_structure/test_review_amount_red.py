@@ -4,8 +4,8 @@ from dataclasses import replace
 
 import numpy as np
 
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.store import AsOfStore
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.store import AsOfStore
 
 
 def bad_prices(manual):

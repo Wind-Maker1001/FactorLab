@@ -4,14 +4,14 @@ import matplotlib
 import pandas as pd
 import pytest
 
-from qbot.research.backtest.fast import FastBacktestResult
-from qbot.research.metrics.prediction import PredictionEvaluation
-from qbot.research.reports.model import (
+from factorlab.backtest.fast import FastBacktestResult
+from factorlab.metrics.prediction import PredictionEvaluation
+from factorlab.reports.model import (
     ModelReportError,
     write_model_comparison_report,
     write_model_report,
 )
-from qbot.research.validation.walk_forward import WalkForwardResult
+from factorlab.validation.walk_forward import WalkForwardResult
 
 
 def _objects(with_coefficients=True):

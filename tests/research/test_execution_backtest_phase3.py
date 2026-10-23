@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.backtest import (
+from factorlab.backtest import (
     ExecutionBacktestConfig,
     FeeSchedule,
     PositionBook,
@@ -14,7 +14,7 @@ from qbot.research.backtest import (
     classify_board,
     run_execution_backtest,
 )
-from qbot.research.errors import ConfigurationError, SchemaError
+from factorlab.errors import ConfigurationError, SchemaError
 
 
 def _bars(dates, symbols, *, overrides=None):

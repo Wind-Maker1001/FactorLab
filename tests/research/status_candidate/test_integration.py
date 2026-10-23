@@ -8,16 +8,16 @@ from types import SimpleNamespace
 import pandas as pd
 import pytest
 
-from qbot.research.data.admission import assert_formal_market_admission
-from qbot.research.data.evidence import snapshot_file
-from qbot.research.data.market_qualification import qualify_market_data
-from qbot.research.errors import ProviderError, SecurityStatusDataError
-from qbot.research.universe.historical_status import HistoricalStatus
-from qbot.research.universe.identity import IdentitySnapshot, SecurityIdentity
-from qbot.research.errors import DataQualityError
-from qbot.research.universe.status import validate_security_data
-from qbot.research.universe.status_candidate import EvidenceError
-from qbot.research.universe.status_candidate.ingest import sha256
+from factorlab.data.admission import assert_formal_market_admission
+from factorlab.data.evidence import snapshot_file
+from factorlab.data.market_qualification import qualify_market_data
+from factorlab.errors import ProviderError, SecurityStatusDataError
+from factorlab.universe.historical_status import HistoricalStatus
+from factorlab.universe.identity import IdentitySnapshot, SecurityIdentity
+from factorlab.errors import DataQualityError
+from factorlab.universe.status import validate_security_data
+from factorlab.universe.status_candidate import EvidenceError
+from factorlab.universe.status_candidate.ingest import sha256
 from tests.research.market_data_fixture import qualification_inputs
 
 

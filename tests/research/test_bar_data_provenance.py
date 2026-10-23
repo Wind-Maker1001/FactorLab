@@ -7,12 +7,12 @@ import json
 import pandas as pd
 import pytest
 
-from qbot.research.data.cache import BarCacheSnapshot, ParquetBarCache
-from qbot.research.data.provenance import (
+from factorlab.data.cache import BarCacheSnapshot, ParquetBarCache
+from factorlab.data.provenance import (
     bar_data_version, build_bar_data_provenance, validate_bar_data_provenance,
 )
-from qbot.research.data.schema import canonicalize_bars, empty_bars
-from qbot.research.errors import DataQualityError
+from factorlab.data.schema import canonicalize_bars, empty_bars
+from factorlab.errors import DataQualityError
 
 
 BENCHMARK = "000905.SH"

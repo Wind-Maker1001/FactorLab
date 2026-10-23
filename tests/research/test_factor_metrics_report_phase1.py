@@ -3,9 +3,9 @@
 import pandas as pd
 import pytest
 
-from qbot.research.errors import SchemaError
-from qbot.research.metrics.factor import evaluate_factors
-from qbot.research.reports.generator import write_factor_report
+from factorlab.errors import SchemaError
+from factorlab.metrics.factor import evaluate_factors
+from factorlab.reports.generator import write_factor_report
 
 
 def _evaluation_frame():

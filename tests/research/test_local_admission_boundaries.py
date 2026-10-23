@@ -6,10 +6,10 @@ import pandas as pd
 import pytest
 import yaml
 
-from qbot.research import cli
-from qbot.research.config import load_config
-from qbot.research.data.providers.local import LocalParquetProvider, publish_local_market_data
-from qbot.research.errors import ProviderError
+from factorlab import cli
+from factorlab.config import load_config
+from factorlab.data.providers.local import LocalParquetProvider, publish_local_market_data
+from factorlab.errors import ProviderError
 from tests.research.market_data_fixture import qualification_inputs
 
 

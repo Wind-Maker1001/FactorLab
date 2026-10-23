@@ -9,8 +9,8 @@ import urllib.request
 import pytest
 
 from examples.research import audit_official_coverage as example
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.universe.official_sources import CATALOGUE_URL, DETAIL_URL, OfficialNoticeSource
+from factorlab.config import PathsConfig, load_config
+from factorlab.universe.official_sources import CATALOGUE_URL, DETAIL_URL, OfficialNoticeSource
 from tests.research.test_browser_notice_observations import container, write
 from tests.research.test_official_sources import Response, detail
 

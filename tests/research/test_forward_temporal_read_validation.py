@@ -14,7 +14,7 @@ import json
 import pandas as pd
 import pytest
 
-from qbot.research.forward.signal_recorder import (
+from factorlab.forward.signal_recorder import (
     SignalRecorder, SignalValidationError, finalize_signal_record,
     load_prediction_record, load_signal_record,
 )

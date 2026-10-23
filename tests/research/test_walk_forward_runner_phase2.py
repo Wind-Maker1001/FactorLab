@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import qbot.research.validation.walk_forward as walk_forward_module
-from qbot.research.models.ridge import RidgeResearchModel
-from qbot.research.validation.splitter import ExpandingWalkForwardSplitter
-from qbot.research.validation.walk_forward import (
+import factorlab.validation.walk_forward as walk_forward_module
+from factorlab.models.ridge import RidgeResearchModel
+from factorlab.validation.splitter import ExpandingWalkForwardSplitter
+from factorlab.validation.walk_forward import (
     WalkForwardRunError,
     WalkForwardRunner,
 )

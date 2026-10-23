@@ -18,7 +18,7 @@ def synthetic_cli_admission(request):
     ):
         yield
         return
-    from qbot.research import cli
+    from factorlab import cli
 
     def offline(*args, **kwargs):
         raise AssertionError("synthetic orchestration must remain offline")

@@ -4,8 +4,8 @@ from datetime import date, datetime
 
 import pytest
 
-from qbot.research.errors import ProviderError
-from qbot.research.universe.source_coverage import audit_notice_coverage
+from factorlab.errors import ProviderError
+from factorlab.universe.source_coverage import audit_notice_coverage
 
 
 START, END = date(2021, 1, 1), date(2021, 12, 31)

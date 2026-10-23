@@ -3,8 +3,8 @@
 import pandas as pd
 import pytest
 
-from qbot.research.errors import PointInTimeUniverseError, ProviderError
-from qbot.research.universe.csi500 import (
+from factorlab.errors import PointInTimeUniverseError, ProviderError
+from factorlab.universe.csi500 import (
     BaoStockPointInTimeProvider,
     collect_point_in_time_universe,
 )

@@ -10,13 +10,13 @@ import pandas as pd
 import pytest
 
 from examples.research import refetch_benchmark as example
-from qbot.research.config import (
+from factorlab.config import (
     DataConfig, PathsConfig, ProjectConfig, ResearchConfig, UniverseConfig,
     discover_repository_root,
 )
-from qbot.research.data.cache import ParquetBarCache
-from qbot.research.data.schema import empty_bars
-from qbot.research.errors import ConfigurationError, DataQualityError, SchemaError
+from factorlab.data.cache import ParquetBarCache
+from factorlab.data.schema import empty_bars
+from factorlab.errors import ConfigurationError, DataQualityError, SchemaError
 from tests.research.test_real_factor_label_smoke import SyntheticProvider
 
 

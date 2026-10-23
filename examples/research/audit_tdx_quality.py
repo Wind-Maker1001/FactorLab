@@ -25,9 +25,9 @@ import numpy as np
 import pandas as pd
 
 from examples.research.five_year_supplier_probe import response_rows
-from qbot.research.data.tdx import audit_day, discover, raw_frame, read_snapshot, safe_path
-from qbot.research.data.tdx_staging import disjoint, frame_source_sha256, json_bytes, write_new
-from qbot.research.exploratory.five_year import DEFAULT_SYMBOLS, verify_pilot
+from factorlab.data.tdx import audit_day, discover, raw_frame, read_snapshot, safe_path
+from factorlab.data.tdx_staging import disjoint, frame_source_sha256, json_bytes, write_new
+from factorlab.exploratory.five_year import DEFAULT_SYMBOLS, verify_pilot
 
 
 START, RESEARCH_START, END = "2021-03-08", "2021-09-13", "2026-09-11"

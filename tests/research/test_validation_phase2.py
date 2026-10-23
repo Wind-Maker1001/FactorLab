@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.config import load_config
-from qbot.research.validation import ExpandingWalkForwardSplitter, WalkForwardError
+from factorlab.config import load_config
+from factorlab.validation import ExpandingWalkForwardSplitter, WalkForwardError
 
 
 def _cross_section(start="2020-01-02", end="2022-12-30", symbols=2):

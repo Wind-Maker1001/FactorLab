@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 from scipy.stats import norm
 
-from qbot.research.metrics.robustness import (
+from factorlab.metrics.robustness import (
     RobustnessError, RobustnessOptions, evaluate_model_robustness,
     holm_adjust, mean_uncertainty,
     validate_robustness_evaluation,

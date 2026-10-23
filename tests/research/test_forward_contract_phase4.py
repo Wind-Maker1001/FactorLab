@@ -5,9 +5,9 @@ from datetime import date
 
 import pytest
 
-from qbot.research.config import ForwardConfig, load_config
-from qbot.research.errors import ConfigurationError
-from qbot.research.forward.contract import (
+from factorlab.config import ForwardConfig, load_config
+from factorlab.errors import ConfigurationError
+from factorlab.forward.contract import (
     forward_contract_payload,
     forward_contract_sha256,
     selected_forward_model_parameters,

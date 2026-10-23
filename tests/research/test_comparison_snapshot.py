@@ -6,8 +6,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from qbot.research import cli
-from qbot.research.errors import FactorLabError
+from factorlab import cli
+from factorlab.errors import FactorLabError
 
 
 @pytest.fixture

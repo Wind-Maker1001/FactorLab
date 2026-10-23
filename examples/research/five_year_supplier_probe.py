@@ -17,9 +17,9 @@ import uuid
 import pandas as pd
 import requests
 
-from qbot.research.data.schema import normalize_symbol
-from qbot.research.data.tdx import audit_day, read_snapshot, safe_path
-from qbot.research.data.tdx_staging import json_bytes, write_new
+from factorlab.data.schema import normalize_symbol
+from factorlab.data.tdx import audit_day, read_snapshot, safe_path
+from factorlab.data.tdx_staging import json_bytes, write_new
 
 
 SUBSET = ("600000.SH", "688981.SH", "000961.SZ")

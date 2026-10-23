@@ -4,8 +4,8 @@ from copy import deepcopy
 
 import pytest
 
-from qbot.research.errors import ProviderError
-from qbot.research.universe.notice_workbook import WORKBOOK_TABLE_CONTRACT, review_csi500_workbook_values
+from factorlab.errors import ProviderError
+from factorlab.universe.notice_workbook import WORKBOOK_TABLE_CONTRACT, review_csi500_workbook_values
 
 
 SIX = [["指数代码", "指数简称", "调出", None, "调入", None],

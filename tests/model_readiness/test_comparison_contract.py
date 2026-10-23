@@ -7,9 +7,9 @@ import pytest
 
 pytestmark = pytest.mark.usefixtures("synthetic_cli_admission")
 
-from qbot.research import cli
-from qbot.research.errors import FactorLabError
-from qbot.research.diagnostics.model_readiness.synthetic import MODELS
+from factorlab import cli
+from factorlab.errors import FactorLabError
+from factorlab.diagnostics.model_readiness.synthetic import MODELS
 from tests.research.test_cli_phase2 import _Run, _config, _inputs, _write_verified_inputs
 
 
@@ -116,7 +116,7 @@ def test_unsealed_prediction_bytes_rejected(comparison_bundle):
 def test_successful_synthetic_producers_cannot_authorize_formal_comparison(
     comparison_bundle, monkeypatch,
 ):
-    from qbot.research.data.admission import assert_formal_market_admission
+    from factorlab.data.admission import assert_formal_market_admission
 
     config, _, _ = comparison_bundle
     # Restore the real boundary after software-only producer preparation.

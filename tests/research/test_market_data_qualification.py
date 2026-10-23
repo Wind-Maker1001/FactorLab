@@ -9,12 +9,12 @@ import pandas as pd
 import pytest
 import yaml
 
-from qbot.research.data.corporate_actions.sources.akshare import parse_sina_factors
-from qbot.research.data.market_qualification import load_qualification, publish_qualification, qualify_market_data
-from qbot.research.data.providers.local import LocalParquetProvider, publish_local_market_data
-from qbot.research.data.units import convert_units
-from qbot.research.errors import DataQualityError, ProviderError
-from qbot.research.universe.identity import IdentitySnapshot, SecurityIdentity
+from factorlab.data.corporate_actions.sources.akshare import parse_sina_factors
+from factorlab.data.market_qualification import load_qualification, publish_qualification, qualify_market_data
+from factorlab.data.providers.local import LocalParquetProvider, publish_local_market_data
+from factorlab.data.units import convert_units
+from factorlab.errors import DataQualityError, ProviderError
+from factorlab.universe.identity import IdentitySnapshot, SecurityIdentity
 from tests.research.market_data_fixture import cutoffs, qualification_inputs
 
 
@@ -73,7 +73,7 @@ def test_incomplete_stage_is_not_promoted(tmp_path, change, stage):
         spec = i.adjustments["fixture-security"]
         bad = spec.reference.copy()
         bad.loc[0, "adj_open"] += 1
-        from qbot.research.data.evidence import table_sha256
+        from factorlab.data.evidence import table_sha256
         spec = replace(spec, reference=bad, contract=replace(spec.contract, reference_sha256=table_sha256(bad)))
         i = replace(i, adjustments={"fixture-security": spec})
     elif change == "trading_price_gap":
@@ -116,7 +116,7 @@ def test_tampered_qualification_is_rejected(tmp_path, target):
 
 def test_editing_report_and_rehashing_manifest_still_cannot_forge_pass(tmp_path):
     i, k, c, s, b, path = package(tmp_path)
-    from qbot.research.data.evidence import json_bytes, sha256
+    from factorlab.data.evidence import json_bytes, sha256
     value = json.loads(path.read_text())
     value["report"]["formal_admission"] = True
     value["generation"] = sha256(json_bytes({key: val for key, val in value.items() if key != "generation"}))
@@ -127,7 +127,7 @@ def test_editing_report_and_rehashing_manifest_still_cannot_forge_pass(tmp_path)
 
 def test_implementation_change_requires_new_qualification_generation(tmp_path, monkeypatch):
     i, k, c, s, b, path = package(tmp_path)
-    import qbot.research.data.market_qualification as qualification_module
+    import factorlab.data.market_qualification as qualification_module
     monkeypatch.setattr(qualification_module, "implementation_sha256", lambda paths: "a" * 64)
     with pytest.raises(DataQualityError, match="report disagrees"):
         load_qualification(path, stocks=s, benchmark=b)
@@ -156,7 +156,7 @@ def test_failed_v2_publish_keeps_previous_pointer(tmp_path, monkeypatch):
     first, sp, bp = local_bundle(tmp_path, s, b, path)
     pointer = tmp_path / "bundle/manifest.json"
     original = pointer.read_bytes()
-    from qbot.research.data.providers import local
+    from factorlab.data.providers import local
     def fail_pointer(*args):
         raise OSError("injected publication failure")
     monkeypatch.setattr(local, "_atomic_manifest", fail_pointer)
@@ -167,8 +167,8 @@ def test_failed_v2_publish_keeps_previous_pointer(tmp_path, monkeypatch):
 
 
 def test_changed_qualification_contract_invalidates_old_cache_even_with_same_prices(tmp_path):
-    from qbot.research.data.cache import ParquetBarCache
-    from qbot.research.errors import CacheError
+    from factorlab.data.cache import ParquetBarCache
+    from factorlab.errors import CacheError
     i, k, c, s, b, path = package(tmp_path)
     first, sp, bp = local_bundle(tmp_path, s, b, path)
     old_provider = LocalParquetProvider(tmp_path / "bundle")
@@ -200,8 +200,8 @@ def test_v1_tdx_declaration_cannot_promote_staging(tmp_path):
 
 
 def test_synthetic_v2_is_rejected_by_formal_market_input_loader(tmp_path, monkeypatch):
-    from qbot.research import cli
-    from qbot.research.config import load_config
+    from factorlab import cli
+    from factorlab.config import load_config
     i, k, c, s, b, path = package(tmp_path, periods=85)
     local_bundle(tmp_path, s, b, path)
     document = yaml.safe_load((Path(__file__).resolve().parents[2] / "configs/research/csi500_local_smoke.yaml").read_text(encoding="utf-8"))

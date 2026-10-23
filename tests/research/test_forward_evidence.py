@@ -9,12 +9,12 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from qbot.research.forward import evidence as module
-from qbot.research.forward.evidence import (
+from factorlab.forward import evidence as module
+from factorlab.forward.evidence import (
     ForwardEvidenceError, ForwardPredictionEvidence, SELECTION_COLUMNS,
     select_forward_prediction_records,
 )
-from qbot.research.forward.signal_recorder import SignalRecorder, finalize_signal_record
+from factorlab.forward.signal_recorder import SignalRecorder, finalize_signal_record
 
 
 DAY = date(2026, 9, 24)

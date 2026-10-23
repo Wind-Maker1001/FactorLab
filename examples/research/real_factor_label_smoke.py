@@ -33,17 +33,17 @@ from typing import Any, Dict, Optional, Sequence, Union
 import numpy as np
 import pandas as pd
 
-from qbot.research.config import ResearchConfig, discover_repository_root, load_config
-from qbot.research.data.cache import BarCacheSnapshot, ParquetBarCache
-from qbot.research.data.calendar import TradingCalendar, reindex_bars_to_calendar
-from qbot.research.data.providers.akshare import AKShareProvider
-from qbot.research.data.providers.base import MarketDataProvider
-from qbot.research.data.providers.local import LocalParquetProvider
-from qbot.research.data.schema import normalize_symbol
-from qbot.research.errors import ConfigurationError, DataQualityError, FactorLabError
-from qbot.research.factors.registry import compute_factors, get_factor
-from qbot.research.labels.forward_return import build_forward_excess_return_labels
-from qbot.research.reproducibility import RunManifest, set_random_seed
+from factorlab.config import ResearchConfig, discover_repository_root, load_config
+from factorlab.data.cache import BarCacheSnapshot, ParquetBarCache
+from factorlab.data.calendar import TradingCalendar, reindex_bars_to_calendar
+from factorlab.data.providers.akshare import AKShareProvider
+from factorlab.data.providers.base import MarketDataProvider
+from factorlab.data.providers.local import LocalParquetProvider
+from factorlab.data.schema import normalize_symbol
+from factorlab.errors import ConfigurationError, DataQualityError, FactorLabError
+from factorlab.factors.registry import compute_factors, get_factor
+from factorlab.labels.forward_return import build_forward_excess_return_labels
+from factorlab.reproducibility import RunManifest, set_random_seed
 
 
 LOGGER = logging.getLogger(__name__)

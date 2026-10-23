@@ -11,13 +11,13 @@ import xml.etree.ElementTree as ET
 
 from setuptools import find_packages
 
-from qbot.research.exploratory.market_structure.contracts import (
+from factorlab.exploratory.market_structure.contracts import (
     BASELINE,
     MARKERS,
     SCHEMA,
     json_bytes,
 )
-from qbot.research.exploratory.market_structure.runner import verify_receipt
+from factorlab.exploratory.market_structure.runner import verify_receipt
 
 ROOT = Path(__file__).resolve().parents[2]
 PREFIXES = (
@@ -139,7 +139,7 @@ def main():
         python=sys.version,
         namespace_has_init=False,
         source_entry_verified=True,
-        found_from_repo="qbot.research.exploratory.market_structure"
+        found_from_repo="factorlab.exploratory.market_structure"
         in find_packages(where=str(ROOT)),
         found_from_qbot="research.exploratory.market_structure"
         in find_packages(where=str(ROOT / "qbot")),

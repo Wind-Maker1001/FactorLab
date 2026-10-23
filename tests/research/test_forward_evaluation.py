@@ -8,9 +8,9 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from qbot.research.data.schema import canonicalize_bars, empty_bars
-from qbot.research.errors import SchemaError
-from qbot.research.forward.evaluation import (
+from factorlab.data.schema import canonicalize_bars, empty_bars
+from factorlab.errors import SchemaError
+from factorlab.forward.evaluation import (
     ForwardEvaluationError,
     evaluate_forward_predictions,
 )

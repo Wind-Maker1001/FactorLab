@@ -9,21 +9,21 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research import cli
-from qbot.research.config import (
+from factorlab import cli
+from factorlab.config import (
     DataConfig,
     PathsConfig,
     ProjectConfig,
     ResearchConfig,
     UniverseConfig,
 )
-from qbot.research.data.schema import canonicalize_bars
-from qbot.research.errors import (
+from factorlab.data.schema import canonicalize_bars
+from factorlab.errors import (
     ConfigurationError,
     PointInTimeUniverseRequiredError,
     SecurityStatusDataError,
 )
-from qbot.research.reproducibility import (
+from factorlab.reproducibility import (
     RunManifest,
     set_random_seed,
     validate_provenance,
@@ -100,14 +100,14 @@ def test_run_manifest_records_lifecycle_outputs_failures_and_seed(tmp_path, monk
         json.dumps({"sha256": "universe-fixture-sha"}), encoding="utf-8"
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.git_commit", lambda root: "abc123"
+        "factorlab.reproducibility.git_commit", lambda root: "abc123"
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.package_versions",
+        "factorlab.reproducibility.package_versions",
         lambda: {"numpy": "fixture"},
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.git_worktree_state",
+        "factorlab.reproducibility.git_worktree_state",
         lambda root: {"git_dirty": True, "git_diff_sha256": "d" * 64},
     )
 
@@ -211,10 +211,10 @@ def test_audit_cli_success_creates_completed_manifest(tmp_path, monkeypatch):
     (docs / "KNOWN_LEGACY_ISSUES.md").write_text("known", encoding="utf-8")
     monkeypatch.setattr(cli, "load_config", lambda path: config)
     monkeypatch.setattr(
-        "qbot.research.reproducibility.git_commit", lambda root: "audit-sha"
+        "factorlab.reproducibility.git_commit", lambda root: "audit-sha"
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.package_versions", lambda: {}
+        "factorlab.reproducibility.package_versions", lambda: {}
     )
 
     assert cli.main(["audit", "--config", "unused.yaml"]) == 0
@@ -235,7 +235,7 @@ def test_audit_cli_failure_after_config_is_persisted(tmp_path, monkeypatch):
     config = _config(tmp_path)
     monkeypatch.setattr(cli, "load_config", lambda path: config)
     monkeypatch.setattr(
-        "qbot.research.reproducibility.package_versions", lambda: {}
+        "factorlab.reproducibility.package_versions", lambda: {}
     )
 
     assert cli.main(["audit", "--config", "unused.yaml"]) == 1
@@ -299,7 +299,7 @@ def test_import_universe_cli_orchestrates_without_network(tmp_path, monkeypatch)
         cli, "_load_benchmark_with_warmup", lambda current: _benchmark_bars()
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.package_versions", lambda: {}
+        "factorlab.reproducibility.package_versions", lambda: {}
     )
 
     def fake_import(
@@ -378,7 +378,7 @@ def test_import_security_data_cli_orchestrates_without_baostock(
         cli, "_load_verified_membership", lambda current, calendar: membership
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.package_versions", lambda: {}
+        "factorlab.reproducibility.package_versions", lambda: {}
     )
 
     def fake_import(

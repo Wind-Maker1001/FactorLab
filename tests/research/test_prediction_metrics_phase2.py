@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.metrics.prediction import (
+from factorlab.metrics.prediction import (
     PredictionMetricError,
     evaluate_predictions,
 )

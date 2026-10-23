@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 import pandas as pd
 import pytest
 
-from qbot.research.errors import PointInTimeUniverseError
-from qbot.research.universe.csi500 import (
+from factorlab.errors import PointInTimeUniverseError
+from factorlab.universe.csi500 import (
     DataFramePointInTimeUniverse,
     _universe_write_lock,
     canonical_symbol,
@@ -18,7 +18,7 @@ from qbot.research.universe.csi500 import (
     import_point_in_time_universe,
     validate_daily_membership,
 )
-from qbot.research.universe.filters import (
+from factorlab.universe.filters import (
     UniverseFilterConfig,
     apply_universe_filters,
     build_filter_flags,

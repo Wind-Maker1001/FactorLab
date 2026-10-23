@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.forward.model_bundle import (
+from factorlab.forward.model_bundle import (
     BundleExistsError,
     BundleIntegrityError,
     ModelBundleError,
@@ -18,7 +18,7 @@ from qbot.research.forward.model_bundle import (
     load_model_bundle,
     save_model_bundle,
 )
-from qbot.research.models import FactorScoreModel, RidgeResearchModel
+from factorlab.models import FactorScoreModel, RidgeResearchModel
 
 
 HASHES = {

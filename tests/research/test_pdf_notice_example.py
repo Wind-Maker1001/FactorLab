@@ -13,9 +13,9 @@ from types import SimpleNamespace
 import pytest
 
 from examples.research import review_pdf_notices as example
-from qbot.research.config import PathsConfig, load_config
-from qbot.research.errors import ProviderError
-from qbot.research.universe.official_sources import OfficialNoticeSource
+from factorlab.config import PathsConfig, load_config
+from factorlab.errors import ProviderError
+from factorlab.universe.official_sources import OfficialNoticeSource
 from tests.research.test_browser_notice_observations import container, write, latest_manifest, Response
 from tests.research.test_notice_pdf import HEAD, ROW1, ROW2, STOP
 

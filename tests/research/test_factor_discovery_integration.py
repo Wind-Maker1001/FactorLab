@@ -13,34 +13,34 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.factor_discovery.contracts import (
+from factorlab.exploratory.factor_discovery.contracts import (
     DiscoveryConfig,
     DiscoveryError,
 )
-from qbot.research.exploratory.factor_discovery.engine import ExpressionEngine
-from qbot.research.exploratory.factor_discovery.evaluation import (
+from factorlab.exploratory.factor_discovery.engine import ExpressionEngine
+from factorlab.exploratory.factor_discovery.evaluation import (
     development_frame,
     evaluate_discovery,
 )
-from qbot.research.exploratory.factor_discovery.generator import generate_candidates
-from qbot.research.exploratory.factor_discovery.private_inputs import (
+from factorlab.exploratory.factor_discovery.generator import generate_candidates
+from factorlab.exploratory.factor_discovery.private_inputs import (
     load_private_inputs,
 )
-from qbot.research.exploratory.factor_discovery.publication import (
+from factorlab.exploratory.factor_discovery.publication import (
     PUBLIC_FILES,
     publish_aggregates,
 )
-from qbot.research.exploratory.factor_discovery.receipts import (
+from factorlab.exploratory.factor_discovery.receipts import (
     assert_discovery_only,
     verify_receipt,
     write_receipt,
 )
-from qbot.research.exploratory.factor_discovery.redundancy import diagnose_redundancy
-from qbot.research.exploratory.factor_discovery.runner import run_frames, run_synthetic
-from qbot.research.exploratory.factor_discovery.synthetic import make_synthetic_data
-from qbot.research.factors.registry import FACTOR_REGISTRY, get_factor
-from qbot.research.labels.forward_return import build_forward_excess_return_labels
-from qbot.research.metrics.factor import evaluate_factors
+from factorlab.exploratory.factor_discovery.redundancy import diagnose_redundancy
+from factorlab.exploratory.factor_discovery.runner import run_frames, run_synthetic
+from factorlab.exploratory.factor_discovery.synthetic import make_synthetic_data
+from factorlab.factors.registry import FACTOR_REGISTRY, get_factor
+from factorlab.labels.forward_return import build_forward_excess_return_labels
+from factorlab.metrics.factor import evaluate_factors
 
 
 @pytest.fixture(scope="module")
@@ -288,7 +288,7 @@ def test_missing_and_tampered_private_data_statuses_never_synthetic_success(tmp_
         [
             sys.executable,
             "-m",
-            "qbot.research.exploratory.factor_discovery",
+            "factorlab.exploratory.factor_discovery",
             "--mode",
             "private",
             "--output-root",
@@ -321,18 +321,18 @@ def test_receipt_aggregate_publication_and_tamper_detection(integrated, tmp_path
 def test_discovery_receipt_rejected_by_actual_formal_forward_and_live_gates(
     integrated, tmp_path
 ):
-    from qbot.research.data.market_qualification import load_qualification
-    from qbot.research.errors import DataQualityError
-    from qbot.research.forward.model_bundle import (
+    from factorlab.data.market_qualification import load_qualification
+    from factorlab.errors import DataQualityError
+    from factorlab.forward.model_bundle import (
         BundleIntegrityError,
         load_model_bundle,
     )
-    from qbot.research.forward.signal_recorder import (
+    from factorlab.forward.signal_recorder import (
         SignalValidationError,
         load_signal_record,
     )
-    from qbot.research.config.loader import load_config
-    from qbot.research.errors import ConfigurationError
+    from factorlab.config.loader import load_config
+    from factorlab.errors import ConfigurationError
 
     _, run = integrated
     bars, benchmark, _ = make_synthetic_data()
@@ -447,7 +447,7 @@ def test_failed_calculation_cannot_retain_successful_private_input_status(
     # It is not an input qualification or an empirical evidence fixture.
     bars, benchmark, dates = make_synthetic_data(stock_count=2, sessions=20)
     labels = build_forward_excess_return_labels(bars, benchmark, calendar=dates)
-    from qbot.research.exploratory.factor_discovery import private_inputs
+    from factorlab.exploratory.factor_discovery import private_inputs
 
     evidence = {
         "classification": "EXPLORATORY / UNVERIFIED / NON_PIT_CONVENIENCE",
@@ -491,7 +491,7 @@ def test_failed_calculation_cannot_retain_successful_private_input_status(
 def test_self_rehashed_receipt_cannot_redefine_approved_historical_labels(
     tmp_path, monkeypatch
 ):
-    from qbot.research.exploratory.factor_discovery import private_inputs
+    from factorlab.exploratory.factor_discovery import private_inputs
 
     manifest, previous = tmp_path / "manifest.json", tmp_path / "receipt.json"
     manifest.write_text("SYNTHETIC_NEGATIVE_TEST_ONLY")
@@ -550,7 +550,7 @@ def test_redundancy_preserves_near_constant_variation_and_ignores_unpaired_extre
 def test_private_claim_must_bind_actual_values_to_independently_loaded_input(
     tmp_path, monkeypatch, changed
 ):
-    from qbot.research.exploratory.factor_discovery import private_inputs
+    from factorlab.exploratory.factor_discovery import private_inputs
 
     bars, benchmark, calendar = make_synthetic_data(stock_count=2, sessions=20)
     labels = build_forward_excess_return_labels(bars, benchmark, calendar=calendar)

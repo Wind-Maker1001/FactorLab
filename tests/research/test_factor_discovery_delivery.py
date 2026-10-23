@@ -6,11 +6,11 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.factor_discovery.publication import (
+from factorlab.exploratory.factor_discovery.publication import (
     PUBLIC_FILES,
     PUBLIC_COLUMNS,
 )
-from qbot.research.exploratory.factor_discovery.receipts import verify_receipt
+from factorlab.exploratory.factor_discovery.receipts import verify_receipt
 
 
 @pytest.mark.parametrize("mode", ["synthetic", "private"])

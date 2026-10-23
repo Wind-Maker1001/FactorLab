@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from qbot.research.data.providers.akshare import AKShareProvider
-from qbot.research.universe.csi500 import (
+from factorlab.data.providers.akshare import AKShareProvider
+from factorlab.universe.csi500 import (
     BaoStockPointInTimeProvider,
     validate_daily_membership,
 )

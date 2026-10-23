@@ -11,12 +11,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.data.adjustment import build_hfq, validate_adjustment
-from qbot.research.data.adjustment.contracts import AFFINE, RATIO, SourceAdjustmentContract
-from qbot.research.data.corporate_actions import select_events, normalize_per_share
-from qbot.research.data.corporate_actions.store import load_snapshot, publish_snapshot
-from qbot.research.data.evidence import table_sha256, timestamp
-from qbot.research.errors import DataQualityError
+from factorlab.data.adjustment import build_hfq, validate_adjustment
+from factorlab.data.adjustment.contracts import AFFINE, RATIO, SourceAdjustmentContract
+from factorlab.data.corporate_actions import select_events, normalize_per_share
+from factorlab.data.corporate_actions.store import load_snapshot, publish_snapshot
+from factorlab.data.evidence import table_sha256, timestamp
+from factorlab.errors import DataQualityError
 from tests.research.market_data_fixture import anchor, build, cutoffs, event, evidence, raw, snapshot
 
 
@@ -208,10 +208,10 @@ def test_per_share_conversion_requires_explicit_units():
 @pytest.mark.parametrize("method", [AFFINE, RATIO])
 @pytest.mark.parametrize("change", ["future_event", "late_correction", "late_cancel", "late_reschedule"])
 def test_future_prices_and_events_leave_builder_features_and_fixed_signal_unchanged(tmp_path, method, change):
-    from qbot.research.config import load_config
-    from qbot.research.dataset import DatasetBuilder, DatasetBuildOptions
-    from qbot.research.models.factor_score import FactorScoreModel
-    from qbot.research.universe.filters import UniverseFilterConfig
+    from factorlab.config import load_config
+    from factorlab.dataset import DatasetBuilder, DatasetBuildOptions
+    from factorlab.models.factor_score import FactorScoreModel
+    from factorlab.universe.filters import UniverseFilterConfig
     artifact = evidence(tmp_path)
     config = load_config(Path(__file__).resolve().parents[2] / "configs/research/csi500_5y.yaml")
     dates = pd.bdate_range("2024-01-02", periods=150)

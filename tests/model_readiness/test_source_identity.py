@@ -7,7 +7,7 @@ import subprocess
 
 import pytest
 
-from qbot.research.diagnostics.model_readiness.source_identity import (
+from factorlab.diagnostics.model_readiness.source_identity import (
     NORMALIZATION, PROTOCOL, SCOPE, SourceIntegrityError, assert_source_unchanged,
     canonical_digest, git_source_snapshot, source_snapshot,
 )
@@ -23,10 +23,10 @@ def repository(tmp_path):
     git(tmp_path, "init", "-q")
     git(tmp_path, "config", "core.autocrlf", "false")
     git(tmp_path, "config", "core.hooksPath", str(tmp_path / "unused-hooks"))
-    (tmp_path / "qbot/research").mkdir(parents=True)
-    (tmp_path / "qbot/research/A.py").write_bytes(b"a = 'alpha'\n# second line\n")
-    (tmp_path / "qbot/research/z.py").write_bytes("# 中文\nz = 2\n".encode("utf-8"))
-    git(tmp_path, "add", "qbot")
+    (tmp_path / "src/factorlab").mkdir(parents=True)
+    (tmp_path / "src/factorlab/A.py").write_bytes(b"a = 'alpha'\n# second line\n")
+    (tmp_path / "src/factorlab/z.py").write_bytes("# 中文\nz = 2\n".encode("utf-8"))
+    git(tmp_path, "add", "src")
     git(tmp_path, "-c", "user.name=Readiness Test", "-c", "user.email=readiness@example.invalid",
         "-c", "commit.gpgsign=false", "commit", "-qm", "fixture")
     return tmp_path
@@ -34,7 +34,7 @@ def repository(tmp_path):
 
 def test_independent_framed_reference_matches_git_and_crlf_worktree(repository):
     files = {p.relative_to(repository).as_posix(): p.read_bytes()
-             for p in (repository / "qbot/research").glob("*.py")}
+             for p in (repository / "src/factorlab").glob("*.py")}
     records = [{"bytes": len(data), "path": name, "sha256": hashlib.sha256(data).hexdigest()}
                for name, data in sorted(files.items(), key=lambda item: item[0].encode("utf-8"))]
     # Defined independently of canonical_digest, using the public wire contract.
@@ -42,7 +42,7 @@ def test_independent_framed_reference_matches_git_and_crlf_worktree(repository):
         "protocol": PROTOCOL, "scope": SCOPE, "normalization": NORMALIZATION, "files": records,
     }, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")).hexdigest()
     first = source_snapshot(repository)
-    for path in (repository / "qbot/research").glob("*.py"):
+    for path in (repository / "src/factorlab").glob("*.py"):
         path.write_bytes(path.read_bytes().replace(b"\n", b"\r\n"))
     windows = source_snapshot(repository)
     committed = git_source_snapshot(repository)
@@ -55,7 +55,7 @@ def test_independent_framed_reference_matches_git_and_crlf_worktree(repository):
 @pytest.mark.parametrize("change", [b"a = 'Alpha'\n# second line\n", b"a = 'alpha' \n# second line\n",
                                     b"a = 'alpha'\n# second line", b"\xef\xbb\xbfa = 'alpha'\n# second line\n"])
 def test_non_eol_edits_including_bom_whitespace_and_final_newline_fail(repository, change):
-    (repository / "qbot/research/A.py").write_bytes(change)
+    (repository / "src/factorlab/A.py").write_bytes(change)
     with pytest.raises(SourceIntegrityError, match="uncommitted source content"):
         source_snapshot(repository)
 
@@ -65,27 +65,27 @@ def test_non_eol_edits_including_bom_whitespace_and_final_newline_fail(repositor
 def test_extra_untracked_or_ignored_source_cannot_be_silently_omitted(repository, ignored, filename):
     if ignored:
         (repository / ".gitignore").write_text(filename + "\n", encoding="utf-8")
-    (repository / "qbot/research" / filename).write_bytes(b"hidden = True\n")
+    (repository / "src/factorlab" / filename).write_bytes(b"hidden = True\n")
     with pytest.raises(SourceIntegrityError, match="extra=.*" + filename):
         source_snapshot(repository)
 
 
 def test_missing_source_fails(repository):
-    (repository / "qbot/research/A.py").unlink()
+    (repository / "src/factorlab/A.py").unlink()
     with pytest.raises(SourceIntegrityError, match="missing=.*A.py"):
         source_snapshot(repository)
 
 
 @pytest.mark.parametrize("content", [b"a = 1\r", b"# \xff\n"])
 def test_unsupported_source_encoding_or_bare_cr_is_rejected(repository, content):
-    (repository / "qbot/research/A.py").write_bytes(content)
+    (repository / "src/factorlab/A.py").write_bytes(content)
     with pytest.raises(SourceIntegrityError, match="lone CR|UTF-8"):
         source_snapshot(repository)
 
 
 def test_raw_eol_change_during_run_fails_even_when_canonical_identity_matches(repository):
     start = source_snapshot(repository)
-    path = repository / "qbot/research/A.py"
+    path = repository / "src/factorlab/A.py"
     path.write_bytes(path.read_bytes().replace(b"\n", b"\r\n"))
     end = source_snapshot(repository)
     assert start["canonical_sha256"] == end["canonical_sha256"]
@@ -104,8 +104,8 @@ def test_commit_change_during_run_is_not_hidden_by_equal_source(repository):
 
 
 def test_file_name_and_record_boundaries_are_part_of_contract():
-    assert canonical_digest({"qbot/research/a.py": b"bc"}) != canonical_digest({"qbot/research/ab.py": b"c"})
-    first = {"qbot/research/a.py": b"a\n", "qbot/research/z.py": b"z\n"}
+    assert canonical_digest({"src/factorlab/a.py": b"bc"}) != canonical_digest({"src/factorlab/ab.py": b"c"})
+    first = {"src/factorlab/a.py": b"a\n", "src/factorlab/z.py": b"z\n"}
     assert canonical_digest(first) == canonical_digest(dict(reversed(list(first.items()))))
 
 

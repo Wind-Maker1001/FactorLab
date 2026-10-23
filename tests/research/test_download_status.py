@@ -11,8 +11,8 @@ from types import SimpleNamespace
 import pandas as pd
 import pytest
 
-from qbot.research.data import download_status as status
-from qbot.research.errors import DataQualityError
+from factorlab.data import download_status as status
+from factorlab.errors import DataQualityError
 
 
 @pytest.fixture
@@ -508,7 +508,7 @@ def test_concurrent_writers_and_readers_serialize_history(tmp_path):
 def test_independent_processes_serialize_immutable_publication(tmp_path):
     worker = (
         "import sys; from pathlib import Path; "
-        "from qbot.research.data.download_status import record_fatal,list_unresolved; "
+        "from factorlab.data.download_status import record_fatal,list_unresolved; "
         "root=Path(sys.argv[1]); "
         "[(record_fatal(root,symbol='600000.SH',provider_class='test.Provider',"
         "source_version='raw-hfq',start='2024-01-02',end='2024-01-12',"

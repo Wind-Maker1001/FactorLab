@@ -7,13 +7,13 @@ from types import SimpleNamespace
 import pytest
 import requests
 
-from qbot.research.exploratory.acquire import (
+from factorlab.exploratory.acquire import (
     RecordingAKShare,
     freeze_sample,
     ingest_firecrawl_capture,
     utc_now,
 )
-from qbot.research.exploratory.contract import sha256_file
+from factorlab.exploratory.contract import sha256_file
 
 
 @pytest.mark.parametrize(
@@ -29,7 +29,7 @@ from qbot.research.exploratory.contract import sha256_file
 def test_cli_fresh_checkout_selects_live_or_explicit_cache(
     tmp_path, monkeypatch, cache_arguments, expected_cache
 ):
-    import qbot.research.exploratory.acquire as acquisition
+    import factorlab.exploratory.acquire as acquisition
 
     calls = []
     monkeypatch.chdir(tmp_path)

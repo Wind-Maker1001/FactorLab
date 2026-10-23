@@ -14,19 +14,19 @@ import pandas as pd
 import pytest
 
 from examples.research import real_factor_label_smoke as example
-from qbot.research.config import (
+from factorlab.config import (
     DataConfig, PathsConfig, ProjectConfig, ResearchConfig, UniverseConfig,
     discover_repository_root,
 )
-from qbot.research.data.providers.base import MarketDataProvider
-from qbot.research.data.cache import ParquetBarCache
-from qbot.research.data.schema import canonicalize_bars, empty_bars
-from qbot.research.errors import (
+from factorlab.data.providers.base import MarketDataProvider
+from factorlab.data.cache import ParquetBarCache
+from factorlab.data.schema import canonicalize_bars, empty_bars
+from factorlab.errors import (
     CacheError, ConfigurationError, DataQualityError, ProviderError,
     ProviderNetworkError, SchemaError,
 )
-from qbot.research.factors.registry import FACTOR_REGISTRY
-from qbot.research.reproducibility import validate_provenance
+from factorlab.factors.registry import FACTOR_REGISTRY
+from factorlab.reproducibility import validate_provenance
 
 
 def _bars(symbol, dates, scale=1.0):

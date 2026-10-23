@@ -7,11 +7,11 @@ import struct
 import pandas as pd
 import pytest
 
-from qbot.research.data.adjustment.engine import build_hfq
-from qbot.research.data.assemble import assemble_market_data
-from qbot.research.data.corporate_actions import select_events
-from qbot.research.data.evidence import archive_bytes, json_bytes, snapshot_file, table_sha256
-from qbot.research.data.market_qualification import load_qualification, publish_qualification, qualify_market_data
+from factorlab.data.adjustment.engine import build_hfq
+from factorlab.data.assemble import assemble_market_data
+from factorlab.data.corporate_actions import select_events
+from factorlab.data.evidence import archive_bytes, json_bytes, snapshot_file, table_sha256
+from factorlab.data.market_qualification import load_qualification, publish_qualification, qualify_market_data
 from tests.research.market_data_fixture import cutoffs, event, qualification_inputs
 
 

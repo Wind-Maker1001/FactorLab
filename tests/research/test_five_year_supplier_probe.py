@@ -9,7 +9,7 @@ import requests
 from examples.research.five_year_supplier_probe import response_rows
 from examples.research.summarize_five_year_pilot import coverage_table, verified_benchmark_provenance
 from examples.research import five_year_supplier_probe as probe_module
-from qbot.research.exploratory.five_year import freeze_pilot
+from factorlab.exploratory.five_year import freeze_pilot
 
 
 def tencent(rows, key="day"):

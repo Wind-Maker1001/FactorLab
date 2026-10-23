@@ -11,12 +11,12 @@ import pandas as pd
 import pytest
 import requests
 
-from qbot.research import cli
-from qbot.research.config import load_config
-from qbot.research.data import ParquetBarCache
-from qbot.research.data.download_status import list_unresolved, record_fatal
-from qbot.research.data.providers import AKShareProvider, LocalParquetProvider
-from qbot.research.errors import (
+from factorlab import cli
+from factorlab.config import load_config
+from factorlab.data import ParquetBarCache
+from factorlab.data.download_status import list_unresolved, record_fatal
+from factorlab.data.providers import AKShareProvider, LocalParquetProvider
+from factorlab.errors import (
     CacheError,
     DataQualityError,
     FactorLabError,
@@ -24,7 +24,7 @@ from qbot.research.errors import (
     ProviderNetworkError,
     SchemaError,
 )
-from qbot.research.reproducibility import RunManifest
+from factorlab.reproducibility import RunManifest
 from tests.research.test_cli_reproducibility import (
     _benchmark_bars_with_warmup,
     _complete_security_data,
@@ -107,10 +107,10 @@ def download_context(tmp_path, monkeypatch):
         lambda *args, **kwargs: (status, listings, security),
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.git_commit", lambda root: GIT_COMMIT
+        "factorlab.reproducibility.git_commit", lambda root: GIT_COMMIT
     )
     monkeypatch.setattr(
-        "qbot.research.reproducibility.package_versions", lambda: {}
+        "factorlab.reproducibility.package_versions", lambda: {}
     )
     return {
         "config": config,

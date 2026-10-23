@@ -16,17 +16,17 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research import cli
-from qbot.research.backtest.fast import FastBacktestResult
-from qbot.research.backtest.execution import ExecutionBacktestResult
-from qbot.research.config import (
+from factorlab import cli
+from factorlab.backtest.fast import FastBacktestResult
+from factorlab.backtest.execution import ExecutionBacktestResult
+from factorlab.config import (
     DataConfig, EvaluationConfig, PathsConfig, PortfolioConfig,
     ProjectConfig, ResearchConfig, UniverseConfig, ValidationConfig,
 )
-from qbot.research.errors import FactorLabError
-from qbot.research.metrics import evaluate_predictions
-from qbot.research.reports import write_model_report
-from qbot.research.validation import ExpandingWalkForwardSplitter, WalkForwardRunner
+from factorlab.errors import FactorLabError
+from factorlab.metrics import evaluate_predictions
+from factorlab.reports import write_model_report
+from factorlab.validation import ExpandingWalkForwardSplitter, WalkForwardRunner
 
 
 @pytest.fixture(scope="module")
@@ -177,7 +177,7 @@ def test_source_binding_rejects_protocol_changes(source, field):
 
 def test_source_reverification_does_not_fit_predict_or_change_data(source, monkeypatch):
     config, runner, result, frame, days, _ = source
-    from qbot.research.models.ridge import RidgeResearchModel
+    from factorlab.models.ridge import RidgeResearchModel
     def forbidden(*args, **kwargs):
         raise AssertionError("source checks must not fit/predict")
     monkeypatch.setattr(RidgeResearchModel, "fit", forbidden)

@@ -14,8 +14,8 @@ import uuid
 import numpy as np
 import pandas as pd
 
-from qbot.research.data.tdx import TdxError, read_snapshot, safe_path
-from qbot.research.data.tdx_staging import disjoint, json_bytes, sha256, write_csv, write_new
+from factorlab.data.tdx import TdxError, read_snapshot, safe_path
+from factorlab.data.tdx_staging import disjoint, json_bytes, sha256, write_csv, write_new
 
 
 REFERENCE_COLUMNS = ["symbol", "date", "open", "high", "low", "close", "volume", "amount",

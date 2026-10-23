@@ -17,8 +17,8 @@ import yaml
 
 pytestmark = pytest.mark.usefixtures("synthetic_cli_admission")
 
-import qbot.research.cli as research_cli
-from qbot.research.data import ParquetBarCache
+import factorlab.cli as research_cli
+from factorlab.data import ParquetBarCache
 
 
 class OfflineFileProvider:

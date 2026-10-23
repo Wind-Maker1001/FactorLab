@@ -4,16 +4,16 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.market_structure.adapters import market_context
-from qbot.research.exploratory.market_structure.aggregation import aggregate_intraday
-from qbot.research.exploratory.market_structure.contracts import ContractError
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.store import (
+from factorlab.exploratory.market_structure.adapters import market_context
+from factorlab.exploratory.market_structure.aggregation import aggregate_intraday
+from factorlab.exploratory.market_structure.contracts import ContractError
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.store import (
     AsOfStore,
     memberships,
     window_requests,
 )
-from qbot.research.exploratory.market_structure.synthetic import (
+from factorlab.exploratory.market_structure.synthetic import (
     make_record,
     make_synthetic_data,
 )

@@ -21,13 +21,13 @@ from typing import Optional, Sequence
 import numpy as np
 import pandas as pd
 
-from qbot.research.config import load_config
-from qbot.research.dataset.builder import DatasetBuilder, DatasetBuildOptions
-from qbot.research.errors import ConfigurationError, SchemaError
-from qbot.research.factors.registry import get_factor
-from qbot.research.metrics.factor import evaluate_factors
-from qbot.research.reproducibility import RunManifest
-from qbot.research.universe.filters import UniverseFilterConfig
+from factorlab.config import load_config
+from factorlab.dataset.builder import DatasetBuilder, DatasetBuildOptions
+from factorlab.errors import ConfigurationError, SchemaError
+from factorlab.factors.registry import get_factor
+from factorlab.metrics.factor import evaluate_factors
+from factorlab.reproducibility import RunManifest
+from factorlab.universe.filters import UniverseFilterConfig
 
 
 LOGGER = logging.getLogger(__name__)
@@ -188,7 +188,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         del changed, changed_bars, changed_benchmark, before, after
         LOGGER.info("Past features unchanged; evaluating %d factors on synthetic data.", len(config.factors))
         recorder.current_phase = "factor_evaluation"
-        from qbot.research.metrics import factor as factor_metrics
+        from factorlab.metrics import factor as factor_metrics
         profiler = cProfile.Profile() if args.profile else None
         stage = perf_counter()
         with recorder.instrument_evaluator(factor_metrics) if args.timing_detail else nullcontext():
@@ -211,7 +211,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             with (output / "factor-evaluation-profile.txt").open("x", encoding="utf-8") as stream:
                 pstats.Stats(profiler, stream=stream).strip_dirs().sort_stats("cumulative").print_stats(50)
         if args.report:
-            from qbot.research.reports.generator import write_factor_report
+            from factorlab.reports.generator import write_factor_report
             stage = perf_counter()
             with recorder.phase("report_generation"), recorder.instrument_report():
                 write_factor_report(evaluation, output / "factor-report")

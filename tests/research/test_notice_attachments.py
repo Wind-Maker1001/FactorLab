@@ -2,8 +2,8 @@
 
 import pytest
 
-from qbot.research.errors import ProviderError
-from qbot.research.universe.notice_attachments import body_file_links, discover_notice_attachments
+from factorlab.errors import ProviderError
+from factorlab.universe.notice_attachments import body_file_links, discover_notice_attachments
 
 
 BASE = "https://www.csindex.com.cn/#/about/newsDetail?id=1"

@@ -15,7 +15,7 @@ from examples.research.phase4_synthetic_demo import (
     WARNING,
     run_demo,
 )
-from qbot.research.forward import (
+from factorlab.forward import (
     load_forward_activation,
     load_model_bundle,
     load_prediction_record,

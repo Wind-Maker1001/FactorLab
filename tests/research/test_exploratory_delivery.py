@@ -9,8 +9,8 @@ from pathlib import Path
 from PIL import Image
 import pytest
 
-from qbot.research.exploratory.contract import REQUIRED_MARKERS
-from qbot.research.exploratory.publication import verify_publication
+from factorlab.exploratory.contract import REQUIRED_MARKERS
+from factorlab.exploratory.publication import verify_publication
 
 
 EVIDENCE = Path(__file__).resolve().parents[2] / "docs/research/evidence"

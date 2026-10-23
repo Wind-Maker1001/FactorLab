@@ -9,11 +9,11 @@ import subprocess
 
 import pytest
 
-from qbot.research.data.evidence import json_bytes, sha256
-from qbot.research.data.market_qualification import (
+from factorlab.data.evidence import json_bytes, sha256
+from factorlab.data.market_qualification import (
     load_qualification, publish_qualification, qualify_market_data,
 )
-from qbot.research.errors import DataQualityError
+from factorlab.errors import DataQualityError
 from tests.research.market_data_fixture import qualification_inputs
 
 

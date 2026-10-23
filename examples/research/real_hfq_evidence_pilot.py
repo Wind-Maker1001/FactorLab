@@ -16,10 +16,10 @@ from urllib.parse import parse_qs, urlsplit
 import numpy as np
 import pandas as pd
 
-from qbot.research.data.corporate_actions.sources.akshare import parse_sina_factors
-from qbot.research.data.evidence import date, implementation_sha256, sha256
-from qbot.research.data.tdx import DAY_DTYPE, FORMAT_VERSION, safe_path
-from qbot.research.data.tdx_staging import frame_source_sha256, write_new
+from factorlab.data.corporate_actions.sources.akshare import parse_sina_factors
+from factorlab.data.evidence import date, implementation_sha256, sha256
+from factorlab.data.tdx import DAY_DTYPE, FORMAT_VERSION, safe_path
+from factorlab.data.tdx_staging import frame_source_sha256, write_new
 
 
 VERSION = "600000-hfq-diagnostic-v6-origin-contracts"

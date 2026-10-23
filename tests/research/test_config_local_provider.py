@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 import yaml
 
-from qbot.research.config import load_config
-from qbot.research.errors import ConfigurationError
+from factorlab.config import load_config
+from factorlab.errors import ConfigurationError
 
 
 def _document():

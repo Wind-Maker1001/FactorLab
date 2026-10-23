@@ -10,13 +10,13 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from qbot.research import cli
-from qbot.research.data.admission import _same_rows, assert_formal_market_admission
-from qbot.research.data.market_qualification import publish_qualification
-from qbot.research.data.providers.base import MarketQualificationEvidence
-from qbot.research.data.providers.local import LocalParquetProvider, publish_local_market_data
-from qbot.research.errors import FactorLabError, ProviderError
-from qbot.research.exploratory.contract import assert_exploratory_only, REQUIRED_MARKERS
+from factorlab import cli
+from factorlab.data.admission import _same_rows, assert_formal_market_admission
+from factorlab.data.market_qualification import publish_qualification
+from factorlab.data.providers.base import MarketQualificationEvidence
+from factorlab.data.providers.local import LocalParquetProvider, publish_local_market_data
+from factorlab.errors import FactorLabError, ProviderError
+from factorlab.exploratory.contract import assert_exploratory_only, REQUIRED_MARKERS
 from tests.research.market_data_fixture import qualification_inputs
 from tests.research.test_cli_phase2 import _config, _inputs, _Run, _write_verified_inputs
 
@@ -124,7 +124,7 @@ def test_actual_gate_binds_requested_scope_before_rejecting_synthetic_qualificat
 
 def test_resealed_pass_flag_cannot_override_financial_replay(package, tmp_path):
     import shutil
-    from qbot.research.data.evidence import json_bytes, sha256
+    from factorlab.data.evidence import json_bytes, sha256
     target = tmp_path / "copy"
     shutil.copytree(package[-1].manifest.parent, target)
     manifest = target / "manifest.json"
@@ -285,7 +285,7 @@ def test_forward_realised_price_evaluation_cannot_skip_qualification(cached):
 
 
 def test_default_five_year_protocol_keeps_pit_blocked():
-    from qbot.research.config import load_config
+    from factorlab.config import load_config
     config = load_config(Path(__file__).resolve().parents[2] / "configs/research/csi500_5y.yaml")
     dates = pd.bdate_range(config.data.start, periods=3)
     with pytest.raises(FactorLabError, match="POINT-IN-TIME UNIVERSE REQUIRED"):

@@ -4,20 +4,20 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qbot.research.exploratory.market_structure.adapters import ResearchFeatureAdapter
-from qbot.research.exploratory.market_structure.aggregation import aggregate_intraday
-from qbot.research.exploratory.market_structure.contracts import (
+from factorlab.exploratory.market_structure.adapters import ResearchFeatureAdapter
+from factorlab.exploratory.market_structure.aggregation import aggregate_intraday
+from factorlab.exploratory.market_structure.contracts import (
     ContractError,
     ComputeRequest,
 )
-from qbot.research.exploratory.market_structure.features import compute_features
-from qbot.research.exploratory.market_structure.registry import build_default_registry
-from qbot.research.exploratory.market_structure.store import (
+from factorlab.exploratory.market_structure.features import compute_features
+from factorlab.exploratory.market_structure.registry import build_default_registry
+from factorlab.exploratory.market_structure.store import (
     AsOfStore,
     memberships,
     window_requests,
 )
-from qbot.research.exploratory.market_structure.synthetic import make_synthetic_data
+from factorlab.exploratory.market_structure.synthetic import make_synthetic_data
 
 
 def value(result, name, entity):
@@ -243,7 +243,7 @@ def test_catalog_and_adapter_are_not_production_admission(manual):
     with pytest.raises(ContractError, match="projection"):
         adapter.build_view(f.values, ["IND_RET"])
     assert len(adapter.model_interfaces) == 4
-    from qbot.research.factors.registry import FACTOR_REGISTRY, get_factor
+    from factorlab.factors.registry import FACTOR_REGISTRY, get_factor
 
     assert len(FACTOR_REGISTRY) == 14
     for spec in registry.specs:

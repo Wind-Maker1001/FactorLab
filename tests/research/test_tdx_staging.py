@@ -9,10 +9,10 @@ import struct
 import pandas as pd
 import pytest
 
-from qbot.research.data.providers.local import _strict_bars
-from qbot.research.errors import ProviderError
-from qbot.research.data.tdx import TdxError, audit_day
-from qbot.research.data.tdx_staging import (
+from factorlab.data.providers.local import _strict_bars
+from factorlab.errors import ProviderError
+from factorlab.data.tdx import TdxError, audit_day
+from factorlab.data.tdx_staging import (
     convert_day, frame_source_sha256, load_calendar, run_audit, staging_root,
 )
 from examples.research.audit_tdx_local import main
@@ -76,7 +76,7 @@ def test_corrupt_existing_generation_refused_never_replaced(source, tmp_path, ta
 
 
 def test_atomic_publish_failure_has_no_published_generation(source, tmp_path, monkeypatch):
-    import qbot.research.data.tdx_staging as module
+    import factorlab.data.tdx_staging as module
     monkeypatch.setattr(module.os, "rename", lambda *args: (_ for _ in ()).throw(OSError("publish failed")))
     with pytest.raises(OSError, match="publish failed"):
         convert_day(item(source), tmp_path / "staging")
@@ -86,7 +86,7 @@ def test_atomic_publish_failure_has_no_published_generation(source, tmp_path, mo
 
 
 def test_validation_failure_never_publishes(source, tmp_path, monkeypatch):
-    import qbot.research.data.tdx_staging as module
+    import factorlab.data.tdx_staging as module
     monkeypatch.setattr(module, "frame_source_sha256", lambda frame: "bad")
     with pytest.raises(TdxError, match="ROUNDTRIP"):
         convert_day(item(source), tmp_path / "staging")
