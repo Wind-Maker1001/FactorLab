@@ -1,0 +1,2 @@
+# The checksum binds the original bytes, independent of checkout line endings.
+factor_reference.py -text

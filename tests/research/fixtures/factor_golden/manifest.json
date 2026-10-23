@@ -1,0 +1,33 @@
+{
+  "synthetic_only": true,
+  "research_conclusions_permitted": false,
+  "reference_source_sha256": "160c9869f962b28434ff7124418463e7e2530bad3f006d3879660ce1cfdab2e9",
+  "atol": 1e-12,
+  "rtol": 1e-12,
+  "sha256": {
+    "normal/autocorrelation.parquet": "a50317a5e3891c328a5d8bdcda9ccdd3b448ad88235ea12ae7eac98ae488079d",
+    "normal/correlation.parquet": "980e4df0f2974fdfb80856362a9a9de730d46db47ca6a6edad7dca98a7018828",
+    "normal/daily_ic.parquet": "f77db36468388bcc8bd3d4d69ce5f3c19f23c045fe14efe25684b676f0600d90",
+    "normal/input.parquet": "7966283e648b7335b4f41cdaff60360a93155dc73e7ff4d9ebbe5433dc485d88",
+    "normal/quantile_returns.parquet": "36317c05ea146aa69279f1af0989106f21115b195f7b85417796abbab92c1520",
+    "normal/summary.parquet": "b1ce174779db09590666699559dee6cae73dc985047497c21757b8dc232a3533",
+    "normal/traces.json": "2db99d469c497dc91e3c833c8602cebc18ffb6c53d4c1feaad1079875a7a730f",
+    "normal/turnover.parquet": "17c4f4364aa800e57a0823f18bbb69a8a91c58d3a199fa9f4d893feaa0614b40",
+    "pool_change/autocorrelation.parquet": "4f722fdf136ae0c757c947cb8245ffc54bf5fb2194469880ba80e2ceb5ce967c",
+    "pool_change/correlation.parquet": "a3fd151fac04466586ff479289e446946cf1fba935432cef735ec376e238d9d5",
+    "pool_change/daily_ic.parquet": "fca86dcbffd3a3a8f128ee376f6b767fcd9b43213653704647f8eb8c24ee8d14",
+    "pool_change/input.parquet": "e88e937a4746df7b56ef299e9683efe0d2dee5298c4a67c4975c826f1f53f548",
+    "pool_change/quantile_returns.parquet": "45f2ef6ce9dbc448b500b994ae198947bbad9f32d5dc9f55429de0b975ff14e0",
+    "pool_change/summary.parquet": "25a4161b67d50188a42743a233fa1e760827515ea1b9798c7e00026022e20002",
+    "pool_change/traces.json": "8dc58ca1bdd71d4cd04dfac2a8add4f0838dfad2fe4c41a6fd13e5924b0b95c9",
+    "pool_change/turnover.parquet": "29d7e16110b06657c22d387225e8613d0bc68b73a1adb10269360d5950a7ae41",
+    "ties/autocorrelation.parquet": "9703c4264a3090ed5934e932b2f90d83a724f5304d1331c9964ef8cfd151daf6",
+    "ties/correlation.parquet": "9fc62930cba5923e4abd2f066e15f69499b462cc0b06418726761ccc91a475be",
+    "ties/daily_ic.parquet": "9dc11da827950824c31a959b625194781db74fe8fd7368a3b208fc090d50fcc3",
+    "ties/input.parquet": "75da715ce8e2224267566df0b456f0f2ef32f9a772d447e50b6b89237c8bbb95",
+    "ties/quantile_returns.parquet": "82099d0dd0ef3abc6fccdd71fc531561ae5f4c1338057255c2b2d1c3f7ca935b",
+    "ties/summary.parquet": "e2deb67a57177ea83756476aa84ef578730ed4430884dde67eb139e630e42519",
+    "ties/traces.json": "35a67d217e5adfc0ac9d85e0599862589439d2cc9d3af9fb9368def728684632",
+    "ties/turnover.parquet": "12f199f57428fb8a1e75448d74bbbb4c2c66143210717a030adfd90a4ee42b09"
+  }
+}

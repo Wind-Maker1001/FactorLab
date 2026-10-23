@@ -1,0 +1,14 @@
+{
+  "synthetic_only": true,
+  "research_conclusions_permitted": false,
+  "oracle": "Manually derived rational arithmetic, independent of production implementation",
+  "cases": [
+    {"name": "cash", "close": "100", "cash": "2", "bonus": "0", "capitalization": "0", "rights": "0", "kind": "CASH_DIVIDEND", "post_open": "99", "affine_multiplier": "1", "affine_offset": "2", "affine_open": "101", "ratio_multiplier": "50/49", "ratio_open": "4950/49"},
+    {"name": "bonus", "close": "100", "cash": "0", "bonus": "1", "capitalization": "0", "rights": "0", "kind": "BONUS", "post_open": "51", "affine_multiplier": "2", "affine_offset": "0", "affine_open": "102", "ratio_multiplier": "2", "ratio_open": "102"},
+    {"name": "capitalization", "close": "100", "cash": "0", "bonus": "0", "capitalization": "0.5", "rights": "0", "kind": "CAPITALIZATION", "post_open": "70", "affine_multiplier": "1.5", "affine_offset": "0", "affine_open": "105", "ratio_multiplier": "1.5", "ratio_open": "105"},
+    {"name": "rights", "close": "100", "cash": "0", "bonus": "0", "capitalization": "0", "rights": "0.5", "rights_price": "20", "kind": "RIGHTS", "post_open": "80", "affine_multiplier": "1.5", "affine_offset": "-10", "affine_open": "110", "ratio_multiplier": "15/11", "ratio_open": "1200/11"},
+    {"name": "split", "close": "100", "cash": "0", "bonus": "0", "capitalization": "0", "rights": "0", "split_ratio": "4", "kind": "SPLIT", "post_open": "26", "affine_multiplier": "4", "affine_offset": "0", "affine_open": "104", "ratio_multiplier": "4", "ratio_open": "104"},
+    {"name": "consolidation", "close": "100", "cash": "0", "bonus": "0", "capitalization": "0", "rights": "0", "split_ratio": "0.5", "kind": "CONSOLIDATION", "post_open": "202", "affine_multiplier": "0.5", "affine_offset": "0", "affine_open": "101", "ratio_multiplier": "0.5", "ratio_open": "101"},
+    {"name": "composite", "close": "100", "cash": "2", "bonus": "0.2", "capitalization": "0.3", "rights": "0.5", "rights_price": "20", "kind": "COMPOSITE", "post_open": "55", "affine_multiplier": "2", "affine_offset": "-8", "affine_open": "102", "ratio_multiplier": "50/27", "ratio_open": "2750/27"}
+  ]
+}

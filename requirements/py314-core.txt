@@ -1,0 +1,11 @@
+# Controlled upgrade set; optional market suppliers are intentionally separate.
+numpy==2.3.4
+pandas==2.3.3
+scipy==1.16.3
+scikit-learn==1.7.2
+pyarrow==22.0.0
+matplotlib==3.10.7
+PyYAML==6.0.3
+lightgbm==4.6.0
+xgboost==3.1.1
+tzdata==2026.4

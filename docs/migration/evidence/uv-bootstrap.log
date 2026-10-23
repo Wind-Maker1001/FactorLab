@@ -1,0 +1,9 @@
+Collecting uv==0.9.5
+  Downloading uv-0.9.5-py3-none-win_amd64.whl.metadata (12 kB)
+Downloading uv-0.9.5-py3-none-win_amd64.whl (21.4 MB)
+   ---------------------------------------- 21.4/21.4 MB 207.1 kB/s  0:00:40
+Installing collected packages: uv
+Successfully installed uv-0.9.5
+
+[notice] A new release of pip is available: 26.1.2 -> 26.2.2
+[notice] To update, run: python.exe -m pip install --upgrade pip

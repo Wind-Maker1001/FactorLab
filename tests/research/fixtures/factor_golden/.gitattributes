@@ -1,0 +1,3 @@
+# These small, checksummed fixtures must survive an offline checkout unchanged.
+*.parquet -filter -diff -merge -text
+*.json -text

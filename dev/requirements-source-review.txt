@@ -1,0 +1,3 @@
+# Optional, offline official-notice PDF review only (Python >=3.9).
+# The research engine and ordinary CLI do not import this reader.
+pypdf==6.13.3

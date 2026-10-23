@@ -1,0 +1,11 @@
+{
+  "schema": "FACTORLAB_ADJUSTMENT_GOLDEN_V1",
+  "synthetic_only": true,
+  "research_conclusions_permitted": false,
+  "oracle": "manually frozen rational calculations; no production adjustment imports",
+  "sha256": {
+    "scenarios.json": "b5554a7ba3cef5ce6db3736f524bb1211a4f026b63f79b6191e0120474691b8c"
+  },
+  "atol": 1e-12,
+  "rtol": 1e-12
+}

@@ -1,0 +1,6 @@
+# Preserve the exact LF bytes used by the reviewed Windows implementation.
+__init__.py text eol=lf
+__main__.py text eol=lf
+fingerprint.py text eol=lf
+native.py text eol=lf
+profiles.py text eol=lf

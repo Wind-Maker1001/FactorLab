@@ -1,0 +1,3 @@
+# FactorLab independent candidate
+
+NO LIVE MONEY. PIT_UNVERIFIED. FORMAL_ADMISSION_BLOCKED.

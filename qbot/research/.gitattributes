@@ -1,0 +1,2 @@
+# Keep this new, receipt-bound checker identical on Windows and Linux.
+universe/event_evidence.py text eol=lf

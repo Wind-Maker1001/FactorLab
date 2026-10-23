@@ -1,0 +1,16 @@
+*.h5 filter=lfs diff=lfs merge=lfs -text
+plugins/investool/investool* filter=lfs diff=lfs merge=lfs -text
+*.parquet filter=lfs diff=lfs merge=lfs -text
+dev/wxPython-4.2.0-cp38-cp38-linux_x86_64.whl filter=lfs diff=lfs merge=lfs -text
+dev/wxPython-4.2.0-cp39-cp39-linux_x86_64.whl filter=lfs diff=lfs merge=lfs -text
+dev/wxPython-4.2.1-cp38-cp38-linux_x86_64.whl filter=lfs diff=lfs merge=lfs -text
+# Freeze derivative publication bytes so receipt hashes survive Windows/Linux checkout.
+docs/research/evidence/exploratory-factor-v1/** -text
+docs/research/evidence/exploratory-factor-v2/** -text
+docs/research/evidence/exploratory-statistical-audit-v2/** -text
+docs/research/evidence/exploratory-statistical-audit-v3/** -text
+docs/research/evidence/factor-discovery-synthetic-v1/** -text whitespace=cr-at-eol
+docs/research/evidence/factor-discovery-private-v1/** -text whitespace=cr-at-eol
+docs/research/evidence/factor-discovery-synthetic-v2/** -text whitespace=cr-at-eol
+docs/research/evidence/factor-discovery-private-v2/** -text whitespace=cr-at-eol
+

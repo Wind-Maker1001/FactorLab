@@ -1,0 +1,69 @@
+# Static, verified local inputs ONLY. Not a ready-made dataset or research result.
+# Import genuine bars, daily PIT membership and security status before running.
+project:
+  name: qbot-factorlab-local-smoke-test-only
+seed: 42
+live_trading: false
+paths:
+  data_root: data/research/local_smoke
+  results_root: results/examples/local_smoke
+  market_input_root: data/research/local_sources/smoke
+data:
+  start: '2024-01-02'
+  end: '2024-05-17'
+  provider: local_parquet
+  benchmark: 000905.SH
+  adjustment: hfq
+  calendar_source: benchmark
+  warmup_trading_days: 130
+universe:
+  name: CSI500
+  index_symbol: 000905.SH
+  provider: local
+  status_provider: local
+  point_in_time: true
+  expected_member_count: 500
+  min_listed_days: 120
+  exclude_st: true
+  exclude_suspended: true
+  zero_volume_window_days: 20
+  data_quality_window_days: 60
+  min_valid_ohlcv_ratio: 0.8
+label:
+  holding_days: 5
+  entry_price: next_open
+  target: excess_return
+preprocessing:
+  winsorization: mad
+  mad_multiplier: 5.0
+  zscore_ddof: 0
+evaluation:
+  quantiles: 5
+  min_cross_section: 20
+inference:
+  enabled: true
+  confidence_level: 0.95
+  hac_lags: 20
+  bootstrap_block_days: 20
+  bootstrap_repetitions: 2000
+  min_valid_days: 60
+  min_coverage: 0.8
+market_regime:
+  enabled: false
+forward:
+  enabled: false
+factors:
+  - REV1
+  - REV5
+  - MOM20
+  - MOM60
+  - VOL5
+  - VOL20
+  - VOL60
+  - TURN5
+  - TURN20
+  - VOLUME_RATIO
+  - AMIHU20
+  - PRICE_MA20
+  - MA5_MA20
+  - MA20_MA60

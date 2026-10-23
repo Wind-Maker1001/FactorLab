@@ -1,0 +1,2 @@
+# Small synthetic Golden tables are source fixtures, not runtime research data.
+!**/*.parquet

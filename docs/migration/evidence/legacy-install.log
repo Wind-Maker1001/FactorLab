@@ -1,0 +1,15 @@
+Processing D:\Code\FactorLab-independent-candidate
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: factorlab
+  Building wheel for factorlab (pyproject.toml): started
+  Building wheel for factorlab (pyproject.toml): finished with status 'done'
+  Created wheel for factorlab: filename=factorlab-0.1.0.dev0-py3-none-any.whl size=566290 sha256=81ba8ac50cc907eedfb97640f4f9cd8c947940c2f84273756c21fc63706131c5
+  Stored in directory: e:\cache\pip\wheels\13\9c\83\1358405f0a7e7d92d5ba07288b18b0f797b66acb4d6a5b97b7
+Successfully built factorlab
+Installing collected packages: factorlab
+Successfully installed factorlab-0.1.0.dev0

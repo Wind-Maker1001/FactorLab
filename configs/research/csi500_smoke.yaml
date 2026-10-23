@@ -1,0 +1,233 @@
+# SMOKE TEST ONLY. This short window must not be used for research conclusions.
+# BaoStock PIT is currently fail-closed; see docs/research/BAOSTOCK_SOURCE_AUDIT.md.
+project:
+  name: qbot-factorlab-smoke-test-only
+
+seed: 42
+live_trading: false
+
+paths:
+  data_root: data/research
+  results_root: results
+
+data:
+  start: '2024-01-02'
+  # Extends beyond the first 2+1+1 month fold so its final five-day label
+  # window is observable; this remains a software smoke interval only.
+  end: '2024-05-17'
+  provider: akshare
+  benchmark: 000905.SH
+  adjustment: hfq
+  calendar_source: benchmark
+  warmup_trading_days: 130
+
+universe:
+  name: CSI500
+  index_symbol: 000905.SH
+  provider: baostock
+  status_provider: baostock
+  point_in_time: true
+  expected_member_count: 500
+  min_listed_days: 120
+  exclude_st: true
+  exclude_suspended: true
+  zero_volume_window_days: 20
+  data_quality_window_days: 60
+  min_valid_ohlcv_ratio: 0.8
+
+cache:
+  format: parquet
+  per_symbol: true
+  skip_existing: true
+  atomic_writes: true
+  lock_timeout_seconds: 10
+
+network:
+  max_retries: 3
+  backoff_seconds: [1, 2, 4]
+  request_interval_seconds: 0.25
+  timeout_seconds: 30
+
+label:
+  holding_days: 5
+  entry_price: next_open
+  target: excess_return
+
+preprocessing:
+  winsorization: mad
+  mad_multiplier: 5.0
+  zscore_ddof: 0
+
+evaluation:
+  quantiles: 5
+  min_cross_section: 20
+
+inference:
+  enabled: true
+  confidence_level: 0.95
+  hac_lags: 20
+  bootstrap_block_days: 20
+  bootstrap_repetitions: 2000
+  min_valid_days: 60
+  min_coverage: 0.8
+
+models:
+  factor_score:
+    normalize_by_absolute_weight: true
+    weights:
+      REV1: 1.0
+      REV5: 1.0
+      MOM20: 1.0
+      MOM60: 1.0
+      VOL5: -1.0
+      VOL20: -1.0
+      VOL60: -1.0
+      TURN5: 0.5
+      TURN20: 0.5
+      VOLUME_RATIO: 0.5
+      AMIHU20: -1.0
+      PRICE_MA20: 1.0
+      MA5_MA20: 1.0
+      MA20_MA60: 1.0
+  ridge:
+    alphas: [0.1, 1.0, 10.0, 100.0]
+    fit_intercept: true
+    max_iter: 10000
+    tolerance: 0.0001
+  lightgbm:
+    n_jobs: 1
+    candidates:
+      - num_leaves: 7
+        max_depth: 3
+        learning_rate: 0.08
+        n_estimators: 20
+        feature_fraction: 0.8
+        bagging_fraction: 0.8
+        bagging_freq: 1
+        reg_alpha: 0.0
+        reg_lambda: 1.0
+        min_child_samples: 10
+      - num_leaves: 15
+        max_depth: 4
+        learning_rate: 0.05
+        n_estimators: 40
+        feature_fraction: 0.8
+        bagging_fraction: 0.8
+        bagging_freq: 1
+        reg_alpha: 0.1
+        reg_lambda: 2.0
+        min_child_samples: 10
+  xgboost:
+    n_jobs: 1
+    candidates:
+      - max_depth: 3
+        learning_rate: 0.08
+        n_estimators: 20
+        subsample: 0.8
+        colsample_bytree: 0.8
+        reg_alpha: 0.0
+        reg_lambda: 1.0
+        min_child_weight: 1.0
+      - max_depth: 4
+        learning_rate: 0.05
+        n_estimators: 40
+        subsample: 0.8
+        colsample_bytree: 0.8
+        reg_alpha: 0.1
+        reg_lambda: 2.0
+        min_child_weight: 2.0
+
+market_regime:
+  enabled: true
+
+# Disabled in smoke: synthetic/offline runs are never forward evidence.
+forward:
+  evaluation_version_policy: FIRST_ON_TIME
+  enabled: false
+  activation_date: null
+  model_name: ridge
+  model_version: null
+  training_asof: null
+  parameter_candidate_index: 0
+  timezone: Asia/Shanghai
+  market_close_hour: 15
+  market_close_minute: 30
+  require_clean_worktree: true
+
+validation:
+  initial_train_months: 2
+  validation_months: 1
+  test_months: 1
+  step_months: 1
+  purge_days: 5
+  embargo_days: 5
+
+portfolio:
+  top_k: 20
+  rebalance_days: 5
+  weighting: equal
+
+backtest:
+  initial_cash: 1000000
+  board_lot: 100
+  annualization_days: 252
+  risk_free_rate: 0.0
+  t_plus_one: true
+  reject_suspended: true
+  price_limit_tolerance_bps: 5
+  price_limits:
+    - board: main
+      start: '1990-01-01'
+      end: null
+      normal_limit_pct: 0.10
+      st_limit_pct: 0.05
+      tick_size: 0.01
+    - board: chinext
+      start: '2009-10-30'
+      end: '2020-08-23'
+      normal_limit_pct: 0.10
+      st_limit_pct: 0.05
+      tick_size: 0.01
+    - board: chinext
+      start: '2020-08-24'
+      end: null
+      normal_limit_pct: 0.20
+      st_limit_pct: 0.20
+      tick_size: 0.01
+    - board: star
+      start: '2019-07-22'
+      end: null
+      normal_limit_pct: 0.20
+      st_limit_pct: 0.20
+      tick_size: 0.01
+
+fees:
+  commission_bps: 3
+  minimum_commission_cny: 5
+  slippage_bps: 5
+  transfer_fee_bps: 0
+  buy_fee_bps: 0
+  sell_fee_bps: 0
+  stamp_duty:
+    - start: '2021-09-13'
+      end: '2023-08-27'
+      sell_bps: 10
+    - start: '2023-08-28'
+      end: null
+      sell_bps: 5
+
+factors:
+  - REV1
+  - REV5
+  - MOM20
+  - MOM60
+  - VOL5
+  - VOL20
+  - VOL60
+  - TURN5
+  - TURN20
+  - VOLUME_RATIO
+  - AMIHU20
+  - PRICE_MA20
+  - MA5_MA20
+  - MA20_MA60

@@ -1,0 +1,15 @@
+# Qbot FactorLab Phase 1-4 (Python 3.9) isolated research environment.
+# Do not combine this file with the Legacy GUI/easyquant dependency set.
+numpy==1.26.4
+pandas==2.2.3
+pyarrow==17.0.0
+scipy==1.13.1
+scikit-learn==1.5.2
+matplotlib==3.8.4
+akshare==1.18.88
+baostock==0.8.9
+lightgbm==4.5.0
+xgboost==2.1.4
+PyYAML==6.0.2
+pytest==8.3.5
+tzdata==2026.4
