@@ -37,8 +37,13 @@ def main():
               "status": git(source, "status", "--porcelain=v1").decode()}
     subprocess.run(["git", "clone", "--shared", "--no-checkout", str(source), str(snapshot)], check=True, env=env, capture_output=True)
     git(snapshot, "read-tree", SOURCE_COMMIT)
-    # Exact Git-exported bytes: disable worktree EOL conversion for this scratch clone.
-    git(snapshot, "config", "core.autocrlf", "false")
+    # The original C01 registry pins platform-specific runtime bytes. Preserve
+    # the real source checkout policy, never manufacture historical preimages.
+    eol = subprocess.run(["git", "-C", str(source), "config", "--get", "core.autocrlf"],
+                         env=env, capture_output=True, text=True).stdout.strip() or "false"
+    if eol not in ("true", "false", "input"):
+        raise ValueError("Unsupported original checkout EOL policy")
+    git(snapshot, "config", "core.autocrlf", eol)
     git(snapshot, "checkout-index", "--all", "--force")
     entries = git(snapshot, "ls-files", "--stage").decode()
     gitlinks = [line for line in entries.splitlines() if line.startswith("160000 ")]
@@ -49,7 +54,7 @@ def main():
                "source_before": before, "snapshot_raw_sha256": bodies, "git_entries": entries,
                "scope": "Original Git objects and original tests, no path synthesis or receipt edits",
                "approval": "BLOCKED", "financial_admission": False,
-               "submodule_gitlinks_not_replayed": gitlinks}
+               "submodule_gitlinks_not_replayed": gitlinks, "source_checkout_autocrlf": eol}
     (out/"snapshot-identity.json").write_text(json.dumps(receipt, indent=2), encoding="utf-8")
     print("Prepared genuine archive", snapshot, len(bodies), "files", flush=True)
     if a.prepare_only:

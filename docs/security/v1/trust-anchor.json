@@ -493,7 +493,7 @@
     "tools/migration/summarize_evidence.py": "45463f7679a3dc81fddfc41258ac4e40375c570ce1331b70149ba2897559a87a",
     "tools/migration/verify_preservation.py": "b80ca81dfcc774d08fa56e66b2a32c665fda4f8d9b334b909b6a3af6e5b42f34",
     "tools/security/acceptance_report.py": "708e55572ea957a687f3d1630066314ea28f3bd74934c958a2204f3ac033cf42",
-    "tools/security/archive_replay.py": "9484cdbb281799db4fcdf2c3dafd886c26abc86c3cd647bacc015a3b58080254",
+    "tools/security/archive_replay.py": "b11f1971adc6f2f134d106d333398b34491cee6a8fd73d551f0d4873b1da72d0",
     "tools/security/fixed_validator.py": "4d12491aa114a48d83997feb90dfaf60b094d4151814b914ed8541668b38674c",
     "tools/security/seal_review_material.py": "b0bb963449ac69718256ae550abec46a0120898d14f7899a4536a1916d06cd67"
   },
