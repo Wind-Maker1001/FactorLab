@@ -70,6 +70,9 @@ def scan(directory, output):
                     findings.append({'file':name,'reason':'prohibited data/legacy directory'})
             if path.suffix in ('.ipynb','.log','.xml','.pem','.key'):
                 findings.append({'file':name,'reason':'prohibited private/notebook/raw-evidence file'})
+            if '/requirements/' in '/'+name and path.suffix=='.txt' and re.search(
+                rb'(?im)^(?:[^#\r\n]+\s@\sfile:|\s*-e\s+|\s*[A-Za-z]:[/\\])',body):
+                findings.append({'file':name,'reason':'nonportable local dependency URL or path'})
             if path.suffix=='.parquet':
                 parquet.append(name)
                 logical=name[name.index('tests/research/fixtures/'):] if 'tests/research/fixtures/' in name else name

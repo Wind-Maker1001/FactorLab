@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[2]
 EVIDENCE=ROOT/'docs/migration/evidence'
 CATALOG=runpy.run_path(str(ROOT/'tools/ci/run_checks.py'),run_name='factorlab_ci_catalog')
-JOBS=('runtime314-final-r4','runtime313-final-r3','full314-final-r3')
+JOBS=('runtime314-final-r5','runtime313-final-r4','full314-final-r4')
 
 
 def reason(case):
@@ -66,8 +66,8 @@ def main():
             'nonpassing':nonpassing})
     unresolved=[dict(job=result['job'],**case) for result in results for case in result['nonpassing']
                 if case['classification']=='UNRESOLVED_SOFTWARE_FAILURE']
-    packaging=json.loads((ROOT/'local-ci/packaging314-final-r6/receipt.json').read_text(encoding='utf-8'))
-    attacks=json.loads((ROOT/'local-ci/archive-attacks314-r5/receipt.json').read_text(encoding='utf-8'))
+    packaging=json.loads((ROOT/'local-ci/packaging314-final-r7/receipt.json').read_text(encoding='utf-8'))
+    attacks=json.loads((ROOT/'local-ci/archive-attacks314-r6/receipt.json').read_text(encoding='utf-8'))
     compact=json.loads((EVIDENCE/'test-summary-compact.json').read_text(encoding='utf-8'))
     review=json.loads((EVIDENCE/'full-failure-review.json').read_text(encoding='utf-8'))
     assert review['junit_sha256']==results[2]['junit_sha256']

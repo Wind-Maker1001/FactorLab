@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[2]
 BASELINE=ROOT/'docs/migration/evidence/baseline/full-suite-r2.xml'
-FINAL=ROOT/'local-ci/full314-final-r3/tests.xml'
+FINAL=ROOT/'local-ci/full314-final-r4/tests.xml'
 
 
 def inventory(path):

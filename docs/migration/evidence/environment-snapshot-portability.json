@@ -1,0 +1,22 @@
+{
+  "status": "PASS_DERIVED_PORTABLE_DEPENDENCIES",
+  "records": [
+    {
+      "original_path": "requirements/py313-win64-full.lock.txt",
+      "preserved_original": "docs/migration/evidence/environments/py313-win64-full.original.txt",
+      "original_sha256": "de4774c1f212dedda1a681c9bb35995b623004714bc4f393ce516097a41f8b39",
+      "derived_dependency_only_sha256": "03b0ceb82844f0f4ce6abaa40c3a82bfbed528b4e274f2722b867630dddd13ad",
+      "removed_project_local_url_count": 1,
+      "original_bytes_unchanged": true
+    },
+    {
+      "original_path": "requirements/py314-win64-full.lock.txt",
+      "preserved_original": "docs/migration/evidence/environments/py314-win64-full.original.txt",
+      "original_sha256": "200ee37f87fa34522e27fcc7e8a195a00341192f5a35f27928545de87c3477ed",
+      "derived_dependency_only_sha256": "0d8b846d7e64297efc527022a266f08044a3a0a4113aba190364bfabc7284bd1",
+      "removed_project_local_url_count": 1,
+      "original_bytes_unchanged": true
+    }
+  ],
+  "scope": "Original private inventories preserved, new dependency-only lists explicitly derived; not rewritten historical evidence"
+}

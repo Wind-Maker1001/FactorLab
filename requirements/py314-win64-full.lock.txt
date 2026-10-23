@@ -1,3 +1,5 @@
+# Derived dependency-only version snapshot; install FactorLab separately from the reviewed source or artifact.
+# Original installer URL inventory is preserved privately under docs/migration/evidence/environments.
 akshare==1.18.88
 baostock==0.8.9
 beautifulsoup4==4.15.0
@@ -15,7 +17,6 @@ curl_cffi==0.16.3
 cycler==0.12.1
 decorator==5.3.1
 et_xmlfile==2.0.0
-factorlab @ file:///D:/Code/FactorLab-independent-candidate
 flake8==7.3.0
 fonttools==4.67.0
 html5lib==1.1

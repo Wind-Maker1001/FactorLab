@@ -19,6 +19,8 @@ def main():
     args=parser.parse_args()
     output=args.output.resolve()
     output.mkdir(parents=True,exist_ok=False)
+    if scan(args.distributions,output/'baseline-scan.json'):
+        raise AssertionError('archive attack checks require a passing unmodified baseline')
     wheel=next(args.distributions.glob('*.whl'))
     source=next(args.distributions.glob('*.tar.gz'))
     cases={
@@ -36,6 +38,8 @@ def main():
         'windows_device':('factorlab/CON.txt',b'synthetic attack'),
         'windows_trailing_dot':('factorlab/demo.py.',b'# synthetic attack\n'),
         'windows_trailing_space':('factorlab/demo.py ',b'# synthetic attack\n'),
+        'local_dependency_url':('factorlab-0.1.0.dev0/requirements/private.lock.txt',
+                                b'factorlab @ file:///D:/private/project\n'),
         'unbound_golden':('tests/research/fixtures/factor_golden/real.parquet',b'synthetic unbound sentinel'),
         'duplicate_zip':('duplicate',b''),
         'zip_link':('factorlab/link.py',b'../../outside'),
