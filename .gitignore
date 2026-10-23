@@ -9,3 +9,8 @@ dist/
 local-*/
 results/
 .venv*/
+# Local raw audit evidence can contain absolute paths; preserve on disk only.
+docs/migration/evidence/**/*.log
+docs/migration/evidence/**/*.xml
+docs/migration/evidence/*.log
+docs/migration/evidence/*.xml

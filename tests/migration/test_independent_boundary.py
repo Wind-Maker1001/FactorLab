@@ -62,3 +62,21 @@ def test_new_identity_is_explicitly_non_authorizing_and_includes_resources():
     assert identity['trust_root_review']=='BLOCKED_INDEPENDENT_REVIEW_REQUIRED'
     assert identity['resource_sha256']['resources/csi500_5y.yaml']
     assert all(name.startswith('src/factorlab/') for name in identity['source_sha256'])
+
+
+def test_source_identity_ignores_external_git_overrides(monkeypatch):
+    import subprocess
+    expected = subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+    monkeypatch.setenv('GIT_DIR', 'nonexistent-impostor-repository')
+    monkeypatch.setenv('GIT_WORK_TREE', 'nonexistent-impostor-worktree')
+    assert software_identity()['git_commit'] == expected
+
+
+def test_discovery_failed_git_status_is_unknown(monkeypatch):
+    from factorlab.exploratory.factor_discovery import receipts
+    monkeypatch.setattr('factorlab._identity.software_identity', lambda: {'git_commit':'observed-head'})
+    def unavailable(*args, **kwargs):
+        import subprocess
+        raise subprocess.CalledProcessError(1, args[0])
+    monkeypatch.setattr(receipts.subprocess, 'check_output', unavailable)
+    assert receipts.code_evidence()['source_tree_dirty'] is None

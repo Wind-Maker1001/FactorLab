@@ -51,7 +51,7 @@ def code_evidence():
         path.relative_to(repo).as_posix(): file_sha256(path) for path in sorted(paths)
     }
 
-    from factorlab._identity import package_root, software_identity
+    from factorlab._identity import git_environment, software_identity
     source_git = software_identity()["git_commit"]
 
     def git(*args):
@@ -64,6 +64,7 @@ def code_evidence():
                 text=True,
                 encoding="utf-8",
                 stderr=subprocess.DEVNULL,
+                env=git_environment(),
             ).strip()
         except (subprocess.CalledProcessError, OSError):
             return None
@@ -74,21 +75,14 @@ def code_evidence():
             versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
             versions[name] = "NOT_INSTALLED"
+    status = git('status', '--porcelain', '--untracked-files=normal', '--',
+                 'src/factorlab', 'tests/research')
     return {
         "source_sha256": hashes,
         "source_digest": digest(hashes),
         "git_head": git("rev-parse", "HEAD"),
         "git_branch": git("branch", "--show-current"),
-        "source_tree_dirty": (None if source_git is None else bool(
-            git(
-                "status",
-                "--porcelain",
-                "--untracked-files=normal",
-                "--",
-                "src/factorlab",
-                "tests/research",
-            )
-        )),
+        "source_tree_dirty": None if status is None else bool(status),
         "python": sys.version,
         "platform": platform.platform(),
         "dependencies": versions,

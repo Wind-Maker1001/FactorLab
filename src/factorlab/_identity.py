@@ -1,11 +1,21 @@
 """Candidate software identity, never a financial authorization mechanism."""
 import hashlib
 import importlib.metadata
+import os
 from pathlib import Path
 import subprocess
 
 BASELINE_SHA = '0ec7af5870c54a0ee202fbceeb97b7d87c293411'
 MIGRATION_PROTOCOL = 'FACTORLAB_NAMESPACE_MIGRATION_V1'
+
+
+def git_environment():
+    """Bind source queries to their explicit checkout, independent of shell Git overrides."""
+    environment = dict(os.environ)
+    for name in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_COMMON_DIR',
+                 'GIT_OBJECT_DIRECTORY', 'GIT_ALTERNATE_OBJECT_DIRECTORIES'):
+        environment.pop(name, None)
+    return environment
 
 
 def package_root():
@@ -28,7 +38,7 @@ def software_identity():
     if root/'src/factorlab' == package and (root/'.git').exists():
         try:
             commit = subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],
-                stderr=subprocess.DEVNULL,text=True).strip()
+                stderr=subprocess.DEVNULL,text=True,env=git_environment()).strip()
         except (OSError,subprocess.CalledProcessError):
             pass
     try:
