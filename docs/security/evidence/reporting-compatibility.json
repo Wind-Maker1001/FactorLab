@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "outputs": {
+    "failure-disposition-186.json": {
+      "python313_sha256": "e024aa4ee4a750479c40fffeef4b62308cebff094fd5ee1933ab112d0cd33081",
+      "python314_sha256": "e024aa4ee4a750479c40fffeef4b62308cebff094fd5ee1933ab112d0cd33081"
+    },
+    "failure-disposition-186.csv": {
+      "python313_sha256": "c6fc1ecfdeb5b9f6eae8d0dce5efc5e4a7d23a843c7094d72556e78f45cfa515",
+      "python314_sha256": "c6fc1ecfdeb5b9f6eae8d0dce5efc5e4a7d23a843c7094d72556e78f45cfa515"
+    },
+    "archive-acceptance.json": {
+      "python313_sha256": "117dec6ecd14facc25bb5f7cb9810bd920694ad8b7ecc916e7926173b8bee924",
+      "python314_sha256": "117dec6ecd14facc25bb5f7cb9810bd920694ad8b7ecc916e7926173b8bee924"
+    },
+    "final-source-test-identity.json": {
+      "python313_sha256": "09aea76f25e7b5cb79562eccccc3aea0f776a76ad82529b65c02e60f64b6c8bf",
+      "python314_sha256": "09aea76f25e7b5cb79562eccccc3aea0f776a76ad82529b65c02e60f64b6c8bf"
+    },
+    "test-results.json": {
+      "python313_sha256": "e26ab84112a457b973d6f5fae209954a2e37a8e0b68eb1eee3b8751c090e26e4",
+      "python314_sha256": "e26ab84112a457b973d6f5fae209954a2e37a8e0b68eb1eee3b8751c090e26e4"
+    }
+  },
+  "scope": "Final actual observations processed identically under Python3.13 and3.14; no authority to issue financial qualification"
+}

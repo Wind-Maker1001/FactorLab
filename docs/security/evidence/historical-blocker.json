@@ -1,0 +1,44 @@
+{
+  "status": "FAIL",
+  "category": "HISTORICAL_UNREGISTERED_METADATA_DELTA",
+  "test": "tests/market_structure/test_delivery.py::test_protected_tracked_content_is_unchanged",
+  "legacy_baseline": "39eecf869c9c2075ba3f6e3c76aeba3338c63432",
+  "archive_commit": "0ec7af5870c54a0ee202fbceeb97b7d87c293411",
+  "files": [
+    {
+      "path": "docs/research/evidence/ci-runtime-optimization-v1/static-runs.json",
+      "states": {
+        "39eecf869c9c2075ba3f6e3c76aeba3338c63432": {
+          "blob": "6433d29cb030c3e1bb4d08470b46861bddefb489",
+          "raw_sha256": "70df6d847be37fe4654ee2773f5758c5f52e80ed36ab55980ca2e3358325d3dc",
+          "bytes": 10965
+        },
+        "0ec7af5870c54a0ee202fbceeb97b7d87c293411": {
+          "blob": "6433d29cb030c3e1bb4d08470b46861bddefb489",
+          "raw_sha256": "70df6d847be37fe4654ee2773f5758c5f52e80ed36ab55980ca2e3358325d3dc",
+          "bytes": 10965
+        }
+      },
+      "last_change": "f11221b2aaa1eb316100b5f09d1429e8bd368d49 test(ci): bind fixture equivalence to unchanged test bodies"
+    },
+    {
+      "path": "docs/research/evidence/ci-runtime-optimization-v1/baseline-detailed-receipts.json",
+      "states": {
+        "39eecf869c9c2075ba3f6e3c76aeba3338c63432": {
+          "blob": "b518d91453a53695edf958f8c88edc67921f083f",
+          "raw_sha256": "ea2ea5477491a7a7d5404bc5038ba8c8d0f67cf324c865fbc0ac9ed2aa4cddd7",
+          "bytes": 61141
+        },
+        "0ec7af5870c54a0ee202fbceeb97b7d87c293411": {
+          "blob": "b518d91453a53695edf958f8c88edc67921f083f",
+          "raw_sha256": "ea2ea5477491a7a7d5404bc5038ba8c8d0f67cf324c865fbc0ac9ed2aa4cddd7",
+          "bytes": 61141
+        }
+      },
+      "last_change": "f11221b2aaa1eb316100b5f09d1429e8bd368d49 test(ci): bind fixture equivalence to unchanged test bodies"
+    }
+  ],
+  "matrix_row": 81,
+  "authorization": "BLOCKED",
+  "action": "Independent reviewer must authenticate historical scope and, if justified, issue separately bound repair evidence. Do not rewrite original receipts, hashes or historical conclusions."
+}

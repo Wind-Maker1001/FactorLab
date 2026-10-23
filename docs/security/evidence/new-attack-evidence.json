@@ -1,0 +1,452 @@
+{
+  "status": "PASS",
+  "schema": "FACTORLAB_P0_ATTACK_OBSERVATIONS_V1",
+  "new_cases": 49,
+  "python314_junit_sha256": "e0c151a1b1eb61998868811f0e2168e0e272685e7b0e16eccc14c782d9119729",
+  "python313_junit_sha256": "4a730745cb101ec2d8fc2a2f676c37cc71bd562325d0085c3e32951461e8711c",
+  "rows": [
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_changed_checker_rejected_without_candidate_execution[append]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_changed_checker_rejected_without_candidate_execution[delete]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_changed_checker_rejected_without_candidate_execution[execute]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_checker_and_receipt_joint_self_authorization_rejected",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_closed_source_scope[addition]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_closed_source_scope[deletion]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_closed_source_scope[rename]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_duplicate_json_keys_rejected",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_git_environment_and_repackaged_receipts_cannot_change_result",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_hardlink_cannot_alias_qualified_source",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_integrity_is_never_an_approval",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_no_pin_or_forged_pin_rejected[0000000000000000000000000000000000000000000000000000000000000000]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_no_pin_or_forged_pin_rejected[PASS]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_no_pin_or_forged_pin_rejected[]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[../outside]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[/tmp/x]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[C:/x]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[NUL/x]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[a. /b]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[a/../b]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[a/./b]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[a//b]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_noncanonical_rule_paths_rejected[a\\\\b]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_rehashed_source_and_locally_reissued_anchor_still_blocked",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_resealing_independent_controls_never_authorizes[anchor]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_resealing_independent_controls_never_authorizes[controller]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_resealing_independent_controls_never_authorizes[joint_reanchor]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_runtime_has_no_local_approval_path",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[.gitattributes]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[.github/workflows/factorlab.yml]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[LICENSE]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[MANIFEST.in]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[pyproject.toml]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[src/factorlab/_identity.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[src/factorlab/cli.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[src/factorlab/data/admission.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[src/factorlab/data/market_qualification.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[src/factorlab/resources/csi500_5y.yaml]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[src/factorlab/security/__init__.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[tests/research/test_factor_metrics_golden.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[tools/ci/run_checks.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_source_config_test_and_control_tampering_rejected[tools/security/fixed_validator.py]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_symlink_source_path_is_rejected",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_version_origin_and_approval_claims_rejected_even_with_new_local_pin[approval-value5]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_version_origin_and_approval_claims_rejected_even_with_new_local_pin[baseline-0000000000000000000000000000000000000000]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_version_origin_and_approval_claims_rejected_even_with_new_local_pin[project-Qbot]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_version_origin_and_approval_claims_rejected_even_with_new_local_pin[schema-FACTORLAB_C01_SOLO_CONTROL_ANCHOR_V1]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_version_origin_and_approval_claims_rejected_even_with_new_local_pin[version-0]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    },
+    {
+      "nodeid": "tests/security/test_independent_controls.py::test_version_origin_and_approval_claims_rejected_even_with_new_local_pin[version-HEAD]",
+      "python314": {
+        "setup": "passed",
+        "call": "passed",
+        "teardown": "passed"
+      },
+      "python313": "PASS"
+    }
+  ],
+  "qualification_authority": false,
+  "authorization": "BLOCKED"
+}

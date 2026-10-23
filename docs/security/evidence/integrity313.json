@@ -1,0 +1,14 @@
+{
+  "schema": "FACTORLAB_INDEPENDENT_SECURITY_V1",
+  "integrity": "PASS",
+  "files_checked": 495,
+  "anchor_sha256": "055461c7a4c9c856778e4a990e13a285afe52fb5f8ff7ec0f6dbc182738f39b2",
+  "independent_review": "BLOCKED",
+  "authorization": "BLOCKED",
+  "formal_admission": false,
+  "execution_admission": false,
+  "no_live_money": true,
+  "pit": "PIT_UNVERIFIED",
+  "financial_status": "FORMAL_ADMISSION_BLOCKED",
+  "reason": "V1_HAS_NO_INDEPENDENT_APPROVAL_MECHANISM"
+}

@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "compatibility_run": "local-p0/compat313-r1",
+  "compatibility_tested_head": "a78671871a1b705e798f98f0aa38cfdf24a9b46f",
+  "current_code_head": "a511fdf624fe279674b6bfae2c6d18be6c2c8be7",
+  "runtime_file_identities_match": 183,
+  "test_file_identities_match": 209,
+  "fixed_verifier_unchanged": true,
+  "changed_nonruntime_tools": {
+    "tools/ci/run_checks.py": {
+      "tested": "e5e966995e2f299feb5bb67a1bf96d84596f42ec4ddb0b1e54d9570379fb1b9d",
+      "current": "94cf68e36d041fabee6c6ab9d0e26ec36aeaa93c988daa22ce3442d779a7787a"
+    },
+    "tools/security/acceptance_report.py": {
+      "tested": "708e55572ea957a687f3d1630066314ea28f3bd74934c958a2204f3ac033cf42",
+      "current": "4f8aa819f69f7eea3398cedb3276676654ecd60f9da350de65a4bdd593563265"
+    },
+    "tools/security/journal.py": {
+      "tested": null,
+      "current": "5fc8f2fd1ef0300c6e9aef5dd4a0219feee7fc25d3489d7d9d888d89946dd2de"
+    }
+  },
+  "independent_root_integrity313": "docs/security/evidence/integrity313.json",
+  "limits": "The672-case compatibility result has unchanged runtime/test bytes. Reporting/observation tools are separately exercised; this is not a rerun of all software cases under3.13 or financial approval."
+}

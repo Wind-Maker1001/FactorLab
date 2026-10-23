@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "original_qbot_head": "aab509be694811ce27e22452fb161a5c38ae9a46",
+  "original_qbot_status_unchanged": true,
+  "protected_file_count": 171,
+  "changed_protected_files": [],
+  "migration_head": "0ec7af5870c54a0ee202fbceeb97b7d87c293411",
+  "migration_status": "",
+  "original_accepted_branch": "98b133841a5cd5ecffcf715e8626b41db2c5b8b6",
+  "candidate_remotes": [],
+  "data_directories": "CSMAR/CNRDS directories not accessed or modified by this task"
+}

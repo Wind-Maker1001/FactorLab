@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "tested_head": "a511fdf624fe279674b6bfae2c6d18be6c2c8be7",
+  "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+  "cases": 3965,
+  "expected_collected_cases": 3965,
+  "journal_records": 11895,
+  "all_case_phases_passed": true,
+  "validation_inputs_unchanged": true,
+  "artifact_sha256": {
+    "tests.xml": "e0c151a1b1eb61998868811f0e2168e0e272685e7b0e16eccc14c782d9119729",
+    "tests.log": "087aedfbb98e87bba27a1f4c24011ac2f7d9bebc6fb45d54a23747fb7ff860e9",
+    "phase-observations.jsonl": "fcfaf992fbe6f3b48562a20edf793f773c53d3dc77055769575385247b89e18e",
+    "coverage.xml": "1496cd714f3147c73b15308d714fdd77b97ef2a842e7f734647f8a8a6b93c2cd",
+    "receipt.json": "bf096aa1e150a2b555e545cc1147f56a3b22e737f148574f2de63357d234038e"
+  },
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED"
+}

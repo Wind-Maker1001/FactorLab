@@ -1,0 +1,178 @@
+{
+  "status": "PARTIAL",
+  "counts": {
+    "PASS": 318,
+    "FAIL": 1
+  },
+  "seven_preimage_attacks": [
+    {
+      "id": 105,
+      "module": "tests.market_admission.test_p1_review",
+      "name": "test_checker_and_receipt_cannot_jointly_self_authorize",
+      "original_outcome": "FAILURE",
+      "original_category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "trace_sha256": "6fdedabc85f8f13fa39f1fe781fec3dd8e0aecdc856106d745e7b623ecaad0fc",
+      "classification": "MASKED_ATTACK_RESTORED_IN_GENUINE_ARCHIVE_AND_REPLACED_IN_V1",
+      "original_execution_phase": "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION",
+      "archival_replay": "PASS",
+      "v1_contract": "tests/security/test_independent_controls.py::test_checker_and_receipt_joint_self_authorization_rejected",
+      "archival_observation": "local-p0/archive39-r1",
+      "new_security_obligation": true,
+      "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
+      "v1_suite": "PASS",
+      "disposition": "PASS",
+      "authorization": "BLOCKED",
+      "reason": "Original attacks need original Qbot preimages; run unchanged original bodies against real 0ec7af5 objects. V1 checks the independent source layout with a retained verifier."
+    },
+    {
+      "id": 106,
+      "module": "tests.market_admission.test_p1_review",
+      "name": "test_changed_checker_is_rejected_before_any_candidate_code_executes[append]",
+      "original_outcome": "FAILURE",
+      "original_category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "trace_sha256": "3a3feea9ad07eef20709ae4f5ed5e375a2b5c182f84cbcb465e33d75413d3717",
+      "classification": "MASKED_ATTACK_RESTORED_IN_GENUINE_ARCHIVE_AND_REPLACED_IN_V1",
+      "original_execution_phase": "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION",
+      "archival_replay": "PASS",
+      "v1_contract": "tests/security/test_independent_controls.py::test_changed_checker_rejected_without_candidate_execution",
+      "archival_observation": "local-p0/archive39-r1",
+      "new_security_obligation": true,
+      "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
+      "v1_suite": "PASS",
+      "disposition": "PASS",
+      "authorization": "BLOCKED",
+      "reason": "Original attacks need original Qbot preimages; run unchanged original bodies against real 0ec7af5 objects. V1 checks the independent source layout with a retained verifier."
+    },
+    {
+      "id": 107,
+      "module": "tests.market_admission.test_p1_review",
+      "name": "test_changed_checker_is_rejected_before_any_candidate_code_executes[execute]",
+      "original_outcome": "FAILURE",
+      "original_category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "trace_sha256": "43e80640b8721c0833a03254d8570b98aaa525cc25e3a017f1d5dc11476eec95",
+      "classification": "MASKED_ATTACK_RESTORED_IN_GENUINE_ARCHIVE_AND_REPLACED_IN_V1",
+      "original_execution_phase": "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION",
+      "archival_replay": "PASS",
+      "v1_contract": "tests/security/test_independent_controls.py::test_changed_checker_rejected_without_candidate_execution",
+      "archival_observation": "local-p0/archive39-r1",
+      "new_security_obligation": true,
+      "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
+      "v1_suite": "PASS",
+      "disposition": "PASS",
+      "authorization": "BLOCKED",
+      "reason": "Original attacks need original Qbot preimages; run unchanged original bodies against real 0ec7af5 objects. V1 checks the independent source layout with a retained verifier."
+    },
+    {
+      "id": 108,
+      "module": "tests.market_admission.test_p1_review",
+      "name": "test_changed_checker_is_rejected_before_any_candidate_code_executes[delete]",
+      "original_outcome": "FAILURE",
+      "original_category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "trace_sha256": "188e519cd81db64bf6fb8e46504adf05aeeed5f18d225bfbff38b66ff244559b",
+      "classification": "MASKED_ATTACK_RESTORED_IN_GENUINE_ARCHIVE_AND_REPLACED_IN_V1",
+      "original_execution_phase": "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION",
+      "archival_replay": "PASS",
+      "v1_contract": "tests/security/test_independent_controls.py::test_changed_checker_rejected_without_candidate_execution",
+      "archival_observation": "local-p0/archive39-r1",
+      "new_security_obligation": true,
+      "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
+      "v1_suite": "PASS",
+      "disposition": "PASS",
+      "authorization": "BLOCKED",
+      "reason": "Original attacks need original Qbot preimages; run unchanged original bodies against real 0ec7af5 objects. V1 checks the independent source layout with a retained verifier."
+    },
+    {
+      "id": 109,
+      "module": "tests.market_admission.test_p1_review",
+      "name": "test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[controller]",
+      "original_outcome": "FAILURE",
+      "original_category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "trace_sha256": "7bbd95b90d30ee5964649b2759c646b13d178120c0b61f70ee9e62783903b5ff",
+      "classification": "MASKED_ATTACK_RESTORED_IN_GENUINE_ARCHIVE_AND_REPLACED_IN_V1",
+      "original_execution_phase": "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION",
+      "archival_replay": "PASS",
+      "v1_contract": "tests/security/test_independent_controls.py::test_resealing_independent_controls_never_authorizes",
+      "archival_observation": "local-p0/archive39-r1",
+      "new_security_obligation": true,
+      "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
+      "v1_suite": "PASS",
+      "disposition": "PASS",
+      "authorization": "BLOCKED",
+      "reason": "Original attacks need original Qbot preimages; run unchanged original bodies against real 0ec7af5 objects. V1 checks the independent source layout with a retained verifier."
+    },
+    {
+      "id": 110,
+      "module": "tests.market_admission.test_p1_review",
+      "name": "test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[anchor]",
+      "original_outcome": "FAILURE",
+      "original_category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "trace_sha256": "45effb3d859e6305b614f0691439815192304a5578ad99fca21e24745100382a",
+      "classification": "MASKED_ATTACK_RESTORED_IN_GENUINE_ARCHIVE_AND_REPLACED_IN_V1",
+      "original_execution_phase": "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION",
+      "archival_replay": "PASS",
+      "v1_contract": "tests/security/test_independent_controls.py::test_resealing_independent_controls_never_authorizes",
+      "archival_observation": "local-p0/archive39-r1",
+      "new_security_obligation": true,
+      "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
+      "v1_suite": "PASS",
+      "disposition": "PASS",
+      "authorization": "BLOCKED",
+      "reason": "Original attacks need original Qbot preimages; run unchanged original bodies against real 0ec7af5 objects. V1 checks the independent source layout with a retained verifier."
+    },
+    {
+      "id": 111,
+      "module": "tests.market_admission.test_p1_review",
+      "name": "test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[joint_reanchor]",
+      "original_outcome": "FAILURE",
+      "original_category": "PINNED_CONTROL_FIXTURE_REQUIRES_OLD_LAYOUT",
+      "trace_sha256": "5a205a92af987abdf664eec21855d7ac821e5dc30f398aa53968914e6d4d2a8e",
+      "classification": "MASKED_ATTACK_RESTORED_IN_GENUINE_ARCHIVE_AND_REPLACED_IN_V1",
+      "original_execution_phase": "PREIMAGE_FAILURE_BEFORE_ATTACK_ASSERTION",
+      "archival_replay": "PASS",
+      "v1_contract": "tests/security/test_independent_controls.py::test_resealing_independent_controls_never_authorizes",
+      "archival_observation": "local-p0/archive39-r1",
+      "new_security_obligation": true,
+      "mapping_relation": "VERSIONED_CONTRACT_REDESIGN_NOT_IDENTICAL_TEST",
+      "v1_suite": "PASS",
+      "disposition": "PASS",
+      "authorization": "BLOCKED",
+      "reason": "Original attacks need original Qbot preimages; run unchanged original bodies against real 0ec7af5 objects. V1 checks the independent source layout with a retained verifier."
+    }
+  ],
+  "observed_runs": [
+    {
+      "path": "local-p0/archive39-r1",
+      "counts": {
+        "PASS": 209,
+        "FAIL": 3
+      },
+      "junit_sha256": "6b4b26acffa5ff679bca4b25b9d94b54f59c4522514ce6799ded39db9c049280",
+      "log_sha256": "d1645ce760c1c3e35a20af3144d47f1b39e3d49393cdd7036a8775847de8adc1"
+    },
+    {
+      "path": "local-p0/archive39-repair-r2",
+      "counts": {
+        "PASS": 2
+      },
+      "junit_sha256": "7ff0a522cbf009d82c9ff2f27f2e27e29e9abeed2448cf46cfd46230e0a6611b",
+      "log_sha256": "7713114e023cc8257c6de008a55997281fba8377c7d52089c53d227fdaeb031e"
+    },
+    {
+      "path": "local-p0/archive39-complete-extra",
+      "counts": {
+        "PASS": 107
+      },
+      "junit_sha256": "ad21d72d9c143144e0aeaa3c05cbadb4cc6c23e18eacc1ba7c42359d190afd18",
+      "log_sha256": "7946eb0e2c8459b9d21b752c0a7a20937aee97eaee7738400430b9ed7d4f025b"
+    }
+  ],
+  "aggregation": "Actual named-case observations; later explicit reruns replace only matching cases. Original failed run receipts and logs remain unchanged.",
+  "original_collection_error_cases_recovered": 27,
+  "source_commit": "0ec7af5870c54a0ee202fbceeb97b7d87c293411",
+  "source_unchanged": true,
+  "snapshot_changed_files": [],
+  "junit_sha256": "6b4b26acffa5ff679bca4b25b9d94b54f59c4522514ce6799ded39db9c049280",
+  "receipt_sha256": "ddeee4fe9b27da27849709df98c510a0adc03a2062cfcb373e5cd5043e29415d",
+  "financial_admission": false,
+  "historical_authenticity_review": "BLOCKED"
+}

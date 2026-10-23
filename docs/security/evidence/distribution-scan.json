@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "scope": "archive allowlist and explicit secret/Legacy patterns only",
+  "archives": [
+    {
+      "file": "factorlab-0.1.0.dev0-py3-none-any.whl",
+      "sha256": "08213801991e12d621acbd237fe01038b973ad6a84719113a50e0315e78070e7",
+      "members_scanned": 183,
+      "synthetic_parquet": []
+    },
+    {
+      "file": "factorlab-0.1.0.dev0.tar.gz",
+      "sha256": "064d8bd95af5e8b59fc9e628aa55234deb4c3dd7e32a5e83f7b6efc430a387a9",
+      "members_scanned": 444,
+      "synthetic_parquet": [
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/normal/autocorrelation.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/normal/correlation.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/normal/daily_ic.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/normal/input.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/normal/quantile_returns.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/normal/summary.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/normal/turnover.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/pool_change/autocorrelation.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/pool_change/correlation.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/pool_change/daily_ic.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/pool_change/input.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/pool_change/quantile_returns.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/pool_change/summary.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/pool_change/turnover.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/ties/autocorrelation.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/ties/correlation.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/ties/daily_ic.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/ties/input.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/ties/quantile_returns.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/ties/summary.parquet",
+        "factorlab-0.1.0.dev0/tests/research/fixtures/factor_golden/ties/turnover.parquet"
+      ]
+    }
+  ],
+  "findings": [],
+  "license_clearance": "BLOCKED_SCOPE_UNRESOLVED",
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+  "limits": "Not a proof of all-secret absence, data rights, trust-root authorization or safe Git history publication."
+}

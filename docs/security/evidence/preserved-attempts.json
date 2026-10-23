@@ -1,0 +1,91 @@
+{
+  "scope": "Preservation inventory, not successful execution or authorization",
+  "attempts": [
+    {
+      "path": "local-p0/archive314-r1",
+      "file_sha256": {}
+    },
+    {
+      "path": "local-p0/archive314-r2",
+      "file_sha256": {
+        "receipt.json": "172e399d20626dfd86e3ff5d5fff58b0001a0963ace01b6fe85b572edf460e17",
+        "snapshot-identity.json": "48443d57ad8c6f2cebf66059c5ebb63cecd68f22e527d7e323663cbb68e84d02",
+        "tests.log": "024f29d01b4d5a7ee11a57ab65e0f9578b19e190a0382a2852a310b55e5d382d",
+        "tests.xml": "94721825bafc7b53f0923e3fe2aab603de908777fbea4e5a92452147da588313"
+      }
+    },
+    {
+      "path": "local-p0/archive314-r3",
+      "file_sha256": {
+        "invalidated.json": "7109fc5dd3da22ce17eea42c1b45e238ffb10c26b7ec28789e6ebc1afb5a9ce3",
+        "snapshot-identity.json": "b84c607e6edb2b818ce1e6107e49b6260717d44aa87e4d41864e780177981c6f",
+        "tests.log": "cbb1c64e84b4287f3a2435452f4003c637f499d53eb716850fb198e6764d09f4"
+      }
+    },
+    {
+      "path": "local-p0/archive314-r4",
+      "file_sha256": {
+        "receipt.json": "fe02708f5dbca9767cb2a03f67b551f3ac79947ec70fc3b0cc13c729061af338",
+        "snapshot-identity.json": "d0fad8765481b0f0c38cb7c3692cba2f8014bebdeea27fbb86a86b085db81bbf",
+        "tests.log": "c8399b924e5f8286ec1d09637b984e5513847cb75c726390a55e091a80999eb0",
+        "tests.xml": "17a5703d02452d452123d5bf685f6dc5e094ea11865622d348795e59c998ddb2"
+      }
+    },
+    {
+      "path": "local-p0/archive39-r1",
+      "file_sha256": {
+        "receipt.json": "ddeee4fe9b27da27849709df98c510a0adc03a2062cfcb373e5cd5043e29415d",
+        "snapshot-identity.json": "d0fad8765481b0f0c38cb7c3692cba2f8014bebdeea27fbb86a86b085db81bbf",
+        "tests.log": "d1645ce760c1c3e35a20af3144d47f1b39e3d49393cdd7036a8775847de8adc1",
+        "tests.xml": "6b4b26acffa5ff679bca4b25b9d94b54f59c4522514ce6799ded39db9c049280"
+      }
+    },
+    {
+      "path": "local-p0/archive39-repair-r1",
+      "file_sha256": {
+        "tests.xml": "b0645be46d89da8d1fce38ae904e72bdc570b7437bc6638d4a8c11e0bc0289ee"
+      }
+    },
+    {
+      "path": "local-p0/archive39-repair-r2",
+      "file_sha256": {
+        "receipt.json": "1c2659214411f0733897fdadbe9ccca891de22b78272d4488bd84aa517cc57a5",
+        "tests.log": "7713114e023cc8257c6de008a55997281fba8377c7d52089c53d227fdaeb031e",
+        "tests.xml": "7ff0a522cbf009d82c9ff2f27f2e27e29e9abeed2448cf46cfd46230e0a6611b"
+      }
+    },
+    {
+      "path": "local-p0/software314-r1",
+      "file_sha256": {
+        "inputs-before.json": "38d8c1460f00c9d75294f462dae4c5c328cb89ffb707c52c7459349457552564",
+        "invalidated.json": "08ac649ab695df7ebbcf0a7f9acaffb12fb47518e62c9976d52ada10307eb65b",
+        "tests.log": "f7a77cb7b99b814b6095d61956e7c020905a8cb44c103be537115b3fe6c2e1da"
+      }
+    },
+    {
+      "path": "local-p0/software314-r2",
+      "file_sha256": {
+        "inputs-before.json": "be6e0a35632a9fe6ecd3714e9d15b606702897179277ce2a2bc7b2b1ac3c8432",
+        "invalidated.json": "cc0606b8625c2e6b75e1168d83177a3cc04eb355032a7d627a95c3cfe9d236ec",
+        "tests.log": "5ba747be3d1152ff1f66ec11cd8e9bd5090f9ef93fc6232345c975d408184f2b"
+      }
+    },
+    {
+      "path": "local-p0/software314-r3",
+      "status": "FAIL_PYTEST_OBSERVER_INTERNAL_ERROR",
+      "file_sha256": {
+        "inputs-before.json": "e2b1d07d9e79e205fd2788ee4c38ea0cedc92a93d017ac0bb9e7644cbe6d8ecb",
+        "phase-observations.jsonl": "3b9562e3ae47bc66a0d4fd6ecb3b40d5103d88f0173e3b75a2549a72117abef2",
+        "receipt.json": "80f19e18ee1e77605bd4a8addbff9ab13b67cf5731f0870bd1b2a2495c7fe602",
+        "tests.log": "6ad18d217baf50b0c825abc4ce471720c105cc1cde888c72968baf050f13107d"
+      }
+    }
+  ],
+  "observer_fix": {
+    "junit": "local-p0/journal-fix.xml",
+    "junit_sha256": "9edb368d57ef9a50f4d04a61e78a17268a19fde11cc214de5bbdb81b4280c922",
+    "phase_journal": "local-p0/journal-fix-phases.jsonl",
+    "phase_sha256": "de64886cf2fbae859f080f15fb708e628f3954c1de974a50a22d8abf0f35b5a2",
+    "status": "PASS_ORIGINAL_OPEN_DENIAL_TEST_ALL3_PHASES"
+  }
+}

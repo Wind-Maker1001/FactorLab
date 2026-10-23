@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "head": "98b133841a5cd5ecffcf715e8626b41db2c5b8b6",
+  "initial_branch": "codex/factorlab-independent",
+  "initial_status": "CLEAN",
+  "remotes": [],
+  "tracked_files": 550,
+  "preserved_old_evidence_files": 341,
+  "materials": {
+    "local-p0/baseline/baseline.bundle": {
+      "sha256": "b3f79b2f93f4aeaf81c773f97f230afbe386bce5f26037f13494a2f886669cb7",
+      "bytes": 1693326
+    },
+    "local-p0/baseline/baseline.json": {
+      "sha256": "cb3e84db79257f38ad059b07c7bd88fcaf242e9126fe96e003d2252bf41d398d",
+      "bytes": 161490
+    },
+    "local-p0/baseline/worktree.zip": {
+      "sha256": "9a53bcd41baa32acd3431e2cb80ef6fe77078641c53197e8f054ff294b04bb9f",
+      "bytes": 1715056
+    }
+  },
+  "baseline_manifest": "local-p0/baseline/baseline.json",
+  "bundle_verification": "PASS_BEFORE_EDITS"
+}
