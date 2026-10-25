@@ -1,0 +1,126 @@
+{
+  "audit_date": "2026-10-25",
+  "project": "factorlab",
+  "version": "0.1.0.dev0",
+  "LICENSE_RELEASE_READY": "PASS",
+  "baseline_head": "a11aadb0e098d515671ca4f0035aea810c0be269",
+  "final_head": "a11aadb0e098d515671ca4f0035aea810c0be269",
+  "binding": "Uncommitted reviewed working-tree changes; exact source/build/artifact hashes in local evidence. HEAD alone is not the candidate identity.",
+  "confirmed_conflict_count": 0,
+  "third_party_embedded_source_file_count": 0,
+  "qbot_derived_published_source_file_count": 0,
+  "unknown_provenance_published_source_file_count": 0,
+  "required_source_deletions": [],
+  "required_source_replacements": [],
+  "unresolved_release_blockers": [],
+  "scope": "Only the exact locally rebuilt wheel/sdist and their corresponding software source. No endorsement of unpublished local Git history, excluded legacy documentation or external data rights.",
+  "artifacts": [
+    {
+      "path": "local-license-final-20261025\\dist\\factorlab-0.1.0.dev0-py3-none-any.whl",
+      "sha256": "36fe46e5b0075c97d0bdb69d8f0a9d8c9e313ec17ea12816536a0b7e339fb6f9",
+      "file_count": 184,
+      "python_count": 176
+    },
+    {
+      "path": "local-license-final-20261025\\dist\\factorlab-0.1.0.dev0.tar.gz",
+      "sha256": "e91f3a25a573445eb9ff7386f5eed4c5a57ff1af1982b2ffa99b3898ef39b3fd",
+      "file_count": 445,
+      "python_count": 388
+    }
+  ],
+  "findings": [
+    {
+      "id": "LIC-001",
+      "type": "UPSTREAM_LICENSE_AMBIGUITY",
+      "classification": "DOCUMENTATION_INCONSISTENCY",
+      "status": "NON_BLOCKING_SCOPE_VERIFIED",
+      "paths": [
+        "upstream README.md",
+        "upstream docs/README.md",
+        "upstream docs/Install_guide.md",
+        "local docs/LICENSE"
+      ],
+      "affected_published_code_files": [],
+      "release_blocker": false,
+      "evidence": [
+        "upstream/qbot-pinned-LICENSE",
+        "upstream/qbot-pinned-README.md",
+        "upstream/qbot-pinned-Install_guide.md",
+        "source-provenance.json",
+        "artifacts-final.json"
+      ],
+      "reason": "MIT and noncommercial/documentation statements coexist. No reviewed published source was found to be subject to a specific conflicting grant; original documentation is not in either artifact. No dual license or rights-holder clarification is invented."
+    },
+    {
+      "id": "LIC-002",
+      "type": "COPYRIGHT_LINEAGE_DOCUMENTATION",
+      "classification": "DOCUMENTATION_INCONSISTENCY",
+      "status": "RESOLVED",
+      "release_blocker": false,
+      "paths": [
+        "NOTICE",
+        "README.md",
+        "pyproject.toml",
+        "MANIFEST.in"
+      ],
+      "reason": "Added factual lineage notice, retained original full MIT license, packaged NOTICE in both artifacts, and replaced a blanket release restriction with the actual scoped finding."
+    },
+    {
+      "id": "LIC-003",
+      "type": "DEPENDENCY_LICENSE_TEXT_MISSING",
+      "classification": "UNVERIFIED",
+      "status": "NON_BLOCKING_EXTERNAL_DEPENDENCY",
+      "release_blocker": false,
+      "package": "baostock",
+      "version": "0.8.9",
+      "license_declaration": "BSD License",
+      "reason": "Actual metadata declares BSD; full license text/subtype not found in installed files. No BaoStock source or binary is redistributed in FactorLab artifacts; no contrary grant or incompatibility found."
+    },
+    {
+      "id": "LIC-004",
+      "type": "EXTERNAL_REFERENCE_LICENSE",
+      "classification": "UNVERIFIED",
+      "status": "NON_BLOCKING_EXTERNAL_REFERENCE",
+      "release_blocker": false,
+      "package": "rainx/pytdx",
+      "version": "2857fdad08534533610bd2aeca387f760c4baa42",
+      "paths": [
+        "examples/research/audit_tdx_quality.py",
+        "examples/research/review_tdx_quality.py"
+      ],
+      "reason": "External reader grant remains unverified. Source/key table absent from packages; separate NumPy implementation shares cipher/format operations, with no copied source expression identified in targeted comparison. Merely running/reading an explicit external reference is distinct from shipping it. No MIT license is asserted for pytdx.",
+      "evidence": [
+        "pytdx-targeted-review.json",
+        "upstream/pytdx-tree.json",
+        "upstream/pytdx-setup.py",
+        "upstream/pytdx-README.md"
+      ]
+    },
+    {
+      "id": "LIC-005",
+      "type": "VERSION_STRING_INCONSISTENCY",
+      "classification": "DOCUMENTATION_INCONSISTENCY",
+      "status": "OUTSIDE_LICENSE_SCOPE_RECORDED",
+      "release_blocker": false,
+      "paths": [
+        "src/factorlab/__init__.py",
+        "pyproject.toml"
+      ],
+      "reason": "Module __version__ is 0.1.0; project and artifact metadata are 0.1.0.dev0. No runtime source or financial gate was changed for this license audit."
+    },
+    {
+      "id": "LIC-006",
+      "type": "PUBLISHED_SOFTWARE_SCOPE",
+      "classification": "NO_CONFLICT_FOUND",
+      "status": "COMPLETE",
+      "release_blocker": false,
+      "python_files_in_sdist": 388,
+      "python_modules_in_wheel": 176,
+      "third_party_embedded_source_files": 0,
+      "confirmed_conflicts": 0,
+      "reason": "Git lineage, source notices, targeted pytdx comparison, actual dependency licenses and archive contents reviewed. No concrete unlicensed embedded file or incompatible redistribution obligation identified."
+    }
+  ],
+  "NO_LIVE_MONEY": true,
+  "financial_admission": "UNCHANGED; PIT_UNVERIFIED / FORMAL_ADMISSION_BLOCKED"
+}

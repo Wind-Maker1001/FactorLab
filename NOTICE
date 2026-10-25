@@ -1,0 +1,27 @@
+FactorLab 0.1.0.dev0
+
+FactorLab's software is distributed under the MIT License in LICENSE.
+The inherited notice is retained without alteration:
+Copyright (c) 2022 UFund-Me
+
+Project lineage:
+  Qbot: https://github.com/UFund-Me/Qbot
+  quant-tv: https://github.com/Wind-Maker1001/quant-tv
+  Extraction baseline: 0ec7af5870c54a0ee202fbceeb97b7d87c293411
+
+The research software and minute-data adapter in this distribution were added
+to quant-tv by Wind-Maker1001 in 2026 and subsequently migrated to factorlab.
+Contributor identities and modification history remain recorded in Git.
+The retained UFund-Me notice does not attribute those later contributions
+exclusively to UFund-Me or transfer their ownership.
+
+This distribution does not include Qbot's legacy trading implementations,
+Qbot's original README or installation guide, or docs/LICENSE. The differing
+GPLv3 and CC BY-NC-SA statements in upstream documentation are not replaced or
+relicensed by this notice.
+
+External Python packages retain their own licenses. They are installed
+separately and are not bundled in the FactorLab wheel or source distribution.
+The TDX audit examples refer to an external, user-supplied pytdx reader; its
+source and expanded key table are not included, and this notice does not grant
+rights to that external reader.

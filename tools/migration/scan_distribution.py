@@ -98,7 +98,8 @@ def scan(directory, output):
     if len(archives)!=2:
         findings.append({'reason':'expected exactly wheel and sdist'})
     report={'status':'PASS' if not findings else 'FAIL','scope':'archive allowlist and explicit secret/Legacy patterns only',
-            'archives':archives,'findings':findings,'license_clearance':'BLOCKED_SCOPE_UNRESOLVED',
+            'archives':archives,'findings':findings,
+            'license_clearance':'NOT_EVALUATED_BY_THIS_SCAN; see RELEASE_LICENSE_DECISION.md',
             'formal_admission':'FORMAL_ADMISSION_BLOCKED',
             'limits':'Not a proof of all-secret absence, data rights, trust-root authorization or safe Git history publication.'}
     output.parent.mkdir(parents=True,exist_ok=True)

@@ -7,4 +7,4 @@ Qlib, and Backtrader modules. Importing it must remain side-effect free.
 from .errors import FactorLabError
 
 __all__ = ["FactorLabError"]
-__version__ = "0.1.0"
+__version__ = "0.1.0.dev0"

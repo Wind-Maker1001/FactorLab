@@ -1,6 +1,6 @@
 # Security and admission
 
-NO LIVE MONEY. PIT_UNVERIFIED. FORMAL_ADMISSION_BLOCKED.
+NO LIVE MONEY. PIT_UNVERIFIED. HFQ_UNVERIFIED. FORMAL_ADMISSION_BLOCKED.
 
 The independent namespace migration is not certified by the upstream C-01 trust
 root. `assert_migration_admitted()` always refuses formal admission. Identity
