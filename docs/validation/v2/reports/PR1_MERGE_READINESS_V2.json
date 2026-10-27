@@ -1,0 +1,85 @@
+{
+  "schema": "FACTORLAB_PR1_MERGE_READINESS_V2",
+  "candidate_sha": "b2b6b472d500b078cc872c3b942c6e1916054512",
+  "executed_merge": "50e94ab96d2ca17cd75fa4dce225b5c834152869",
+  "main": "afac4f9d4c2b123c0b32787ccd1cf67fe965c723",
+  "input_head": "ed2b4c1a0a10afd794c674b14d105b748b01b9c8",
+  "evidence_index_sha256": "81a23cb3e3704f8c7b8eb34725d41f4f7e4cf93d6d9c721ee0af43863bf86f9b",
+  "remote_run": 40550674503,
+  "remote_conclusion": "failure",
+  "answers": {
+    "root_cause": "CONFIRMED_DELETE_PENDING_MECHANISM; historical actor attribution UNKNOWN",
+    "safe_fix_implemented": true,
+    "equivalent_windows_acceptance": "PASS",
+    "new_software_failures": {},
+    "original_4157_nodes_preserved": true,
+    "historical_186_preserved": true,
+    "independent_v2_engineering_verification": "PASS",
+    "real_human_migration_approval": false,
+    "ready_for_review": false,
+    "ready_to_merge_main": false
+  },
+  "CURRENT_SOFTWARE_VALIDATION_V2": "PASS",
+  "CONCURRENT_LOCKING": "PASS",
+  "local_supplemental_full_regression": {
+    "tests": 4184,
+    "passed": 4144,
+    "failures": 13,
+    "errors": 27,
+    "skipped": 0
+  },
+  "local_supplemental_full_status": "FAIL_MISSING_DECLARED_OPTIONAL_DEPENDENCY; original exit 1 retained",
+  "local_repaired_dependency_scope": {
+    "tests": 114,
+    "passed": 114,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "HISTORICAL_ARCHIVE_VALIDATION_V1": "FAIL; certification BLOCKED",
+  "HISTORICAL_MIGRATION_APPROVAL": "PENDING",
+  "independent_human_review": "PENDING",
+  "full_regression_counts": {
+    "tests": 4370,
+    "passed": 4184,
+    "failures": 50,
+    "errors": 136,
+    "skipped": 0
+  },
+  "software_counts": {
+    "current314": {
+      "tests": 4184,
+      "passed": 4184,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "current313": {
+      "tests": 4184,
+      "passed": 4184,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "software_merge_blockers": [
+    "FULL_PROJECT_HISTORICAL_50_FAIL_136_ERROR",
+    "HISTORICAL_MIGRATION_APPROVAL_PENDING",
+    "INDEPENDENT_HISTORICAL_MIGRATION_REVIEW_PENDING"
+  ],
+  "residual_unknowns": [
+    "External/implicit handle attribution for historical CI failures",
+    "Original missing-root collection module parameter count",
+    "Unexecuted Windows releases and non-local filesystem behavior"
+  ],
+  "draft": true,
+  "merge_main_authorized": false,
+  "release_authorized": false,
+  "pypi_publication_authorized": false,
+  "branch_protection_changed": false,
+  "financial_authorization": "BLOCKED",
+  "PIT": "PIT_UNVERIFIED",
+  "HFQ": "HFQ_UNVERIFIED",
+  "FORMAL_ADMISSION": "FORMAL_ADMISSION_BLOCKED",
+  "LIVE_MONEY": "NO LIVE MONEY"
+}

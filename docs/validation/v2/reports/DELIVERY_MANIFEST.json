@@ -1,0 +1,61 @@
+{
+  "schema": "FACTORLAB_PR1_V2_DELIVERY_MANIFEST",
+  "candidate_sha": "b2b6b472d500b078cc872c3b942c6e1916054512",
+  "executed_merge": "50e94ab96d2ca17cd75fa4dce225b5c834152869",
+  "files": {
+    ".gitattributes": {
+      "sha256": "730a35ae3d558080083c3103d9ac8100c3f6561678092abe341701dfa331eb1d",
+      "bytes": 29
+    },
+    "COVERAGE_REVIEW.json": {
+      "sha256": "d7e6fbb11e7cd5dbaee06ba31c662bd343716647279e0a75d0a445aa1732eb1f",
+      "bytes": 9925
+    },
+    "EVIDENCE_INDEX.json": {
+      "sha256": "81a23cb3e3704f8c7b8eb34725d41f4f7e4cf93d6d9c721ee0af43863bf86f9b",
+      "bytes": 38327
+    },
+    "HISTORICAL_FAILURE_COMPARISON.json": {
+      "sha256": "0b50b2331f283757793e4c986252b1bdcacf0c97ca37fd5abab589c7864f5d42",
+      "bytes": 121682
+    },
+    "HISTORICAL_MIGRATION_RISK_DECISION.md": {
+      "sha256": "70d7efc1187b8b3771e1643110c6457943899c36be1b755d24e7628c022c355e",
+      "bytes": 6077
+    },
+    "HISTORICAL_V1_V2_COVERAGE_MATRIX.csv": {
+      "sha256": "a97c5388cf8e57fc47ee0a0257d8951d7a6007be7c42ea9e7b3f2ba1de1be538",
+      "bytes": 2014625
+    },
+    "LOCK_CONCURRENCY_TEST_RESULTS.json": {
+      "sha256": "648d6267beb7adcf6a12d88e678dfdc857cc776f38618065b9c6156578f6c656",
+      "bytes": 1129989
+    },
+    "PR1_FINAL_CI_REPORT.md": {
+      "sha256": "e637b3cfd110393456f5dae897d31dbef6456699a521fd80136a318626d1f55f",
+      "bytes": 6120
+    },
+    "PR1_MERGE_READINESS_V2.json": {
+      "sha256": "f50a27e3ee60e31737b18ddf0b7e717662202a8b3a9dfcfdae5b6fd2bd16f3cc",
+      "bytes": 2787
+    },
+    "SOFTWARE_VALIDATION_V2_SPEC.md": {
+      "sha256": "e2b8386d5717c58c9ea64b07eaef629d667eab7622e9a56559efc8e3bfef6ce4",
+      "bytes": 8401
+    },
+    "WINDOWS_LOCK_FIX_REPORT.md": {
+      "sha256": "09956c92c6f2d24475d56cc291c1bc915a3f1ab41edd4d70f9fbd1016fed431c",
+      "bytes": 3628
+    },
+    "WINDOWS_LOCK_NATIVE_DIAGNOSIS.md": {
+      "sha256": "55872b9ed19cada420f8761b628f5dd635540090eb9e0c7315f88b48b2ce63da",
+      "bytes": 4971
+    },
+    "PUBLIC_REPORT_REVIEW.json": {
+      "sha256": "58ca30c9a3c47691403860f9e29cfb7faf1b44e5a175a1497d69d369ec5920fe",
+      "bytes": 993
+    }
+  },
+  "HISTORICAL_MIGRATION_APPROVAL": "PENDING",
+  "no_live_money": true
+}
