@@ -39,7 +39,14 @@ jobs:
         if: always()
         with:
           name: package-windows-3.14
-          path: local-ci/
+          path: |
+            local-ci/distributions/*.whl
+            local-ci/distributions/*.tar.gz
+            local-ci/packaging/receipt.json
+            local-ci/packaging/*.log
+            local-ci/packaging/*-smoke.json
+            local-ci/packaging/publication-scan.json
+            local-ci/archive-attacks/**/*.json
           if-no-files-found: error
   incremental:
     name: Core, cross-market and financial gates Windows Python ${{ matrix.python }}
@@ -69,7 +76,11 @@ jobs:
         if: always()
         with:
           name: incremental-windows-${{ matrix.python }}
-          path: local-ci/
+          path: |
+            local-ci/incremental/*/receipt.json
+            local-ci/incremental/*/dependencies.txt
+            local-ci/incremental/*/tests.xml
+            local-ci/incremental/*/tests.log
           if-no-files-found: error
 
   legacy:
@@ -95,5 +106,9 @@ jobs:
         if: always()
         with:
           name: full-legacy-windows-3.14
-          path: local-ci/
+          path: |
+            local-ci/legacy/legacy/receipt.json
+            local-ci/legacy/legacy/dependencies.txt
+            local-ci/legacy/legacy/tests.xml
+            local-ci/legacy/legacy/tests.log
           if-no-files-found: error

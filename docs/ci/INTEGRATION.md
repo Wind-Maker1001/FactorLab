@@ -30,6 +30,8 @@ keep their job red and remain merge blockers. There is no continue-on-error,
 xfail conversion, additional deselection or exit-code override. JUnit, logs,
 process status, subject SHA and input hashes are uploaded even after failure.
 Artifact upload success does not mean tests passed.
+Uploads select receipts, dependency snapshots, JUnit/logs and the built
+wheel/sdist. Temporary test trees and installed environments are excluded.
 
 Historical controls require genuine upstream roots, original Git objects and
 published artifacts absent from this independent repository. Copying a YAML
