@@ -38,7 +38,8 @@ SUITES = {
         'tests/research/test_real_factor_label_smoke.py::test_main_from_other_cwd_resolves_repo_relative_config',
     ],
     'locking': ['tests/research/test_forward_full_predictions.py',
-                'tests/research/test_forward_signal_recorder_phase4.py'],
+                'tests/research/test_forward_signal_recorder_phase4.py',
+                'tests/research/test_signal_lock_native.py'],
     'legacy': [],  # All configured tests, with no selection or deselection override.
 }
 

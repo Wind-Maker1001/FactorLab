@@ -2,9 +2,12 @@ name: FactorLab integration
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/validation/v2/reports/**'
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: factorlab-integration-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -77,8 +80,7 @@ jobs:
           python tools/ci/integration_checks.py --suite configuration --output local-ci/incremental
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/ci/integration_checks.py --suite locking --output local-ci/incremental
-      - name: Exhaustive current software layer (all nonhistorical tests)
-        if: matrix.python == '3.14'
+      - name: CURRENT_SOFTWARE_VALIDATION_V2 (all nonhistorical tests)
         run: python tools/ci/integration_checks.py --suite current --output local-ci/incremental
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
@@ -93,7 +95,7 @@ jobs:
           if-no-files-found: error
 
   lock-diagnostics:
-    name: Bounded lock diagnosis Windows Python 3.14
+    name: Native lock diagnosis Windows Python 3.14 (control failures retained)
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
@@ -110,20 +112,83 @@ jobs:
         run: |
           git worktree add --detach local-ci/lock-main afac4f9d4c2b123c0b32787ccd1cf67fe965c723
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          git worktree add --detach local-ci/lock-input 50698bd97b95ce1cb55319ec02b9b4f3baf3cd28
+          git worktree add --detach local-ci/lock-input ed2b4c1a0a10afd794c674b14d105b748b01b9c8
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/ci/lock_diagnostics.py --source local-ci/lock-main --output local-ci/lock-diagnostics/main --iterations 40
+          python tools/ci/windows_lock_probe.py --source local-ci/lock-main --output local-ci/lock-diagnostics/main --iterations 100
           $mainCode = $LASTEXITCODE
-          python tools/ci/lock_diagnostics.py --source local-ci/lock-input --output local-ci/lock-diagnostics/input --iterations 40
+          python tools/ci/windows_lock_probe.py --source local-ci/lock-input --output local-ci/lock-diagnostics/input --iterations 100
           $inputCode = $LASTEXITCODE
-          python tools/ci/lock_diagnostics.py --source . --output local-ci/lock-diagnostics/current --iterations 40
+          python tools/ci/windows_lock_probe.py --source . --output local-ci/lock-diagnostics/current --iterations 100
           $currentCode = $LASTEXITCODE
           exit [Math]::Max($mainCode, [Math]::Max($inputCode, $currentCode))
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: bounded-lock-diagnostics-windows-3.14
-          path: local-ci/lock-diagnostics/*/diagnostic.json
+          path: local-ci/lock-diagnostics/*/native-diagnostic.json
+          if-no-files-found: error
+
+  lock-acceptance-v2:
+    name: Lock acceptance ${{ matrix.os }} Python 3.14
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install public test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - name: Bounded stress and fail-closed fault injection
+        run: python tools/ci/lock_acceptance.py --output local-ci/lock-acceptance --thread-rounds 100 --process-rounds 12
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: lock-acceptance-${{ matrix.os }}-3.14
+          path: |
+            local-ci/lock-acceptance/LOCK_CONCURRENCY_TEST_RESULTS.json
+            local-ci/lock-acceptance/faults.xml
+            local-ci/lock-acceptance/faults.log
+          if-no-files-found: error
+
+  validation-v2-review:
+    name: Independent V2 coverage comparison (no migration approval)
+    needs: [incremental, legacy]
+    if: always()
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Retrieve actual complete and software reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name full-legacy-windows-3.14 --dir local-ci/full
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.14 --dir local-ci/current314
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.13 --dir local-ci/current313
+          exit $LASTEXITCODE
+      - name: Compare every original software node, historical record and frozen input
+        run: python tools/ci/validation_v2.py --full local-ci/full --current local-ci/current314/current --additional-current local-ci/current313/current --output local-ci/v2-review
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: independent-v2-coverage
+          path: local-ci/v2-review/*
           if-no-files-found: error
 
   legacy:
