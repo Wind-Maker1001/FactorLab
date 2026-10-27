@@ -1,4 +1,4 @@
-Public input `ed2b4c1a0a10afd794c674b14d105b748b01b9c8`; main `afac4f9d4c2b123c0b32787ccd1cf67fe965c723`. Tested candidate `b2b6b472d500b078cc872c3b942c6e1916054512`; actual executed merge `50e94ab96d2ca17cd75fa4dce225b5c834152869` (identical Git tree `23a324933ba447f2516328a6b16b4b426593e3a9`). Evidence index SHA-256 `81a23cb3e3704f8c7b8eb34725d41f4f7e4cf93d6d9c721ee0af43863bf86f9b`. [Remote run 40550674503](https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503). Windows Server 2025 / Python 3.14.9; additional Linux/Python 3.14.8 and Windows/Python 3.13.16 evidence are identified in the index.
+Public input `ed2b4c1a0a10afd794c674b14d105b748b01b9c8`; main `afac4f9d4c2b123c0b32787ccd1cf67fe965c723`. Tested candidate `b2b6b472d500b078cc872c3b942c6e1916054512`; actual executed merge `50e94ab96d2ca17cd75fa4dce225b5c834152869` (identical Git tree `23a324933ba447f2516328a6b16b4b426593e3a9`). Evidence index SHA-256 `abcfe4beb91f8028a90a34f48f184844badb3ed2c39135f6dd2afd98f7d2e0b4`. [Remote run 40550674503](https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503). Windows Server 2025 / Python 3.14.9; additional Linux/Python 3.14.8 and Windows/Python 3.13.16 evidence are identified in the index.
 
 # CURRENT_SOFTWARE_VALIDATION_V2
 
@@ -104,11 +104,14 @@ downloads both Python software artifacts and the complete full artifact.
 No continue-on-error, mass xfail, old-test removal or protection change is used.
 Known control failures in main/input diagnosis remain actual failed observations.
 
-Only `docs/validation/v2/reports/**` report-only PR changes are excluded from
-starting another full Actions run. They cannot change code, tests, this spec,
-the coverage baseline, workflows or safety controls. Reports name the actual
-tested commit and final documentation commit separately. This avoids rerunning
-an unchanged failing full job to seek a green result; it does not waive its FAIL.
+The workflow's paths-ignore excludes a PR only when its cumulative diff is
+confined to the report directory. It does not prevent report-update runs in this
+mixed software PR. This corrects the earlier overbroad statement in the original
+tested spec. Report-only duplicate runs are explicitly cancelled after source,
+test, workflow and dependency identity is checked against completed validation.
+Cancellation is not PASS and does not waive the historical full-project FAIL.
+The actual duplicate run and later observations are in the evidence index, PR
+description and final delivery receipt. No exact-final-head software PASS is claimed.
 
 Historical failures remain merge blockers until genuine recovery or explicit
 maintainer risk acceptance plus independent review. PR #1 stays Draft. No main

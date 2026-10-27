@@ -12,48 +12,48 @@
       "bytes": 9925
     },
     "EVIDENCE_INDEX.json": {
-      "sha256": "81a23cb3e3704f8c7b8eb34725d41f4f7e4cf93d6d9c721ee0af43863bf86f9b",
-      "bytes": 38327
+      "sha256": "abcfe4beb91f8028a90a34f48f184844badb3ed2c39135f6dd2afd98f7d2e0b4",
+      "bytes": 38920
     },
     "HISTORICAL_FAILURE_COMPARISON.json": {
       "sha256": "0b50b2331f283757793e4c986252b1bdcacf0c97ca37fd5abab589c7864f5d42",
       "bytes": 121682
     },
     "HISTORICAL_MIGRATION_RISK_DECISION.md": {
-      "sha256": "70d7efc1187b8b3771e1643110c6457943899c36be1b755d24e7628c022c355e",
-      "bytes": 6077
+      "sha256": "087500b2d0b9471eeaa43bf27ec4e3d658c065acd95a0f5710569692c6f71a6b",
+      "bytes": 6263
     },
     "HISTORICAL_V1_V2_COVERAGE_MATRIX.csv": {
-      "sha256": "a97c5388cf8e57fc47ee0a0257d8951d7a6007be7c42ea9e7b3f2ba1de1be538",
+      "sha256": "a93281246b172aeedacf2cb2d59b8c9dbdbe33046e0e475bb1be3a5be9b82cff",
       "bytes": 2014625
     },
     "LOCK_CONCURRENCY_TEST_RESULTS.json": {
-      "sha256": "648d6267beb7adcf6a12d88e678dfdc857cc776f38618065b9c6156578f6c656",
+      "sha256": "7bbb021e6b18c096c7ca1925ace251682b6358a63b560296b57c79b21586b54e",
       "bytes": 1129989
     },
     "PR1_FINAL_CI_REPORT.md": {
-      "sha256": "e637b3cfd110393456f5dae897d31dbef6456699a521fd80136a318626d1f55f",
-      "bytes": 6120
+      "sha256": "4ada65dd636852660f9afa7b844bb257d123bf76b3abf91d9cb95d4cf8875bc4",
+      "bytes": 6372
     },
     "PR1_MERGE_READINESS_V2.json": {
-      "sha256": "f50a27e3ee60e31737b18ddf0b7e717662202a8b3a9dfcfdae5b6fd2bd16f3cc",
-      "bytes": 2787
-    },
-    "SOFTWARE_VALIDATION_V2_SPEC.md": {
-      "sha256": "e2b8386d5717c58c9ea64b07eaef629d667eab7622e9a56559efc8e3bfef6ce4",
-      "bytes": 8401
-    },
-    "WINDOWS_LOCK_FIX_REPORT.md": {
-      "sha256": "09956c92c6f2d24475d56cc291c1bc915a3f1ab41edd4d70f9fbd1016fed431c",
-      "bytes": 3628
-    },
-    "WINDOWS_LOCK_NATIVE_DIAGNOSIS.md": {
-      "sha256": "55872b9ed19cada420f8761b628f5dd635540090eb9e0c7315f88b48b2ce63da",
-      "bytes": 4971
+      "sha256": "80b1c107d487f3fa9e6b2af6718676a759725c459f231fb76ca2c47cf2d90bd0",
+      "bytes": 3380
     },
     "PUBLIC_REPORT_REVIEW.json": {
       "sha256": "58ca30c9a3c47691403860f9e29cfb7faf1b44e5a175a1497d69d369ec5920fe",
       "bytes": 993
+    },
+    "SOFTWARE_VALIDATION_V2_SPEC.md": {
+      "sha256": "4c235622a6b660da66e27ba5c7242d7f48ef27839244a0506644e20def63b142",
+      "bytes": 8648
+    },
+    "WINDOWS_LOCK_FIX_REPORT.md": {
+      "sha256": "c4e9735c7df84f48d064a64121ae92dc542845ee036f1af2feb9b1db748423ec",
+      "bytes": 3628
+    },
+    "WINDOWS_LOCK_NATIVE_DIAGNOSIS.md": {
+      "sha256": "145a8daf6b222b830aa46bec9b83fb7a1da2de55495078c8272da8cea4608c12",
+      "bytes": 4971
     }
   },
   "HISTORICAL_MIGRATION_APPROVAL": "PENDING",

@@ -653,5 +653,12 @@
   "HISTORICAL_MIGRATION_APPROVAL": "PENDING",
   "independent_human_review": "PENDING",
   "financial_authorization": "BLOCKED",
-  "no_live_money": true
+  "no_live_money": true,
+  "report_only_ci_observation": {
+    "run_id": 40559634733,
+    "head": "4d68d05ba7832bc7b18076e39a40358253b183f3",
+    "conclusion": "CANCELLED",
+    "reason": "Automatic duplicate for report-only descendant; software/source inputs identical to completed tested code. Not counted as PASS and no historical merge requirement waived.",
+    "correction": "pull_request paths-ignore evaluates cumulative PR differences, so it does not avoid report-update runs in this mixed software PR. Any later report-only duplicates are separately recorded in the PR and final delivery receipt."
+  }
 }

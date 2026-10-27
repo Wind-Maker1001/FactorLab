@@ -4,7 +4,7 @@
   "executed_merge": "50e94ab96d2ca17cd75fa4dce225b5c834152869",
   "main": "afac4f9d4c2b123c0b32787ccd1cf67fe965c723",
   "input_head": "ed2b4c1a0a10afd794c674b14d105b748b01b9c8",
-  "evidence_index_sha256": "81a23cb3e3704f8c7b8eb34725d41f4f7e4cf93d6d9c721ee0af43863bf86f9b",
+  "evidence_index_sha256": "abcfe4beb91f8028a90a34f48f184844badb3ed2c39135f6dd2afd98f7d2e0b4",
   "remote_run": 40550674503,
   "remote_conclusion": "failure",
   "answers": {
@@ -81,5 +81,12 @@
   "PIT": "PIT_UNVERIFIED",
   "HFQ": "HFQ_UNVERIFIED",
   "FORMAL_ADMISSION": "FORMAL_ADMISSION_BLOCKED",
-  "LIVE_MONEY": "NO LIVE MONEY"
+  "LIVE_MONEY": "NO LIVE MONEY",
+  "report_only_ci_observation": {
+    "run_id": 40559634733,
+    "head": "4d68d05ba7832bc7b18076e39a40358253b183f3",
+    "conclusion": "CANCELLED",
+    "reason": "Automatic duplicate for report-only descendant; software/source inputs identical to completed tested code. Not counted as PASS and no historical merge requirement waived.",
+    "correction": "pull_request paths-ignore evaluates cumulative PR differences, so it does not avoid report-update runs in this mixed software PR. Any later report-only duplicates are separately recorded in the PR and final delivery receipt."
+  }
 }

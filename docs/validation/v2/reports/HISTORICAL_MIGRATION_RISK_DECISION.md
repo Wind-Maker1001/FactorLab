@@ -1,4 +1,4 @@
-Public input `ed2b4c1a0a10afd794c674b14d105b748b01b9c8`; main `afac4f9d4c2b123c0b32787ccd1cf67fe965c723`. Tested candidate `b2b6b472d500b078cc872c3b942c6e1916054512`; actual executed merge `50e94ab96d2ca17cd75fa4dce225b5c834152869` (identical Git tree `23a324933ba447f2516328a6b16b4b426593e3a9`). Evidence index SHA-256 `81a23cb3e3704f8c7b8eb34725d41f4f7e4cf93d6d9c721ee0af43863bf86f9b`. [Remote run 40550674503](https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503). Windows Server 2025 / Python 3.14.9; additional Linux/Python 3.14.8 and Windows/Python 3.13.16 evidence are identified in the index.
+Public input `ed2b4c1a0a10afd794c674b14d105b748b01b9c8`; main `afac4f9d4c2b123c0b32787ccd1cf67fe965c723`. Tested candidate `b2b6b472d500b078cc872c3b942c6e1916054512`; actual executed merge `50e94ab96d2ca17cd75fa4dce225b5c834152869` (identical Git tree `23a324933ba447f2516328a6b16b4b426593e3a9`). Evidence index SHA-256 `abcfe4beb91f8028a90a34f48f184844badb3ed2c39135f6dd2afd98f7d2e0b4`. [Remote run 40550674503](https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503). Windows Server 2025 / Python 3.14.9; additional Linux/Python 3.14.8 and Windows/Python 3.13.16 evidence are identified in the index.
 
 # Historical V1 to software V2 risk acceptance proposal
 
@@ -50,8 +50,10 @@ No prediction bytes, manifest contract or version namespace changes.
 
 Python 3.13 now also executes the exhaustive software selection. New Windows and
 Linux lock jobs and an independent comparison job add CI work. Full historical
-failures remain failures. Documentation-only final report updates do not rerun
-the unchanged software jobs; their tested subject remains explicit.
+failures remain failures. Report-only updates in this mixed PR can trigger duplicate jobs because PR
+path filtering uses cumulative differences. Such duplicates are explicitly
+cancelled after source identity checks, retained as CANCELLED and never counted
+as PASS or a historical-check waiver. The tested subject remains explicit.
 
 ## Required real decisions
 

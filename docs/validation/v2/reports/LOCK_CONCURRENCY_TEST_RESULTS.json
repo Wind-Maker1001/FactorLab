@@ -2,7 +2,7 @@
   "schema": "FACTORLAB_PR1_LOCK_RESULTS_AGGREGATE_V2",
   "candidate_sha": "b2b6b472d500b078cc872c3b942c6e1916054512",
   "executed_merge": "50e94ab96d2ca17cd75fa4dce225b5c834152869",
-  "evidence_index_sha256": "81a23cb3e3704f8c7b8eb34725d41f4f7e4cf93d6d9c721ee0af43863bf86f9b",
+  "evidence_index_sha256": "abcfe4beb91f8028a90a34f48f184844badb3ed2c39135f6dd2afd98f7d2e0b4",
   "remote_windows": {
     "schema": "FACTORLAB_LOCK_CONCURRENCY_ACCEPTANCE_V2",
     "status": "PASS",
