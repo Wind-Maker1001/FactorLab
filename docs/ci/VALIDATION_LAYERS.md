@@ -44,5 +44,8 @@ an absolute config inside a source checkout uses that checkout. Relative wheel
 configs require an explicit absolute root. The loader never searches arbitrary
 repositories for a matching filename or falls back to the process cwd. Existing
 CSI500 YAML files, schemas, financial gates and backtest contracts are unchanged.
+The module identifies its source root only at the canonical
+`src/factorlab/config/loader.py` location. A wheel installed in an environment
+inside a checkout does not inherit that checkout as its own source root.
 
 PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED / NO LIVE MONEY

@@ -35,7 +35,16 @@ def discover_repository_root(start: Optional[Path] = None) -> Path:
     process cwd must never become the wheel's implicit artifact destination.
     """
 
-    candidate = (Path(__file__) if start is None else Path(start)).resolve()
+    if start is None:
+        module = Path(__file__).resolve()
+        candidate = module.parents[3]
+        # An environment may be nested *inside* a checkout. Only the canonical
+        # src layout identifies this module as source, never a higher ancestor.
+        if (candidate / "src/factorlab/config/loader.py" != module or
+                not (candidate / "pyproject.toml").is_file()):
+            raise ConfigurationError("cannot locate FactorLab source root for installed module")
+        return candidate
+    candidate = Path(start).resolve()
     if candidate.is_file():
         candidate = candidate.parent
     for directory in (candidate,) + tuple(candidate.parents):
@@ -63,7 +72,10 @@ def _configuration_location(path: Path, repo_root: Optional[Union[str, Path]]) -
         if not root.is_dir():
             raise ConfigurationError("repo_root must be an existing directory: %s" % root)
     else:
-        module_root = _optional_source_root(Path(__file__))
+        try:
+            module_root = discover_repository_root()
+        except ConfigurationError:
+            module_root = None
         if path.is_absolute():
             # An absolute config in another checkout explicitly selects it.
             # Standalone configs use the source root when running from source,

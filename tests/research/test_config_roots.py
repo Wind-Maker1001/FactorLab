@@ -1,10 +1,23 @@
 """Root contracts exercised independently of the actual checkout/cwd topology."""
 from pathlib import Path
+import tempfile
 
 import pytest
 
 from factorlab.config import loader
 from factorlab.errors import ConfigurationError
+
+
+@pytest.fixture
+def tmp_path(tmp_path_factory):
+    # A fake standalone config must really be outside every source checkout.
+    # Hosted CI puts --basetemp inside the checkout; choose an owned sibling
+    # directory there, while retaining the same drive and automatic cleanup.
+    base = tmp_path_factory.getbasetemp()
+    while (repository := loader._optional_source_root(base)) is not None:
+        base = repository.parent
+    with tempfile.TemporaryDirectory(dir=base, prefix="factorlab-root-contract-") as directory:
+        yield Path(directory)
 
 
 def source_tree(root):
@@ -118,3 +131,16 @@ def test_missing_config_does_not_fall_back_to_cwd(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     with pytest.raises(ConfigurationError, match="cannot read configuration"):
         loader.load_config("test.yaml")
+
+
+def test_nested_wheel_does_not_inherit_outer_source_root(tmp_path, monkeypatch):
+    outer = tmp_path / "outer"
+    source_tree(outer)
+    monkeypatch.setattr(loader, "__file__", str(outer / "environment/Lib/site-packages/factorlab/config/loader.py"))
+    path = config_at(tmp_path / "standalone/test.yaml")
+    monkeypatch.chdir(outer)
+    assert_root(loader.load_config(path), path.parent, path)
+    with pytest.raises(ConfigurationError, match="relative configuration requires"):
+        loader.load_config("test.yaml")
+    with pytest.raises(ConfigurationError, match="cannot locate"):
+        loader.discover_repository_root()
