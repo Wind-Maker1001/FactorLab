@@ -29,9 +29,13 @@ T = TypeVar("T")
 
 
 def discover_repository_root(start: Optional[Path] = None) -> Path:
-    """Locate the Qbot repository without relying on the process cwd."""
+    """Find a source root from an explicit location, or this installed module.
 
-    candidate = (start or Path.cwd()).resolve()
+    A wheel has no source root. In particular, an unrelated repository in the
+    process cwd must never become the wheel's implicit artifact destination.
+    """
+
+    candidate = (Path(__file__) if start is None else Path(start)).resolve()
     if candidate.is_file():
         candidate = candidate.parent
     for directory in (candidate,) + tuple(candidate.parents):
@@ -42,28 +46,58 @@ def discover_repository_root(start: Optional[Path] = None) -> Path:
     )
 
 
+def _optional_source_root(start: Path) -> Optional[Path]:
+    try:
+        return discover_repository_root(start)
+    except ConfigurationError:
+        return None
+
+
+def _configuration_location(path: Path, repo_root: Optional[Union[str, Path]]) -> Tuple[Path, Path]:
+    """Return the explicit config location and the base for relative artifacts."""
+    if repo_root is not None:
+        root = Path(repo_root).expanduser()
+        if not root.is_absolute():
+            raise ConfigurationError("repo_root must be absolute")
+        root = root.resolve()
+        if not root.is_dir():
+            raise ConfigurationError("repo_root must be an existing directory: %s" % root)
+    else:
+        module_root = _optional_source_root(Path(__file__))
+        if path.is_absolute():
+            # An absolute config in another checkout explicitly selects it.
+            # Standalone configs use the source root when running from source,
+            # and their own parent when installed as a wheel.
+            root = _optional_source_root(path) or module_root or path.resolve().parent
+        else:
+            cwd_root = _optional_source_root(Path.cwd())
+            if module_root is None:
+                raise ConfigurationError(
+                    "relative configuration requires an absolute repo_root when installed; "
+                    "alternatively pass an absolute configuration path"
+                )
+            if cwd_root is not None and cwd_root != module_root:
+                raise ConfigurationError(
+                    "ambiguous configuration roots; pass an absolute configuration path "
+                    "or an explicit absolute repo_root"
+                )
+            root = module_root
+    return (path if path.is_absolute() else root / path).resolve(), root
+
+
 def load_config(
     path: Union[str, Path], repo_root: Optional[Union[str, Path]] = None
 ) -> ResearchConfig:
     """Load and validate a FactorLab YAML configuration.
 
     Unknown keys are rejected recursively. Relative configuration and artifact
-    paths are interpreted from the repository root, so CLI results do not
-    depend on the caller's current working directory.
+    paths use an explicit absolute repo_root when supplied. Otherwise a source
+    invocation uses its module's checkout (or an absolute config's checkout).
+    A standalone absolute config in a wheel uses its parent. Relative configs
+    in a wheel require repo_root; conflicting source checkouts are rejected.
     """
 
-    if repo_root is not None:
-        root = Path(repo_root).expanduser().resolve()
-    else:
-        start = Path(path).expanduser()
-        try:
-            root = discover_repository_root(start if start.is_absolute() else Path.cwd())
-        except ConfigurationError:
-            root = start.resolve().parent if start.is_absolute() else Path.cwd().resolve()
-    config_path = Path(path).expanduser()
-    if not config_path.is_absolute():
-        config_path = root / config_path
-    config_path = config_path.resolve()
+    config_path, root = _configuration_location(Path(path).expanduser(), repo_root)
 
     try:
         text = config_path.read_text(encoding="utf-8")

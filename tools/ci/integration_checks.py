@@ -31,6 +31,14 @@ SUITES = {
         'tests/research/test_forward_policy_phase4.py',
         'tests/cross_market/test_exploratory_scenario.py',
     ],
+    'current': [],  # Exhaustive nonhistorical selection, with an exact inventory.
+    'configuration': [
+        'tests/research/test_config_roots.py', 'tests/research/test_config.py',
+        'tests/research/test_local_cli_pipeline.py::test_relative_import_paths_use_repository_root_from_another_cwd',
+        'tests/research/test_real_factor_label_smoke.py::test_main_from_other_cwd_resolves_repo_relative_config',
+    ],
+    'locking': ['tests/research/test_forward_full_predictions.py',
+                'tests/research/test_forward_signal_recorder_phase4.py'],
     'legacy': [],  # All configured tests, with no selection or deselection override.
 }
 
@@ -63,6 +71,9 @@ def run(suite, output):
                '--continue-on-collection-errors', '--basetemp='+str(output/'tmp'),
                '-o', 'cache_dir='+str(output/'pytest-cache'),
                '--junitxml='+str(output/'tests.xml')]
+    if suite == 'current':
+        command += ['-p', 'tools.ci.validation_layers',
+                    '--current-layer-inventory='+str(output/'selection.json')]
     env = dict(os.environ, MPLBACKEND='Agg', PYTHONUTF8='1', PYTHONHASHSEED='0', TZ='UTC')
     env.pop('PYTHONPATH', None)
     dependencies = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze', '--all'], text=True)

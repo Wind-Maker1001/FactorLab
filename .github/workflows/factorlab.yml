@@ -72,6 +72,14 @@ jobs:
           python -m pip check
       - name: Run all three incremental suites and retain individual results
         run: python tools/ci/integration_checks.py --suite incremental --output local-ci/incremental
+      - name: Check configuration and locking contracts
+        run: |
+          python tools/ci/integration_checks.py --suite configuration --output local-ci/incremental
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/ci/integration_checks.py --suite locking --output local-ci/incremental
+      - name: Exhaustive current software layer (all nonhistorical tests)
+        if: matrix.python == '3.14'
+        run: python tools/ci/integration_checks.py --suite current --output local-ci/incremental
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
@@ -81,6 +89,41 @@ jobs:
             local-ci/incremental/*/dependencies.txt
             local-ci/incremental/*/tests.xml
             local-ci/incremental/*/tests.log
+            local-ci/incremental/*/selection.json
+          if-no-files-found: error
+
+  lock-diagnostics:
+    name: Bounded lock diagnosis Windows Python 3.14
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - name: Compare public main, input PR head and repaired head without test retries
+        run: |
+          git worktree add --detach local-ci/lock-main afac4f9d4c2b123c0b32787ccd1cf67fe965c723
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git worktree add --detach local-ci/lock-input 50698bd97b95ce1cb55319ec02b9b4f3baf3cd28
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/ci/lock_diagnostics.py --source local-ci/lock-main --output local-ci/lock-diagnostics/main --iterations 40
+          $mainCode = $LASTEXITCODE
+          python tools/ci/lock_diagnostics.py --source local-ci/lock-input --output local-ci/lock-diagnostics/input --iterations 40
+          $inputCode = $LASTEXITCODE
+          python tools/ci/lock_diagnostics.py --source . --output local-ci/lock-diagnostics/current --iterations 40
+          $currentCode = $LASTEXITCODE
+          exit [Math]::Max($mainCode, [Math]::Max($inputCode, $currentCode))
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: bounded-lock-diagnostics-windows-3.14
+          path: local-ci/lock-diagnostics/*/diagnostic.json
           if-no-files-found: error
 
   legacy:
