@@ -1,53 +1,99 @@
-name: FactorLab independent candidate
+name: FactorLab integration
 on:
-  push:
   pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: factorlab-integration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+env:
+  MPLBACKEND: Agg
+  PYTHONUTF8: '1'
+  FACTORLAB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
-  software:
-    name: Software ${{ matrix.os }} Python ${{ matrix.python }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, ubuntu-24.04]
-        python: ['3.13', '3.14']
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
-    env:
-      MPLBACKEND: Agg
-      PYTHONUTF8: '1'
+  package:
+    name: Package Windows Python 3.14
+    runs-on: windows-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: ${{ matrix.python }}
-      - name: Install controlled core and test dependencies
-        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt
-      - name: Install independent package
-        run: python -m pip install --no-deps .
-      - run: python -m pip check
-      - name: Execute declared software and rejection domains
-        run: python tools/ci/run_checks.py --suite software --output local-ci/runtime
+          python-version: '3.14'
+      - name: Install public build and runtime dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/cross-market.txt
       - name: Build wheel and sdist
         run: python -m build --outdir local-ci/distributions
-      - name: Run public synthetic CLI
-        run: factorlab demo --output local-ci/synthetic-demo
-      - name: Test archive publication rejection cases
+      - name: Verify licenses, module bytes and publication boundaries
+        run: python tools/migration/inspect_distributions.py local-ci/distributions
+      - name: Reject malformed and private distributions
         run: python tools/migration/check_distribution_rejections.py local-ci/distributions local-ci/archive-attacks
-      - name: Validate clean wheel/sdist installs, offline imports, CLI, demo and publication boundary
+      - name: Validate wheel and sdist installs, imports, CLI and offline demo
         run: python tools/migration/packaging_ci.py local-ci/distributions local-ci/packaging
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
-          name: factorlab-${{ matrix.os }}-${{ matrix.python }}
+          name: package-windows-3.14
+          path: local-ci/
+          if-no-files-found: error
+  incremental:
+    name: Core, cross-market and financial gates Windows Python ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.14', '3.13']
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install public test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt
+      - name: Install project and check dependencies
+        run: |
+          python -m pip install --no-deps .
+          python -m pip check
+      - name: Run all three incremental suites and retain individual results
+        run: python tools/ci/integration_checks.py --suite incremental --output local-ci/incremental
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: incremental-windows-${{ matrix.python }}
           path: local-ci/
           if-no-files-found: error
 
-# Historical Qbot replay is a separate local archive acceptance.
-# Run tools/security/archive_replay.py with genuine baseline objects;
-# missing history is NOT_RUN/BLOCKED and never financial approval.
+  legacy:
+    name: Full legacy regression Windows Python 3.14 (failures retained)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install public dependencies and project
+        run: |
+          python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt
+          python -m pip install --no-deps .
+          python -m pip check
+      - name: Run complete project regression with real failure propagation
+        run: python tools/ci/integration_checks.py --suite legacy --output local-ci/legacy
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: full-legacy-windows-3.14
+          path: local-ci/
+          if-no-files-found: error

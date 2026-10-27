@@ -164,6 +164,8 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     subparsers = parser.add_subparsers(dest="command", required=True)
+    from factorlab.cross_market.cli import add_parser as add_cross_market_parser
+    add_cross_market_parser(subparsers)
     demo = subparsers.add_parser("demo", help="Offline synthetic four-model software demonstration")
     demo.add_argument("--output", required=True, type=Path)
     demo.add_argument("--seed", default=42, type=int)
@@ -3538,6 +3540,13 @@ def command_evaluate_forward(
 def main(argv: Optional[List[str]] = None) -> int:
     parser = _parser()
     arguments = parser.parse_args(argv)
+    if arguments.command == "cross-market":
+        from factorlab.cross_market.cli import run_command
+        try:
+            return run_command(arguments)
+        except (OSError, ValueError, FactorLabError) as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
     if arguments.command == "demo":
         from factorlab.demo import run
         try:

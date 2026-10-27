@@ -1,0 +1,2 @@
+# Optional Apache-2.0 calendar provider, installed separately; no source bundled.
+exchange-calendars==4.13.2
