@@ -105,7 +105,7 @@ class ExecutionEngine:
             self.rejections.append(dict(date=day, instrument_id=iid, side=side, reason='CASH_OR_SETTLEMENT_CONSTRAINT'))
         if quantity <= 1e-10:
             return 0.0
-        if side == 'sell' and self.cash + quantity * price - fee < -1e-8:
+        if side == 'sell' and self.available_cash() + quantity * price - fee < -1e-8:
             self.rejections.append(dict(date=day, instrument_id=iid, side=side, reason='INSUFFICIENT_CASH_FOR_FEES'))
             return 0.0
         released_basis = 0.0
@@ -126,8 +126,11 @@ class ExecutionEngine:
                 if remaining <= 1e-10:
                     break
             proceeds = quantity * price - fee
+            # Cash includes the net sale immediately. Only positive income is
+            # unsettled; a fee shortfall spends existing available cash now.
             self.cash += proceeds
-            self.pending.append(dict(due=self.settlement_date(day), amount=proceeds))
+            if proceeds > 0:
+                self.pending.append(dict(due=self.settlement_date(day), amount=proceeds))
         if self.cash < -1e-6:
             raise ContractError('cash accounting invariant violated')
         self.trades.append(dict(date=day, execution_at=self.adapter.calendar.at(day, 'open'),

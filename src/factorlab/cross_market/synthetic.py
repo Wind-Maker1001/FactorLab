@@ -4,6 +4,7 @@ import pandas as pd
 from .calendar import us_calendar
 from .identity import IdentityRegistry, DynamicUniverse
 from .adapters import USEquityAdapter, ActionLedger, DatedFees, FeePeriod
+from .contracts import session_date
 
 
 def build_us(start='2023-09-01', end='2025-02-28', count=72, seed=42):
@@ -60,8 +61,15 @@ def build_us(start='2023-09-01', end='2025-02-28', count=72, seed=42):
     ledger = ActionLedger(events, coverage_start=start, coverage_end=end,
                           instrument_ids=registry.aliases.instrument_id, version='SYNTHETIC_COMPLETE_V1')
     # Demonstrate date-effective fee selection, not actual SEC/FINRA rates.
-    fees = DatedFees([FeePeriod(start, '2024-05-27', commission_per_share=0.002, minimum=0.5, sell_bps=0.1),
-                      FeePeriod('2024-05-28', end, commission_per_share=0.001, minimum=0.2, sell_bps=0.2, sell_per_share=0.0001, sell_maximum=8)],
+    first, last = session_date(start), session_date(end)
+    scenarios = [
+        (first, min(last, pd.Timestamp('2024-05-27')),
+         dict(commission_per_share=0.002, minimum=0.5, sell_bps=0.1)),
+        (max(first, pd.Timestamp('2024-05-28')), last,
+         dict(commission_per_share=0.001, minimum=0.2, sell_bps=0.2, sell_per_share=0.0001, sell_maximum=8)),
+    ]
+    fees = DatedFees([FeePeriod(lo.date().isoformat(), hi.date().isoformat(), **rates)
+                      for lo, hi, rates in scenarios if lo <= hi],
                      'SYNTHETIC_FEE_SCENARIO_NOT_US_TARIFF')
     adapter = USEquityAdapter(calendar, universe, ledger, fees)
     return pd.DataFrame(rows), adapter
