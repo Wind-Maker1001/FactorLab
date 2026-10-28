@@ -1,0 +1,664 @@
+{
+  "schema": "FACTORLAB_PR1_V2_EVIDENCE_INDEX",
+  "input_head": "ed2b4c1a0a10afd794c674b14d105b748b01b9c8",
+  "main": "afac4f9d4c2b123c0b32787ccd1cf67fe965c723",
+  "candidate": "b2b6b472d500b078cc872c3b942c6e1916054512",
+  "executed_merge": "50e94ab96d2ca17cd75fa4dce225b5c834152869",
+  "run_id": 40550674503,
+  "run_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503",
+  "run_conclusion": "failure",
+  "tested_tree": "23a324933ba447f2516328a6b16b4b426593e3a9",
+  "merge_tree": "23a324933ba447f2516328a6b16b4b426593e3a9",
+  "delta_paths": [
+    "M\t.github/workflows/factorlab.yml",
+    "A\tdocs/validation/v2/BASELINE_4157.json",
+    "A\tdocs/validation/v2/HISTORICAL_MIGRATION_RISK_DECISION.md",
+    "A\tdocs/validation/v2/SOFTWARE_VALIDATION_V2_SPEC.md",
+    "A\tsrc/factorlab/forward/_windows_lock.py",
+    "M\tsrc/factorlab/forward/signal_recorder.py",
+    "A\ttests/research/test_signal_lock_native.py",
+    "A\ttests/security/test_validation_v2.py",
+    "M\ttools/ci/integration_checks.py",
+    "A\ttools/ci/lock_acceptance.py",
+    "A\ttools/ci/validation_v2.py",
+    "A\ttools/ci/windows_lock_probe.py"
+  ],
+  "delta_patch_sha256": "fcc3205ee9f07059c4ad0156f2fb60a79c1e3ca716530235a471930a5925ea75",
+  "jobs": [
+    {
+      "id": 122353221687,
+      "name": "Package Windows Python 3.14",
+      "conclusion": "success",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122353221687"
+    },
+    {
+      "id": 122353222148,
+      "name": "Core, cross-market and financial gates Windows Python 3.14",
+      "conclusion": "success",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122353222148"
+    },
+    {
+      "id": 122353222243,
+      "name": "Lock acceptance windows-latest Python 3.14",
+      "conclusion": "success",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122353222243"
+    },
+    {
+      "id": 122353222360,
+      "name": "Core, cross-market and financial gates Windows Python 3.13",
+      "conclusion": "success",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122353222360"
+    },
+    {
+      "id": 122353222384,
+      "name": "Full legacy regression Windows Python 3.14 (failures retained)",
+      "conclusion": "failure",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122353222384"
+    },
+    {
+      "id": 122353222425,
+      "name": "Lock acceptance ubuntu-latest Python 3.14",
+      "conclusion": "success",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122353222425"
+    },
+    {
+      "id": 122353222689,
+      "name": "Native lock diagnosis Windows Python 3.14 (control failures retained)",
+      "conclusion": "success",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122353222689"
+    },
+    {
+      "id": 122372478601,
+      "name": "Independent V2 coverage comparison (no migration approval)",
+      "conclusion": "success",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/40550674503/job/122372478601"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12757810156,
+      "name": "full-legacy-windows-3.14",
+      "sha256": "de2b1f9e03d37346fcb9c0c8170747842ed577098ebccbf922f4dc5e7994c85b",
+      "files": {
+        "dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "receipt.json": "fa91599265f76d279a712df5b53d97d078017f8c1bac74b619e3502444ee1287",
+        "tests.log": "41e96853ddc1b185fc21ec0a47a0ce6fd7b5c9a0186529de3e773cc2ca82c772",
+        "tests.xml": "9f1f3ef53baba45176ca93425caf4f67b4c2e350f2052b125eaa5ab9c59422db"
+      },
+      "verification": "PASS"
+    },
+    {
+      "id": 12757526635,
+      "name": "incremental-windows-3.13",
+      "sha256": "7d1ae139bca2da969dadee105bfd90bacdfa1bbbdcf17e7c6e646a0005e7a132",
+      "files": {
+        "configuration/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "configuration/receipt.json": "1a832a7e5b61b6754b40cfd579ccee6737771febceb6f41f3b4e4af902c260c7",
+        "configuration/tests.log": "51a382321d96eb3c641bd20a05f36f3140c31a8efd1abbf3d821864d2684c1d7",
+        "configuration/tests.xml": "63d9eddc3a8e66eff36f81d68c5e4ab6492ed7ae639bfcb2409642d76da7bbff",
+        "core/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "core/receipt.json": "21f4fb7e5b6b3a9fb5df023287030296f595789984b428f2bc5271ca1693ee05",
+        "core/tests.log": "fbd30baba5f2c8ee68b414961dcde8c86a83bb63873200d3e2c910c91d4b7f58",
+        "core/tests.xml": "9c64ad38d284e3c0ceeba8780572b802b62eb5c97fe7d7544cdd6a19153c1d8b",
+        "cross-market/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "cross-market/receipt.json": "a34ae77dc78fd1d7c116b94df9fde5c14b7375b4af7827ee1ea8eb5191e24c33",
+        "cross-market/tests.log": "ae09784c58b44fd5fedfc5e13a19288104d4a545db28108657a8e964a18d3cef",
+        "cross-market/tests.xml": "291ffd92a72baca15058df5559cdf06bc68cdce8889bb3c3ee46e4efb1826791",
+        "current/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "current/receipt.json": "b3f2b8926974550732f59ca2b937c4f1fc57591622a6d115db4c6a5a6065f7da",
+        "current/selection.json": "6798baaf98d9f9ad01ae1cb4449dcb9e15f159e369e63fb179ddd983b15c6bb3",
+        "current/tests.log": "1ac233b67d8607798bcbf0012d7f76f40366b5e85a5335c01eef13d7d320bafa",
+        "current/tests.xml": "2a5444ab4a1570616cb7091893406dfd9fc8aeb12e08c1bc3b1355aaeea26272",
+        "financial-gates/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "financial-gates/receipt.json": "8c5ad0694268324617b83eb0290ea8e88ceac17cdc9d11aa1c8e58aaf0eccd9f",
+        "financial-gates/tests.log": "391ed8f52cef8ac96bfaf67a25cf06369ca055466a394cccfad0fe548fbb1d8f",
+        "financial-gates/tests.xml": "25b5084c565ef7b0fdbcff1b7e8541f350f7b184c6640aca05a9a76f06437861",
+        "locking/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "locking/receipt.json": "1ed4745d200bef015f1069d09d9fc7485be5d525d198a424ab2cabb5dd7b25f4",
+        "locking/tests.log": "06da0d698447963b11efe7e92da3ee65ca01dd030b42227e7a4071120601a9cd",
+        "locking/tests.xml": "92ba4063f7f8b90a6c2ac0b6543bde78fcfc78f2fcf6ee2c3386c59116ad4957"
+      },
+      "verification": "PASS"
+    },
+    {
+      "id": 12757157318,
+      "name": "independent-v2-coverage",
+      "sha256": "8eb08767d3de79d8520370705e6bffbf5b214fd69d6d735a2b3206b9a06cb9d8",
+      "files": {
+        "coverage-review.json": "d7e6fbb11e7cd5dbaee06ba31c662bd343716647279e0a75d0a445aa1732eb1f",
+        "HISTORICAL_V1_V2_COVERAGE_MATRIX.csv": "ded01586eb3e146b7509285431620d78abb241822b015412809df8342e60a4aa"
+      },
+      "verification": "PASS"
+    },
+    {
+      "id": 12756966779,
+      "name": "incremental-windows-3.14",
+      "sha256": "dbf002760fe83cbea80849d18ac2cb4d6554829a101bb1f3f0d3402b60c5a744",
+      "files": {
+        "configuration/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "configuration/receipt.json": "c3ced59772b6454ef1a7026c170f156ff1f23baabb26ff35ad9ec2ea84d9656d",
+        "configuration/tests.log": "95fba3ceccaec85468a33f7ac1a97866bb4fad3c48be2805268a58fcd722bf53",
+        "configuration/tests.xml": "484784634609230f598aa2748b7cf3df433c53b95f3e4c8be81c8e985ed406f6",
+        "core/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "core/receipt.json": "2d89dbadf53340c43af9beada18d227769a15d593b51de7b18695f1d51186af6",
+        "core/tests.log": "2bf94690b60b03149f46a8e4a2de9ca3b92abe889c9cf89aaea347ddbd6b62fa",
+        "core/tests.xml": "c91942725adc8df5d81f1d2f7dc64b8074f44b444941d6e72b5f0d04d7cd1971",
+        "cross-market/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "cross-market/receipt.json": "daaa64337c0dd9f704c6fa333dba5fb6a7e12f519847f6fae6a459d90e388141",
+        "cross-market/tests.log": "9557e17c87b1c768f5441e125ca1665ae70a850715bead6d0d7a2fdc8c59c6de",
+        "cross-market/tests.xml": "976c4f44ee1ac2391f489254a5b6fafa1e477e80576c2b818d95e3e3c4767e69",
+        "current/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "current/receipt.json": "b171563a61c6837aef63490304eccba5ac07f0b016e69731cc1f513a3171d387",
+        "current/selection.json": "6798baaf98d9f9ad01ae1cb4449dcb9e15f159e369e63fb179ddd983b15c6bb3",
+        "current/tests.log": "108f8c21f83c45b4d4643c1a28857264716d68d87ef56cfe67323a6303fa165a",
+        "current/tests.xml": "ac39a81ae6a1433cc41b5dde687bf3be13b8d0cf02904d3bb009b9074bdb86be",
+        "financial-gates/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "financial-gates/receipt.json": "8c8b4db8f630fb7d6e372b9bc804ff8ac8d8dcc802621e0568654280566ce643",
+        "financial-gates/tests.log": "0b3d97e4853973fd0bf73e332cbeed59a0718617fe1bb62a8d9741ee9ab191c9",
+        "financial-gates/tests.xml": "55f8674a37b9866fc763d7d1c9c9f4ca2dad024195bd674afce2de56aa7eca41",
+        "locking/dependencies.txt": "2a31817310f82f0400504e1a56deda6e1522c54ee23f1091d6b57b2860296b27",
+        "locking/receipt.json": "421b82922cb0d6aec8e5acbd29d6ee31cf2358d08937498eafa2345998070976",
+        "locking/tests.log": "c963b3f34acd0ad36aa2b2ff9376d0fafb50a75768c653cf90f4891dd9db3f63",
+        "locking/tests.xml": "11337e730ec18ecf1a4beb4b0c2ae9b7bcfba45e30d2c0a51ca84ef55bd8143b"
+      },
+      "verification": "PASS"
+    },
+    {
+      "id": 12754927309,
+      "name": "bounded-lock-diagnostics-windows-3.14",
+      "sha256": "261c6773c3f18ede93cda4268d0e9de44ba7f19d06838d39890e2b51bbcb6d68",
+      "files": {
+        "current/native-diagnostic.json": "636d95243b6022768432024ac626362fe863d741752e0fb70c8896a1ee2cf6b5",
+        "input/native-diagnostic.json": "5d72fd3ba1c7616fc17a998c6cb69b0930a1554624a588fe508297617f7e077a",
+        "main/native-diagnostic.json": "4bfa319546857f6ab2c0dfb4fffa877a02cc0da358e436395a7aaed5570a879a"
+      },
+      "verification": "PASS"
+    },
+    {
+      "id": 12754867615,
+      "name": "lock-acceptance-windows-latest-3.14",
+      "sha256": "5ab474447d82e0a00f61198a355c0c74e2221257b73310e10f8f0ee22c7a34a4",
+      "files": {
+        "faults.log": "36c2943adefd79278faab35664cd2a845f039895b26c1b8152db8400ab35e245",
+        "faults.xml": "2ec952d42ea38d9b4b45e82a0516a8e45b8c4b40a5ad685b4665aea6e7b178b8",
+        "LOCK_CONCURRENCY_TEST_RESULTS.json": "6b8099fe57fc908359cf01d4729eed867541ded7dbf4c96167408de415a7f157"
+      },
+      "verification": "PASS"
+    },
+    {
+      "id": 12754692481,
+      "name": "lock-acceptance-ubuntu-latest-3.14",
+      "sha256": "8060183018690cffdaa34117997418abf704d024733a6baa09d6d984e6bb7504",
+      "files": {
+        "faults.log": "8dcfd96054216528ca48256278373f19fa195ca2fee0033c499a35455ff4fb31",
+        "faults.xml": "5ba8e19afcc67ba1c077a9ed0ba11d6461a57797cebe3ae2fef50a2fb9a03ef0",
+        "LOCK_CONCURRENCY_TEST_RESULTS.json": "b9a23526a6f449f387f9eb5480cb8195e4ab35aaf6a4dccbc898d5d2196c8b5b"
+      },
+      "verification": "PASS"
+    },
+    {
+      "id": 12753594697,
+      "name": "package-windows-3.14",
+      "sha256": "adbe7f5badf0277a294f7a0d2fcab3bc1200437840067a9adac8ec3ec6b25970",
+      "files": {
+        "archive-attacks/baseline-scan.json": "10e9cea9d3ee39082c81dd94e933423245bd7fd8124d6006f94280ff223ff382",
+        "archive-attacks/receipt.json": "32c0b199af6c51e768b8cf6219a7619d3b791be7c9a06216c87d763a6eb25fab",
+        "distributions/factorlab-0.1.0.dev0-py3-none-any.whl": "25b8215f14c2ba2cc8b7f724d3fe7285124c679e6aa146f0fb66a5ca59a221fc",
+        "distributions/factorlab-0.1.0.dev0.tar.gz": "6873a000661cea4df8cc51c83f67f287753171c794afba52ebe0ce7bf3a93205",
+        "packaging/publication-scan.json": "10e9cea9d3ee39082c81dd94e933423245bd7fd8124d6006f94280ff223ff382",
+        "packaging/receipt.json": "c1160319d3d48d492272f14151f4a7e6b92febbf690e1d47e222670b7ee26be8",
+        "packaging/sdist-smoke.json": "72a25a337ff78311bad149b50582195184a78e944900a6ac38592424c56ee84b",
+        "packaging/sdist.log": "7254bfbd666301896e1d1970e20d8ebfcdab52a981ede2c1a4458a8d261c7712",
+        "packaging/wheel-smoke.json": "5328e6addd0f4c007856cd93e2e1d8bb7ed36754fc700c0c7e2aeb67a0be930e",
+        "packaging/wheel.log": "39ab64a7d73f97a9bbc7808269e948ab2453c41499b78a40b60ffa87b766cc6e",
+        "archive-attacks/alternate_stream/scan.json": "1aa01a1065703f25027c5971f1b64e0fbb3dafb1cdfff27d3da4e276c0424edd",
+        "archive-attacks/credential/scan.json": "42050aa5023089b98b04a21f12ae050769a3c61465488fe6c895256d7b731acf",
+        "archive-attacks/dot_alias/scan.json": "0f35e2aee57dff1fae848a9d7eb61ecb8e94d98990bde07d9eef17f91d02a5cd",
+        "archive-attacks/duplicate_zip/scan.json": "ee1a24a3d5ec17d1119ec400015a12b074280f66405f72d0737899b9910d3aee",
+        "archive-attacks/legacy_import/scan.json": "6791ee923dcb1dc8b31bb41c6c23d92aa548cb9caa4d7cc0592b8e3f63eef699",
+        "archive-attacks/local_dependency_url/scan.json": "4e2500005de6c87342a548756fed3cce2f0fd0f206ee8fd385cfa3df71b84a4d",
+        "archive-attacks/parent_path/scan.json": "742b1047ffab3c7037480e60de97182a3d5b93a5cde698cbaf112840b02b19e2",
+        "archive-attacks/redundant_separator/scan.json": "2d715fcb455d450edd8341502a241eecdc9f026df390405664a82cc4025432af",
+        "archive-attacks/tar_link/scan.json": "bf62497d8c8be72c45d1ae846c47b4f57c24328a7c7dbf1da1407b5afd268e1c",
+        "archive-attacks/unbound_golden/scan.json": "ebfce26a1dcdfe256bfa8dac72004273d03142c6b5d374c6082cb375d0bcb550",
+        "archive-attacks/unc_path/scan.json": "6fea1ea075bbf81b3585e511ba2796beaed8dfe754164f36e174ee39d5e74b07",
+        "archive-attacks/unsafe_directory/scan.json": "ac6aa4d70f2563c2d370a81412b19faefbefb607c946706052ae4f536792ae96",
+        "archive-attacks/windows_backslash/scan.json": "9ac4e9776fe13f771c494dc95f467f197e53579e8f4839cd409c8869556967f5",
+        "archive-attacks/windows_device/scan.json": "129fd15a219b2472cd18b787311b46514f0bea78932ef976477e0b324791cdd3",
+        "archive-attacks/windows_drive/scan.json": "b3df2e68de2cd59196917d947c63367aadd9cc489a283ace479ce56f05dcc65b",
+        "archive-attacks/windows_relative_drive/scan.json": "a6673de1bbaa30efcfbfc568e0fe7729019bd8dd384af8a04b4ee933ae3e228f",
+        "archive-attacks/windows_trailing_dot/scan.json": "e72e5b27596dc61d381476eb95839613d587df4a499fe0d9a7298f298a777830",
+        "archive-attacks/windows_trailing_space/scan.json": "32cd6ac0e031bab523dd4980b9a4435807368ed251f6f638ae2c9bedc2c3c006",
+        "archive-attacks/zip_link/scan.json": "5d710ec0069ec2b7be29a89d6f3b132c1cbaac95c71856a5e12a9dc71b4c8fd8"
+      },
+      "verification": "PASS"
+    }
+  ],
+  "environments": {
+    "full": {
+      "python": "3.14.9 (tags/v3.14.9:ead82c0, Oct 21 2026, 06:26:14) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "dependencies_sha256": "5ee38adcba7dd20072406ebcdff3a20e474b1bdd9bc98a640eda6bf6a3badbe4"
+    },
+    "current314": {
+      "python": "3.14.9 (tags/v3.14.9:ead82c0, Oct 21 2026, 06:26:14) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "dependencies_sha256": "5ee38adcba7dd20072406ebcdff3a20e474b1bdd9bc98a640eda6bf6a3badbe4"
+    },
+    "current313": {
+      "python": "3.13.16 (tags/v3.13.16:cbc944f, Sep 30 2026, 19:17:50) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "dependencies_sha256": "5ee38adcba7dd20072406ebcdff3a20e474b1bdd9bc98a640eda6bf6a3badbe4"
+    }
+  },
+  "lock_environments": {
+    "windows": {
+      "python": "3.14.9 (tags/v3.14.9:ead82c0, Oct 21 2026, 06:26:14) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "subject_sha": "50e94ab96d2ca17cd75fa4dce225b5c834152869"
+    },
+    "linux": {
+      "python": "3.14.8 (main, Oct  1 2026, 02:38:33) [GCC 13.3.0]",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "subject_sha": "50e94ab96d2ca17cd75fa4dce225b5c834152869"
+    },
+    "local_precommit": {
+      "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "subject_sha": "ed2b4c1a0a10afd794c674b14d105b748b01b9c8"
+    }
+  },
+  "local_evidence_sha256": {
+    "local-lock-evidence/input/native-diagnostic.json": "0fe1290b94454df2828bab4bc4840668e1b7343639a24cb16ac15d70a8d46e80",
+    "local-lock-evidence/main/native-diagnostic.json": "34eed8cc2f65323e1d07b3443e5052154206112d068ce4eab4442b6feda3e41f",
+    "local-lock-evidence/input-native-r2/native-diagnostic.json": "01c31a9b69668b86a76fb009d8db41235f67291d7605cc443f60904aca7d1030",
+    "local-lock-evidence/main-native-r2/native-diagnostic.json": "7d349c9442755cd6147efde16396016d930f3bdc7cb3d866ff472d8c51c88dd1",
+    "local-lock-evidence/input-disposition-r3/native-diagnostic.json": "f1466fa400b02b99d96b139423824a8bc73cbffc8dfde1c8614767729164d7da",
+    "local-lock-evidence/main-disposition-r3/native-diagnostic.json": "1c39cb3ace832c9261ff3dae0cdccf1cfb1236705853ee331947f4615aa7ec2d",
+    "local-lock-evidence/acceptance-r1/LOCK_CONCURRENCY_TEST_RESULTS.json": "8010a95ea329573c108301b93548405009ba6f5a020881ed929281d54dcf93e8",
+    "local-lock-evidence/fix-r1.xml": "7ed31492546039e50e32d1182f0850ac929aaa063b5466daad2e60236037954d",
+    "local-lock-evidence/fix-r2.xml": "f0499f81d93fa55a21d8894a12ffbe3ab6f73449ee9ec5b26c409c593b63542d",
+    "local-lock-evidence/py313.xml": "9a14cb43feb5be3fb41bb0baea471b67ca0867a26cc3e39da259dd3305bd4e46",
+    "local-validation/public-review.json": "796ade7c0a0b921a0435f8ba9d22df426b7871b1c71dddf5bead679b65aeca76",
+    "local-validation/retained-v1-result.json": "b32c3a1bc520665783559bb34b3de498c9ead41cc7a53aec2bc86a2f3f82e16f",
+    "local-validation/historical-comparison.json": "ad49b15e077fd5f852cc08ef4741ca7da77f6a5aa003b5edfe7e7577731da98b",
+    "local-validation/frozen-b2b6b47/current/receipt.json": "a12cd17b5204168ea0fc63581e43504925f120f7b3f845162d15bed9ecad98e2",
+    "local-validation/frozen-b2b6b47/current/tests.xml": "2024749b65b99a234f2ead2aa97a0fd1699e73f907b6ee54d0c544a827b8a471",
+    "local-validation/independent-comparison314.json": "ab4ed953d64c0e73b2b3666339794ce72fc5368e4f53b27648fec22ce508deb1",
+    "local-validation/cross-market-overlay/receipt.json": "174e4b3ec117a94cceaf2ccdb5287d046851f4909bdb08413d398aa35f95825b",
+    "local-validation/cross-market-overlay-r2/receipt.json": "a9e892229eddeccfdf3c697e9f99384e68a06e82d1fd60c68a3c3d28552cf80b",
+    "local-validation/dependency-overlay-inventory.json": "d62c92d0ab60d545d85f205ab0e54cfd7bd5c8d0ac26934fa19d7d5147ba03be"
+  },
+  "baseline_inventory_sha256": "0624b879d923c839b85b87d932ae2f181d4f289c4f31f40d13f211b0c7c6ce8d",
+  "baseline_git_blob_sha256": "e9af3eb6e7d76ed7023e13f1252f02d86b230057388e65c620d38d6eb401002e",
+  "original_historical_matrix_sha256": "7e1f49e84632ef55d4e15fa34be77d93dcdbe98fe6bf41d03abc67101caac1a4",
+  "current_contract_sha256": "e32fa9c923a2d620555afb330d5c45588c6aa97ead5e29f8ca25e312c9516057",
+  "executed_contract_sha256": "cc0d579f5c2dbff0a95e04c2ee5d710fac76fd9ba568535ce7840da279acc630",
+  "migration_proposal_sha256": "88182d6655444d20e4cd43b47923077acbb6a064e7db3a000e8c99e327fd51ea",
+  "full_junit_sha256": "9f1f3ef53baba45176ca93425caf4f67b4c2e350f2052b125eaa5ab9c59422db",
+  "coverage_review_sha256": "d7e6fbb11e7cd5dbaee06ba31c662bd343716647279e0a75d0a445aa1732eb1f",
+  "package": {
+    "wheel_sha256": "25b8215f14c2ba2cc8b7f724d3fe7285124c679e6aa146f0fb66a5ca59a221fc",
+    "python_modules": 191,
+    "byte_differences": []
+  },
+  "retained_v1": {
+    "validator_sha256": "4d12491aa114a48d83997feb90dfaf60b094d4151814b914ed8541668b38674c",
+    "anchor_sha256": "055461c7a4c9c856778e4a990e13a285afe52fb5f8ff7ec0f6dbc182738f39b2",
+    "result": "SOURCE_SCOPE_CHANGED"
+  },
+  "public_review": {
+    "schema": "FACTORLAB_PR1_V2_PREPUSH_PUBLIC_REVIEW",
+    "status": "PASS_SCOPED_SOFTWARE_PUBLICATION",
+    "base": "ed2b4c1a0a10afd794c674b14d105b748b01b9c8",
+    "worktree_parent": "ed2b4c1a0a10afd794c674b14d105b748b01b9c8",
+    "paths": [
+      {
+        "path": ".github/workflows/factorlab.yml",
+        "bytes": 10089,
+        "sha256": "e04c35e5d44d9179f4813530eda372345194bc710fa13ac0c12bebaf07748b29",
+        "blob": "4f354880d732c179c268d73acc4d502d01a9e3b4"
+      },
+      {
+        "path": "docs/validation/v2/BASELINE_4157.json",
+        "bytes": 663148,
+        "sha256": "e9af3eb6e7d76ed7023e13f1252f02d86b230057388e65c620d38d6eb401002e",
+        "blob": "9e87a58de63b3c0b0f600a5220354084510e2f61"
+      },
+      {
+        "path": "docs/validation/v2/HISTORICAL_MIGRATION_RISK_DECISION.md",
+        "bytes": 4781,
+        "sha256": "88182d6655444d20e4cd43b47923077acbb6a064e7db3a000e8c99e327fd51ea",
+        "blob": "2509b397f5c1fd6d4ceadd9b296926c15fb26130"
+      },
+      {
+        "path": "docs/validation/v2/SOFTWARE_VALIDATION_V2_SPEC.md",
+        "bytes": 7070,
+        "sha256": "e32fa9c923a2d620555afb330d5c45588c6aa97ead5e29f8ca25e312c9516057",
+        "blob": "e2af914f100f928ff2a48438ebd70edf49d61069"
+      },
+      {
+        "path": "src/factorlab/forward/_windows_lock.py",
+        "bytes": 4103,
+        "sha256": "ac45e755cb130a6ac935be1e1e41c182c130b2af98bdbf7360560fb08f0fda17",
+        "blob": "5ac370cea6c9b3496c7adcc9a4dc3554e8087c72"
+      },
+      {
+        "path": "src/factorlab/forward/signal_recorder.py",
+        "bytes": 64588,
+        "sha256": "098df34fa6f97bb8a83a8e9e1d468941a15d1d9aea9c24fe69afc84ae20af5b0",
+        "blob": "6e55a2db113153287d74a3111c3a36ec39af6f5a"
+      },
+      {
+        "path": "tests/research/test_signal_lock_native.py",
+        "bytes": 11342,
+        "sha256": "697fe702bef738f490f467243790c763c20fbbfa12ea320314a6cfa55c302405",
+        "blob": "69d6c82453a6af3fd7bc12f5355a46edbbd6da75"
+      },
+      {
+        "path": "tests/security/test_validation_v2.py",
+        "bytes": 1880,
+        "sha256": "90caeb404fb7342acd7abc03a9898cec7e3ecc5a57f181bd007e4a74623e07c1",
+        "blob": "42121d61f4d6b23b1c8c72a64c4fbb4ccd5c2d37"
+      },
+      {
+        "path": "tools/ci/integration_checks.py",
+        "bytes": 5844,
+        "sha256": "9701d453d4ee6fe656ee9e16b7ba17f9d1236849bc5dbbd51c2d3638edaa1b82",
+        "blob": "66b99c30241c6ba35aafe7287ed85387397f566f"
+      },
+      {
+        "path": "tools/ci/lock_acceptance.py",
+        "bytes": 5845,
+        "sha256": "c16a2f36ad734e96a5e5d56b6799a936c4d6540f0885de82830278446ab59954",
+        "blob": "a2f8cfafe07567e717284cd7bd06af9899a6f317"
+      },
+      {
+        "path": "tools/ci/validation_v2.py",
+        "bytes": 10660,
+        "sha256": "df776aed476480d8573413fb82a0f4e2573f980e7a23929aef010c9f49226fdc",
+        "blob": "4e0ca3ff61d26f7db1690ffdb69ec30e15e47de1"
+      },
+      {
+        "path": "tools/ci/windows_lock_probe.py",
+        "bytes": 10700,
+        "sha256": "98e79570fb2ca15b5f27d9ad6c2d17b6afa24c5ce8fb080112074fdfa5c07cb3",
+        "blob": "6c457fb62c63fef69855a310f095f68f6892cb5a"
+      }
+    ],
+    "findings": [],
+    "unchanged_nonlock_function_ast": true,
+    "license_notice_unchanged": true,
+    "dependencies_unchanged": true,
+    "new_blobs_intersect_restricted_inventory": false,
+    "context_review": "One existing synthetic credential-in-URL rejection parameter copied from verified public JUnit node inventory; not a real credential.",
+    "old_tests_controls_and_fixtures_unchanged": true,
+    "review_scope": "Twelve staged software/test/CI/coverage/proposal paths; stdlib-only native implementation, synthetic tests, public CI node IDs; no financial data or old-chain merge.",
+    "limitations": "Agent source review and pattern scan; not third-party approval or historical certification.",
+    "HISTORICAL_MIGRATION_APPROVAL": "PENDING",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "no_live_money": true
+  },
+  "local_current_regression": {
+    "status": "FAIL",
+    "exit_code": 1,
+    "subject_sha": "b2b6b472d500b078cc872c3b942c6e1916054512",
+    "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "counts": {
+      "tests": 4184,
+      "passed": 4144,
+      "failures": 13,
+      "errors": 27,
+      "skipped": 0
+    },
+    "validation_inputs_unchanged": true,
+    "elapsed_seconds": 2713.0376881999837
+  },
+  "local_dependency_repair": {
+    "schema": "FACTORLAB_LOCAL_DECLARED_DEPENDENCY_REPAIR",
+    "subject_sha": "b2b6b472d500b078cc872c3b942c6e1916054512",
+    "original_full_result": "FAIL:4144 PASS/13 FAIL/27 ERROR; unchanged and not rerun",
+    "original_failure_records": {
+      "tests/cross_market/test_contracts.py::test_symbol_change_retains_identity": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_symbol_reuse_and_cross_market": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_identity_overlap_rejected": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_future_identity_unavailable": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_dynamic_listing_delisting_and_no_current_list": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_security_type_scope[ETF-XNAS]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_security_type_scope[ADR-XNYS]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_security_type_scope[REIT-XNYS]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_security_type_scope[preferred_stock-XNAS]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_security_type_scope[common_stock-ARCX]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_dst[2024-03-08-14]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_dst[2024-03-11-13]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_dst[2024-11-01-13]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_dst[2024-11-04-14]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_holidays[2024-01-01]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_holidays[2024-03-29]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_holidays[2024-06-19]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_holidays[2024-07-04]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_us_holidays[2024-12-25]": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_early_close_and_emergency_closure": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "914df09bd1c25aa0192083dd9de9a3df19392c8fa6da393a2f86f59bf1df7e86"
+      },
+      "tests/cross_market/test_contracts.py::test_cash_day_trade_and_unsettled_reinvestment": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_settlement_bank_holiday_is_separate": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_splits_reverse_splits_preserve_total_basis": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_dividend_entitlement_and_payment": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_merger_and_delisting_accounting": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_factor_metadata_and_missing_data_refusal": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_equivalent_cn_us_inputs_identical_and_batch_invariant": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_factor_vintage_leakage_refused": {
+        "status": "ERROR",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "43c6a87d7c68d22ec9482c5f2fc5c554b39859e62b31b248162bc8a11fa6860c"
+      },
+      "tests/cross_market/test_contracts.py::test_arbitrary_long_history_and_warmup[10]": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "670d7d1792d6701cabe954a24ab174940a54c7eebbeced74ab3f2e381a1b48e1"
+      },
+      "tests/cross_market/test_contracts.py::test_arbitrary_long_history_and_warmup[20]": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "c44502707f7e7a47f54b109dd678323ac131c2e682025022736b4b203fa1fbbe"
+      },
+      "tests/cross_market/test_research.py::test_us_four_models_topk_execution_e2e": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "ba0a1f1d8ee7eef1894fe4aae10698b02f6c0729d47bc77e5ab2383fd8c6f052"
+      },
+      "tests/cross_market/test_research.py::test_future_signal_timestamp_reaches_execution_rejection": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "997416db2c909b5d3f87a5096ac00551d513fe58136b8f782bf41f43c32244e1"
+      },
+      "tests/cross_market/test_research.py::test_fast_refuses_short_or_leveraged_targets": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "c8c627bd8fdde89196b31e6b6281605fb0f6b8a162c269c1d1edb7e4179114ef"
+      },
+      "tests/cross_market/test_research.py::test_fast_minimum_fees_cannot_create_negative_cash_or_phantom_sells": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "30f2520eafe36e627821e74023c8c36d8798494439c5cdb3e8126f3181b3f874"
+      },
+      "tests/cross_market/test_research.py::test_execution_unfunded_sell_fee_preserves_lots": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "a252913bc2d5af442979c341b1185cfbd0ffe3cc32273d70cf34a8043f85e073"
+      },
+      "tests/cross_market/test_research.py::test_complete_ca_coverage_and_valuation_required": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "f128af317a44d1da286a7d220d8f13037bb6145b323249abc9f819c16f4f5f38"
+      },
+      "tests/cross_market/test_research.py::test_benchmark_currency_and_coverage_are_explicit": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "3946c27a59cdc68a486e783927a6ab18b7b099ece2da4c675b16247af80cd72f"
+      },
+      "tests/cross_market/test_research.py::test_oos_membership_does_not_depend_on_future_label": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "aba5ddc53329a7267dbf2b3019f4e48e86005cc6d77efc2f71a74d6dcc5263a1"
+      },
+      "tests/cross_market/test_research.py::test_long_walkforward_actual_horizons_purge_embargo[10]": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "e16bf0dd8d900f19a76c34e6a7d0262723b76293167c0d5dd690d5dfa71d1042"
+      },
+      "tests/cross_market/test_research.py::test_long_walkforward_actual_horizons_purge_embargo[20]": {
+        "status": "FAIL",
+        "reason": "MISSING_DECLARED_EXCHANGE_CALENDARS",
+        "trace_sha256": "5dd3fde9ae04d3ba6ba0323f1fa5553d643bbd47d5ff559801c0e6e3d846b948"
+      }
+    },
+    "all_40_same_nodes_pass_remote": true,
+    "reason": "The pre-existing local core-only environment lacks the already declared optional calendar provider and its transitive dependencies.",
+    "repair": "Isolated workspace overlay; exact versions from verified remote dependency snapshot; no source or requirement change.",
+    "installed_versions": {
+      "exchange-calendars": "4.13.2",
+      "korean-lunar-calendar": "0.4.0",
+      "pyluach": "2.3.0",
+      "toolz": "1.2.0"
+    },
+    "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "exit_code": 0,
+    "counts": {
+      "tests": 114,
+      "passed": 114,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "validation_inputs_unchanged": true,
+    "elapsed_seconds": 100.43619700000272,
+    "all_40_revalidated": true,
+    "junit_sha256": "77165b63d3c1979980a459b0973384db3a2d5acef5a3c4cc2f78e6e1b9ba463f",
+    "log_sha256": "d827c935d6b28c9e331f04d6292ca831d47f610a2a281bdecc03b89640b706ae",
+    "financial_authorization": "BLOCKED",
+    "no_live_money": true
+  },
+  "local_invalid_trials": "The first sandboxed 100-round runs could not access chmod/ACL test directories and are invalid diagnoses; their failed observations are retained. The early DeleteFileW example used POSIX unlink semantics and did not construct a blocking tombstone. Explicit FileDispositionInfo corrected this fixture; no production fix was based on that early example.",
+  "original_cause_limits": "Kernel deletion/creation state is confirmed; actor attribution for old CI failures/security software remains UNKNOWN without system-wide native handle tracing.",
+  "HISTORICAL_MIGRATION_APPROVAL": "PENDING",
+  "independent_human_review": "PENDING",
+  "financial_authorization": "BLOCKED",
+  "no_live_money": true,
+  "report_only_ci_observation": {
+    "run_id": 40559634733,
+    "head": "4d68d05ba7832bc7b18076e39a40358253b183f3",
+    "conclusion": "CANCELLED",
+    "reason": "Automatic duplicate for report-only descendant; software/source inputs identical to completed tested code. Not counted as PASS and no historical merge requirement waived.",
+    "correction": "pull_request paths-ignore evaluates cumulative PR differences, so it does not avoid report-update runs in this mixed software PR. Any later report-only duplicates are separately recorded in the PR and final delivery receipt."
+  }
+}

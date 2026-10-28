@@ -46,6 +46,8 @@ import time as time_module
 from typing import Any, Dict, Iterable, Iterator, Mapping, Optional, Tuple, Union
 import uuid
 
+from ._windows_lock import DeletePendingError, create_exclusive as _windows_create_exclusive
+
 import pandas as pd
 
 from factorlab.data.schema import normalize_symbol
@@ -636,12 +638,20 @@ class SignalRecorder:
         descriptor: Optional[int] = None
         while descriptor is None:
             try:
-                descriptor = os.open(
-                    str(lock_path),
-                    os.O_WRONLY | os.O_CREAT | os.O_EXCL,
-                    0o600,
-                )
-            except FileExistsError as exc:
+                try:
+                    descriptor = os.open(
+                        str(lock_path),
+                        os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                        0o600,
+                    )
+                except PermissionError:
+                    if os.name != "nt":
+                        raise
+                    # errno=13 conflates ACL refusal and delete-pending. A new
+                    # FILE_CREATE operation is itself exclusive and supplies an
+                    # authoritative NTSTATUS, not a stale last-error or probe.
+                    descriptor = _windows_create_exclusive(str(lock_path))
+            except (FileExistsError, DeletePendingError) as exc:
                 remaining = deadline - time_module.monotonic()
                 if remaining <= 0.0:
                     raise SignalLockTimeoutError(
@@ -697,7 +707,7 @@ class SignalRecorder:
                         "exclusive signal lock disappeared or became invalid: %s"
                         % lock_path
                     ) from exc
-                if payload.get("token") != token:
+                if not isinstance(payload, dict) or payload.get("token") != token:
                     raise SignalLockError(
                         "exclusive signal lock ownership changed: %s" % lock_path
                     )

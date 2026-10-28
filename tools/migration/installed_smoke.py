@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import socket
 import sys
+import tempfile
 
 def denied(*args, **kwargs):
     raise AssertionError('installed import attempted network access')
@@ -33,6 +34,25 @@ for path in sorted(root.rglob('*.py')):
     except Exception as exc:
         failed[name] = type(exc).__name__+': '+str(exc)
 from factorlab._identity import software_identity, assert_migration_admitted
+from factorlab.config import load_config
+from factorlab.errors import ConfigurationError
+with tempfile.TemporaryDirectory(prefix='factorlab-config-contract-') as directory:
+    standalone = Path(directory).resolve()
+    configuration = standalone/'config.yaml'
+    configuration.write_bytes((root/'resources/csi500_5y.yaml').read_bytes())
+    loaded = load_config(configuration)
+    assert loaded.repo_root == standalone
+    assert loaded.config_path == configuration
+    assert loaded.paths.data_root.is_absolute()
+    explicit = standalone/'explicit'
+    explicit.mkdir()
+    assert load_config(configuration, repo_root=explicit).repo_root == explicit
+    try:
+        load_config('config.yaml')
+    except ConfigurationError as exc:
+        assert 'relative configuration requires' in str(exc)
+    else:
+        raise AssertionError('wheel accepted an implicit cwd-relative configuration')
 identity = software_identity()
 assert identity['git_commit'] is None
 try:
@@ -45,6 +65,7 @@ report = {'status':'PASS' if not failed else 'FAIL', 'python':sys.version,
           'package_path':str(root),'modules_imported':len(imported),'failures':failed,
           'legacy_available':False,'network_used':False,'software_identity':identity,
           'formal_rejection':rejection,
+          'installed_config_contract':'PASS_ABSOLUTE_STANDALONE_EXPLICIT_ROOT_RELATIVE_REFUSAL',
           'dev_tools_absent':{p:importlib.util.find_spec(p) is None for p in ('pytest','coverage')},
           'optional_suppliers_absent':{p:importlib.util.find_spec(p) is None for p in ('akshare','baostock')}}
 Path(sys.argv[1]).write_text(json.dumps(report,indent=2),encoding='utf-8')

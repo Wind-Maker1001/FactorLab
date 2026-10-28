@@ -41,7 +41,8 @@ PUBLISHED_HISTORY = {
     'tests/research/test_factor_discovery_delivery.py':'upstream historical publication including private-input lineage',
 }
 TEST_ROOTS = ['tests/research','tests/model_readiness','tests/market_structure',
-              'tests/market_admission','tests/minute_data','tests/evidence','tests/migration', 'tests/security']
+              'tests/market_admission','tests/minute_data','tests/evidence','tests/migration', 'tests/security',
+              'tests/cross_market']
 ARCHIVE_UNIT_FUNCTIONS = [
     'test_real_objects_validate_only_recorded_scope',
     'test_synthetic_repository_is_independent',

@@ -1,0 +1,1742 @@
+{
+  "subject": "50e94ab96d2ca17cd75fa4dce225b5c834152869",
+  "baseline_run": 40524983243,
+  "current_run": 40550674503,
+  "records": {
+    "tests/market_admission/test_revision_contract.py": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "624ca94c4ca643a213607bc5c4e792cdd8aa7e542d1098fe4b0e85427ab1671c",
+      "current_message_sha256": "624ca94c4ca643a213607bc5c4e792cdd8aa7e542d1098fe4b0e85427ab1671c",
+      "old_trace_sha256": "389ad0f99aa0a31e4296bed40d4f46ecdd5069b6c409f2b65572ce816785beb5",
+      "current_trace_sha256": "389ad0f99aa0a31e4296bed40d4f46ecdd5069b6c409f2b65572ce816785beb5"
+    },
+    "tests/research/status_candidate/test_preservation.py::test_prior_control_versions_and_source_closure_remain_exact": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/status_candidate/test_preservation.py::test_status_or_historical_control_change_is_rejected[source]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/status_candidate/test_preservation.py::test_status_or_historical_control_change_is_rejected[newline]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/status_candidate/test_preservation.py::test_status_or_historical_control_change_is_rejected[predecessor]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/status_candidate/test_preservation.py::test_old_version_cannot_be_selected_by_new_package": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/status_candidate/test_preservation.py::test_versioned_registry_literals_remain_finite[current]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/status_candidate/test_preservation.py::test_versioned_registry_literals_remain_finite[predecessor]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unknown_version_ref_and_fallback_are_rejected[UNKNOWN]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unknown_version_ref_and_fallback_are_rejected[]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unknown_version_ref_and_fallback_are_rejected[main]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unknown_version_ref_and_fallback_are_rejected[HEAD]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unknown_version_ref_and_fallback_are_rejected[LEGACY_MAIN_V1]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unregistered_source_receipt_and_test_changes_are_rejected[qbot/research/data/market_qualification.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unregistered_source_receipt_and_test_changes_are_rejected[qbot/research/factors/registry.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unregistered_source_receipt_and_test_changes_are_rejected[docs/research/evidence/ci-runtime-optimization-v1/baseline-collection.json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unregistered_source_receipt_and_test_changes_are_rejected[docs/research/evidence/pit-phase1-20261018-v1/delivery-assembly-receipt.json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unregistered_source_receipt_and_test_changes_are_rejected[tests/research/test_five_year_frozen_baseline.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_old_golden_change_is_rejected": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_unregistered_new_protected_file_is_rejected": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_registry_claims_cannot_authorize_changed_content[source_commit-0000000000000000000000000000000000000000]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_registry_claims_cannot_authorize_changed_content[source_commit-refs/heads/main]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_registry_claims_cannot_authorize_changed_content[version-UNKNOWN]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_registry_claims_cannot_authorize_changed_content[migration_postimages-value3]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_registry_claims_cannot_authorize_changed_content[financial_recertification-True]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_registry_claims_cannot_authorize_changed_content[approved-True]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_controls_are_rechecked_after_module_load[.github/scripts/ci/research_checks.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_controls_are_rechecked_after_module_load[.github/scripts/ci/security_admission_revision.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_controls_are_rechecked_after_module_load[.github/scripts/ci/c01_preservation.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_controls_are_rechecked_after_module_load[docs/research/evidence/c01-solo-v1/trust-anchor.json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_controls_are_rechecked_after_module_load[.github/workflows/market-admission.yml]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_legacy_current_control_mixing_is_rejected[.github/scripts/ci/research_checks.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_legacy_current_control_mixing_is_rejected[docs/research/evidence/c01-solo-v1/trust-anchor.json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_preservation.py::test_missing_pit_does_not_gain_admission_after_version_registration": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_squash_fresh_clone_without_source_objects_preserves_and_refuses_finance": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_untrusted_source_manifest_changes_are_rejected[source_commit]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_untrusted_source_manifest_changes_are_rejected[source_changes]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_untrusted_source_manifest_changes_are_rejected[source_closure]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_untrusted_source_manifest_changes_are_rejected[sha256]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_untrusted_source_manifest_changes_are_rejected[blob]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_untrusted_source_manifest_changes_are_rejected[path]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_untrusted_source_manifest_changes_are_rejected[mode]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_registry_and_anchor_rehash_cannot_replace_trusted_workflow_pin": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_manifest_reconstruction_requires_exact_finite_consistent_entries[count]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_manifest_reconstruction_requires_exact_finite_consistent_entries[noop]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_manifest_reconstruction_requires_exact_finite_consistent_entries[path]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_manifest_reconstruction_requires_exact_finite_consistent_entries[mode]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_manifest_reconstruction_requires_exact_finite_consistent_entries[blob]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_manifest_reconstruction_requires_exact_finite_consistent_entries[sha256]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_manifest_reconstruction_requires_exact_finite_consistent_entries[inventory]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_actual_file_and_mode_changes_are_rejected[delete]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_actual_file_and_mode_changes_are_rejected[rename]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_actual_file_and_mode_changes_are_rejected[content]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_actual_file_and_mode_changes_are_rejected[migration]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_actual_file_and_mode_changes_are_rejected[git_mode]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_actual_file_and_mode_changes_are_rejected[runtime_bytes]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_tracked_symlink_mode_is_rejected_without_following_target": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_source_content_rejects_unregistered_or_changed_source": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_control_file_modes_are_authenticated[.github/scripts/ci/c01_preservation.py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_control_file_modes_are_authenticated[.github/workflows/market-admission.yml]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_c01_source_reachability.py::test_control_file_modes_are_authenticated[docs/research/evidence/c01-solo-v1/trust-anchor.json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05",
+      "current_trace_sha256": "995b7a0a1237c1dae25793f025b981e9e200d3ff61fbb912c8f60005d89f9f05"
+    },
+    "tests/research/test_exploratory_delivery.py::test_shipped_publication_survives_checkout_with_verified_derived_hashes[exploratory-factor-v1]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "6357a073dc796ce9eadb2ced034dec5bf1f164af0e627b0ad3b393e2946d813e",
+      "current_message_sha256": "6357a073dc796ce9eadb2ced034dec5bf1f164af0e627b0ad3b393e2946d813e",
+      "old_trace_sha256": "731f2cbf27abc70da63555372b0f259c610d8d4ffa75e24895c0e3628b68fcfa",
+      "current_trace_sha256": "731f2cbf27abc70da63555372b0f259c610d8d4ffa75e24895c0e3628b68fcfa"
+    },
+    "tests/research/test_exploratory_delivery.py::test_shipped_publication_survives_checkout_with_verified_derived_hashes[exploratory-factor-v2]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "4167b0d364a37970273f07b5b3c29fa81ae5513138139b167f96b059dbec0d1b",
+      "current_message_sha256": "4167b0d364a37970273f07b5b3c29fa81ae5513138139b167f96b059dbec0d1b",
+      "old_trace_sha256": "ef1c2658847e70a155dca07afc1ba6a08e1688cc4a34681f7bb5636af052e4cd",
+      "current_trace_sha256": "ef1c2658847e70a155dca07afc1ba6a08e1688cc4a34681f7bb5636af052e4cd"
+    },
+    "tests/research/test_exploratory_delivery.py::test_shipped_report_and_all_pngs_keep_exploratory_disclosures[exploratory-factor-v1]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "084681abc0511d1bce4d6bdd209bd57a25d618247d4264bf9d44e26808b5a484",
+      "current_message_sha256": "084681abc0511d1bce4d6bdd209bd57a25d618247d4264bf9d44e26808b5a484",
+      "old_trace_sha256": "bd956d5069b0ba9e6391c18bb0a04bda95e4a9a42218d68a9111ce4da84dce38",
+      "current_trace_sha256": "bd956d5069b0ba9e6391c18bb0a04bda95e4a9a42218d68a9111ce4da84dce38"
+    },
+    "tests/research/test_exploratory_delivery.py::test_shipped_report_and_all_pngs_keep_exploratory_disclosures[exploratory-factor-v2]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "53d2258ea3ac6153845d3b6da9956df2b11e9dd8e4e6c146a9ff53c06bfb5b6d",
+      "current_message_sha256": "53d2258ea3ac6153845d3b6da9956df2b11e9dd8e4e6c146a9ff53c06bfb5b6d",
+      "old_trace_sha256": "3f2ea4ef03c5ce11336cb7197ca9c749a3789825ec05f18f0f32928311057926",
+      "current_trace_sha256": "3f2ea4ef03c5ce11336cb7197ca9c749a3789825ec05f18f0f32928311057926"
+    },
+    "tests/research/test_exploratory_statistical_delivery.py::test_complete_real_audit_receipt_and_fixed_families_survive_checkout": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "c074e18f8768ec67bc75c434c4a4ed2ebb1f5f87705d3d35de7587b537dca10e",
+      "current_message_sha256": "c074e18f8768ec67bc75c434c4a4ed2ebb1f5f87705d3d35de7587b537dca10e",
+      "old_trace_sha256": "374bd9b781857a2a7670a1e70308476109572bb57694eb614863c7f73d69529f",
+      "current_trace_sha256": "374bd9b781857a2a7670a1e70308476109572bb57694eb614863c7f73d69529f"
+    },
+    "tests/research/test_exploratory_statistical_delivery.py::test_all_quintile_days_and_unmatured_tail_are_explicit_without_private_ids": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "374ead30c47c7545fa500c9b819d7ec0fce14de16ae864b6dbc6e5b08038e0a4",
+      "current_message_sha256": "374ead30c47c7545fa500c9b819d7ec0fce14de16ae864b6dbc6e5b08038e0a4",
+      "old_trace_sha256": "dba4cfa2e534945f99bcad61ea075123c373e8a7ad4b56497d712bddaacb4e82",
+      "current_trace_sha256": "dba4cfa2e534945f99bcad61ea075123c373e8a7ad4b56497d712bddaacb4e82"
+    },
+    "tests/research/test_exploratory_statistical_delivery.py::test_chinese_report_and_four_figures_have_all_six_disclosures": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "c3256c730b9c0d16fcb8b6d675f78e039707fc7c06fefa19370fab3678057866",
+      "current_message_sha256": "c3256c730b9c0d16fcb8b6d675f78e039707fc7c06fefa19370fab3678057866",
+      "old_trace_sha256": "8d935db4a09bf8fe09f5566d2769e201c8e018a41d559ca71f18fa6d694e71de",
+      "current_trace_sha256": "8d935db4a09bf8fe09f5566d2769e201c8e018a41d559ca71f18fa6d694e71de"
+    },
+    "tests/research/test_factor_discovery_delivery.py::test_committed_public_package_receipt_expressions_and_aggregate_schema[synthetic]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "ec89667c35a23660fac790862b3fa8446544eba2001e12e4933cde81de9b19b2",
+      "current_message_sha256": "ec89667c35a23660fac790862b3fa8446544eba2001e12e4933cde81de9b19b2",
+      "old_trace_sha256": "9a78b55b2af6c5af098c065e612a3f2e585d3b373f5312a4b4010cc19343fd2e",
+      "current_trace_sha256": "9a78b55b2af6c5af098c065e612a3f2e585d3b373f5312a4b4010cc19343fd2e"
+    },
+    "tests/research/test_factor_discovery_delivery.py::test_committed_public_package_receipt_expressions_and_aggregate_schema[private]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "986c8bc1bb209ab3a2cb137016da96ee0caf2b78d4892145f429fdbd0429a484",
+      "current_message_sha256": "986c8bc1bb209ab3a2cb137016da96ee0caf2b78d4892145f429fdbd0429a484",
+      "old_trace_sha256": "884957fecaf9f68a3e1796fbb0036e7badd5556b9ccdbf27ba17a6b833399733",
+      "current_trace_sha256": "884957fecaf9f68a3e1796fbb0036e7badd5556b9ccdbf27ba17a6b833399733"
+    },
+    "tests/research/test_factor_discovery_integration.py::test_old_factor_golden_configs_and_historical_artifacts_unchanged": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "8327779921ad45803d42b760fa1beda582b804b80e4988e10acdde5ddb076e4e",
+      "current_message_sha256": "8327779921ad45803d42b760fa1beda582b804b80e4988e10acdde5ddb076e4e",
+      "old_trace_sha256": "a3170fcd0881fefc77ae373dfe65dd5812e4324d88aa66ae0d4399b58046eff9",
+      "current_trace_sha256": "a3170fcd0881fefc77ae373dfe65dd5812e4324d88aa66ae0d4399b58046eff9"
+    },
+    "tests/research/test_five_year_frozen_baseline.py::test_original_research_evidence_and_factor_parameters_are_frozen": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "7ed8468c72389bacdbe4e40e06f483b7c137385e285cb1b3922435c0bebc4438",
+      "current_message_sha256": "7ed8468c72389bacdbe4e40e06f483b7c137385e285cb1b3922435c0bebc4438",
+      "old_trace_sha256": "1477fe2d42908c66c8dfcc7753ee55ac9ba70ef46ca5c15b3531e331542a7680",
+      "current_trace_sha256": "1477fe2d42908c66c8dfcc7753ee55ac9ba70ef46ca5c15b3531e331542a7680"
+    },
+    "tests/research/test_pit_event_evidence.py::test_existing_public_metadata_stays_unknown_without_original_bytes": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "e890971c167ae822b01fea32ebe3473a4c140119ec0b1de945d15644cd55653c",
+      "current_message_sha256": "e890971c167ae822b01fea32ebe3473a4c140119ec0b1de945d15644cd55653c",
+      "old_trace_sha256": "d5ec1eb592b145b01f71b507b1b350409c663092d54571900ac1d842a5a9aecd",
+      "current_trace_sha256": "d5ec1eb592b145b01f71b507b1b350409c663092d54571900ac1d842a5a9aecd"
+    },
+    "tests/research/test_pit_event_evidence.py::test_public_receipts_bind_exact_published_bytes_across_checkouts": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "ae890ccf728b58295f45fb0db9eb4b8e68bf941e4d3f90d02a0118962db72a5c",
+      "current_message_sha256": "ae890ccf728b58295f45fb0db9eb4b8e68bf941e4d3f90d02a0118962db72a5c",
+      "old_trace_sha256": "e07fe9177bdb90714008547b2b8437fe0ad7c5880c9cb5880a0b41d6317f8c2d",
+      "current_trace_sha256": "e07fe9177bdb90714008547b2b8437fe0ad7c5880c9cb5880a0b41d6317f8c2d"
+    },
+    "tests/research/test_tdx_delivery_seal.py::test_all_published_tdx_files_in_clean_checkout": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "c562da8d2627faec8d52eed003bc5d23b47deaa22c7ecdfe16bdc4fd575100e2",
+      "current_message_sha256": "c562da8d2627faec8d52eed003bc5d23b47deaa22c7ecdfe16bdc4fd575100e2",
+      "old_trace_sha256": "5d230e788b3ec84c905ff73bf2af940f3786189a04449b539b61b520f97cbe43",
+      "current_trace_sha256": "5d230e788b3ec84c905ff73bf2af940f3786189a04449b539b61b520f97cbe43"
+    },
+    "tests/model_readiness/test_source_identity.py::test_historical_git_blobs_and_eol_map_reconstruct_original_raw_receipt": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "64f2c883d03061918de5b16a14db25c5e49a0908c4733ff984354f83615bc7e8",
+      "current_message_sha256": "64f2c883d03061918de5b16a14db25c5e49a0908c4733ff984354f83615bc7e8",
+      "old_trace_sha256": "25ed18b99ff8a1838e1118653349645a5d1085c71010f308299c96067fc05fe0",
+      "current_trace_sha256": "25ed18b99ff8a1838e1118653349645a5d1085c71010f308299c96067fc05fe0"
+    },
+    "tests/market_structure/test_c01_publication_safety.py::test_exact_source_literal_inventory_rejects_added_paths[qbot/research/data/csmar/binding.py]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "current_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "old_trace_sha256": "eb38851aa67d05d5bc6858eeb4e06b588afa51d033c68fdc15a79136fdb39412",
+      "current_trace_sha256": "eb38851aa67d05d5bc6858eeb4e06b588afa51d033c68fdc15a79136fdb39412"
+    },
+    "tests/market_structure/test_c01_publication_safety.py::test_exact_source_literal_inventory_rejects_added_paths[qbot/research/data/csmar/fingerprint.py]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "current_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "old_trace_sha256": "2f249448f632a2d7704167eb774bbf5a90311a73e960c52f4a3c64477d0df351",
+      "current_trace_sha256": "2f249448f632a2d7704167eb774bbf5a90311a73e960c52f4a3c64477d0df351"
+    },
+    "tests/market_structure/test_c01_publication_safety.py::test_exact_source_literal_inventory_rejects_added_paths[qbot/research/data/csmar/native.py]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "current_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "old_trace_sha256": "865418ad7944eafa93b4c262b46e879071dac76f1fcc8a25f7a316140d7431a9",
+      "current_trace_sha256": "865418ad7944eafa93b4c262b46e879071dac76f1fcc8a25f7a316140d7431a9"
+    },
+    "tests/market_structure/test_c01_publication_safety.py::test_exact_source_literal_inventory_rejects_added_paths[tests/research/test_csmar_source_binding.py]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "current_message_sha256": "d4c8f5e5e0efbac37bbc3b48b20a608c3a88fa154730970cea2c288092d4a4cd",
+      "old_trace_sha256": "25af1b292c1d9a6269d8444665dc07bc1a10f0d06c87461a2c9b657e89674db7",
+      "current_trace_sha256": "25af1b292c1d9a6269d8444665dc07bc1a10f0d06c87461a2c9b657e89674db7"
+    },
+    "tests/market_structure/test_delivery.py::test_protected_tracked_content_is_unchanged": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "e4029b543cec6998cf11a2f105d1342576eed86492ab44a040d4752f098747f2",
+      "current_message_sha256": "e4029b543cec6998cf11a2f105d1342576eed86492ab44a040d4752f098747f2",
+      "old_trace_sha256": "e34df7a66e144a700175a5e413d061b37852816cb63ce90a8b130cc1c05bdcf8",
+      "current_trace_sha256": "e34df7a66e144a700175a5e413d061b37852816cb63ce90a8b130cc1c05bdcf8"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[original]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "3eda7e8ae0651c2baa7e7b6e53e16c093f453995705692f17b7143a650b706ab",
+      "current_trace_sha256": "c1acdb350b907bbfbcf3db7657dc955ccc1bf01d85933063894fe0e8607fe3f0"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[squashed-retained]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "c33d1e636b8dd928b4dc5bbec12eaa72de41e1913b9cf870d7c9cdc051f73fe3",
+      "current_trace_sha256": "71d294766e1a710f7dd8288d2ab68618501906715e5c3c8630b1ab361e10676a"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[squashed-discarded]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "6ae2d849b3db2aa5549bdcf061ac33af674c7d78e4f6f6f8fe536c22b27f01c5",
+      "current_trace_sha256": "cca959d2fb377460196bc39897b4102334fdf46378caf11fd8ddd6b634fb4ff5"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_exact_archive_passes_in_both_modes[False]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "de14ceaffbf490afa7fd7fadb32790f4bbeb9500919a508dc69431f8164a68a1",
+      "current_trace_sha256": "526998387f90678ff23bed2a91b0e951d5b521a16ad668aead0b96f049c043a1"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_exact_archive_passes_in_both_modes[True]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "b0bf45133a51ea9630bd5ad78e0f7ee80dbb520a749d12bb5edba448bd0353af",
+      "current_trace_sha256": "92b37f76fd19c971c2daed9aee45628d6819c194f11e5943c1e4a352fd0559a2"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_changed_legacy_bytes_lose_exception": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "78b70bccdce821b0d3bf81eee88455e2398c32b19daa7033d0edafd37207787e",
+      "current_trace_sha256": "82a097b36e1115370b1792b8b3012b7133dddd50ff8e50d2a2c6e0439491ef2c"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_changed_utf8_document_loses_path_exception": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "d700ec45a4574dc0b85e5f67a5e8396264aec19326370478fc387dcccf08afac",
+      "current_trace_sha256": "301b9305ec66e35bd32eebdd89671e14a2946da0d9a588f8c9a779e503243b86"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_new_path_cannot_claim_a_frozen_file_hash": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "93507ef8a17ca4ef6e25821fdc706197072d5a5733586c06f3aed8d1dc23406d",
+      "current_trace_sha256": "a0b7f6a0e4e45f0fcf8155b30d5c43a7fc23a4b1c403487d25063551cf33aeff"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_frozen_manifest_digest_mismatch_is_blocked": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "208c381cacc03638735f64188e09716d50116041afb4736e25f20b98ea9e0130",
+      "current_trace_sha256": "a9243a0e9c55fa2207e595e72413bf589ee8d9c1bbd88f110acee6583a1132b9"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_matching_current_hash_still_requires_frozen_source_membership": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "27947aff886554f716360c56725e6db8fb7a6903a5434a346ac0a79f49fe73e3",
+      "current_trace_sha256": "367bd7c35b0703dc9a687befd6b8ebe73335b8754a1408fd02e2516c897e64dc"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_new_file_under_archival_directory_is_not_exempt": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "cac329664427556c3ea48796fcfc55da0ed8b1033d29476f51481c41b7c9a81c",
+      "current_trace_sha256": "130e80c986cfe4b0b1363dc7d4051ce9b7a3f4432f344aaaaf3c7e29568cac31"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_new_actual_machine_path_is_blocked": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "69de4b0158764bc055c76a911d42978335e4dab83718751c2fde5fbe258687cf",
+      "current_trace_sha256": "f40a7db6ee76b550ac9b43516eea460374579f457e18690f248572ae024a3ea7"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_rule_version_cannot_select_a_different_baseline": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "fab251794281c4ff7936ea2cfc038fdec185fe883391e37f918200ad6108c576",
+      "current_trace_sha256": "ad2cb0c247368979029766194e5d5390a76199146e4083ad3822b1a434789089"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_legacy_log_requires_frozen_text_attribute": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "09a060f67521a31a03d55e468bb6361697eff993a1bb215787be837e92edfe2c",
+      "current_trace_sha256": "d638bcf5646ff2a69928eb876585360b6c0a2da844c23383c2f3d9dd3234c7be"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_unexpected_match_count_invalidates_exception": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "667b387a2c43df06f48a937cb0ad285b732fb38f59d7ac40514816461928f92d",
+      "current_trace_sha256": "52f4017d980140ca447034026ac5519b4634161139b02d5b93a527cabcee5b6c"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_rehashed_rule_file_cannot_grant_exception": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "9c3e1b5173a38483ea5d0aacffb48fbd1ce6bbb90a97eded22943f6c300e8144",
+      "current_trace_sha256": "e6dcc080f96a193882673aed766736fd921a7cd3875b087b88d668df2ddab9de"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[.]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "9070c6c97eed4c01478fa58c76692187be3043e0fbcbec4c79a4f36bfc4f0057",
+      "current_trace_sha256": "f41a6c70fb9afdc3c196c7bae39881e73b4e692680af3d7e39a5f019da19e530"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[../file]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "f0e998d83ad97f0dfd64a0717a328f1281fbfad695ea9bf6105caa44fe41c6a8",
+      "current_trace_sha256": "a7fd44c1c8609996bea2daa2fefccdceec985a8d2d9e1d63b27cc21b7c4558b0"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a/../file]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "0c740b9babffb978b14c4ca590dce905ee42dec26eaf3552965398d2edaf7f7e",
+      "current_trace_sha256": "6c10c382425676919faecb10606705b5b63f90dfa5188aa7fecc99702161d1c0"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[/file]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "c9d0284e6c8522f28ffdc8e7781e2310d3166309bd01fdc4f6ea10c2776e9263",
+      "current_trace_sha256": "3dfbf491fe5c924576deff670b5c14738f0690e245b84d3adaf5ee93ac0c246a"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a//file]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "f6b3e7866e4a0765a1b94b25af0ed3120c09b0c7bbac80352a155fe935665b55",
+      "current_trace_sha256": "faa1cf26fe6a67259aaf6cc03a92703b3d11492630cf2138cd1935a72f33f56d"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a\\\\file]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "bc030d51b62b5949952444443b4957a411245f461cb393471ac94e5ddacda0ea",
+      "current_trace_sha256": "29541ce5b39b39823ac75d441f4636a078e36b957e51b471aa0aa5744c896d33"
+    },
+    "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a/./file]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "current_message_sha256": "87114cb156613857df10d9ce47dbb332040fe863564b039e6a6924416669385f",
+      "old_trace_sha256": "a48d8345faa302f602b9c0e9f499a0306f7425c987715c3d2d111fc20f11106b",
+      "current_trace_sha256": "660e810aac1e66d29217f18ff35a67c1f0ff1fccdc87d99028416d6ccd8c21bb"
+    },
+    "tests/market_admission/test_p1_review.py::test_checker_and_receipt_cannot_jointly_self_authorize": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "current_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "old_trace_sha256": "e0050f450e9527b2306f50f87a21322fdbc84f98287a95dd5359f10ff24cc23d",
+      "current_trace_sha256": "e0050f450e9527b2306f50f87a21322fdbc84f98287a95dd5359f10ff24cc23d"
+    },
+    "tests/market_admission/test_p1_review.py::test_changed_checker_is_rejected_before_any_candidate_code_executes[append]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "current_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "old_trace_sha256": "0c2adc218ddc83c606fa1161a618c45e701cd74b27331b062a21560c18867f3b",
+      "current_trace_sha256": "0c2adc218ddc83c606fa1161a618c45e701cd74b27331b062a21560c18867f3b"
+    },
+    "tests/market_admission/test_p1_review.py::test_changed_checker_is_rejected_before_any_candidate_code_executes[execute]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "current_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "old_trace_sha256": "73b59990bf090a7e947ca82efa16a7621cbd4b49ffe9cf71dbe629cf76dd821b",
+      "current_trace_sha256": "73b59990bf090a7e947ca82efa16a7621cbd4b49ffe9cf71dbe629cf76dd821b"
+    },
+    "tests/market_admission/test_p1_review.py::test_changed_checker_is_rejected_before_any_candidate_code_executes[delete]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "current_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "old_trace_sha256": "b096d767c58f2f09ce42102f17cd245460a1042031ab94588e21a33d72a04e78",
+      "current_trace_sha256": "b096d767c58f2f09ce42102f17cd245460a1042031ab94588e21a33d72a04e78"
+    },
+    "tests/market_admission/test_p1_review.py::test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[controller]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "current_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "old_trace_sha256": "bcc0799a7c8c1a7e95bd92d428807b269fd9ee25ee9d1ced74cf1d3ddf720327",
+      "current_trace_sha256": "bcc0799a7c8c1a7e95bd92d428807b269fd9ee25ee9d1ced74cf1d3ddf720327"
+    },
+    "tests/market_admission/test_p1_review.py::test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[anchor]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "current_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "old_trace_sha256": "adc9a9dcc7dd2261f8d73f232dd965f954db1de4b86fd2f17318c37b2702eb48",
+      "current_trace_sha256": "adc9a9dcc7dd2261f8d73f232dd965f954db1de4b86fd2f17318c37b2702eb48"
+    },
+    "tests/market_admission/test_p1_review.py::test_independent_controls_cannot_be_authorized_by_resealing_the_candidate[joint_reanchor]": {
+      "old_status": "FAIL",
+      "current_status": "FAIL",
+      "message_unchanged": true,
+      "old_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "current_message_sha256": "a47c273a7c400f02dd40be437ce392bad4c2bc3cf9441cfcef9795c571938694",
+      "old_trace_sha256": "bcc144de5ec13ed92b3c68495ef0fdf17f7363d95f02c53c7ec38716f30d9e88",
+      "current_trace_sha256": "bcc144de5ec13ed92b3c68495ef0fdf17f7363d95f02c53c7ec38716f30d9e88"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/workspace/alice/repo-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/workspace/alice/repo-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/workspace/alice/repo-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/root/secret-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/root/secret-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/root/secret-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/tmp/build-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/tmp/build-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/tmp/build-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/var/cache/private-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/var/cache/private-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/var/cache/private-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/opt/research-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/opt/research-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/opt/research-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/srv/evidence-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/srv/evidence-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/srv/evidence-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/Volumes/alice/archive-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/Volumes/alice/archive-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/Volumes/alice/archive-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/data/research-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/data/research-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/data/research-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/unlisted_mount_928/alice-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/unlisted_mount_928/alice-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/unlisted_mount_928/alice-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/\\u79c1\\u6709\\u6302\\u8f7d/\\u7814\\u7a76-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/\\u79c1\\u6709\\u6302\\u8f7d/\\u7814\\u7a76-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/\\u79c1\\u6709\\u6302\\u8f7d/\\u7814\\u7a76-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/secret-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/secret-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/secret-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/.hidden-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/.hidden-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/.hidden-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/2026/10/18-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/2026/10/18-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[/2026/10/18-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[C:/Users/alice/repo-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[C:/Users/alice/repo-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[C:/Users/alice/repo-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[D:\\\\private\\\\receipt.json-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[D:\\\\private\\\\receipt.json-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[D:\\\\private\\\\receipt.json-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[\\\\\\\\server\\\\share\\\\private-md]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[\\\\\\\\server\\\\share\\\\private-json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_rehashed_public_file_rejects_paths[\\\\\\\\server\\\\share\\\\private-py]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_json_escapes_cannot_hide_paths[/new_volume/private-\\\\/]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_json_escapes_cannot_hide_paths[/new_volume/private-\\\\u002f]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_json_escapes_cannot_hide_paths[/root/secret-\\\\/]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_json_escapes_cannot_hide_paths[/root/secret-\\\\u002f]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_json_escapes_cannot_hide_paths[/-\\\\/]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_json_escapes_cannot_hide_paths[/-\\\\u002f]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[https://example.org/workspace/alice?date=2026/10/18]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[http://example.org:8080/tmp/build]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[ftp://example.org/root/archive]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[wss://example.org/unknown/mount]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[custom+v2://example.org/root/resource]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[s3://research-bucket/2026/10/18]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[ssh://git@example.org/workspace/repo]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[docs/research/evidence.json]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[./tmp/build]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[../root/secret]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[<REPO>/data/research]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[${QBOT_DATA_DIR}/tdx]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[**/__pycache__/]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[2026/10/18]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[2026-10-18]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[2021/01/01\\u20132026/10/18]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_urls_relative_paths_and_dates_pass[Formal/Forward BLOCKED; NO LIVE MONEY]": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_manifest_strings_are_scanned": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_python_suffix_requires_relative_expression": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_python_string_escapes_are_decoded": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    },
+    "tests/evidence/test_pit_archive_verifiers.py::test_decoded_json_keys_are_scanned": {
+      "old_status": "ERROR",
+      "current_status": "ERROR",
+      "message_unchanged": true,
+      "old_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "current_message_sha256": "da66ddffeadf7a608b24a2e484dc59c32f873ef2b7f221b29c60d3fe43c47ef5",
+      "old_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb",
+      "current_trace_sha256": "7acc20d2d8666a44b759da35884b07869317b4379580750bd42e81476605cceb"
+    }
+  },
+  "statuses_unchanged": true,
+  "messages_unchanged": 186,
+  "historical_count": 186,
+  "raw_trace_byte_comparison": {
+    "records": 186,
+    "status_or_message_drift": [],
+    "full_trace_hash_unchanged": 163,
+    "new_failure_records": [],
+    "address_only_trace_changes": [],
+    "other_trace_changes": [
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[original]",
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[squashed-retained]",
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[squashed-discarded]",
+      "tests/market_structure/test_publication_scope_audit.py::test_exact_archive_passes_in_both_modes[False]",
+      "tests/market_structure/test_publication_scope_audit.py::test_exact_archive_passes_in_both_modes[True]",
+      "tests/market_structure/test_publication_scope_audit.py::test_changed_legacy_bytes_lose_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_changed_utf8_document_loses_path_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_new_path_cannot_claim_a_frozen_file_hash",
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_manifest_digest_mismatch_is_blocked",
+      "tests/market_structure/test_publication_scope_audit.py::test_matching_current_hash_still_requires_frozen_source_membership",
+      "tests/market_structure/test_publication_scope_audit.py::test_new_file_under_archival_directory_is_not_exempt",
+      "tests/market_structure/test_publication_scope_audit.py::test_new_actual_machine_path_is_blocked",
+      "tests/market_structure/test_publication_scope_audit.py::test_rule_version_cannot_select_a_different_baseline",
+      "tests/market_structure/test_publication_scope_audit.py::test_legacy_log_requires_frozen_text_attribute",
+      "tests/market_structure/test_publication_scope_audit.py::test_unexpected_match_count_invalidates_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_rehashed_rule_file_cannot_grant_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[.]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[../file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a/../file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[/file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a//file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a\\\\file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a/./file]"
+    ],
+    "fixture_commit_and_address_only_changes": [
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[original]",
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[squashed-retained]",
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_publication_survives_real_git_topologies[squashed-discarded]",
+      "tests/market_structure/test_publication_scope_audit.py::test_exact_archive_passes_in_both_modes[False]",
+      "tests/market_structure/test_publication_scope_audit.py::test_exact_archive_passes_in_both_modes[True]",
+      "tests/market_structure/test_publication_scope_audit.py::test_changed_legacy_bytes_lose_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_changed_utf8_document_loses_path_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_new_path_cannot_claim_a_frozen_file_hash",
+      "tests/market_structure/test_publication_scope_audit.py::test_frozen_manifest_digest_mismatch_is_blocked",
+      "tests/market_structure/test_publication_scope_audit.py::test_matching_current_hash_still_requires_frozen_source_membership",
+      "tests/market_structure/test_publication_scope_audit.py::test_new_file_under_archival_directory_is_not_exempt",
+      "tests/market_structure/test_publication_scope_audit.py::test_new_actual_machine_path_is_blocked",
+      "tests/market_structure/test_publication_scope_audit.py::test_rule_version_cannot_select_a_different_baseline",
+      "tests/market_structure/test_publication_scope_audit.py::test_legacy_log_requires_frozen_text_attribute",
+      "tests/market_structure/test_publication_scope_audit.py::test_unexpected_match_count_invalidates_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_rehashed_rule_file_cannot_grant_exception",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[.]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[../file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a/../file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[/file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a//file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a\\\\file]",
+      "tests/market_structure/test_publication_scope_audit.py::test_noncanonical_rule_paths_are_rejected[a/./file]"
+    ]
+  },
+  "note": "163 raw traceback hashes match; 23 differ only in existing test fixture Git commit locals and pytest object addresses. Both original and current raw trace hashes remain recorded; no traceback or original archive is rewritten."
+}

@@ -1,53 +1,222 @@
-name: FactorLab independent candidate
+name: FactorLab integration
 on:
-  push:
   pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/validation/v2/reports/**'
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
+concurrency:
+  group: factorlab-integration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+env:
+  MPLBACKEND: Agg
+  PYTHONUTF8: '1'
+  FACTORLAB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
-  software:
-    name: Software ${{ matrix.os }} Python ${{ matrix.python }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, ubuntu-24.04]
-        python: ['3.13', '3.14']
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
-    env:
-      MPLBACKEND: Agg
-      PYTHONUTF8: '1'
+  package:
+    name: Package Windows Python 3.14
+    runs-on: windows-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: ${{ matrix.python }}
-      - name: Install controlled core and test dependencies
-        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt
-      - name: Install independent package
-        run: python -m pip install --no-deps .
-      - run: python -m pip check
-      - name: Execute declared software and rejection domains
-        run: python tools/ci/run_checks.py --suite software --output local-ci/runtime
+          python-version: '3.14'
+      - name: Install public build and runtime dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/cross-market.txt
       - name: Build wheel and sdist
         run: python -m build --outdir local-ci/distributions
-      - name: Run public synthetic CLI
-        run: factorlab demo --output local-ci/synthetic-demo
-      - name: Test archive publication rejection cases
+      - name: Verify licenses, module bytes and publication boundaries
+        run: python tools/migration/inspect_distributions.py local-ci/distributions
+      - name: Reject malformed and private distributions
         run: python tools/migration/check_distribution_rejections.py local-ci/distributions local-ci/archive-attacks
-      - name: Validate clean wheel/sdist installs, offline imports, CLI, demo and publication boundary
+      - name: Validate wheel and sdist installs, imports, CLI and offline demo
         run: python tools/migration/packaging_ci.py local-ci/distributions local-ci/packaging
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
-          name: factorlab-${{ matrix.os }}-${{ matrix.python }}
-          path: local-ci/
+          name: package-windows-3.14
+          path: |
+            local-ci/distributions/*.whl
+            local-ci/distributions/*.tar.gz
+            local-ci/packaging/receipt.json
+            local-ci/packaging/*.log
+            local-ci/packaging/*-smoke.json
+            local-ci/packaging/publication-scan.json
+            local-ci/archive-attacks/**/*.json
+          if-no-files-found: error
+  incremental:
+    name: Core, cross-market and financial gates Windows Python ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.14', '3.13']
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install public test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt
+      - name: Install project and check dependencies
+        run: |
+          python -m pip install --no-deps .
+          python -m pip check
+      - name: Run all three incremental suites and retain individual results
+        run: python tools/ci/integration_checks.py --suite incremental --output local-ci/incremental
+      - name: Check configuration and locking contracts
+        run: |
+          python tools/ci/integration_checks.py --suite configuration --output local-ci/incremental
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/ci/integration_checks.py --suite locking --output local-ci/incremental
+      - name: CURRENT_SOFTWARE_VALIDATION_V2 (all nonhistorical tests)
+        run: python tools/ci/integration_checks.py --suite current --output local-ci/incremental
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: incremental-windows-${{ matrix.python }}
+          path: |
+            local-ci/incremental/*/receipt.json
+            local-ci/incremental/*/dependencies.txt
+            local-ci/incremental/*/tests.xml
+            local-ci/incremental/*/tests.log
+            local-ci/incremental/*/selection.json
           if-no-files-found: error
 
-# Historical Qbot replay is a separate local archive acceptance.
-# Run tools/security/archive_replay.py with genuine baseline objects;
-# missing history is NOT_RUN/BLOCKED and never financial approval.
+  lock-diagnostics:
+    name: Native lock diagnosis Windows Python 3.14 (control failures retained)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - name: Compare public main, input PR head and repaired head without test retries
+        run: |
+          git worktree add --detach local-ci/lock-main afac4f9d4c2b123c0b32787ccd1cf67fe965c723
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git worktree add --detach local-ci/lock-input ed2b4c1a0a10afd794c674b14d105b748b01b9c8
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/ci/windows_lock_probe.py --source local-ci/lock-main --output local-ci/lock-diagnostics/main --iterations 100
+          $mainCode = $LASTEXITCODE
+          python tools/ci/windows_lock_probe.py --source local-ci/lock-input --output local-ci/lock-diagnostics/input --iterations 100
+          $inputCode = $LASTEXITCODE
+          python tools/ci/windows_lock_probe.py --source . --output local-ci/lock-diagnostics/current --iterations 100
+          $currentCode = $LASTEXITCODE
+          exit [Math]::Max($mainCode, [Math]::Max($inputCode, $currentCode))
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: bounded-lock-diagnostics-windows-3.14
+          path: local-ci/lock-diagnostics/*/native-diagnostic.json
+          if-no-files-found: error
+
+  lock-acceptance-v2:
+    name: Lock acceptance ${{ matrix.os }} Python 3.14
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install public test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - name: Bounded stress and fail-closed fault injection
+        run: python tools/ci/lock_acceptance.py --output local-ci/lock-acceptance --thread-rounds 100 --process-rounds 12
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: lock-acceptance-${{ matrix.os }}-3.14
+          path: |
+            local-ci/lock-acceptance/LOCK_CONCURRENCY_TEST_RESULTS.json
+            local-ci/lock-acceptance/faults.xml
+            local-ci/lock-acceptance/faults.log
+          if-no-files-found: error
+
+  validation-v2-review:
+    name: Independent V2 coverage comparison (no migration approval)
+    needs: [incremental, legacy]
+    if: always()
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Retrieve actual complete and software reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name full-legacy-windows-3.14 --dir local-ci/full
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.14 --dir local-ci/current314
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.13 --dir local-ci/current313
+          exit $LASTEXITCODE
+      - name: Compare every original software node, historical record and frozen input
+        run: python tools/ci/validation_v2.py --full local-ci/full --current local-ci/current314/current --additional-current local-ci/current313/current --output local-ci/v2-review
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: independent-v2-coverage
+          path: local-ci/v2-review/*
+          if-no-files-found: error
+
+  legacy:
+    name: Full legacy regression Windows Python 3.14 (failures retained)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install public dependencies and project
+        run: |
+          python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt
+          python -m pip install --no-deps .
+          python -m pip check
+      - name: Run complete project regression with real failure propagation
+        run: python tools/ci/integration_checks.py --suite legacy --output local-ci/legacy
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: full-legacy-windows-3.14
+          path: |
+            local-ci/legacy/legacy/receipt.json
+            local-ci/legacy/legacy/dependencies.txt
+            local-ci/legacy/legacy/tests.xml
+            local-ci/legacy/legacy/tests.log
+          if-no-files-found: error

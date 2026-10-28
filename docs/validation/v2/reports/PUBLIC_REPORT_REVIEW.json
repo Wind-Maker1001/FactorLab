@@ -1,0 +1,22 @@
+{
+  "schema": "FACTORLAB_PR1_V2_FINAL_REPORT_PUBLIC_REVIEW",
+  "status": "PASS_SCOPED_PUBLIC_REPORTS",
+  "candidate_sha": "b2b6b472d500b078cc872c3b942c6e1916054512",
+  "executed_merge": "50e94ab96d2ca17cd75fa4dce225b5c834152869",
+  "required_files": 8,
+  "coverage_rows": 4370,
+  "old_software": 4157,
+  "historical": 186,
+  "added_tests": 27,
+  "findings": [],
+  "context_review": {
+    "files": [
+      "HISTORICAL_FAILURE_COMPARISON.json",
+      "HISTORICAL_V1_V2_COVERAGE_MATRIX.csv"
+    ],
+    "reason": "Exact pre-existing public synthetic path/credential rejection IDs retained for auditable node mapping; no real local identity or credential."
+  },
+  "license_notice_and_old_controls": "UNCHANGED; checked in code-public-review and independent CI",
+  "report_byte_policy": "Directory-local * -text freezes only new report bytes; original byte policies unchanged.",
+  "approval": "PENDING; this agent review is not historical acceptance or third-party approval"
+}
