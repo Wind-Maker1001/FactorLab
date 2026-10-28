@@ -9,12 +9,73 @@ import pandas as pd
 from factorlab.models import FactorScoreModel, RidgeResearchModel, LightGBMResearchModel, XGBoostResearchModel
 from factorlab.validation.splitter import ExpandingWalkForwardSplitter
 from factorlab.data.csmar.native import peak_memory_bytes
-from .contracts import ContractError
+from .contracts import ContractError, instant, session_date
 from .factors import FACTOR_METADATA, compute_instrument_batch, preprocess
 from .engine import target_weights, ExecutionEngine, fast_backtest
 from .data import file_sha, implementation_sha
 from . import WARNINGS
 from .benchmark import validate_benchmark, attach_benchmark
+from .adapters import ChinaAshareAdapter, USEquityAdapter
+from .identity import DynamicUniverse, IdentityRegistry
+
+
+def validate_adapter(adapter, spec):
+    """Bind the specification to the supported adapter and its actual universe."""
+    expected = {'CN': ChinaAshareAdapter, 'US': USEquityAdapter}[spec.market]
+    if (type(adapter) is not expected or adapter.market != spec.market or
+            adapter.currency != spec.currency or adapter.calendar.market != spec.market or
+            adapter.rules.market != spec.market):
+        raise ContractError('adapter/spec identity mismatch')
+    universe = adapter.universe
+    if (type(universe) is not DynamicUniverse or universe.market != spec.market or
+            universe.name != spec.universe or type(universe.identities) is not IdentityRegistry):
+        raise ContractError('adapter/spec universe identity mismatch')
+    aliases = universe.identities.aliases
+    if not aliases.loc[aliases.market.eq(spec.market), 'currency'].eq(spec.currency).all():
+        raise ContractError('universe identity currency mismatch')
+    if spec.universe in {'CSI500', 'US_INDEX'}:
+        membership = universe.membership
+        if (membership is None or membership.empty or
+                {'date', 'instrument_id', 'available_at'} - set(membership)):
+            raise ContractError('historical index membership required')
+        member_dates = pd.DatetimeIndex([session_date(d) for d in membership.date])
+        available = pd.DatetimeIndex([instant(t) for t in membership.available_at])
+        # Recheck mutable inputs and require historically available membership
+        # throughout the requested interval, including execution at the open.
+        for day in adapter.calendar.sessions(spec.start_date, spec.end_date).index:
+            rows = member_dates == day
+            if not rows.any() or (available[rows] > adapter.calendar.at(day, 'open')).any():
+                raise ContractError('historical index membership unavailable: ' + str(day.date()))
+            for which in ('open', 'close'):
+                if universe.members(day, adapter.calendar.at(day, which)).empty:
+                    raise ContractError('historical index membership unavailable: ' + str(day.date()))
+    elif universe.membership is not None:
+        raise ContractError('all-market universe identity cannot contain index membership')
+
+
+def execution_eligibility(pred, bars, adapter, spec, benchmark):
+    """Keep OOS predictions intact; conservatively cap execution at the request.
+
+    Extra supplied rows never implicitly authorize a longer research interval.
+    Internal holes remain errors in the original price/action validators.
+    """
+    ledger = adapter.corporate_actions
+    first = max(pd.Timestamp(spec.start_date), bars.date.min(), benchmark.date.min(),
+                getattr(ledger, 'start', pd.Timestamp(spec.start_date)))
+    last = min(pd.Timestamp(spec.end_date), bars.date.max(), benchmark.date.max(),
+               getattr(ledger, 'end', pd.Timestamp(spec.end_date)))
+    sessions = adapter.calendar.sessions(first, last).index if first <= last else pd.DatetimeIndex([])
+    execution_dates = {}
+    for day in pred.date.unique():
+        try:
+            execution_dates[day] = adapter.calendar.shift(day, 1)
+        except ContractError:
+            execution_dates[day] = pd.NaT
+    audit = pred[['date', 'instrument_id']].copy()
+    audit['execution_date'] = pd.to_datetime(audit.date.map(execution_dates))
+    audit['executable'] = audit.date.isin(sessions) & audit.execution_date.isin(sessions)
+    audit['reason'] = np.where(audit.executable, 'EXECUTABLE', 'NEXT_EXECUTION_OUTSIDE_VALIDATED_COVERAGE')
+    return audit, sessions
 
 
 def make_model(name, names, estimators=40):
@@ -111,10 +172,9 @@ def run_models(dataset, spec, calendar, output, estimators=40, retain_prediction
 
 def run_research(bars, adapter, spec, output, *, benchmark, synthetic=False, retrospective=False, instrument_batch=256, estimators=40):
     started = time.perf_counter()
+    validate_adapter(adapter, spec)
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
-    if adapter.market != spec.market or adapter.currency != spec.currency:
-        raise ContractError('adapter/spec mismatch')
     benchmark = validate_benchmark(benchmark, adapter.calendar, spec.start_date, spec.end_date, spec.currency)
     if set(benchmark.benchmark_id) != {spec.benchmark}:
         raise ContractError('benchmark identity differs from research configuration')
@@ -123,15 +183,37 @@ def run_research(bars, adapter, spec, output, *, benchmark, synthetic=False, ret
     dataset.to_parquet(output / 'dataset.parquet', index=False)
     predictions, folds = run_models(dataset, spec, adapter.calendar, output / 'models', estimators)
     backtests = []
+    execution_signals = []
     for name, pred in predictions.items():
+        audit, covered_sessions = execution_eligibility(pred, bars, adapter, spec, benchmark)
+        audit.to_parquet(output / (name + '-execution-eligibility.parquet'), index=False)
+        execution_signals.append(dict(model=name, oos_rows=len(pred), executable_rows=int(audit.executable.sum()),
+            excluded_rows=int((~audit.executable).sum()), reasons=audit.reason.value_counts().to_dict(),
+            coverage_first=str(covered_sessions.min()), coverage_last=str(covered_sessions.max())))
         for k in spec.top_k:
             targets = target_weights(pred, adapter.calendar, k, spec.rebalance_frequency)
+            scheduled_rows = len(targets)
+            targets = targets.loc[targets.date.isin(audit.loc[audit.executable, 'date'])].copy()
             targets.to_parquet(output / (name + '-top' + str(k) + '-targets.parquet'), index=False)
-            first, last = pred.date.min(), adapter.calendar.shift(pred.date.max(), 1)
+            first = targets.date.min()
+            last = min(covered_sessions.max(), audit.execution_date.max())
             for mode in ('fast', 'execution'):
-                record = {'model': name, 'top_k': k, 'mode': mode}
+                record = dict(model=name, top_k=k, mode=mode, scheduled_signal_rows=scheduled_rows,
+                    execution_signal_rows=len(targets), excluded_signal_rows=scheduled_rows-len(targets))
                 try:
+                    if targets.empty or pd.isna(last) or first >= last:
+                        raise ContractError('no executable signals or valid valuation interval within validated coverage')
+                    sessions = adapter.calendar.sessions(first, last).index
+                    ids = sorted(set(bars.instrument_id) | set(targets.instrument_id))
+                    adapter.corporate_actions.require_coverage(first, last, ids)
+                    if hasattr(adapter.corporate_actions, 'require_session'):
+                        for day in sessions:
+                            adapter.corporate_actions.require_session(day, ids, adapter.calendar.at(day, 'open'))
                     result = fast_backtest(bars, targets, adapter.calendar, adapter.fees, first, last) if mode == 'fast' else ExecutionEngine(adapter).run(bars, targets, first, last)
+                    benchmark_slice = benchmark.loc[benchmark.date.isin(sessions)]
+                    if (not pd.DatetimeIndex(result.nav.date).equals(sessions) or
+                            not pd.DatetimeIndex(benchmark_slice.date).equals(sessions)):
+                        raise ContractError('Fast/Execution/benchmark valuation dates differ')
                     result.nav = attach_benchmark(result.nav, benchmark)
                     prefix = name + '-top' + str(k) + '-' + mode
                     for attr in ('nav', 'trades', 'positions', 'rejections', 'actions'):
@@ -141,13 +223,18 @@ def run_research(bars, adapter, spec, output, *, benchmark, synthetic=False, ret
                 except ContractError as exc:
                     record.update(status='BLOCKED', reason=str(exc))
                 backtests.append(record)
-    receipt = dict(status='PASS' if all(r['status'] == 'PASS' for r in backtests) else 'PARTIAL',
+    status = ('PASS' if backtests and all(r['status'] == 'PASS' for r in backtests) else
+              'PARTIAL' if any(r['status'] == 'PASS' for r in backtests) else 'BLOCKED')
+    receipt = dict(status=status,
         classification='SYNTHETIC / SOFTWARE_ONLY' if synthetic else 'REAL_SOURCE / RETROSPECTIVE_UNVERIFIED / EXPLORATORY_ONLY',
         spec=asdict(spec), implementation_sha256=implementation_sha(), input_rows=len(bars),
         instrument_count=int(bars.instrument_id.nunique()), dataset_rows=len(dataset),
         unavailable_factor_rows=int((~dataset.factors_available).sum()), models=list(predictions), fold_count=len(folds) // len(spec.model),
         actual_start=str(bars.date.min().date()), actual_end=str(bars.date.max().date()),
-        backtests=backtests, seconds=time.perf_counter() - started, peak_memory_bytes=peak_memory_bytes(),
+        backtests=backtests, execution_signals=execution_signals,
+        adapter_identity=dict(adapter_class=type(adapter).__name__, market=adapter.market,
+            currency=adapter.currency, universe_class=type(adapter.universe).__name__, universe=adapter.universe.name),
+        seconds=time.perf_counter() - started, peak_memory_bytes=peak_memory_bytes(),
         gates=list(WARNINGS), formal_admission='BLOCKED', execution_admission='BLOCKED',
         real_us_data='US_REAL_DATA_NOT_VALIDATED', artifacts={p.relative_to(output).as_posix(): file_sha(p) for p in output.rglob('*') if p.is_file()})
     (output / 'run.json').write_text(json.dumps(receipt, indent=2, default=str), encoding='utf-8')
