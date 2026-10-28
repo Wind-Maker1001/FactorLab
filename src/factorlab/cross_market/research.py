@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 from factorlab.models import FactorScoreModel, RidgeResearchModel, LightGBMResearchModel, XGBoostResearchModel
 from factorlab.validation.splitter import ExpandingWalkForwardSplitter
+from factorlab.portfolio.topk import rebalance_dates
+from factorlab.errors import SchemaError
 from factorlab.data.csmar.native import peak_memory_bytes
 from .contracts import ContractError, instant, session_date
 from .factors import FACTOR_METADATA, compute_instrument_batch, preprocess
@@ -191,9 +193,18 @@ def run_research(bars, adapter, spec, output, *, benchmark, synthetic=False, ret
             excluded_rows=int((~audit.executable).sum()), reasons=audit.reason.value_counts().to_dict(),
             coverage_first=str(covered_sessions.min()), coverage_last=str(covered_sessions.max())))
         for k in spec.top_k:
-            targets = target_weights(pred, adapter.calendar, k, spec.rebalance_frequency)
-            scheduled_rows = len(targets)
-            targets = targets.loc[targets.date.isin(audit.loc[audit.executable, 'date'])].copy()
+            # Preserve the original rebalance anchor even if coverage starts
+            # later. An unexecutable tail must not fail Top-K construction.
+            scheduled = rebalance_dates(adapter.calendar.schedule.index,
+                spec.rebalance_frequency, pred.date)
+            eligible = pred.loc[audit.executable & pred.date.isin(scheduled)]
+            scheduled_rows = len(scheduled) * k
+            target_error = None
+            try:
+                targets = target_weights(eligible, adapter.calendar, k, 1)
+            except SchemaError as exc:
+                target_error = str(exc)
+                targets = pd.DataFrame(columns=['date', 'instrument_id', 'target_weight', 'signal_at'])
             targets.to_parquet(output / (name + '-top' + str(k) + '-targets.parquet'), index=False)
             first = targets.date.min()
             last = min(covered_sessions.max(), audit.execution_date.max())
@@ -201,6 +212,8 @@ def run_research(bars, adapter, spec, output, *, benchmark, synthetic=False, ret
                 record = dict(model=name, top_k=k, mode=mode, scheduled_signal_rows=scheduled_rows,
                     execution_signal_rows=len(targets), excluded_signal_rows=scheduled_rows-len(targets))
                 try:
+                    if target_error:
+                        raise ContractError('insufficient executable signals: ' + target_error)
                     if targets.empty or pd.isna(last) or first >= last:
                         raise ContractError('no executable signals or valid valuation interval within validated coverage')
                     sessions = adapter.calendar.sessions(first, last).index

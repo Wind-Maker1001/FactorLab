@@ -252,3 +252,34 @@ def test_nav_date_disagreement_blocks_performance(monkeypatch, tmp_path):
     fast = next(r for r in result['backtests'] if r['mode'] == 'fast')
     assert fast['status'] == 'BLOCKED' and 'dates differ' in fast['reason']
     assert not (tmp_path / 'run/FactorScore-top2-fast-nav.parquet').exists()
+
+
+@pytest.mark.parametrize('boundary_only', [False, True])
+def test_insufficient_executable_cross_section_is_blocked(monkeypatch, tmp_path, boundary_only):
+    data = inputs()
+    pred = fake_predictions(monkeypatch, data[1], ['2024-04-02' if boundary_only else '2024-04-01'])
+    pred.drop(pred.index[1:], inplace=True)
+    result = run(data, tmp_path / 'run')
+    assert result['status'] == 'BLOCKED'
+    assert all(r['status'] == 'BLOCKED' for r in result['backtests'])
+    assert not list((tmp_path / 'run').glob('*-nav.parquet'))
+
+
+def test_sparse_unexecutable_boundary_does_not_block_valid_signals(monkeypatch, tmp_path):
+    data = inputs()
+    pred = fake_predictions(monkeypatch, data[1], ['2024-04-01', '2024-04-02'])
+    pred.drop(pred.index[4:], inplace=True)
+    result = run(data, tmp_path / 'run')
+    assert result['status'] == 'PASS'
+    assert_nav(tmp_path / 'run', '2024-04-02')
+
+
+def test_coverage_filter_keeps_original_rebalance_anchor(monkeypatch, tmp_path):
+    bars, adapter, spec, benchmark = inputs()
+    spec = replace(spec, rebalance_frequency=2)
+    fake_predictions(monkeypatch, adapter, ['2024-03-27', '2024-03-28', '2024-04-01', '2024-04-02'])
+    adapter.corporate_actions.start = pd.Timestamp('2024-03-28')
+    result = run((bars, adapter, spec, benchmark), tmp_path / 'run')
+    assert result['status'] == 'PASS'
+    targets = pd.read_parquet(tmp_path / 'run/FactorScore-top2-targets.parquet')
+    assert set(targets.date) == {pd.Timestamp('2024-04-01')}
