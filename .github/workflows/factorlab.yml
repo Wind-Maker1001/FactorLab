@@ -106,23 +106,108 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.14'
+      - name: Resolve immutable historical controls and record preflight
+        id: history
+        shell: python {0}
+        run: |
+          import json, platform, subprocess, sys
+          from pathlib import Path
+
+          root = Path('local-ci/lock-diagnostics')
+          root.mkdir(parents=True, exist_ok=True)
+          receipt = dict(schema='FACTORLAB_LOCK_REFERENCE_PREFLIGHT_V1',
+                         status='BLOCKED', python=sys.version, windows=platform.platform(),
+                         commands=[], controls=[])
+
+          def git(*args, required=True):
+              p = subprocess.run(['git', *args], capture_output=True, text=True)
+              receipt['commands'].append(dict(args=list(args), returncode=p.returncode,
+                                               stdout=p.stdout, stderr=p.stderr))
+              if required and p.returncode:
+                  raise RuntimeError(f'git {args}: exit {p.returncode}: {p.stderr}')
+              return p
+
+          try:
+              receipt['checkout_commit'] = git('rev-parse', 'HEAD').stdout.strip()
+              receipt['checkout_tree'] = git('rev-parse', 'HEAD^{tree}').stdout.strip()
+              receipt['shallow'] = git('rev-parse', '--is-shallow-repository').stdout.strip()
+              for label, expected in (
+                  ('main', 'afac4f9d4c2b123c0b32787ccd1cf67fe965c723'),
+                  ('input', 'ed2b4c1a0a10afd794c674b14d105b748b01b9c8'),
+              ):
+                  control = dict(label=label, expected_commit=expected)
+                  receipt['controls'].append(control)
+                  control['present_before_fetch'] = git('cat-file', '-e', expected + '^{commit}', required=False).returncode == 0
+                  # Public fixed repository, exact SHA, no stored credentials or mutable-ref fallback.
+                  git('-c', 'credential.helper=', 'fetch', '--no-tags',
+                      'https://github.com/Wind-Maker1001/FactorLab.git', expected)
+                  actual = git('rev-parse', 'FETCH_HEAD^{commit}').stdout.strip()
+                  control['fetched_commit'] = actual
+                  if actual != expected:
+                      raise RuntimeError(f'{label}: expected {expected}, received {actual}')
+                  control['tree'] = git('rev-parse', expected + '^{tree}').stdout.strip()
+                  source = 'local-ci/lock-' + label
+                  git('worktree', 'add', '--detach', source, expected)
+                  control['worktree_commit'] = git('-C', source, 'rev-parse', 'HEAD').stdout.strip()
+                  if control['worktree_commit'] != expected:
+                      raise RuntimeError(f'{label}: worktree identity mismatch')
+              receipt['status'] = 'PASS'
+          except Exception as exc:
+              receipt['error'] = f'{type(exc).__name__}: {exc}'
+              raise
+          finally:
+              (root / 'reference-preflight.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
       - name: Install test dependencies
         run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
       - name: Compare public main, input PR head and repaired head without test retries
+        shell: python {0}
         run: |
-          git worktree add --detach local-ci/lock-main afac4f9d4c2b123c0b32787ccd1cf67fe965c723
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          git worktree add --detach local-ci/lock-input ed2b4c1a0a10afd794c674b14d105b748b01b9c8
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/ci/windows_lock_probe.py --source local-ci/lock-main --output local-ci/lock-diagnostics/main --iterations 100
-          $mainCode = $LASTEXITCODE
-          python tools/ci/windows_lock_probe.py --source local-ci/lock-input --output local-ci/lock-diagnostics/input --iterations 100
-          $inputCode = $LASTEXITCODE
-          python tools/ci/windows_lock_probe.py --source . --output local-ci/lock-diagnostics/current --iterations 100
-          $currentCode = $LASTEXITCODE
-          exit [Math]::Max($mainCode, [Math]::Max($inputCode, $currentCode))
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+          import json, platform, subprocess, sys
+          from pathlib import Path
+
+          root = Path('local-ci/lock-diagnostics')
+          receipt = dict(schema='FACTORLAB_LOCK_EXECUTION_V1', python=sys.version,
+                         windows=platform.platform(), groups=[], status='FAIL', exit_code=1)
+          try:
+              for label, source in (('main', 'local-ci/lock-main'), ('input', 'local-ci/lock-input'), ('current', '.')):
+                  identity = subprocess.check_output(['git', '-C', source, 'show', '-s', '--format=%H %T', 'HEAD'], text=True).strip().split()
+                  group = dict(label=label, commit=identity[0], tree=identity[1])
+                  receipt['groups'].append(group)
+                  p = subprocess.run([sys.executable, 'tools/ci/windows_lock_probe.py', '--source', source,
+                                      '--output', str(root / label), '--iterations', '100'])
+                  group['raw_exit_code'] = p.returncode
+                  diagnostic = root / label / 'native-diagnostic.json'
+                  group['diagnostic_exists'] = diagnostic.is_file()
+                  group['diagnostic_valid'] = False
+                  if diagnostic.is_file():
+                      try:
+                          data = json.loads(diagnostic.read_text(encoding='utf-8'))
+                          group['diagnostic_valid'] = (data['subject_sha'] == group['commit'] and
+                              data['iterations'] == len(data['rounds']) == 100 and
+                              data['passed'] + data['failed'] == 100)
+                      except (ValueError, KeyError, TypeError) as exc:
+                          group['validation_error'] = str(exc)
+              receipt['exit_code'] = max(g['raw_exit_code'] if g['raw_exit_code'] >= 0 else 1 for g in receipt['groups'])
+              if not all(g['diagnostic_valid'] for g in receipt['groups']):
+                  receipt['exit_code'] = max(1, receipt['exit_code'])
+              receipt['status'] = 'PASS' if receipt['exit_code'] == 0 else 'FAIL'
+          except Exception as exc:
+              receipt['error'] = f'{type(exc).__name__}: {exc}'
+              raise
+          finally:
+              (root / 'execution.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+          sys.exit(receipt['exit_code'])
+      - name: Upload reference and execution receipts even on failure
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
+        with:
+          name: lock-reference-receipts-windows-3.14
+          path: |
+            local-ci/lock-diagnostics/reference-preflight.json
+            local-ci/lock-diagnostics/execution.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always() && steps.history.outcome == 'success'
         with:
           name: bounded-lock-diagnostics-windows-3.14
           path: local-ci/lock-diagnostics/*/native-diagnostic.json
