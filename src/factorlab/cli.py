@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+from factorlab.application.factor_evaluation import evaluate_admitted_dataset
 from factorlab.backtest import (
     ExecutionBacktestConfig,
     FastBacktestConfig,
@@ -1349,25 +1350,12 @@ def command_evaluate(config: ResearchConfig, run: RunManifest) -> None:
     dataset, dataset_sha256, universe_version = _load_verified_dataset(
         config, research_calendar, run, full_calendar=full_calendar
     )
-    run.payload["dataset_sha256"] = dataset_sha256
-    run.payload["universe_version"] = universe_version
-    target = _target_column(config)
-    evaluation = evaluate_factors(
-        dataset,
-        config.factors,
-        target=target,
-        quantiles=config.evaluation.quantiles,
-        minimum_cross_section=config.evaluation.min_cross_section,
-        group_column=("MARKET_REGIME" if config.market_regime.enabled else None),
-        calendar=research_calendar,
+    evaluate_admitted_dataset(
+        config, run, dataset, research_calendar=research_calendar,
+        dataset_sha256=dataset_sha256, universe_version=universe_version,
+        evaluate=evaluate_factors, write_report=write_factor_report,
+        target_for_config=_target_column, logger=LOGGER,
     )
-    summary = write_factor_report(evaluation, config.paths.factor_results_dir)
-    run.add_output("factor_report", summary)
-    valid_rank_ic = int(evaluation.daily_ic["RankIC"].notna().sum())
-    run.payload["valid_rank_ic_observations"] = valid_rank_ic
-    if valid_rank_ic == 0:
-        raise FactorLabError("Factor evaluation produced no valid RankIC observations")
-    LOGGER.info("Factor report written with %d valid daily RankIC values", valid_rank_ic)
 
 
 def _target_column(config: ResearchConfig) -> str:
