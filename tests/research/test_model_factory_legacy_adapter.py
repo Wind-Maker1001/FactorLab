@@ -441,3 +441,18 @@ def test_unknown_metadata_fails_without_any_constructor(field,value,monkeypatch)
     def forbidden(*a,**k): raise AssertionError('unexpected constructor')
     monkeypatch.setattr(RidgeResearchModel,'__init__',forbidden)
     with pytest.raises(InvalidModelSpec): create_legacy_model(LegacyModelRequest(**kwargs))
+
+
+def test_legacy_seed_subclass_is_retained_without_claiming_strict_representability():
+    class LegacySeed(int):
+        pass
+    seed = LegacySeed(7)
+    request = request_for('ridge', {'feature_names':NAMES,'random_seed':seed})
+    model = create_legacy_model(request)
+    assert model.random_seed is seed
+    assert vars(model) == vars(RidgeResearchModel(feature_names=NAMES,random_seed=seed))
+    result = describe(model,'ridge',request)
+    assert result.seed is seed and result.status == 'LEGACY_ONLY_UNREPRESENTABLE'
+    assert result.strict_spec is None and 'exact Python int' in result.reason
+    with pytest.raises(InvalidModelSpec):
+        validate_spec(ModelSpec('ridge','legacy-v1',{},tuple(FeatureRef.legacy(n) for n in NAMES),seed,1,'research_v2'))

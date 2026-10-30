@@ -216,7 +216,8 @@ metadata is not an authenticated model/request binding.
 `status="STRICT_REPRESENTABLE"` includes a `strict_spec` when those effective
 values fit ModelSpec. `status="LEGACY_ONLY_UNREPRESENTABLE"` includes a reason
 and no strict spec for old successful inputs such as whitespace feature names
-or unfitted supervised models whose feature_names=None is resolved at fit.
+or unfitted supervised models whose feature_names=None is resolved at fit, or
+Ridge seed int subclasses accepted by the old API but rejected by strict V2.
 This optional inspection never changes legacy construction success, invents
 names/weights, or becomes a runtime gate. It does not call strict validation
 and cannot trigger its temporary constructions.

@@ -500,6 +500,8 @@ def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
                                    for name, value in parameters.items()})
     strict = reason = None
     try:
+        if not fixed and type(seed) is not int:
+            raise InvalidModelSpec("legacy random_seed is not the exact Python int required by strict V2")
         if names is None:
             raise InvalidModelSpec("legacy feature_names=None is resolved by fit, not construction")
         strict = ModelSpec(descriptor.model_id, implementation_version, parameters,
