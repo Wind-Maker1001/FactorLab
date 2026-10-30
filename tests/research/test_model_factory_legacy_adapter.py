@@ -456,3 +456,65 @@ def test_legacy_seed_subclass_is_retained_without_claiming_strict_representabili
     assert result.strict_spec is None and 'exact Python int' in result.reason
     with pytest.raises(InvalidModelSpec):
         validate_spec(ModelSpec('ridge','legacy-v1',{},tuple(FeatureRef.legacy(n) for n in NAMES),seed,1,'research_v2'))
+
+
+@pytest.mark.parametrize('name', ('ridge','lightgbm','xgboost'))
+@pytest.mark.parametrize('structured', (False,True))
+def test_object_array_mutable_elements_are_snapshotted_without_type_or_value_coercion(name,structured):
+    if structured:
+        names = np.empty(2,dtype=[('label',object)])
+        names['label'][0],names['label'][1] = ['a'],['b']
+    else:
+        names = np.empty(2,dtype=object)
+        names[0],names[1] = ['a'],['b']
+    expected = CLASSES[name](feature_names=names)
+    request = request_for(name,{'feature_names':names})
+    source_element = names['label'][0] if structured else names[0]
+    source_element.append('source mutation')
+    public = request.constructor_arguments['feature_names']
+    public_element = public['label'][1] if structured else public[1]
+    public_element.append('public mutation')
+    assert type(public) is np.ndarray and public.dtype == names.dtype
+    first,second = create_legacy_model(request),create_legacy_model(request)
+    assert vars(first) == vars(second) == vars(expected)
+    assert pickle.dumps(first) == pickle.dumps(expected)
+
+
+def test_object_array_self_reference_is_copied_without_recursion_or_alias_leak():
+    names = np.empty(1,dtype=object)
+    names[0] = names
+    request = request_for('ridge',{'feature_names':names})
+    public = request.constructor_arguments['feature_names']
+    assert public is not names and public[0] is public
+    public[0] = 'changed'
+    next_copy = request.constructor_arguments['feature_names']
+    assert next_copy[0] is next_copy
+
+
+@pytest.mark.parametrize('name,key', [('ridge','max_iter'),('lightgbm','n_estimators'),
+    ('lightgbm','max_depth'),('lightgbm','bagging_freq'),('lightgbm','min_child_samples'),
+    ('xgboost','n_estimators'),('xgboost','max_depth')])
+def test_accepted_legacy_huge_integers_are_not_false_strict_specs(name,key):
+    huge = 10**400
+    args = dict(feature_names=NAMES)
+    args[key] = huge
+    request = request_for(name,args)
+    direct = CLASSES[name](**args)
+    model = create_legacy_model(request)
+    assert vars(model) == vars(direct)
+    result = describe(model,name,request)
+    assert result.parameters[key] == huge
+    assert result.status == 'LEGACY_ONLY_UNREPRESENTABLE' and result.strict_spec is None
+    assert key in result.reason
+    spec = ModelSpec(name,'legacy-v1',{key:huge},tuple(FeatureRef.legacy(n) for n in NAMES),42,1,'research_v2')
+    with pytest.raises(InvalidModelSpec): validate_spec(spec)
+
+
+def test_mapping_proxy_snapshots_preserve_distinct_mapping_contents():
+    from types import MappingProxyType
+    first = {'a':1}
+    second = {'b':2}
+    request = request_for('factor_score',{'weights':MappingProxyType(first),'unknown':MappingProxyType(second)})
+    first['a'],second['b'] = 99,88
+    assert dict(request.constructor_arguments['weights']) == {'a':1}
+    assert dict(request.constructor_arguments['unknown']) == {'b':2}

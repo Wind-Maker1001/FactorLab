@@ -349,26 +349,38 @@ def _legacy_copy(value, memo=None):
     if memo is None:
         memo = {}
     if id(value) in memo:
-        return memo[id(value)]
+        return memo[id(value)][1]
     kind = type(value)
     if kind in (dict, OrderedDict, UserDict, defaultdict):
         copied = defaultdict(value.default_factory) if kind is defaultdict else kind()
-        memo[id(value)] = copied
+        memo[id(value)] = (value, copied)
         for key, item in value.items():
             copied[key] = _legacy_copy(item, memo)
         return copied
     if kind is MappingProxyType:
-        return MappingProxyType(_legacy_copy(dict(value), memo))
+        contents = {}
+        copied = MappingProxyType(contents)
+        memo[id(value)] = (value, copied)
+        for key, item in value.items():
+            contents[key] = _legacy_copy(item, memo)
+        return copied
     if kind is list:
         copied = []
-        memo[id(value)] = copied
+        memo[id(value)] = (value, copied)
         copied.extend(_legacy_copy(item, memo) for item in value)
         return copied
     if kind is tuple:
         return tuple(_legacy_copy(item, memo) for item in value)
     if kind is np.ndarray:
         copied = value.copy()
-        memo[id(value)] = copied
+        memo[id(value)] = (value, copied)
+        if value.dtype.names:
+            for name in value.dtype.names:
+                if value.dtype.fields[name][0].hasobject:
+                    copied[name] = _legacy_copy(value[name], memo)
+        elif value.dtype.hasobject:
+            for index in np.ndindex(value.shape):
+                copied[index] = _legacy_copy(value[index], memo)
         return copied
     return value
 
@@ -504,6 +516,15 @@ def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
             raise InvalidModelSpec("legacy random_seed is not the exact Python int required by strict V2")
         if names is None:
             raise InvalidModelSpec("legacy feature_names=None is resolved by fit, not construction")
+        for name, value in parameters.items():
+            if name == "weights":
+                numeric = all(_numeric(weight) for weight in value.values())
+            elif name in ("normalize_by_absolute_weight", "fit_intercept"):
+                numeric = type(value) is bool
+            else:
+                numeric = _numeric(value)
+            if not numeric:
+                raise InvalidModelSpec(name + " cannot be represented by strict V2 numeric checks")
         strict = ModelSpec(descriptor.model_id, implementation_version, parameters,
                            tuple(FeatureRef.legacy(name) for name in names), seed, threads, profile_id)
     except InvalidModelSpec as exc:

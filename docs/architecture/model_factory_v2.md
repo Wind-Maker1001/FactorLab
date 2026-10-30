@@ -184,6 +184,11 @@ or replace a custom numeric object's original float conversion. Requests are
 trusted Python values, not a YAML/pickle/plugin loader or a universal object
 freezer. Models never retain the request, spec, catalog or injection callback.
 
+Object-dtype arrays and structured object fields recursively snapshot supported
+mutable elements, including self-references; copying an array's storage alone
+would leave request state exposed. Copy memo entries keep their original objects
+alive for the duration of the snapshot, so temporary array views cannot reuse IDs.
+
 `ModelRegistration` appends optional
 `legacy_constructor: type[ResearchModel] | None = None` after its existing
 fields. Old positional descriptor construction and strict `build` remain valid.
@@ -218,6 +223,9 @@ values fit ModelSpec. `status="LEGACY_ONLY_UNREPRESENTABLE"` includes a reason
 and no strict spec for old successful inputs such as whitespace feature names
 or unfitted supervised models whose feature_names=None is resolved at fit, or
 Ridge seed int subclasses accepted by the old API but rejected by strict V2.
+Original positive integers too large for strict finite-number checks also retain
+legacy success and return this compatibility status. Inspection reuses the
+strict numeric predicate without invoking a validation constructor.
 This optional inspection never changes legacy construction success, invents
 names/weights, or becomes a runtime gate. It does not call strict validation
 and cannot trigger its temporary constructions.
