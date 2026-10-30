@@ -138,6 +138,106 @@ exception types are unchanged. LightGBM/XGBoost native packages are never
 imported by factory construction; a missing package still produces its original
 dependency error only at fit.
 
+## P2-01C: original API construction adapter
+
+P2-01 was merged by PR #4. P2-01C extends this module and document and adds
+`tests/research/test_model_factory_legacy_adapter.py`; original model classes,
+callers, strict validation/build functions, configuration and dependencies stay
+unchanged. Import these additional interfaces from this module:
+
+```python
+from factorlab.models.factory import (
+    LegacyModelRequest, create_legacy_model, effective_spec_from_legacy,
+)
+
+request = LegacyModelRequest(
+    "xgboost", "legacy-v1", "cross_market_fixed_v1",
+    {"feature_names": ["REV1", "MOM20"], "n_estimators": 40,
+     "random_seed": 42, "n_jobs": 1},
+)
+model = create_legacy_model(request)  # exactly one original construction
+observed = effective_spec_from_legacy(
+    model, model_id="xgboost", implementation_version="legacy-v1",
+    profile_id="cross_market_fixed_v1", request=request,
+)
+assert observed.parameters["n_estimators"] == 40
+assert observed.explicit_arguments == tuple(request.constructor_arguments)
+assert observed.strict_spec.parameters["n_estimators"] == 40
+```
+
+`LegacyModelRequest(model_id, implementation_version, profile_id,
+constructor_arguments)` is frozen. Original `feature_names`, `random_seed`,
+`n_jobs`, weights and other keywords stay in the argument mapping, preserving
+omission versus explicit None. No value coercion, signature binding, default
+expansion or parameter validation occurs before the actual constructor. Missing
+and unknown keywords, malformed values and model-input errors propagate from
+that one call with their original type, message, cause and construction phase.
+The metadata boundary still rejects unknown model/version/profile identities.
+
+The request snapshots dict/OrderedDict/UserDict/defaultdict weights, lists, tuples and NumPy
+arrays without converting their types. Public argument access returns a fresh
+defensive copy with a read-only outer mapping. Opaque custom Python objects and
+one-shot iterators retain their identity and original protocols; callers own
+their lifetime and must not mutate them during use. The adapter deliberately
+does not execute arbitrary deepcopy/reduction hooks, consume iterators early,
+or replace a custom numeric object's original float conversion. Requests are
+trusted Python values, not a YAML/pickle/plugin loader or a universal object
+freezer. Models never retain the request, spec, catalog or injection callback.
+
+`ModelRegistration` appends optional
+`legacy_constructor: type[ResearchModel] | None = None` after its existing
+fields. Old positional descriptor construction and strict `build` remain valid.
+The four default registrations explicitly associate their original classes;
+legacy creation requires that association and the exact `legacy-v1` identity.
+Old custom catalogs without that association still serve the strict API, but
+cannot silently opt into legacy execution. Registry freeze semantics are intact.
+
+`create_legacy_model(request, *, constructor_type=None,
+catalog=DEFAULT_CATALOG)` accepts the registered original class or its subclass
+through the injection keyword. Future callers pass their **current module-level
+class binding at each call**, preserving frozen Spy tests and isinstance checks.
+Method-level mocks on such classes remain observable. Strings, unrelated classes
+and arbitrary callable/Mock factories are rejected. There is no dynamic import,
+global catalog mutation, cached Spy, fallback constructor or extra validation
+construction. Constructors perform no fit/predict, data I/O, network, persistence
+or global RNG changes; native tree imports remain deferred to original fit.
+
+`effective_spec_from_legacy(model, *, model_id, implementation_version,
+profile_id, catalog=DEFAULT_CATALOG, request=None)` returns a frozen
+`LegacyEffectiveSpec`. It reads effective original fields without constructing
+or training. `original_model_id` retains the supplied alias; `model_id` is
+canonical. Ordered names, normalized parameters, seed and threads reflect the
+actual object. Optional `request` is caller-supplied provenance: explicit keyword
+names and omitted default names are recorded separately. Without it both are
+None, because explicit/default origins cannot be recovered from model state.
+The supplied request must be the one used to create the inspected model; this
+metadata is not an authenticated model/request binding.
+
+`status="STRICT_REPRESENTABLE"` includes a `strict_spec` when those effective
+values fit ModelSpec. `status="LEGACY_ONLY_UNREPRESENTABLE"` includes a reason
+and no strict spec for old successful inputs such as whitespace feature names
+or unfitted supervised models whose feature_names=None is resolved at fit.
+This optional inspection never changes legacy construction success, invents
+names/weights, or becomes a runtime gate. It does not call strict validation
+and cannot trigger its temporary constructions.
+
+Legacy constructors retain loose numeric-string conversions (FactorScore
+weights and Ridge numeric fields), NumPy boolean flags where accepted, original
+sequence handling and all original failures. Strict `validate_spec/create_model`
+keep their intentional narrower acceptance domain and wrapped errors. Profiles
+never infer 40 trees or FactorScore signs: future cross-market callers explicitly
+carry 40 (or a supplied legal value), REV/VOL/AMIHU negative weights, normalization
+False, supervised seed42/threads1 and FactorScore seedNone/threads1. Omitting a
+tree count always retains original class default200. Runner-specific defaults,
+candidate order, parameter receipts and call counts remain caller-owned.
+
+Adapter tests use the unchanged direct classes and actual cross-market
+make_model as oracles; they compare original errors, call-time Spy/Mock methods,
+single construction, defensive snapshots, exact trained states/predictions,
+train-only preprocessing, pickle/save-load bytes, lazy dependencies and zero
+construction side effects. Actual acceptance evidence is external under
+`D:/Code/FactorLab-archives/P2-01C-LEGACY-COMPAT-20261030`.
+
 ## Verification and evidence
 
 The new tests use direct constructors as independent oracles. They compare full
@@ -182,15 +282,19 @@ copy so generated packaging files never expand this change's three-file scope.
 
 ## Next migration boundaries
 
-P2-02 can adapt the old WalkForwardRunner's construction calls to complete specs,
+After P2-01C is reviewed, accepted and merged, P2-02 can adapt the old
+WalkForwardRunner's six construction sites to `create_legacy_model`,
 preserving candidate order, validation metric, tie-breaking, fit/predict counts,
 and its no-Train+Validation-refit policy. P2-03 can independently adapt the
-cross-market make_model call, explicitly carrying its 40-tree defaults and fixed
+cross-market make_model call through that same adapter, explicitly carrying its 40-tree defaults and fixed
 sign-derived weights. Neither migration is implemented here.
 
 Training services, target/input binding, V2 artifact envelopes and selection are
 later steps. A fifth-model complete research path is not available from P2-01.
-Phase 1 integration must be arranged before caller migration is integrated and
-validated at the final integration SHA. This candidate is local only: no push,
-PR creation, merge, or financial admission is implied. Reverting these three
-additions removes the factory without model-artifact migration.
+Fix a real shared baseline B only after the P2-01C merge, recording its actual
+commit/tree, interpreters/dependencies, frozen synthetic inputs, original
+comparators and hashes. P2-02 and P2-03 branch independently from B, retain their
+original reports/receipts and receive separate equivalence and combination
+acceptance. Neither migration is implemented by this adapter. Revert P2-01C to
+remove the adapter while retaining strict P2-01; once consumers exist, revert
+them first. Existing original-class model artifacts need no migration.

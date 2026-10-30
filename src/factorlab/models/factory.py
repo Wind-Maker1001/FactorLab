@@ -7,10 +7,14 @@ selection, persistence, plugin discovery, or financial admission responsibilitie
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, replace
+from collections import OrderedDict, UserDict, defaultdict
+from dataclasses import dataclass, field, replace
+from inspect import Parameter, signature
 from math import isfinite
 from numbers import Real
 from types import MappingProxyType
+
+import numpy as np
 
 from .base import ModelInputError, ResearchModel
 from .factor_score import FactorScoreModel
@@ -134,6 +138,7 @@ class ModelRegistration:
     parameter_defaults: Mapping[str, object]
     build: Callable[[ModelSpec], ResearchModel]
     capabilities: ModelCapabilities = ModelCapabilities()
+    legacy_constructor: type[ResearchModel] | None = None
 
     def __post_init__(self) -> None:
         _text(self.model_id, "model_id")
@@ -141,6 +146,11 @@ class ModelRegistration:
         if self.model_id in ALIASES or not callable(self.build):
             raise InvalidModelSpec("registration requires canonical identity and callable builder")
         object.__setattr__(self, "parameter_defaults", _snapshot(self.parameter_defaults))
+        if self.legacy_constructor is not None and (
+            not isinstance(self.legacy_constructor, type)
+            or not issubclass(self.legacy_constructor, ResearchModel)
+        ):
+            raise InvalidModelSpec("legacy_constructor must be a ResearchModel class")
 
     def requirements(self, spec: ModelSpec) -> FeatureRequirement:
         fixed = self.model_id == "factor_score"
@@ -247,10 +257,15 @@ def _legacy_catalog() -> ModelCatalogSnapshot:
                      "reg_alpha": 0.0, "reg_lambda": 1.0, "gamma": 0.0}, build_xgboost),
     )
     for model_id, defaults, builder in definitions:
-        registry.register(ModelRegistration(model_id, "legacy-v1", defaults, builder))
+        registry.register(ModelRegistration(model_id, "legacy-v1", defaults, builder,
+                                            legacy_constructor=_LEGACY_CLASSES[model_id]))
     return registry.freeze()
 
 
+_LEGACY_CLASSES = MappingProxyType({
+    "factor_score": FactorScoreModel, "ridge": RidgeResearchModel,
+    "lightgbm": LightGBMResearchModel, "xgboost": XGBoostResearchModel,
+})
 DEFAULT_CATALOG = _legacy_catalog()
 
 
@@ -322,3 +337,176 @@ def create_model(spec: ValidatedModelSpec, catalog: ModelCatalogSnapshot = DEFAU
     validated = validate_spec(spec.spec, catalog)
     descriptor = catalog.resolve(validated.spec.model_id, validated.spec.implementation_version)
     return descriptor.build(validated.spec)
+
+
+def _legacy_copy(value, memo=None):
+    """Copy inert containers without coercion or invoking user copy protocols.
+
+    Opaque Python objects (including one-shot iterators and custom numeric
+    objects) retain their original semantics and identity. They are trusted
+    caller-owned values, not serializable configuration or executable plugins.
+    """
+    if memo is None:
+        memo = {}
+    if id(value) in memo:
+        return memo[id(value)]
+    kind = type(value)
+    if kind in (dict, OrderedDict, UserDict, defaultdict):
+        copied = defaultdict(value.default_factory) if kind is defaultdict else kind()
+        memo[id(value)] = copied
+        for key, item in value.items():
+            copied[key] = _legacy_copy(item, memo)
+        return copied
+    if kind is MappingProxyType:
+        return MappingProxyType(_legacy_copy(dict(value), memo))
+    if kind is list:
+        copied = []
+        memo[id(value)] = copied
+        copied.extend(_legacy_copy(item, memo) for item in value)
+        return copied
+    if kind is tuple:
+        return tuple(_legacy_copy(item, memo) for item in value)
+    if kind is np.ndarray:
+        copied = value.copy()
+        memo[id(value)] = copied
+        return copied
+    return value
+
+
+@dataclass(frozen=True, init=False, eq=False)
+class LegacyModelRequest:
+    """Original keyword arguments; no V2 coercion, expansion or value checks.
+
+    feature_names, random_seed and n_jobs remain in constructor_arguments.
+    Omission is distinct from explicit None. Injection is a call-time keyword
+    of create_legacy_model, never serialized into this request.
+    """
+
+    model_id: str
+    implementation_version: str
+    profile_id: str
+    _arguments: Mapping[str, object] = field(repr=False, compare=False)
+
+    def __init__(self, model_id: str, implementation_version: str, profile_id: str,
+                 constructor_arguments: Mapping[str, object]) -> None:
+        for name, value in (("model_id", model_id), ("implementation_version", implementation_version),
+                            ("profile_id", profile_id)):
+            _text(value, name)
+            object.__setattr__(self, name, value)
+        if not isinstance(constructor_arguments, Mapping):
+            raise InvalidModelSpec("constructor_arguments must be a mapping")
+        object.__setattr__(self, "_arguments", _legacy_copy(dict(constructor_arguments)))
+
+    @property
+    def constructor_arguments(self) -> Mapping[str, object]:
+        """A defensive public copy; original list/tuple/array/weights types survive."""
+        return MappingProxyType(_legacy_copy(self._arguments))
+
+
+def _legacy_registration(model_id, implementation_version, profile_id, catalog):
+    if type(catalog) is not ModelCatalogSnapshot:
+        raise InvalidModelSpec("expected frozen ModelCatalogSnapshot")
+    descriptor = catalog.resolve(model_id, implementation_version)
+    if profile_id not in PROFILES:
+        raise InvalidModelSpec("unknown profile: " + str(profile_id))
+    if (descriptor.implementation_version != "legacy-v1"
+            or descriptor.model_id not in _LEGACY_CLASSES
+            or descriptor.legacy_constructor is not _LEGACY_CLASSES[descriptor.model_id]):
+        raise InvalidModelSpec("legacy construction requires a registered original model class")
+    return descriptor
+
+
+def create_legacy_model(request: LegacyModelRequest, *,
+                        constructor_type: type[ResearchModel] | None = None,
+                        catalog: ModelCatalogSnapshot = DEFAULT_CATALOG) -> ResearchModel:
+    """One original construction, original errors; no strict validation or fit.
+
+    A trusted Python caller may supply its current module-level original class
+    or subclass (including a Spy). Arbitrary callables and import strings fail.
+    """
+    if type(request) is not LegacyModelRequest:
+        raise InvalidModelSpec("expected LegacyModelRequest")
+    descriptor = _legacy_registration(request.model_id, request.implementation_version,
+                                      request.profile_id, catalog)
+    original = descriptor.legacy_constructor
+    constructor = original if constructor_type is None else constructor_type
+    if not isinstance(constructor, type) or not issubclass(constructor, original):
+        raise InvalidModelSpec("constructor_type must be the registered original class or its subclass")
+    model = constructor(**request.constructor_arguments)
+    if not isinstance(model, original):
+        raise InvalidModelSpec("legacy constructor did not return an original model instance")
+    return model
+
+
+@dataclass(frozen=True)
+class LegacyEffectiveSpec:
+    """Observed effective state and optional caller-supplied request provenance.
+
+    explicit_arguments/defaults_used are None when provenance was not supplied;
+    model state cannot reveal which values were explicitly passed. strict_spec
+    is absent when the old successful input cannot be expressed faithfully.
+    """
+
+    original_model_id: str
+    model_id: str
+    implementation_version: str
+    profile_id: str
+    parameters: Mapping[str, object]
+    feature_names: tuple[str, ...] | None
+    seed: int | None
+    threads: int
+    explicit_arguments: tuple[str, ...] | None
+    defaults_used: tuple[str, ...] | None
+    strict_spec: ModelSpec | None
+    status: str
+    reason: str | None
+
+
+def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
+                               implementation_version: str, profile_id: str,
+                               catalog: ModelCatalogSnapshot = DEFAULT_CATALOG,
+                               request: LegacyModelRequest | None = None) -> LegacyEffectiveSpec:
+    """Describe an existing model without constructing, fitting or changing it.
+
+    request, when supplied, must be the original creation request. Its explicit
+    argument keys are caller provenance, not an inferred or authenticated fact.
+    This inspection is optional and never a gate on legacy construction.
+    """
+    descriptor = _legacy_registration(model_id, implementation_version, profile_id, catalog)
+    if not isinstance(model, descriptor.legacy_constructor):
+        raise InvalidModelSpec("model does not match the registered legacy constructor")
+    explicit = defaults = None
+    if request is not None:
+        if type(request) is not LegacyModelRequest:
+            raise InvalidModelSpec("expected LegacyModelRequest provenance")
+        requested = _legacy_registration(request.model_id, request.implementation_version,
+                                          request.profile_id, catalog)
+        if requested is not descriptor or request.profile_id != profile_id:
+            raise InvalidModelSpec("request provenance does not match model identity/profile")
+        explicit = tuple(request.constructor_arguments)
+        defaults = tuple(name for name, p in signature(descriptor.legacy_constructor).parameters.items()
+                         if p.default is not Parameter.empty and name not in explicit)
+    parameters = {name: getattr(model, name) for name in descriptor.parameter_defaults}
+    fixed = descriptor.model_id == "factor_score"
+    if fixed:
+        parameters["weights"] = model.weights
+        names, seed, threads = tuple(model.feature_names), None, 1
+    else:
+        names = model.requested_feature_names
+        seed = model.random_seed
+        threads = model.n_jobs if descriptor.model_id in ("lightgbm", "xgboost") else 1
+    parameters = MappingProxyType({name: MappingProxyType(dict(value))
+                                   if isinstance(value, Mapping) else value
+                                   for name, value in parameters.items()})
+    strict = reason = None
+    try:
+        if names is None:
+            raise InvalidModelSpec("legacy feature_names=None is resolved by fit, not construction")
+        strict = ModelSpec(descriptor.model_id, implementation_version, parameters,
+                           tuple(FeatureRef.legacy(name) for name in names), seed, threads, profile_id)
+    except InvalidModelSpec as exc:
+        reason = str(exc)
+    return LegacyEffectiveSpec(model_id, descriptor.model_id, implementation_version, profile_id,
+                               parameters, names, seed, threads, explicit, defaults, strict,
+                               "STRICT_REPRESENTABLE" if strict is not None else "LEGACY_ONLY_UNREPRESENTABLE",
+                               reason)
