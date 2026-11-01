@@ -85,7 +85,7 @@ def make_model(name, names, estimators=40):
     if name == 'FactorScore':
         return create_legacy_model(LegacyModelRequest(
             'FactorScore', 'legacy-v1', 'cross_market_fixed_v1',
-            {'weights': {n: (-1.0 if n.startswith(('REV', 'VOL', 'AMIHU')) else 1.0) for n in names}),
+            {'weights': {n: (-1.0 if n.startswith(('REV', 'VOL', 'AMIHU')) else 1.0) for n in names}}),
             constructor_type=FactorScoreModel)
     if name == 'Ridge':
         return create_legacy_model(LegacyModelRequest(
