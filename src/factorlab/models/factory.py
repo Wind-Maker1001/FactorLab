@@ -355,14 +355,14 @@ def _legacy_copy(value, memo=None):
         copied = defaultdict(value.default_factory) if kind is defaultdict else kind()
         memo[id(value)] = (value, copied)
         for key, item in value.items():
-            copied[key] = _legacy_copy(item, memo)
+            copied[_legacy_copy(key, memo)] = _legacy_copy(item, memo)
         return copied
     if kind is MappingProxyType:
         contents = {}
         copied = MappingProxyType(contents)
         memo[id(value)] = (value, copied)
         for key, item in value.items():
-            contents[key] = _legacy_copy(item, memo)
+            contents[_legacy_copy(key, memo)] = _legacy_copy(item, memo)
         return copied
     if kind is list:
         copied = []
@@ -370,7 +370,14 @@ def _legacy_copy(value, memo=None):
         copied.extend(_legacy_copy(item, memo) for item in value)
         return copied
     if kind is tuple:
-        return tuple(_legacy_copy(item, memo) for item in value)
+        items = [_legacy_copy(item, memo) for item in value]
+        # A tuple -> mutable container -> tuple cycle can complete this tuple
+        # in a recursive visit. Reuse that result to close the same graph.
+        if id(value) in memo:
+            return memo[id(value)][1]
+        copied = tuple(items)
+        memo[id(value)] = (value, copied)
+        return copied
     if kind is np.ndarray:
         copied = value.copy()
         memo[id(value)] = (value, copied)
@@ -387,7 +394,7 @@ def _legacy_copy(value, memo=None):
 
 @dataclass(frozen=True, init=False, eq=False)
 class LegacyModelRequest:
-    """Original keyword arguments; no V2 coercion, expansion or value checks.
+    """Original call arguments; no V2 coercion, expansion or value checks.
 
     feature_names, random_seed and n_jobs remain in constructor_arguments.
     Omission is distinct from explicit None. Injection is a call-time keyword
@@ -397,22 +404,41 @@ class LegacyModelRequest:
     model_id: str
     implementation_version: str
     profile_id: str
-    _arguments: Mapping[str, object] = field(repr=False, compare=False)
+    _call_arguments: tuple = field(repr=False, compare=False)
 
     def __init__(self, model_id: str, implementation_version: str, profile_id: str,
-                 constructor_arguments: Mapping[str, object]) -> None:
+                 constructor_arguments: Mapping[str, object],
+                 positional_arguments: tuple | list = ()) -> None:
         for name, value in (("model_id", model_id), ("implementation_version", implementation_version),
                             ("profile_id", profile_id)):
             _text(value, name)
             object.__setattr__(self, name, value)
         if not isinstance(constructor_arguments, Mapping):
             raise InvalidModelSpec("constructor_arguments must be a mapping")
-        object.__setattr__(self, "_arguments", _legacy_copy(dict(constructor_arguments)))
+        if type(positional_arguments) not in (tuple, list):
+            raise InvalidModelSpec("positional_arguments must be a tuple or list")
+        # Preserve the old outer mapping protocol, but seed its identity before
+        # copying either channel, including references back to that mapping.
+        arguments = {}
+        memo = {id(constructor_arguments): (constructor_arguments, arguments)}
+        for key, value in dict(constructor_arguments).items():
+            arguments[key] = _legacy_copy(value, memo)
+        positional = _legacy_copy(positional_arguments, memo)
+        object.__setattr__(self, "_call_arguments", (positional, arguments))
+
+    def _construction_arguments(self) -> tuple:
+        """One fresh joint snapshot, retaining aliases between both channels."""
+        return _legacy_copy(self._call_arguments)
 
     @property
     def constructor_arguments(self) -> Mapping[str, object]:
         """A defensive public copy; original list/tuple/array/weights types survive."""
-        return MappingProxyType(_legacy_copy(self._arguments))
+        return MappingProxyType(self._construction_arguments()[1])
+
+    @property
+    def positional_arguments(self) -> tuple | list:
+        """A defensive copy with the original sequence and element types."""
+        return self._construction_arguments()[0]
 
 
 def _legacy_registration(model_id, implementation_version, profile_id, catalog):
@@ -444,7 +470,8 @@ def create_legacy_model(request: LegacyModelRequest, *,
     constructor = original if constructor_type is None else constructor_type
     if not isinstance(constructor, type) or not issubclass(constructor, original):
         raise InvalidModelSpec("constructor_type must be the registered original class or its subclass")
-    model = constructor(**request.constructor_arguments)
+    args, kwargs = request._construction_arguments()
+    model = constructor(*args, **kwargs)
     if not isinstance(model, original):
         raise InvalidModelSpec("legacy constructor did not return an original model instance")
     return model
@@ -472,6 +499,8 @@ class LegacyEffectiveSpec:
     strict_spec: ModelSpec | None
     status: str
     reason: str | None
+    positional_argument_names: tuple[str | None, ...] | None = None
+    explicit_keyword_arguments: tuple[str, ...] | None = None
 
 
 def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
@@ -487,7 +516,7 @@ def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
     descriptor = _legacy_registration(model_id, implementation_version, profile_id, catalog)
     if not isinstance(model, descriptor.legacy_constructor):
         raise InvalidModelSpec("model does not match the registered legacy constructor")
-    explicit = defaults = None
+    explicit = defaults = positional_names = keyword_names = None
     if request is not None:
         if type(request) is not LegacyModelRequest:
             raise InvalidModelSpec("expected LegacyModelRequest provenance")
@@ -495,7 +524,17 @@ def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
                                           request.profile_id, catalog)
         if requested is not descriptor or request.profile_id != profile_id:
             raise InvalidModelSpec("request provenance does not match model identity/profile")
-        explicit = tuple(request.constructor_arguments)
+        args, kwargs = request._construction_arguments()
+        keyword_names = tuple(kwargs)
+        # Observe names only after construction; never bind, validate, consume
+        # opaque values or infer raw inputs from effective model attributes.
+        positional_parameters = tuple(
+            name for name, p in signature(type(model)).parameters.items()
+            if p.kind in (Parameter.POSITIONAL_ONLY, Parameter.POSITIONAL_OR_KEYWORD)
+        )
+        positional_names = tuple(positional_parameters[i] if i < len(positional_parameters) else None
+                                 for i in range(len(args)))
+        explicit = tuple(name for name in positional_names if name is not None) + keyword_names
         defaults = tuple(name for name, p in signature(descriptor.legacy_constructor).parameters.items()
                          if p.default is not Parameter.empty and name not in explicit)
     parameters = {name: getattr(model, name) for name in descriptor.parameter_defaults}
@@ -532,4 +571,4 @@ def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
     return LegacyEffectiveSpec(model_id, descriptor.model_id, implementation_version, profile_id,
                                parameters, names, seed, threads, explicit, defaults, strict,
                                "STRICT_REPRESENTABLE" if strict is not None else "LEGACY_ONLY_UNREPRESENTABLE",
-                               reason)
+                               reason, positional_names, keyword_names)
