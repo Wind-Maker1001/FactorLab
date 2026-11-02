@@ -114,9 +114,14 @@ def test_request_profile_explicit_keys_module_binding_and_one_construction(monke
     request, kwargs = requests[0]
     assert request.profile_id == 'cross_market_fixed_v1'
     assert request.implementation_version == 'legacy-v1'
-    assert request.model_id == name
+    assert request.model_id == ('factor_score' if name == 'FactorScore' else name)
     assert kwargs == {'constructor_type': Spy}
-    expected = {'weights'} if name == 'FactorScore' else {'feature_names'}
+    expected = set() if name == 'FactorScore' else {'feature_names'}
+    if name == 'FactorScore':
+        assert request.positional_arguments == ({n: (-1.0 if n.startswith(('REV', 'VOL', 'AMIHU')) else 1.0) for n in NAMES},)
+        assert calls[0] == (request.positional_arguments, {})
+    else:
+        assert request.positional_arguments == ()
     if name in ('LightGBM', 'XGBoost'):
         expected |= {'n_estimators', 'n_jobs'}
         assert actual.n_estimators == 40 and actual.n_jobs == 1
@@ -139,7 +144,7 @@ def test_frozen_constructor_call_shape_with_spy(monkeypatch, name):
     expected = calls.pop()
     cm.make_model(name, NAMES)
     assert len(calls) == 1
-    # FS is one positional dict in B; current factory converts it into a kwarg.
+    # FS retains B's single positional dict through the B2-compatible factory.
     assert calls[0] == expected
 
 
