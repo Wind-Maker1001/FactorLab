@@ -249,6 +249,93 @@ construction side effects. Actual acceptance evidence is external under
 
 ## Verification and evidence
 
+### P2-01D: positional legacy calls
+
+The compatible request signature is now:
+
+```python
+LegacyModelRequest(model_id, implementation_version, profile_id,
+                   constructor_arguments, positional_arguments=())
+```
+
+The existing first four arguments and the meaning of `constructor_arguments`
+are unchanged. The optional fifth argument accepts an exact built-in tuple or
+list, preserving its type and order. Its default is the empty tuple. Other
+sequence/iterator types at this outer boundary raise `InvalidModelSpec` without
+consuming them. Opaque objects *inside* either channel retain the P2-01C identity,
+protocol and caller-owned lifetime contract. Metadata acceptance is unchanged.
+
+```python
+weights = {"REV1": -1., "MOM20": 1.}
+# P2-02 original call: FactorScoreModel(weights, normalize_by_absolute_weight=False)
+request = LegacyModelRequest(
+    "factor_score", "legacy-v1", "legacy_csi500_v1",
+    {"normalize_by_absolute_weight": False}, positional_arguments=(weights,),
+)
+model = create_legacy_model(request, constructor_type=FactorScoreModel)
+# P2-03 original call: FactorScoreModel(weights); normalization remains omitted.
+omitted = LegacyModelRequest(
+    "factor_score", "legacy-v1", "cross_market_fixed_v1", {}, (weights,),
+)
+```
+
+Construction takes one joint defensive snapshot and executes exactly one
+`constructor(*args, **kwargs)`. It never reads the two public properties
+separately, binds a signature, expands defaults, reorders or coerces parameters,
+or catches/replaces constructor errors. Duplicate, missing, excess and unknown
+arguments retain native Python rejection, including positional-only subclass
+behavior. A constructor-raised exception object, cause and originating traceback
+are retained; the factory invocation naturally adds a stack frame. Original
+callsite/caller control observations remain separate immutable evidence.
+
+Both channels share one safe copy memo at request creation and at construction.
+The supported standard mappings, list/tuple graphs and NumPy arrays retain
+their types, nested mutations, cycles and repeated-reference topology, including
+aliases across channels and references back to either outer input. Tuple cycles
+through mutable containers are closed by reusing recursively completed tuples.
+The keyword mapping is expanded once to a separate outer dict, matching Python
+call semantics. References to the source mapping inside either channel keep
+their original supported mapping type and share one copied instance; the source
+mapping must not be memoized as that separate expansion dict. Opaque source
+mappings retain their identity and their original single expansion protocol.
+No deepcopy, reduction, pickle or dynamic execution protocol is introduced.
+Array storage and supported object elements are copied; arbitrary ndarray-view
+storage overlap is not an identity relationship guaranteed by this adapter.
+
+`positional_arguments` and `constructor_arguments` are read-only properties;
+each access returns a separate defensive copy. Nested mutable values in those
+copies are editable without affecting the request. Separate property accesses
+are separate observations, so cross-channel identity is guaranteed in the joint
+construction snapshot. Opaque values remain caller-owned references.
+
+`LegacyEffectiveSpec` appends two optional fields with defaults of `None`:
+`positional_argument_names` (one name or `None` per supplied positional argument)
+and `explicit_keyword_arguments` (original ordered keyword names). Existing
+field order is retained. With a request, `explicit_arguments` contains named
+positional arguments followed by keyword names; pure-keyword results retain
+their old meaning exactly. Positional names are observed from the actual model
+class signature after construction, without `Signature.bind`; variadic elements
+have unknown names rather than invented provenance. Default names are the
+registered original defaults absent from the explicit names. For arbitrary
+subclasses that internally remap or forward variadic inputs these fields cannot
+describe that internal forwarding. In particular, ordinary or positional-only
+`weights` is explicit, never omitted. Without a request, all provenance fields
+stay `None`. Effective values and strict/legacy-only status continue to describe
+the actual model, without constructing or training an additional model.
+
+The strict `ModelSpec`, `validate_spec` and `create_model` API is unchanged.
+No Walk-Forward or cross-market caller is migrated by P2-01D. Passing independent
+P2-02/P2-03 call probes verifies this public interface only; both migrations
+still require separate acceptance. Baseline B is permanently retained at commit
+`ef91f3d26801dc660fbef8f3826bfa37732dff33`, tree
+`8a785e635a96488352adb1aa825d52ed2f1ed601`. B2 freezing and any versioned callsite
+comparison policy require subsequent external review and approval.
+
+P2-01D evidence is external under
+`D:/Code/FactorLab-archives/P2-01D-POSITIONAL-COMPAT-20261102`. Revert the P2-01D
+commit to restore the keyword-only adapter; dependent caller migrations must
+first be reverted or kept unmerged. Original-class artifacts need no migration.
+
 The new tests use direct constructors as independent oracles. They compare full
 initial state and pickle bytes, signature defaults, explicit parameters and
 boundaries, alias/version errors, immutable snapshots, profile isolation, seeds,
