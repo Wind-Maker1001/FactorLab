@@ -1,5 +1,6 @@
 """P2-01D: original Python calls are the oracle, including their failures."""
 from collections import OrderedDict, UserDict, defaultdict
+from collections.abc import Mapping
 from dataclasses import FrozenInstanceError
 import inspect
 import pickle
@@ -213,6 +214,59 @@ def test_alias_to_outer_keyword_mapping_and_positional_sequence():
             super().__init__({'a': 1})
 
     create_legacy_model(r, constructor_type=Root)
+
+
+@pytest.mark.parametrize('kind', [dict, OrderedDict, UserDict, defaultdict, MappingProxyType])
+def test_outer_keyword_mapping_keeps_type_when_aliased_as_positional_value(kind):
+    contents = {'value': ['before']}
+    mapping = defaultdict(list, contents) if kind is defaultdict else kind(contents)
+    if kind is MappingProxyType:
+        contents['root'] = mapping
+    else:
+        mapping['root'] = mapping
+    calls = []
+
+    class Root(FactorScoreModel):
+        def __init__(self, observed, *, root, value):
+            calls.append(observed)
+            assert type(observed) is kind
+            assert observed is root and observed['root'] is observed
+            assert observed['value'] is value and value == ['before']
+            super().__init__({'a': 1})
+
+    Root(mapping, **mapping)  # Independent original Python call.
+    r = request((mapping,), mapping)
+    mapping['value'].append('source mutation')
+    assert type(r.positional_arguments[0]) is kind
+    assert type(r.constructor_arguments['root']) is kind
+    r.constructor_arguments['value'].append('public mutation')
+    create_legacy_model(r, constructor_type=Root)
+    assert len(calls) == 2 and calls[0] is mapping and calls[1] is not mapping
+
+
+def test_opaque_outer_mapping_retains_identity_and_single_mapping_expansion_protocol():
+    events = []
+
+    class OpaqueMapping(Mapping):
+        def __init__(self): self.contents = {'root': self, 'value': ['before']}
+        def __iter__(self): events.append('iterate'); return iter(self.contents)
+        def __len__(self): return len(self.contents)
+        def __getitem__(self, key): events.append(('get', key)); return self.contents[key]
+        def __deepcopy__(self, memo): raise AssertionError('uncontrolled copy hook')
+
+    mapping = OpaqueMapping()
+    r = request((mapping,), mapping)
+    expected_events = list(events)
+    assert expected_events == ['iterate', ('get', 'root'), ('get', 'value')]
+    assert r.positional_arguments[0] is r.constructor_arguments['root'] is mapping
+
+    class Root(FactorScoreModel):
+        def __init__(self, observed, *, root, value):
+            assert observed is root is mapping and value == ['before']
+            super().__init__({'a': 1})
+
+    create_legacy_model(r, constructor_type=Root)
+    assert events == expected_events
 
 
 @pytest.mark.parametrize('dtype', [float, object])

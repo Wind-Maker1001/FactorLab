@@ -293,6 +293,11 @@ The supported standard mappings, list/tuple graphs and NumPy arrays retain
 their types, nested mutations, cycles and repeated-reference topology, including
 aliases across channels and references back to either outer input. Tuple cycles
 through mutable containers are closed by reusing recursively completed tuples.
+The keyword mapping is expanded once to a separate outer dict, matching Python
+call semantics. References to the source mapping inside either channel keep
+their original supported mapping type and share one copied instance; the source
+mapping must not be memoized as that separate expansion dict. Opaque source
+mappings retain their identity and their original single expansion protocol.
 No deepcopy, reduction, pickle or dynamic execution protocol is introduced.
 Array storage and supported object elements are copied; arbitrary ndarray-view
 storage overlap is not an identity relationship guaranteed by this adapter.

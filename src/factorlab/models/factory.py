@@ -417,14 +417,11 @@ class LegacyModelRequest:
             raise InvalidModelSpec("constructor_arguments must be a mapping")
         if type(positional_arguments) not in (tuple, list):
             raise InvalidModelSpec("positional_arguments must be a tuple or list")
-        # Preserve the old outer mapping protocol, but seed its identity before
-        # copying either channel, including references back to that mapping.
-        arguments = {}
-        memo = {id(constructor_arguments): (constructor_arguments, arguments)}
-        for key, value in dict(constructor_arguments).items():
-            arguments[key] = _legacy_copy(value, memo)
-        positional = _legacy_copy(positional_arguments, memo)
-        object.__setattr__(self, "_call_arguments", (positional, arguments))
+        # Python ** expansion makes a separate outer dict, whose values can
+        # still refer to the original mapping. Copy that entire call graph
+        # jointly so such references keep their own type and shared identity.
+        arguments = _legacy_copy((positional_arguments, dict(constructor_arguments)))
+        object.__setattr__(self, "_call_arguments", arguments)
 
     def _construction_arguments(self) -> tuple:
         """One fresh joint snapshot, retaining aliases between both channels."""
