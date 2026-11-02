@@ -278,6 +278,17 @@ def test_effective_observer_does_not_invent_variadic_parameter_names():
     assert result.status == 'LEGACY_ONLY_UNREPRESENTABLE' and result.strict_spec is None
 
 
+def test_pure_keyword_observer_does_not_add_subclass_signature_protocol():
+    class CustomSignature(FactorScoreModel):
+        __signature__ = 'not an inspect signature'
+    r = request(kwargs={'weights': {'a': 1}})
+    model = create_legacy_model(r, constructor_type=CustomSignature)
+    result = effective_spec_from_legacy(model, model_id='factor_score',
+        implementation_version='legacy-v1', profile_id='research_v2', request=r)
+    assert result.explicit_arguments == result.explicit_keyword_arguments == ('weights',)
+    assert result.positional_argument_names == ()
+
+
 def test_construction_never_signature_binds(monkeypatch):
     def forbidden(*a, **k): raise AssertionError('pre-binding changes Python errors')
     monkeypatch.setattr(inspect.Signature, 'bind', forbidden)

@@ -531,7 +531,7 @@ def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
         positional_parameters = tuple(
             name for name, p in signature(type(model)).parameters.items()
             if p.kind in (Parameter.POSITIONAL_ONLY, Parameter.POSITIONAL_OR_KEYWORD)
-        )
+        ) if args else ()
         positional_names = tuple(positional_parameters[i] if i < len(positional_parameters) else None
                                  for i in range(len(args)))
         explicit = tuple(name for name in positional_names if name is not None) + keyword_names
