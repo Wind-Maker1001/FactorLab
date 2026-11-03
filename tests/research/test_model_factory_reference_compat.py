@@ -204,6 +204,26 @@ def test_custom_container_hooks_never_called():
     with pytest.raises(InvalidModelSpec): TrustedLegacyReference(Hostile(a=1))
 
 
+@pytest.mark.parametrize('borrow', [False, True])
+def test_opaque_values_are_not_inspected_through_custom_class_property(borrow):
+    class Opaque:
+        @property
+        def __class__(self):
+            raise AssertionError('reference recognition invoked caller code')
+
+    opaque = Opaque()
+    weights = {'a': 1}
+    r = request(TrustedLegacyReference(weights) if borrow else weights,
+                kwargs={'opaque': opaque})
+
+    class Spy(FactorScoreModel):
+        def __init__(self, w, /, *, opaque):
+            assert type(opaque) is Opaque
+            super().__init__(w)
+
+    create_legacy_model(r, constructor_type=Spy)
+
+
 @pytest.mark.parametrize('where', ['second_positional', 'other_keyword', 'nested_list', 'nested_dict', 'borrowed_graph'])
 def test_marker_cannot_escape_to_other_slots_or_nested_values(where):
     marker = TrustedLegacyReference({'a': 1})

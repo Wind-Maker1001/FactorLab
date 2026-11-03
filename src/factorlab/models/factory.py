@@ -363,7 +363,7 @@ def _legacy_reference_memo(weights):
         if id(value) in memo:
             return
         kind = type(value)
-        if isinstance(value, TrustedLegacyReference):
+        if issubclass(kind, TrustedLegacyReference):
             raise InvalidModelSpec("reference markers must be direct weights arguments")
         if kind in (dict, OrderedDict, UserDict, defaultdict, MappingProxyType):
             memo[id(value)] = (value, value)
@@ -401,7 +401,7 @@ def _legacy_copy(value, memo=None):
     if id(value) in memo:
         return memo[id(value)][1]
     kind = type(value)
-    if isinstance(value, TrustedLegacyReference):
+    if issubclass(kind, TrustedLegacyReference):
         raise InvalidModelSpec("reference markers must be direct weights arguments")
     if kind in (dict, OrderedDict, UserDict, defaultdict):
         copied = defaultdict(value.default_factory) if kind is defaultdict else kind()
@@ -476,12 +476,12 @@ class LegacyModelRequest:
         args = positional_arguments
         borrowed = []
         for position, value in enumerate(args):
-            if isinstance(value, TrustedLegacyReference):
+            if issubclass(type(value), TrustedLegacyReference):
                 if type(value) is not TrustedLegacyReference or position != 0:
                     raise InvalidModelSpec("only direct weights arguments may borrow references")
                 borrowed.append(value.value)
         for name, value in kwargs.items():
-            if isinstance(value, TrustedLegacyReference):
+            if issubclass(type(value), TrustedLegacyReference):
                 if type(value) is not TrustedLegacyReference or name != "weights":
                     raise InvalidModelSpec("only direct weights arguments may borrow references")
                 borrowed.append(value.value)
