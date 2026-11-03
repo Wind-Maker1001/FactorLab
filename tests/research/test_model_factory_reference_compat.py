@@ -277,6 +277,18 @@ def test_borrowed_userdict_backing_and_child_aliases_are_retained():
     create_legacy_model(r, constructor_type=Spy)
 
 
+def test_borrowed_ordereddict_does_not_call_instance_shadowed_items():
+    weights = OrderedDict(a=1)
+    def forbidden(): raise AssertionError('instance-shadowed items executed')
+    weights.items = forbidden
+    r = request(TrustedLegacyReference(weights))
+    class Spy(FactorScoreModel):
+        def __init__(self, w, /):
+            assert w is weights
+            super().__init__({'a': 1})
+    create_legacy_model(r, constructor_type=Spy)
+
+
 @pytest.mark.parametrize('where', ['second_positional', 'other_keyword', 'nested_list', 'nested_dict', 'borrowed_graph'])
 def test_marker_cannot_escape_to_other_slots_or_nested_values(where):
     marker = TrustedLegacyReference({'a': 1})

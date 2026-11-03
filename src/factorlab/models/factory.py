@@ -376,7 +376,8 @@ def _legacy_reference_memo(weights):
             retain(value.data)
         elif any(kind is allowed for allowed in (dict, OrderedDict, defaultdict)):
             memo[id(value)] = (value, value)
-            for key, item in value.items():
+            items = OrderedDict.items(value) if kind is OrderedDict else dict.items(value)
+            for key, item in items:
                 retain(key)
                 retain(item)
         elif kind is tuple or kind is list:
