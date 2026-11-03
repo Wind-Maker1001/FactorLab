@@ -339,6 +339,56 @@ def create_model(spec: ValidatedModelSpec, catalog: ModelCatalogSnapshot = DEFAU
     return descriptor.build(validated.spec)
 
 
+@dataclass(frozen=True, eq=False)
+class TrustedLegacyReference:
+    """Explicitly borrow FactorScore weights from a trusted Python caller.
+
+    Only exact dict/OrderedDict roots are supported. The original constructor
+    can observe or mutate the borrowed graph. This is not a security boundary
+    against code in the same process, and is not a configuration value.
+    """
+
+    value: object = field(repr=False)
+
+    def __post_init__(self) -> None:
+        if type(self.value) not in (dict, OrderedDict):
+            raise InvalidModelSpec("trusted weights require an exact dict or OrderedDict")
+
+
+def _legacy_reference_memo(weights):
+    """Retain the borrowed graph and its aliases, without copy/reduce hooks."""
+    memo = {}
+
+    def retain(value):
+        if id(value) in memo:
+            return
+        kind = type(value)
+        if isinstance(value, TrustedLegacyReference):
+            raise InvalidModelSpec("reference markers must be direct weights arguments")
+        if kind in (dict, OrderedDict, UserDict, defaultdict, MappingProxyType):
+            memo[id(value)] = (value, value)
+            for key, item in value.items():
+                retain(key)
+                retain(item)
+        elif kind in (tuple, list):
+            memo[id(value)] = (value, value)
+            for item in value:
+                retain(item)
+        elif kind is np.ndarray:
+            memo[id(value)] = (value, value)
+            if value.dtype.names:
+                for name in value.dtype.names:
+                    if value.dtype.fields[name][0].hasobject:
+                        retain(value[name])
+            elif value.dtype.hasobject:
+                for index in np.ndindex(value.shape):
+                    retain(value[index])
+
+    for value in weights:
+        retain(value)
+    return memo
+
+
 def _legacy_copy(value, memo=None):
     """Copy inert containers without coercion or invoking user copy protocols.
 
@@ -351,6 +401,8 @@ def _legacy_copy(value, memo=None):
     if id(value) in memo:
         return memo[id(value)][1]
     kind = type(value)
+    if isinstance(value, TrustedLegacyReference):
+        raise InvalidModelSpec("reference markers must be direct weights arguments")
     if kind in (dict, OrderedDict, UserDict, defaultdict):
         copied = defaultdict(value.default_factory) if kind is defaultdict else kind()
         memo[id(value)] = (value, copied)
@@ -399,12 +451,15 @@ class LegacyModelRequest:
     feature_names, random_seed and n_jobs remain in constructor_arguments.
     Omission is distinct from explicit None. Injection is a call-time keyword
     of create_legacy_model, never serialized into this request.
+    TrustedLegacyReference explicitly borrows only approved FactorScore weights;
+    all ordinary arguments retain the defensive joint snapshot contract.
     """
 
     model_id: str
     implementation_version: str
     profile_id: str
     _call_arguments: tuple = field(repr=False, compare=False)
+    _borrowed_weights: tuple = field(repr=False, compare=False)
 
     def __init__(self, model_id: str, implementation_version: str, profile_id: str,
                  constructor_arguments: Mapping[str, object],
@@ -417,24 +472,47 @@ class LegacyModelRequest:
             raise InvalidModelSpec("constructor_arguments must be a mapping")
         if type(positional_arguments) not in (tuple, list):
             raise InvalidModelSpec("positional_arguments must be a tuple or list")
+        kwargs = dict(constructor_arguments)
+        args = positional_arguments
+        borrowed = []
+        for position, value in enumerate(args):
+            if isinstance(value, TrustedLegacyReference):
+                if type(value) is not TrustedLegacyReference or position != 0:
+                    raise InvalidModelSpec("only direct weights arguments may borrow references")
+                borrowed.append(value.value)
+        for name, value in kwargs.items():
+            if isinstance(value, TrustedLegacyReference):
+                if type(value) is not TrustedLegacyReference or name != "weights":
+                    raise InvalidModelSpec("only direct weights arguments may borrow references")
+                borrowed.append(value.value)
+        if borrowed:
+            if (model_id not in ("factor_score", "FactorScore")
+                    or implementation_version != "legacy-v1"
+                    or profile_id not in ("legacy_csi500_v1", "cross_market_fixed_v1")):
+                raise InvalidModelSpec("trusted references require FactorScore legacy-v1 and an approved legacy profile")
+            # Unwrap only the two sanctioned call slots; duplicate arguments
+            # remain duplicates and are rejected by Python at construction.
+            args = type(args)(v.value if type(v) is TrustedLegacyReference else v for v in args)
+            kwargs = {k: v.value if type(v) is TrustedLegacyReference else v for k, v in kwargs.items()}
+        object.__setattr__(self, "_borrowed_weights", tuple(borrowed))
         # Python ** expansion makes a separate outer dict, whose values can
         # still refer to the original mapping. Copy that entire call graph
         # jointly so such references keep their own type and shared identity.
-        arguments = _legacy_copy((positional_arguments, dict(constructor_arguments)))
+        arguments = _legacy_copy((args, kwargs), _legacy_reference_memo(borrowed))
         object.__setattr__(self, "_call_arguments", arguments)
 
     def _construction_arguments(self) -> tuple:
-        """One fresh joint snapshot, retaining aliases between both channels."""
-        return _legacy_copy(self._call_arguments)
+        """Fresh ordinary arguments plus explicitly borrowed weights/aliases."""
+        return _legacy_copy(self._call_arguments, _legacy_reference_memo(self._borrowed_weights))
 
     @property
     def constructor_arguments(self) -> Mapping[str, object]:
-        """A defensive public copy; original list/tuple/array/weights types survive."""
+        """Defensive outer copy; explicitly borrowed weights remain live."""
         return MappingProxyType(self._construction_arguments()[1])
 
     @property
     def positional_arguments(self) -> tuple | list:
-        """A defensive copy with the original sequence and element types."""
+        """Defensive outer sequence; explicitly borrowed weights remain live."""
         return self._construction_arguments()[0]
 
 
