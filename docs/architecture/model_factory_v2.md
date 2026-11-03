@@ -421,12 +421,16 @@ profile and parameter names alone never disable copying. Markers in other slots
 or nested supported containers are rejected. Registered original class/subclass
 requirements and catalog checks remain in force.
 
-The borrowed graph is live. Its supported inert containers (the same container
-kinds traversed by the existing copier), cycles and aliases are retained, including
+The borrowed graph is live. Its supported inert containers, cycles and aliases are retained, including
 aliases reached from other arguments. This is an intentional consequence of
 borrowing one object graph. Unrelated mutable arguments still have independent
 snapshots. Opaque leaves retain the existing trusted Python semantics; no custom
 copy, deepcopy, pickle, reduce or import protocol is used by reference handling.
+Borrowed graphs reject MappingProxyType, whose backing mapping can execute user
+code, and UserDict with backing other than exact dict/OrderedDict. Exact UserDict
+backing aliases are retained. Type recognition uses actual class identity without
+custom __class__ attributes or metaclass equality. Ordinary request support for
+all existing container kinds remains unchanged.
 Arbitrary ndarray view storage overlap is subject to the existing limitation.
 Public argument properties copy their outer channels but return the original
 borrowed weights and their aliases. Requests hold strong references until they

@@ -224,6 +224,59 @@ def test_opaque_values_are_not_inspected_through_custom_class_property(borrow):
     create_legacy_model(r, constructor_type=Spy)
 
 
+@pytest.mark.parametrize('as_root', [False, True])
+def test_reference_type_checks_do_not_execute_custom_metaclass_equality(as_root):
+    class Meta(type):
+        def __eq__(cls, other):
+            raise AssertionError('type equality invoked caller code')
+    class Opaque(metaclass=Meta):
+        pass
+    opaque = Opaque()
+    if as_root:
+        with pytest.raises(InvalidModelSpec, match='exact dict or OrderedDict'):
+            TrustedLegacyReference(opaque)
+    else:
+        weights = {'a': opaque}
+        r = request(TrustedLegacyReference(weights))
+        class Spy(FactorScoreModel):
+            def __init__(self, w, /):
+                assert w is weights and w['a'] is opaque
+                super().__init__({'a': 1})
+        create_legacy_model(r, constructor_type=Spy)
+
+
+def test_borrowed_mapping_proxy_is_rejected_without_executing_hidden_mapping():
+    from collections.abc import Mapping
+    class Hostile(Mapping):
+        def __getitem__(self, key): raise AssertionError('mapping lookup')
+        def __iter__(self): raise AssertionError('mapping iteration')
+        def __len__(self): raise AssertionError('mapping length')
+    weights = {'a': MappingProxyType(Hostile())}
+    with pytest.raises(InvalidModelSpec, match='mapping proxies'):
+        request(TrustedLegacyReference(weights))
+
+
+def test_borrowed_userdict_rejects_dynamic_backing_without_executing_it():
+    from collections.abc import Mapping
+    class Hostile(Mapping):
+        def __getitem__(self, key): raise AssertionError('mapping lookup')
+        def __iter__(self): raise AssertionError('mapping iteration')
+        def __len__(self): raise AssertionError('mapping length')
+    child = UserDict(); child.data = Hostile()
+    with pytest.raises(InvalidModelSpec, match='backing'):
+        request(TrustedLegacyReference({'a': child}))
+
+
+def test_borrowed_userdict_backing_and_child_aliases_are_retained():
+    child = UserDict(a=[1]); weights = {'a': child}
+    r = request(TrustedLegacyReference(weights), kwargs={'backing': child.data, 'alias': child['a']})
+    class Spy(FactorScoreModel):
+        def __init__(self, w, /, *, backing, alias):
+            assert w is weights and backing is child.data and alias is child['a']
+            super().__init__({'a': 1})
+    create_legacy_model(r, constructor_type=Spy)
+
+
 @pytest.mark.parametrize('where', ['second_positional', 'other_keyword', 'nested_list', 'nested_dict', 'borrowed_graph'])
 def test_marker_cannot_escape_to_other_slots_or_nested_values(where):
     marker = TrustedLegacyReference({'a': 1})

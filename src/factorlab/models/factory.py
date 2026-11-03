@@ -351,7 +351,7 @@ class TrustedLegacyReference:
     value: object = field(repr=False)
 
     def __post_init__(self) -> None:
-        if type(self.value) not in (dict, OrderedDict):
+        if type(self.value) is not dict and type(self.value) is not OrderedDict:
             raise InvalidModelSpec("trusted weights require an exact dict or OrderedDict")
 
 
@@ -365,12 +365,21 @@ def _legacy_reference_memo(weights):
         kind = type(value)
         if issubclass(kind, TrustedLegacyReference):
             raise InvalidModelSpec("reference markers must be direct weights arguments")
-        if kind in (dict, OrderedDict, UserDict, defaultdict, MappingProxyType):
+        if kind is MappingProxyType:
+            # A proxy can hide an arbitrary user-defined Mapping; traversing
+            # it could execute caller code. Ordinary snapshots are unchanged.
+            raise InvalidModelSpec("borrowed weights graphs cannot contain mapping proxies")
+        if kind is UserDict:
+            if type(value.data) is not dict and type(value.data) is not OrderedDict:
+                raise InvalidModelSpec("borrowed UserDict requires an exact dict or OrderedDict backing")
+            memo[id(value)] = (value, value)
+            retain(value.data)
+        elif any(kind is allowed for allowed in (dict, OrderedDict, defaultdict)):
             memo[id(value)] = (value, value)
             for key, item in value.items():
                 retain(key)
                 retain(item)
-        elif kind in (tuple, list):
+        elif kind is tuple or kind is list:
             memo[id(value)] = (value, value)
             for item in value:
                 retain(item)
