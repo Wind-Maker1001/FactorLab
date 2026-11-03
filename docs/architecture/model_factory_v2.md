@@ -376,6 +376,87 @@ The final evidence and delivery report, rather than older main or Phase 1 runs,
 determine this candidate's acceptance. Build/install checks run on an external
 copy so generated packaging files never expand this change's three-file scope.
 
+## P2-01E: explicit borrowed FactorScore weights
+
+`TrustedLegacyReference(weights)` is a trusted Python call marker. It is accepted
+only as positional argument zero or the direct `weights` keyword of a
+`LegacyModelRequest` for `factor_score` (or `FactorScore`), `legacy-v1`, and
+`legacy_csi500_v1` or `cross_market_fixed_v1`. The borrowed root must be an exact
+`dict` or `OrderedDict`; subclasses, other mappings and arbitrary root objects
+are rejected. This deliberately small initial contract covers the P2-02/P2-03
+calls. It does not add a string/configuration switch or change strict V2 APIs.
+
+```python
+from factorlab.models.factory import (
+    LegacyModelRequest, TrustedLegacyReference, create_legacy_model,
+)
+
+# P2-02 capability probe: the normalization keyword remains explicit.
+request = LegacyModelRequest(
+    "factor_score", "legacy-v1", "legacy_csi500_v1",
+    {"normalize_by_absolute_weight": value},
+    (TrustedLegacyReference(runner.factor_weights),),
+)
+first = create_legacy_model(request, constructor_type=FactorScoreModel)
+second = create_legacy_model(request, constructor_type=FactorScoreModel)
+
+# P2-03 capability probe: normalization remains omitted.
+request = LegacyModelRequest(
+    "factor_score", "legacy-v1", "cross_market_fixed_v1", {},
+    (TrustedLegacyReference(weights),),
+)
+```
+
+The marker is removed before the native constructor call. Both constructor
+entries receive the original object, including a positional-only subclass.
+Keyword/positional duplicates still reach Python's native argument handling;
+there is one constructor call and no retry or fallback. Native value validation,
+exceptions and causes remain at construction. Effective-spec observation retains
+its existing meaning and introduces no new fields.
+
+Ordinary requests continue to freeze one joint argument graph at request creation
+and make a fresh joint copy for each construction. Four/five argument request
+initialization is unchanged. Only an explicit marker opts into borrowing; model,
+profile and parameter names alone never disable copying. Markers in other slots
+or nested supported containers are rejected. Registered original class/subclass
+requirements and catalog checks remain in force.
+
+The borrowed graph is live. Its supported inert containers, cycles and aliases are retained, including
+aliases reached from other arguments. This is an intentional consequence of
+borrowing one object graph. Unrelated mutable arguments still have independent
+snapshots. Opaque leaves retain the existing trusted Python semantics; no custom
+copy, deepcopy, pickle, reduce or import protocol is used by reference handling.
+Borrowed graphs reject MappingProxyType, whose backing mapping can execute user
+code, and UserDict with backing other than exact dict/OrderedDict. Exact UserDict
+backing aliases are retained. Type recognition uses actual class identity without
+custom __class__ attributes or metaclass equality. Ordinary request support for
+all existing container kinds remains unchanged.
+Arbitrary ndarray view storage overlap is subject to the existing limitation.
+Public argument properties copy their outer channels but return the original
+borrowed weights and their aliases. Requests hold strong references until they
+are released; retained constructor arguments and exception tracebacks can extend
+the lifetime, just as with direct calls. There is no global reference cache.
+
+Mutating the original object after request creation affects later constructions.
+A native constructor or legal Spy may mutate it, and a failure does not roll that
+mutation back. Callers must manage concurrent mutation and object lifetime.
+FactorScoreModel itself continues to construct its own OrderedDict; its internal
+state, numerical behavior and original-class artifact format are unchanged.
+
+Profile names are routing restrictions, not authentication credentials. A trusted
+caller already owns the object and can invoke Python constructors. This API is
+not isolation from malicious code in the same process and is not intended for
+untrusted serialized configuration.
+
+P2-01E changes the public factory only. P2-02 remains BLOCKED at its existing
+candidate; P2-03 requires renewed reference-identity review. Passing independent
+call probes does not accept either migration. Keep both PRs unmerged. After
+external review and merge of P2-01E, freeze B3 from the actual new main, then
+resume and independently validate both migrations plus their combination. B2 and
+all frozen comparators, Oracle inputs and historical failure receipts remain
+unchanged. Roll back by reverting the P2-01E commit; any future dependent caller
+migrations must be reverted first. No B3 freeze is performed here.
+
 ## Next migration boundaries
 
 After P2-01C is reviewed, accepted and merged, P2-02 can adapt the old
