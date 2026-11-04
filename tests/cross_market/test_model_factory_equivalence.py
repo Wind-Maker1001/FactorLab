@@ -12,7 +12,6 @@ import pytest
 
 from factorlab.cross_market import research as cm
 from factorlab.cross_market.contracts import ContractError
-from factorlab.models.factory import TrustedLegacyReference
 from factorlab.models import (
     FactorScoreModel, RidgeResearchModel, LightGBMResearchModel, XGBoostResearchModel,
 )
@@ -120,7 +119,8 @@ def test_request_profile_explicit_keys_module_binding_and_one_construction(monke
     expected = set() if name == 'FactorScore' else {'feature_names'}
     if name == 'FactorScore':
         assert len(request.positional_arguments) == 1
-        assert isinstance(request.positional_arguments[0], TrustedLegacyReference)
+        assert request.positional_arguments[0] is calls[0][0][0]
+        assert request.positional_arguments[0] == {n: (-1.0 if n.startswith(('REV', 'VOL', 'AMIHU')) else 1.0) for n in NAMES}
         assert calls[0][1] == {}
     else:
         assert request.positional_arguments == ()
