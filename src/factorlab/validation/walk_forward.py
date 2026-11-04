@@ -24,6 +24,7 @@ from factorlab.metrics.prediction import (
     evaluate_predictions,
 )
 from factorlab.models.factor_score import FactorScoreModel
+from factorlab.models.factory import LegacyModelRequest, TrustedLegacyReference, create_legacy_model
 from factorlab.models.lightgbm import LightGBMResearchModel
 from factorlab.models.ridge import RidgeResearchModel
 from factorlab.models.xgboost import XGBoostResearchModel
@@ -430,18 +431,22 @@ class WalkForwardRunner:
         # Validate tree parameter types before any fold starts.  Construction
         # does not import the optional native packages; those remain lazy.
         for candidate in self.lightgbm_candidates:
-            LightGBMResearchModel(
-                feature_names=self.feature_names,
-                random_seed=self.random_seed,
-                n_jobs=self.lightgbm_n_jobs,
-                **candidate
+            create_legacy_model(
+                LegacyModelRequest(
+                    "lightgbm", "legacy-v1", "legacy_csi500_v1",
+                    dict(feature_names=self.feature_names, random_seed=self.random_seed,
+                         n_jobs=self.lightgbm_n_jobs, **candidate),
+                ),
+                constructor_type=LightGBMResearchModel,
             )
         for candidate in self.xgboost_candidates:
-            XGBoostResearchModel(
-                feature_names=self.feature_names,
-                random_seed=self.random_seed,
-                n_jobs=self.xgboost_n_jobs,
-                **candidate
+            create_legacy_model(
+                LegacyModelRequest(
+                    "xgboost", "legacy-v1", "legacy_csi500_v1",
+                    dict(feature_names=self.feature_names, random_seed=self.random_seed,
+                         n_jobs=self.xgboost_n_jobs, **candidate),
+                ),
+                constructor_type=XGBoostResearchModel,
             )
 
     @staticmethod
@@ -886,32 +891,42 @@ class WalkForwardRunner:
 
         for order, (candidate_name, alpha, parameters) in enumerate(specifications):
             if self.model_name == "ridge":
-                model = RidgeResearchModel(
-                    alpha=float(alpha),
-                    feature_names=self.feature_names,
-                    fit_intercept=self.ridge_fit_intercept,
-                    random_seed=self.random_seed,
-                    max_iter=self.ridge_max_iter,
-                    tolerance=self.ridge_tolerance,
+                model = create_legacy_model(
+                    LegacyModelRequest(
+                        "ridge", "legacy-v1", "legacy_csi500_v1",
+                        dict(alpha=float(alpha), feature_names=self.feature_names,
+                             fit_intercept=self.ridge_fit_intercept,
+                             random_seed=self.random_seed, max_iter=self.ridge_max_iter,
+                             tolerance=self.ridge_tolerance),
+                    ),
+                    constructor_type=RidgeResearchModel,
                 )
             elif self.model_name == "factor_score":
-                model = FactorScoreModel(
-                    self.factor_weights,
-                    normalize_by_absolute_weight=self.normalize_by_absolute_weight,
+                model = create_legacy_model(
+                    LegacyModelRequest(
+                        "factor_score", "legacy-v1", "legacy_csi500_v1",
+                        dict(normalize_by_absolute_weight=self.normalize_by_absolute_weight),
+                        positional_arguments=(TrustedLegacyReference(self.factor_weights),),
+                    ),
+                    constructor_type=FactorScoreModel,
                 )
             elif self.model_name == "lightgbm":
-                model = LightGBMResearchModel(
-                    feature_names=self.feature_names,
-                    random_seed=self.random_seed,
-                    n_jobs=self.lightgbm_n_jobs,
-                    **parameters
+                model = create_legacy_model(
+                    LegacyModelRequest(
+                        "lightgbm", "legacy-v1", "legacy_csi500_v1",
+                        dict(feature_names=self.feature_names, random_seed=self.random_seed,
+                             n_jobs=self.lightgbm_n_jobs, **parameters),
+                    ),
+                    constructor_type=LightGBMResearchModel,
                 )
             else:
-                model = XGBoostResearchModel(
-                    feature_names=self.feature_names,
-                    random_seed=self.random_seed,
-                    n_jobs=self.xgboost_n_jobs,
-                    **parameters
+                model = create_legacy_model(
+                    LegacyModelRequest(
+                        "xgboost", "legacy-v1", "legacy_csi500_v1",
+                        dict(feature_names=self.feature_names, random_seed=self.random_seed,
+                             n_jobs=self.xgboost_n_jobs, **parameters),
+                    ),
+                    constructor_type=XGBoostResearchModel,
                 )
             model.fit(
                 train.loc[:, self.feature_names],
