@@ -49,12 +49,19 @@ def action_candidates(projection, symbol, observed_at):
     Each fact keeps full physical provenance and raw terms. Unsupported types
     remain explicit OTHER candidates; no capital-stock total becomes a split.
     """
+    for schema in projection.metrics["schemas"].values():
+        fields, units = schema["headers"], schema["units"]
+        if ("Amount" not in fields or units[fields.index("Amount")] != "元或股"
+                or "Roprc" not in fields or units[fields.index("Roprc")] != "元/股"):
+            fail("unreviewed distribution field units")
     events = []
     for record, origin in zip(projection.native.to_dict("records"), projection.lineage.to_dict("records")):
         market = str(int(number(record.get("Markettype"), integral=True)))
         if profiles.MARKETS.get(market) != symbol.split(".")[1]:
             fail("corporate action market identity differs")
         cash = record.get("Disttyp") == "CA"
+        if cash:
+            number(record.get("Amount"))  # Exact native numeric domain validation.
         event = CorporateAction(
             security_id=symbol, event_id="csmar:" + sha256(json_bytes([record, origin])), revision=1,
             event_type="CASH_DIVIDEND" if cash else "OTHER", effective_date=record["Exdistdt"],

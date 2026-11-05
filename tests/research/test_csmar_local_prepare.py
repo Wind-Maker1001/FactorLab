@@ -113,7 +113,8 @@ def test_action_candidate_keeps_original_coordinates_without_invented_record_dat
                   Annodt="2018-06-12", Paydt="2018-06-21", Amount="0.06074", Roprc="0")
     origin = dict(source_sha256="a" * 64, member="TRDNEW_Cptl.xlsx", member_sha256="b" * 64,
                   sheet="sheet1", row_number=45, native_values_sha256=sha256(json_bytes(record)))
-    projection = Projection(pd.DataFrame(), pd.DataFrame([record]), pd.DataFrame([origin]), {})
+    projection = Projection(pd.DataFrame(), pd.DataFrame([record]), pd.DataFrame([origin]),
+                            {"schemas": {"sheet1": {"headers": ["Amount", "Roprc"], "units": ["元或股", "元/股"]}}})
     candidate = action_candidates(projection, "601857.SH", "2026-11-05T04:00:00Z")[0]
     assert candidate["event"]["record_date"] is None
     assert str(candidate["event"]["cash"]) == "0.06074"
@@ -121,6 +122,12 @@ def test_action_candidate_keeps_original_coordinates_without_invented_record_dat
     assert candidate["event"]["pay_date"] == "2018-06-21"
     assert candidate["origin"] == origin
     assert candidate["tax_status"] == "UNKNOWN"
+    projection.native.loc[0, "Amount"] = "-1"
+    with pytest.raises(DataQualityError, match="numeric"):
+        action_candidates(projection, "601857.SH", "2026-11-05T04:00:00Z")
+    projection.metrics["schemas"]["sheet1"]["units"][0] = "per ten shares"
+    with pytest.raises(DataQualityError, match="units"):
+        action_candidates(projection, "601857.SH", "2026-11-05T04:00:00Z")
 
 
 def test_raw_root_can_never_be_scratch_or_output(tmp_path):
