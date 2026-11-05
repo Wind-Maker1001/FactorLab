@@ -109,7 +109,7 @@ def test_unreviewed_signal_price_status_or_exchange_fail(tmp_path, monkeypatch, 
 
 
 def test_action_candidate_keeps_original_coordinates_without_invented_record_date():
-    record = dict(Stkcd="601857", Disttyp="CA", Exdistdt="2018-06-21", Markettype="1",
+    record = dict(Stkcd="601857", Disttyp="CA", Exdistdt="2018-06-21", Markettype="1.0",
                   Annodt="2018-06-12", Paydt="2018-06-21", Amount="0.06074", Roprc="0")
     origin = dict(source_sha256="a" * 64, member="TRDNEW_Cptl.xlsx", member_sha256="b" * 64,
                   sheet="sheet1", row_number=45, native_values_sha256=sha256(json_bytes(record)))

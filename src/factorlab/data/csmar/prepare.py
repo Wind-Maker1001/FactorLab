@@ -51,7 +51,8 @@ def action_candidates(projection, symbol, observed_at):
     """
     events = []
     for record, origin in zip(projection.native.to_dict("records"), projection.lineage.to_dict("records")):
-        if profiles.MARKETS.get(record.get("Markettype")) != symbol.split(".")[1]:
+        market = str(int(number(record.get("Markettype"), integral=True)))
+        if profiles.MARKETS.get(market) != symbol.split(".")[1]:
             fail("corporate action market identity differs")
         cash = record.get("Disttyp") == "CA"
         event = CorporateAction(
@@ -59,7 +60,7 @@ def action_candidates(projection, symbol, observed_at):
             event_type="CASH_DIVIDEND" if cash else "OTHER", effective_date=record["Exdistdt"],
             announced_at=record.get("Annodt"), available_at=observed_at,
             source_id="CSMAR_TRDNEW_Cptl_CANDIDATE", source_sha256=origin["source_sha256"],
-            cash=Decimal(str(record["Amount"])) if cash else None,
+            cash=Decimal(record["Amount"]) if cash else None,
             pay_date=record.get("Paydt"), currency="CNY", record_date=None,
             original_terms=json_bytes(record).decode("ascii").strip())
         events.append(dict(event=asdict(event), origin=origin,
