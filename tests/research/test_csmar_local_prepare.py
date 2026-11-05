@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from factorlab.data.csmar import profiles
-from factorlab.data.csmar.catalog import catalog_source, references
+from factorlab.data.csmar.catalog import catalog_source, operator_paths, references
 from factorlab.data.csmar.prepare import action_candidates, market_candidate, prepare
 from factorlab.data.csmar.binding import Projection, replay
 from factorlab.data.evidence import json_bytes, sha256
@@ -121,3 +121,11 @@ def test_action_candidate_keeps_original_coordinates_without_invented_record_dat
     assert candidate["event"]["pay_date"] == "2018-06-21"
     assert candidate["origin"] == origin
     assert candidate["tax_status"] == "UNKNOWN"
+
+
+def test_raw_root_can_never_be_scratch_or_output(tmp_path):
+    root = tmp_path / "raw"; root.mkdir()
+    for scratch, output in [(root, tmp_path / "out"), (tmp_path, root / "out"), (tmp_path, root)]:
+        with pytest.raises(DataQualityError, match="outside original"):
+            operator_paths(root, scratch, output)
+    assert not (root / "out").exists()

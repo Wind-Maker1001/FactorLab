@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-from .catalog import catalog_source, write_json
+from .catalog import catalog_source, operator_paths, write_json
 
 
 def main():
@@ -32,6 +32,7 @@ def main():
                        start=args.start, end=args.end, warmup_start=args.warmup_start)
         print(path)
         return
+    args.source_root, args.scratch, args.output = operator_paths(args.source_root, args.scratch, args.output)
     args.output.mkdir(parents=True, exist_ok=False)
     paths = sorted(args.source_root.glob("*.zip"))
     if args.source_name:

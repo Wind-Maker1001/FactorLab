@@ -13,7 +13,7 @@ from factorlab.data.tdx import safe_path
 from factorlab.errors import DataQualityError
 from . import profiles
 from .binding import number, replay, runtime
-from .catalog import references, write_json
+from .catalog import operator_paths, references, write_json
 
 
 def market_candidate(projection, symbol):
@@ -73,10 +73,7 @@ def prepare(catalog, *, source_root, scratch, output, symbol, start, end, warmup
     symbol = normalize_symbol(symbol)
     if not date(warmup_start) < date(start) <= date(end):
         fail("explicit preceding warmup and ordered research range required")
-    root = safe_path(Path(source_root))
-    destination = safe_path(Path(output))
-    if destination == root or root in destination.parents:
-        fail("candidate output must be outside original source root")
+    root, scratch, destination = operator_paths(source_root, scratch, output)
     destination.mkdir(parents=True, exist_ok=False)
     for name in ("market", "corporate_actions", "calendar", "provenance", "diagnostics"):
         (destination / name).mkdir()

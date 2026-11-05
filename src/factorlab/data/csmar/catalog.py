@@ -12,6 +12,16 @@ from . import native, profiles
 from .binding import reference, scope
 
 
+def operator_paths(source_root, scratch, output):
+    """Reject scratch/output writes anywhere inside the original-data root."""
+    root, temporary, destination = [safe_path(Path(p)) for p in (source_root, scratch, output)]
+    if not root.is_dir() or not temporary.is_dir():
+        fail("existing source and scratch directories required")
+    if any(p == root or root in p.parents for p in (temporary, destination)):
+        fail("scratch and candidate output must be outside original source root")
+    return root, temporary, destination
+
+
 def file_sha256(path):
     with Path(path).open("rb") as stream:
         return native.digest_stream(stream)
