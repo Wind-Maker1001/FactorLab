@@ -33,6 +33,9 @@ Ridge、LightGBM、XGBoost，输出 Fast/Execution 回测、统计、图表、�
 
 ## 文档与证据
 
+* [独立双均线策略、目标仓位执行与合成回测](docs/strategies/DUAL_MA.md)、
+  [中国石油2018年真实数据阻塞报告](docs/strategies/DUAL_MA_2018_DATA_STATUS.md)。
+  无需训练模型；真实收益仍受原有准入及公司行为账本限制。
 * [安装、Windows/Linux、四模型教程、数据 Schema、自定义因子与结果解释](docs/user/GUIDE.md)
 * [贡献指南](CONTRIBUTING.md) 与 [安全与准入边界](SECURITY.md)
 * [迁移审计](docs/migration/BASELINE_AUDIT.md)、[依赖边界](docs/migration/EXTRACTION_DEPENDENCY_GRAPH.md)

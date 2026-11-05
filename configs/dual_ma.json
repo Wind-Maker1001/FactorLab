@@ -1,0 +1,13 @@
+{
+  "symbol": "601857.SH",
+  "start": "2018-01-01",
+  "end": "2018-12-31",
+  "short_window": 5,
+  "long_window": 20,
+  "initial_cash": 100000.0,
+  "max_weight": 1.0,
+  "board_lot": 100,
+  "allow_short": false,
+  "signal_frequency": "daily",
+  "execution_timing": "next_open"
+}
