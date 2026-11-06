@@ -7,6 +7,7 @@ import time
 import numpy as np
 import pandas as pd
 from factorlab.models import FactorScoreModel, RidgeResearchModel, LightGBMResearchModel, XGBoostResearchModel
+from factorlab.models.factory import LegacyModelRequest, TrustedLegacyReference, create_legacy_model
 from factorlab.validation.splitter import ExpandingWalkForwardSplitter
 from factorlab.portfolio.topk import rebalance_dates
 from factorlab.errors import SchemaError
@@ -82,13 +83,25 @@ def execution_eligibility(pred, bars, adapter, spec, benchmark):
 
 def make_model(name, names, estimators=40):
     if name == 'FactorScore':
-        return FactorScoreModel({n: (-1.0 if n.startswith(('REV', 'VOL', 'AMIHU')) else 1.0) for n in names})
+        weights = {n: (-1.0 if n.startswith(('REV', 'VOL', 'AMIHU')) else 1.0) for n in names}
+        return create_legacy_model(LegacyModelRequest(
+            'factor_score', 'legacy-v1', 'cross_market_fixed_v1', {},
+            positional_arguments=(TrustedLegacyReference(weights),)),
+            constructor_type=FactorScoreModel)
     if name == 'Ridge':
-        return RidgeResearchModel(feature_names=names)
+        return create_legacy_model(LegacyModelRequest(
+            'Ridge', 'legacy-v1', 'cross_market_fixed_v1', {'feature_names': names}),
+            constructor_type=RidgeResearchModel)
     if name == 'LightGBM':
-        return LightGBMResearchModel(feature_names=names, n_estimators=estimators, n_jobs=1)
+        return create_legacy_model(LegacyModelRequest(
+            'LightGBM', 'legacy-v1', 'cross_market_fixed_v1',
+            {'feature_names': names, 'n_estimators': estimators, 'n_jobs': 1}),
+            constructor_type=LightGBMResearchModel)
     if name == 'XGBoost':
-        return XGBoostResearchModel(feature_names=names, n_estimators=estimators, n_jobs=1)
+        return create_legacy_model(LegacyModelRequest(
+            'XGBoost', 'legacy-v1', 'cross_market_fixed_v1',
+            {'feature_names': names, 'n_estimators': estimators, 'n_jobs': 1}),
+            constructor_type=XGBoostResearchModel)
     raise ContractError('unknown model')
 
 
