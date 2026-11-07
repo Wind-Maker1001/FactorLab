@@ -1,0 +1,62 @@
+{
+  "python": "3.13.9",
+  "runs": [
+    {
+      "scope": "new",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 174.84,
+      "exit_code": 0,
+      "xml_sha256": "eb9fbdef38a4497190186b2dd0e3b86c504d610d6d6e1b2b5faa003fb28b1d07"
+    },
+    {
+      "scope": "regression",
+      "tests": 81,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 162.282,
+      "exit_code": 0,
+      "xml_sha256": "dc9c2a3c2144acb7596a0d56732bda92f5b18196c933b326413bfa3469593ed5"
+    }
+  ],
+  "development_failures": [
+    {
+      "scope": "first collection",
+      "exit_code": 2,
+      "reason": "test helper import needed tests.research package path"
+    },
+    {
+      "scope": "first execution",
+      "exit_code": 1,
+      "failed": 6,
+      "passed": 6,
+      "reason": "_PreparedFactors API requires list, not tuple"
+    },
+    {
+      "scope": "second execution",
+      "exit_code": 1,
+      "failed": 2,
+      "passed": 10,
+      "reason": "machine-scale IC std produced unstable finite ICIR on CSV round trip; now explicit undefined <=1e-12"
+    }
+  ],
+  "demo_exit_code": 0,
+  "core_algorithms_and_financial_gates_unchanged": true,
+  "base_commit": "d3f5aae7f451e268a0f05dcded5b8726dce39da4",
+  "base_tree": "dfc9a33b6565a00ea782bebb503ffec9a70c341b",
+  "branch": "feat/p2-08-factor-selection-ablation",
+  "git_author": "Wind-Maker1001",
+  "git_email": "88176063+Wind-Maker1001@users.noreply.github.com",
+  "unchanged_core_sha256": {
+    "src/factorlab/validation/walk_forward.py": "0fa74574784e8f96c7d96655bce70135b3d9e25e04b195d09d4db751352283d2",
+    "src/factorlab/validation/factor_selection.py": "27ea5ad9a087f8e923ce3260de5ec281d27a4988dc8e97f18161f96b4269d784",
+    "src/factorlab/validation/splitter.py": "c21cb6c3d4189833ae83ef8c905591a2421931b148a583b782149d115699bee1",
+    "src/factorlab/dataset/builder.py": "058519344e0c8b275314d26e2355d19e87b06f3d35b0840f3a8812f725e1f704",
+    "src/factorlab/models/factor_score.py": "82b545275b19fda5df6339dfbd26964ee88e0a9a737e94e2660e6b753655c588",
+    "src/factorlab/models/ridge.py": "c4d118d93804fb671fa46c4b04a951db5012418d9e7e22ca7190d473fb390ece",
+    "src/factorlab/models/lightgbm.py": "b5ea1f8082916dd5667d0cc98c297d48b45b20515a4823d56e72ee769e81d05c",
+    "src/factorlab/models/xgboost.py": "5b6be8a863a02f58fd26a6342b5ceabd0fa9adc5c2dbf20d69c3cad0140d7f58",
+    "src/factorlab/data/admission.py": "ac3c38f2f04ec2964f9596c2a23f8fcc7978ccae9a41e71352ca58ddc717b9eb"
+  }
+}
