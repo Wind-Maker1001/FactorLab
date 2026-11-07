@@ -29,6 +29,10 @@ class Factor(ABC):
     def compute(self, bars: pd.DataFrame) -> pd.Series:
         """Return values indexed like ``bars``."""
 
+    def _compute_ordered(self, ordered: pd.DataFrame) -> pd.Series:
+        """Internal batch hook; only trusted built-ins override this method."""
+        return self.compute(ordered)
+
 
 def grouped_shift(series: pd.Series, symbols: pd.Series, periods: int) -> pd.Series:
     return series.groupby(symbols, sort=False).shift(periods)

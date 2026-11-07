@@ -15,7 +15,9 @@ class TrendFactor(Factor):
         self.lookback = 60 if name == "MA20_MA60" else 20
 
     def compute(self, bars: pd.DataFrame) -> pd.Series:
-        ordered = self.validate(bars)
+        return self._compute_ordered(self.validate(bars)).reindex(bars.index)
+
+    def _compute_ordered(self, ordered: pd.DataFrame) -> pd.Series:
         close = ordered["adj_close"]
         symbols = ordered["symbol"]
         ma20 = rolling_transform(close, symbols, 20, "mean")
@@ -27,4 +29,4 @@ class TrendFactor(Factor):
         else:
             ma60 = rolling_transform(close, symbols, 60, "mean")
             value = ma20 / ma60.mask(ma60 == 0) - 1.0
-        return value.replace([np.inf, -np.inf], np.nan).reindex(bars.index).rename(self.name)
+        return value.replace([np.inf, -np.inf], np.nan).rename(self.name)

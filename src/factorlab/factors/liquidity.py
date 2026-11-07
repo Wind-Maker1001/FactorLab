@@ -15,11 +15,13 @@ class TurnoverFactor(Factor):
         self.lookback = self.days
 
     def compute(self, bars: pd.DataFrame) -> pd.Series:
-        ordered = self.validate(bars)
+        return self._compute_ordered(self.validate(bars)).reindex(bars.index)
+
+    def _compute_ordered(self, ordered: pd.DataFrame) -> pd.Series:
         value = rolling_transform(
             ordered["turnover"], ordered["symbol"], self.days, "mean"
         )
-        return value.reindex(bars.index).rename(self.name)
+        return value.rename(self.name)
 
 
 class VolumeRatioFactor(Factor):
@@ -28,11 +30,13 @@ class VolumeRatioFactor(Factor):
     required_columns = ("date", "symbol", "volume")
 
     def compute(self, bars: pd.DataFrame) -> pd.Series:
-        ordered = self.validate(bars)
+        return self._compute_ordered(self.validate(bars)).reindex(bars.index)
+
+    def _compute_ordered(self, ordered: pd.DataFrame) -> pd.Series:
         ma5 = rolling_transform(ordered["volume"], ordered["symbol"], 5, "mean")
         ma20 = rolling_transform(ordered["volume"], ordered["symbol"], 20, "mean")
         value = ma5 / ma20.mask(ma20 == 0)
-        return value.replace([np.inf, -np.inf], np.nan).reindex(bars.index).rename(self.name)
+        return value.replace([np.inf, -np.inf], np.nan).rename(self.name)
 
 
 class AmihudFactor(Factor):
@@ -41,10 +45,12 @@ class AmihudFactor(Factor):
     required_columns = ("date", "symbol", "adj_close", "amount")
 
     def compute(self, bars: pd.DataFrame) -> pd.Series:
-        ordered = self.validate(bars)
+        return self._compute_ordered(self.validate(bars)).reindex(bars.index)
+
+    def _compute_ordered(self, ordered: pd.DataFrame) -> pd.Series:
         returns = daily_return(ordered["adj_close"], ordered["symbol"]).abs()
         amount = ordered["amount"].where(ordered["amount"] > 0)
         impact = returns / amount * 1.0e8
         impact = impact.replace([np.inf, -np.inf], np.nan)
         value = rolling_transform(impact, ordered["symbol"], 20, "mean")
-        return value.reindex(bars.index).rename(self.name)
+        return value.rename(self.name)
