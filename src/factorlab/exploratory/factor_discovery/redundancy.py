@@ -93,7 +93,7 @@ def original_structure_hashes(config=DiscoveryConfig()):
 
 
 def diagnose_redundancy(
-    frame, candidates, originals, config=DiscoveryConfig(), deadline=None
+    frame, candidates, originals, config=DiscoveryConfig(), deadline=None, *, summary_only=False
 ):
     names = list(candidates) + list(originals)
     if len(names) != len(set(names)) or not set(["date", "symbol"] + names).issubset(
@@ -113,7 +113,8 @@ def diagnose_redundancy(
         (i, j) for i, j in combinations(range(len(names)), 2) if i < len(candidates)
     ]
     count = len(pairs)
-    if local["date"].nunique() * count > config.max_diagnostic_records:
+    # Summary-only callers retain O(factors**2) evidence, without daily rows.
+    if not summary_only and local["date"].nunique() * count > config.max_diagnostic_records:
         raise DiscoveryError(
             ErrorCode.BUDGET_EXCEEDED, "redundancy diagnostic record limit"
         )
@@ -166,17 +167,18 @@ def diagnose_redundancy(
                 valid_dates[index] += 1
                 signed[index] += value
                 absolute[index] += abs(value)
-            daily_rows.append(
-                {
-                    "date": date,
-                    "left": names[i],
-                    "right": names[j],
-                    "observations": paired,
-                    "pair_coverage": coverage,
-                    "pearson": value,
-                    "same_values_and_missing_mask": bool(same),
-                }
-            )
+            if not summary_only:
+                daily_rows.append(
+                    {
+                        "date": date,
+                        "left": names[i],
+                        "right": names[j],
+                        "observations": paired,
+                        "pair_coverage": coverage,
+                        "pearson": value,
+                        "same_values_and_missing_mask": bool(same),
+                    }
+                )
     dates = local["date"].nunique()
     summary = []
     for index, (i, j) in enumerate(pairs):

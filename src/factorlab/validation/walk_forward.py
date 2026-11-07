@@ -8,6 +8,7 @@ exactly once.  In particular, no train-plus-validation refit is performed.
 
 from __future__ import annotations
 
+from copy import copy
 from dataclasses import dataclass, field
 import hashlib
 import json
@@ -29,6 +30,8 @@ from factorlab.models.lightgbm import LightGBMResearchModel
 from factorlab.models.ridge import RidgeResearchModel
 from factorlab.models.xgboost import XGBoostResearchModel
 from factorlab.universe.csi500 import dataframe_sha256
+from factorlab.dataset.identity import IDENTITY_ATTR, check_identity, frame_hash, json_hash
+from factorlab.validation.factor_selection import TrainFactorSelector
 from factorlab.validation.splitter import (
     ExpandingWalkForwardSplitter,
     WalkForwardError,
@@ -67,6 +70,9 @@ class WalkForwardResult:
     diagnostic_daily: pd.DataFrame = field(default_factory=pd.DataFrame)
     diagnostic_summary: pd.DataFrame = field(default_factory=pd.DataFrame)
     diagnostic_audit: pd.DataFrame = field(default_factory=pd.DataFrame)
+    factor_selection: pd.DataFrame = field(default_factory=pd.DataFrame)
+    factor_quality: pd.DataFrame = field(default_factory=pd.DataFrame)
+    factor_redundancy: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     @property
     def validation_candidate_metrics(self) -> pd.DataFrame:
@@ -275,7 +281,8 @@ def _date_boundaries(values: pd.Series) -> Tuple[pd.Timestamp, pd.Timestamp]:
 class WalkForwardRunner:
     """Execute one configured model on immutable expanding folds.
 
-    Candidate selection uses Validation only.  The selected, already-fitted
+    Model candidate selection uses Validation only. Optional factor selection
+    sees only purged Train rows. The selected, already-fitted
     Train model is then evaluated once on Test, identically for linear and
     tree models.
     """
@@ -305,6 +312,8 @@ class WalkForwardRunner:
         minimum_cross_section: int = 2,
         random_seed: int = 42,
         model_directory: Optional[Path] = None,
+        factor_selector: Optional[TrainFactorSelector] = None,
+        dynamic_factor_score_weighting: Optional[str] = None,
     ) -> None:
         if not isinstance(splitter, ExpandingWalkForwardSplitter):
             raise WalkForwardRunError(
@@ -323,6 +332,18 @@ class WalkForwardRunner:
         self.splitter = splitter
         self.model_name = canonical_model
         self.feature_names = _feature_names(feature_names)
+        if factor_selector is not None:
+            if type(factor_selector) is not TrainFactorSelector:
+                raise WalkForwardRunError("factor_selector must be a TrainFactorSelector")
+            if set(self.feature_names) != set(factor_selector.feature_names):
+                raise WalkForwardRunError("feature_names must match pinned selector candidates")
+        self.factor_selector = factor_selector
+        self.dynamic_factor_score_weighting = dynamic_factor_score_weighting
+        if factor_selector is not None and canonical_model == "factor_score":
+            if dynamic_factor_score_weighting not in ("equal", "configured_subset"):
+                raise WalkForwardRunError("Explicit dynamic FactorScore weighting required: equal or configured_subset")
+        elif dynamic_factor_score_weighting is not None:
+            raise WalkForwardRunError("dynamic_factor_score_weighting requires dynamic factor_score")
         self.target_col = self._column_name("target_col", target_col)
         self.date_col = self._column_name("date_col", date_col)
         self.symbol_col = self._column_name("symbol_col", symbol_col)
@@ -395,6 +416,10 @@ class WalkForwardRunner:
         )
 
         if canonical_model == "factor_score":
+            if factor_selector is not None and dynamic_factor_score_weighting == "equal":
+                if factor_weights is not None:
+                    raise WalkForwardRunError("equal dynamic weighting does not accept factor_weights")
+                factor_weights = dict.fromkeys(self.feature_names, 1.0)
             if not isinstance(factor_weights, Mapping) or not factor_weights:
                 raise WalkForwardRunError(
                     "factor_weights are required for factor_score"
@@ -514,6 +539,26 @@ class WalkForwardRunner:
             raise
         self._assert_unique_test_observations(prepared, folds)
 
+        dataset_identity_hash = None
+        if self.factor_selector is not None:
+            # Verify V2 identity when present. Plain research frames receive a
+            # content-and-pins identity, without any provenance certification.
+            if IDENTITY_ATTR in data.attrs:
+                identity = check_identity(data.attrs[IDENTITY_ATTR])
+                if frame_hash(data) != identity.get("dataset_content_hash"):
+                    raise WalkForwardRunError("Dataset identity content mismatch")
+                pins = {json.dumps(r, sort_keys=True) for r in identity.get("factors", [])}
+                expected = {json.dumps(r, sort_keys=True) for r in
+                            [dict(factor_id=r.factor_id, version=r.version, definition_hash=r.definition_hash)
+                             for r in self.factor_selector.factor_refs]}
+                if pins != expected or identity.get("snapshot_hash") != self.factor_selector.snapshot.snapshot_hash:
+                    raise WalkForwardRunError("Dataset identity candidate pins mismatch")
+                dataset_identity_hash = data.attrs[IDENTITY_ATTR]["identity_hash"]
+            else:
+                dataset_identity_hash = json_hash({"content": frame_hash(prepared),
+                    "snapshot": self.factor_selector.snapshot.snapshot_hash,
+                    "candidates": list(self.factor_selector.feature_names)})
+
         prediction_parts: List[pd.DataFrame] = []
         fold_rows: List[dict] = []
         candidate_rows: List[dict] = []
@@ -524,11 +569,27 @@ class WalkForwardRunner:
         diagnostic_daily_parts: List[pd.DataFrame] = []
         diagnostic_summary_parts: List[pd.DataFrame] = []
         diagnostic_audit_rows: List[dict] = []
+        selection_rows, quality_parts, redundancy_parts = [], [], []
 
         for fold in folds:
+            execution = self
             train = prepared.iloc[fold.train_indices]
             validation = prepared.iloc[fold.validation_indices]
             test = prepared.iloc[fold.test_indices]
+            selection = None
+            if self.factor_selector is not None:
+                selection = self.factor_selector.select(
+                    train, target_col=self.target_col, date_col=self.date_col, symbol_col=self.symbol_col)
+                execution = copy(self)
+                execution.feature_names = selection.feature_names
+                if self.model_name == "factor_score":
+                    execution.factor_weights = {
+                        name: (1.0 / len(selection.feature_names)
+                               if self.dynamic_factor_score_weighting == "equal"
+                               else self.factor_weights[name]) for name in selection.feature_names}
+                train, validation, test = (selection.transform(part) for part in (train, validation, test))
+                quality_parts.append(selection.quality.assign(fold=fold.fold))
+                redundancy_parts.append(selection.redundancy.assign(fold=fold.fold))
             train_labeled = train.loc[train[self.target_col].notna()]
             if train_labeled.empty:
                 raise WalkForwardRunError(
@@ -548,7 +609,7 @@ class WalkForwardRunner:
                 selected_validation_evaluation,
                 rows,
             ) = (
-                self._fit_and_select(
+                execution._fit_and_select(
                     fold.fold,
                     train_labeled,
                     validation,
@@ -559,7 +620,7 @@ class WalkForwardRunner:
             candidate_rows.extend(rows)
 
             # This is the sole Test predict call for the selected fold model.
-            test_scores = selected_model.predict(test.loc[:, self.feature_names])
+            test_scores = selected_model.predict(test.loc[:, execution.feature_names])
             prediction_frame = self._prediction_frame(
                 test,
                 test_scores,
@@ -576,7 +637,7 @@ class WalkForwardRunner:
             # Only the already-selected model receives this extra diagnostic
             # call. Test has already been predicted exactly once; Validation
             # reuses the candidate-selection snapshot, never a second predict.
-            train_scores = selected_model.predict(train.loc[:, self.feature_names])
+            train_scores = selected_model.predict(train.loc[:, execution.feature_names])
             train_prediction_frame = self._prediction_frame(
                 train, train_scores, fold.fold, selected_alpha, selected_parameters,
                 entry_date_col=entry_date_col, exit_date_col=exit_date_col,
@@ -636,12 +697,12 @@ class WalkForwardRunner:
                     "fold %d is missing mandatory label-window audit evidence"
                     % fold.fold
                 )
-            fit_source = self._diagnostic_source_frame(
+            fit_source = execution._diagnostic_source_frame(
                 train_labeled, entry_date_col=entry_date_col, exit_date_col=exit_date_col,
             )
             fit_source_keys_sha256 = diagnostic_frame_sha256(fit_source[["date", "symbol"]])
             fit_source_sha256 = diagnostic_frame_sha256(fit_source)
-            model_parameters = self._model_parameters(selected_model)
+            model_parameters = execution._model_parameters(selected_model)
             stages = (
                 ("TRAIN_IN_SAMPLE", train, train_prediction_frame, train_evaluation, audit.validation_first_date),
                 ("VALIDATION_SELECTION", validation, selected_validation_frame, selected_validation_evaluation, audit.test_first_date),
@@ -657,7 +718,7 @@ class WalkForwardRunner:
                 diagnostic_summary_parts.append(summary)
                 if stage != "HISTORICAL_TEST":
                     diagnostic_prediction_parts.append(stage_frame)
-                source_frame = self._diagnostic_source_frame(
+                source_frame = execution._diagnostic_source_frame(
                     stage_source, entry_date_col=entry_date_col, exit_date_col=exit_date_col,
                 )
                 entry = pd.to_datetime(stage_frame["entry_date"], errors="raise")
@@ -669,7 +730,7 @@ class WalkForwardRunner:
                     "selection_usage": DIAGNOSTIC_SELECTION_USAGE[stage],
                     "selected_alpha": selected_alpha, "selected_parameters": selected_parameters,
                     "model_parameters": model_parameters,
-                    "feature_names": json.dumps(list(self.feature_names), separators=(",", ":")),
+                    "feature_names": json.dumps(list(execution.feature_names), separators=(",", ":")),
                     "target_column": self.target_col, "selection_metric": self.selection_metric,
                     "top_k": self.top_k, "minimum_cross_section": self.minimum_cross_section,
                     "random_seed": self.random_seed,
@@ -759,6 +820,33 @@ class WalkForwardRunner:
                 }
             )
 
+            if selection is not None:
+                binding = {
+                    **selection.receipt, "fold": int(fold.fold), "model_name": self.model_name,
+                    "dataset_identity_hash": dataset_identity_hash,
+                    "train_start": train_start.isoformat(), "train_end": train_end.isoformat(),
+                    "validation_start": validation_start.isoformat(), "validation_end": validation_end.isoformat(),
+                    "test_start": test_start.isoformat(), "test_end": test_end.isoformat(),
+                    "train_window": [v.isoformat() for v in fold.train_window],
+                    "validation_window": [v.isoformat() for v in fold.validation_window],
+                    "test_window": [v.isoformat() for v in fold.test_window],
+                    "purge_days": self.splitter.purge_days, "embargo_days": self.splitter.embargo_days,
+                    "train_max_exit_date": audit.train_max_exit_date.isoformat(),
+                    "validation_max_exit_date": audit.validation_max_exit_date.isoformat(),
+                    "fit_source_sha256": fit_source_sha256,
+                    "model_feature_names": list(selected_model.feature_names),
+                    "model_parameters": json.loads(model_parameters),
+                    "factor_score_weighting": self.dynamic_factor_score_weighting,
+                    "saved_model_sha256": saved_model_sha256,
+                    "prediction_sha256": diagnostic_frame_sha256(prediction_frame),
+                }
+                binding["model_prediction_identity"] = json_hash(binding)
+                selection_rows.append(binding)
+                if model_path is not None:
+                    model_path.with_suffix(".selection.json").write_text(
+                        json.dumps(binding, indent=2, sort_keys=True, allow_nan=False) + "\n",
+                        encoding="utf-8")
+
         predictions = pd.concat(prediction_parts, ignore_index=True)
         # The pre-flight check should make this impossible; retain a final
         # assertion so future runner changes cannot silently double-count OOS.
@@ -771,6 +859,9 @@ class WalkForwardRunner:
         )
         predictions.reset_index(drop=True, inplace=True)
         return WalkForwardResult(
+            factor_selection=pd.DataFrame(selection_rows),
+            factor_quality=pd.concat(quality_parts, ignore_index=True) if quality_parts else pd.DataFrame(),
+            factor_redundancy=pd.concat(redundancy_parts, ignore_index=True) if redundancy_parts else pd.DataFrame(),
             predictions=predictions,
             fold_summary=pd.DataFrame(fold_rows),
             validation_metrics=pd.DataFrame(candidate_rows),
@@ -819,6 +910,10 @@ class WalkForwardRunner:
         prepared[self.date_col] = _normalise_dates(
             prepared[self.date_col], self.date_col
         )
+        if self.factor_selector is not None:
+            prepared[self.symbol_col] = prepared[self.symbol_col].astype("string")
+            prepared.sort_values([self.date_col, self.symbol_col], kind="mergesort", inplace=True)
+            prepared.reset_index(drop=True, inplace=True)
         if not prepared[self.date_col].is_monotonic_increasing:
             raise WalkForwardRunError(
                 "data must be sorted chronologically by %s" % self.date_col
@@ -833,7 +928,13 @@ class WalkForwardRunner:
                 "data contains duplicate (date, symbol) observations"
             )
         for feature in self.feature_names:
-            _validate_numeric_column(prepared, feature, allow_nan=True)
+            if self.factor_selector is None:
+                _validate_numeric_column(prepared, feature, allow_nan=True)
+            else:
+                # Quality assessment must see rejected infinities, not fail the
+                # whole candidate pool before the Train-only selector runs.
+                _validate_numeric_column(prepared[[feature]].replace([np.inf, -np.inf], np.nan),
+                                         feature, allow_nan=True)
         _validate_numeric_column(prepared, self.target_col, allow_nan=True)
         return prepared
 
