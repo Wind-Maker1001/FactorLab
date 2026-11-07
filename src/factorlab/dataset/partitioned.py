@@ -17,7 +17,6 @@ import uuid
 
 import numpy as np
 import pandas as pd
-import psutil
 import pyarrow.parquet as pq
 
 from factorlab.dataset.identity import (
@@ -72,7 +71,21 @@ class ResourceLimitError(RuntimeError):
     pass
 
 
+def _require_psutil():
+    try:
+        import psutil
+    except ModuleNotFoundError as exc:
+        if exc.name != "psutil":
+            raise
+        raise ConfigurationError(
+            "Chunked computation/resource monitoring requires optional psutil. "
+            "Install with: python -m pip install -r requirements/scalable-compute.txt"
+        ) from exc
+    return psutil
+
+
 def tree_rss():
+    psutil = _require_psutil()
     process = psutil.Process()
     return sum(p.memory_info().rss for p in [process] + process.children(recursive=True)
                if p.is_running())
@@ -309,6 +322,7 @@ class PartitionedDataset:
 def build_partitioned(snapshot, refs, bars, calendar, output_dir, *, context,
                       config=None, builder=None, benchmark=None, membership=None,
                       status=None, listings=None):
+    psutil = _require_psutil()
     from factorlab.dataset.builder import _full_bar_grid, DatasetBuilder
     cfg = config or ChunkedConfig()
     if type(cfg) is not ChunkedConfig:

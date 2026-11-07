@@ -14,12 +14,11 @@ import tracemalloc
 
 import numpy as np
 import pandas as pd
-import psutil
 
 from examples.research.dataset_registry_v2_demo import synthetic_inputs
 from factorlab.dataset import DatasetBuilder, DatasetBuildOptions
 from factorlab.dataset.identity import file_hash, frame_hash
-from factorlab.dataset.partitioned import ChunkedConfig, directory_bytes
+from factorlab.dataset.partitioned import ChunkedConfig, directory_bytes, _require_psutil
 from factorlab.exploratory.factor_discovery.contracts import Node
 from factorlab.exploratory.factor_discovery.engine import compile_expression
 from factorlab.factors.registry_v2 import FactorDefinition, FactorRegistryV2, FactorDataContext
@@ -85,6 +84,7 @@ def model_proof(dataset, builder, dates):
 
 
 def worker(args):
+    psutil = _require_psutil()
     symbols, sessions, count = LEVELS[args.level]
     root = Path(args.output)
     preflight = {"available_memory_bytes": psutil.virtual_memory().available,
@@ -139,6 +139,7 @@ def worker(args):
 
 
 def supervise(args):
+    psutil = _require_psutil()
     root = Path(args.output).resolve()
     if root.exists():
         raise FileExistsError(root)

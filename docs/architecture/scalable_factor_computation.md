@@ -2,6 +2,9 @@
 
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
+分块计算和容量脚本需要独立可选依赖：`python -m pip install -r requirements/scalable-compute.txt`。
+核心包导入、分区读取及校验不要求 psutil；缺少它时拒绝启动计算或资源守卫，并提示安装命令。
+
 原 `snapshot.compute()`、`DatasetBuilder.build()` 的 250,000 行限制和 DiscoveryConfig
 默认 40 / 最大 50 候选预算保持不变。新增可选入口：
 

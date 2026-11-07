@@ -58,7 +58,7 @@ jobs:
       matrix:
         python: ['3.14', '3.13']
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
@@ -68,7 +68,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install public test dependencies
-        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
       - name: Install project and check dependencies
         run: |
           python -m pip install --no-deps .
@@ -290,7 +290,7 @@ jobs:
           python-version: '3.14'
       - name: Install public dependencies and project
         run: |
-          python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt
+          python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
           python -m pip install --no-deps .
           python -m pip check
       - name: Run complete project regression with real failure propagation
