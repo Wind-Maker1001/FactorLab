@@ -1,0 +1,114 @@
+{
+  "warning": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "engineering_status": "P206_ENGINEERING_ACCEPTED",
+  "financial_status": "FINANCIAL_ADMISSION_BLOCKED",
+  "synthetic": true,
+  "python": "3.13.9",
+  "rows": 1710,
+  "dataset_identity_hash": "2c1b18260659a90dbdb428386b71eb26a6f25efb987e247ef8b6ea784d296168",
+  "snapshot_hash": "5907efb1af8186260bee2364b65d1344efd731bc297b2fa12223436f43155791",
+  "sidecar_verified": true,
+  "models": {
+    "factor_score": {
+      "feature_names": [
+        "MOM20",
+        "FD_001",
+        "pinned_reversal"
+      ],
+      "prediction_rows": 690,
+      "folds": 2,
+      "fit_scope": [
+        "train_only"
+      ],
+      "prediction_rank_ic_mean": 0.22955665024630545,
+      "prediction_ic_mean": 0.26194800572195653,
+      "predictions_sha256": "a2a14af8e92e35a33afeacef77de89bef6c973fbf4e851cdb0838cd0de1cf886",
+      "model_sha256": [
+        "63dff6763bc679c5bbf228d173d88d81dc2dad6c97d2ac992cb1c622a8202695",
+        "63dff6763bc679c5bbf228d173d88d81dc2dad6c97d2ac992cb1c622a8202695"
+      ],
+      "fit_source_sha256": [
+        "0b6007d8bf3c6560dd79b548200688657a3c6abc89a9f5a2b9c8e0df23168ca6",
+        "e71a4c396db0082f9d2d3743d5071bc9550138746be30a19cbc4b1b0ba282057"
+      ],
+      "discovered_feature_score_delta": 2.000000000000001
+    },
+    "ridge": {
+      "feature_names": [
+        "MOM20",
+        "FD_001",
+        "pinned_reversal"
+      ],
+      "prediction_rows": 690,
+      "folds": 2,
+      "fit_scope": [
+        "train_only"
+      ],
+      "prediction_rank_ic_mean": 0.2633552271483307,
+      "prediction_ic_mean": 0.30384625242491115,
+      "predictions_sha256": "292daf6b961a6af1611297e8baf22c12df00e417df0ce24a25b8b667e0b727c7",
+      "model_sha256": [
+        "b36ee7393ed9323e4714071ae5eba1832655a79247d0ff1107999e48117188e5",
+        "2cfb9cc0120a610663909688e21920f6a8ed4f6a75d65965d3306b95db3acc3b"
+      ],
+      "fit_source_sha256": [
+        "0b6007d8bf3c6560dd79b548200688657a3c6abc89a9f5a2b9c8e0df23168ca6",
+        "e71a4c396db0082f9d2d3743d5071bc9550138746be30a19cbc4b1b0ba282057"
+      ],
+      "discovered_feature_score_delta": 0.027513654960610034
+    },
+    "lightgbm": {
+      "feature_names": [
+        "MOM20",
+        "FD_001",
+        "pinned_reversal"
+      ],
+      "prediction_rows": 690,
+      "folds": 2,
+      "fit_scope": [
+        "train_only"
+      ],
+      "prediction_rank_ic_mean": 0.2533840505685909,
+      "prediction_ic_mean": 0.28280117157410134,
+      "predictions_sha256": "12bac21f4db44c4662812f9440280688448c07a2143707a30ceace1d8394e640",
+      "model_sha256": [
+        "e852b770f0fa6cd5eecac5aaedadf3f00005fb29ce698257623a780824b2942f",
+        "a25a923d1e490cfe4a8254211d55130fcd414536e82fc281a5d1344bb04b34e9"
+      ],
+      "fit_source_sha256": [
+        "0b6007d8bf3c6560dd79b548200688657a3c6abc89a9f5a2b9c8e0df23168ca6",
+        "e71a4c396db0082f9d2d3743d5071bc9550138746be30a19cbc4b1b0ba282057"
+      ],
+      "discovered_feature_score_delta": 0.005744534030489698
+    },
+    "xgboost": {
+      "feature_names": [
+        "MOM20",
+        "FD_001",
+        "pinned_reversal"
+      ],
+      "prediction_rows": 690,
+      "folds": 2,
+      "fit_scope": [
+        "train_only"
+      ],
+      "prediction_rank_ic_mean": 0.29088758146226645,
+      "prediction_ic_mean": 0.30759674284686556,
+      "predictions_sha256": "4e52b361c0872dddc5102e62a47864263fc6db881cbd5e9832a0867591073f97",
+      "model_sha256": [
+        "aa236b4ea7a16e859cb7a78ce03875833b2ba26af975d488c955e4fcc3c8e523",
+        "f37c875c8f01550c40b66e0cab0dded29ca998469a16910e634e05bc57af67bd"
+      ],
+      "fit_source_sha256": [
+        "0b6007d8bf3c6560dd79b548200688657a3c6abc89a9f5a2b9c8e0df23168ca6",
+        "e71a4c396db0082f9d2d3743d5071bc9550138746be30a19cbc4b1b0ba282057"
+      ],
+      "discovered_feature_score_delta": 0.0037656486965715885
+    }
+  },
+  "build_seconds": 1.633831699989969,
+  "total_seconds": 33.95604049999383,
+  "tracemalloc_peak_bytes": 22936801,
+  "process_peak_rss_bytes": 358588416,
+  "dataset_memory_bytes": 628374
+}
