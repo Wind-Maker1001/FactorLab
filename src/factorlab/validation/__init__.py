@@ -18,8 +18,12 @@ from factorlab.validation.walk_forward import (
     WalkForwardRunner,
     run_walk_forward,
 )
+from factorlab.validation.ablation import AblationConfig, AblationResult, FactorAblationRunner
 
 __all__ = [
+    "AblationConfig",
+    "AblationResult",
+    "FactorAblationRunner",
     "FactorSelectionConfig",
     "FactorSelectionError",
     "FactorSelectionResult",

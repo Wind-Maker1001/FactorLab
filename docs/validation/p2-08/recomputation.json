@@ -1,0 +1,25 @@
+{
+  "summary_recomputed": true,
+  "model_reload_exact_count": 60,
+  "contrast_status_counts": {
+    "OK": 84
+  },
+  "artifact_sha256": {
+    "audit.csv": "7b45e939b5b7aeda2de90be0aa7b1cd59e6fdbbe061d3f431af88c5089a87b51",
+    "contrasts.csv": "a73ca915326555c813c1db967a12002d8e19aa8c7dc7e3a2a76fe716937cf354",
+    "daily.csv": "65b4efe6eb2031995220d91bcd6c242578765806e06bad34b498c36475f9835e",
+    "dataset.identity.json": "66d3da776403f2fa7b3b34cc14ddc7505b8832f2fbe8ee5eceba5278cd32d8ce",
+    "frequency.csv": "ff7cd41cdeece2ab1b12fd67b57cf876a49191f14f416ad6c4d9eafdde57c944",
+    "jaccard.csv": "84d6e3c2905bde10f32ce06bc8d5db0c46f911adcef72c23556e25c93f1b6897",
+    "manifest.json": "d1b4276ebede961be3ec0bb09c398431db3e8a297e12cb72b3cd59ba1a0bedab",
+    "metrics.csv": "87c88952b768fd0c9747a1163107a145c5a21494409c63ccbf04355b5779a31c",
+    "performance-summary.csv": "167a504aecff51b569f074da8a17bc557050db63ab9d78cdb7a67de2a0c6a64b",
+    "performance.csv": "c94e4f0997a03dd3c44621ceaf3aabdb7a0bcb71bd0e4c0c1fb499af7ddd6d64",
+    "plans.json": "3be4ae0d11d01541f10233d1df693047a9736a717695741cda8154fe6d364f27",
+    "quality.csv": "2b68c00c0f8484dd77d01ccb7773be731a36bda8ebb642901f323b18f35a5659",
+    "redundancy.csv": "249d972cc6e4dfa1d92fbf1d57627812128dd5b2f75cd49ebb2e10444b060045",
+    "validation.csv": "3d50401f0e7907c510e8f12c7425de5f0977290aac7914ce6930952b2be358cd",
+    "volatility.csv": "2e7091def1df6f50369debafc596de90b734966b9238d2d378aab254c6bc5ea4"
+  },
+  "final_statistics_recomputed": true
+}

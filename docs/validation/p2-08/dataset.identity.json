@@ -1,0 +1,841 @@
+{
+  "artifacts": {
+    "dataset": "3f55300d65d4619fb86b3c76c18076ba3d3c19e1b4a97b2f11138ffda7be13a4",
+    "processed_features": "b8109a579db4f7e10324945c2cdb97d5bceb079544dfffe5b400770f050d381e",
+    "raw_features": "6a2f5163a884fb8859b266df590afb9e404aa92a429c0084692f0617a7d3be23"
+  },
+  "calendar": {
+    "end": "2024-02-23",
+    "id": "SYNTHETIC_BDAY_NOT_EXCHANGE-v1",
+    "sessions": 300,
+    "sha256": "3f9d8ad0749ae6381028462f2f13eaa7df2cf9a53aa9f119e50badf8491a0283",
+    "start": "2023-01-02"
+  },
+  "data_context": {
+    "admission_status": "FORMAL_ADMISSION_BLOCKED",
+    "availability_evidence": "SYNTHETIC_CLOSE_ONLY",
+    "data_source": "p207-synthetic-seed-20261014",
+    "hfq_status": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit_status": "PIT_UNVERIFIED"
+  },
+  "data_version": "p207-synthetic-v1",
+  "dataset_content_hash": "6b55995e3c8d4f7735935f184f4e19575fcd4121ff10b697fe0280caf31da8ac",
+  "factors": [
+    {
+      "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3",
+      "factor_id": "AMIHU20",
+      "version": "1"
+    },
+    {
+      "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc",
+      "factor_id": "MA20_MA60",
+      "version": "1"
+    },
+    {
+      "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409",
+      "factor_id": "MA5_MA20",
+      "version": "1"
+    },
+    {
+      "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+      "factor_id": "MOM20",
+      "version": "1"
+    },
+    {
+      "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024",
+      "factor_id": "MOM60",
+      "version": "1"
+    },
+    {
+      "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad",
+      "factor_id": "PRICE_MA20",
+      "version": "1"
+    },
+    {
+      "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+      "factor_id": "REV1",
+      "version": "1"
+    },
+    {
+      "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46",
+      "factor_id": "REV1_ALIAS",
+      "version": "1"
+    },
+    {
+      "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+      "factor_id": "REV1_COPY",
+      "version": "1"
+    },
+    {
+      "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4",
+      "factor_id": "REV5",
+      "version": "1"
+    },
+    {
+      "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5",
+      "factor_id": "TURN20",
+      "version": "1"
+    },
+    {
+      "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6",
+      "factor_id": "TURN5",
+      "version": "1"
+    },
+    {
+      "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e",
+      "factor_id": "VOL20",
+      "version": "1"
+    },
+    {
+      "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2",
+      "factor_id": "VOL5",
+      "version": "1"
+    },
+    {
+      "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd",
+      "factor_id": "VOL60",
+      "version": "1"
+    },
+    {
+      "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e",
+      "factor_id": "VOLUME_RATIO",
+      "version": "1"
+    },
+    {
+      "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83",
+      "factor_id": "synthetic_000",
+      "version": "1"
+    },
+    {
+      "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a",
+      "factor_id": "synthetic_001",
+      "version": "1"
+    },
+    {
+      "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979",
+      "factor_id": "synthetic_002",
+      "version": "1"
+    },
+    {
+      "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650",
+      "factor_id": "synthetic_003",
+      "version": "1"
+    },
+    {
+      "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb",
+      "factor_id": "synthetic_004",
+      "version": "1"
+    },
+    {
+      "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba",
+      "factor_id": "synthetic_005",
+      "version": "1"
+    },
+    {
+      "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c",
+      "factor_id": "synthetic_006",
+      "version": "1"
+    },
+    {
+      "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c",
+      "factor_id": "synthetic_007",
+      "version": "1"
+    },
+    {
+      "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838",
+      "factor_id": "synthetic_008",
+      "version": "1"
+    },
+    {
+      "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f",
+      "factor_id": "synthetic_009",
+      "version": "1"
+    },
+    {
+      "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159",
+      "factor_id": "synthetic_010",
+      "version": "1"
+    },
+    {
+      "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce",
+      "factor_id": "synthetic_011",
+      "version": "1"
+    },
+    {
+      "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff",
+      "factor_id": "synthetic_012",
+      "version": "1"
+    },
+    {
+      "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b",
+      "factor_id": "synthetic_013",
+      "version": "1"
+    },
+    {
+      "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394",
+      "factor_id": "synthetic_014",
+      "version": "1"
+    },
+    {
+      "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8",
+      "factor_id": "synthetic_015",
+      "version": "1"
+    }
+  ],
+  "financial_status": "FINANCIAL_ADMISSION_BLOCKED",
+  "identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+  "input_hashes": {
+    "bars": "40325e634f23793e623ddfdb79d44afc3dc28a2ba430ee6fa37338a47f738d7e",
+    "benchmark": "382cc741540a419837d1479ab6aa0a17475a335da13704cbdfba067e2dd4a077",
+    "listings": "945a005073664071a87c76c4ea38e1c42fbf479df1d48b59f5351c07b1c52fb3",
+    "membership": "cdd31564e252732a75aaef529096bc38796556e576d22a2620d6422fe32d144d",
+    "status": "e3fbffad226cf045574d2eaba9bae5843eb5a851467b373543db5416047c3d05"
+  },
+  "options": {
+    "entry_price": "next_open",
+    "expected_member_count": 24,
+    "factor_names": [
+      "AMIHU20",
+      "MA20_MA60",
+      "MA5_MA20",
+      "MOM20",
+      "MOM60",
+      "PRICE_MA20",
+      "REV1",
+      "REV1_ALIAS",
+      "REV1_COPY",
+      "REV5",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "VOL5",
+      "VOL60",
+      "VOLUME_RATIO",
+      "synthetic_000",
+      "synthetic_001",
+      "synthetic_002",
+      "synthetic_003",
+      "synthetic_004",
+      "synthetic_005",
+      "synthetic_006",
+      "synthetic_007",
+      "synthetic_008",
+      "synthetic_009",
+      "synthetic_010",
+      "synthetic_011",
+      "synthetic_012",
+      "synthetic_013",
+      "synthetic_014",
+      "synthetic_015"
+    ],
+    "filter_config": {
+      "exclude_st": true,
+      "exclude_suspended": true,
+      "min_listed_days": 1,
+      "min_quality_ratio": 0.8,
+      "quality_window": 5,
+      "zero_volume_window": 1
+    },
+    "holding_days": 5,
+    "include_market_regime": true,
+    "lower_quantile": 0.01,
+    "mad_multiplier": 5.0,
+    "minimum_cross_section": 12,
+    "upper_quantile": 0.99,
+    "winsorization": "mad"
+  },
+  "registration_status": "SOFTWARE_VALIDATED_ONLY",
+  "research_interval": {
+    "end": "2024-02-23",
+    "start": "2023-04-03"
+  },
+  "resolved_definitions": [
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "AMIHU20",
+      "frequency": "1d",
+      "implementation": "phase1-v1:AMIHU20",
+      "input_fields": [
+        "adj_close",
+        "amount"
+      ],
+      "kind": "builtin",
+      "lookback": 20,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "MA20_MA60",
+      "frequency": "1d",
+      "implementation": "phase1-v1:MA20_MA60",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 59,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "MA5_MA20",
+      "frequency": "1d",
+      "implementation": "phase1-v1:MA5_MA20",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 19,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "MOM20",
+      "frequency": "1d",
+      "implementation": "phase1-v1:MOM20",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 20,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "MOM60",
+      "frequency": "1d",
+      "implementation": "phase1-v1:MOM60",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 60,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "PRICE_MA20",
+      "frequency": "1d",
+      "implementation": "phase1-v1:PRICE_MA20",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 19,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "REV1",
+      "frequency": "1d",
+      "implementation": "phase1-v1:REV1",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 1,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46",
+      "dependencies": [
+        {
+          "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+          "factor_id": "REV1",
+          "version": "1"
+        }
+      ],
+      "expression_json": "",
+      "factor_id": "REV1_ALIAS",
+      "frequency": "1d",
+      "implementation": "dependency-alias-v1",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "alias",
+      "lookback": 1,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "REV1_COPY",
+      "frequency": "1d",
+      "implementation": "phase1-v1:REV1",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 1,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "REV5",
+      "frequency": "1d",
+      "implementation": "phase1-v1:REV5",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 5,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "TURN20",
+      "frequency": "1d",
+      "implementation": "phase1-v1:TURN20",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "builtin",
+      "lookback": 19,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "TURN5",
+      "frequency": "1d",
+      "implementation": "phase1-v1:TURN5",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "builtin",
+      "lookback": 4,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "VOL20",
+      "frequency": "1d",
+      "implementation": "phase1-v1:VOL20",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 20,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "VOL5",
+      "frequency": "1d",
+      "implementation": "phase1-v1:VOL5",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 5,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "VOL60",
+      "frequency": "1d",
+      "implementation": "phase1-v1:VOL60",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 60,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "VOLUME_RATIO",
+      "frequency": "1d",
+      "implementation": "phase1-v1:VOLUME_RATIO",
+      "input_fields": [
+        "volume"
+      ],
+      "kind": "builtin",
+      "lookback": 19,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_000",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 1,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_001",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 5,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_002",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 10,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_003",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 20,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_004",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 60,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_005",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 5,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_006",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 5,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_007",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 10,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_008",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 20,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_009",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 60,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_010",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 10,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_011",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 10,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_012",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 10,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_013",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 20,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_014",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 60,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":20},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+      "factor_id": "synthetic_015",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "turnover"
+      ],
+      "kind": "expression",
+      "lookback": 20,
+      "price_basis": [],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    }
+  ],
+  "schema": "FACTORLAB_DATASET_REGISTRY_V2_1",
+  "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+  "timing": {
+    "earliest_decision": "NEXT_SESSION_OPEN",
+    "entry_price": "next_open",
+    "factor_availability": "SESSION_CLOSE",
+    "label_price_basis": "HFQ",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+  }
+}
