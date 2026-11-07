@@ -30,3 +30,6 @@ docs/security/v1/** -filter -diff -merge -text
 MANIFEST.in text eol=lf
 SECURITY.md text eol=lf
 
+# P2-07 receipts use identical text bytes on Windows and Linux checkouts.
+docs/validation/p2-07/** text eol=lf
+
