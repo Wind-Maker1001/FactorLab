@@ -1,0 +1,714 @@
+{
+  "format": "FACTORLAB_PARTITIONED_V1",
+  "kind": "dataset",
+  "binding": {
+    "schema": "FACTORLAB_DATASET_REGISTRY_V2_1",
+    "snapshot_hash": "348c366b261ae36b43d29a422abfaeb4db3dce44ba675a77458d634bb43d22c6",
+    "factors": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      }
+    ],
+    "resolved_definitions": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:AMIHU20",
+        "input_fields": [
+          "adj_close",
+          "amount"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MA20_MA60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 59,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MA5_MA20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MOM20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MOM60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:PRICE_MA20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:REV1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 1,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:REV5",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:TURN20",
+        "input_fields": [
+          "turnover"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:TURN5",
+        "input_fields": [
+          "turnover"
+        ],
+        "lookback": 4,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL5",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOLUME_RATIO",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      }
+    ],
+    "data_context": {
+      "data_source": "P209_SYNTHETIC",
+      "availability_evidence": "UNVERIFIED",
+      "no_live_money": true,
+      "pit_status": "PIT_UNVERIFIED",
+      "hfq_status": "HFQ_UNVERIFIED",
+      "admission_status": "FORMAL_ADMISSION_BLOCKED"
+    },
+    "data_version": "seed-20261014-fixed-v1",
+    "calendar": {
+      "id": "SYNTHETIC_BDAY_NOT_EXCHANGE-v1",
+      "sessions": 200,
+      "sha256": "75b754680f7552079fa975df868732f66b2cad8dbcc7a244e4ca190324cc977b",
+      "start": "2023-01-02",
+      "end": "2023-10-06"
+    },
+    "options": {
+      "factor_names": [
+        "AMIHU20",
+        "MA20_MA60",
+        "MA5_MA20",
+        "MOM20",
+        "MOM60",
+        "PRICE_MA20",
+        "REV1",
+        "REV5",
+        "TURN20",
+        "TURN5",
+        "VOL20",
+        "VOL5",
+        "VOL60",
+        "VOLUME_RATIO"
+      ],
+      "holding_days": 5,
+      "entry_price": "next_open",
+      "expected_member_count": 50,
+      "winsorization": "mad",
+      "mad_multiplier": 5.0,
+      "lower_quantile": 0.01,
+      "upper_quantile": 0.99,
+      "minimum_cross_section": 20,
+      "include_market_regime": true,
+      "filter_config": {
+        "min_listed_days": 120,
+        "exclude_st": true,
+        "exclude_suspended": true,
+        "zero_volume_window": 20,
+        "quality_window": 60,
+        "min_quality_ratio": 0.8
+      }
+    },
+    "timing": {
+      "factor_availability": "SESSION_CLOSE",
+      "earliest_decision": "NEXT_SESSION_OPEN",
+      "entry_price": "next_open",
+      "label_price_basis": "HFQ",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    "registration_status": "SOFTWARE_VALIDATED_ONLY",
+    "financial_status": "FINANCIAL_ADMISSION_BLOCKED"
+  },
+  "input_hashes": {
+    "bars": "ed85fba5922586c6d2cb47a5bcbf327e89ec9a7e903f6a450b2bad180083f70f",
+    "benchmark": "5c2676f247157bc02084389ea08b59f1fdfb1768ef025b963b3119dda550ad6c",
+    "membership": "d5e28c8308fe3bc6f35c017a9e5024240b27381486e06faf6d630e1aac1c6595",
+    "status": "dde9fa3e0b76f2aa0dd4c534c7303a8833bdab0bc3b047ca0cea62cbd3b37287",
+    "listings": "1a0670e6ef67593416871a114518c635a187ab6cc57f3d8aefb724e16c0944a2"
+  },
+  "research_interval": {
+    "start": "2023-04-03",
+    "end": "2023-10-06"
+  },
+  "schema": [
+    [
+      "date",
+      "timestamp[ns]"
+    ],
+    [
+      "symbol",
+      "string"
+    ],
+    [
+      "open",
+      "double"
+    ],
+    [
+      "high",
+      "double"
+    ],
+    [
+      "low",
+      "double"
+    ],
+    [
+      "close",
+      "double"
+    ],
+    [
+      "volume",
+      "double"
+    ],
+    [
+      "amount",
+      "double"
+    ],
+    [
+      "turnover",
+      "double"
+    ],
+    [
+      "adj_factor",
+      "double"
+    ],
+    [
+      "raw_open",
+      "double"
+    ],
+    [
+      "raw_high",
+      "double"
+    ],
+    [
+      "raw_low",
+      "double"
+    ],
+    [
+      "raw_close",
+      "double"
+    ],
+    [
+      "adj_open",
+      "double"
+    ],
+    [
+      "adj_high",
+      "double"
+    ],
+    [
+      "adj_low",
+      "double"
+    ],
+    [
+      "adj_close",
+      "double"
+    ],
+    [
+      "AMIHU20",
+      "double"
+    ],
+    [
+      "MA20_MA60",
+      "double"
+    ],
+    [
+      "MA5_MA20",
+      "double"
+    ],
+    [
+      "MOM20",
+      "double"
+    ],
+    [
+      "MOM60",
+      "double"
+    ],
+    [
+      "PRICE_MA20",
+      "double"
+    ],
+    [
+      "REV1",
+      "double"
+    ],
+    [
+      "REV5",
+      "double"
+    ],
+    [
+      "TURN20",
+      "double"
+    ],
+    [
+      "TURN5",
+      "double"
+    ],
+    [
+      "VOL20",
+      "double"
+    ],
+    [
+      "VOL5",
+      "double"
+    ],
+    [
+      "VOL60",
+      "double"
+    ],
+    [
+      "VOLUME_RATIO",
+      "double"
+    ],
+    [
+      "entry_date",
+      "timestamp[ns]"
+    ],
+    [
+      "exit_date",
+      "timestamp[ns]"
+    ],
+    [
+      "STOCK_FWD_RET5",
+      "double"
+    ],
+    [
+      "BENCHMARK_FWD_RET5",
+      "double"
+    ],
+    [
+      "EXCESS_RET5",
+      "double"
+    ],
+    [
+      "MARKET_REGIME",
+      "string"
+    ],
+    [
+      "INDEX_RET5",
+      "double"
+    ],
+    [
+      "INDEX_RET20",
+      "double"
+    ],
+    [
+      "INDEX_RET60",
+      "double"
+    ],
+    [
+      "INDEX_VOL20",
+      "double"
+    ],
+    [
+      "raw_AMIHU20",
+      "double"
+    ],
+    [
+      "raw_MA20_MA60",
+      "double"
+    ],
+    [
+      "raw_MA5_MA20",
+      "double"
+    ],
+    [
+      "raw_MOM20",
+      "double"
+    ],
+    [
+      "raw_MOM60",
+      "double"
+    ],
+    [
+      "raw_PRICE_MA20",
+      "double"
+    ],
+    [
+      "raw_REV1",
+      "double"
+    ],
+    [
+      "raw_REV5",
+      "double"
+    ],
+    [
+      "raw_TURN20",
+      "double"
+    ],
+    [
+      "raw_TURN5",
+      "double"
+    ],
+    [
+      "raw_VOL20",
+      "double"
+    ],
+    [
+      "raw_VOL5",
+      "double"
+    ],
+    [
+      "raw_VOL60",
+      "double"
+    ],
+    [
+      "raw_VOLUME_RATIO",
+      "double"
+    ]
+  ],
+  "partitions": [
+    {
+      "file": "date-000040.parquet",
+      "sha256": "cac3ddb0016b43debf1a190260986963c049b3367235d26e49d16c6c4384e41e",
+      "rows": 300,
+      "content_hash": "db69da4e886bc8864451bbddc1c63697740981a260245fbe116b59623d4f2175",
+      "keys_hash": "d0c91d8f849fc58400a80fdb5380cf13125284dea26a28b45bafce8f92744bb8",
+      "date_start": "2023-06-16T00:00:00",
+      "date_end": "2023-06-23T00:00:00"
+    },
+    {
+      "file": "date-000060.parquet",
+      "sha256": "862c6749550361fb04a253aef4d9535c00a3da31e6ad979b73583a7374ae5e75",
+      "rows": 1000,
+      "content_hash": "b558a073b3478d54b86d8efec91cced04805a05ba1060a6e9e6ff4433731f7bb",
+      "keys_hash": "5401180627a086385a13578e8bc8989136c26868f76b9d443cbe0a0895b526bf",
+      "date_start": "2023-06-26T00:00:00",
+      "date_end": "2023-07-21T00:00:00"
+    },
+    {
+      "file": "date-000080.parquet",
+      "sha256": "2688f577b01d0e5c132f41f59b4130f1849ff8312fd0de1605783c49473e81d4",
+      "rows": 1000,
+      "content_hash": "955f99df7c0fa5e074029c631932024b427e888ce15aac81a1e5dcf67e92f386",
+      "keys_hash": "4bc8be511ffa4fe0a614dac5d3983b6ff59d5ec9dc6b2b992998eae155581749",
+      "date_start": "2023-07-24T00:00:00",
+      "date_end": "2023-08-18T00:00:00"
+    },
+    {
+      "file": "date-000100.parquet",
+      "sha256": "ba4af380fdae2ebd9627c728b59160c538ed9fcbe1ef8152b13d378e8989c936",
+      "rows": 1000,
+      "content_hash": "6c01a37527d389625aa284c05042483248d928f0be177766130f4b5689c4e453",
+      "keys_hash": "907e098c278bb07d2e5e93aca238c8710fca2ddff7cc687ab2f38f4bf6816247",
+      "date_start": "2023-08-21T00:00:00",
+      "date_end": "2023-09-15T00:00:00"
+    },
+    {
+      "file": "date-000120.parquet",
+      "sha256": "b1318a96dbb549f51c859d855bd34dde0f8f4548803b614249de6808213fb3bf",
+      "rows": 750,
+      "content_hash": "e7afe22d0327d7b70d8cad720f1f67ffbf2aacdacaa6780243f20e9083bb57d1",
+      "keys_hash": "d16cd11d05335c943bf333e668ea325c38d86a62d7dde4e8fc780c8b9e3c8004",
+      "date_start": "2023-09-18T00:00:00",
+      "date_end": "2023-10-06T00:00:00"
+    }
+  ],
+  "rows": 4050,
+  "counts": {
+    "registered_definitions": 14,
+    "requested_candidates": 14,
+    "resolved_definitions": 14,
+    "unique_executed_definitions": 14,
+    "successful_factors": 14,
+    "selected_factors": null,
+    "factor_rows": 10000,
+    "total_factor_cells": 140000,
+    "valid_factor_values": 122367
+  },
+  "execution": {
+    "symbols_per_batch": 32,
+    "factors_per_batch": 16,
+    "dates_per_batch": 20,
+    "workers": 2,
+    "max_factors": 300,
+    "timeout_seconds": 1200.0,
+    "memory_limit_bytes": 5368709120,
+    "disk_limit_bytes": 8589934592,
+    "minimum_available_memory_bytes": 1073741824,
+    "minimum_free_disk_bytes": 1073741824
+  },
+  "failures": 0,
+  "retries": 0,
+  "identity_hash": "1b24af73348f98d38a926c6e405152316d1ebcf3ad133b21ad387c0169349bb6"
+}

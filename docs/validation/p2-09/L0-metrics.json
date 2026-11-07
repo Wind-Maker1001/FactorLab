@@ -1,0 +1,73 @@
+{
+  "level": "L0",
+  "status": "PASS",
+  "synthetic": true,
+  "warning": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "sls_status": "SLS_PERFORMANCE_NOT_VERIFIED",
+  "python": "3.13.9",
+  "input_generation_seconds": 0.09180779999587685,
+  "input_stock_days": 9994,
+  "dense_calendar_stock_days": 10000,
+  "end_to_end_seconds": 4.529655799997272,
+  "cpu_seconds": 4.609375,
+  "python_tracemalloc_peak_bytes": 10129223,
+  "read_bytes": 18587019,
+  "write_bytes": 3125119,
+  "config": {
+    "symbols_per_batch": 32,
+    "factors_per_batch": 16,
+    "dates_per_batch": 20,
+    "workers": 2,
+    "max_factors": 300,
+    "timeout_seconds": 1200.0,
+    "memory_limit_bytes": 5368709120,
+    "disk_limit_bytes": 8589934592,
+    "minimum_available_memory_bytes": 1073741824,
+    "minimum_free_disk_bytes": 1073741824
+  },
+  "dataset_identity_hash": "1b24af73348f98d38a926c6e405152316d1ebcf3ad133b21ad387c0169349bb6",
+  "manifest_sha256": "c59ac2f8c741cf712bd651f391c25be4bddb2d8fe02b5347d1f180acc228552c",
+  "partition_count": 5,
+  "counts": {
+    "registered_definitions": 14,
+    "requested_candidates": 14,
+    "resolved_definitions": 14,
+    "unique_executed_definitions": 14,
+    "successful_factors": 14,
+    "selected_factors": null,
+    "factor_rows": 10000,
+    "total_factor_cells": 140000,
+    "valid_factor_values": 122367
+  },
+  "dataset_rows": 4050,
+  "valid_factor_values_per_second": 27014.635416685236,
+  "failed_batches": 0,
+  "retries": 0,
+  "dense_equivalence": "EXACT",
+  "models": {
+    "factor_score": {
+      "folds": 1,
+      "prediction_rows": 1150,
+      "prediction_hash": "b05f15a8680da2a73472423e0a55ee4764a0aaf05161d8e837aef30a0048bfde",
+      "purge_maturity_checked": true
+    },
+    "ridge": {
+      "folds": 1,
+      "prediction_rows": 1150,
+      "prediction_hash": "8e04e44ed9a1ea820a6e33c22eed06e6cfde7b83a8b858816472ec2498b66281",
+      "purge_maturity_checked": true
+    },
+    "lightgbm": {
+      "folds": 1,
+      "prediction_rows": 1150,
+      "prediction_hash": "a88d6706d731e0f6ed4b9039a51bf21ee8606f974be60df19e42eb3c79da2e22",
+      "purge_maturity_checked": true
+    },
+    "xgboost": {
+      "folds": 1,
+      "prediction_rows": 1150,
+      "prediction_hash": "785671dad877b7fb94c3ea1d35046f0a3351c1f3bcfabda134059a61bd4dcc1d",
+      "purge_maturity_checked": true
+    }
+  }
+}

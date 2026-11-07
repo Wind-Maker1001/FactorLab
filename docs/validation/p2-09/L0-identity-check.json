@@ -1,0 +1,7 @@
+{
+  "exit_code": 0,
+  "status": "PASS",
+  "comparison": "EXACT_VALUES_SCHEMA_MASKS_AND_V2_IDENTITY",
+  "content_hash": "b7c38a595ed85d55b9fe1d7cfbb9b17f9505c753b442796e5ea9442bd26837f5",
+  "identity_hash": "6d913320b4cd20b2689e3cdd63003d02afedb9be54019639e684b5abad529885"
+}

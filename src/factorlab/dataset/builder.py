@@ -125,7 +125,8 @@ class DatasetBuilder:
             dates, self.calendar_id, replace(self.options, factor_names=self.factor_names),
         )))
 
-    def _v2_calendar(self, calendar):
+    @staticmethod
+    def _v2_calendar(calendar):
         values = list(calendar)
         if pd.api.types.is_numeric_dtype(pd.Index(values).dtype):
             raise SchemaError("Numeric dates are not daily session keys")
@@ -330,6 +331,29 @@ class DatasetBuilder:
         return verify_dataset_artifacts(
             processed_path, features_dir,
             expected_binding=self._binding(self._v2_calendar(calendar)),
+            expected_identity_hash=expected_identity_hash,
+            expected_input_hashes=expected_input_hashes,
+        )
+
+    def build_chunked(self, bars, benchmark, membership, status, listings, calendar,
+                      *, output_dir, config=None):
+        """Opt-in disk-backed build; the dense build limit remains unchanged."""
+        from factorlab.dataset.partitioned import build_partitioned
+        if self.snapshot is None:
+            raise ConfigurationError("Chunked datasets require Registry V2")
+        return build_partitioned(
+            self.snapshot, self.factor_refs, bars, calendar, output_dir,
+            context=self.data_context, config=config, builder=self,
+            benchmark=benchmark, membership=membership, status=status, listings=listings,
+        )
+
+    def read_partitioned(self, output_dir, *, calendar, expected_identity_hash=None,
+                         expected_input_hashes=None):
+        from factorlab.dataset.partitioned import PartitionedDataset
+        if self.snapshot is None:
+            raise ConfigurationError("Verified partition loading requires V2")
+        return PartitionedDataset(
+            output_dir, expected_binding=self._binding(self._v2_calendar(calendar)),
             expected_identity_hash=expected_identity_hash,
             expected_input_hashes=expected_input_hashes,
         )

@@ -1,0 +1,9 @@
+{
+  "status": "BLOCKED_BY_POLICY",
+  "action": "Remove only newly generated local-p209/L0/dataset, L1/dataset, L2/dataset, L3/dataset after checking absolute paths and retained manifest hashes",
+  "review_result": "exec_command CreateProcess rejected: blocked by policy",
+  "deletion_executed": false,
+  "retry_or_bypass_attempted": false,
+  "data_retained": true,
+  "existing_frozen_evidence_untouched": true
+}

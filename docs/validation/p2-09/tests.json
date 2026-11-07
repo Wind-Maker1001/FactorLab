@@ -1,0 +1,24 @@
+{
+  "initial_targeted_run": {
+    "exit_code": 1,
+    "tests": 170,
+    "passed": 169,
+    "failed": [
+      "test_dense_dataset_exact_equivalence[1-1-1-1]"
+    ],
+    "diagnostic": "WinError 2: RSS/disk guard scanned a shard concurrently with successful shard cleanup. Fixed directory_bytes to ignore files removed during sampling."
+  },
+  "partition_suite_before_fixture_fix": {
+    "exit_code": 1,
+    "tests": 21,
+    "passed": 20,
+    "failed": "Supplementary shuffled-input test shuffled benchmark, violating the existing market-regime sorted-date contract. Retained production contract and corrected fixture."
+  },
+  "final_failed_case_rerun": {
+    "exit_code": 0,
+    "tests": 1,
+    "passed": 1
+  },
+  "effective_partition_cases_passing": 21,
+  "scope": "Only partitioned path, Registry V2, DatasetBuilder V2, factor selection and ablation; no full legacy or local dual-Python matrix."
+}

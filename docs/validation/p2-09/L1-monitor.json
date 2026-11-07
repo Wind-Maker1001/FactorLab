@@ -1,0 +1,35 @@
+{
+  "exit_code": 0,
+  "stop_reason": null,
+  "peak_process_tree_rss_bytes": 603955200,
+  "peak_private_commit_bytes": 628953088,
+  "peak_disk_bytes": 400089662,
+  "supervisor_seconds": 79.43689270000323,
+  "sample_interval_seconds": 0.1,
+  "command": [
+    "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "-m",
+    "examples.research.scalable_factor_computation",
+    "--worker",
+    "--level",
+    "L1",
+    "--output",
+    "D:\\Code\\FactorLab-worktrees\\p2-09\\local-p209\\L1",
+    "--workers",
+    "2",
+    "--memory-gib",
+    "5",
+    "--disk-gib",
+    "8",
+    "--timeout",
+    "3600.0"
+  ],
+  "machine": {
+    "platform": "Windows-11-10.0.26340-SP0",
+    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "logical_cpus": 28,
+    "physical_cpus": 20,
+    "total_memory_bytes": 68523327488
+  },
+  "memory_note": "External process-tree RSS samples; short transients may be missed. Private commit also recorded."
+}

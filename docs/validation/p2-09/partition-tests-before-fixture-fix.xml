@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="21" time="93.289" timestamp="2026-11-08T00:16:30.202042+08:00" hostname="Desktop"><testcase classname="tests.research.test_partitioned_dataset" name="test_dense_dataset_exact_equivalence[1-1-1-1]" time="33.886" /><testcase classname="tests.research.test_partitioned_dataset" name="test_dense_dataset_exact_equivalence[2-5-13-2]" time="5.932" /><testcase classname="tests.research.test_partitioned_dataset" name="test_dense_dataset_exact_equivalence[6-16-20-4]" time="5.039" /><testcase classname="tests.research.test_partitioned_dataset" name="test_ast_alias_dedup_and_order" time="1.431" /><testcase classname="tests.research.test_partitioned_dataset" name="test_future_perturbation" time="6.259" /><testcase classname="tests.research.test_partitioned_dataset" name="test_research_future_label_interval_and_shuffled_inputs" time="1.948"><failure message="factorlab.errors.SchemaError: Benchmark dates must be strictly increasing">inputs = (DatetimeIndex(['2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05',
+               '2023-01-06', '2023-01-09', '20...Z   2023-02-06
+2  000003.SZ   2023-01-02
+3  000004.SZ   2023-01-02
+4  000005.SZ   2023-01-02
+5  000006.SZ   2023-01-02)
+tmp_path = WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-qwe13/pytest-95/test_research_future_label_int0')
+
+    def test_research_future_label_interval_and_shuffled_inputs(inputs, tmp_path):
+        dates, *frames = inputs
+        frames[2] = frames[2].loc[frames[2].date &lt;= dates[175]]
+        obj = builder()
+        expected = obj.build(*frames, dates)
+        shuffled = [f.sample(frac=1, random_state=8) for f in frames]
+&gt;       actual = obj.build_chunked(*shuffled, dates, output_dir=tmp_path / "interval").to_frame()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_dataset.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\dataset\builder.py:344: in build_chunked
+    return build_partitioned(
+src\factorlab\dataset\partitioned.py:359: in build_partitioned
+    market = build_market_regime_features(benchmark)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\factorlab\market\regime.py:129: in build_market_regime_features
+    dates = _normalise_and_validate_dates(benchmark["date"])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+values = 67    2023-04-05
+69    2023-04-07
+193   2023-09-28
+161   2023-08-15
+65    2023-04-03
+         ...    
+136   2023-07-11
+133   2023-07-06
+105   2023-05-29
+84    2023-04-28
+195   2023-10-02
+Name: date, Length: 200, dtype: datetime64[ns]
+
+    def _normalise_and_validate_dates(values: pd.Series) -&gt; pd.Series:
+        try:
+            dates = pd.to_datetime(values, errors="raise")
+        except (TypeError, ValueError) as exc:
+            raise SchemaError("Benchmark date contains an invalid value") from exc
+        if dates.isna().any():
+            raise SchemaError("Benchmark date must not contain missing values")
+        if getattr(dates.dt, "tz", None) is not None:
+            raise SchemaError("Benchmark date must be timezone-naive")
+        normalized = dates.dt.normalize().astype("datetime64[ns]")
+        if not dates.equals(normalized):
+            raise SchemaError("Benchmark date must contain trading dates at midnight")
+        if normalized.duplicated().any():
+            raise SchemaError("Benchmark contains duplicate dates")
+        if not normalized.is_monotonic_increasing:
+&gt;           raise SchemaError("Benchmark dates must be strictly increasing")
+E           factorlab.errors.SchemaError: Benchmark dates must be strictly increasing
+
+src\factorlab\market\regime.py:48: SchemaError</failure></testcase><testcase classname="tests.research.test_partitioned_dataset" name="test_partition_integrity[corrupt]" time="3.088" /><testcase classname="tests.research.test_partitioned_dataset" name="test_partition_integrity[missing]" time="3.041" /><testcase classname="tests.research.test_partitioned_dataset" name="test_partition_integrity[duplicate_keys]" time="2.985" /><testcase classname="tests.research.test_partitioned_dataset" name="test_partition_integrity[schema]" time="2.851" /><testcase classname="tests.research.test_partitioned_dataset" name="test_partition_integrity[overlap]" time="2.755" /><testcase classname="tests.research.test_partitioned_dataset" name="test_partition_integrity[extra]" time="2.828" /><testcase classname="tests.research.test_partitioned_dataset" name="test_failure_never_publishes[memory]" time="0.146" /><testcase classname="tests.research.test_partitioned_dataset" name="test_failure_never_publishes[disk]" time="0.268" /><testcase classname="tests.research.test_partitioned_dataset" name="test_failure_never_publishes[timeout]" time="0.137" /><testcase classname="tests.research.test_partitioned_dataset" name="test_failure_never_publishes[duplicate]" time="0.104" /><testcase classname="tests.research.test_partitioned_dataset" name="test_failure_never_publishes[outside]" time="0.103" /><testcase classname="tests.research.test_partitioned_dataset" name="test_failure_never_publishes[factor_failure]" time="0.187" /><testcase classname="tests.research.test_partitioned_dataset" name="test_pins_calendar_overwrite_and_original_limits" time="2.958" /><testcase classname="tests.research.test_partitioned_dataset" name="test_large_definition_workload_is_real_and_bounded" time="0.232" /><testcase classname="tests.research.test_partitioned_dataset" name="test_all_300_definitions_execute_with_deterministic_batches" time="14.767" /></testsuite></testsuites>

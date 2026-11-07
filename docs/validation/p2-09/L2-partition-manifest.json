@@ -1,0 +1,3950 @@
+{
+  "format": "FACTORLAB_PARTITIONED_V1",
+  "kind": "dataset",
+  "binding": {
+    "schema": "FACTORLAB_DATASET_REGISTRY_V2_1",
+    "snapshot_hash": "b8c44bd78258d08c3790d660f9a22070cf2055b7c8457aa0da76992ae7b2cf7d",
+    "factors": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "SCALE_000",
+        "version": "1",
+        "definition_hash": "abefd688b03a9d443746e21d611f4f510ff2de62d4cf18bf6d3ea77e4eed4101"
+      },
+      {
+        "factor_id": "SCALE_001",
+        "version": "1",
+        "definition_hash": "e52c98e92d6bf7998dbcbe98f435d8aeaa4249efb2ac042d8eb3fc478254c0fc"
+      },
+      {
+        "factor_id": "SCALE_002",
+        "version": "1",
+        "definition_hash": "d3907c1351b9d238a9954e036bc48e0140fe077cf96cce2a29c41962235ec8aa"
+      },
+      {
+        "factor_id": "SCALE_003",
+        "version": "1",
+        "definition_hash": "8e434308f9810959bb296d83ae64bd1d9ec35d9b270c971161eb3f1d135f7e36"
+      },
+      {
+        "factor_id": "SCALE_004",
+        "version": "1",
+        "definition_hash": "3bd52a1e84807efd86c32a07bdea967caec2c9d3f17518f5c20f2a47cc9df3ac"
+      },
+      {
+        "factor_id": "SCALE_005",
+        "version": "1",
+        "definition_hash": "fcfb83b0fd5df0b99bbe485cea557a5ce8c903263cbc8cdaa384fbfa170d22aa"
+      },
+      {
+        "factor_id": "SCALE_006",
+        "version": "1",
+        "definition_hash": "4a4ed0c757f3eb7d034f303974b95c5bd0ec93d9f9c3a51ee2f25085a61cacc5"
+      },
+      {
+        "factor_id": "SCALE_007",
+        "version": "1",
+        "definition_hash": "22662f7c9cde13ef90d227e5589977fb78c7ae201acea974e49d9229e1149496"
+      },
+      {
+        "factor_id": "SCALE_008",
+        "version": "1",
+        "definition_hash": "e594d1e6bcd7d876271d091c9c3dacce8c83efc4da40cd14a2f767b6dec80fa8"
+      },
+      {
+        "factor_id": "SCALE_009",
+        "version": "1",
+        "definition_hash": "cd57372d13c41d49e0145ba80444d38cc3adc0bdb8ca85e39f03324e4ed84ee0"
+      },
+      {
+        "factor_id": "SCALE_010",
+        "version": "1",
+        "definition_hash": "64a212dd4561496b7a84cc0232b8efd501512b14ffc46e3e6f4e5127650b8cde"
+      },
+      {
+        "factor_id": "SCALE_011",
+        "version": "1",
+        "definition_hash": "e606b1325d76322c5738e61fb26c0afafa9683498417291853c1ae4f2cd6484b"
+      },
+      {
+        "factor_id": "SCALE_012",
+        "version": "1",
+        "definition_hash": "5da51435d0d0b2888f1989ffa9ca1362ee71af660a2ca938cf3f543a4c3a9ef5"
+      },
+      {
+        "factor_id": "SCALE_013",
+        "version": "1",
+        "definition_hash": "6dfa2f68e26db76396fb744f29e22868dfbe2efa0c5ae4e2d703b70a38a09146"
+      },
+      {
+        "factor_id": "SCALE_014",
+        "version": "1",
+        "definition_hash": "7d9b0756499afb0e6f86a573e816888403bec1eeb945cdf39776d54d368c30e1"
+      },
+      {
+        "factor_id": "SCALE_015",
+        "version": "1",
+        "definition_hash": "cb60c5f8695b29a78343603dead39ee4d608c71060ab9fa5bae05102b8309e70"
+      },
+      {
+        "factor_id": "SCALE_016",
+        "version": "1",
+        "definition_hash": "9f045de357bc15ad406a433534fc3254a350b90adf9471fa5cecfbc7beee1241"
+      },
+      {
+        "factor_id": "SCALE_017",
+        "version": "1",
+        "definition_hash": "79d685fc41d32b256aae480f13771225b6ee915632920aac94a4201ad2b16016"
+      },
+      {
+        "factor_id": "SCALE_018",
+        "version": "1",
+        "definition_hash": "aba6052a76952d2bddb9f881e5f23556a03e8091347fffe4c8314035f8a4984c"
+      },
+      {
+        "factor_id": "SCALE_019",
+        "version": "1",
+        "definition_hash": "2e00f3e97c77a0bdd0639386b9ee7e838ee22132be04e0fc058d8bb1b0c37f04"
+      },
+      {
+        "factor_id": "SCALE_020",
+        "version": "1",
+        "definition_hash": "b1229fc11092a27a257aaf4e7ef1c9eb1669faa32a1f841a7f37e65af711d66b"
+      },
+      {
+        "factor_id": "SCALE_021",
+        "version": "1",
+        "definition_hash": "a9722a02cbbb1952255867db204ef54e95a87213f64533f0a172b0771cdcb862"
+      },
+      {
+        "factor_id": "SCALE_022",
+        "version": "1",
+        "definition_hash": "e52e394426a3b923d1919bf55f14616cdb6b01fe5a7c6c6c2823f42331b445f0"
+      },
+      {
+        "factor_id": "SCALE_023",
+        "version": "1",
+        "definition_hash": "f6df53835f79d93832aa59099a674e1bd6fb739bb9e1febf925cb651bc87a37f"
+      },
+      {
+        "factor_id": "SCALE_024",
+        "version": "1",
+        "definition_hash": "57b73349d2b525357581529f1eb6cab768190ed510b65c3e24ac69cacc812bf1"
+      },
+      {
+        "factor_id": "SCALE_025",
+        "version": "1",
+        "definition_hash": "6e25b448bc1e2fe0edf7687989aea4024f0d71f610dce61fc825237a1f14eb20"
+      },
+      {
+        "factor_id": "SCALE_026",
+        "version": "1",
+        "definition_hash": "a198f947ec2045e2164e88c7096b8caa6bd65e44d6750dcdb760e8c7018c77f1"
+      },
+      {
+        "factor_id": "SCALE_027",
+        "version": "1",
+        "definition_hash": "e90ad829b95fb53b744599eab4d724eca4e0588258e946c0574f9e61e5ddc40c"
+      },
+      {
+        "factor_id": "SCALE_028",
+        "version": "1",
+        "definition_hash": "494905fe0f27f3c7369eed13c203cc99038e993653023fdaa4b892e6d3a589d8"
+      },
+      {
+        "factor_id": "SCALE_029",
+        "version": "1",
+        "definition_hash": "3440caeeb97efa517e48e08af2828be11a274d42e88d2ca2983b9d329b0a5fbf"
+      },
+      {
+        "factor_id": "SCALE_030",
+        "version": "1",
+        "definition_hash": "44995afe9dc5e93cf31c9c01f8ad8550af81fb09619fdcdfb2f40ce4d46f2016"
+      },
+      {
+        "factor_id": "SCALE_031",
+        "version": "1",
+        "definition_hash": "16256b2f299927bc330fa9310a4582cb199b53cfdd33f6e22a2281708aa17116"
+      },
+      {
+        "factor_id": "SCALE_032",
+        "version": "1",
+        "definition_hash": "5eb99c74e8003be5452f052fa4dd652c08916d1281e07d672be1fc4e659be5db"
+      },
+      {
+        "factor_id": "SCALE_033",
+        "version": "1",
+        "definition_hash": "bdbec347eb83e998fb7322c07cdad91e99fb38524a4c2e1364de05619e06b41c"
+      },
+      {
+        "factor_id": "SCALE_034",
+        "version": "1",
+        "definition_hash": "8c1add4d8237d7961c47678225b37dfc7dde7de4c31504defeafecf9d9421e06"
+      },
+      {
+        "factor_id": "SCALE_035",
+        "version": "1",
+        "definition_hash": "03c0ac6e6cb0e5832172650e98d656bbca6fb668e8148317dbb1d20f50d2b63d"
+      },
+      {
+        "factor_id": "SCALE_036",
+        "version": "1",
+        "definition_hash": "16defb8c19ba6727502317e6977b6fe5785b20481276ab4acb5e898657b72a91"
+      },
+      {
+        "factor_id": "SCALE_037",
+        "version": "1",
+        "definition_hash": "5ab9e391736029cfc04541bf288f43f5c17a1b986bf948068f2326d21d35c0a9"
+      },
+      {
+        "factor_id": "SCALE_038",
+        "version": "1",
+        "definition_hash": "8d8a28519445d27f556ee0ab087210fbe5873ab5b5e45756ab969d897e0e0433"
+      },
+      {
+        "factor_id": "SCALE_039",
+        "version": "1",
+        "definition_hash": "425db4e78598694c47be485f108fd42a0e3c33e73347b7ad3e2f924eec3fbe37"
+      },
+      {
+        "factor_id": "SCALE_040",
+        "version": "1",
+        "definition_hash": "4f048d365ccf56dc77c13b429b2b7a01f5d2f34d44908fa3320edce2aa3829fc"
+      },
+      {
+        "factor_id": "SCALE_041",
+        "version": "1",
+        "definition_hash": "30ffedc50160bc8b9c97db29ca0e07d73512046a93377c58813327e09214aaea"
+      },
+      {
+        "factor_id": "SCALE_042",
+        "version": "1",
+        "definition_hash": "6abf260b310a92981f0cd516bb2f5fe7965d407c22756966c1d58d38474d878c"
+      },
+      {
+        "factor_id": "SCALE_043",
+        "version": "1",
+        "definition_hash": "a1913ee9b3188a3c40236e5eacbac1da3db99ed8edf4d92e3b962467b56017b5"
+      },
+      {
+        "factor_id": "SCALE_044",
+        "version": "1",
+        "definition_hash": "9a1c69dc18ec7877d56c3c58cf8cc9bcca64b028f0d8346c9179aa0ed5b4dc3c"
+      },
+      {
+        "factor_id": "SCALE_045",
+        "version": "1",
+        "definition_hash": "9b1f0909b5997055a853d84453bff7a69cf0bfb6443544cc04e4d3aada372895"
+      },
+      {
+        "factor_id": "SCALE_046",
+        "version": "1",
+        "definition_hash": "f12e28f4bb573371450e6a6bc69bb921eb727c91c41b30adbef83cbb357725cf"
+      },
+      {
+        "factor_id": "SCALE_047",
+        "version": "1",
+        "definition_hash": "13d93adf6d7dc8ef89f29be28d4093d3a2b1b446fb0801bcde2be2636839275f"
+      },
+      {
+        "factor_id": "SCALE_048",
+        "version": "1",
+        "definition_hash": "2527bc8e270fb7f348dd300c37e9a2abf8c6130b98c1fe8db0f358788b4600a0"
+      },
+      {
+        "factor_id": "SCALE_049",
+        "version": "1",
+        "definition_hash": "f1c79e6e04715abd909fe9fee1d5e43fdba97b9044b12c8244311916cc7a5a4d"
+      },
+      {
+        "factor_id": "SCALE_050",
+        "version": "1",
+        "definition_hash": "4a69ec317a55645f8a89a668164f768c726c4bd853e9c1d4731099697b72b3e6"
+      },
+      {
+        "factor_id": "SCALE_051",
+        "version": "1",
+        "definition_hash": "d33c01bdf97e5e371d787a16c80a291e0ab60bcd75f50a75881b41f2f8677582"
+      },
+      {
+        "factor_id": "SCALE_052",
+        "version": "1",
+        "definition_hash": "7f70f261c900cbe9764a1ba4c9a8b9360850e3b684191cb689c9ac41373ee7a2"
+      },
+      {
+        "factor_id": "SCALE_053",
+        "version": "1",
+        "definition_hash": "c012a468ba0a15053cf6e7449b57c801f50ffeef8b28634a95f2ba6ffb6905c5"
+      },
+      {
+        "factor_id": "SCALE_054",
+        "version": "1",
+        "definition_hash": "d83bd62934111225be937c424c7dceb65c104be167c3005c2171fa4ae353407e"
+      },
+      {
+        "factor_id": "SCALE_055",
+        "version": "1",
+        "definition_hash": "e1c6ba802e428a2b3886bc07507865406d5c058b7da8da7478285c752a07ee25"
+      },
+      {
+        "factor_id": "SCALE_056",
+        "version": "1",
+        "definition_hash": "33af7448ba2b92e467aafbe84ceb02e24c67f767bce1f6f6edc819e3e14c3fd5"
+      },
+      {
+        "factor_id": "SCALE_057",
+        "version": "1",
+        "definition_hash": "31f860eb6c3308b6efe50da1c1843811bd83c06d6eb4c3415583a3f191a544e8"
+      },
+      {
+        "factor_id": "SCALE_058",
+        "version": "1",
+        "definition_hash": "dca989e68300f77abe0d1d08a5f54e5bfa4f2d7c44dd979f00c69d2193a95221"
+      },
+      {
+        "factor_id": "SCALE_059",
+        "version": "1",
+        "definition_hash": "094e8dde3d98b0b9a68b92d22cd423c21701e593418888ff7118540fa6d61e2c"
+      },
+      {
+        "factor_id": "SCALE_060",
+        "version": "1",
+        "definition_hash": "5423872754200ea638bdeb008545c932362409d6044d265ac12d6dd18e583ac3"
+      },
+      {
+        "factor_id": "SCALE_061",
+        "version": "1",
+        "definition_hash": "b7c36630ca4b362a068ca887951a66ec912855cf0fc3e19581f168137249113a"
+      },
+      {
+        "factor_id": "SCALE_062",
+        "version": "1",
+        "definition_hash": "ae3d249405bc7369bac98be8ccf28de0291901786b1e1b6fff47ac6c1d01c44b"
+      },
+      {
+        "factor_id": "SCALE_063",
+        "version": "1",
+        "definition_hash": "10838c57e2e22aafd24a6f73869a294f646bb407cadce4f5f567fb7ae42627a3"
+      },
+      {
+        "factor_id": "SCALE_064",
+        "version": "1",
+        "definition_hash": "b3fa349bb9002e8c5626732908c4bffac4d7da124615953fc23a123d8b6587b4"
+      },
+      {
+        "factor_id": "SCALE_065",
+        "version": "1",
+        "definition_hash": "7240a25c05c31f9e48a2a34980538f6c071144812b3de38789da2a18e04854b0"
+      },
+      {
+        "factor_id": "SCALE_066",
+        "version": "1",
+        "definition_hash": "1ee3c2f596291f115e10904bc1a7c68da5c77bc67cdfad5f9f50d510c49373a0"
+      },
+      {
+        "factor_id": "SCALE_067",
+        "version": "1",
+        "definition_hash": "2fa649df9045d75c3aa1880f7fc998ddb4328bb64d6cdcd9266e03afce273110"
+      },
+      {
+        "factor_id": "SCALE_068",
+        "version": "1",
+        "definition_hash": "ff3777b03fa7b6f6c2f4737ba2e5077a4413a2b56c0fa693ec7473d68dd69fa8"
+      },
+      {
+        "factor_id": "SCALE_069",
+        "version": "1",
+        "definition_hash": "6f03241aabc93aff1f3537580a229689743eeb196b3a2391f2cf68bb3d11286e"
+      },
+      {
+        "factor_id": "SCALE_070",
+        "version": "1",
+        "definition_hash": "5cb278c11e1d5504a71f5fa6852e20d18605e398c3cb90f237c6cc7680ba042e"
+      },
+      {
+        "factor_id": "SCALE_071",
+        "version": "1",
+        "definition_hash": "7e2208d3c96a90d093a34a40cedc99283796d461a1cc9b0d2b1ef81488c82e55"
+      },
+      {
+        "factor_id": "SCALE_072",
+        "version": "1",
+        "definition_hash": "d7cf0cf2303efe0145ccf12482b1043d1d1cea4caa5861322e5517f4a52421d7"
+      },
+      {
+        "factor_id": "SCALE_073",
+        "version": "1",
+        "definition_hash": "a8f02fa180b5a447037aa47e290f030e69fe4909c3ae05244623b20f45d19502"
+      },
+      {
+        "factor_id": "SCALE_074",
+        "version": "1",
+        "definition_hash": "d66084b425ca3d54d6d8bb97f98791b8ab01f3b95e3643b58437b4c6303bc560"
+      },
+      {
+        "factor_id": "SCALE_075",
+        "version": "1",
+        "definition_hash": "4e9cbec956c7537f2aba3e2e8a6ce11a211ee09d03ff8187bdf92bf0e27fabc6"
+      },
+      {
+        "factor_id": "SCALE_076",
+        "version": "1",
+        "definition_hash": "277ee88f26f4ce5d1c3fb453b7567fc4c5a98ae7a417dc9b18d4f756a1d2e522"
+      },
+      {
+        "factor_id": "SCALE_077",
+        "version": "1",
+        "definition_hash": "a3412e1b58f4b4d5a77bd8fd7377bcf4bd8e08bb7b57847dd0e90e754d708b90"
+      },
+      {
+        "factor_id": "SCALE_078",
+        "version": "1",
+        "definition_hash": "2d5e11dc506bdde044ada7664ef358797b41d8faa022ce146c4e71ae9296bb93"
+      },
+      {
+        "factor_id": "SCALE_079",
+        "version": "1",
+        "definition_hash": "caaf85995623111d5d4cd3429501aadad45a9531b1b806c12cf07b737f9649d5"
+      },
+      {
+        "factor_id": "SCALE_080",
+        "version": "1",
+        "definition_hash": "144ab2c49992e350ea5c7ffc2304f66c3db27320387b131f74ab4462687f251b"
+      },
+      {
+        "factor_id": "SCALE_081",
+        "version": "1",
+        "definition_hash": "0dc1fc0d27fe2a577ff9fbbc18a5759f45a18a2453680e5f670da004eefa6306"
+      },
+      {
+        "factor_id": "SCALE_082",
+        "version": "1",
+        "definition_hash": "4079d6ce08ecba2b0fed9fb792db6149058bc2069bae249d7027517c3ac768d8"
+      },
+      {
+        "factor_id": "SCALE_083",
+        "version": "1",
+        "definition_hash": "46ec03a5168c1f4b32b4251618ead1271bc40c2b747029ebc8ce338d021ef606"
+      },
+      {
+        "factor_id": "SCALE_084",
+        "version": "1",
+        "definition_hash": "6ba114945e526a80691e8e1c8ee8d9054747c962178fd4e495b0811e3081b44b"
+      },
+      {
+        "factor_id": "SCALE_085",
+        "version": "1",
+        "definition_hash": "02573ef72c50ceec3850ed07e5ff1a263b389ae0b4fffc0f50065a0fc4d41f4b"
+      }
+    ],
+    "resolved_definitions": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:AMIHU20",
+        "input_fields": [
+          "adj_close",
+          "amount"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MA20_MA60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 59,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MA5_MA20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MOM20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MOM60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:PRICE_MA20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:REV1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 1,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:REV5",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:TURN20",
+        "input_fields": [
+          "turnover"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:TURN5",
+        "input_fields": [
+          "turnover"
+        ],
+        "lookback": 4,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL5",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOLUME_RATIO",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "SCALE_000",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "abefd688b03a9d443746e21d611f4f510ff2de62d4cf18bf6d3ea77e4eed4101"
+      },
+      {
+        "factor_id": "SCALE_001",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "e52c98e92d6bf7998dbcbe98f435d8aeaa4249efb2ac042d8eb3fc478254c0fc"
+      },
+      {
+        "factor_id": "SCALE_002",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "d3907c1351b9d238a9954e036bc48e0140fe077cf96cce2a29c41962235ec8aa"
+      },
+      {
+        "factor_id": "SCALE_003",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 9,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "8e434308f9810959bb296d83ae64bd1d9ec35d9b270c971161eb3f1d135f7e36"
+      },
+      {
+        "factor_id": "SCALE_004",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 9,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "3bd52a1e84807efd86c32a07bdea967caec2c9d3f17518f5c20f2a47cc9df3ac"
+      },
+      {
+        "factor_id": "SCALE_005",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 9,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "fcfb83b0fd5df0b99bbe485cea557a5ce8c903263cbc8cdaa384fbfa170d22aa"
+      },
+      {
+        "factor_id": "SCALE_006",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 14,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "4a4ed0c757f3eb7d034f303974b95c5bd0ec93d9f9c3a51ee2f25085a61cacc5"
+      },
+      {
+        "factor_id": "SCALE_007",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 14,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "22662f7c9cde13ef90d227e5589977fb78c7ae201acea974e49d9229e1149496"
+      },
+      {
+        "factor_id": "SCALE_008",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 14,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "e594d1e6bcd7d876271d091c9c3dacce8c83efc4da40cd14a2f767b6dec80fa8"
+      },
+      {
+        "factor_id": "SCALE_009",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 24,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "cd57372d13c41d49e0145ba80444d38cc3adc0bdb8ca85e39f03324e4ed84ee0"
+      },
+      {
+        "factor_id": "SCALE_010",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 24,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "64a212dd4561496b7a84cc0232b8efd501512b14ffc46e3e6f4e5127650b8cde"
+      },
+      {
+        "factor_id": "SCALE_011",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 24,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "e606b1325d76322c5738e61fb26c0afafa9683498417291853c1ae4f2cd6484b"
+      },
+      {
+        "factor_id": "SCALE_012",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 64,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5da51435d0d0b2888f1989ffa9ca1362ee71af660a2ca938cf3f543a4c3a9ef5"
+      },
+      {
+        "factor_id": "SCALE_013",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 64,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "6dfa2f68e26db76396fb744f29e22868dfbe2efa0c5ae4e2d703b70a38a09146"
+      },
+      {
+        "factor_id": "SCALE_014",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 64,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "7d9b0756499afb0e6f86a573e816888403bec1eeb945cdf39776d54d368c30e1"
+      },
+      {
+        "factor_id": "SCALE_015",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 10,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "cb60c5f8695b29a78343603dead39ee4d608c71060ab9fa5bae05102b8309e70"
+      },
+      {
+        "factor_id": "SCALE_016",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 10,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "9f045de357bc15ad406a433534fc3254a350b90adf9471fa5cecfbc7beee1241"
+      },
+      {
+        "factor_id": "SCALE_017",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 10,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "79d685fc41d32b256aae480f13771225b6ee915632920aac94a4201ad2b16016"
+      },
+      {
+        "factor_id": "SCALE_018",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 14,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "aba6052a76952d2bddb9f881e5f23556a03e8091347fffe4c8314035f8a4984c"
+      },
+      {
+        "factor_id": "SCALE_019",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 14,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "2e00f3e97c77a0bdd0639386b9ee7e838ee22132be04e0fc058d8bb1b0c37f04"
+      },
+      {
+        "factor_id": "SCALE_020",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 14,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "b1229fc11092a27a257aaf4e7ef1c9eb1669faa32a1f841a7f37e65af711d66b"
+      },
+      {
+        "factor_id": "SCALE_021",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a9722a02cbbb1952255867db204ef54e95a87213f64533f0a172b0771cdcb862"
+      },
+      {
+        "factor_id": "SCALE_022",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "e52e394426a3b923d1919bf55f14616cdb6b01fe5a7c6c6c2823f42331b445f0"
+      },
+      {
+        "factor_id": "SCALE_023",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "f6df53835f79d93832aa59099a674e1bd6fb739bb9e1febf925cb651bc87a37f"
+      },
+      {
+        "factor_id": "SCALE_024",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 29,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "57b73349d2b525357581529f1eb6cab768190ed510b65c3e24ac69cacc812bf1"
+      },
+      {
+        "factor_id": "SCALE_025",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 29,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "6e25b448bc1e2fe0edf7687989aea4024f0d71f610dce61fc825237a1f14eb20"
+      },
+      {
+        "factor_id": "SCALE_026",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 29,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a198f947ec2045e2164e88c7096b8caa6bd65e44d6750dcdb760e8c7018c77f1"
+      },
+      {
+        "factor_id": "SCALE_027",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 69,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "e90ad829b95fb53b744599eab4d724eca4e0588258e946c0574f9e61e5ddc40c"
+      },
+      {
+        "factor_id": "SCALE_028",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 69,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "494905fe0f27f3c7369eed13c203cc99038e993653023fdaa4b892e6d3a589d8"
+      },
+      {
+        "factor_id": "SCALE_029",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 69,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "3440caeeb97efa517e48e08af2828be11a274d42e88d2ca2983b9d329b0a5fbf"
+      },
+      {
+        "factor_id": "SCALE_030",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "44995afe9dc5e93cf31c9c01f8ad8550af81fb09619fdcdfb2f40ce4d46f2016"
+      },
+      {
+        "factor_id": "SCALE_031",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "16256b2f299927bc330fa9310a4582cb199b53cfdd33f6e22a2281708aa17116"
+      },
+      {
+        "factor_id": "SCALE_032",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5eb99c74e8003be5452f052fa4dd652c08916d1281e07d672be1fc4e659be5db"
+      },
+      {
+        "factor_id": "SCALE_033",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 24,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "bdbec347eb83e998fb7322c07cdad91e99fb38524a4c2e1364de05619e06b41c"
+      },
+      {
+        "factor_id": "SCALE_034",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 24,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "8c1add4d8237d7961c47678225b37dfc7dde7de4c31504defeafecf9d9421e06"
+      },
+      {
+        "factor_id": "SCALE_035",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 24,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "03c0ac6e6cb0e5832172650e98d656bbca6fb668e8148317dbb1d20f50d2b63d"
+      },
+      {
+        "factor_id": "SCALE_036",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 29,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "16defb8c19ba6727502317e6977b6fe5785b20481276ab4acb5e898657b72a91"
+      },
+      {
+        "factor_id": "SCALE_037",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 29,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5ab9e391736029cfc04541bf288f43f5c17a1b986bf948068f2326d21d35c0a9"
+      },
+      {
+        "factor_id": "SCALE_038",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 29,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "8d8a28519445d27f556ee0ab087210fbe5873ab5b5e45756ab969d897e0e0433"
+      },
+      {
+        "factor_id": "SCALE_039",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 39,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "425db4e78598694c47be485f108fd42a0e3c33e73347b7ad3e2f924eec3fbe37"
+      },
+      {
+        "factor_id": "SCALE_040",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 39,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "4f048d365ccf56dc77c13b429b2b7a01f5d2f34d44908fa3320edce2aa3829fc"
+      },
+      {
+        "factor_id": "SCALE_041",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 39,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "30ffedc50160bc8b9c97db29ca0e07d73512046a93377c58813327e09214aaea"
+      },
+      {
+        "factor_id": "SCALE_042",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 79,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "6abf260b310a92981f0cd516bb2f5fe7965d407c22756966c1d58d38474d878c"
+      },
+      {
+        "factor_id": "SCALE_043",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 79,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a1913ee9b3188a3c40236e5eacbac1da3db99ed8edf4d92e3b962467b56017b5"
+      },
+      {
+        "factor_id": "SCALE_044",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 79,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "9a1c69dc18ec7877d56c3c58cf8cc9bcca64b028f0d8346c9179aa0ed5b4dc3c"
+      },
+      {
+        "factor_id": "SCALE_045",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "9b1f0909b5997055a853d84453bff7a69cf0bfb6443544cc04e4d3aada372895"
+      },
+      {
+        "factor_id": "SCALE_046",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "f12e28f4bb573371450e6a6bc69bb921eb727c91c41b30adbef83cbb357725cf"
+      },
+      {
+        "factor_id": "SCALE_047",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "13d93adf6d7dc8ef89f29be28d4093d3a2b1b446fb0801bcde2be2636839275f"
+      },
+      {
+        "factor_id": "SCALE_048",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 64,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "2527bc8e270fb7f348dd300c37e9a2abf8c6130b98c1fe8db0f358788b4600a0"
+      },
+      {
+        "factor_id": "SCALE_049",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 64,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "f1c79e6e04715abd909fe9fee1d5e43fdba97b9044b12c8244311916cc7a5a4d"
+      },
+      {
+        "factor_id": "SCALE_050",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 64,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "4a69ec317a55645f8a89a668164f768c726c4bd853e9c1d4731099697b72b3e6"
+      },
+      {
+        "factor_id": "SCALE_051",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 69,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "d33c01bdf97e5e371d787a16c80a291e0ab60bcd75f50a75881b41f2f8677582"
+      },
+      {
+        "factor_id": "SCALE_052",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 69,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "7f70f261c900cbe9764a1ba4c9a8b9360850e3b684191cb689c9ac41373ee7a2"
+      },
+      {
+        "factor_id": "SCALE_053",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 69,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "c012a468ba0a15053cf6e7449b57c801f50ffeef8b28634a95f2ba6ffb6905c5"
+      },
+      {
+        "factor_id": "SCALE_054",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 79,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "d83bd62934111225be937c424c7dceb65c104be167c3005c2171fa4ae353407e"
+      },
+      {
+        "factor_id": "SCALE_055",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 79,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "e1c6ba802e428a2b3886bc07507865406d5c058b7da8da7478285c752a07ee25"
+      },
+      {
+        "factor_id": "SCALE_056",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 79,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "33af7448ba2b92e467aafbe84ceb02e24c67f767bce1f6f6edc819e3e14c3fd5"
+      },
+      {
+        "factor_id": "SCALE_057",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 119,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "31f860eb6c3308b6efe50da1c1843811bd83c06d6eb4c3415583a3f191a544e8"
+      },
+      {
+        "factor_id": "SCALE_058",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 119,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "dca989e68300f77abe0d1d08a5f54e5bfa4f2d7c44dd979f00c69d2193a95221"
+      },
+      {
+        "factor_id": "SCALE_059",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 119,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Delta\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "094e8dde3d98b0b9a68b92d22cd423c21701e593418888ff7118540fa6d61e2c"
+      },
+      {
+        "factor_id": "SCALE_060",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 5,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5423872754200ea638bdeb008545c932362409d6044d265ac12d6dd18e583ac3"
+      },
+      {
+        "factor_id": "SCALE_061",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 5,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "b7c36630ca4b362a068ca887951a66ec912855cf0fc3e19581f168137249113a"
+      },
+      {
+        "factor_id": "SCALE_062",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 5,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "ae3d249405bc7369bac98be8ccf28de0291901786b1e1b6fff47ac6c1d01c44b"
+      },
+      {
+        "factor_id": "SCALE_063",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 9,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "10838c57e2e22aafd24a6f73869a294f646bb407cadce4f5f567fb7ae42627a3"
+      },
+      {
+        "factor_id": "SCALE_064",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 9,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "b3fa349bb9002e8c5626732908c4bffac4d7da124615953fc23a123d8b6587b4"
+      },
+      {
+        "factor_id": "SCALE_065",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 9,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "7240a25c05c31f9e48a2a34980538f6c071144812b3de38789da2a18e04854b0"
+      },
+      {
+        "factor_id": "SCALE_066",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 14,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "1ee3c2f596291f115e10904bc1a7c68da5c77bc67cdfad5f9f50d510c49373a0"
+      },
+      {
+        "factor_id": "SCALE_067",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 14,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "2fa649df9045d75c3aa1880f7fc998ddb4328bb64d6cdcd9266e03afce273110"
+      },
+      {
+        "factor_id": "SCALE_068",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 14,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "ff3777b03fa7b6f6c2f4737ba2e5077a4413a2b56c0fa693ec7473d68dd69fa8"
+      },
+      {
+        "factor_id": "SCALE_069",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 24,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "6f03241aabc93aff1f3537580a229689743eeb196b3a2391f2cf68bb3d11286e"
+      },
+      {
+        "factor_id": "SCALE_070",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 24,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5cb278c11e1d5504a71f5fa6852e20d18605e398c3cb90f237c6cc7680ba042e"
+      },
+      {
+        "factor_id": "SCALE_071",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 24,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "7e2208d3c96a90d093a34a40cedc99283796d461a1cc9b0d2b1ef81488c82e55"
+      },
+      {
+        "factor_id": "SCALE_072",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 64,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "d7cf0cf2303efe0145ccf12482b1043d1d1cea4caa5861322e5517f4a52421d7"
+      },
+      {
+        "factor_id": "SCALE_073",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 64,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a8f02fa180b5a447037aa47e290f030e69fe4909c3ae05244623b20f45d19502"
+      },
+      {
+        "factor_id": "SCALE_074",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 64,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "d66084b425ca3d54d6d8bb97f98791b8ab01f3b95e3643b58437b4c6303bc560"
+      },
+      {
+        "factor_id": "SCALE_075",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 10,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "4e9cbec956c7537f2aba3e2e8a6ce11a211ee09d03ff8187bdf92bf0e27fabc6"
+      },
+      {
+        "factor_id": "SCALE_076",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 10,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "277ee88f26f4ce5d1c3fb453b7567fc4c5a98ae7a417dc9b18d4f756a1d2e522"
+      },
+      {
+        "factor_id": "SCALE_077",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 10,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a3412e1b58f4b4d5a77bd8fd7377bcf4bd8e08bb7b57847dd0e90e754d708b90"
+      },
+      {
+        "factor_id": "SCALE_078",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 14,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "2d5e11dc506bdde044ada7664ef358797b41d8faa022ce146c4e71ae9296bb93"
+      },
+      {
+        "factor_id": "SCALE_079",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 14,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "caaf85995623111d5d4cd3429501aadad45a9531b1b806c12cf07b737f9649d5"
+      },
+      {
+        "factor_id": "SCALE_080",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 14,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "144ab2c49992e350ea5c7ffc2304f66c3db27320387b131f74ab4462687f251b"
+      },
+      {
+        "factor_id": "SCALE_081",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "0dc1fc0d27fe2a577ff9fbbc18a5759f45a18a2453680e5f670da004eefa6306"
+      },
+      {
+        "factor_id": "SCALE_082",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "4079d6ce08ecba2b0fed9fb792db6149058bc2069bae249d7027517c3ac768d8"
+      },
+      {
+        "factor_id": "SCALE_083",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Delta\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "46ec03a5168c1f4b32b4251618ead1271bc40c2b747029ebc8ce338d021ef606"
+      },
+      {
+        "factor_id": "SCALE_084",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 29,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "6ba114945e526a80691e8e1c8ee8d9054747c962178fd4e495b0811e3081b44b"
+      },
+      {
+        "factor_id": "SCALE_085",
+        "version": "1",
+        "kind": "expression",
+        "implementation": "discovery-ast-v1",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 29,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"}",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "02573ef72c50ceec3850ed07e5ff1a263b389ae0b4fffc0f50065a0fc4d41f4b"
+      }
+    ],
+    "data_context": {
+      "data_source": "P209_SYNTHETIC",
+      "availability_evidence": "UNVERIFIED",
+      "no_live_money": true,
+      "pit_status": "PIT_UNVERIFIED",
+      "hfq_status": "HFQ_UNVERIFIED",
+      "admission_status": "FORMAL_ADMISSION_BLOCKED"
+    },
+    "data_version": "seed-20261014-fixed-v1",
+    "calendar": {
+      "id": "SYNTHETIC_BDAY_NOT_EXCHANGE-v1",
+      "sessions": 1200,
+      "sha256": "161d326374efed3c2f786d82a4c631bd0af470a23f5cee642ea7d5f18ab6e608",
+      "start": "2023-01-02",
+      "end": "2027-08-06"
+    },
+    "options": {
+      "factor_names": [
+        "AMIHU20",
+        "MA20_MA60",
+        "MA5_MA20",
+        "MOM20",
+        "MOM60",
+        "PRICE_MA20",
+        "REV1",
+        "REV5",
+        "TURN20",
+        "TURN5",
+        "VOL20",
+        "VOL5",
+        "VOL60",
+        "VOLUME_RATIO",
+        "SCALE_000",
+        "SCALE_001",
+        "SCALE_002",
+        "SCALE_003",
+        "SCALE_004",
+        "SCALE_005",
+        "SCALE_006",
+        "SCALE_007",
+        "SCALE_008",
+        "SCALE_009",
+        "SCALE_010",
+        "SCALE_011",
+        "SCALE_012",
+        "SCALE_013",
+        "SCALE_014",
+        "SCALE_015",
+        "SCALE_016",
+        "SCALE_017",
+        "SCALE_018",
+        "SCALE_019",
+        "SCALE_020",
+        "SCALE_021",
+        "SCALE_022",
+        "SCALE_023",
+        "SCALE_024",
+        "SCALE_025",
+        "SCALE_026",
+        "SCALE_027",
+        "SCALE_028",
+        "SCALE_029",
+        "SCALE_030",
+        "SCALE_031",
+        "SCALE_032",
+        "SCALE_033",
+        "SCALE_034",
+        "SCALE_035",
+        "SCALE_036",
+        "SCALE_037",
+        "SCALE_038",
+        "SCALE_039",
+        "SCALE_040",
+        "SCALE_041",
+        "SCALE_042",
+        "SCALE_043",
+        "SCALE_044",
+        "SCALE_045",
+        "SCALE_046",
+        "SCALE_047",
+        "SCALE_048",
+        "SCALE_049",
+        "SCALE_050",
+        "SCALE_051",
+        "SCALE_052",
+        "SCALE_053",
+        "SCALE_054",
+        "SCALE_055",
+        "SCALE_056",
+        "SCALE_057",
+        "SCALE_058",
+        "SCALE_059",
+        "SCALE_060",
+        "SCALE_061",
+        "SCALE_062",
+        "SCALE_063",
+        "SCALE_064",
+        "SCALE_065",
+        "SCALE_066",
+        "SCALE_067",
+        "SCALE_068",
+        "SCALE_069",
+        "SCALE_070",
+        "SCALE_071",
+        "SCALE_072",
+        "SCALE_073",
+        "SCALE_074",
+        "SCALE_075",
+        "SCALE_076",
+        "SCALE_077",
+        "SCALE_078",
+        "SCALE_079",
+        "SCALE_080",
+        "SCALE_081",
+        "SCALE_082",
+        "SCALE_083",
+        "SCALE_084",
+        "SCALE_085"
+      ],
+      "holding_days": 5,
+      "entry_price": "next_open",
+      "expected_member_count": 500,
+      "winsorization": "mad",
+      "mad_multiplier": 5.0,
+      "lower_quantile": 0.01,
+      "upper_quantile": 0.99,
+      "minimum_cross_section": 20,
+      "include_market_regime": true,
+      "filter_config": {
+        "min_listed_days": 120,
+        "exclude_st": true,
+        "exclude_suspended": true,
+        "zero_volume_window": 20,
+        "quality_window": 60,
+        "min_quality_ratio": 0.8
+      }
+    },
+    "timing": {
+      "factor_availability": "SESSION_CLOSE",
+      "earliest_decision": "NEXT_SESSION_OPEN",
+      "entry_price": "next_open",
+      "label_price_basis": "HFQ",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    "registration_status": "SOFTWARE_VALIDATED_ONLY",
+    "financial_status": "FINANCIAL_ADMISSION_BLOCKED"
+  },
+  "input_hashes": {
+    "bars": "bfaef0bdb9932f4253e8c8938905d4203f1b6cd75c193d61e2e37b857edff648",
+    "benchmark": "590794c0d09f9e4342f1e081864818e2e5fae9939d40409736b5bcb25843bb8c",
+    "membership": "2d5307f2c2793e52753fffb7cc526e356d1a4748c49c2ad237bc1a5109b5238a",
+    "status": "92e3aae71361576fb2cc29709af0418d3e17cf3b38a3dad92c1cc495460e9b7b",
+    "listings": "a6c94de59aaa6e6c0a7e1ad2b554dbd33e31addf717c50d4a5b3260ad3fde497"
+  },
+  "research_interval": {
+    "start": "2023-04-03",
+    "end": "2027-08-06"
+  },
+  "schema": [
+    [
+      "date",
+      "timestamp[ns]"
+    ],
+    [
+      "symbol",
+      "string"
+    ],
+    [
+      "open",
+      "double"
+    ],
+    [
+      "high",
+      "double"
+    ],
+    [
+      "low",
+      "double"
+    ],
+    [
+      "close",
+      "double"
+    ],
+    [
+      "volume",
+      "double"
+    ],
+    [
+      "amount",
+      "double"
+    ],
+    [
+      "turnover",
+      "double"
+    ],
+    [
+      "adj_factor",
+      "double"
+    ],
+    [
+      "raw_open",
+      "double"
+    ],
+    [
+      "raw_high",
+      "double"
+    ],
+    [
+      "raw_low",
+      "double"
+    ],
+    [
+      "raw_close",
+      "double"
+    ],
+    [
+      "adj_open",
+      "double"
+    ],
+    [
+      "adj_high",
+      "double"
+    ],
+    [
+      "adj_low",
+      "double"
+    ],
+    [
+      "adj_close",
+      "double"
+    ],
+    [
+      "AMIHU20",
+      "double"
+    ],
+    [
+      "MA20_MA60",
+      "double"
+    ],
+    [
+      "MA5_MA20",
+      "double"
+    ],
+    [
+      "MOM20",
+      "double"
+    ],
+    [
+      "MOM60",
+      "double"
+    ],
+    [
+      "PRICE_MA20",
+      "double"
+    ],
+    [
+      "REV1",
+      "double"
+    ],
+    [
+      "REV5",
+      "double"
+    ],
+    [
+      "TURN20",
+      "double"
+    ],
+    [
+      "TURN5",
+      "double"
+    ],
+    [
+      "VOL20",
+      "double"
+    ],
+    [
+      "VOL5",
+      "double"
+    ],
+    [
+      "VOL60",
+      "double"
+    ],
+    [
+      "VOLUME_RATIO",
+      "double"
+    ],
+    [
+      "SCALE_000",
+      "double"
+    ],
+    [
+      "SCALE_001",
+      "double"
+    ],
+    [
+      "SCALE_002",
+      "double"
+    ],
+    [
+      "SCALE_003",
+      "double"
+    ],
+    [
+      "SCALE_004",
+      "double"
+    ],
+    [
+      "SCALE_005",
+      "double"
+    ],
+    [
+      "SCALE_006",
+      "double"
+    ],
+    [
+      "SCALE_007",
+      "double"
+    ],
+    [
+      "SCALE_008",
+      "double"
+    ],
+    [
+      "SCALE_009",
+      "double"
+    ],
+    [
+      "SCALE_010",
+      "double"
+    ],
+    [
+      "SCALE_011",
+      "double"
+    ],
+    [
+      "SCALE_012",
+      "double"
+    ],
+    [
+      "SCALE_013",
+      "double"
+    ],
+    [
+      "SCALE_014",
+      "double"
+    ],
+    [
+      "SCALE_015",
+      "double"
+    ],
+    [
+      "SCALE_016",
+      "double"
+    ],
+    [
+      "SCALE_017",
+      "double"
+    ],
+    [
+      "SCALE_018",
+      "double"
+    ],
+    [
+      "SCALE_019",
+      "double"
+    ],
+    [
+      "SCALE_020",
+      "double"
+    ],
+    [
+      "SCALE_021",
+      "double"
+    ],
+    [
+      "SCALE_022",
+      "double"
+    ],
+    [
+      "SCALE_023",
+      "double"
+    ],
+    [
+      "SCALE_024",
+      "double"
+    ],
+    [
+      "SCALE_025",
+      "double"
+    ],
+    [
+      "SCALE_026",
+      "double"
+    ],
+    [
+      "SCALE_027",
+      "double"
+    ],
+    [
+      "SCALE_028",
+      "double"
+    ],
+    [
+      "SCALE_029",
+      "double"
+    ],
+    [
+      "SCALE_030",
+      "double"
+    ],
+    [
+      "SCALE_031",
+      "double"
+    ],
+    [
+      "SCALE_032",
+      "double"
+    ],
+    [
+      "SCALE_033",
+      "double"
+    ],
+    [
+      "SCALE_034",
+      "double"
+    ],
+    [
+      "SCALE_035",
+      "double"
+    ],
+    [
+      "SCALE_036",
+      "double"
+    ],
+    [
+      "SCALE_037",
+      "double"
+    ],
+    [
+      "SCALE_038",
+      "double"
+    ],
+    [
+      "SCALE_039",
+      "double"
+    ],
+    [
+      "SCALE_040",
+      "double"
+    ],
+    [
+      "SCALE_041",
+      "double"
+    ],
+    [
+      "SCALE_042",
+      "double"
+    ],
+    [
+      "SCALE_043",
+      "double"
+    ],
+    [
+      "SCALE_044",
+      "double"
+    ],
+    [
+      "SCALE_045",
+      "double"
+    ],
+    [
+      "SCALE_046",
+      "double"
+    ],
+    [
+      "SCALE_047",
+      "double"
+    ],
+    [
+      "SCALE_048",
+      "double"
+    ],
+    [
+      "SCALE_049",
+      "double"
+    ],
+    [
+      "SCALE_050",
+      "double"
+    ],
+    [
+      "SCALE_051",
+      "double"
+    ],
+    [
+      "SCALE_052",
+      "double"
+    ],
+    [
+      "SCALE_053",
+      "double"
+    ],
+    [
+      "SCALE_054",
+      "double"
+    ],
+    [
+      "SCALE_055",
+      "double"
+    ],
+    [
+      "SCALE_056",
+      "double"
+    ],
+    [
+      "SCALE_057",
+      "double"
+    ],
+    [
+      "SCALE_058",
+      "double"
+    ],
+    [
+      "SCALE_059",
+      "double"
+    ],
+    [
+      "SCALE_060",
+      "double"
+    ],
+    [
+      "SCALE_061",
+      "double"
+    ],
+    [
+      "SCALE_062",
+      "double"
+    ],
+    [
+      "SCALE_063",
+      "double"
+    ],
+    [
+      "SCALE_064",
+      "double"
+    ],
+    [
+      "SCALE_065",
+      "double"
+    ],
+    [
+      "SCALE_066",
+      "double"
+    ],
+    [
+      "SCALE_067",
+      "double"
+    ],
+    [
+      "SCALE_068",
+      "double"
+    ],
+    [
+      "SCALE_069",
+      "double"
+    ],
+    [
+      "SCALE_070",
+      "double"
+    ],
+    [
+      "SCALE_071",
+      "double"
+    ],
+    [
+      "SCALE_072",
+      "double"
+    ],
+    [
+      "SCALE_073",
+      "double"
+    ],
+    [
+      "SCALE_074",
+      "double"
+    ],
+    [
+      "SCALE_075",
+      "double"
+    ],
+    [
+      "SCALE_076",
+      "double"
+    ],
+    [
+      "SCALE_077",
+      "double"
+    ],
+    [
+      "SCALE_078",
+      "double"
+    ],
+    [
+      "SCALE_079",
+      "double"
+    ],
+    [
+      "SCALE_080",
+      "double"
+    ],
+    [
+      "SCALE_081",
+      "double"
+    ],
+    [
+      "SCALE_082",
+      "double"
+    ],
+    [
+      "SCALE_083",
+      "double"
+    ],
+    [
+      "SCALE_084",
+      "double"
+    ],
+    [
+      "SCALE_085",
+      "double"
+    ],
+    [
+      "entry_date",
+      "timestamp[ns]"
+    ],
+    [
+      "exit_date",
+      "timestamp[ns]"
+    ],
+    [
+      "STOCK_FWD_RET5",
+      "double"
+    ],
+    [
+      "BENCHMARK_FWD_RET5",
+      "double"
+    ],
+    [
+      "EXCESS_RET5",
+      "double"
+    ],
+    [
+      "MARKET_REGIME",
+      "string"
+    ],
+    [
+      "INDEX_RET5",
+      "double"
+    ],
+    [
+      "INDEX_RET20",
+      "double"
+    ],
+    [
+      "INDEX_RET60",
+      "double"
+    ],
+    [
+      "INDEX_VOL20",
+      "double"
+    ],
+    [
+      "raw_AMIHU20",
+      "double"
+    ],
+    [
+      "raw_MA20_MA60",
+      "double"
+    ],
+    [
+      "raw_MA5_MA20",
+      "double"
+    ],
+    [
+      "raw_MOM20",
+      "double"
+    ],
+    [
+      "raw_MOM60",
+      "double"
+    ],
+    [
+      "raw_PRICE_MA20",
+      "double"
+    ],
+    [
+      "raw_REV1",
+      "double"
+    ],
+    [
+      "raw_REV5",
+      "double"
+    ],
+    [
+      "raw_TURN20",
+      "double"
+    ],
+    [
+      "raw_TURN5",
+      "double"
+    ],
+    [
+      "raw_VOL20",
+      "double"
+    ],
+    [
+      "raw_VOL5",
+      "double"
+    ],
+    [
+      "raw_VOL60",
+      "double"
+    ],
+    [
+      "raw_VOLUME_RATIO",
+      "double"
+    ],
+    [
+      "raw_SCALE_000",
+      "double"
+    ],
+    [
+      "raw_SCALE_001",
+      "double"
+    ],
+    [
+      "raw_SCALE_002",
+      "double"
+    ],
+    [
+      "raw_SCALE_003",
+      "double"
+    ],
+    [
+      "raw_SCALE_004",
+      "double"
+    ],
+    [
+      "raw_SCALE_005",
+      "double"
+    ],
+    [
+      "raw_SCALE_006",
+      "double"
+    ],
+    [
+      "raw_SCALE_007",
+      "double"
+    ],
+    [
+      "raw_SCALE_008",
+      "double"
+    ],
+    [
+      "raw_SCALE_009",
+      "double"
+    ],
+    [
+      "raw_SCALE_010",
+      "double"
+    ],
+    [
+      "raw_SCALE_011",
+      "double"
+    ],
+    [
+      "raw_SCALE_012",
+      "double"
+    ],
+    [
+      "raw_SCALE_013",
+      "double"
+    ],
+    [
+      "raw_SCALE_014",
+      "double"
+    ],
+    [
+      "raw_SCALE_015",
+      "double"
+    ],
+    [
+      "raw_SCALE_016",
+      "double"
+    ],
+    [
+      "raw_SCALE_017",
+      "double"
+    ],
+    [
+      "raw_SCALE_018",
+      "double"
+    ],
+    [
+      "raw_SCALE_019",
+      "double"
+    ],
+    [
+      "raw_SCALE_020",
+      "double"
+    ],
+    [
+      "raw_SCALE_021",
+      "double"
+    ],
+    [
+      "raw_SCALE_022",
+      "double"
+    ],
+    [
+      "raw_SCALE_023",
+      "double"
+    ],
+    [
+      "raw_SCALE_024",
+      "double"
+    ],
+    [
+      "raw_SCALE_025",
+      "double"
+    ],
+    [
+      "raw_SCALE_026",
+      "double"
+    ],
+    [
+      "raw_SCALE_027",
+      "double"
+    ],
+    [
+      "raw_SCALE_028",
+      "double"
+    ],
+    [
+      "raw_SCALE_029",
+      "double"
+    ],
+    [
+      "raw_SCALE_030",
+      "double"
+    ],
+    [
+      "raw_SCALE_031",
+      "double"
+    ],
+    [
+      "raw_SCALE_032",
+      "double"
+    ],
+    [
+      "raw_SCALE_033",
+      "double"
+    ],
+    [
+      "raw_SCALE_034",
+      "double"
+    ],
+    [
+      "raw_SCALE_035",
+      "double"
+    ],
+    [
+      "raw_SCALE_036",
+      "double"
+    ],
+    [
+      "raw_SCALE_037",
+      "double"
+    ],
+    [
+      "raw_SCALE_038",
+      "double"
+    ],
+    [
+      "raw_SCALE_039",
+      "double"
+    ],
+    [
+      "raw_SCALE_040",
+      "double"
+    ],
+    [
+      "raw_SCALE_041",
+      "double"
+    ],
+    [
+      "raw_SCALE_042",
+      "double"
+    ],
+    [
+      "raw_SCALE_043",
+      "double"
+    ],
+    [
+      "raw_SCALE_044",
+      "double"
+    ],
+    [
+      "raw_SCALE_045",
+      "double"
+    ],
+    [
+      "raw_SCALE_046",
+      "double"
+    ],
+    [
+      "raw_SCALE_047",
+      "double"
+    ],
+    [
+      "raw_SCALE_048",
+      "double"
+    ],
+    [
+      "raw_SCALE_049",
+      "double"
+    ],
+    [
+      "raw_SCALE_050",
+      "double"
+    ],
+    [
+      "raw_SCALE_051",
+      "double"
+    ],
+    [
+      "raw_SCALE_052",
+      "double"
+    ],
+    [
+      "raw_SCALE_053",
+      "double"
+    ],
+    [
+      "raw_SCALE_054",
+      "double"
+    ],
+    [
+      "raw_SCALE_055",
+      "double"
+    ],
+    [
+      "raw_SCALE_056",
+      "double"
+    ],
+    [
+      "raw_SCALE_057",
+      "double"
+    ],
+    [
+      "raw_SCALE_058",
+      "double"
+    ],
+    [
+      "raw_SCALE_059",
+      "double"
+    ],
+    [
+      "raw_SCALE_060",
+      "double"
+    ],
+    [
+      "raw_SCALE_061",
+      "double"
+    ],
+    [
+      "raw_SCALE_062",
+      "double"
+    ],
+    [
+      "raw_SCALE_063",
+      "double"
+    ],
+    [
+      "raw_SCALE_064",
+      "double"
+    ],
+    [
+      "raw_SCALE_065",
+      "double"
+    ],
+    [
+      "raw_SCALE_066",
+      "double"
+    ],
+    [
+      "raw_SCALE_067",
+      "double"
+    ],
+    [
+      "raw_SCALE_068",
+      "double"
+    ],
+    [
+      "raw_SCALE_069",
+      "double"
+    ],
+    [
+      "raw_SCALE_070",
+      "double"
+    ],
+    [
+      "raw_SCALE_071",
+      "double"
+    ],
+    [
+      "raw_SCALE_072",
+      "double"
+    ],
+    [
+      "raw_SCALE_073",
+      "double"
+    ],
+    [
+      "raw_SCALE_074",
+      "double"
+    ],
+    [
+      "raw_SCALE_075",
+      "double"
+    ],
+    [
+      "raw_SCALE_076",
+      "double"
+    ],
+    [
+      "raw_SCALE_077",
+      "double"
+    ],
+    [
+      "raw_SCALE_078",
+      "double"
+    ],
+    [
+      "raw_SCALE_079",
+      "double"
+    ],
+    [
+      "raw_SCALE_080",
+      "double"
+    ],
+    [
+      "raw_SCALE_081",
+      "double"
+    ],
+    [
+      "raw_SCALE_082",
+      "double"
+    ],
+    [
+      "raw_SCALE_083",
+      "double"
+    ],
+    [
+      "raw_SCALE_084",
+      "double"
+    ],
+    [
+      "raw_SCALE_085",
+      "double"
+    ]
+  ],
+  "partitions": [
+    {
+      "file": "date-000040.parquet",
+      "sha256": "643683dcc26e2df5ea03dfdc9d2fa35a42f4a5f9eeb503387fec18952c02e31e",
+      "rows": 3000,
+      "content_hash": "6da60db5b9eeb6bc8cfdcd598dfbb6449008edb4974a251d2e749fee9dc8db04",
+      "keys_hash": "993299cbbf00ecf634c5b1eb879b256383d5fc60671779f2a8330bda2421f258",
+      "date_start": "2023-06-16T00:00:00",
+      "date_end": "2023-06-23T00:00:00"
+    },
+    {
+      "file": "date-000060.parquet",
+      "sha256": "eb0c754cc08af45432e381bb108e02a6091de26386e5ab469372f29fd82702e1",
+      "rows": 10000,
+      "content_hash": "be69e83c067309453133385b8339e360fe17d61408dc52b1bb43dda233d7da39",
+      "keys_hash": "a0021c7f1a9d70d883f2516b34f0ecdbf4a9dd86b701a4cd27d13045fd54f246",
+      "date_start": "2023-06-26T00:00:00",
+      "date_end": "2023-07-21T00:00:00"
+    },
+    {
+      "file": "date-000080.parquet",
+      "sha256": "46640570d27ac1ff60d63f5a1451b2b48545f4097e0112d5d3c9ac7892575f8e",
+      "rows": 10000,
+      "content_hash": "b3b691151c44711dc5cd741c478d58e45d41a544785e704b14f938b5032f46a6",
+      "keys_hash": "f9c9c6aacdc3cf48bd60ff1d8d13d02bacb9735d131dad9f926ea67501bc1bf3",
+      "date_start": "2023-07-24T00:00:00",
+      "date_end": "2023-08-18T00:00:00"
+    },
+    {
+      "file": "date-000100.parquet",
+      "sha256": "2d6ca14462024aa17ad88ea4c2d06192fcfe7a0e389cf240727e7e0cf78a6e69",
+      "rows": 10000,
+      "content_hash": "3e102ac396385885040bb7801926758fcf9991b6f2bb045b13acf13344bd7ab0",
+      "keys_hash": "069faa38a158cecf748a4c24ffff2f29720f3fc949fbeea3065f9c9f2bc6dd9d",
+      "date_start": "2023-08-21T00:00:00",
+      "date_end": "2023-09-15T00:00:00"
+    },
+    {
+      "file": "date-000120.parquet",
+      "sha256": "02172caabe1aaf89dc435bbba2816cf4ebd33d1c9944abb1750699f68991543e",
+      "rows": 10000,
+      "content_hash": "1128fe47e8bc13926e60af8f53e4dad041e1242d89bbad716973ac45c7b88bf4",
+      "keys_hash": "666ea55ac685a79cefa62094035f55c16ab803e6ff119911fe54534fd05892b9",
+      "date_start": "2023-09-18T00:00:00",
+      "date_end": "2023-10-13T00:00:00"
+    },
+    {
+      "file": "date-000140.parquet",
+      "sha256": "1e5e3b3baa2619459849a5a011cdf09d82e26807dbb2f22d30f55c77b0eeb4d3",
+      "rows": 10000,
+      "content_hash": "b36a5621b943eb808f233cf7426981067a089db24ace2f9d4927075e3cdfda45",
+      "keys_hash": "2df6901f10942e00ff89c3453d122c50954d52f3bc8e6e37a8e1368a236c2e95",
+      "date_start": "2023-10-16T00:00:00",
+      "date_end": "2023-11-10T00:00:00"
+    },
+    {
+      "file": "date-000160.parquet",
+      "sha256": "c1b90966207d3b1fe67639b92258a8b200c85a57f89284c780dbbf23e6838c4f",
+      "rows": 10000,
+      "content_hash": "e1a41f3e7fc9f1418d41e990e2b17809231461c181191aa49e47580ce390f846",
+      "keys_hash": "f72ff9831871f8a9b6fe82cdb98629d1b0df4b5a6cd4ea4ae2d78f11439d22f3",
+      "date_start": "2023-11-13T00:00:00",
+      "date_end": "2023-12-08T00:00:00"
+    },
+    {
+      "file": "date-000180.parquet",
+      "sha256": "70627a57ba6829b5f17114465e9d33533fbe1ff909a8ca414f0bb6783379b4b0",
+      "rows": 10000,
+      "content_hash": "9809e83ae5d5eed56cc517d4aad91bedb89e03e2aa1a1777cf1219d95f909554",
+      "keys_hash": "111656f4344a0f486c4299c5d68c302fc3f932b86318a04aaca40436c2a40ef8",
+      "date_start": "2023-12-11T00:00:00",
+      "date_end": "2024-01-05T00:00:00"
+    },
+    {
+      "file": "date-000200.parquet",
+      "sha256": "b683f15d057f2390575a53e4dc74efa750e3f6e8f95217b765366c1bd175cca1",
+      "rows": 10000,
+      "content_hash": "73534b14c4661668c7d90e6fa154b19aced066e6b7b893d2fad18b5febda9dba",
+      "keys_hash": "3c46d99fc897a848886eaa314ef345786edde842d74e61711709e93e59c21a1f",
+      "date_start": "2024-01-08T00:00:00",
+      "date_end": "2024-02-02T00:00:00"
+    },
+    {
+      "file": "date-000220.parquet",
+      "sha256": "74209dc04678fed559f988868f8577619cde7cb996c76f22112c511335d44cd2",
+      "rows": 10000,
+      "content_hash": "b33f83f038dc05a2588213dd44a32ce022c42f2c69d78856cbe4cf5e4b4e6d73",
+      "keys_hash": "d74ad9c3403f57676768e6cad635525aff0fb87374d5e0d38d9ae1bb56c3bf8a",
+      "date_start": "2024-02-05T00:00:00",
+      "date_end": "2024-03-01T00:00:00"
+    },
+    {
+      "file": "date-000240.parquet",
+      "sha256": "3d4f8de786cbb5d554a8a1ecaecd9db35fcd04a5ad244b16518af37de0f6c824",
+      "rows": 10000,
+      "content_hash": "cb0321e9d6728971cd30ac92de5076977df0e0bd419045632929385598bd922f",
+      "keys_hash": "60c71932a89cc2c1361fd80da2c427b92269565fc3c3e85e2992ba613fcc693f",
+      "date_start": "2024-03-04T00:00:00",
+      "date_end": "2024-03-29T00:00:00"
+    },
+    {
+      "file": "date-000260.parquet",
+      "sha256": "89b1d95e7edf13e5ce95724ac8c4c99f14f231d23d3d9f34911f9b420d2200d2",
+      "rows": 10000,
+      "content_hash": "f9ee7f2118579e4e6a882a9f92dad160fdfc2945834b0cbeabd95cd37b2189c3",
+      "keys_hash": "bec792ca0dc92bf83cf083f7cabae60be02e7570c96eb8e3980fc282eaee4c63",
+      "date_start": "2024-04-01T00:00:00",
+      "date_end": "2024-04-26T00:00:00"
+    },
+    {
+      "file": "date-000280.parquet",
+      "sha256": "4e4a2777bfe434d04f36ae5e17a5a889f1ac88bd752c8edcc175e7c0d91a7dbd",
+      "rows": 10000,
+      "content_hash": "3e06df165a308199710598bbdac2a4e49a2cb0ab2ad5ab14885d1ee4bfe103b0",
+      "keys_hash": "56ea260ed532cfd77db5a589044a201d6e18ddca5d1dbff8bd6ae5a0f31193fc",
+      "date_start": "2024-04-29T00:00:00",
+      "date_end": "2024-05-24T00:00:00"
+    },
+    {
+      "file": "date-000300.parquet",
+      "sha256": "10ca461012f485c332ba3940aad4e9f133db1f4e58ebe6ab55324524e3dd07f2",
+      "rows": 10000,
+      "content_hash": "6cc0d6e8e4d7ef3f0f4e87e8616f8f6b890fd12c980c8a84d69402bde334c282",
+      "keys_hash": "22ecdd911c3e4036d9ec28589e4aa51b52286d301ab257a91f6e62f642201665",
+      "date_start": "2024-05-27T00:00:00",
+      "date_end": "2024-06-21T00:00:00"
+    },
+    {
+      "file": "date-000320.parquet",
+      "sha256": "5bfbaa474c39189fc46e0a87320483a64e69d78fbe07f57c9716ab240a36c37b",
+      "rows": 10000,
+      "content_hash": "1c98cca1211a2dfa7578e61574effa4fb91c593470f5012d5111f319b65295a5",
+      "keys_hash": "30628b6f19da007ae85ec9144791a152c1da1d80a4579662730671a7ef2754dd",
+      "date_start": "2024-06-24T00:00:00",
+      "date_end": "2024-07-19T00:00:00"
+    },
+    {
+      "file": "date-000340.parquet",
+      "sha256": "10a9e27777227b7b09ccc058a09d30a2e9f5a4a7ff24a3000fcaaa4e29262796",
+      "rows": 10000,
+      "content_hash": "85b1d9d00b26ee7a5b9f6e5ae4890c43bb548d959ae4b394b1452133e90c4f78",
+      "keys_hash": "47821d1a0721c6b386795019798515eee508a03341f849282de48633a4f709c7",
+      "date_start": "2024-07-22T00:00:00",
+      "date_end": "2024-08-16T00:00:00"
+    },
+    {
+      "file": "date-000360.parquet",
+      "sha256": "b285fe9b1534d4e75c9da0891d42a9b640fdc9e17ed2c232d64499029183e4ac",
+      "rows": 10000,
+      "content_hash": "2742d06521b56f053f8ebd894ed6765474e84f813c2c9f65985042884b4e2782",
+      "keys_hash": "d825b3615132a1b90872a2df94876eeebb5d3b67501fe230653d8d6837d44bce",
+      "date_start": "2024-08-19T00:00:00",
+      "date_end": "2024-09-13T00:00:00"
+    },
+    {
+      "file": "date-000380.parquet",
+      "sha256": "90e46ac003375f215461e0e30cf9de2d356a648826258091c2385332835cead0",
+      "rows": 10000,
+      "content_hash": "44950150cafd336c5c3c752bd98c57d9e86f2724884fadcf55d9c292dd612adf",
+      "keys_hash": "60daae170a0fa3d0703ec00f1f83b1f90415670ebfe952712430f13f1bf28ea2",
+      "date_start": "2024-09-16T00:00:00",
+      "date_end": "2024-10-11T00:00:00"
+    },
+    {
+      "file": "date-000400.parquet",
+      "sha256": "98556a6491883acb31382044abdf8667d4f80fb39c7b063dca7566dfcad1bba8",
+      "rows": 10000,
+      "content_hash": "36c70c0b43135a4331c39a5483013d1de88821cd913c4d3c07285f98596e8e68",
+      "keys_hash": "94be5b225e9e08afd8dc132de2410a4bf79de5ea9902421db1f26e5207a009cd",
+      "date_start": "2024-10-14T00:00:00",
+      "date_end": "2024-11-08T00:00:00"
+    },
+    {
+      "file": "date-000420.parquet",
+      "sha256": "ea5d13d969c4aefe340351987decd1d1c9f7b7f83616c55ce09b7028cd7ec3f6",
+      "rows": 10000,
+      "content_hash": "f28f7eef35b078b1d3bd9385d9f554c823b7460d01938ba8e9bf8b1f3f641434",
+      "keys_hash": "a762b9c2778d03f48afe6d0ed83145c9a6c2d402b3208a2a6bfb11701020fe74",
+      "date_start": "2024-11-11T00:00:00",
+      "date_end": "2024-12-06T00:00:00"
+    },
+    {
+      "file": "date-000440.parquet",
+      "sha256": "90dc1a10ba930c16c739fd524d92561bf42687d8a6d75e905138bb240c11c578",
+      "rows": 10000,
+      "content_hash": "c6e42a2069b0dee4336dcefff1a3185ecacd22717f058056e80ef9418ca59b5a",
+      "keys_hash": "0f137082cdcf26614e6963fb1309158a80a0000ebe0b2f1c19022de55014ffd0",
+      "date_start": "2024-12-09T00:00:00",
+      "date_end": "2025-01-03T00:00:00"
+    },
+    {
+      "file": "date-000460.parquet",
+      "sha256": "44be91bc5ed68da539dade70ff09e84113d928db41fb54a9a0dbe8fa82f024ab",
+      "rows": 10000,
+      "content_hash": "24d8b46563e10c7f4450375d591d8f181cba328446f118afd8ed8cfd4f4291d7",
+      "keys_hash": "355f29b04404c846459007892839f67dc8b4e52fa8738fd1cdebd02cf027e068",
+      "date_start": "2025-01-06T00:00:00",
+      "date_end": "2025-01-31T00:00:00"
+    },
+    {
+      "file": "date-000480.parquet",
+      "sha256": "b8ddb021602365b13f9c4d508cfd6a28bcd3ab6a464580b2a95f75acdfb091f3",
+      "rows": 10000,
+      "content_hash": "9a5eef081e261d60fd673042cf0f4f29debccda53fff374442d4989a8bbb121f",
+      "keys_hash": "e93417247e73875c4ea62c81130bd5a28f7a7e5b7119220b494007bfaaa6d036",
+      "date_start": "2025-02-03T00:00:00",
+      "date_end": "2025-02-28T00:00:00"
+    },
+    {
+      "file": "date-000500.parquet",
+      "sha256": "f210fc3217891422e2b212876b0957e4303914d78d09c640d6534cde816da0fa",
+      "rows": 10000,
+      "content_hash": "ea8ed169833d43554770b5942b55deb448ed3e7cb6ccdb54bce8bfbac56ca687",
+      "keys_hash": "ccff9601bca6a6101690c8a2dad2daeb39ac7ce791a79a03ea16a86c86df1378",
+      "date_start": "2025-03-03T00:00:00",
+      "date_end": "2025-03-28T00:00:00"
+    },
+    {
+      "file": "date-000520.parquet",
+      "sha256": "17a153f1fb488bf9f9171a3986a5e9557eff6f6593cd878451d5ec38e4e92281",
+      "rows": 10000,
+      "content_hash": "a3128cbfdaa5845f746fe193d5a96d164215eccd8315111c41b640789247c5e3",
+      "keys_hash": "60b946861271547eb306ea708d0a720ad9698ceb926127ded4354e0b2718b910",
+      "date_start": "2025-03-31T00:00:00",
+      "date_end": "2025-04-25T00:00:00"
+    },
+    {
+      "file": "date-000540.parquet",
+      "sha256": "e63e2e15c56cde740e6f3b39f8a4a2a9b84cfe65b15b97670cda275f105af745",
+      "rows": 10000,
+      "content_hash": "b36c0a65db067405ad0783aa3cb4ec36e7327649faa1bf804490b500b780468e",
+      "keys_hash": "e1c6a7c945badbd5949b21a74de22600d7f1dea987fb72ff9d78476c76f16ae1",
+      "date_start": "2025-04-28T00:00:00",
+      "date_end": "2025-05-23T00:00:00"
+    },
+    {
+      "file": "date-000560.parquet",
+      "sha256": "091eb57e3240739579e04181874c64ddf531f75fdac8362a0b63b205c66089fc",
+      "rows": 10000,
+      "content_hash": "3339b750d484229543c5c7ff1afb2e64daeb69e1b17e02f544fcf77160cd0140",
+      "keys_hash": "858c13cbeba4af51abced769f31456e98b3ef21bff1ea5a5ccf1f01ad311df7b",
+      "date_start": "2025-05-26T00:00:00",
+      "date_end": "2025-06-20T00:00:00"
+    },
+    {
+      "file": "date-000580.parquet",
+      "sha256": "32a3a293b9f5ba0e516aff6e104aa0b237975bc6a5184dca597af3b17fca4e6b",
+      "rows": 10000,
+      "content_hash": "ddf0504d17866102e9af38604bb5d2ef3f4627f195d810c1e0f595c897991fd9",
+      "keys_hash": "22dd74f0a07df108a20f1ea1ead44476d2acd995bd9df778f2fe3a3e8b96bd9a",
+      "date_start": "2025-06-23T00:00:00",
+      "date_end": "2025-07-18T00:00:00"
+    },
+    {
+      "file": "date-000600.parquet",
+      "sha256": "f668b74ecdcb8912b1ec827babbde1a2c3b63e3c8694eeb0597b74d2643c539a",
+      "rows": 10000,
+      "content_hash": "acfba1cb117a827e5f51f2f39c61a8fd326f15f3d02502d214d6d865cc1008d9",
+      "keys_hash": "d929cb1b28dc041448004c83834365af9d8e2c3525a72309518a585a3cd64f89",
+      "date_start": "2025-07-21T00:00:00",
+      "date_end": "2025-08-15T00:00:00"
+    },
+    {
+      "file": "date-000620.parquet",
+      "sha256": "e07ae39f8ee22853cd56620ee3b473e2c46e3543532dda6b24466d0c3ec38e54",
+      "rows": 10000,
+      "content_hash": "8b1f6fd52f6c70919047dd80c5609c6e56e00fb3ca2308f4cb732abf7850bee4",
+      "keys_hash": "b4aa636e05dbd48df6bb685730008df04d631e911c9c19cc10d6d9127c9d5475",
+      "date_start": "2025-08-18T00:00:00",
+      "date_end": "2025-09-12T00:00:00"
+    },
+    {
+      "file": "date-000640.parquet",
+      "sha256": "32604e05153bba0b1b61e55ddd71e475f6ff3bec88c26e80fec44327e268c2b0",
+      "rows": 10000,
+      "content_hash": "510bf651ded47665b230709f23979c9a61b72ea37dc93d893a80c45c9ad92307",
+      "keys_hash": "74f32313628efadaefc806ed4387faca824945e398c3bd1d2835ddfe70926340",
+      "date_start": "2025-09-15T00:00:00",
+      "date_end": "2025-10-10T00:00:00"
+    },
+    {
+      "file": "date-000660.parquet",
+      "sha256": "84009e835e01d8b828ad93042640672bb2bf4160ee6e82951860a3b1930e0d24",
+      "rows": 10000,
+      "content_hash": "93ca0587bfc781c789528df7d29cfdfa639ee2f2dab2ab44c96aa6ffbb7b8bdc",
+      "keys_hash": "f53a9cc7fdc8ea0c63d4c7a76b656beb67d38d78639ae431b19310910fbd23fc",
+      "date_start": "2025-10-13T00:00:00",
+      "date_end": "2025-11-07T00:00:00"
+    },
+    {
+      "file": "date-000680.parquet",
+      "sha256": "904e27d5d4ec52b40999f61667e6eca0678295929c6b49a12767d2e1b748ba31",
+      "rows": 10000,
+      "content_hash": "3f04a701cdfccc85c1c00447ad00f1c6d4d50af0f88c43d53c86a4fe1944873d",
+      "keys_hash": "f4c29ee35e1438fafdaddf8d54714f6736fd4c9aa0e083d651d6c212eacc875d",
+      "date_start": "2025-11-10T00:00:00",
+      "date_end": "2025-12-05T00:00:00"
+    },
+    {
+      "file": "date-000700.parquet",
+      "sha256": "eb76a32e3068c685f6065db770d16f3e5f27c9f8d1c80714de3b7f5e19b038e9",
+      "rows": 10000,
+      "content_hash": "b372c0e1aaa5ae4de1cae496680db74ee20951b498bc2a9e194a0e82ef5e8c84",
+      "keys_hash": "30775c19bb18b6aac55106e4783875045a1669e168eb95b212972f953a20580f",
+      "date_start": "2025-12-08T00:00:00",
+      "date_end": "2026-01-02T00:00:00"
+    },
+    {
+      "file": "date-000720.parquet",
+      "sha256": "d18bde34b38420693a4d655a369a8a8f75eb0e4675b3ff1bd4a7eeade3b15dde",
+      "rows": 10000,
+      "content_hash": "9d2749ec9fedd47e2a9c7005a9c4d5860f22b7070643b63cb4cab590e0a157bb",
+      "keys_hash": "d710ec9a8287da83c21c091c47543e138b002b8e7446247fd38c4cf0216bf328",
+      "date_start": "2026-01-05T00:00:00",
+      "date_end": "2026-01-30T00:00:00"
+    },
+    {
+      "file": "date-000740.parquet",
+      "sha256": "e13e5f3857bc92ab1ff63bb3fec50c9cbc1792baaa123fcc1a498a1784e57cfd",
+      "rows": 10000,
+      "content_hash": "22e6e47cab110ef3d4e767b5a5d9df4541ba75806739776e6261acf17bd9a9a8",
+      "keys_hash": "1e1f47e3e6d9aeb7c213cc78e8a43bb3ca60c1f0e0369785f5b592d5736f7980",
+      "date_start": "2026-02-02T00:00:00",
+      "date_end": "2026-02-27T00:00:00"
+    },
+    {
+      "file": "date-000760.parquet",
+      "sha256": "f823513727ae6eb05339b0b9f1fcd9e984560ae86185430749d2a7c0682c39ef",
+      "rows": 10000,
+      "content_hash": "c34315d46fa31d789ea683680f53fca6c4562106574263dcf3a36801c95cb328",
+      "keys_hash": "da2123d2adace0177fc89ab6b72ec0d8849c541bab61e00396af7a2ee3d0f19f",
+      "date_start": "2026-03-02T00:00:00",
+      "date_end": "2026-03-27T00:00:00"
+    },
+    {
+      "file": "date-000780.parquet",
+      "sha256": "adbfcc5fdd7d2aa22c4ebe2105debb921f5ddba666f1bf0416132460857698e0",
+      "rows": 10000,
+      "content_hash": "e67822a716b1dba4b2724bf7d020f278893a78326dc20548226535ecedd40204",
+      "keys_hash": "d5c2ad8323d2e80393bea5dc12e713a2251d376c62472659b415751e9a8d7d70",
+      "date_start": "2026-03-30T00:00:00",
+      "date_end": "2026-04-24T00:00:00"
+    },
+    {
+      "file": "date-000800.parquet",
+      "sha256": "00d25a8f5e8aa4e7f5afc343a7ae240ba1d095a72e242bf90224cc98c06a4fce",
+      "rows": 10000,
+      "content_hash": "76ae666a2798f090ca4e95f50572c0c3c1506de9736f53b654ce44f0e50ba079",
+      "keys_hash": "1edf848b653f0fdfc9bcc44cc5b9a1a29a1bcc55e4baee4b579e335bae7f103e",
+      "date_start": "2026-04-27T00:00:00",
+      "date_end": "2026-05-22T00:00:00"
+    },
+    {
+      "file": "date-000820.parquet",
+      "sha256": "e610b42e110e501f8097e83b345ae3673077d9773e8652f28b7abe6f552eb28b",
+      "rows": 10000,
+      "content_hash": "0bc1278dc125eea5444407b3a7108470759f99839b359f3c66ab99345b8c1b0b",
+      "keys_hash": "9dacec5d044c2787d25a641756d8483290db6f28d56bfde2d251433a42a1b5eb",
+      "date_start": "2026-05-25T00:00:00",
+      "date_end": "2026-06-19T00:00:00"
+    },
+    {
+      "file": "date-000840.parquet",
+      "sha256": "b4c022976830427454b8f8613e26f28ae042b5a92d5530a858396a6d397efb3e",
+      "rows": 10000,
+      "content_hash": "11a38e0a24fd880ea59d25e28cbd36449ad32728103c3c94576b9bcb4d4438ed",
+      "keys_hash": "bde32dcdc333be0fb7d633e788d384aa77878c0745fcf31bd254deb8e73b9d65",
+      "date_start": "2026-06-22T00:00:00",
+      "date_end": "2026-07-17T00:00:00"
+    },
+    {
+      "file": "date-000860.parquet",
+      "sha256": "bf620cc981fb6af9b140f42dcb64d4ebd586acac1b21d4d0fe0f7fcceca183ae",
+      "rows": 10000,
+      "content_hash": "ce53f7f9ef60f09bd61060653635325d1bf0d8ffa6b28be5bb7a5ad8e5f88acd",
+      "keys_hash": "b82ee88ae9d906886f730771380b58fadbdf32bf32acc413064c4d22e5a70fbd",
+      "date_start": "2026-07-20T00:00:00",
+      "date_end": "2026-08-14T00:00:00"
+    },
+    {
+      "file": "date-000880.parquet",
+      "sha256": "dd1f21b4659e9599a0f7505a346f6d134fe796dbfc366c5650d651bbe2caf2d4",
+      "rows": 10000,
+      "content_hash": "6e0aed605fd2a13ba15e187c31f113a772f1c7d1fc91534b4899eee9bb6249bc",
+      "keys_hash": "100d61a46964a26da333c5f39abd3a8a6282639605381e9c9eedc0c06af1dcff",
+      "date_start": "2026-08-17T00:00:00",
+      "date_end": "2026-09-11T00:00:00"
+    },
+    {
+      "file": "date-000900.parquet",
+      "sha256": "6ee00f78597e4a1fd99f438bbe81a8ba1d12bedfe26c2b0a9a692ba136b7bd9f",
+      "rows": 10000,
+      "content_hash": "05607e2c0a39dd091aba614e3e0c11a6e904c57252e8bb750fc8ac668c6c6376",
+      "keys_hash": "b3c4f96ea1d4cf2f7979ecea864b5b10e314903782de7a4e4116d09e63f7a167",
+      "date_start": "2026-09-14T00:00:00",
+      "date_end": "2026-10-09T00:00:00"
+    },
+    {
+      "file": "date-000920.parquet",
+      "sha256": "013f0381b14fa87f37f2d5ddcde68cd504901464d3cc2e2f61f9c111cb0a3a10",
+      "rows": 10000,
+      "content_hash": "a6f7424fc0d28baf26958e5d2bbf1de2f249dde91a8c5415b09fb305b628dd20",
+      "keys_hash": "2c0e32c2ab375be74f5f1a915bd3fce0ad0468db3ef8567b99848389c85d6a0f",
+      "date_start": "2026-10-12T00:00:00",
+      "date_end": "2026-11-06T00:00:00"
+    },
+    {
+      "file": "date-000940.parquet",
+      "sha256": "57101dcc039ea8835a221316f47c2c40626f49c19c0c294fb6ce6b8ada9f3e23",
+      "rows": 10000,
+      "content_hash": "fa34692d32b633e429079686b376a6155071d05e97c92fd3d383ce1acd068bd9",
+      "keys_hash": "a6c97e6ea5e95d146d3128ace329c45064f65153d05f9cca5ccadbdd0fe92f65",
+      "date_start": "2026-11-09T00:00:00",
+      "date_end": "2026-12-04T00:00:00"
+    },
+    {
+      "file": "date-000960.parquet",
+      "sha256": "710f4e47cd50af0f9282dc231303189fd3144994fe11348c233699d70626552c",
+      "rows": 10000,
+      "content_hash": "69aeefbc8939657de55f4d7950fbfb75722e282829cf768cbed5f307113fd93c",
+      "keys_hash": "8fb87b0be3357a8e115bfe3bf62ae54288f2e6d63194b5d12e93ab2a9abe6a93",
+      "date_start": "2026-12-07T00:00:00",
+      "date_end": "2027-01-01T00:00:00"
+    },
+    {
+      "file": "date-000980.parquet",
+      "sha256": "cad23bd3f7fae712338390c1f28ffc9c9f69d9a59d9a0f8f20ad50dec621e059",
+      "rows": 10000,
+      "content_hash": "5c4aba2bd1845a345832ae22a3ce0550fc22fdadffc735bbba893cfaa23009d3",
+      "keys_hash": "3b247982fa8eba88c810cd08ce737bc1672e069699d0bf443d452409f909bc28",
+      "date_start": "2027-01-04T00:00:00",
+      "date_end": "2027-01-29T00:00:00"
+    },
+    {
+      "file": "date-001000.parquet",
+      "sha256": "3b35fd7bc2b8046df002c7bd2b9731b62131bcca68c508a3c770cb2bbc525295",
+      "rows": 10000,
+      "content_hash": "67c61281c0ae55d68989c8aceff6f77d8a73190cc0d98ef73720233211582ba8",
+      "keys_hash": "128380e0e3fde87264917c84d3cbd346a600a6c656a7ac2b9d2a9db11daf6b54",
+      "date_start": "2027-02-01T00:00:00",
+      "date_end": "2027-02-26T00:00:00"
+    },
+    {
+      "file": "date-001020.parquet",
+      "sha256": "509ec1ab008e44568dbc1694ef543a22571875767be6913d47ced80c9ca05181",
+      "rows": 10000,
+      "content_hash": "71300096d89dbec57c2442f08dec97c8905b7112f37bd696691036fd11b8bc87",
+      "keys_hash": "a7b44fdd3707fa7e9c2cf632e7038dd963302b95cb00b5a867fb6449d6d488eb",
+      "date_start": "2027-03-01T00:00:00",
+      "date_end": "2027-03-26T00:00:00"
+    },
+    {
+      "file": "date-001040.parquet",
+      "sha256": "e8da7c47f84cdcf9eb9870b4e544b869082ac453749a43b720a1fb6bae93f9e0",
+      "rows": 10000,
+      "content_hash": "0e89b6c2f2de88b9f8f2b4f5a9dee889bcb5a36d583f1acb5a3811cc4bb6ed96",
+      "keys_hash": "c2f3dc3812aaf47a28cd89b3fa40f6c8158e601e550b1ea4e5572e12cbc60a52",
+      "date_start": "2027-03-29T00:00:00",
+      "date_end": "2027-04-23T00:00:00"
+    },
+    {
+      "file": "date-001060.parquet",
+      "sha256": "221d575de6502e7e801082e71c1658b2e8e6da90f203489c6c30cf49f82c64c3",
+      "rows": 10000,
+      "content_hash": "ce3897a2b0d865e2b207e5e3c7921fc2fd54f61358940d19067c71dec09c551f",
+      "keys_hash": "51cce14458c42a518a44e5be762db57fac11cfc2956b868f43072404c7adb7f2",
+      "date_start": "2027-04-26T00:00:00",
+      "date_end": "2027-05-21T00:00:00"
+    },
+    {
+      "file": "date-001080.parquet",
+      "sha256": "5040fd8f65b050cda540ea95cd9389607d2c72552385e42b55cd121a2f9eab46",
+      "rows": 10000,
+      "content_hash": "be7f7376b6d4c5b9e50e1bb5ed174e91ce664f553fec817677936ea4aeb48f84",
+      "keys_hash": "b58fa84564d3f1e4a92bf914002acf151a7b41dcd0aef623faa3f46705a1788c",
+      "date_start": "2027-05-24T00:00:00",
+      "date_end": "2027-06-18T00:00:00"
+    },
+    {
+      "file": "date-001100.parquet",
+      "sha256": "e091eb9ab7938aaf1b5512bfbdb0de621166bebe3b2029c6898a885671db632d",
+      "rows": 10000,
+      "content_hash": "9940662ed8e6b03d336d6f59fcd9aa05dad15c7c8ecec5a80e7a532f73d6af66",
+      "keys_hash": "76c9ed0fc9fa8716cd98f077edb869e5158c883e8c02191b065654aa82a743e4",
+      "date_start": "2027-06-21T00:00:00",
+      "date_end": "2027-07-16T00:00:00"
+    },
+    {
+      "file": "date-001120.parquet",
+      "sha256": "e2c231aa4f808ba6dcddca35f3fbe1d5b8a8c99993fef3515060b39ebe45ef53",
+      "rows": 7500,
+      "content_hash": "ac59b30a4d2a877e07f789b06a6505cf4f2c24377f61004f681ca4bba2ecf79b",
+      "keys_hash": "47570f66b87d69938d9637d009a428d292822ba742f5c078b07e34b2991d00ee",
+      "date_start": "2027-07-19T00:00:00",
+      "date_end": "2027-08-06T00:00:00"
+    }
+  ],
+  "rows": 540500,
+  "counts": {
+    "registered_definitions": 100,
+    "requested_candidates": 100,
+    "resolved_definitions": 100,
+    "unique_executed_definitions": 100,
+    "successful_factors": 100,
+    "selected_factors": null,
+    "factor_rows": 600000,
+    "total_factor_cells": 60000000,
+    "valid_factor_values": 58281569
+  },
+  "execution": {
+    "symbols_per_batch": 32,
+    "factors_per_batch": 16,
+    "dates_per_batch": 20,
+    "workers": 2,
+    "max_factors": 300,
+    "timeout_seconds": 3600.0,
+    "memory_limit_bytes": 5368709120,
+    "disk_limit_bytes": 8589934592,
+    "minimum_available_memory_bytes": 1073741824,
+    "minimum_free_disk_bytes": 1073741824
+  },
+  "failures": 0,
+  "retries": 0,
+  "identity_hash": "16dc0b5828ced10a6cb89f72002c6884f38f2a3f486d82a28205a6b46a12f1f1"
+}
