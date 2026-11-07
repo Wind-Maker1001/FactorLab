@@ -1,0 +1,99 @@
+{
+  "base_commit": "82db7be8598d12d1967063a12fbd88929dea59fb",
+  "base_tree": "fab6d3c30caa9111f2b5c0ba46b3dd01633df522",
+  "python": "3.13.9",
+  "runs": [
+    {
+      "name": "new-tests",
+      "exit_code": 1,
+      "tests": 54,
+      "passed": 50,
+      "failed": 4,
+      "errors": 0,
+      "skipped": 0,
+      "description": "initial new integration tests; four diagnosed failures",
+      "junit_sha256": "32b97a8618453b4f14dc084d8cbd433e7d4466f423510153ecd2896e76b04dfb",
+      "log_sha256": "da283d1cacd7b728155c9cd26bb3d92970d985f0f242e8d19f4d1668e3444f4e",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_dataset_registry_v2.py -q -p no:cacheprovider --basetemp=local-validation/pytest-new --junitxml=local-validation/new-tests.xml"
+    },
+    {
+      "name": "new-fixed",
+      "exit_code": 1,
+      "tests": 54,
+      "passed": 53,
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0,
+      "description": "NaN hash and test expectations corrected; demo audit-column assertion remained",
+      "junit_sha256": "80c1321912e7e44a28a6c5c5e3ff018d8396f3b2a2d12255440295a124b64c26",
+      "log_sha256": "bdc5120cd1bb5d31b8b73d573ad4be717a5dd4aacaff2ba99b6265f8fb2f8882",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_dataset_registry_v2.py -q -p no:cacheprovider --basetemp=local-validation/pytest-new-fixed --junitxml=local-validation/new-fixed.xml"
+    },
+    {
+      "name": "model",
+      "exit_code": 0,
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "description": "corrected demo audit-column assertion; four-model integration passed",
+      "junit_sha256": "9e9d4a9150303fbdbf54791c9655e6ccdf1246f8195e4d159834447102cbbdee",
+      "log_sha256": "19713462ae5c7a0dfe4d5fb1f2950b3317c2f24524319f0addffd9c6d8779486",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_dataset_registry_v2.py::test_four_models_train_on_v2_dataset_and_walk_forward -q -p no:cacheprovider --basetemp=local-validation/pytest-model --junitxml=local-validation/model.xml"
+    },
+    {
+      "name": "acceptance",
+      "exit_code": 0,
+      "tests": 206,
+      "passed": 206,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "description": "targeted integration, legacy factors, dataset, labels, models, runner and financial boundary regression",
+      "junit_sha256": "4d0a5497dea9190b065bb25fcd070ec0104c59d7a2327f2a56ae492d599b8709",
+      "log_sha256": "ae74fd22c03ce56a9fe3b8cd0f5895eb91d90984449e048836a21882688d2ee5",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_dataset_registry_v2.py tests/research/test_factor_registry_v2.py tests/research/test_factors_phase1.py tests/research/test_dataset_phase1.py tests/research/test_labels_phase1.py tests/research/test_walk_forward_runner_phase2.py tests/research/test_models_phase2.py tests/research/test_tree_models_phase3.py tests/research/test_local_admission_boundaries.py tests/research/test_qualification_admission_boundaries.py -q -p no:cacheprovider --basetemp=local-validation/pytest-acceptance --junitxml=local-validation/acceptance.xml"
+    },
+    {
+      "name": "final-boundaries",
+      "exit_code": 0,
+      "tests": 66,
+      "passed": 66,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "description": "final input/raw-feature collision checks; four-model test deselected because final standalone demo executes it",
+      "junit_sha256": "4d4535b6ef27e7810fd1799c8cc1b4d722af1ad0d3c0557cf67febe6d3fce4cc",
+      "log_sha256": "a85c70137e272c0c0f604ce9518144244922b2fa19778a0a72a01a32d6be082f",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_dataset_registry_v2.py -k 'not four_models' -q -p no:cacheprovider --basetemp=local-validation/pytest-final-boundaries --junitxml=local-validation/final-boundaries.xml"
+    }
+  ],
+  "final_distinct_passed_nodes": 207,
+  "final_failures": 0,
+  "standalone_demo_exit_code": 0,
+  "financial_status": "FINANCIAL_ADMISSION_BLOCKED",
+  "engineering_status": "P206_ENGINEERING_ACCEPTED",
+  "source_sha256": {
+    "src/factorlab/dataset/builder.py": "058519344e0c8b275314d26e2355d19e87b06f3d35b0840f3a8812f725e1f704",
+    "src/factorlab/dataset/identity.py": "29b1073986b22c1af1e52a833627ad736d4e92fd372cad31f0d320594880c5a4",
+    "examples/research/dataset_registry_v2_demo.py": "b218d321978936d21876fc8db7ec1f133f9ec48d3ec2196c31e8e9579632d1ea",
+    "tests/research/test_dataset_registry_v2.py": "e84698f82dff82a0913721c35a699a8a2e6cc33e5d1b7b1cce2185167503605c"
+  },
+  "demo_command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m examples.research.dataset_registry_v2_demo --output local-validation/demo",
+  "environment": {
+    "PYTHONPATH": "src",
+    "dependencies": {
+      "numpy": "2.3.4",
+      "pandas": "2.3.3",
+      "lightgbm": "4.6.0",
+      "xgboost": "2.1.4"
+    }
+  },
+  "checkout_crlf_observation": {
+    "file": "src/factorlab/demo.py",
+    "worktree_equals_head_blob_bytes": true,
+    "sha256": "d9df8a165c92b33b09fc825a217f2e361fb4784e8b260b9f89e299d26805553c",
+    "pr_changes_file": false
+  }
+}

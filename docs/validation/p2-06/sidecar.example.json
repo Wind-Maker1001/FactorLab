@@ -1,0 +1,172 @@
+{
+  "artifacts": {
+    "dataset": "723ea3e6e02431b6658f95e83aaf9ea5629c77f5ba8edb1272c00385836af057",
+    "processed_features": "18f0b0eaa3186574f7f76c7764967f292e7935ab487dc474e221e9712d7c0bc5",
+    "raw_features": "3481f4aae7086878708378554bb50d60bf5e55d16e514ae81df3ffd5f2f8a055"
+  },
+  "calendar": {
+    "end": "2024-01-26",
+    "id": "SYNTHETIC_BDAY_NOT_EXCHANGE-v1",
+    "sessions": 280,
+    "sha256": "504c9b51a506b97fdb2449209b13bd0d92d1760137f872a8a5a5973c0bf9f59b",
+    "start": "2023-01-02"
+  },
+  "data_context": {
+    "admission_status": "FORMAL_ADMISSION_BLOCKED",
+    "availability_evidence": "SYNTHETIC_CLOSE_ONLY",
+    "data_source": "synthetic-discovery-generator",
+    "hfq_status": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit_status": "PIT_UNVERIFIED"
+  },
+  "data_version": "seed-20261014-v1",
+  "dataset_content_hash": "5355fcaf6f6c838a47916d58813d1165d1097d0743dbcb5fca371f611fe45243",
+  "factors": [
+    {
+      "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+      "factor_id": "MOM20",
+      "version": "1"
+    },
+    {
+      "definition_hash": "db8483e6b243060c72997b0d28e396c6b59b010b544818d541b639fb8d9b2c21",
+      "factor_id": "FD_001",
+      "version": "1"
+    },
+    {
+      "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46",
+      "factor_id": "pinned_reversal",
+      "version": "1"
+    }
+  ],
+  "financial_status": "FINANCIAL_ADMISSION_BLOCKED",
+  "identity_hash": "2c1b18260659a90dbdb428386b71eb26a6f25efb987e247ef8b6ea784d296168",
+  "input_hashes": {
+    "bars": "d01c96e03ecb2a137eb82641ab6259a1fca33e8069487d09a8f59ac1857788a0",
+    "benchmark": "8d233e4b207dd5c64cc2524648a39009902d1d955d62e8b5a31e2f3f40bd371e",
+    "listings": "84cb70e100222d7e47f4d766c0ae8bd65a0252ee4e942d5daa4b398133a63b75",
+    "membership": "66236f5e094fe32243f18ac92bd2767329fc3f255651302aa5f29eaec0a19d60",
+    "status": "e64de60d2988aa9283ae61586aceaba064f76f352f51179be2cd4c745f6dd3d3"
+  },
+  "options": {
+    "entry_price": "next_open",
+    "expected_member_count": 8,
+    "factor_names": [
+      "MOM20",
+      "FD_001",
+      "pinned_reversal"
+    ],
+    "filter_config": {
+      "exclude_st": true,
+      "exclude_suspended": true,
+      "min_listed_days": 1,
+      "min_quality_ratio": 0.8,
+      "quality_window": 5,
+      "zero_volume_window": 1
+    },
+    "holding_days": 5,
+    "include_market_regime": true,
+    "lower_quantile": 0.01,
+    "mad_multiplier": 5.0,
+    "minimum_cross_section": 4,
+    "upper_quantile": 0.99,
+    "winsorization": "mad"
+  },
+  "registration_status": "SOFTWARE_VALIDATED_ONLY",
+  "research_interval": {
+    "end": "2024-01-26",
+    "start": "2023-04-03"
+  },
+  "resolved_definitions": [
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "MOM20",
+      "frequency": "1d",
+      "implementation": "phase1-v1:MOM20",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 20,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "db8483e6b243060c72997b0d28e396c6b59b010b544818d541b639fb8d9b2c21",
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"}",
+      "factor_id": "FD_001",
+      "frequency": "1d",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "expression",
+      "lookback": 4,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+      "dependencies": [],
+      "expression_json": "",
+      "factor_id": "REV1",
+      "frequency": "1d",
+      "implementation": "phase1-v1:REV1",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "builtin",
+      "lookback": 1,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    {
+      "availability": "SESSION_CLOSE",
+      "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46",
+      "dependencies": [
+        {
+          "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+          "factor_id": "REV1",
+          "version": "1"
+        }
+      ],
+      "expression_json": "",
+      "factor_id": "pinned_reversal",
+      "frequency": "1d",
+      "implementation": "dependency-alias-v1",
+      "input_fields": [
+        "adj_close"
+      ],
+      "kind": "alias",
+      "lookback": 1,
+      "price_basis": [
+        "HFQ"
+      ],
+      "version": "1",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    }
+  ],
+  "schema": "FACTORLAB_DATASET_REGISTRY_V2_1",
+  "snapshot_hash": "5907efb1af8186260bee2364b65d1344efd731bc297b2fa12223436f43155791",
+  "timing": {
+    "earliest_decision": "NEXT_SESSION_OPEN",
+    "entry_price": "next_open",
+    "factor_availability": "SESSION_CLOSE",
+    "label_price_basis": "HFQ",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+  }
+}
