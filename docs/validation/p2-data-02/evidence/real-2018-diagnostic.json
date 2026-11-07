@@ -1,0 +1,69 @@
+{
+  "schema": "P2_DATA_02_PRIVATE_BINDING_DIAGNOSTIC",
+  "real_return_backtest": "BLOCKED / NOT_RUN",
+  "source_root_read_only": true,
+  "manifest_sha256": "d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+  "candidate_file_hashes_verified": 18,
+  "original_replay": "PASS",
+  "events": [
+    {
+      "event_id": "csmar:e1aabbbc97a204f209f1f7e25d4208635ab7dd0cf69c4a4c63eba5e168f79fe4",
+      "revision": 1,
+      "source_version": "sha256:e13d7f2306888889892ae8b74a238904f0af99c78eddefa6396427f9d272baef",
+      "source_sha256": "e13d7f2306888889892ae8b74a238904f0af99c78eddefa6396427f9d272baef",
+      "member_sha256": "4ece5e0ce28382f06d9ee1c9aee8073b3e3380579b16708e1330102b5b8f8b15",
+      "row_number": 59650,
+      "official_sha256": "9e26fe2216c5264e809b92cfe4cb8c0e47c14961d203a9c2889d4f1285361f51",
+      "official_url": "https://www.petrochina.com.cn/petrochina/gsgg/201806/667ae738ac3142a6a3260b3e55a90ab6/files/a78ca662a1f04a4797210e962a6f6bf8.pdf",
+      "public_terms": {
+        "record_date": "2018-06-20",
+        "effective_date": "2018-06-21",
+        "payment_date": "2018-06-21",
+        "cash_per_share": "0.06074"
+      },
+      "record_date_source": "official implementation notice; original CSMAR candidate remains missing",
+      "announced_native": "2018-06-13",
+      "announced_document": "2018-06-12",
+      "date_conflict": "NATIVE_ANNODT_ONE_DAY_AFTER_NOTICE_DOCUMENT_DATE; RETAIN_BOTH",
+      "retrieved_at": "2026-11-05T04:41:28.676079+00:00",
+      "available_at": "2026-11-05T04:50:10.674852+00:00",
+      "status": "PROPOSED",
+      "refusal": "MARKET DATA QUALIFICATION REQUIRED: only implemented events can adjust prices"
+    },
+    {
+      "event_id": "csmar:f0f7c75c6693415bd8f4315a89e7c8350199259d16d09586379646570311eaee",
+      "revision": 1,
+      "source_version": "sha256:e13d7f2306888889892ae8b74a238904f0af99c78eddefa6396427f9d272baef",
+      "source_sha256": "e13d7f2306888889892ae8b74a238904f0af99c78eddefa6396427f9d272baef",
+      "member_sha256": "4ece5e0ce28382f06d9ee1c9aee8073b3e3380579b16708e1330102b5b8f8b15",
+      "row_number": 59651,
+      "official_sha256": "79b1e9ee30b0a3e7a71df9e803c33a620169d61646ed2f77b8367e366b0653c6",
+      "official_url": "https://www.petrochina.com.cn/petrochina/gsgg/201809/b3d3e80c3ebe45398e844d3ae80b4368/files/332296d36d624cbf9f72fe4c61bcdba5.pdf",
+      "public_terms": {
+        "record_date": "2018-09-20",
+        "effective_date": "2018-09-21",
+        "payment_date": "2018-09-21",
+        "cash_per_share": "0.08880"
+      },
+      "record_date_source": "official implementation notice; original CSMAR candidate remains missing",
+      "announced_native": "2018-09-14",
+      "announced_document": "2018-09-13",
+      "date_conflict": "NATIVE_ANNODT_ONE_DAY_AFTER_NOTICE_DOCUMENT_DATE; RETAIN_BOTH",
+      "retrieved_at": "2026-11-05T04:41:28.676097+00:00",
+      "available_at": "2026-11-05T04:50:10.674852+00:00",
+      "status": "PROPOSED",
+      "refusal": "MARKET DATA QUALIFICATION REQUIRED: only implemented events can adjust prices"
+    }
+  ],
+  "warmup_records": 244,
+  "research_records": 243,
+  "gold_crosses": 5,
+  "death_crosses": 6,
+  "action_coverage": "PARTIAL; no complete range evidence",
+  "old_runner_refusal": "corporate-action/variable adjustment ratio requires qualified execution ledger",
+  "tax_status": "UNKNOWN",
+  "hfq_status": "HFQ_UNVERIFIED",
+  "pit_status": "PIT_UNVERIFIED",
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+  "no_live_money": true
+}

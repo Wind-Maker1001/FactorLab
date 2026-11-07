@@ -1,0 +1,297 @@
+{
+  "baseline": "967f9201ce349676b9ad3f2719c162176ffab9fd",
+  "reports": [
+    {
+      "label": "related-final-313",
+      "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "command": [
+        "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/research/test_dividend_execution.py",
+        "tests/research/test_corporate_action_ledger.py",
+        "tests/research/test_dual_ma.py",
+        "tests/research/test_execution_backtest_phase3.py",
+        "tests/research/test_qualification_admission_boundaries.py",
+        "tests/security",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\related-final-313\\tmp",
+        "--junitxml=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\related-final-313\\tests.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 123.52972279999813,
+      "baseline": "967f9201ce349676b9ad3f2719c162176ffab9fd",
+      "implementation_sha256": {
+        "src/factorlab/backtest/corporate_actions.py": "435b47dc3356c6f3dc5b06564b4579eb920af728ea8cc1d3768d58cc10e72ca6",
+        "src/factorlab/backtest/execution.py": "7dfe7b2f7a96ab7414e574ad18bd1477fe561b2325d3403cabb14f765778095d",
+        "src/factorlab/backtest/target.py": "341a1a13b29f8396bf966630d896aa1eb6b924c699297daba855e4b86093dc9f",
+        "src/factorlab/strategies/dual_ma.py": "6f0003371da8464a0c3bc98316b2be5372a76e290fe960e5ec6aaf213d6cb7b1",
+        "src/factorlab/data/corporate_actions/execution_evidence.py": "cd4ba5cc368f573a39737247a21cdac7e1a3a7543264168c7ba0d6a01c8ee235",
+        "tests/research/test_dividend_execution.py": "da7af1aaf8011c18500a49ada00415ed4c9bb4bf1045437b5b1ebf71947b2aa8"
+      },
+      "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+      "no_live_money": true,
+      "tests": 202,
+      "failures": 0,
+      "skipped": 0,
+      "groups": {
+        "new_integration": {
+          "tests": 42,
+          "passed": 42
+        },
+        "executor": {
+          "tests": 8,
+          "passed": 8
+        },
+        "dual_ma": {
+          "tests": 49,
+          "passed": 49
+        },
+        "existing_offline_dividend": {
+          "tests": 11,
+          "passed": 11
+        },
+        "financial_gates": {
+          "tests": 92,
+          "passed": 92
+        }
+      },
+      "failed_nodes": [],
+      "logs": {
+        "local-validation/related-final-313/tests.log": "1518b118973dc86b41c308718aac7a598cda4afe3271fa1bb75f1336782471ee",
+        "local-validation/related-final-313/tests.xml": "db1bb20d9ed6820d3a4efd4f299aceab12d7c98c1b514e84f325544866b69db3",
+        "local-validation/related-final-313/receipt.json": "794cff166e762727c40b79cb64b11df5cafa33a25811bea5dd928ac025d69f74"
+      }
+    },
+    {
+      "label": "related-final-314",
+      "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "command": [
+        "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/research/test_dividend_execution.py",
+        "tests/research/test_corporate_action_ledger.py",
+        "tests/research/test_dual_ma.py",
+        "tests/research/test_execution_backtest_phase3.py",
+        "tests/research/test_qualification_admission_boundaries.py",
+        "tests/security",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\related-final-314\\tmp",
+        "--junitxml=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\related-final-314\\tests.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 122.87688869998965,
+      "baseline": "967f9201ce349676b9ad3f2719c162176ffab9fd",
+      "implementation_sha256": {
+        "src/factorlab/backtest/corporate_actions.py": "435b47dc3356c6f3dc5b06564b4579eb920af728ea8cc1d3768d58cc10e72ca6",
+        "src/factorlab/backtest/execution.py": "7dfe7b2f7a96ab7414e574ad18bd1477fe561b2325d3403cabb14f765778095d",
+        "src/factorlab/backtest/target.py": "341a1a13b29f8396bf966630d896aa1eb6b924c699297daba855e4b86093dc9f",
+        "src/factorlab/strategies/dual_ma.py": "6f0003371da8464a0c3bc98316b2be5372a76e290fe960e5ec6aaf213d6cb7b1",
+        "src/factorlab/data/corporate_actions/execution_evidence.py": "cd4ba5cc368f573a39737247a21cdac7e1a3a7543264168c7ba0d6a01c8ee235",
+        "tests/research/test_dividend_execution.py": "da7af1aaf8011c18500a49ada00415ed4c9bb4bf1045437b5b1ebf71947b2aa8"
+      },
+      "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+      "no_live_money": true,
+      "tests": 202,
+      "failures": 0,
+      "skipped": 0,
+      "groups": {
+        "new_integration": {
+          "tests": 42,
+          "passed": 42
+        },
+        "executor": {
+          "tests": 8,
+          "passed": 8
+        },
+        "dual_ma": {
+          "tests": 49,
+          "passed": 49
+        },
+        "existing_offline_dividend": {
+          "tests": 11,
+          "passed": 11
+        },
+        "financial_gates": {
+          "tests": 92,
+          "passed": 92
+        }
+      },
+      "failed_nodes": [],
+      "logs": {
+        "local-validation/related-final-314/tests.log": "e5b7843d4b5a7b96c8450bed075970d3a21df70e54edc7d5ffc699ed479545d0",
+        "local-validation/related-final-314/tests.xml": "f871535d763c9586a52c4ece1a02bd67579f4393594307979257750aea5b1713",
+        "local-validation/related-final-314/receipt.json": "38fe20ced19f8b25ed2cd707b32ddc2cffa34b3ee9354f63f2934b0595889940"
+      }
+    },
+    {
+      "label": "core-313",
+      "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "command": [
+        "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/research/test_factors_phase1.py",
+        "tests/research/test_factor_metrics_golden.py",
+        "tests/research/test_models_phase2.py",
+        "tests/research/test_tree_models_phase3.py",
+        "tests/research/test_walk_forward_runner_phase2.py",
+        "tests/research/test_prediction_metrics_phase2.py",
+        "tests/research/test_exploratory_statistical_audit.py",
+        "tests/research/test_portfolio_backtest_phase2.py",
+        "tests/research/test_execution_backtest_phase3.py",
+        "tests/research/test_forward_activation_phase4.py",
+        "tests/research/test_forward_policy_phase4.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\core-313\\tmp",
+        "--junitxml=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\core-313\\tests.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 39.733265000002575,
+      "baseline": "967f9201ce349676b9ad3f2719c162176ffab9fd",
+      "implementation_sha256": {
+        "src/factorlab/backtest/corporate_actions.py": "435b47dc3356c6f3dc5b06564b4579eb920af728ea8cc1d3768d58cc10e72ca6",
+        "src/factorlab/backtest/execution.py": "7dfe7b2f7a96ab7414e574ad18bd1477fe561b2325d3403cabb14f765778095d",
+        "src/factorlab/backtest/target.py": "341a1a13b29f8396bf966630d896aa1eb6b924c699297daba855e4b86093dc9f",
+        "src/factorlab/strategies/dual_ma.py": "6f0003371da8464a0c3bc98316b2be5372a76e290fe960e5ec6aaf213d6cb7b1",
+        "src/factorlab/data/corporate_actions/execution_evidence.py": "cd4ba5cc368f573a39737247a21cdac7e1a3a7543264168c7ba0d6a01c8ee235",
+        "tests/research/test_dividend_execution.py": "da7af1aaf8011c18500a49ada00415ed4c9bb4bf1045437b5b1ebf71947b2aa8"
+      },
+      "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+      "no_live_money": true,
+      "tests": 471,
+      "failures": 0,
+      "skipped": 0,
+      "groups": {
+        "new_integration": {
+          "tests": 0,
+          "passed": 0
+        },
+        "executor": {
+          "tests": 8,
+          "passed": 8
+        },
+        "dual_ma": {
+          "tests": 0,
+          "passed": 0
+        },
+        "existing_offline_dividend": {
+          "tests": 0,
+          "passed": 0
+        },
+        "financial_gates": {
+          "tests": 0,
+          "passed": 0
+        }
+      },
+      "failed_nodes": [],
+      "logs": {
+        "local-validation/core-313/tests.log": "d0e252cb3abd8bb293905e101902d278548b668263f916a350de786881b40ded",
+        "local-validation/core-313/tests.xml": "432d2d042a35bce2033ab3eaeb1161cdceb03fa5edd56f5d2ae385cc80bf153e",
+        "local-validation/core-313/receipt.json": "16d0c07c0f65911c5c209caac6c06e03d93ddfe3c9aa290c45f37c6e0f86a19f"
+      }
+    },
+    {
+      "label": "core-314",
+      "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "command": [
+        "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/research/test_factors_phase1.py",
+        "tests/research/test_factor_metrics_golden.py",
+        "tests/research/test_models_phase2.py",
+        "tests/research/test_tree_models_phase3.py",
+        "tests/research/test_walk_forward_runner_phase2.py",
+        "tests/research/test_prediction_metrics_phase2.py",
+        "tests/research/test_exploratory_statistical_audit.py",
+        "tests/research/test_portfolio_backtest_phase2.py",
+        "tests/research/test_execution_backtest_phase3.py",
+        "tests/research/test_forward_activation_phase4.py",
+        "tests/research/test_forward_policy_phase4.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\core-314\\tmp",
+        "--junitxml=D:\\Code\\FactorLab-worktrees\\p2-data-02\\local-validation\\core-314\\tests.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 39.90372339999885,
+      "baseline": "967f9201ce349676b9ad3f2719c162176ffab9fd",
+      "implementation_sha256": {
+        "src/factorlab/backtest/corporate_actions.py": "435b47dc3356c6f3dc5b06564b4579eb920af728ea8cc1d3768d58cc10e72ca6",
+        "src/factorlab/backtest/execution.py": "7dfe7b2f7a96ab7414e574ad18bd1477fe561b2325d3403cabb14f765778095d",
+        "src/factorlab/backtest/target.py": "341a1a13b29f8396bf966630d896aa1eb6b924c699297daba855e4b86093dc9f",
+        "src/factorlab/strategies/dual_ma.py": "6f0003371da8464a0c3bc98316b2be5372a76e290fe960e5ec6aaf213d6cb7b1",
+        "src/factorlab/data/corporate_actions/execution_evidence.py": "cd4ba5cc368f573a39737247a21cdac7e1a3a7543264168c7ba0d6a01c8ee235",
+        "tests/research/test_dividend_execution.py": "da7af1aaf8011c18500a49ada00415ed4c9bb4bf1045437b5b1ebf71947b2aa8"
+      },
+      "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+      "no_live_money": true,
+      "tests": 471,
+      "failures": 0,
+      "skipped": 0,
+      "groups": {
+        "new_integration": {
+          "tests": 0,
+          "passed": 0
+        },
+        "executor": {
+          "tests": 8,
+          "passed": 8
+        },
+        "dual_ma": {
+          "tests": 0,
+          "passed": 0
+        },
+        "existing_offline_dividend": {
+          "tests": 0,
+          "passed": 0
+        },
+        "financial_gates": {
+          "tests": 0,
+          "passed": 0
+        }
+      },
+      "failed_nodes": [],
+      "logs": {
+        "local-validation/core-314/tests.log": "03c69ec0710a68f94ad9caa09c642c5595dd855686193269a851359919add4ff",
+        "local-validation/core-314/tests.xml": "39ce96d9dff1ef0f23d15ecaf03873f357aad23bea15bd8d09d689ed4f37e33b",
+        "local-validation/core-314/receipt.json": "69c4ca3c5c5aa27b3dccc519931414111a424afea111ac7db8899e3fe430d7a5"
+      }
+    }
+  ],
+  "prior_historical_collection_errors": {
+    "local-validation\\related-313.xml": "00a292b70e023f2dc2ae7393dd85a371dd54be07145a1c21c64b4d7c149ed08a",
+    "local-validation\\related-314.xml": "9295895669139873eb7e48cc87a4726c830747faaa6c3d5bcfbb4b778d06d32e"
+  },
+  "prior_historical_error_reason": "market-admission.yml absent in baseline and task checkout; original historical matrix retained",
+  "financial_and_frozen_controls_unchanged": true,
+  "no_live_money": true,
+  "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+  "pit": "PIT_UNVERIFIED",
+  "hfq": "HFQ_UNVERIFIED"
+}
