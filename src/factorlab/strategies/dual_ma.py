@@ -3,8 +3,9 @@
 The input calendar includes warmup sessions. No pre-start order is carried in.
 A genuine crossing on the first research close is eligible; an already bullish
 ordering is not an entry. Raw prices execute/mark, adjusted closes signal.
-Corporate-action accounting is not implemented: variable adjustment ratios and
-nonempty action ledgers are refused. This module grants no financial admission.
+The original runner refuses variable adjustment ratios and nonempty actions.
+The separate typed integrated runner supports cash events under explicit
+evidence and tax contracts. Neither runner grants financial admission.
 """
 from dataclasses import dataclass
 
@@ -147,3 +148,29 @@ def run_software_backtest(bars, calendar, config=None, *, fee_schedule=None, cor
     benchmark = run_target_positions(benchmark_targets, frame, research, execution, fees, buy_at_first_open=True)
     return {"signals": signals, "strategy": result, "benchmark": benchmark,
             "scope": "SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE", "financial_admission": "FORMAL_ADMISSION_BLOCKED"}
+
+
+def run_integrated_software_backtest(bars, calendar, dividend_plan, config=None, *, fee_schedule=None):
+    """Explicit SOFTWARE_ONLY event execution for strategy and buy/hold.
+
+    This separate API does not change the old runner/CLI admission refusals.
+    Adjustment inputs remain unqualified signal inputs, not a PIT/HFQ claim.
+    """
+    from factorlab.data.corporate_actions.execution_evidence import DividendExecutionPlan
+    if not isinstance(dividend_plan, DividendExecutionPlan):
+        raise SchemaError("typed dividend execution plan required")
+    config = config or DualMAConfig()
+    frame, research = prepare_inputs(bars, calendar, config)
+    signals = moving_average_signals(frame, calendar, config)
+    execution = ExecutionBacktestConfig(initial_cash=config.initial_cash, board_lot=config.board_lot)
+    fees = fee_schedule or FeeSchedule.a_share_default()
+    strategy = run_target_positions(signals, frame, research, execution, fees, dividend_plan=dividend_plan)
+    targets = signals.copy()
+    targets["target_weight"] = np.nan
+    targets.loc[0, "target_weight"] = config.max_weight
+    benchmark = run_target_positions(targets, frame, research, execution, fees,
+                                     buy_at_first_open=True, dividend_plan=dividend_plan)
+    return dict(signals=signals, strategy=strategy, benchmark=benchmark,
+                scope="SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+                financial_admission="FORMAL_ADMISSION_BLOCKED", pit_status="PIT_UNVERIFIED",
+                hfq_status="HFQ_UNVERIFIED", no_live_money=True)

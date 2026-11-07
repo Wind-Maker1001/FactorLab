@@ -106,6 +106,14 @@ class PositionBook:
     def total_shares(self, symbol: str) -> int:
         return int(sum(lot.shares for lot in self._lots.get(symbol, ())))
 
+    def lot_snapshot(self, symbol: str) -> Tuple[Tuple[pd.Timestamp, int], ...]:
+        """Immutable acquisition-date/remaining-quantity evidence for tax rules.
+
+        Trade history and daily snapshots retain sold lots; callers cannot
+        mutate the live FIFO book through this view.
+        """
+        return tuple((lot.acquired_on, lot.shares) for lot in self._lots.get(symbol, ()))
+
     def sellable_shares(
         self, symbol: str, trade_date: object, *, t_plus_one: bool = True
     ) -> int:

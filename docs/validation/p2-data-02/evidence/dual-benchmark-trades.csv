@@ -1,0 +1,2 @@
+signal_date,execution_date,symbol,side,score,rank,requested_shares,executed_shares,execution_price,trade_notional,commission,stamp_duty,transfer_fee,side_fee,slippage,transaction_cost,cash_after
+,2024-01-02,600000.SH,buy,,,100,100,100.0,10000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0

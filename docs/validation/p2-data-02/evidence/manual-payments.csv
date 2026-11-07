@@ -1,0 +1,2 @@
+event_id,actual_date,observed_on,phase,gross,net,available_cash_delta,restricted_cash_delta,tax_status
+cash-1,2024-01-08,2024-01-08,AFTER_OPEN_ORDERS,200,200,200,0,SYNTHETIC_EXPLICIT

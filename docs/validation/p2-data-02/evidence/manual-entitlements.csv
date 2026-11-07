@@ -1,0 +1,2 @@
+event_id,revision,record_date,eligible_shares,cash_per_share,gross,lots,position_source,source_id,source_sha256
+cash-1,2,2024-01-03,100,2,200,"((Timestamp('2024-01-02 00:00:00'), 100),)",PositionBook AFTER_OPEN_FILLS AT_RECORD_CLOSE,SYNTHETIC_FIXTURE_SOURCE,e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f

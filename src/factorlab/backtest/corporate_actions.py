@@ -13,6 +13,92 @@ from factorlab.data.corporate_actions.validation import decimal, event_terms
 from factorlab.data.evidence import date, fail
 
 
+def _dividend_amounts(gross, rate):
+    """Shared offline/in-loop gross-to-net arithmetic; unknown is never zero."""
+    return gross * (1 - rate) if rate is not None else (Decimal(0) if gross == 0 else None)
+
+
+class DividendExecutionLedger:
+    """Incremental lifecycle used *inside* the target order loop.
+
+    Available cash stays in the executor's single cash variable. This object
+    returns only new cash deltas, and owns receivables/restricted cash. A pay
+    date without intraday evidence posts AFTER_OPEN; the next observed open
+    may spend it. Non-session pay dates retain their actual date in the audit.
+    Gross unknown-tax assets are disclosed, never called precise net equity.
+    """
+
+    def __init__(self, plan, security_id, dates):
+        from factorlab.data.corporate_actions.execution_evidence import validate_execution_plan
+        self.events, self.rates = validate_execution_plan(plan, security_id, dates)
+        self.eligible, self.receivables, self.paid = {}, {}, set()
+        self.restricted_cash = Decimal(0)
+        self.tax_accrued = Decimal(0)
+        self.audit, self.entitlements, self.recognitions = [], [], []
+        self.unknown_tax = False
+
+    def _pay(self, event, observed_on, phase):
+        key = event.event_id
+        if key in self.paid:
+            return Decimal(0)
+        if key not in self.receivables:
+            fail("payment before recognized entitlement")
+        gross, recognized = self.receivables.pop(key)
+        rate = self.rates[key]
+        net = _dividend_amounts(gross, rate)
+        if net is None:
+            self.restricted_cash += gross
+        self.audit.append(dict(event_id=key, actual_date=date(event.pay_date),
+                               observed_on=observed_on, phase=phase, gross=gross,
+                               net=net, available_cash_delta=net or Decimal(0),
+                               restricted_cash_delta=gross if net is None else Decimal(0),
+                               tax_status="UNKNOWN" if rate is None else "SYNTHETIC_EXPLICIT"))
+        self.paid.add(key)
+        return net or Decimal(0)
+
+    def before_open(self, day):
+        delta = Decimal(0)
+        for event in self.events:
+            if date(event.pay_date) < day and event.event_id not in self.paid:
+                delta += self._pay(event, day, "BEFORE_OPEN_AFTER_ACTUAL_PAY_DATE")
+        return float(delta)
+
+    def after_orders(self, day, book, symbol):
+        delta = Decimal(0)
+        for event in self.events:
+            key = event.event_id
+            if day == date(event.record_date):
+                if key in self.eligible:
+                    fail("duplicate record-close entitlement")
+                quantity = book.total_shares(symbol)
+                self.eligible[key] = Decimal(quantity) * event.cash
+                self.entitlements.append(dict(
+                    event_id=key, revision=event.revision, record_date=day,
+                    eligible_shares=quantity, cash_per_share=event.cash,
+                    gross=self.eligible[key], lots=book.lot_snapshot(symbol),
+                    position_source="PositionBook AFTER_OPEN_FILLS AT_RECORD_CLOSE",
+                    source_id=event.source_id, source_sha256=event.source_sha256))
+            if day == date(event.effective_date):
+                gross = self.eligible[key]
+                rate = self.rates[key]
+                net = _dividend_amounts(gross, rate)
+                recognized = gross if net is None else net
+                self.tax_accrued += gross - recognized
+                self.unknown_tax |= rate is None and gross != 0
+                self.receivables[key] = (gross, recognized)
+                self.recognitions.append(dict(event_id=key, effective_date=day, gross=gross,
+                                              net=net, recognized=recognized))
+            if day == date(event.pay_date):
+                delta += self._pay(event, day, "AFTER_OPEN_ORDERS")
+        return float(delta)
+
+    def balances(self):
+        return dict(receivable_gross=float(sum((r[0] for r in self.receivables.values()), Decimal(0))),
+                    recognized_receivables=float(sum((r[1] for r in self.receivables.values()), Decimal(0))),
+                    restricted_cash=float(self.restricted_cash), tax_accrued=float(self.tax_accrued),
+                    tax_status="UNKNOWN" if self.unknown_tax else "SYNTHETIC_EXPLICIT_OR_NO_ENTITLEMENT")
+
+
 def cash_dividend_ledger(positions, events, coverage, *, security_id, initial_cash, tax_rates=None,
                          price_basis="RAW"):
     if price_basis != "RAW":
@@ -81,7 +167,7 @@ def cash_dividend_ledger(positions, events, coverage, *, security_id, initial_ca
                     cash += gross
                     gross_paid += gross
                     rate = tax.get(key)
-                    net = gross * (1 - rate) if rate is not None else (Decimal(0) if gross == 0 else None)
+                    net = _dividend_amounts(gross, rate)
                     if net is None:
                         net_known = False
                     else:
