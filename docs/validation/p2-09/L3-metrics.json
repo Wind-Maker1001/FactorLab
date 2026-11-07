@@ -1,0 +1,57 @@
+{
+  "level": "L3",
+  "status": "PASS",
+  "synthetic": true,
+  "warning": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "sls_status": "SLS_PERFORMANCE_NOT_VERIFIED",
+  "python": "3.13.9",
+  "preflight": {
+    "available_memory_bytes": 39360524288,
+    "free_disk_bytes": 82087313408,
+    "output_directory": "D:\\Code\\FactorLab-worktrees\\p2-09\\local-p209\\L3",
+    "dataset_destination_existed": false
+  },
+  "input_generation_seconds": 2.8427178999991156,
+  "input_stock_days": 1249991,
+  "dense_calendar_stock_days": 1250000,
+  "end_to_end_seconds": 2020.5120624999981,
+  "cpu_seconds": 2082.84375,
+  "python_tracemalloc_peak_bytes": 1058304881,
+  "read_bytes": 26607230560,
+  "write_bytes": 3882183638,
+  "config": {
+    "symbols_per_batch": 32,
+    "factors_per_batch": 16,
+    "dates_per_batch": 20,
+    "workers": 2,
+    "max_factors": 300,
+    "timeout_seconds": 7200.0,
+    "memory_limit_bytes": 7516192768,
+    "disk_limit_bytes": 12884901888,
+    "minimum_available_memory_bytes": 1073741824,
+    "minimum_free_disk_bytes": 1073741824
+  },
+  "dataset_identity_hash": "7a9d35362b6ef7f8e1868deffc8063732f2a74f184b562de40fe86591c3e197f",
+  "manifest_sha256": "fa6b01b2fa671de8918dd51c111defe15128be830c4a5765eb4e9f4922254a06",
+  "partition_count": 120,
+  "counts": {
+    "registered_definitions": 100,
+    "requested_candidates": 100,
+    "resolved_definitions": 100,
+    "unique_executed_definitions": 100,
+    "successful_factors": 100,
+    "selected_factors": null,
+    "factor_rows": 1250000,
+    "total_factor_cells": 125000000,
+    "valid_factor_values": 123269869
+  },
+  "dataset_rows": 1190500,
+  "valid_factor_values_per_second": 61009.222012501654,
+  "failed_batches": 0,
+  "retries": 0,
+  "native_thread_environment": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2"
+  }
+}

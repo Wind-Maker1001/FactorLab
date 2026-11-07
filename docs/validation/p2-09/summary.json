@@ -1,0 +1,78 @@
+{
+  "L0": {
+    "status": "PASS",
+    "registered_definitions": 14,
+    "requested_candidates": 14,
+    "resolved_definitions": 14,
+    "unique_executed_definitions": 14,
+    "successful_factors": 14,
+    "selected_factors": null,
+    "factor_rows": 10000,
+    "total_factor_cells": 140000,
+    "valid_factor_values": 122367,
+    "end_to_end_seconds": 4.529655799997272,
+    "rss_gib": 0.34108734130859375,
+    "disk_gib": 0.002581472508609295,
+    "dataset_identity_hash": "1b24af73348f98d38a926c6e405152316d1ebcf3ad133b21ad387c0169349bb6"
+  },
+  "L1": {
+    "status": "PASS",
+    "registered_definitions": 14,
+    "requested_candidates": 14,
+    "resolved_definitions": 14,
+    "unique_executed_definitions": 14,
+    "successful_factors": 14,
+    "selected_factors": null,
+    "factor_rows": 600000,
+    "total_factor_cells": 8400000,
+    "valid_factor_values": 8232898,
+    "end_to_end_seconds": 76.51861030000146,
+    "rss_gib": 0.5624771118164062,
+    "disk_gib": 0.3726125340908766,
+    "dataset_identity_hash": "ed876ab0ace62e55c53579a7ee2d5fc958ba5e89f4b530d32b4383ccb2f3e756"
+  },
+  "L2": {
+    "status": "PASS",
+    "registered_definitions": 100,
+    "requested_candidates": 100,
+    "resolved_definitions": 100,
+    "unique_executed_definitions": 100,
+    "successful_factors": 100,
+    "selected_factors": null,
+    "factor_rows": 600000,
+    "total_factor_cells": 60000000,
+    "valid_factor_values": 58281569,
+    "end_to_end_seconds": 755.6450373999978,
+    "rss_gib": 0.8181114196777344,
+    "disk_gib": 1.6415670551359653,
+    "dataset_identity_hash": "16dc0b5828ced10a6cb89f72002c6884f38f2a3f486d82a28205a6b46a12f1f1"
+  },
+  "L3": {
+    "status": "PASS",
+    "registered_definitions": 100,
+    "requested_candidates": 100,
+    "resolved_definitions": 100,
+    "unique_executed_definitions": 100,
+    "successful_factors": 100,
+    "selected_factors": null,
+    "factor_rows": 1250000,
+    "total_factor_cells": 125000000,
+    "valid_factor_values": 123269869,
+    "end_to_end_seconds": 2020.5120624999981,
+    "rss_gib": 1.3278961181640625,
+    "disk_gib": 3.6154080210253596,
+    "dataset_identity_hash": "7a9d35362b6ef7f8e1868deffc8063732f2a74f184b562de40fe86591c3e197f"
+  },
+  "L4": {
+    "status": "NOT_RUN",
+    "reason": "Optional large stress test omitted; 300 real definitions executed and checked on small panels. L2 and L3 provide required and extension capacity evidence."
+  },
+  "acceptance": {
+    "P209_FUNCTIONAL_ACCEPTANCE": "PASS",
+    "P209_DESKTOP_CAPACITY": "PASS",
+    "P209_MEMORY_BUDGET": "PASS",
+    "P209_SLS_PERFORMANCE_NOT_VERIFIED": "NOT_RUN",
+    "P209_FINANCIAL_ADMISSION_BLOCKED": "PASS",
+    "P209_ENGINEERING_ACCEPTED": "PASS"
+  }
+}

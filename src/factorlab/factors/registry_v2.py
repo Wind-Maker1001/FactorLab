@@ -371,6 +371,13 @@ class FactorRegistrySnapshot:
         }
         return output
 
+    def compute_chunked(self, bars, refs, *, calendar, output_dir,
+                        context=FactorDataContext(), config=None):
+        """Persist raw factors using independent full-history security groups."""
+        from factorlab.dataset.partitioned import build_partitioned
+        return build_partitioned(self, tuple(refs), bars, calendar, output_dir,
+                                 context=context, config=config)
+
 
 def _prepare_panel(bars, definitions, calendar):
     if (not isinstance(bars, pd.DataFrame) or bars.empty
@@ -465,6 +472,9 @@ class FactorRegistryV2:
 
     def compute(self, bars, refs, **kwargs):
         return self.freeze().compute(bars, refs, **kwargs)
+
+    def compute_chunked(self, bars, refs, **kwargs):
+        return self.freeze().compute_chunked(bars, refs, **kwargs)
 
     @classmethod
     def with_builtins(cls):

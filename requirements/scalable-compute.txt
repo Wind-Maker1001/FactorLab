@@ -1,0 +1,2 @@
+# Optional P2-09 resource monitoring; core-only installs remain supported.
+psutil==7.2.2

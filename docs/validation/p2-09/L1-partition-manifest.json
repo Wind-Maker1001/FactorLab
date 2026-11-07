@@ -1,0 +1,1164 @@
+{
+  "format": "FACTORLAB_PARTITIONED_V1",
+  "kind": "dataset",
+  "binding": {
+    "schema": "FACTORLAB_DATASET_REGISTRY_V2_1",
+    "snapshot_hash": "348c366b261ae36b43d29a422abfaeb4db3dce44ba675a77458d634bb43d22c6",
+    "factors": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      }
+    ],
+    "resolved_definitions": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:AMIHU20",
+        "input_fields": [
+          "adj_close",
+          "amount"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MA20_MA60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 59,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MA5_MA20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MOM20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:MOM60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:PRICE_MA20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 19,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:REV1",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 1,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:REV5",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:TURN20",
+        "input_fields": [
+          "turnover"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:TURN5",
+        "input_fields": [
+          "turnover"
+        ],
+        "lookback": 4,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL20",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 20,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL5",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 5,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOL60",
+        "input_fields": [
+          "adj_close"
+        ],
+        "lookback": 60,
+        "price_basis": [
+          "HFQ"
+        ],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "kind": "builtin",
+        "implementation": "phase1-v1:VOLUME_RATIO",
+        "input_fields": [
+          "volume"
+        ],
+        "lookback": 19,
+        "price_basis": [],
+        "dependencies": [],
+        "expression_json": "",
+        "frequency": "1d",
+        "availability": "SESSION_CLOSE",
+        "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      }
+    ],
+    "data_context": {
+      "data_source": "P209_SYNTHETIC",
+      "availability_evidence": "UNVERIFIED",
+      "no_live_money": true,
+      "pit_status": "PIT_UNVERIFIED",
+      "hfq_status": "HFQ_UNVERIFIED",
+      "admission_status": "FORMAL_ADMISSION_BLOCKED"
+    },
+    "data_version": "seed-20261014-fixed-v1",
+    "calendar": {
+      "id": "SYNTHETIC_BDAY_NOT_EXCHANGE-v1",
+      "sessions": 1200,
+      "sha256": "161d326374efed3c2f786d82a4c631bd0af470a23f5cee642ea7d5f18ab6e608",
+      "start": "2023-01-02",
+      "end": "2027-08-06"
+    },
+    "options": {
+      "factor_names": [
+        "AMIHU20",
+        "MA20_MA60",
+        "MA5_MA20",
+        "MOM20",
+        "MOM60",
+        "PRICE_MA20",
+        "REV1",
+        "REV5",
+        "TURN20",
+        "TURN5",
+        "VOL20",
+        "VOL5",
+        "VOL60",
+        "VOLUME_RATIO"
+      ],
+      "holding_days": 5,
+      "entry_price": "next_open",
+      "expected_member_count": 500,
+      "winsorization": "mad",
+      "mad_multiplier": 5.0,
+      "lower_quantile": 0.01,
+      "upper_quantile": 0.99,
+      "minimum_cross_section": 20,
+      "include_market_regime": true,
+      "filter_config": {
+        "min_listed_days": 120,
+        "exclude_st": true,
+        "exclude_suspended": true,
+        "zero_volume_window": 20,
+        "quality_window": 60,
+        "min_quality_ratio": 0.8
+      }
+    },
+    "timing": {
+      "factor_availability": "SESSION_CLOSE",
+      "earliest_decision": "NEXT_SESSION_OPEN",
+      "entry_price": "next_open",
+      "label_price_basis": "HFQ",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL"
+    },
+    "registration_status": "SOFTWARE_VALIDATED_ONLY",
+    "financial_status": "FINANCIAL_ADMISSION_BLOCKED"
+  },
+  "input_hashes": {
+    "bars": "bfaef0bdb9932f4253e8c8938905d4203f1b6cd75c193d61e2e37b857edff648",
+    "benchmark": "590794c0d09f9e4342f1e081864818e2e5fae9939d40409736b5bcb25843bb8c",
+    "membership": "2d5307f2c2793e52753fffb7cc526e356d1a4748c49c2ad237bc1a5109b5238a",
+    "status": "92e3aae71361576fb2cc29709af0418d3e17cf3b38a3dad92c1cc495460e9b7b",
+    "listings": "a6c94de59aaa6e6c0a7e1ad2b554dbd33e31addf717c50d4a5b3260ad3fde497"
+  },
+  "research_interval": {
+    "start": "2023-04-03",
+    "end": "2027-08-06"
+  },
+  "schema": [
+    [
+      "date",
+      "timestamp[ns]"
+    ],
+    [
+      "symbol",
+      "string"
+    ],
+    [
+      "open",
+      "double"
+    ],
+    [
+      "high",
+      "double"
+    ],
+    [
+      "low",
+      "double"
+    ],
+    [
+      "close",
+      "double"
+    ],
+    [
+      "volume",
+      "double"
+    ],
+    [
+      "amount",
+      "double"
+    ],
+    [
+      "turnover",
+      "double"
+    ],
+    [
+      "adj_factor",
+      "double"
+    ],
+    [
+      "raw_open",
+      "double"
+    ],
+    [
+      "raw_high",
+      "double"
+    ],
+    [
+      "raw_low",
+      "double"
+    ],
+    [
+      "raw_close",
+      "double"
+    ],
+    [
+      "adj_open",
+      "double"
+    ],
+    [
+      "adj_high",
+      "double"
+    ],
+    [
+      "adj_low",
+      "double"
+    ],
+    [
+      "adj_close",
+      "double"
+    ],
+    [
+      "AMIHU20",
+      "double"
+    ],
+    [
+      "MA20_MA60",
+      "double"
+    ],
+    [
+      "MA5_MA20",
+      "double"
+    ],
+    [
+      "MOM20",
+      "double"
+    ],
+    [
+      "MOM60",
+      "double"
+    ],
+    [
+      "PRICE_MA20",
+      "double"
+    ],
+    [
+      "REV1",
+      "double"
+    ],
+    [
+      "REV5",
+      "double"
+    ],
+    [
+      "TURN20",
+      "double"
+    ],
+    [
+      "TURN5",
+      "double"
+    ],
+    [
+      "VOL20",
+      "double"
+    ],
+    [
+      "VOL5",
+      "double"
+    ],
+    [
+      "VOL60",
+      "double"
+    ],
+    [
+      "VOLUME_RATIO",
+      "double"
+    ],
+    [
+      "entry_date",
+      "timestamp[ns]"
+    ],
+    [
+      "exit_date",
+      "timestamp[ns]"
+    ],
+    [
+      "STOCK_FWD_RET5",
+      "double"
+    ],
+    [
+      "BENCHMARK_FWD_RET5",
+      "double"
+    ],
+    [
+      "EXCESS_RET5",
+      "double"
+    ],
+    [
+      "MARKET_REGIME",
+      "string"
+    ],
+    [
+      "INDEX_RET5",
+      "double"
+    ],
+    [
+      "INDEX_RET20",
+      "double"
+    ],
+    [
+      "INDEX_RET60",
+      "double"
+    ],
+    [
+      "INDEX_VOL20",
+      "double"
+    ],
+    [
+      "raw_AMIHU20",
+      "double"
+    ],
+    [
+      "raw_MA20_MA60",
+      "double"
+    ],
+    [
+      "raw_MA5_MA20",
+      "double"
+    ],
+    [
+      "raw_MOM20",
+      "double"
+    ],
+    [
+      "raw_MOM60",
+      "double"
+    ],
+    [
+      "raw_PRICE_MA20",
+      "double"
+    ],
+    [
+      "raw_REV1",
+      "double"
+    ],
+    [
+      "raw_REV5",
+      "double"
+    ],
+    [
+      "raw_TURN20",
+      "double"
+    ],
+    [
+      "raw_TURN5",
+      "double"
+    ],
+    [
+      "raw_VOL20",
+      "double"
+    ],
+    [
+      "raw_VOL5",
+      "double"
+    ],
+    [
+      "raw_VOL60",
+      "double"
+    ],
+    [
+      "raw_VOLUME_RATIO",
+      "double"
+    ]
+  ],
+  "partitions": [
+    {
+      "file": "date-000040.parquet",
+      "sha256": "bb9075c7a718c84bee85bc83f3a9843ebee04d4ce89ecaaadee953b94331c386",
+      "rows": 3000,
+      "content_hash": "3d29dd7fbb9055ee7fb459fbee0dcb74653c020e12ca09c77a7eddbf4c066b8e",
+      "keys_hash": "993299cbbf00ecf634c5b1eb879b256383d5fc60671779f2a8330bda2421f258",
+      "date_start": "2023-06-16T00:00:00",
+      "date_end": "2023-06-23T00:00:00"
+    },
+    {
+      "file": "date-000060.parquet",
+      "sha256": "18ea16e069c5b4c0afd7a8805138da778b23acfdb603d53433ae29ef85ca4f06",
+      "rows": 10000,
+      "content_hash": "2acff05aa769be4a207626772b0ad415b952689b0975f6c389f0368fcdc693e4",
+      "keys_hash": "a0021c7f1a9d70d883f2516b34f0ecdbf4a9dd86b701a4cd27d13045fd54f246",
+      "date_start": "2023-06-26T00:00:00",
+      "date_end": "2023-07-21T00:00:00"
+    },
+    {
+      "file": "date-000080.parquet",
+      "sha256": "6b694f261d25386c3687825aba336b9dbb5753bc105d812008922a203faee1ef",
+      "rows": 10000,
+      "content_hash": "c6e3b78e43fdfdac8d8b90c5a6b572bc27036caea46ddde477bc36212b495e5e",
+      "keys_hash": "f9c9c6aacdc3cf48bd60ff1d8d13d02bacb9735d131dad9f926ea67501bc1bf3",
+      "date_start": "2023-07-24T00:00:00",
+      "date_end": "2023-08-18T00:00:00"
+    },
+    {
+      "file": "date-000100.parquet",
+      "sha256": "e9e08472568cfe84bdd0322fe0fdfcd76658ec7449468d86745a40d5a367eb60",
+      "rows": 10000,
+      "content_hash": "a01a2efaf547dc8ce19fb6c3375abfc525fc9a2f462f694f0dbba4dc37b6e210",
+      "keys_hash": "069faa38a158cecf748a4c24ffff2f29720f3fc949fbeea3065f9c9f2bc6dd9d",
+      "date_start": "2023-08-21T00:00:00",
+      "date_end": "2023-09-15T00:00:00"
+    },
+    {
+      "file": "date-000120.parquet",
+      "sha256": "c466c0ff8bebe3b18e9f57a594c1eb54e761a712463cd4acb9d1986035feeebb",
+      "rows": 10000,
+      "content_hash": "080b6d27b630a34a4f6e039c6f06841dca01c13a36d4155cf087dcaafe3e506f",
+      "keys_hash": "666ea55ac685a79cefa62094035f55c16ab803e6ff119911fe54534fd05892b9",
+      "date_start": "2023-09-18T00:00:00",
+      "date_end": "2023-10-13T00:00:00"
+    },
+    {
+      "file": "date-000140.parquet",
+      "sha256": "063a67bf2434cb80ff3e878e60e67ef47eba503dac85cd23dc1301bb8bd47fff",
+      "rows": 10000,
+      "content_hash": "176c480f9bfa456809170729b4e677ea4b1d05c271c33fdbb3c7033ab31dd3b8",
+      "keys_hash": "2df6901f10942e00ff89c3453d122c50954d52f3bc8e6e37a8e1368a236c2e95",
+      "date_start": "2023-10-16T00:00:00",
+      "date_end": "2023-11-10T00:00:00"
+    },
+    {
+      "file": "date-000160.parquet",
+      "sha256": "f9044168b07d1810413ed2865a1743804f55a8a34f5fb83cd903835cf3b8e9e4",
+      "rows": 10000,
+      "content_hash": "b63da80270eedd68c5b482ba9042099979c8b4699f9c37440d72ca5a2381d40b",
+      "keys_hash": "f72ff9831871f8a9b6fe82cdb98629d1b0df4b5a6cd4ea4ae2d78f11439d22f3",
+      "date_start": "2023-11-13T00:00:00",
+      "date_end": "2023-12-08T00:00:00"
+    },
+    {
+      "file": "date-000180.parquet",
+      "sha256": "b33fdecd4d705bd923fc6e5a6f1c9d5d857c55dd05f190343011b2d61b39c338",
+      "rows": 10000,
+      "content_hash": "3a0e2e3673fd7626a2756b7d043fd1c1950ab97f1aabeeb6cf95d286637923c5",
+      "keys_hash": "111656f4344a0f486c4299c5d68c302fc3f932b86318a04aaca40436c2a40ef8",
+      "date_start": "2023-12-11T00:00:00",
+      "date_end": "2024-01-05T00:00:00"
+    },
+    {
+      "file": "date-000200.parquet",
+      "sha256": "a30ef34efaa1b03e94382c152dfd1a080e41af4608c5e423fd61d6e4672f6157",
+      "rows": 10000,
+      "content_hash": "ea7c739e20e9a3318d8898c1610338d3dafa2293118b0fe66e2fb1ae4ee9779b",
+      "keys_hash": "3c46d99fc897a848886eaa314ef345786edde842d74e61711709e93e59c21a1f",
+      "date_start": "2024-01-08T00:00:00",
+      "date_end": "2024-02-02T00:00:00"
+    },
+    {
+      "file": "date-000220.parquet",
+      "sha256": "69baa8e2642f6ec44b56d2575f3d703df4c2b5fcc58023114d79493367955dae",
+      "rows": 10000,
+      "content_hash": "4bbcd287413c713171bcb486e59e1ece98254db50b5b2435250dc933e7514d65",
+      "keys_hash": "d74ad9c3403f57676768e6cad635525aff0fb87374d5e0d38d9ae1bb56c3bf8a",
+      "date_start": "2024-02-05T00:00:00",
+      "date_end": "2024-03-01T00:00:00"
+    },
+    {
+      "file": "date-000240.parquet",
+      "sha256": "eb9e2eb0026012f7f6ec96d41a5860bb25766262c2ce5657755a3924fff51a18",
+      "rows": 10000,
+      "content_hash": "caa7fe3238590964ab80f83e91bfe898f9ddc79d8ed41568d8f4b65a954f07e7",
+      "keys_hash": "60c71932a89cc2c1361fd80da2c427b92269565fc3c3e85e2992ba613fcc693f",
+      "date_start": "2024-03-04T00:00:00",
+      "date_end": "2024-03-29T00:00:00"
+    },
+    {
+      "file": "date-000260.parquet",
+      "sha256": "b02e3a8a809c583c9a97db3f26524a11ff22cd74c1a8f08ba5f7548828e0d980",
+      "rows": 10000,
+      "content_hash": "b0b9cafbf70a269327cef4cfb4717dfc44495907fffdbf97a9e916f051e5e66f",
+      "keys_hash": "bec792ca0dc92bf83cf083f7cabae60be02e7570c96eb8e3980fc282eaee4c63",
+      "date_start": "2024-04-01T00:00:00",
+      "date_end": "2024-04-26T00:00:00"
+    },
+    {
+      "file": "date-000280.parquet",
+      "sha256": "a001aac4e8c933c1f6581071558f6abea709b503fa1872c585f241c7c8158602",
+      "rows": 10000,
+      "content_hash": "29b1d0ae255fb9ab68c94e0631fbcc389b1b5bfbf4a705350167d9ca54acb935",
+      "keys_hash": "56ea260ed532cfd77db5a589044a201d6e18ddca5d1dbff8bd6ae5a0f31193fc",
+      "date_start": "2024-04-29T00:00:00",
+      "date_end": "2024-05-24T00:00:00"
+    },
+    {
+      "file": "date-000300.parquet",
+      "sha256": "fc2ad5c9499143040e3295e6104473f2c35d841e07499bc2eb494003bb8c6d0c",
+      "rows": 10000,
+      "content_hash": "884f3da006a125b4809f57771195900bbb890927b45f23cde36f01bf4d2881bb",
+      "keys_hash": "22ecdd911c3e4036d9ec28589e4aa51b52286d301ab257a91f6e62f642201665",
+      "date_start": "2024-05-27T00:00:00",
+      "date_end": "2024-06-21T00:00:00"
+    },
+    {
+      "file": "date-000320.parquet",
+      "sha256": "ecc0103cb34e62948a9cfc5d9ea03daed80ffd4cbca8a577e51aae665206f31c",
+      "rows": 10000,
+      "content_hash": "57b58d8ba3ff7b739aff027b8670f94542c10aa8f6d8df6b28745216c0e66e11",
+      "keys_hash": "30628b6f19da007ae85ec9144791a152c1da1d80a4579662730671a7ef2754dd",
+      "date_start": "2024-06-24T00:00:00",
+      "date_end": "2024-07-19T00:00:00"
+    },
+    {
+      "file": "date-000340.parquet",
+      "sha256": "017d05366287fd81a2ac78bf4f7e14507124cdcf483bdb36ffb8ddfff10f713a",
+      "rows": 10000,
+      "content_hash": "2206ac1cf8b354e27bc5b943fc808fff0f1970b4355c973d5ab320a078a67ef6",
+      "keys_hash": "47821d1a0721c6b386795019798515eee508a03341f849282de48633a4f709c7",
+      "date_start": "2024-07-22T00:00:00",
+      "date_end": "2024-08-16T00:00:00"
+    },
+    {
+      "file": "date-000360.parquet",
+      "sha256": "dfbc08b3554671f9bf7d12acf121b5fdcde9cf95fa7c1248f694bdfdbbd2e8de",
+      "rows": 10000,
+      "content_hash": "8b84c88ae6bc90545c0ecdc1d111728d2b2f29b61ae36d323046d0d182de121a",
+      "keys_hash": "d825b3615132a1b90872a2df94876eeebb5d3b67501fe230653d8d6837d44bce",
+      "date_start": "2024-08-19T00:00:00",
+      "date_end": "2024-09-13T00:00:00"
+    },
+    {
+      "file": "date-000380.parquet",
+      "sha256": "8908850b576f2a6560f757c745fa122f05c06b4a68ffd545804aaddefa2226e9",
+      "rows": 10000,
+      "content_hash": "9d36d3e3b9b92c944cae6c613ffcad3ba19305c712eee7a4f1a09bcb8902ad58",
+      "keys_hash": "60daae170a0fa3d0703ec00f1f83b1f90415670ebfe952712430f13f1bf28ea2",
+      "date_start": "2024-09-16T00:00:00",
+      "date_end": "2024-10-11T00:00:00"
+    },
+    {
+      "file": "date-000400.parquet",
+      "sha256": "91a10ac55a730f61f1618b7f615929c0bad9332c608c8e26270b8564815c2f56",
+      "rows": 10000,
+      "content_hash": "5b551c755227b4a8c880b3f176738a0204d48bf1be483af0a3a981a500598009",
+      "keys_hash": "94be5b225e9e08afd8dc132de2410a4bf79de5ea9902421db1f26e5207a009cd",
+      "date_start": "2024-10-14T00:00:00",
+      "date_end": "2024-11-08T00:00:00"
+    },
+    {
+      "file": "date-000420.parquet",
+      "sha256": "580fc5337997b38f36a99eeaec27b1827a0d5c7aa53a8dec8fe782785c702f28",
+      "rows": 10000,
+      "content_hash": "e631b9528ae48a1f8a313ddf4f80059450fe680a7deec76d7c5747e750f08e55",
+      "keys_hash": "a762b9c2778d03f48afe6d0ed83145c9a6c2d402b3208a2a6bfb11701020fe74",
+      "date_start": "2024-11-11T00:00:00",
+      "date_end": "2024-12-06T00:00:00"
+    },
+    {
+      "file": "date-000440.parquet",
+      "sha256": "81cabb9e94a26323c0661aa8ca965f0000c954aab02b638c41581755c4877982",
+      "rows": 10000,
+      "content_hash": "feb3304a3d5a971ab3f8fd0b2c079cdfff6008f89cec586b6e7375385c87d41b",
+      "keys_hash": "0f137082cdcf26614e6963fb1309158a80a0000ebe0b2f1c19022de55014ffd0",
+      "date_start": "2024-12-09T00:00:00",
+      "date_end": "2025-01-03T00:00:00"
+    },
+    {
+      "file": "date-000460.parquet",
+      "sha256": "4a4cd27fd9c13e1d1bea192635f3991f5136d774d60b3d54288e93b96a755141",
+      "rows": 10000,
+      "content_hash": "b6fa6039e4761534e36cc8a4999b18272bad68f4fece91778c3a5f1e90812c32",
+      "keys_hash": "355f29b04404c846459007892839f67dc8b4e52fa8738fd1cdebd02cf027e068",
+      "date_start": "2025-01-06T00:00:00",
+      "date_end": "2025-01-31T00:00:00"
+    },
+    {
+      "file": "date-000480.parquet",
+      "sha256": "9e0dc1438d448547637a407d62dbad267573863fc2982f735d302794e5d77d97",
+      "rows": 10000,
+      "content_hash": "05d01f616b00dd0718c5a7284e52c825d7eef3f4ff01d9969fc82997135cd415",
+      "keys_hash": "e93417247e73875c4ea62c81130bd5a28f7a7e5b7119220b494007bfaaa6d036",
+      "date_start": "2025-02-03T00:00:00",
+      "date_end": "2025-02-28T00:00:00"
+    },
+    {
+      "file": "date-000500.parquet",
+      "sha256": "ab25a50d9bdb6244cebba07ae1be3c8fb9f1496afd9bcb7e1a0a43e1ea5ab3d1",
+      "rows": 10000,
+      "content_hash": "20cd9696c862b3217563545cb2d1bd2ac7cac8cde56240a5f493dc21100c5995",
+      "keys_hash": "ccff9601bca6a6101690c8a2dad2daeb39ac7ce791a79a03ea16a86c86df1378",
+      "date_start": "2025-03-03T00:00:00",
+      "date_end": "2025-03-28T00:00:00"
+    },
+    {
+      "file": "date-000520.parquet",
+      "sha256": "2a6ea09765d667b8c195fb0f4fdc5da26970f8b9a9d4049ffbbfb1913c7a3c81",
+      "rows": 10000,
+      "content_hash": "8f1a046a3e7982dd0da9d46e77df2967081a9db36908b86f4b5ab0219af31d65",
+      "keys_hash": "60b946861271547eb306ea708d0a720ad9698ceb926127ded4354e0b2718b910",
+      "date_start": "2025-03-31T00:00:00",
+      "date_end": "2025-04-25T00:00:00"
+    },
+    {
+      "file": "date-000540.parquet",
+      "sha256": "377c2155638a2da488ec7bb735eb219e995545e8a9667b83b2d375366278fe76",
+      "rows": 10000,
+      "content_hash": "12d12e2756d4e6d60c5411de2645c936342866b1df029283b687233666d4d83b",
+      "keys_hash": "e1c6a7c945badbd5949b21a74de22600d7f1dea987fb72ff9d78476c76f16ae1",
+      "date_start": "2025-04-28T00:00:00",
+      "date_end": "2025-05-23T00:00:00"
+    },
+    {
+      "file": "date-000560.parquet",
+      "sha256": "f64185c82f43a12c42629983442f1ad258c8c6e8444d1afbd693a0b009feb7aa",
+      "rows": 10000,
+      "content_hash": "f8a5800def0703cb481770a4de066e0ab178486c714f705aaeac808768984582",
+      "keys_hash": "858c13cbeba4af51abced769f31456e98b3ef21bff1ea5a5ccf1f01ad311df7b",
+      "date_start": "2025-05-26T00:00:00",
+      "date_end": "2025-06-20T00:00:00"
+    },
+    {
+      "file": "date-000580.parquet",
+      "sha256": "533b158c273959829ff6025031cedad064dd56be17ea511b4986d49cd92c729c",
+      "rows": 10000,
+      "content_hash": "6a633c69c1ead9038cdf84a5c1ffd8b540964306e7302637113e2ae56a5fa21d",
+      "keys_hash": "22dd74f0a07df108a20f1ea1ead44476d2acd995bd9df778f2fe3a3e8b96bd9a",
+      "date_start": "2025-06-23T00:00:00",
+      "date_end": "2025-07-18T00:00:00"
+    },
+    {
+      "file": "date-000600.parquet",
+      "sha256": "fe45bd6f5353baad5184ad436ba98e64708f49e1381988623e180f1d3bffc97f",
+      "rows": 10000,
+      "content_hash": "ece6b161123e0f7528143f5050758d19dc83937c69592939cc33e8336bb393f8",
+      "keys_hash": "d929cb1b28dc041448004c83834365af9d8e2c3525a72309518a585a3cd64f89",
+      "date_start": "2025-07-21T00:00:00",
+      "date_end": "2025-08-15T00:00:00"
+    },
+    {
+      "file": "date-000620.parquet",
+      "sha256": "350f981242e0dd765c72232fa4e4aa741b314d0eabba3265626139662b4d03c2",
+      "rows": 10000,
+      "content_hash": "c34f5fc1d481dd810c8ccdbbc28955675b27f5b30abb2137ac0864b77813f2b2",
+      "keys_hash": "b4aa636e05dbd48df6bb685730008df04d631e911c9c19cc10d6d9127c9d5475",
+      "date_start": "2025-08-18T00:00:00",
+      "date_end": "2025-09-12T00:00:00"
+    },
+    {
+      "file": "date-000640.parquet",
+      "sha256": "f68b4aab844489051ec6634a5b5630f81dfd45c347ceddfb0eebb9b340c26914",
+      "rows": 10000,
+      "content_hash": "9cd19f2cabfb4c3b83adbc39cdaa86d185c890a788f6c3d42065623afef4d842",
+      "keys_hash": "74f32313628efadaefc806ed4387faca824945e398c3bd1d2835ddfe70926340",
+      "date_start": "2025-09-15T00:00:00",
+      "date_end": "2025-10-10T00:00:00"
+    },
+    {
+      "file": "date-000660.parquet",
+      "sha256": "dd238ed2a620d0af40d2f14bb9fec18483c47608a865f5024f89849fe7756822",
+      "rows": 10000,
+      "content_hash": "a568478faa65fa55efbf55088416db9cfdc000454ba36d688b98467522bce4fc",
+      "keys_hash": "f53a9cc7fdc8ea0c63d4c7a76b656beb67d38d78639ae431b19310910fbd23fc",
+      "date_start": "2025-10-13T00:00:00",
+      "date_end": "2025-11-07T00:00:00"
+    },
+    {
+      "file": "date-000680.parquet",
+      "sha256": "1114503adf86e310d276f2c54e2d1621cd5544b51e65892cf073136210e3a25a",
+      "rows": 10000,
+      "content_hash": "8e3f4b5c888d8411caf6a00a10d74c15ab082204879839837b7e2878fd405427",
+      "keys_hash": "f4c29ee35e1438fafdaddf8d54714f6736fd4c9aa0e083d651d6c212eacc875d",
+      "date_start": "2025-11-10T00:00:00",
+      "date_end": "2025-12-05T00:00:00"
+    },
+    {
+      "file": "date-000700.parquet",
+      "sha256": "23e061087285466f0584ccd5d06cefa337fa4283f2d141641df8c58f4b9c13cf",
+      "rows": 10000,
+      "content_hash": "0138e7977444da3a7153006bd26c88efc6a23b51436929cf89114ca0a7c41fed",
+      "keys_hash": "30775c19bb18b6aac55106e4783875045a1669e168eb95b212972f953a20580f",
+      "date_start": "2025-12-08T00:00:00",
+      "date_end": "2026-01-02T00:00:00"
+    },
+    {
+      "file": "date-000720.parquet",
+      "sha256": "6d8e0feaaf7b6e3a895938d0c7ff451de8a289bf9e9b1fc42b7cb3f7ebdc1cbd",
+      "rows": 10000,
+      "content_hash": "aa412fde84e2905c61733e09bc9cc446fa8458f9eae7143f4bb70a690c72723a",
+      "keys_hash": "d710ec9a8287da83c21c091c47543e138b002b8e7446247fd38c4cf0216bf328",
+      "date_start": "2026-01-05T00:00:00",
+      "date_end": "2026-01-30T00:00:00"
+    },
+    {
+      "file": "date-000740.parquet",
+      "sha256": "79638c647c444e90bf49b0f43c31b4fea6018721a2cea49a15d3de338b0f0087",
+      "rows": 10000,
+      "content_hash": "1a9d02089581a5054b27dc062aa0bc5495e588ab5bf041d6a74d023ed4c6d7f9",
+      "keys_hash": "1e1f47e3e6d9aeb7c213cc78e8a43bb3ca60c1f0e0369785f5b592d5736f7980",
+      "date_start": "2026-02-02T00:00:00",
+      "date_end": "2026-02-27T00:00:00"
+    },
+    {
+      "file": "date-000760.parquet",
+      "sha256": "2ffc0b342a0667d10f1e4528671428f559452b6e2524c59da9522d6d80f668eb",
+      "rows": 10000,
+      "content_hash": "6c926ee9921b3ede4b421739971b2ac0946bf827aeb300b578ab91e3425b634b",
+      "keys_hash": "da2123d2adace0177fc89ab6b72ec0d8849c541bab61e00396af7a2ee3d0f19f",
+      "date_start": "2026-03-02T00:00:00",
+      "date_end": "2026-03-27T00:00:00"
+    },
+    {
+      "file": "date-000780.parquet",
+      "sha256": "1596ae3efc44ce4a78ab02cd9c301fad4feb7e6ccfa2c90c02548b438f36d385",
+      "rows": 10000,
+      "content_hash": "8f7c2400605540a7fb937506e396c22f4f56aaf19ac534929d1a665fb57000a1",
+      "keys_hash": "d5c2ad8323d2e80393bea5dc12e713a2251d376c62472659b415751e9a8d7d70",
+      "date_start": "2026-03-30T00:00:00",
+      "date_end": "2026-04-24T00:00:00"
+    },
+    {
+      "file": "date-000800.parquet",
+      "sha256": "83b55c32e04119bd3e30b34cd685f31d7b211156b698bce2f31b3e99d3b69c24",
+      "rows": 10000,
+      "content_hash": "cb0271274bade1d274ce26c4902d749d17724767b448f7124083b9e4d4785d03",
+      "keys_hash": "1edf848b653f0fdfc9bcc44cc5b9a1a29a1bcc55e4baee4b579e335bae7f103e",
+      "date_start": "2026-04-27T00:00:00",
+      "date_end": "2026-05-22T00:00:00"
+    },
+    {
+      "file": "date-000820.parquet",
+      "sha256": "9e8aaf997edd0da8bc86257930a812cfaf666516219d409892ba3d28c9bded70",
+      "rows": 10000,
+      "content_hash": "418cb5a67695fa011734644b872557938a233f31683167b99205449ed71a977f",
+      "keys_hash": "9dacec5d044c2787d25a641756d8483290db6f28d56bfde2d251433a42a1b5eb",
+      "date_start": "2026-05-25T00:00:00",
+      "date_end": "2026-06-19T00:00:00"
+    },
+    {
+      "file": "date-000840.parquet",
+      "sha256": "3b825b4f46b4514e5315271cd539ac2327f50a0592daaea42684dcaf06876a6f",
+      "rows": 10000,
+      "content_hash": "077d65e2bc69cc7ed30eb829a2f02220c645bd50dc174b7696d8b996e9d8c919",
+      "keys_hash": "bde32dcdc333be0fb7d633e788d384aa77878c0745fcf31bd254deb8e73b9d65",
+      "date_start": "2026-06-22T00:00:00",
+      "date_end": "2026-07-17T00:00:00"
+    },
+    {
+      "file": "date-000860.parquet",
+      "sha256": "cbbf137d563e2301f8a8d499fafc0decbf08d8ed259fd499ec43e5914f88d53b",
+      "rows": 10000,
+      "content_hash": "f03a01de4c9de5f4cdbc8c8a4424627ce7b79c4ea70d619733231f200cc4b1b1",
+      "keys_hash": "b82ee88ae9d906886f730771380b58fadbdf32bf32acc413064c4d22e5a70fbd",
+      "date_start": "2026-07-20T00:00:00",
+      "date_end": "2026-08-14T00:00:00"
+    },
+    {
+      "file": "date-000880.parquet",
+      "sha256": "787d5f2f917c3fe41f4e00a6eff055ab536dfadcc70b79f9310ce0eba7038d1b",
+      "rows": 10000,
+      "content_hash": "c98e1bee02b2750d0d7246e50c1d8e541771a090dff68ec61acec64bdb6b8214",
+      "keys_hash": "100d61a46964a26da333c5f39abd3a8a6282639605381e9c9eedc0c06af1dcff",
+      "date_start": "2026-08-17T00:00:00",
+      "date_end": "2026-09-11T00:00:00"
+    },
+    {
+      "file": "date-000900.parquet",
+      "sha256": "0f5ecb59adc4d0c0f45c01347b4075e086bae66105a82cf52cb60399dc4bd935",
+      "rows": 10000,
+      "content_hash": "47673063201c4fc18fe65c7354468c10fcfa7fb2cb4d151aaa6b955fdbf33332",
+      "keys_hash": "b3c4f96ea1d4cf2f7979ecea864b5b10e314903782de7a4e4116d09e63f7a167",
+      "date_start": "2026-09-14T00:00:00",
+      "date_end": "2026-10-09T00:00:00"
+    },
+    {
+      "file": "date-000920.parquet",
+      "sha256": "a58d135af49762c604ce9679f4086bdff15e98fafa2fef3fa4d830c479c10347",
+      "rows": 10000,
+      "content_hash": "aed39ce0257b971439a1b175bb67bf383ae08354e60e0d0e6aa44ac9c083165e",
+      "keys_hash": "2c0e32c2ab375be74f5f1a915bd3fce0ad0468db3ef8567b99848389c85d6a0f",
+      "date_start": "2026-10-12T00:00:00",
+      "date_end": "2026-11-06T00:00:00"
+    },
+    {
+      "file": "date-000940.parquet",
+      "sha256": "72fcaba0ce484307ad518cc6d5718bb2662ceca69715d2a86e0a405369cea491",
+      "rows": 10000,
+      "content_hash": "2bd78deb92c6c466ca413382e8919ba2b422841cf3ff211770bb12e99c357cfc",
+      "keys_hash": "a6c97e6ea5e95d146d3128ace329c45064f65153d05f9cca5ccadbdd0fe92f65",
+      "date_start": "2026-11-09T00:00:00",
+      "date_end": "2026-12-04T00:00:00"
+    },
+    {
+      "file": "date-000960.parquet",
+      "sha256": "bf196a24c6d5e9675d66f0fd19fa4d7ad92ab8c92cac78bb2ac4a64d658759b8",
+      "rows": 10000,
+      "content_hash": "40b8e3d349446ea8bbdb00ba5acd479c7a35bb204c31fe380d301eaa5f3cb3c9",
+      "keys_hash": "8fb87b0be3357a8e115bfe3bf62ae54288f2e6d63194b5d12e93ab2a9abe6a93",
+      "date_start": "2026-12-07T00:00:00",
+      "date_end": "2027-01-01T00:00:00"
+    },
+    {
+      "file": "date-000980.parquet",
+      "sha256": "42bade09e4e3554fd9b7c3fdbfe7d462826bef3c2f2bbcb1fee42d09edea5c9b",
+      "rows": 10000,
+      "content_hash": "ff16d785bc6b0774738ee00de0913552799fffe7d149110ff2ff906daced1035",
+      "keys_hash": "3b247982fa8eba88c810cd08ce737bc1672e069699d0bf443d452409f909bc28",
+      "date_start": "2027-01-04T00:00:00",
+      "date_end": "2027-01-29T00:00:00"
+    },
+    {
+      "file": "date-001000.parquet",
+      "sha256": "d690420b1dde86c94bc166e26655689ed045e9582d70703b545f467f42d70198",
+      "rows": 10000,
+      "content_hash": "0eb964cb0aa6ef8d1257b6e58eacf1b555ffdacce1f2ac329a6fa7b10c76f1c9",
+      "keys_hash": "128380e0e3fde87264917c84d3cbd346a600a6c656a7ac2b9d2a9db11daf6b54",
+      "date_start": "2027-02-01T00:00:00",
+      "date_end": "2027-02-26T00:00:00"
+    },
+    {
+      "file": "date-001020.parquet",
+      "sha256": "5c68b115a4d41989825409e2a59cf7f2fe3b6780009edbf3f15953124b2a3d34",
+      "rows": 10000,
+      "content_hash": "c49090f230645f6eb246b2154d73882f876d68d96f134f71343805fe0b0a134d",
+      "keys_hash": "a7b44fdd3707fa7e9c2cf632e7038dd963302b95cb00b5a867fb6449d6d488eb",
+      "date_start": "2027-03-01T00:00:00",
+      "date_end": "2027-03-26T00:00:00"
+    },
+    {
+      "file": "date-001040.parquet",
+      "sha256": "db400cb5f8178dc7bf14147a71f4b92177d1a3141534288a3a8eb86e9f300947",
+      "rows": 10000,
+      "content_hash": "369b3b54ffb7833d559df0aa5b5362cafc62c62da67b377a76a50a1bbcafac9c",
+      "keys_hash": "c2f3dc3812aaf47a28cd89b3fa40f6c8158e601e550b1ea4e5572e12cbc60a52",
+      "date_start": "2027-03-29T00:00:00",
+      "date_end": "2027-04-23T00:00:00"
+    },
+    {
+      "file": "date-001060.parquet",
+      "sha256": "ac92640ef839d9b5bf5d40e842f8e2e5442b36da297b27c9cc183e4daf7a3d05",
+      "rows": 10000,
+      "content_hash": "e5edf68532230677f0b411388b3d1b8291308e59191ec672a4cce1ff7f89a9b0",
+      "keys_hash": "51cce14458c42a518a44e5be762db57fac11cfc2956b868f43072404c7adb7f2",
+      "date_start": "2027-04-26T00:00:00",
+      "date_end": "2027-05-21T00:00:00"
+    },
+    {
+      "file": "date-001080.parquet",
+      "sha256": "015270ac0ac4109c7228b0c895ded99999687859ebc134bc9560cc727f37e2f5",
+      "rows": 10000,
+      "content_hash": "c910c1dc92391c97c106cd7eb2ded2ddaecda1e741022e2d2bc6ece446039bf8",
+      "keys_hash": "b58fa84564d3f1e4a92bf914002acf151a7b41dcd0aef623faa3f46705a1788c",
+      "date_start": "2027-05-24T00:00:00",
+      "date_end": "2027-06-18T00:00:00"
+    },
+    {
+      "file": "date-001100.parquet",
+      "sha256": "11aab02580b0e37aca0127a5cd90e1286c68a810557875d2fb4a78fe332023fa",
+      "rows": 10000,
+      "content_hash": "174fa69e846e8fe8ca27f54cf9442850c5572e38d2db32f8f9b638aa216cefcc",
+      "keys_hash": "76c9ed0fc9fa8716cd98f077edb869e5158c883e8c02191b065654aa82a743e4",
+      "date_start": "2027-06-21T00:00:00",
+      "date_end": "2027-07-16T00:00:00"
+    },
+    {
+      "file": "date-001120.parquet",
+      "sha256": "d4b09207aa9cec5f4c886061c5700b8cf9150e3d1156f02e6bc9ebbc857990c1",
+      "rows": 7500,
+      "content_hash": "0a7a8af3b5c16559cf8ce5e626dc2cc1644dc8fd0083e95507c0d8cd366670ae",
+      "keys_hash": "47570f66b87d69938d9637d009a428d292822ba742f5c078b07e34b2991d00ee",
+      "date_start": "2027-07-19T00:00:00",
+      "date_end": "2027-08-06T00:00:00"
+    }
+  ],
+  "rows": 540500,
+  "counts": {
+    "registered_definitions": 14,
+    "requested_candidates": 14,
+    "resolved_definitions": 14,
+    "unique_executed_definitions": 14,
+    "successful_factors": 14,
+    "selected_factors": null,
+    "factor_rows": 600000,
+    "total_factor_cells": 8400000,
+    "valid_factor_values": 8232898
+  },
+  "execution": {
+    "symbols_per_batch": 32,
+    "factors_per_batch": 16,
+    "dates_per_batch": 20,
+    "workers": 2,
+    "max_factors": 300,
+    "timeout_seconds": 3600.0,
+    "memory_limit_bytes": 5368709120,
+    "disk_limit_bytes": 8589934592,
+    "minimum_available_memory_bytes": 1073741824,
+    "minimum_free_disk_bytes": 1073741824
+  },
+  "failures": 0,
+  "retries": 0,
+  "identity_hash": "ed876ab0ace62e55c53579a7ee2d5fc958ba5e89f4b530d32b4383ccb2f3e756"
+}
