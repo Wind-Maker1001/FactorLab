@@ -1,0 +1,132 @@
+{
+  "status": "P207_ENGINEERING_ACCEPTED",
+  "base_commit": "11ec87d2dfe677ea1b8ff03b4e268f2a4eb6b7a6",
+  "base_tree": "bc5e1186917fd18d20c8e60e82ae4fd3aa7e286c",
+  "python": "3.13.9",
+  "final_unique_tests": 593,
+  "final_passed": 590,
+  "final_preexisting_failures": 3,
+  "runs": [
+    {
+      "name": "new",
+      "exit_code": 1,
+      "tests": 22,
+      "failures": 0,
+      "errors": 4,
+      "skipped": 0,
+      "time": 17.227,
+      "junit_sha256": "1b0350d9cfec7cc382fe12ec0e891acda5d93b454ca34429781bf51addd2485d",
+      "log_sha256": "c26db612482ec0385d532a91de874ebe8f058ad4a8e25a02cb33550f547d5c48",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_walk_forward_factor_selection.py -q -p no:cacheprovider --basetemp=local-validation/pytest-new --junitxml=local-validation/new.xml"
+    },
+    {
+      "name": "new-fixed",
+      "exit_code": 0,
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 19.83,
+      "junit_sha256": "acb67bc8fcd6279e2599353f2d4f9e75b3bf80fa3fe6e976079a54ff7919777f",
+      "log_sha256": "e9dfa9d69a68952edbc63a4b306f39218cd552158773a98b674c92fb76b0aee7",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_walk_forward_factor_selection.py -q -p no:cacheprovider --basetemp=local-validation/pytest-new-fixed --junitxml=local-validation/new-fixed.xml"
+    },
+    {
+      "name": "expanded",
+      "exit_code": 0,
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 28.496,
+      "junit_sha256": "5d44d2ebeb2655c1e7a6c065a21ba17dafd8536e563cd88f54ac514ecb8ef3fa",
+      "log_sha256": "e263993f9be486ca457adad3c6dd4a4a507b93afa4b66f0563400c72e976c89a",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_walk_forward_factor_selection.py -q -p no:cacheprovider --basetemp=local-validation/pytest-final --junitxml=local-validation/final.xml"
+    },
+    {
+      "name": "reviewed",
+      "exit_code": 0,
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 31.302,
+      "junit_sha256": "9ec49915704bf1d13914879bb470eec398cd2a0d63fb7cbd468ecaa22317dee3",
+      "log_sha256": "c9fd3ec3aed5286414aea01744a9080b9dbfffe14273059d78b8f396017c2e59",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_walk_forward_factor_selection.py -q -p no:cacheprovider --basetemp=local-validation/pytest-final-reviewed --junitxml=local-validation/final-reviewed.xml"
+    },
+    {
+      "name": "final",
+      "exit_code": 0,
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 31.085,
+      "junit_sha256": "9d3ef9c4393a069674be885e8f7465221d2815d579a8f0d332d660d3e68ac2a9",
+      "log_sha256": "334b9948f63d560f98648ff9538215ca8c2e388a77b4c93d9c083ed8afb54a6a",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_walk_forward_factor_selection.py -q -p no:cacheprovider --basetemp=local-validation/pytest-final-evidence --junitxml=local-validation/final-evidence.xml"
+    },
+    {
+      "name": "related",
+      "exit_code": 1,
+      "tests": 525,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "time": 109.882,
+      "junit_sha256": "d8058a335194a25522c4aae2b5c4ce4fe423e9e8820d264ee9b6169dd55dbc21",
+      "log_sha256": "993386bca83aafc57bdf9acf8a2b99fbed4c15c8038eac916a7754ab9b1eac31",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_walk_forward_runner_phase2.py tests/research/test_walk_forward_stage_diagnostics.py tests/research/test_walk_forward_factory_equivalence.py tests/research/test_models_phase2.py tests/research/test_tree_models_phase3.py tests/research/test_factors_phase1.py tests/research/test_factor_metrics_golden.py tests/research/test_factor_discovery_delivery.py tests/research/test_factor_registry_v2.py tests/research/test_dataset_registry_v2.py -q -p no:cacheprovider --basetemp=local-validation/pytest-related --junitxml=local-validation/related.xml"
+    },
+    {
+      "name": "boundaries",
+      "exit_code": 1,
+      "tests": 41,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 74.533,
+      "junit_sha256": "a72c8c55b5b0e36294a4b019335b9872a1a99441c79489f54cd07b4a928cd416",
+      "log_sha256": "f17b9df7e9a1cda60eff42f040f4b52dd88f82fddfe57e33564a7ac61d7a6f4e",
+      "command": "D:/Environments/factorlab-py313/Scripts/python.exe -B -m pytest tests/research/test_validation_phase2.py tests/research/test_factor_discovery_integration.py -q -p no:cacheprovider --basetemp=local-validation/pytest-boundaries --junitxml=local-validation/boundaries.xml"
+    }
+  ],
+  "demo_exit_code": 0,
+  "demo_command": "$env:PYTHONPATH=\"src\"; D:/Environments/factorlab-py313/Scripts/python.exe -B -m examples.research.walk_forward_factor_selection_demo --output local-validation/demo --reference-runner local-validation/main-walk-forward.py",
+  "main_reference_export": "git show 11ec87d2dfe677ea1b8ff03b4e268f2a4eb6b7a6:src/factorlab/validation/walk_forward.py (write raw bytes to local-validation/main-walk-forward.py)",
+  "main_exact_parity_models": 4,
+  "saved_models_exact_prediction_proofs": 24,
+  "baseline_dependencies": {
+    "missing_receipts": [],
+    "missing_old_object": "fatal: git cat-file: could not get object info"
+  },
+  "evidence_sha256": {
+    "dataset.identity.example.json": "66d3da776403f2fa7b3b34cc14ddc7505b8832f2fbe8ee5eceba5278cd32d8ce",
+    "factor-quality.csv": "2b68c00c0f8484dd77d01ccb7773be731a36bda8ebb642901f323b18f35a5659",
+    "factor-redundancy.csv": "249d972cc6e4dfa1d92fbf1d57627812128dd5b2f75cd49ebb2e10444b060045",
+    "manifest.json": "53bc5238928dbad3b10a2b4c40804df660e74cf51652d8066fcfcbe6ab1974dd",
+    "model-proof.json": "30cb3aa34152cd6ed3073b2669e67c316eccd01faa46a06b10a5e0f935246b41",
+    "predictions.sample.csv": "1b0500b0488f6e53123d9a32b4fb9b6b1a2d4f94670ded8cd84a4fe02cfe294f",
+    "REPORT.md": "383928957544412bd9178ae2a44efe6d37008901339a9855e36c2616f4c9e279",
+    "selection-frequency.csv": "6802c4c90adc93c6a624f408ff308f03a6347aa4702205f5755961050bc98f3d",
+    "selections.json": "daa0e91d4f0f78fc058de837808d2914f709f8f56a7e00653e1e0ae4b9bb9f47"
+  },
+  "runtime_packages": {
+    "numpy": "2.3.4",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.7.2",
+    "lightgbm": "4.6.0",
+    "xgboost": "2.1.4",
+    "pyarrow": "22.0.0",
+    "pytest": "8.4.2"
+  },
+  "cleanup": {
+    "status": "BLOCKED_BY_AUTOMATIC_REVIEW",
+    "reason": "blocked by policy (no further reason supplied)",
+    "retained": "local-validation demo and pytest basetemp directories",
+    "retained_bytes": 206620375,
+    "new_environments": 0
+  }
+}

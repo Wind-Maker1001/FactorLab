@@ -1,0 +1,3833 @@
+[
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MOM20": 1,
+      "MA20_MA60": -1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "VOLUME_RATIO": -1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "cd8a30e516a338a4561a615958b10ef6d01d0218ec8ce4a9663a16c8e0dd279f",
+    "quality_sha256": "1aa56088d728dcdcc5bff0c7b3508909baaefededd48709e9cb5e804189ed002",
+    "redundancy_sha256": "c06f77200fca40bdb6ee36cd2dfef7f141165841b86343e2fc7d37b9f62993ca",
+    "eligible_count": 25,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "28201c730e0ece4663f02cdb0fd32b0ed1d712f6c441639adfc63066c40eefc5",
+    "fold": 0,
+    "model_name": "factor_score",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-06-22T00:00:00",
+    "validation_start": "2023-07-03T00:00:00",
+    "validation_end": "2023-07-25T00:00:00",
+    "test_start": "2023-08-03T00:00:00",
+    "test_end": "2023-10-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-07-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-07-03T00:00:00",
+      "2023-08-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-08-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-06-30T00:00:00",
+    "validation_max_exit_date": "2023-08-02T00:00:00",
+    "fit_source_sha256": "d90a6a0cdeb4ab00ab7bd7d6f20c46e9b593bd67d6d24f41291a783ecc2d228f",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "normalize_by_absolute_weight": false,
+      "weights": {
+        "AMIHU20": 0.1,
+        "MA20_MA60": 0.1,
+        "MOM20": 0.1,
+        "MOM60": 0.1,
+        "PRICE_MA20": 0.1,
+        "REV1": 0.1,
+        "REV5": 0.1,
+        "TURN5": 0.1,
+        "VOL20": 0.1,
+        "VOLUME_RATIO": 0.1
+      }
+    },
+    "factor_score_weighting": "equal",
+    "saved_model_sha256": "285bbab68d21ae6fc68c6616874f31a3ae19dee8a26ba0e4c4353b5f69f0dc16",
+    "prediction_sha256": "49ba35b6d048295ef409390b69eb907893e0ffa37882682d89a4a13cdb04be1c",
+    "model_prediction_identity": "16fd96cb74e362c0ee8754c6a4f3cad78ecfbf9a1cf0046fb6c61daf48193ade"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "TURN20": -1,
+      "VOLUME_RATIO": -1,
+      "synthetic_015": 1
+    },
+    "selection_train_sha256": "c552ed77323c38e15ee4cf936328538ac49c29b681cd3c9b24485cee59f8e198",
+    "quality_sha256": "43c6f5ed12952360b621b8fa88f6b7f5b06bf6c2e04abb198921ee2e2239b464",
+    "redundancy_sha256": "33a9404943123e4e5e42376d09d43b6f6e101e4e4ef15eb6ae028938f3136610",
+    "eligible_count": 21,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "91cadfe35650875bbfffe7e132d81004342622f84d147001bff9f27f20e15c5a",
+    "fold": 1,
+    "model_name": "factor_score",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-08-24T00:00:00",
+    "validation_start": "2023-09-04T00:00:00",
+    "validation_end": "2023-09-22T00:00:00",
+    "test_start": "2023-10-03T00:00:00",
+    "test_end": "2023-12-01T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-09-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-09-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-10-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-09-01T00:00:00",
+    "validation_max_exit_date": "2023-10-02T00:00:00",
+    "fit_source_sha256": "e8bbfe4ebef19e10e8b4f8826f10cab54158e2fe5b3307691f34f90dd299c9ab",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "model_parameters": {
+      "normalize_by_absolute_weight": false,
+      "weights": {
+        "MA20_MA60": 0.1,
+        "MOM20": 0.1,
+        "MOM60": 0.1,
+        "PRICE_MA20": 0.1,
+        "REV1": 0.1,
+        "REV5": 0.1,
+        "TURN20": 0.1,
+        "TURN5": 0.1,
+        "VOLUME_RATIO": 0.1,
+        "synthetic_015": 0.1
+      }
+    },
+    "factor_score_weighting": "equal",
+    "saved_model_sha256": "2ad694582f1174cff948cfe94cc6e6e41c484b10d01dd2c214be9e4b0c1ac960",
+    "prediction_sha256": "67a54e9c55011f95253e29e2c9bc1673ca83b8a91a8833f058f3b04d88d26799",
+    "model_prediction_identity": "02b3cb07fd36b1df738f839a9ee499c07e456bac017ef2aed54d817b61660424"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN20": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "4bee9a9c377a9caf16bd66cb76988b7c6f98eccc192ec6bd48d169bfd5982e64",
+    "quality_sha256": "22fc646fa426dfc3b27d5ea37133fe7f02514733bface5680f6db108bcc6f035",
+    "redundancy_sha256": "4bfe08d618f2565b392b7686b59a727a11db4d71a6712c7c414329b6c397153b",
+    "eligible_count": 20,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "02ae64120714ece9af2c4c0a5e45a661ed3692ea6cdf78b70c827e36334e42d7",
+    "fold": 2,
+    "model_name": "factor_score",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-10-25T00:00:00",
+    "validation_start": "2023-11-03T00:00:00",
+    "validation_end": "2023-11-23T00:00:00",
+    "test_start": "2023-12-04T00:00:00",
+    "test_end": "2024-02-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-11-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-11-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-12-03T00:00:00",
+      "2024-02-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-11-02T00:00:00",
+    "validation_max_exit_date": "2023-12-01T00:00:00",
+    "fit_source_sha256": "c828d0767e3faffe31c4f209f78ef718ce6fc32e108484267374ba13c955fab1",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "normalize_by_absolute_weight": false,
+      "weights": {
+        "AMIHU20": 0.1,
+        "MA20_MA60": 0.1,
+        "MOM20": 0.1,
+        "MOM60": 0.1,
+        "PRICE_MA20": 0.1,
+        "REV1": 0.1,
+        "REV5": 0.1,
+        "TURN20": 0.1,
+        "TURN5": 0.1,
+        "VOL20": 0.1
+      }
+    },
+    "factor_score_weighting": "equal",
+    "saved_model_sha256": "059815f3884837e4d293f91218d8ece909d6f03b4579d2bb054e3ccd4ef4ddee",
+    "prediction_sha256": "2027084e357b18624d897a3ba730101e82b087e307982ec359be7f68cb2027ac",
+    "model_prediction_identity": "58861352cb77d5fb92690a4efd327c8ed03a3fdbc6e4b62f9952385bf7d25252"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MOM20": 1,
+      "MA20_MA60": -1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "VOLUME_RATIO": -1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "cd8a30e516a338a4561a615958b10ef6d01d0218ec8ce4a9663a16c8e0dd279f",
+    "quality_sha256": "1aa56088d728dcdcc5bff0c7b3508909baaefededd48709e9cb5e804189ed002",
+    "redundancy_sha256": "c06f77200fca40bdb6ee36cd2dfef7f141165841b86343e2fc7d37b9f62993ca",
+    "eligible_count": 25,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "28201c730e0ece4663f02cdb0fd32b0ed1d712f6c441639adfc63066c40eefc5",
+    "fold": 0,
+    "model_name": "ridge",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-06-22T00:00:00",
+    "validation_start": "2023-07-03T00:00:00",
+    "validation_end": "2023-07-25T00:00:00",
+    "test_start": "2023-08-03T00:00:00",
+    "test_end": "2023-10-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-07-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-07-03T00:00:00",
+      "2023-08-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-08-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-06-30T00:00:00",
+    "validation_max_exit_date": "2023-08-02T00:00:00",
+    "fit_source_sha256": "d90a6a0cdeb4ab00ab7bd7d6f20c46e9b593bd67d6d24f41291a783ecc2d228f",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "alpha": 1.0,
+      "fit_intercept": true,
+      "max_iter": 10000,
+      "random_seed": 42,
+      "tolerance": 0.0001
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "22a49680363c1c97f5dd2842543e8a037829694059ea606ed0491733232300fb",
+    "prediction_sha256": "c90ecab05635c4a5df6c2e85b049a3d1b31ae38a20a008d68bc87d2af2fa2976",
+    "model_prediction_identity": "78ed50a8693dc0e45725a6bb0cda378c46c43e32adc4ac36919656463297a399"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "TURN20": -1,
+      "VOLUME_RATIO": -1,
+      "synthetic_015": 1
+    },
+    "selection_train_sha256": "c552ed77323c38e15ee4cf936328538ac49c29b681cd3c9b24485cee59f8e198",
+    "quality_sha256": "43c6f5ed12952360b621b8fa88f6b7f5b06bf6c2e04abb198921ee2e2239b464",
+    "redundancy_sha256": "33a9404943123e4e5e42376d09d43b6f6e101e4e4ef15eb6ae028938f3136610",
+    "eligible_count": 21,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "91cadfe35650875bbfffe7e132d81004342622f84d147001bff9f27f20e15c5a",
+    "fold": 1,
+    "model_name": "ridge",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-08-24T00:00:00",
+    "validation_start": "2023-09-04T00:00:00",
+    "validation_end": "2023-09-22T00:00:00",
+    "test_start": "2023-10-03T00:00:00",
+    "test_end": "2023-12-01T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-09-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-09-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-10-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-09-01T00:00:00",
+    "validation_max_exit_date": "2023-10-02T00:00:00",
+    "fit_source_sha256": "e8bbfe4ebef19e10e8b4f8826f10cab54158e2fe5b3307691f34f90dd299c9ab",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "model_parameters": {
+      "alpha": 0.1,
+      "fit_intercept": true,
+      "max_iter": 10000,
+      "random_seed": 42,
+      "tolerance": 0.0001
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "5f66b3c29b0cab0b000d6a56ebfb2cb6cd18dda51ff6d64bcc8b0c8e90bac83a",
+    "prediction_sha256": "180c52bc078235bb50c44b2867d8556e373c3dfb8ce77c8aafed468c932d591a",
+    "model_prediction_identity": "b8e22e55f511d0b8bd43758b8501302ea63233ca5e4bddbba049b6c1aee226b8"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN20": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "4bee9a9c377a9caf16bd66cb76988b7c6f98eccc192ec6bd48d169bfd5982e64",
+    "quality_sha256": "22fc646fa426dfc3b27d5ea37133fe7f02514733bface5680f6db108bcc6f035",
+    "redundancy_sha256": "4bfe08d618f2565b392b7686b59a727a11db4d71a6712c7c414329b6c397153b",
+    "eligible_count": 20,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "02ae64120714ece9af2c4c0a5e45a661ed3692ea6cdf78b70c827e36334e42d7",
+    "fold": 2,
+    "model_name": "ridge",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-10-25T00:00:00",
+    "validation_start": "2023-11-03T00:00:00",
+    "validation_end": "2023-11-23T00:00:00",
+    "test_start": "2023-12-04T00:00:00",
+    "test_end": "2024-02-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-11-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-11-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-12-03T00:00:00",
+      "2024-02-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-11-02T00:00:00",
+    "validation_max_exit_date": "2023-12-01T00:00:00",
+    "fit_source_sha256": "c828d0767e3faffe31c4f209f78ef718ce6fc32e108484267374ba13c955fab1",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "alpha": 0.1,
+      "fit_intercept": true,
+      "max_iter": 10000,
+      "random_seed": 42,
+      "tolerance": 0.0001
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "0156c2a5a1cb326c5d6ce9f06e1ba980808f8c54df1ce398b00ad391167d7ca5",
+    "prediction_sha256": "a2fc1f23853e1710c2bf1b7304a60c38c101a1270a8bc418311240b781361728",
+    "model_prediction_identity": "f6d4cf405f1e2118ebfae41c56679be8da33510255517101ab0609ca0c9f018b"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MOM20": 1,
+      "MA20_MA60": -1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "VOLUME_RATIO": -1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "cd8a30e516a338a4561a615958b10ef6d01d0218ec8ce4a9663a16c8e0dd279f",
+    "quality_sha256": "1aa56088d728dcdcc5bff0c7b3508909baaefededd48709e9cb5e804189ed002",
+    "redundancy_sha256": "c06f77200fca40bdb6ee36cd2dfef7f141165841b86343e2fc7d37b9f62993ca",
+    "eligible_count": 25,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "28201c730e0ece4663f02cdb0fd32b0ed1d712f6c441639adfc63066c40eefc5",
+    "fold": 0,
+    "model_name": "lightgbm",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-06-22T00:00:00",
+    "validation_start": "2023-07-03T00:00:00",
+    "validation_end": "2023-07-25T00:00:00",
+    "test_start": "2023-08-03T00:00:00",
+    "test_end": "2023-10-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-07-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-07-03T00:00:00",
+      "2023-08-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-08-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-06-30T00:00:00",
+    "validation_max_exit_date": "2023-08-02T00:00:00",
+    "fit_source_sha256": "d90a6a0cdeb4ab00ab7bd7d6f20c46e9b593bd67d6d24f41291a783ecc2d228f",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "bagging_fraction": 0.8,
+      "bagging_freq": 1,
+      "feature_fraction": 0.8,
+      "learning_rate": 0.03,
+      "max_depth": 5,
+      "min_child_samples": 10,
+      "n_estimators": 12,
+      "n_jobs": 1,
+      "num_leaves": 7,
+      "random_seed": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "889a040c75600d94fd17d1401c4a4bbd6688bb68e93ae7f2164c8c9710f0f804",
+    "prediction_sha256": "0fafbfd8beba4c10774579a4f689ae7d305d66f26e6495ea7938de3beaca65fd",
+    "model_prediction_identity": "77f7c1a7207a531fd938e74125d4f115bdaaafb9ceb3d21d9c0a97c740760f02"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "TURN20": -1,
+      "VOLUME_RATIO": -1,
+      "synthetic_015": 1
+    },
+    "selection_train_sha256": "c552ed77323c38e15ee4cf936328538ac49c29b681cd3c9b24485cee59f8e198",
+    "quality_sha256": "43c6f5ed12952360b621b8fa88f6b7f5b06bf6c2e04abb198921ee2e2239b464",
+    "redundancy_sha256": "33a9404943123e4e5e42376d09d43b6f6e101e4e4ef15eb6ae028938f3136610",
+    "eligible_count": 21,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "91cadfe35650875bbfffe7e132d81004342622f84d147001bff9f27f20e15c5a",
+    "fold": 1,
+    "model_name": "lightgbm",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-08-24T00:00:00",
+    "validation_start": "2023-09-04T00:00:00",
+    "validation_end": "2023-09-22T00:00:00",
+    "test_start": "2023-10-03T00:00:00",
+    "test_end": "2023-12-01T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-09-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-09-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-10-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-09-01T00:00:00",
+    "validation_max_exit_date": "2023-10-02T00:00:00",
+    "fit_source_sha256": "e8bbfe4ebef19e10e8b4f8826f10cab54158e2fe5b3307691f34f90dd299c9ab",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "model_parameters": {
+      "bagging_fraction": 0.8,
+      "bagging_freq": 1,
+      "feature_fraction": 0.8,
+      "learning_rate": 0.03,
+      "max_depth": 5,
+      "min_child_samples": 10,
+      "n_estimators": 12,
+      "n_jobs": 1,
+      "num_leaves": 7,
+      "random_seed": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "a4d960b60e4267878fe175c82dfb0a55cd0d6fb60e90f2ac8eac92c8160bc41f",
+    "prediction_sha256": "fb17e7d293262534091665b77bdc079bce31d219c994ceecc7abb20ca0a8c194",
+    "model_prediction_identity": "067fc7552ce2d430c2da193f08409b878eb3573113ed3b57965197bda47a9c3c"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN20": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "4bee9a9c377a9caf16bd66cb76988b7c6f98eccc192ec6bd48d169bfd5982e64",
+    "quality_sha256": "22fc646fa426dfc3b27d5ea37133fe7f02514733bface5680f6db108bcc6f035",
+    "redundancy_sha256": "4bfe08d618f2565b392b7686b59a727a11db4d71a6712c7c414329b6c397153b",
+    "eligible_count": 20,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "02ae64120714ece9af2c4c0a5e45a661ed3692ea6cdf78b70c827e36334e42d7",
+    "fold": 2,
+    "model_name": "lightgbm",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-10-25T00:00:00",
+    "validation_start": "2023-11-03T00:00:00",
+    "validation_end": "2023-11-23T00:00:00",
+    "test_start": "2023-12-04T00:00:00",
+    "test_end": "2024-02-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-11-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-11-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-12-03T00:00:00",
+      "2024-02-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-11-02T00:00:00",
+    "validation_max_exit_date": "2023-12-01T00:00:00",
+    "fit_source_sha256": "c828d0767e3faffe31c4f209f78ef718ce6fc32e108484267374ba13c955fab1",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "bagging_fraction": 0.8,
+      "bagging_freq": 1,
+      "feature_fraction": 0.8,
+      "learning_rate": 0.03,
+      "max_depth": 5,
+      "min_child_samples": 10,
+      "n_estimators": 12,
+      "n_jobs": 1,
+      "num_leaves": 7,
+      "random_seed": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "d9756ac488e6c6a04f23c83f786b1a2154a616dbc9d218028b75be839ccf5877",
+    "prediction_sha256": "344b0ac6631a526243be7337835c102751f77c5c9dacb3dd2dd6400cb3e178d4",
+    "model_prediction_identity": "3d1d837438ec823a0c29d846fb80eda5ccf2771e006b8f744417bb89f2bb45d1"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MOM20": 1,
+      "MA20_MA60": -1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "VOLUME_RATIO": -1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "cd8a30e516a338a4561a615958b10ef6d01d0218ec8ce4a9663a16c8e0dd279f",
+    "quality_sha256": "1aa56088d728dcdcc5bff0c7b3508909baaefededd48709e9cb5e804189ed002",
+    "redundancy_sha256": "c06f77200fca40bdb6ee36cd2dfef7f141165841b86343e2fc7d37b9f62993ca",
+    "eligible_count": 25,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "28201c730e0ece4663f02cdb0fd32b0ed1d712f6c441639adfc63066c40eefc5",
+    "fold": 0,
+    "model_name": "xgboost",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-06-22T00:00:00",
+    "validation_start": "2023-07-03T00:00:00",
+    "validation_end": "2023-07-25T00:00:00",
+    "test_start": "2023-08-03T00:00:00",
+    "test_end": "2023-10-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-07-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-07-03T00:00:00",
+      "2023-08-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-08-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-06-30T00:00:00",
+    "validation_max_exit_date": "2023-08-02T00:00:00",
+    "fit_source_sha256": "d90a6a0cdeb4ab00ab7bd7d6f20c46e9b593bd67d6d24f41291a783ecc2d228f",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MOM20",
+      "MA20_MA60",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "VOL20",
+      "VOLUME_RATIO",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "colsample_bytree": 0.8,
+      "gamma": 0.0,
+      "learning_rate": 0.03,
+      "max_depth": 2,
+      "min_child_weight": 1.0,
+      "n_estimators": 12,
+      "n_jobs": 1,
+      "random_seed": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 0.8
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "808dc65621cf6ef158eab7e7b75e07489f528a80220ede5b1ce524fe2b9ff8b0",
+    "prediction_sha256": "cbcaaceafc7195b67399a57033f05b2640d5ab5ee0813e467b94b3ee96a6ce37",
+    "model_prediction_identity": "00cd75043624234dbb7d2c97ab4990e49748e3edea225ffb33d7c7fe1fe0f2a7"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN5": -1,
+      "TURN20": -1,
+      "VOLUME_RATIO": -1,
+      "synthetic_015": 1
+    },
+    "selection_train_sha256": "c552ed77323c38e15ee4cf936328538ac49c29b681cd3c9b24485cee59f8e198",
+    "quality_sha256": "43c6f5ed12952360b621b8fa88f6b7f5b06bf6c2e04abb198921ee2e2239b464",
+    "redundancy_sha256": "33a9404943123e4e5e42376d09d43b6f6e101e4e4ef15eb6ae028938f3136610",
+    "eligible_count": 21,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "91cadfe35650875bbfffe7e132d81004342622f84d147001bff9f27f20e15c5a",
+    "fold": 1,
+    "model_name": "xgboost",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-08-24T00:00:00",
+    "validation_start": "2023-09-04T00:00:00",
+    "validation_end": "2023-09-22T00:00:00",
+    "test_start": "2023-10-03T00:00:00",
+    "test_end": "2023-12-01T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-09-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-09-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-10-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-09-01T00:00:00",
+    "validation_max_exit_date": "2023-10-02T00:00:00",
+    "fit_source_sha256": "e8bbfe4ebef19e10e8b4f8826f10cab54158e2fe5b3307691f34f90dd299c9ab",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN5",
+      "TURN20",
+      "VOLUME_RATIO",
+      "synthetic_015"
+    ],
+    "model_parameters": {
+      "colsample_bytree": 0.8,
+      "gamma": 0.0,
+      "learning_rate": 0.03,
+      "max_depth": 2,
+      "min_child_weight": 1.0,
+      "n_estimators": 12,
+      "n_jobs": 1,
+      "random_seed": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 0.8
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "94eb5e02ffec69eba366837da0685aa7ea8f13e41eae287babc5d8e52b84e7f6",
+    "prediction_sha256": "1d84803580fcec0c394d015f1ee9f62f239d20b6cc70b93d96ae37b3a9222c1a",
+    "model_prediction_identity": "8a971a3703c860f2a87beaf9d67425f1ec038bc2fbcaa59176ca3e30f7e8fd71"
+  },
+  {
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "ef3ba1eac52803cebe56c8c12ebba96e903e88bddcc764d01a1b491eb3ea70ba",
+    "candidate_refs": [
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MA5_MA20",
+        "version": "1",
+        "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV1_ALIAS",
+        "version": "1",
+        "definition_hash": "a4b77d62db803ab82289dd262ca7c938b2cdf58d5b1ea6908f40da5eceff9b46"
+      },
+      {
+        "factor_id": "REV1_COPY",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "VOL5",
+        "version": "1",
+        "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2"
+      },
+      {
+        "factor_id": "VOL60",
+        "version": "1",
+        "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd"
+      },
+      {
+        "factor_id": "VOLUME_RATIO",
+        "version": "1",
+        "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+      },
+      {
+        "factor_id": "synthetic_000",
+        "version": "1",
+        "definition_hash": "061310d284c9a1f7ed9cc9d5521fe3a69a997e7ebe10e37ab9e9c951bbb31f83"
+      },
+      {
+        "factor_id": "synthetic_001",
+        "version": "1",
+        "definition_hash": "5ef9d1b067ec6cd36d82caf98e16f5ec782ae940536e8df223e9c5b4eb45a99a"
+      },
+      {
+        "factor_id": "synthetic_002",
+        "version": "1",
+        "definition_hash": "19d1ac28634f6f9aa54746cc308efd261b407b161a52d1e94378b38b0b69d979"
+      },
+      {
+        "factor_id": "synthetic_003",
+        "version": "1",
+        "definition_hash": "dfd7465a3de0727091a5f92ee11fba0a78068c3b979650694412cd04fb42c650"
+      },
+      {
+        "factor_id": "synthetic_004",
+        "version": "1",
+        "definition_hash": "83bd7a5a7d46725b3c1584b1e3664b9623585810310c5853c6fa774fa40286eb"
+      },
+      {
+        "factor_id": "synthetic_005",
+        "version": "1",
+        "definition_hash": "5587ff579ea32eb003a3e09f5cac1b2d6d551dfa199f49b7facc0a8bb32964ba"
+      },
+      {
+        "factor_id": "synthetic_006",
+        "version": "1",
+        "definition_hash": "d14e869826fe5590aaf575d40b96363de23ed51ebd89b1fea3c3e7740989139c"
+      },
+      {
+        "factor_id": "synthetic_007",
+        "version": "1",
+        "definition_hash": "287f739090b5623b6ff51db1dae1d7bdb42a75d40abc2ca5f34a8c7e2907482c"
+      },
+      {
+        "factor_id": "synthetic_008",
+        "version": "1",
+        "definition_hash": "77eba508ee1c09287219c8b8c2f3b066bf65c18fdb80084bf2988f6dfe031838"
+      },
+      {
+        "factor_id": "synthetic_009",
+        "version": "1",
+        "definition_hash": "6cf566d1715f4ca9b1f2d64bfde3a1bcb1bc521eb588eb33563e2a6eb06cd72f"
+      },
+      {
+        "factor_id": "synthetic_010",
+        "version": "1",
+        "definition_hash": "74638ca65af5ba7f3b1552bc9e7d4b85ec911bddb27cc8dc5e75d16e5ba24159"
+      },
+      {
+        "factor_id": "synthetic_011",
+        "version": "1",
+        "definition_hash": "3c5a3655b9bbabdfc218eb0c1b1279df964bad2d3ee60e2d28a94d64bc23e0ce"
+      },
+      {
+        "factor_id": "synthetic_012",
+        "version": "1",
+        "definition_hash": "c68a76a420abc2a4310c7fa4abd0932380a86e368dd992a9d2041aad8adaf1ff"
+      },
+      {
+        "factor_id": "synthetic_013",
+        "version": "1",
+        "definition_hash": "bd6d81cf7af73e7aac4e9162d4b04d00d4fa913f0094113781a486a10fafad1b"
+      },
+      {
+        "factor_id": "synthetic_014",
+        "version": "1",
+        "definition_hash": "0575e2fb201befc9a1ca7abb631d060d2eb7732159d58f5a3cbd2b267a187394"
+      },
+      {
+        "factor_id": "synthetic_015",
+        "version": "1",
+        "definition_hash": "5e04e25928b72075c02ab898e8aac8525604082447d95bacaa52b620297b65a8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "REV5",
+        "version": "1",
+        "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4"
+      },
+      {
+        "factor_id": "PRICE_MA20",
+        "version": "1",
+        "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+      },
+      {
+        "factor_id": "MA20_MA60",
+        "version": "1",
+        "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc"
+      },
+      {
+        "factor_id": "MOM20",
+        "version": "1",
+        "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+      },
+      {
+        "factor_id": "MOM60",
+        "version": "1",
+        "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024"
+      },
+      {
+        "factor_id": "REV1",
+        "version": "1",
+        "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+      },
+      {
+        "factor_id": "TURN20",
+        "version": "1",
+        "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+      },
+      {
+        "factor_id": "TURN5",
+        "version": "1",
+        "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6"
+      },
+      {
+        "factor_id": "VOL20",
+        "version": "1",
+        "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+      },
+      {
+        "factor_id": "AMIHU20",
+        "version": "1",
+        "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+      }
+    ],
+    "selected_features": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "directions": {
+      "REV5": -1,
+      "PRICE_MA20": 1,
+      "MA20_MA60": -1,
+      "MOM20": 1,
+      "MOM60": -1,
+      "REV1": -1,
+      "TURN20": -1,
+      "TURN5": -1,
+      "VOL20": 1,
+      "AMIHU20": 1
+    },
+    "selection_train_sha256": "4bee9a9c377a9caf16bd66cb76988b7c6f98eccc192ec6bd48d169bfd5982e64",
+    "quality_sha256": "22fc646fa426dfc3b27d5ea37133fe7f02514733bface5680f6db108bcc6f035",
+    "redundancy_sha256": "4bfe08d618f2565b392b7686b59a727a11db4d71a6712c7c414329b6c397153b",
+    "eligible_count": 20,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "02ae64120714ece9af2c4c0a5e45a661ed3692ea6cdf78b70c827e36334e42d7",
+    "fold": 2,
+    "model_name": "xgboost",
+    "dataset_identity_hash": "f1003c7c515ee56108fb24c7d87c8da6910f240066ffbce35d203819c4d44f8b",
+    "train_start": "2023-04-03T00:00:00",
+    "train_end": "2023-10-25T00:00:00",
+    "validation_start": "2023-11-03T00:00:00",
+    "validation_end": "2023-11-23T00:00:00",
+    "test_start": "2023-12-04T00:00:00",
+    "test_end": "2024-02-02T00:00:00",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-11-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-11-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-12-03T00:00:00",
+      "2024-02-03T00:00:00"
+    ],
+    "purge_days": 5,
+    "embargo_days": 5,
+    "train_max_exit_date": "2023-11-02T00:00:00",
+    "validation_max_exit_date": "2023-12-01T00:00:00",
+    "fit_source_sha256": "c828d0767e3faffe31c4f209f78ef718ce6fc32e108484267374ba13c955fab1",
+    "model_feature_names": [
+      "REV5",
+      "PRICE_MA20",
+      "MA20_MA60",
+      "MOM20",
+      "MOM60",
+      "REV1",
+      "TURN20",
+      "TURN5",
+      "VOL20",
+      "AMIHU20"
+    ],
+    "model_parameters": {
+      "colsample_bytree": 0.8,
+      "gamma": 0.0,
+      "learning_rate": 0.03,
+      "max_depth": 2,
+      "min_child_weight": 1.0,
+      "n_estimators": 12,
+      "n_jobs": 1,
+      "random_seed": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 0.8
+    },
+    "factor_score_weighting": null,
+    "saved_model_sha256": "78b2e056bcdf5414833b645c2c625c9d49ee9e57d32b1fbafcf9708f94c44ec9",
+    "prediction_sha256": "0ade0d0e34c517e5f08f3094f53b4166a9422835f762d582807645e5bddac6ce",
+    "model_prediction_identity": "c075dba29017b3869563058d26704632a83938c615861fe3a029214bb0b57f43"
+  }
+]
