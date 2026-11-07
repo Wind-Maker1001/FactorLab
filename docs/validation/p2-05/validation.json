@@ -1,0 +1,77 @@
+{
+  "schema": "FACTOR_REGISTRY_V2_TARGETED_VALIDATION_V1",
+  "baseline_commit": "967f9201ce349676b9ad3f2719c162176ffab9fd",
+  "python": "3.13.9",
+  "targeted": {
+    "exit_code": 0,
+    "tests": 66,
+    "passed": 66,
+    "seconds_reported": 2.45,
+    "per_module": {
+      "tests.research.test_factor_registry_v2": {
+        "tests": 42,
+        "passed": 42,
+        "failures": 0,
+        "errors": 0
+      },
+      "tests.research.test_factors_phase1": {
+        "tests": 19,
+        "passed": 19,
+        "failures": 0,
+        "errors": 0
+      },
+      "tests.research.test_dataset_phase1": {
+        "tests": 5,
+        "passed": 5,
+        "failures": 0,
+        "errors": 0
+      }
+    },
+    "command": "& 'D:/Environments/factorlab-py313/Scripts/python.exe' -B -m pytest tests/research/test_factor_registry_v2.py tests/research/test_factors_phase1.py tests/research/test_dataset_phase1.py -q -p no:cacheprovider --basetemp=local-validation/pytest-v2-final --tb=short --junitxml=local-validation/targeted.xml"
+  },
+  "additional_discovery": {
+    "exit_code": 1,
+    "passed": 95,
+    "failed": 3,
+    "seconds_reported": 73.8,
+    "command": "& 'D:/Environments/factorlab-py313/Scripts/python.exe' -B -m pytest tests/research/test_factor_discovery_engine.py tests/research/test_factor_discovery_generator.py tests/research/test_factor_discovery_integration.py tests/research/test_factor_discovery_delivery.py -q -p no:cacheprovider --basetemp=local-validation/pytest-discovery --tb=short",
+    "failures": [
+      {
+        "test": "test_old_factor_golden_configs_and_historical_artifacts_unchanged",
+        "reason": "git diff references missing object 48ea4dd8c1876c1515f3172c9bb2e812f20ebe82; exit 128"
+      },
+      {
+        "test": "test_committed_public_package_receipt_expressions_and_aggregate_schema[synthetic]",
+        "reason": "missing docs/research/evidence/factor-discovery-synthetic-v2/receipt.json"
+      },
+      {
+        "test": "test_committed_public_package_receipt_expressions_and_aggregate_schema[private]",
+        "reason": "missing docs/research/evidence/factor-discovery-private-v2/receipt.json"
+      }
+    ],
+    "baseline_reference_audit": "Missing receipt paths are absent from origin/main tree; historical object absent from shared repository. Tests and discovery engine are unchanged. No baseline full-suite rerun or evidence regeneration performed.",
+    "absent_from_baseline_tree": [
+      "docs/research/evidence/factor-discovery-synthetic-v2/receipt.json",
+      "docs/research/evidence/factor-discovery-private-v2/receipt.json"
+    ]
+  },
+  "unchanged_from_baseline_normalized_source_sha256": {
+    "tests/research/test_factor_discovery_engine.py": "b0b077c64dfd20cfa31e0ec28d6022dcbfce472acf9802b2879768d6ef717654",
+    "tests/research/test_factor_discovery_generator.py": "647a30107cfbb028c3b2dafe99b63ca571b283fc69e535eaece04c3f7cb40627",
+    "tests/research/test_factor_discovery_integration.py": "2111ac66a427d88570f1bb0674beeb90239b44897a20405865c479ca1e93b640",
+    "tests/research/test_factor_discovery_delivery.py": "8310d3d1db2814439976cb38b31d9faf90d2c87d7817275e257469b2cd589da0",
+    "src/factorlab/exploratory/factor_discovery/contracts.py": "0e9014c6dbddae14a10625f08d55afc78c8a659d99c06e03f3a29d74fe79edcc",
+    "src/factorlab/exploratory/factor_discovery/engine.py": "0a59ec08f26d2dc707596c6eb19244cede4306aab596b3d8d71b01b269284611",
+    "src/factorlab/dataset/builder.py": "87aea8428d888093634c63ff769767e4e2e2a3a102242d9ba4cd0ec8b73cfb76",
+    "src/factorlab/factors/registry.py": "15f834f6136386e5fec521e92beb90befaebbd9f4ccd6540cb09121cfc1e713b"
+  },
+  "source_hashes": "performance.json: source_sha256; UTF8 bytes with CRLF normalized to LF",
+  "full_legacy_matrix_run": false,
+  "new_virtual_environments_created": false,
+  "financial_status": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

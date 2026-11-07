@@ -12,8 +12,10 @@ class ReversalFactor(Factor):
         self.lookback = self.days
 
     def compute(self, bars: pd.DataFrame) -> pd.Series:
-        ordered = self.validate(bars)
+        return self._compute_ordered(self.validate(bars)).reindex(bars.index)
+
+    def _compute_ordered(self, ordered: pd.DataFrame) -> pd.Series:
         close = ordered["adj_close"]
         previous = grouped_shift(close, ordered["symbol"], self.days)
         value = -(close / previous - 1.0)
-        return value.reindex(bars.index).rename(self.name)
+        return value.rename(self.name)
