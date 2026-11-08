@@ -1,0 +1,72 @@
+{
+  "target_weights": {
+    "A": 0.8,
+    "B": 0.19999999999999998
+  },
+  "cash_weight": 0.0,
+  "estimated_variance": 0.8,
+  "estimated_volatility": 0.8944271909999159,
+  "turnover": null,
+  "industry_exposures": {},
+  "constraint_checks": {
+    "finite": true,
+    "budget": true,
+    "long_only": true,
+    "max_weight": true
+  },
+  "solver_status": {
+    "status": 0,
+    "success": true,
+    "message": "Optimization terminated successfully",
+    "method": "SLSQP",
+    "iterations": 3
+  },
+  "config_identity": "95ca5926442d3bd21dcb38373308706bdf58524dd007a559a4120920d2b26026",
+  "input_identity": "6846eef99064bb9dee33de4849c2dda36195274bb637723816197997dc2d95c4",
+  "parameters": {
+    "config": {
+      "objective": "minimum_variance",
+      "investment": 1.0,
+      "max_weight": 1.0,
+      "risk_aversion": 1.0,
+      "shrinkage": 0.0,
+      "industry_bounds": {},
+      "industry_deviation": {},
+      "turnover_limit": null,
+      "tolerance": 1e-08,
+      "max_iterations": 1000,
+      "return_period": "daily"
+    },
+    "inputs": {
+      "symbols": [
+        "A",
+        "B"
+      ],
+      "decision_time": "2026-01-05 00:00:00+00:00",
+      "risk": {
+        "method": "supplied",
+        "as_of": "2026-01-04 00:00:00+00:00",
+        "matrix": [
+          [
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ]
+      },
+      "scores": null,
+      "expected_returns": null,
+      "expected_return_definition": null,
+      "industries": {},
+      "benchmark_industries": {},
+      "previous_weights": null
+    },
+    "numpy": "2.3.4",
+    "scipy": "1.16.3",
+    "covariance_roundoff_tolerance": 4e-10
+  },
+  "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]"
+}
