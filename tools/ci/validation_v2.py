@@ -18,11 +18,23 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def outcomes(path):
+def outcomes(path, collected=()):
+    identities = {}
+    for node in collected:
+        parts = node.split('::')
+        if len(parts) < 2:
+            continue
+        module = parts[0].removesuffix('.py').replace('/', '.')
+        key = ('.'.join([module, *parts[1:-1]]), parts[-1])
+        if key in identities and identities[key] != node:
+            raise ValueError('ambiguous JUnit identity: '+repr(key))
+        identities[key] = node
     result = {}
     for case in ET.parse(path).getroot().iter('testcase'):
         cls, name = case.get('classname', ''), case.get('name')
-        node = cls.replace('.', '/')+'.py::'+name if cls else name.replace('.', '/')+'.py'
+        node = identities.get((cls, name))
+        if node is None:
+            node = cls.replace('.', '/')+'.py::'+name if cls else name.replace('.', '/')+'.py'
         if node in result:
             raise ValueError('duplicate JUnit node: '+node)
         result[node] = ('ERROR' if case.find('error') is not None else
@@ -130,8 +142,10 @@ def main():
     historical = {r['test_id']: r['current_failure_status'] for r in rows}
     if len(rows) != 186 or len(historical) != 186 or Counter(historical.values()) != {'FAIL':50,'ERROR':136}:
         raise ValueError('original historical inventory drift')
-    full, current = outcomes(a.full/'tests.xml'), outcomes(a.current/'tests.xml')
     inventory = json.loads((a.current/'selection.json').read_bytes())
+    collected = set(inventory['current']) | set(inventory['historical_collected'])
+    full = outcomes(a.full/'tests.xml', collected)
+    current = outcomes(a.current/'tests.xml', collected)
     full_receipt = json.loads((a.full/'receipt.json').read_bytes())
     current_receipt = json.loads((a.current/'receipt.json').read_bytes())
     result = compare(baseline, historical, full, current, inventory)
@@ -145,7 +159,7 @@ def main():
                     if not (ROOT/n).is_file() or digest(ROOT/n) != h}
     additional = None
     if a.additional_current:
-        other = outcomes(a.additional_current/'tests.xml')
+        other = outcomes(a.additional_current/'tests.xml', collected)
         receipt = json.loads((a.additional_current/'receipt.json').read_bytes())
         additional = dict(count=len(other), nonpassing={n:s for n,s in other.items() if s!='PASS'},
                           node_drift=sorted(set(other)^set(current)),

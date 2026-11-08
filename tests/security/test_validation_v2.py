@@ -1,6 +1,7 @@
 """A software coverage checker must refuse lost tests and disguised historical failures."""
 import copy
 import pytest
+import xml.etree.ElementTree as ET
 from tools.ci.validation_v2 import compare, comparison_pass, outcomes
 
 
@@ -43,3 +44,40 @@ def test_duplicate_junit_node_is_refused(tmp_path):
     path.write_text('<testsuite><testcase classname="same" name="node"/><testcase classname="same" name="node"/></testsuite>')
     with pytest.raises(ValueError,match='duplicate'):
         outcomes(path)
+
+
+@pytest.mark.parametrize('suffix', [
+    'test_function',
+    'EvidenceTests::test_cash_price_is_not_extra_holder_income',
+    'Outer::Inner::test_method[value.with.dots]',
+])
+def test_junit_identity_matches_collection(tmp_path, suffix):
+    node = 'tests/evidence/test_p3_d03.py::'+suffix
+    parts = suffix.split('::')
+    root = ET.Element('testsuite')
+    ET.SubElement(root, 'testcase',
+                  classname='.'.join(['tests.evidence.test_p3_d03', *parts[:-1]]),
+                  name=parts[-1])
+    path = tmp_path/'tests.xml'
+    ET.ElementTree(root).write(path)
+    assert outcomes(path, [node]) == {node: 'PASS'}
+
+
+def test_ambiguous_junit_identity_is_refused(tmp_path):
+    with pytest.raises(ValueError, match='ambiguous JUnit identity'):
+        outcomes(tmp_path/'unused.xml', [
+            'tests/example.py::Group::test_method',
+            'tests/example/Group.py::test_method',
+        ])
+
+
+def test_uncollected_junit_node_is_not_hidden(tmp_path, evidence):
+    path = tmp_path/'unexpected.xml'
+    path.write_text('<testsuite><testcase classname="tests.unexpected" name="test_extra"/></testsuite>')
+    baseline, history, full, current, inventory = evidence
+    observed = outcomes(path, inventory['current'])
+    full.update(observed)
+    current.update(observed)
+    result = compare(baseline, history, full, current, inventory)
+    assert result['inventory_drift'] == ['tests/unexpected.py::test_extra']
+    assert not comparison_pass(result)
