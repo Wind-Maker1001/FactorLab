@@ -59,4 +59,4 @@ Ridge、LightGBM、XGBoost，输出 Fast/Execution 回测、统计、图表、�
 Copyright (c) 2022 UFund-Me；研究代码的贡献与迁移来源见 [NOTICE](NOTICE)。
 上游原文档存在 GPLv3/CC BY-NC-SA 声明差异，这些原文档未进入本候选的 wheel/sdist；
 本候选的具体代码与许可证复核未发现该差异导致的软件许可冲突。外部依赖保留各自许可证。
-本次仅生成本地候选与审计资料，未创建远端 Release 或上传 PyPI。
+本次仅生成本地候选与审计资料，未创建远端 Release 或上传 PyPI
