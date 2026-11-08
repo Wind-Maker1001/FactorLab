@@ -1,0 +1,1816 @@
+{
+  "schema": "P3D01_READ_ONLY_DIAGNOSTIC_V1",
+  "python": "3.12.7",
+  "window": {
+    "start": "2021-09-13",
+    "end": "2026-09-11"
+  },
+  "pit": "PIT_UNVERIFIED",
+  "hfq": "HFQ_UNVERIFIED",
+  "formal": "FORMAL_ADMISSION_BLOCKED",
+  "money": "NO LIVE MONEY",
+  "membership_columns": [
+    "date",
+    "index_code",
+    "stock_code"
+  ],
+  "membership": {
+    "rows": 605500,
+    "unique_keys": 605500,
+    "duplicate_excess": 0,
+    "start": "2021-09-13",
+    "end": "2026-09-11",
+    "observed_dates": 1211,
+    "securities": 932,
+    "nulls": {
+      "date": 0,
+      "index_code": 0,
+      "stock_code": 0,
+      "instrument": 0
+    },
+    "nonfinite_nonnull": {},
+    "fields": {
+      "date": "datetime64[ns]",
+      "index_code": "object",
+      "stock_code": "object",
+      "instrument": "object"
+    },
+    "negative_volume_rows": null,
+    "negative_amount_rows": null
+  },
+  "stock_tables": {
+    "cn_stock_adjust_factor": {
+      "partitions": 121,
+      "receipts": 121,
+      "receipt_rows_claim": 69310,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:22:36+00:00",
+        "2026-11-07T12:22:37+00:00",
+        "2026-11-07T12:22:38+00:00",
+        "2026-11-07T12:22:39+00:00",
+        "2026-11-07T12:22:40+00:00",
+        "2026-11-07T12:22:41+00:00",
+        "2026-11-07T12:22:42+00:00",
+        "2026-11-07T12:22:43+00:00",
+        "2026-11-07T12:22:44+00:00",
+        "2026-11-07T12:22:45+00:00",
+        "2026-11-07T12:22:46+00:00",
+        "2026-11-07T12:22:47+00:00",
+        "2026-11-07T12:22:48+00:00",
+        "2026-11-07T12:22:49+00:00",
+        "2026-11-07T12:22:50+00:00",
+        "2026-11-07T12:22:51+00:00",
+        "2026-11-07T12:22:52+00:00",
+        "2026-11-07T12:22:53+00:00",
+        "2026-11-07T12:22:54+00:00",
+        "2026-11-07T12:22:55+00:00",
+        "2026-11-07T12:22:56+00:00",
+        "2026-11-07T12:22:57+00:00",
+        "2026-11-07T12:22:58+00:00",
+        "2026-11-07T12:22:59+00:00",
+        "2026-11-07T12:23:00+00:00",
+        "2026-11-07T12:23:01+00:00",
+        "2026-11-07T12:23:02+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_adjust_factor",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "method",
+            "type": "string"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_allotment": {
+      "partitions": 11,
+      "receipts": 11,
+      "receipt_rows_claim": 71,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:22:05+00:00",
+        "2026-11-07T12:22:06+00:00",
+        "2026-11-07T12:22:07+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_allotment",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "publish_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "allotment_price",
+            "type": "double"
+          },
+          {
+            "name": "allotment_rate",
+            "type": "double"
+          },
+          {
+            "name": "allotment_shares",
+            "type": "int64"
+          },
+          {
+            "name": "register_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "exright_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "allot_listdate",
+            "type": "timestamp[ns]"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_bar1d": {
+      "partitions": 121,
+      "receipts": 121,
+      "receipt_rows_claim": 10853543,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:18:29+00:00",
+        "2026-11-07T12:18:30+00:00",
+        "2026-11-07T12:18:31+00:00",
+        "2026-11-07T12:18:32+00:00",
+        "2026-11-07T12:18:33+00:00",
+        "2026-11-07T12:18:34+00:00",
+        "2026-11-07T12:18:35+00:00",
+        "2026-11-07T12:18:36+00:00",
+        "2026-11-07T12:18:37+00:00",
+        "2026-11-07T12:18:38+00:00",
+        "2026-11-07T12:18:39+00:00",
+        "2026-11-07T12:18:40+00:00",
+        "2026-11-07T12:18:41+00:00",
+        "2026-11-07T12:18:42+00:00",
+        "2026-11-07T12:18:43+00:00",
+        "2026-11-07T12:18:44+00:00",
+        "2026-11-07T12:18:45+00:00",
+        "2026-11-07T12:18:46+00:00",
+        "2026-11-07T12:18:47+00:00",
+        "2026-11-07T12:18:48+00:00",
+        "2026-11-07T12:18:49+00:00",
+        "2026-11-07T12:18:50+00:00",
+        "2026-11-07T12:18:51+00:00",
+        "2026-11-07T12:18:52+00:00",
+        "2026-11-07T12:18:53+00:00",
+        "2026-11-07T12:18:54+00:00",
+        "2026-11-07T12:18:55+00:00",
+        "2026-11-07T12:18:56+00:00",
+        "2026-11-07T12:18:57+00:00",
+        "2026-11-07T12:18:58+00:00",
+        "2026-11-07T12:18:59+00:00",
+        "2026-11-07T12:19:00+00:00",
+        "2026-11-07T12:19:01+00:00",
+        "2026-11-07T12:19:02+00:00",
+        "2026-11-07T12:19:03+00:00",
+        "2026-11-07T12:19:04+00:00",
+        "2026-11-07T12:19:05+00:00",
+        "2026-11-07T12:19:06+00:00",
+        "2026-11-07T12:19:07+00:00",
+        "2026-11-07T12:19:08+00:00",
+        "2026-11-07T12:19:09+00:00",
+        "2026-11-07T12:19:10+00:00",
+        "2026-11-07T12:19:11+00:00",
+        "2026-11-07T12:19:12+00:00",
+        "2026-11-07T12:19:13+00:00",
+        "2026-11-07T12:19:14+00:00",
+        "2026-11-07T12:19:15+00:00",
+        "2026-11-07T12:19:16+00:00",
+        "2026-11-07T12:19:17+00:00",
+        "2026-11-07T12:19:18+00:00",
+        "2026-11-07T12:19:19+00:00",
+        "2026-11-07T12:19:20+00:00",
+        "2026-11-07T12:19:21+00:00",
+        "2026-11-07T12:19:22+00:00",
+        "2026-11-07T12:19:23+00:00",
+        "2026-11-07T12:19:24+00:00",
+        "2026-11-07T12:19:25+00:00",
+        "2026-11-07T12:19:26+00:00",
+        "2026-11-07T12:19:27+00:00",
+        "2026-11-07T12:19:28+00:00",
+        "2026-11-07T12:19:29+00:00",
+        "2026-11-07T12:19:30+00:00",
+        "2026-11-07T12:19:31+00:00",
+        "2026-11-07T12:19:32+00:00",
+        "2026-11-07T12:19:33+00:00",
+        "2026-11-07T12:19:34+00:00",
+        "2026-11-07T12:19:35+00:00",
+        "2026-11-07T12:19:36+00:00",
+        "2026-11-07T12:19:37+00:00",
+        "2026-11-07T12:19:38+00:00",
+        "2026-11-07T12:19:39+00:00",
+        "2026-11-07T12:19:40+00:00",
+        "2026-11-07T12:19:41+00:00",
+        "2026-11-07T12:19:42+00:00",
+        "2026-11-07T12:19:43+00:00",
+        "2026-11-07T12:19:44+00:00",
+        "2026-11-07T12:19:45+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_bar1d",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_basic_info": {
+      "partitions": 1,
+      "receipts": 1,
+      "receipt_rows_claim": 5924,
+      "query_window_start_claim": null,
+      "query_window_end_claim": null,
+      "exported_at_utc_values": [
+        "2026-11-07T12:21:32+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_basic_info",
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "full_name",
+            "type": "string"
+          },
+          {
+            "name": "en_name",
+            "type": "string"
+          },
+          {
+            "name": "used_name",
+            "type": "string"
+          },
+          {
+            "name": "instrument_b",
+            "type": "string"
+          },
+          {
+            "name": "name_b",
+            "type": "string"
+          },
+          {
+            "name": "instrument_hk",
+            "type": "string"
+          },
+          {
+            "name": "name_hk",
+            "type": "string"
+          },
+          {
+            "name": "exchange",
+            "type": "string"
+          },
+          {
+            "name": "list_sector",
+            "type": "int8"
+          },
+          {
+            "name": "security_type",
+            "type": "string"
+          },
+          {
+            "name": "industry",
+            "type": "string"
+          },
+          {
+            "name": "office_addr",
+            "type": "string"
+          },
+          {
+            "name": "regster_addr",
+            "type": "string"
+          },
+          {
+            "name": "register_captial",
+            "type": "double"
+          },
+          {
+            "name": "nums_employees",
+            "type": "double"
+          },
+          {
+            "name": "nums_managers",
+            "type": "double"
+          },
+          {
+            "name": "law_firm",
+            "type": "string"
+          },
+          {
+            "name": "account_firm",
+            "type": "string"
+          },
+          {
+            "name": "profile",
+            "type": "string"
+          },
+          {
+            "name": "estab_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "list_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "delist_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "online_list",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "ipo_price",
+            "type": "double"
+          },
+          {
+            "name": "ipo_nums",
+            "type": "double"
+          },
+          {
+            "name": "ipo_pe",
+            "type": "double"
+          },
+          {
+            "name": "ipo_parvalue",
+            "type": "double"
+          },
+          {
+            "name": "net_amount_funds",
+            "type": "double"
+          },
+          {
+            "name": "offline_dtor",
+            "type": "double"
+          },
+          {
+            "name": "dtor",
+            "type": "double"
+          },
+          {
+            "name": "f_open",
+            "type": "double"
+          },
+          {
+            "name": "f_high",
+            "type": "double"
+          },
+          {
+            "name": "f_close",
+            "type": "double"
+          },
+          {
+            "name": "f_turnover",
+            "type": "double"
+          },
+          {
+            "name": "corp_nature",
+            "type": "string"
+          },
+          {
+            "name": "corp_scale",
+            "type": "string"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_dividend": {
+      "partitions": 11,
+      "receipts": 11,
+      "receipt_rows_claim": 35508,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:22:03+00:00",
+        "2026-11-07T12:22:04+00:00",
+        "2026-11-07T12:22:05+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_dividend",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "report_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "publish_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "bonus_rate",
+            "type": "double"
+          },
+          {
+            "name": "conversed_rate",
+            "type": "double"
+          },
+          {
+            "name": "cash_before_tax",
+            "type": "double"
+          },
+          {
+            "name": "cash_after_tax",
+            "type": "double"
+          },
+          {
+            "name": "register_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "ex_date",
+            "type": "timestamp[ns]"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_limit_price": {
+      "partitions": 121,
+      "receipts": 121,
+      "receipt_rows_claim": 10825886,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:20:59+00:00",
+        "2026-11-07T12:21:00+00:00",
+        "2026-11-07T12:21:01+00:00",
+        "2026-11-07T12:21:02+00:00",
+        "2026-11-07T12:21:03+00:00",
+        "2026-11-07T12:21:04+00:00",
+        "2026-11-07T12:21:05+00:00",
+        "2026-11-07T12:21:06+00:00",
+        "2026-11-07T12:21:07+00:00",
+        "2026-11-07T12:21:08+00:00",
+        "2026-11-07T12:21:09+00:00",
+        "2026-11-07T12:21:10+00:00",
+        "2026-11-07T12:21:11+00:00",
+        "2026-11-07T12:21:12+00:00",
+        "2026-11-07T12:21:13+00:00",
+        "2026-11-07T12:21:14+00:00",
+        "2026-11-07T12:21:15+00:00",
+        "2026-11-07T12:21:16+00:00",
+        "2026-11-07T12:21:17+00:00",
+        "2026-11-07T12:21:18+00:00",
+        "2026-11-07T12:21:19+00:00",
+        "2026-11-07T12:21:20+00:00",
+        "2026-11-07T12:21:21+00:00",
+        "2026-11-07T12:21:22+00:00",
+        "2026-11-07T12:21:23+00:00",
+        "2026-11-07T12:21:24+00:00",
+        "2026-11-07T12:21:25+00:00",
+        "2026-11-07T12:21:26+00:00",
+        "2026-11-07T12:21:27+00:00",
+        "2026-11-07T12:21:28+00:00",
+        "2026-11-07T12:21:29+00:00",
+        "2026-11-07T12:21:30+00:00",
+        "2026-11-07T12:21:31+00:00",
+        "2026-11-07T12:21:32+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_limit_price",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_name_change": {
+      "partitions": 11,
+      "receipts": 11,
+      "receipt_rows_claim": 18422,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:22:34+00:00",
+        "2026-11-07T12:22:35+00:00",
+        "2026-11-07T12:22:36+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_name_change",
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "start_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "end_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_real_bar1d": {
+      "partitions": 121,
+      "receipts": 121,
+      "receipt_rows_claim": 10853543,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:19:45+00:00",
+        "2026-11-07T12:19:46+00:00",
+        "2026-11-07T12:19:47+00:00",
+        "2026-11-07T12:19:48+00:00",
+        "2026-11-07T12:19:49+00:00",
+        "2026-11-07T12:19:50+00:00",
+        "2026-11-07T12:19:51+00:00",
+        "2026-11-07T12:19:52+00:00",
+        "2026-11-07T12:19:53+00:00",
+        "2026-11-07T12:19:54+00:00",
+        "2026-11-07T12:19:55+00:00",
+        "2026-11-07T12:19:56+00:00",
+        "2026-11-07T12:19:57+00:00",
+        "2026-11-07T12:19:58+00:00",
+        "2026-11-07T12:19:59+00:00",
+        "2026-11-07T12:20:00+00:00",
+        "2026-11-07T12:20:01+00:00",
+        "2026-11-07T12:20:02+00:00",
+        "2026-11-07T12:20:03+00:00",
+        "2026-11-07T12:20:04+00:00",
+        "2026-11-07T12:20:05+00:00",
+        "2026-11-07T12:20:06+00:00",
+        "2026-11-07T12:20:07+00:00",
+        "2026-11-07T12:20:08+00:00",
+        "2026-11-07T12:20:09+00:00",
+        "2026-11-07T12:20:10+00:00",
+        "2026-11-07T12:20:11+00:00",
+        "2026-11-07T12:20:12+00:00",
+        "2026-11-07T12:20:13+00:00",
+        "2026-11-07T12:20:14+00:00",
+        "2026-11-07T12:20:15+00:00",
+        "2026-11-07T12:20:16+00:00",
+        "2026-11-07T12:20:17+00:00",
+        "2026-11-07T12:20:18+00:00",
+        "2026-11-07T12:20:19+00:00",
+        "2026-11-07T12:20:20+00:00",
+        "2026-11-07T12:20:21+00:00",
+        "2026-11-07T12:20:22+00:00",
+        "2026-11-07T12:20:23+00:00",
+        "2026-11-07T12:20:24+00:00",
+        "2026-11-07T12:20:25+00:00",
+        "2026-11-07T12:20:26+00:00",
+        "2026-11-07T12:20:27+00:00",
+        "2026-11-07T12:20:28+00:00",
+        "2026-11-07T12:20:29+00:00",
+        "2026-11-07T12:20:30+00:00",
+        "2026-11-07T12:20:31+00:00",
+        "2026-11-07T12:20:32+00:00",
+        "2026-11-07T12:20:33+00:00",
+        "2026-11-07T12:20:34+00:00",
+        "2026-11-07T12:20:35+00:00",
+        "2026-11-07T12:20:36+00:00",
+        "2026-11-07T12:20:37+00:00",
+        "2026-11-07T12:20:38+00:00",
+        "2026-11-07T12:20:39+00:00",
+        "2026-11-07T12:20:40+00:00",
+        "2026-11-07T12:20:41+00:00",
+        "2026-11-07T12:20:42+00:00",
+        "2026-11-07T12:20:43+00:00",
+        "2026-11-07T12:20:44+00:00",
+        "2026-11-07T12:20:45+00:00",
+        "2026-11-07T12:20:46+00:00",
+        "2026-11-07T12:20:47+00:00",
+        "2026-11-07T12:20:48+00:00",
+        "2026-11-07T12:20:49+00:00",
+        "2026-11-07T12:20:50+00:00",
+        "2026-11-07T12:20:51+00:00",
+        "2026-11-07T12:20:52+00:00",
+        "2026-11-07T12:20:53+00:00",
+        "2026-11-07T12:20:54+00:00",
+        "2026-11-07T12:20:55+00:00",
+        "2026-11-07T12:20:56+00:00",
+        "2026-11-07T12:20:57+00:00",
+        "2026-11-07T12:20:58+00:00",
+        "2026-11-07T12:20:59+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_real_bar1d",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_st": {
+      "partitions": 1,
+      "receipts": 1,
+      "receipt_rows_claim": 5896,
+      "query_window_start_claim": null,
+      "query_window_end_claim": null,
+      "exported_at_utc_values": [
+        "2026-11-07T12:22:07+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_st",
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "special_treatment",
+            "type": "string"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_static_data": {
+      "partitions": 11,
+      "receipts": 11,
+      "receipt_rows_claim": 3088301,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:23:02+00:00",
+        "2026-11-07T12:23:03+00:00",
+        "2026-11-07T12:23:04+00:00",
+        "2026-11-07T12:23:05+00:00",
+        "2026-11-07T12:23:06+00:00",
+        "2026-11-07T12:23:07+00:00",
+        "2026-11-07T12:23:08+00:00",
+        "2026-11-07T12:23:10+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_static_data",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "exchange",
+            "type": "string"
+          },
+          {
+            "name": "trading_day",
+            "type": "int32"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "security_status",
+            "type": "int32"
+          },
+          {
+            "name": "suspended",
+            "type": "int8"
+          },
+          {
+            "name": "st_status",
+            "type": "int8"
+          },
+          {
+            "name": "exdr",
+            "type": "int8"
+          },
+          {
+            "name": "in_delist",
+            "type": "int8"
+          },
+          {
+            "name": "price_tick",
+            "type": "double"
+          },
+          {
+            "name": "crd_buy_flag",
+            "type": "int8"
+          },
+          {
+            "name": "crd_sell_flag",
+            "type": "int8"
+          },
+          {
+            "name": "day_trading",
+            "type": "int8"
+          },
+          {
+            "name": "public_float_share",
+            "type": "int64"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_status": {
+      "partitions": 121,
+      "receipts": 121,
+      "receipt_rows_claim": 10853543,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:21:32+00:00",
+        "2026-11-07T12:21:33+00:00",
+        "2026-11-07T12:21:34+00:00",
+        "2026-11-07T12:21:35+00:00",
+        "2026-11-07T12:21:36+00:00",
+        "2026-11-07T12:21:37+00:00",
+        "2026-11-07T12:21:38+00:00",
+        "2026-11-07T12:21:39+00:00",
+        "2026-11-07T12:21:40+00:00",
+        "2026-11-07T12:21:41+00:00",
+        "2026-11-07T12:21:42+00:00",
+        "2026-11-07T12:21:43+00:00",
+        "2026-11-07T12:21:44+00:00",
+        "2026-11-07T12:21:45+00:00",
+        "2026-11-07T12:21:46+00:00",
+        "2026-11-07T12:21:47+00:00",
+        "2026-11-07T12:21:48+00:00",
+        "2026-11-07T12:21:49+00:00",
+        "2026-11-07T12:21:50+00:00",
+        "2026-11-07T12:21:51+00:00",
+        "2026-11-07T12:21:52+00:00",
+        "2026-11-07T12:21:53+00:00",
+        "2026-11-07T12:21:54+00:00",
+        "2026-11-07T12:21:55+00:00",
+        "2026-11-07T12:21:56+00:00",
+        "2026-11-07T12:21:57+00:00",
+        "2026-11-07T12:21:58+00:00",
+        "2026-11-07T12:21:59+00:00",
+        "2026-11-07T12:22:00+00:00",
+        "2026-11-07T12:22:01+00:00",
+        "2026-11-07T12:22:02+00:00",
+        "2026-11-07T12:22:03+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_status",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "st_status",
+            "type": "int8"
+          },
+          {
+            "name": "is_risk_warning",
+            "type": "int8"
+          },
+          {
+            "name": "suspended",
+            "type": "int8"
+          },
+          {
+            "name": "price_limit_status",
+            "type": "int8"
+          },
+          {
+            "name": "exdr",
+            "type": "int8"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    },
+    "cn_stock_suspend": {
+      "partitions": 121,
+      "receipts": 121,
+      "receipt_rows_claim": 134005,
+      "query_window_start_claim": "2016-11-07",
+      "query_window_end_claim": "2026-11-06",
+      "exported_at_utc_values": [
+        "2026-11-07T12:22:08+00:00",
+        "2026-11-07T12:22:09+00:00",
+        "2026-11-07T12:22:10+00:00",
+        "2026-11-07T12:22:11+00:00",
+        "2026-11-07T12:22:12+00:00",
+        "2026-11-07T12:22:13+00:00",
+        "2026-11-07T12:22:14+00:00",
+        "2026-11-07T12:22:15+00:00",
+        "2026-11-07T12:22:16+00:00",
+        "2026-11-07T12:22:17+00:00",
+        "2026-11-07T12:22:18+00:00",
+        "2026-11-07T12:22:19+00:00",
+        "2026-11-07T12:22:20+00:00",
+        "2026-11-07T12:22:21+00:00",
+        "2026-11-07T12:22:22+00:00",
+        "2026-11-07T12:22:23+00:00",
+        "2026-11-07T12:22:24+00:00",
+        "2026-11-07T12:22:25+00:00",
+        "2026-11-07T12:22:26+00:00",
+        "2026-11-07T12:22:27+00:00",
+        "2026-11-07T12:22:28+00:00",
+        "2026-11-07T12:22:29+00:00",
+        "2026-11-07T12:22:30+00:00",
+        "2026-11-07T12:22:31+00:00",
+        "2026-11-07T12:22:32+00:00",
+        "2026-11-07T12:22:33+00:00"
+      ],
+      "schema": {
+        "datasource_id": "cn_stock_suspend",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "suspend_period",
+            "type": "int64"
+          },
+          {
+            "name": "suspend_reason",
+            "type": "string"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "verification": "RECEIPT_CLAIMS_NOT_FULL_TABLE_ROW_SCAN"
+    }
+  },
+  "scanned_partitions": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+      "physical_rows": 89492,
+      "receipt_rows": 89492
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+      "physical_rows": 72115,
+      "receipt_rows": 72115
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2021-11-01_2021-11-30.parquet",
+      "physical_rows": 100895,
+      "receipt_rows": 100895
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2021-12-01_2021-12-31.parquet",
+      "physical_rows": 107235,
+      "receipt_rows": 107235
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-01-01_2022-01-31.parquet",
+      "physical_rows": 89288,
+      "receipt_rows": 89288
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-02-01_2022-02-28.parquet",
+      "physical_rows": 75574,
+      "receipt_rows": 75574
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-03-01_2022-03-31.parquet",
+      "physical_rows": 109239,
+      "receipt_rows": 109239
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-04-01_2022-04-30.parquet",
+      "physical_rows": 90945,
+      "receipt_rows": 90945
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-05-01_2022-05-31.parquet",
+      "physical_rows": 91383,
+      "receipt_rows": 91383
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-06-01_2022-06-30.parquet",
+      "physical_rows": 101334,
+      "receipt_rows": 101334
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-07-01_2022-07-31.parquet",
+      "physical_rows": 101464,
+      "receipt_rows": 101464
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-08-01_2022-08-31.parquet",
+      "physical_rows": 111976,
+      "receipt_rows": 111976
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-09-01_2022-09-30.parquet",
+      "physical_rows": 103254,
+      "receipt_rows": 103254
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-10-01_2022-10-31.parquet",
+      "physical_rows": 79337,
+      "receipt_rows": 79337
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-11-01_2022-11-30.parquet",
+      "physical_rows": 109792,
+      "receipt_rows": 109792
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2022-12-01_2022-12-31.parquet",
+      "physical_rows": 110760,
+      "receipt_rows": 110760
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-01-01_2023-01-31.parquet",
+      "physical_rows": 81122,
+      "receipt_rows": 81122
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-02-01_2023-02-28.parquet",
+      "physical_rows": 101770,
+      "receipt_rows": 101770
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-03-01_2023-03-31.parquet",
+      "physical_rows": 117714,
+      "receipt_rows": 117714
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "physical_rows": 97883,
+      "receipt_rows": 97883
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "physical_rows": 103588,
+      "receipt_rows": 103588
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-06-01_2023-06-30.parquet",
+      "physical_rows": 104168,
+      "receipt_rows": 104168
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-07-01_2023-07-31.parquet",
+      "physical_rows": 109821,
+      "receipt_rows": 109821
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-08-01_2023-08-31.parquet",
+      "physical_rows": 120857,
+      "receipt_rows": 120857
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-09-01_2023-09-30.parquet",
+      "physical_rows": 105528,
+      "receipt_rows": 105528
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-10-01_2023-10-31.parquet",
+      "physical_rows": 89969,
+      "receipt_rows": 89969
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-11-01_2023-11-30.parquet",
+      "physical_rows": 116754,
+      "receipt_rows": 116754
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-12-01_2023-12-31.parquet",
+      "physical_rows": 111810,
+      "receipt_rows": 111810
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-01-01_2024-01-31.parquet",
+      "physical_rows": 117513,
+      "receipt_rows": 117513
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-02-01_2024-02-29.parquet",
+      "physical_rows": 80255,
+      "receipt_rows": 80255
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-03-01_2024-03-31.parquet",
+      "physical_rows": 112450,
+      "receipt_rows": 112450
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-04-01_2024-04-30.parquet",
+      "physical_rows": 107243,
+      "receipt_rows": 107243
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-05-01_2024-05-31.parquet",
+      "physical_rows": 107254,
+      "receipt_rows": 107254
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-06-01_2024-06-30.parquet",
+      "physical_rows": 101922,
+      "receipt_rows": 101922
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-07-01_2024-07-31.parquet",
+      "physical_rows": 123248,
+      "receipt_rows": 123248
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-08-01_2024-08-31.parquet",
+      "physical_rows": 117753,
+      "receipt_rows": 117753
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-09-01_2024-09-30.parquet",
+      "physical_rows": 101671,
+      "receipt_rows": 101671
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-10-01_2024-10-31.parquet",
+      "physical_rows": 96424,
+      "receipt_rows": 96424
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-11-01_2024-11-30.parquet",
+      "physical_rows": 112701,
+      "receipt_rows": 112701
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-12-01_2024-12-31.parquet",
+      "physical_rows": 118309,
+      "receipt_rows": 118309
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-01-01_2025-01-31.parquet",
+      "physical_rows": 97001,
+      "receipt_rows": 97001
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-02-01_2025-02-28.parquet",
+      "physical_rows": 97112,
+      "receipt_rows": 97112
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-03-01_2025-03-31.parquet",
+      "physical_rows": 113375,
+      "receipt_rows": 113375
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-04-01_2025-04-30.parquet",
+      "physical_rows": 113615,
+      "receipt_rows": 113615
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-05-01_2025-05-31.parquet",
+      "physical_rows": 102850,
+      "receipt_rows": 102850
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-06-01_2025-06-30.parquet",
+      "physical_rows": 108353,
+      "receipt_rows": 108353
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-07-01_2025-07-31.parquet",
+      "physical_rows": 124619,
+      "receipt_rows": 124619
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-08-01_2025-08-31.parquet",
+      "physical_rows": 113891,
+      "receipt_rows": 113891
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-09-01_2025-09-30.parquet",
+      "physical_rows": 119456,
+      "receipt_rows": 119456
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-10-01_2025-10-31.parquet",
+      "physical_rows": 92467,
+      "receipt_rows": 92467
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-11-01_2025-11-30.parquet",
+      "physical_rows": 108992,
+      "receipt_rows": 108992
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-12-01_2025-12-31.parquet",
+      "physical_rows": 125582,
+      "receipt_rows": 125582
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-01-01_2026-01-31.parquet",
+      "physical_rows": 109439,
+      "receipt_rows": 109439
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-02-01_2026-02-28.parquet",
+      "physical_rows": 76741,
+      "receipt_rows": 76741
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-03-01_2026-03-31.parquet",
+      "physical_rows": 120776,
+      "receipt_rows": 120776
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-04-01_2026-04-30.parquet",
+      "physical_rows": 115590,
+      "receipt_rows": 115590
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-05-01_2026-05-31.parquet",
+      "physical_rows": 99330,
+      "receipt_rows": 99330
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-06-01_2026-06-30.parquet",
+      "physical_rows": 116065,
+      "receipt_rows": 116065
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-07-01_2026-07-31.parquet",
+      "physical_rows": 127186,
+      "receipt_rows": 127186
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-08-01_2026-08-31.parquet",
+      "physical_rows": 116429,
+      "receipt_rows": 116429
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-09-01_2026-09-30.parquet",
+      "physical_rows": 116816,
+      "receipt_rows": 116816
+    }
+  ],
+  "candidate_population_bars": {
+    "rows": 1091414,
+    "unique_keys": 1091414,
+    "duplicate_excess": 0,
+    "start": "2021-09-13",
+    "end": "2026-09-11",
+    "observed_dates": 1211,
+    "securities": 930,
+    "nulls": {
+      "date": 0,
+      "instrument": 0,
+      "name": 0,
+      "adjust_factor": 0,
+      "pre_close": 61,
+      "open": 1647,
+      "close": 1647,
+      "high": 1647,
+      "low": 1647,
+      "volume": 0,
+      "deal_number": 0,
+      "amount": 1647,
+      "change_ratio": 0,
+      "turn": 0,
+      "upper_limit": 0,
+      "lower_limit": 0
+    },
+    "nonfinite_nonnull": {
+      "adjust_factor": 0,
+      "pre_close": 0,
+      "open": 0,
+      "close": 0,
+      "high": 0,
+      "low": 0,
+      "volume": 0,
+      "deal_number": 0,
+      "amount": 0,
+      "change_ratio": 0,
+      "turn": 0,
+      "upper_limit": 0,
+      "lower_limit": 0
+    },
+    "fields": {
+      "date": "datetime64[ns]",
+      "instrument": "object",
+      "name": "object",
+      "adjust_factor": "float64",
+      "pre_close": "float64",
+      "open": "float64",
+      "close": "float64",
+      "high": "float64",
+      "low": "float64",
+      "volume": "int64",
+      "deal_number": "int32",
+      "amount": "float64",
+      "change_ratio": "float64",
+      "turn": "float64",
+      "upper_limit": "float64",
+      "lower_limit": "float64"
+    },
+    "nonpositive_price_rows": 0,
+    "ohlc_order_rows": 0,
+    "negative_volume_rows": 0,
+    "negative_amount_rows": 0
+  },
+  "member_date_join": {
+    "expected_rows": 605500,
+    "joined_rows": 605500,
+    "missing_keys": 292,
+    "missing_securities": [
+      "300114.SZ",
+      "600068.SH"
+    ],
+    "dates_with_missing": 292,
+    "matched": {
+      "rows": 605208,
+      "unique_keys": 605208,
+      "duplicate_excess": 0,
+      "start": "2021-09-13",
+      "end": "2026-09-11",
+      "observed_dates": 1211,
+      "securities": 930,
+      "nulls": {
+        "date": 0,
+        "instrument": 0,
+        "name": 0,
+        "adjust_factor": 0,
+        "pre_close": 1,
+        "open": 564,
+        "close": 564,
+        "high": 564,
+        "low": 564,
+        "volume": 0,
+        "deal_number": 0,
+        "amount": 564,
+        "change_ratio": 0,
+        "turn": 0,
+        "upper_limit": 0,
+        "lower_limit": 0
+      },
+      "nonfinite_nonnull": {
+        "adjust_factor": 0,
+        "pre_close": 0,
+        "open": 0,
+        "close": 0,
+        "high": 0,
+        "low": 0,
+        "volume": 0,
+        "deal_number": 0,
+        "amount": 0,
+        "change_ratio": 0,
+        "turn": 0,
+        "upper_limit": 0,
+        "lower_limit": 0
+      },
+      "fields": {
+        "date": "datetime64[ns]",
+        "instrument": "object",
+        "name": "object",
+        "adjust_factor": "float64",
+        "pre_close": "float64",
+        "open": "float64",
+        "close": "float64",
+        "high": "float64",
+        "low": "float64",
+        "volume": "float64",
+        "deal_number": "float64",
+        "amount": "float64",
+        "change_ratio": "float64",
+        "turn": "float64",
+        "upper_limit": "float64",
+        "lower_limit": "float64"
+      },
+      "nonpositive_price_rows": 0,
+      "ohlc_order_rows": 0,
+      "negative_volume_rows": 0,
+      "negative_amount_rows": 0
+    }
+  },
+  "csmar_2017_2018": {
+    "rows": 487,
+    "unique_keys": 487,
+    "duplicate_excess": 0,
+    "start": "2017-01-03",
+    "end": "2018-12-28",
+    "observed_dates": 487,
+    "securities": 1,
+    "nulls": {
+      "date": 0,
+      "symbol": 0,
+      "raw_open": 0,
+      "raw_high": 0,
+      "raw_low": 0,
+      "raw_close": 0,
+      "volume": 0,
+      "amount": 0,
+      "adj_close": 0,
+      "trade_status": 0,
+      "is_st": 0
+    },
+    "nonfinite_nonnull": {
+      "raw_open": 0,
+      "raw_high": 0,
+      "raw_low": 0,
+      "raw_close": 0,
+      "volume": 0,
+      "amount": 0,
+      "adj_close": 0,
+      "trade_status": 0,
+      "is_st": 0
+    },
+    "fields": {
+      "date": "datetime64[ns]",
+      "symbol": "object",
+      "raw_open": "float64",
+      "raw_high": "float64",
+      "raw_low": "float64",
+      "raw_close": "float64",
+      "volume": "float64",
+      "amount": "float64",
+      "adj_close": "float64",
+      "trade_status": "int64",
+      "is_st": "int64"
+    },
+    "nonpositive_price_rows": 0,
+    "ohlc_order_rows": 0,
+    "negative_volume_rows": 0,
+    "negative_amount_rows": 0,
+    "manifest_coverage": {
+      "action_coverage": "PARTIAL",
+      "calendar": "OBSERVED_SECURITY_SESSIONS_ONLY; OFFICIAL_CALENDAR_UNKNOWN",
+      "comparable_close": "CSMAR_Adjprcwd_CANDIDATE",
+      "corporate_actions": 4,
+      "end": "2018-12-31",
+      "event_factor_association": "UNVERIFIED",
+      "execution": "BLOCKED",
+      "factors": "NATIVE_OBSERVATIONS_ONLY",
+      "first_observed": "2017-01-03",
+      "formal_return_backtest": "BLOCKED / NOT_RUN",
+      "identity": "CURRENT_NATIVE_COMPANY_RECORD; HISTORICAL_IDENTITY_UNVERIFIED",
+      "last_observed": "2018-12-28",
+      "raw_conversion": "PASS",
+      "raw_records": 487,
+      "research_records": 243,
+      "start": "2018-01-01",
+      "symbol": "601857.SH",
+      "warmup_records": 244,
+      "warmup_start": "2017-01-01"
+    }
+  },
+  "indexed_file_access": [
+    {
+      "source": "BaiduNetdiskDownload",
+      "status": "EXISTS",
+      "files": 192
+    },
+    {
+      "source": "CNRDS Raw",
+      "status": "EXISTS",
+      "files": 81
+    },
+    {
+      "source": "CSMAR Raw",
+      "status": "EXISTS",
+      "files": 50
+    },
+    {
+      "source": "vipdoc",
+      "status": "EXISTS",
+      "files": 9374
+    }
+  ],
+  "tdx_sample": {
+    "file_name": "bj899050.day",
+    "bytes": 34432,
+    "records": 1076,
+    "min_date_integer": 20220429,
+    "max_date_integer": 20261009,
+    "scope": "ONE_INDEXED_FILE_ONLY; UNITS_AND_SECURITY_ID_NOT_CERTIFIED"
+  },
+  "cross_source": {
+    "symbol": "601857.SH",
+    "start": "2017-01-03",
+    "end": "2018-12-28",
+    "csmar_rows": 487,
+    "bigquant_rows": 487,
+    "csmar_duplicate_keys": 0,
+    "bigquant_duplicate_keys": 0,
+    "join_counts": {
+      "both": 487,
+      "left_only": 0,
+      "right_only": 0
+    },
+    "fields": {
+      "open": {
+        "nonnull_pairs": 487,
+        "exact_differences": 0,
+        "max_absolute_difference": 0.0
+      },
+      "high": {
+        "nonnull_pairs": 487,
+        "exact_differences": 0,
+        "max_absolute_difference": 0.0
+      },
+      "low": {
+        "nonnull_pairs": 487,
+        "exact_differences": 0,
+        "max_absolute_difference": 0.0
+      },
+      "close": {
+        "nonnull_pairs": 487,
+        "exact_differences": 0,
+        "max_absolute_difference": 0.0
+      },
+      "volume": {
+        "nonnull_pairs": 487,
+        "exact_differences": 0,
+        "max_absolute_difference": 0.0
+      },
+      "amount": {
+        "nonnull_pairs": 487,
+        "exact_differences": 4,
+        "max_absolute_difference": 5.960464477539063e-08
+      }
+    },
+    "event_profiles": {
+      "cn_stock_dividend": {
+        "rows": 35508,
+        "unique_keys": 35508,
+        "duplicate_excess": 0,
+        "start": "2016-11-08",
+        "end": "2026-11-06",
+        "observed_dates": 1776,
+        "securities": 5414,
+        "nulls": {
+          "date": 0,
+          "instrument": 0,
+          "report_date": 0,
+          "publish_date": 0,
+          "bonus_rate": 35207,
+          "conversed_rate": 31176,
+          "cash_before_tax": 390,
+          "cash_after_tax": 402,
+          "register_date": 0,
+          "ex_date": 0
+        },
+        "nonfinite_nonnull": {
+          "bonus_rate": 0,
+          "conversed_rate": 0,
+          "cash_before_tax": 0,
+          "cash_after_tax": 0
+        },
+        "fields": {
+          "date": "datetime64[ns]",
+          "instrument": "object",
+          "report_date": "datetime64[ns]",
+          "publish_date": "datetime64[ns]",
+          "bonus_rate": "float64",
+          "conversed_rate": "float64",
+          "cash_before_tax": "float64",
+          "cash_after_tax": "float64",
+          "register_date": "datetime64[ns]",
+          "ex_date": "datetime64[ns]"
+        },
+        "negative_volume_rows": null,
+        "negative_amount_rows": null,
+        "key_status": "CANDIDATE_KEY_NOT_VENDOR_CERTIFIED",
+        "date_fields": {
+          "date": {
+            "start": "2016-11-08 00:00:00",
+            "end": "2026-11-06 00:00:00"
+          },
+          "report_date": {
+            "start": "2016-06-30 00:00:00",
+            "end": "2026-09-30 00:00:00"
+          },
+          "publish_date": {
+            "start": "2016-07-12 00:00:00",
+            "end": "2026-10-29 00:00:00"
+          },
+          "register_date": {
+            "start": "2016-11-07 00:00:00",
+            "end": "2026-11-05 00:00:00"
+          },
+          "ex_date": {
+            "start": "2016-11-08 00:00:00",
+            "end": "2026-11-06 00:00:00"
+          }
+        }
+      },
+      "cn_stock_allotment": {
+        "rows": 71,
+        "unique_keys": 71,
+        "duplicate_excess": 0,
+        "start": "2017-04-11",
+        "end": "2026-08-21",
+        "observed_dates": 67,
+        "securities": 67,
+        "nulls": {
+          "date": 0,
+          "instrument": 0,
+          "publish_date": 0,
+          "allotment_price": 0,
+          "allotment_rate": 0,
+          "allotment_shares": 0,
+          "register_date": 0,
+          "exright_date": 0,
+          "allot_listdate": 1
+        },
+        "nonfinite_nonnull": {
+          "allotment_price": 0,
+          "allotment_rate": 0,
+          "allotment_shares": 0
+        },
+        "fields": {
+          "date": "datetime64[ns]",
+          "instrument": "object",
+          "publish_date": "datetime64[ns]",
+          "allotment_price": "float64",
+          "allotment_rate": "float64",
+          "allotment_shares": "int64",
+          "register_date": "datetime64[ns]",
+          "exright_date": "datetime64[ns]",
+          "allot_listdate": "datetime64[ns]"
+        },
+        "negative_volume_rows": null,
+        "negative_amount_rows": null,
+        "key_status": "CANDIDATE_KEY_NOT_VENDOR_CERTIFIED",
+        "date_fields": {
+          "date": {
+            "start": "2017-04-11 00:00:00",
+            "end": "2026-08-21 00:00:00"
+          },
+          "publish_date": {
+            "start": "2017-03-27 00:00:00",
+            "end": "2026-08-10 00:00:00"
+          },
+          "register_date": {
+            "start": "2017-03-29 00:00:00",
+            "end": "2026-08-12 00:00:00"
+          },
+          "exright_date": {
+            "start": "2017-04-11 00:00:00",
+            "end": "2026-08-21 00:00:00"
+          },
+          "allot_listdate": {
+            "start": "2017-04-20 00:00:00",
+            "end": "2023-12-25 00:00:00"
+          }
+        }
+      },
+      "cn_stock_adjust_factor": {
+        "rows": 69310,
+        "unique_keys": 69310,
+        "duplicate_excess": 0,
+        "start": "2016-11-08",
+        "end": "2026-08-19",
+        "observed_dates": 1766,
+        "securities": 5363,
+        "nulls": {
+          "date": 0,
+          "instrument": 0,
+          "type": 0,
+          "adjust_factor": 0,
+          "method": 0
+        },
+        "nonfinite_nonnull": {
+          "adjust_factor": 0
+        },
+        "fields": {
+          "date": "datetime64[ns]",
+          "instrument": "object",
+          "type": "object",
+          "adjust_factor": "float64",
+          "method": "object"
+        },
+        "negative_volume_rows": null,
+        "negative_amount_rows": null,
+        "key_status": "CANDIDATE_KEY_NOT_VENDOR_CERTIFIED",
+        "date_fields": {
+          "date": {
+            "start": "2016-11-08 00:00:00",
+            "end": "2026-08-19 00:00:00"
+          }
+        }
+      }
+    },
+    "interpretation": "NUMERIC_COMPARISON_ONLY; VENDOR_UNITS_AND_COMMON_UPSTREAM_UNKNOWN; NO_SOURCE_SELECTED"
+  }
+}
