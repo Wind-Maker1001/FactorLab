@@ -136,6 +136,7 @@ def test_artifact_and_sample_mismatch(tmp_path, definition):
 
 
 def test_provenance(tmp_path):
+    import platform
     import subprocess
     from factorlab.experiments.provenance import capture_provenance
     subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True)
@@ -144,7 +145,7 @@ def test_provenance(tmp_path):
     assert len(receipt["code"]["commit"]) == 40
     assert len(receipt["code"]["tree"]) == 40
     assert receipt["code"]["git_dirty"] is False
-    assert receipt["environment"]["python_version"].startswith("3.13")
+    assert receipt["environment"]["python_version"] == platform.python_version()
 
 
 def test_index_failure_preserves_record(tmp_path, definition, monkeypatch):
