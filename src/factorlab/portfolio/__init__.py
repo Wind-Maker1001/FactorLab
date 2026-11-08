@@ -5,6 +5,8 @@ from .weights import equal_weights
 from .optimizer import (OptimizationError, OptimizationInput, OptimizationResult,
                         OptimizerConfig, PortfolioOptimizer)
 
-__all__ = ["TopKPortfolio", "equal_weights", "rebalance_dates", "select_top_k",
+from .feedback import ExecutionFeedback, FeedbackDecision, SaleRestriction
+
+__all__ = ["ExecutionFeedback", "FeedbackDecision", "SaleRestriction", "TopKPortfolio", "equal_weights", "rebalance_dates", "select_top_k",
            "OptimizationError", "OptimizationInput", "OptimizationResult",
            "OptimizerConfig", "PortfolioOptimizer"]

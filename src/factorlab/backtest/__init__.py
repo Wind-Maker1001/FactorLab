@@ -9,10 +9,14 @@ from .execution import (
     OrderSizeRule,
     run_execution_backtest,
 )
+from .session import ExecutionSession, HoldingSnapshot, HoldingsSnapshot
 from .fees import FeeBreakdown, FeeRule, FeeSchedule
 from .rules import PriceLimitBounds, PriceLimitRule, PriceLimitSchedule, classify_board
 
 __all__ = [
+    "ExecutionSession",
+    "HoldingSnapshot",
+    "HoldingsSnapshot",
     "AShareExecutionBacktester",
     "ExecutionBacktestConfig",
     "ExecutionBacktestResult",

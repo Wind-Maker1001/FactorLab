@@ -443,6 +443,14 @@ class AShareExecutionBacktester:
         Optional optimizer_turnover is the optimizer's gross security-weight change,
         repeated consistently across each snapshot; it is not executed turnover.
         """
+        selected = self._prepare_targets(targets)
+        prepared = _prepare_bars(bars, self.config)
+        benchmark_data = _prepare_benchmark(benchmark, self.config.benchmark_open_price_column,
+                                            self.config.benchmark_close_price_column)
+        return self._run_selected(selected, prepared, benchmark_data, explicit=True)
+
+    @staticmethod
+    def _prepare_targets(targets):
         required = {"date", "symbol", "target_weight"}
         if not isinstance(targets, pd.DataFrame) or targets.empty or not required.issubset(targets):
             raise SchemaError("targets require nonempty date, symbol, target_weight")
@@ -468,10 +476,7 @@ class AShareExecutionBacktester:
         selected = selected.sort_values(["date", "symbol"], kind="mergesort")
         selected["rank"] = selected.groupby("date").cumcount() + 1
         selected["score"] = np.nan
-        prepared = _prepare_bars(bars, self.config)
-        benchmark_data = _prepare_benchmark(benchmark, self.config.benchmark_open_price_column,
-                                            self.config.benchmark_close_price_column)
-        return self._run_selected(selected, prepared, benchmark_data, explicit=True)
+        return selected
 
     def _size_rule(self, symbol):
         rules = self.config.target_order_sizes
@@ -481,6 +486,19 @@ class AShareExecutionBacktester:
         return rules[key]
 
     def _run_selected(self, selected, prepared_bars, benchmark_data, *, explicit=False):
+        iterator = self._iterate_selected(selected, prepared_bars, benchmark_data, explicit=explicit)
+        while True:
+            try:
+                next(iterator)
+            except StopIteration as completed:
+                return completed.value
+
+    def start_session(self, bars, benchmark, *, signal_date):
+        """Start a forward-only target execution session at a known close."""
+        from .session import ExecutionSession
+        return ExecutionSession(self, bars, benchmark, signal_date=signal_date)
+
+    def _iterate_selected(self, selected, prepared_bars, benchmark_data, *, explicit=False, session=None):
         calendar = pd.DatetimeIndex(benchmark_data["date"])
         calendar_position = {day: number for number, day in enumerate(calendar)}
         executions: Dict[pd.Timestamp, pd.DataFrame] = {}
@@ -505,7 +523,12 @@ class AShareExecutionBacktester:
         benchmark_close = benchmark_by_date[
             self.config.benchmark_close_price_column
         ]
-        first_execution = min(executions)
+        if session is not None:
+            executions = session._executions
+            accepted = session._accepted
+            first_execution = calendar[calendar_position[session._initial_day] + 1]
+        else:
+            first_execution = min(executions)
         start_position = calendar_position[first_execution]
         # Strategy capital is first exposed at the execution-day open, so the
         # benchmark uses the same starting instant.  Daily NAV is then marked
@@ -518,6 +541,7 @@ class AShareExecutionBacktester:
         book = PositionBook()
         cash = float(self.config.initial_cash)
         last_marks: Dict[str, float] = {}
+        mark_times: Dict[str, pd.Timestamp] = {}
         nav_rows: List[dict] = []
         trade_rows: List[dict] = []
         rejection_rows: List[dict] = []
@@ -616,6 +640,9 @@ class AShareExecutionBacktester:
                         requested_shares=requested,
                         cash=cash,
                         metadata=metadata,
+                        locked_shares=(session._locked_shares.get(day, {}).get(symbol, 0)
+                                       if session is not None else 0),
+                        size_rule=self._size_rule(symbol) if explicit else None,
                     )
                     if executed is not None:
                         _, notional, breakdown, cash = executed
@@ -702,6 +729,10 @@ class AShareExecutionBacktester:
                         % (symbol, day.date())
                     )
                 marks[symbol] = mark
+                if pd.notna(raw_close):
+                    mark_times[symbol] = day + pd.Timedelta(hours=15)
+                elif symbol not in last_marks:
+                    mark_times[symbol] = day + pd.Timedelta(hours=9, minutes=30)
                 portfolio_value += book.total_shares(symbol) * mark
             last_marks = marks
             turnover = (
@@ -767,6 +798,11 @@ class AShareExecutionBacktester:
                 }
             )
 
+            if session is not None:
+                session._capture(day, book, cash, marks, mark_times, trade_rows, rejection_rows)
+                session._rows = (nav_rows, trade_rows, position_rows, rejection_rows, comparison_rows)
+            yield day
+
         return ExecutionBacktestResult(
             nav=pd.DataFrame(nav_rows),
             target_comparison=pd.DataFrame(comparison_rows),
@@ -822,6 +858,7 @@ class AShareExecutionBacktester:
         cash: float,
         metadata: Optional[pd.Series],
         size_rule: Optional[OrderSizeRule] = None,
+        locked_shares: int = 0,
     ) -> Optional[Tuple[int, float, FeeBreakdown, float]]:
         rank = np.nan if metadata is None else metadata.get("rank", np.nan)
         score = np.nan if metadata is None else metadata.get("score", np.nan)
@@ -882,6 +919,11 @@ class AShareExecutionBacktester:
             )
             quantity = min(quantity, sellable)
             reject(requested_shares - quantity, "t_plus_one")
+            unrestricted = min(quantity, book.total_shares(symbol) - locked_shares)
+            if locked_shares and size_rule is not None:
+                unrestricted = size_rule.round(unrestricted)
+            reject(quantity - unrestricted, "sale_restriction")
+            quantity = unrestricted
         else:
             rule = size_rule or OrderSizeRule(self.config.board_lot, self.config.board_lot)
             lot_rounded = rule.round(quantity)
