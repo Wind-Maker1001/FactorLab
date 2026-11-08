@@ -1,0 +1,129 @@
+{
+  "schema": "P311_V1",
+  "warning": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "synthetic": true,
+  "real_market_predictive_ability": "NOT_VERIFIED",
+  "candidate_count": 64,
+  "executable_count": 64,
+  "unique_definition_count": 64,
+  "baseline_count": 14,
+  "folds": 3,
+  "rows": 5630,
+  "selection_config": {
+    "k": 10,
+    "minimum_selected": 1,
+    "shortfall_policy": "use_available",
+    "minimum_coverage": 0.8,
+    "maximum_missing_ratio": 0.2,
+    "maximum_nonfinite_ratio": 0.0,
+    "minimum_observations": 100,
+    "minimum_cross_section": 12,
+    "minimum_dates": 20,
+    "minimum_abs_rank_ic": 0.01,
+    "minimum_direction_consistency": 0.5,
+    "minimum_pair_coverage": 0.8,
+    "redundancy_threshold": 0.95,
+    "orient_by_train_ic": true
+  },
+  "models": {
+    "factor_score": {},
+    "ridge": {
+      "ridge_alphas": [
+        1.0
+      ]
+    },
+    "lightgbm": {
+      "lightgbm_candidates": [
+        {
+          "n_estimators": 12,
+          "num_leaves": 7,
+          "min_child_samples": 10
+        }
+      ]
+    },
+    "xgboost": {
+      "xgboost_candidates": [
+        {
+          "n_estimators": 12,
+          "max_depth": 2
+        }
+      ]
+    }
+  },
+  "selection_jaccard": [
+    {
+      "left": 0,
+      "right": 1,
+      "jaccard": 0.42857142857142855
+    },
+    {
+      "left": 0,
+      "right": 2,
+      "jaccard": 0.42857142857142855
+    },
+    {
+      "left": 1,
+      "right": 2,
+      "jaccard": 0.6666666666666666
+    }
+  ],
+  "snapshot_hash": "df737cd443a259311f91e8615bfddd6f4408dd3ec05e933612e9c7d674b76a15",
+  "dataset_hash": "59046532f4f10266459efd7fd0808e85c528efeef265fe94bf8c73439cfd7b2c",
+  "dataset_identity_hash": "ade7fe28d061f32b5833222234dd18958902f0eac5f7f7c29a2222c86c970dec",
+  "catalog_hash": "bd4ce628d3fe309a8ad18e0b2bf2d86f0e9383441e28aa9ce7624b3ebb2341a2",
+  "common_sample_identity_verified": true,
+  "counts_by_fold": [
+    {
+      "fold": 0,
+      "eligible_after_redundancy": 36,
+      "selected": 10
+    },
+    {
+      "fold": 1,
+      "eligible_after_redundancy": 36,
+      "selected": 10
+    },
+    {
+      "fold": 2,
+      "eligible_after_redundancy": 40,
+      "selected": 10
+    }
+  ],
+  "statistics": "daily equal-weight RankIC; ICIR mean/sample std, unannualized; descriptive synthetic only",
+  "memory": "per-run tracemalloc peak and sampled process RSS; native RSS includes shared state",
+  "ablation": "predeclared leave-one-category-out fixed candidates; FactorScore only; no causal efficacy claim",
+  "python": "3.13.9",
+  "dependencies": {
+    "numpy": "2.3.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "lightgbm": "4.6.0",
+    "xgboost": "2.1.4"
+  },
+  "chunked_config": {
+    "symbols_per_batch": 32,
+    "factors_per_batch": 16,
+    "dates_per_batch": 20,
+    "workers": 2,
+    "max_factors": 300,
+    "timeout_seconds": 14400,
+    "memory_limit_bytes": 5368709120,
+    "disk_limit_bytes": 8589934592,
+    "minimum_available_memory_bytes": 1073741824,
+    "minimum_free_disk_bytes": 1073741824
+  },
+  "artifact_sha256": {
+    "catalog.json": "855b8acf90792198dc82e5582eb490c1d8c21e6a51aaa30200136f717b3960fd",
+    "contrasts.csv": "49ea5a3b20c2b24c6fd26da9734969623a46f8c8aae919d91e3a4fa2103fb3c9",
+    "daily.csv": "0c5c0707a83788c112537ae30ca609631a70198950bb86aab41e617f919a739b",
+    "fit-audit.csv": "cd00387cbf67f4dd00716b042943b28801acf622da83eaf15b9f50a9334b24ff",
+    "frequency.csv": "4677e97868c8c2e13d032403449d51d4e589b60762409b8b195e0efbe6534a75",
+    "plans.json": "d04e63f77ebb9a131f35a68829921347fc34f5cf4688e82f174658aa93d723d0",
+    "quality.csv": "71b8cd062523dc23422488b561c3a55e0a7d150b132161f7ac6612330fe27e68",
+    "recomputation.json": "b991216ba1d54885f7855f576c2f104870988d81bc545ae7421e93abac864858",
+    "redundancy.csv": "4605f0713743ba9e622a757120deb181915cebf7867faaa241bccbf104ab59c1",
+    "resources.csv": "d5827dd8bbd64caa178c0808e9f38c5a239ace1e6c0faa04b3c0724a518372a4",
+    "summary.csv": "ae9feaacf5f3da24e4c7e8b5acc0c5f1edfd1e496d05325ed2d6f24b6dbee2e3",
+    "variation.csv": "47cfe09a0089652dbbe0d36db4f69cd318542b5783874a4f7c7db1082d2b3a9d"
+  }
+}
