@@ -1,0 +1,115 @@
+{
+  "schema": "P3D03_BOUNDED_DIAGNOSTIC_V1",
+  "security": "601857.SH",
+  "window": [
+    "2017-01-03",
+    "2018-12-28"
+  ],
+  "status": "P3D03_PARTIAL",
+  "restrictions": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "counts": {
+    "csmar_cash_candidates": 4,
+    "bigquant_dividend_candidates": 4,
+    "matching_cash_date_pairs_binary64_tolerance_1e_14": 4,
+    "csmar_only_dates": 0,
+    "bigquant_only_dates": 0,
+    "csmar_factor_rows": 4,
+    "bigquant_factor_rows": 8,
+    "bigquant_allotment_rows": 0,
+    "bigquant_null_bonus_rate": 4,
+    "bigquant_null_conversed_rate": 4
+  },
+  "coverage": "UNKNOWN",
+  "vendor_historical_available_at": "UNKNOWN",
+  "revisions": "UNKNOWN",
+  "source_members": {
+    "cn_stock_dividend": [
+      "stock/cn_stock_dividend/2017-01-01_2017-12-31.parquet",
+      "stock/cn_stock_dividend/2018-01-01_2018-12-31.parquet"
+    ],
+    "cn_stock_allotment": [
+      "stock/cn_stock_allotment/2017-01-01_2017-12-31.parquet",
+      "stock/cn_stock_allotment/2018-01-01_2018-12-31.parquet"
+    ],
+    "cn_stock_adjust_factor": [
+      "stock/cn_stock_adjust_factor/2017-01-01_2017-01-31.parquet",
+      "stock/cn_stock_adjust_factor/2017-02-01_2017-02-28.parquet",
+      "stock/cn_stock_adjust_factor/2017-03-01_2017-03-31.parquet",
+      "stock/cn_stock_adjust_factor/2017-04-01_2017-04-30.parquet",
+      "stock/cn_stock_adjust_factor/2017-05-01_2017-05-31.parquet",
+      "stock/cn_stock_adjust_factor/2017-06-01_2017-06-30.parquet",
+      "stock/cn_stock_adjust_factor/2017-07-01_2017-07-31.parquet",
+      "stock/cn_stock_adjust_factor/2017-08-01_2017-08-31.parquet",
+      "stock/cn_stock_adjust_factor/2017-09-01_2017-09-30.parquet",
+      "stock/cn_stock_adjust_factor/2017-10-01_2017-10-31.parquet",
+      "stock/cn_stock_adjust_factor/2017-11-01_2017-11-30.parquet",
+      "stock/cn_stock_adjust_factor/2017-12-01_2017-12-31.parquet",
+      "stock/cn_stock_adjust_factor/2018-01-01_2018-01-31.parquet",
+      "stock/cn_stock_adjust_factor/2018-02-01_2018-02-28.parquet",
+      "stock/cn_stock_adjust_factor/2018-03-01_2018-03-31.parquet",
+      "stock/cn_stock_adjust_factor/2018-04-01_2018-04-30.parquet",
+      "stock/cn_stock_adjust_factor/2018-05-01_2018-05-31.parquet",
+      "stock/cn_stock_adjust_factor/2018-06-01_2018-06-30.parquet",
+      "stock/cn_stock_adjust_factor/2018-07-01_2018-07-31.parquet",
+      "stock/cn_stock_adjust_factor/2018-08-01_2018-08-31.parquet",
+      "stock/cn_stock_adjust_factor/2018-09-01_2018-09-30.parquet",
+      "stock/cn_stock_adjust_factor/2018-10-01_2018-10-31.parquet",
+      "stock/cn_stock_adjust_factor/2018-11-01_2018-11-30.parquet",
+      "stock/cn_stock_adjust_factor/2018-12-01_2018-12-31.parquet"
+    ]
+  },
+  "factor_differences_derived_not_vendor_rows": [
+    {
+      "event_date": "2017-06-22",
+      "candidate_forward_minus_csmar": "4.248704663212435233160621762E-7",
+      "bigquant_minus_csmar_forward": "-0.0002573471502591",
+      "bigquant_minus_csmar_backward": "0.0002603333333333",
+      "bigquant_method": "price_gap"
+    },
+    {
+      "event_date": "2017-09-15",
+      "candidate_forward_minus_csmar": "-1.556662515566625155666251557E-7",
+      "bigquant_minus_csmar_forward": "-0.000092310087173",
+      "bigquant_minus_csmar_backward": "0.000093969849246",
+      "bigquant_method": "price_gap"
+    },
+    {
+      "event_date": "2018-06-21",
+      "candidate_forward_minus_csmar": "1.617250673854447439353099730E-8",
+      "bigquant_minus_csmar_forward": "0.0000997466307278",
+      "bigquant_minus_csmar_backward": "-0.0001018260869565",
+      "bigquant_method": "price_gap"
+    },
+    {
+      "event_date": "2018-09-21",
+      "candidate_forward_minus_csmar": "2.857142857142857142857142857E-7",
+      "bigquant_minus_csmar_forward": "-0.000133642857143",
+      "bigquant_minus_csmar_backward": "0.0001365614430667",
+      "bigquant_method": "price_gap"
+    }
+  ],
+  "notice_text_checks": [
+    {
+      "notice": "201806",
+      "cash_text_match": true,
+      "ex_date_text_match": true,
+      "record_date_text_match": true,
+      "historical_pdf_sha256_reference": "9e26fe2216c5264e809b92cfe4cb8c0e47c14961d203a9c2889d4f1285361f51",
+      "retrieved_at_reference": "2026-11-05T04:41:28.676079+00:00"
+    },
+    {
+      "notice": "201809",
+      "cash_text_match": true,
+      "ex_date_text_match": true,
+      "record_date_text_match": true,
+      "historical_pdf_sha256_reference": "79b1e9ee30b0a3e7a71df9e803c33a620169d61646ed2f77b8367e366b0653c6",
+      "retrieved_at_reference": "2026-11-05T04:41:28.676097+00:00"
+    }
+  ],
+  "hash_policy": "HISTORICAL_RECEIPT_REFERENCES_ONLY; INPUTS_READ_ONLY; NO_REHASH"
+}
