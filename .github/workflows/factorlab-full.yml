@@ -19,7 +19,7 @@ env:
 jobs:
   release-gate:
     name: Full release gate
-    needs: [package, incremental, legacy, lock-diagnostics, lock-acceptance-v2, validation-v2-review]
+    needs: [package, incremental, current-coverage, legacy, lock-diagnostics, lock-acceptance-v2, validation-v2-review]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 1
@@ -74,13 +74,14 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   incremental:
-    name: Core, cross-market and financial gates Windows Python ${{ matrix.python }}
+    name: Current software Windows Python ${{ matrix.python }} shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
       matrix:
         python: ['3.14', '3.13']
+        shard: [0, 1, 2]
     runs-on: windows-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
@@ -100,20 +101,60 @@ jobs:
           python -m pip install --no-deps .
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m pip check
-      - name: CURRENT_SOFTWARE_VALIDATION_V2 (all nonhistorical tests)
-        run: python tools/ci/integration_checks.py --suite current --output local-ci/incremental
+      - name: CURRENT_SOFTWARE_VALIDATION_V2 (serial balanced shard, live progress)
+        run: python tools/ci/integration_checks.py --suite current --shard ${{ matrix.shard }} --output local-ci/incremental
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
-          name: incremental-windows-${{ matrix.python }}
+          name: current-windows-${{ matrix.python }}-shard-${{ matrix.shard }}
           path: |
             local-ci/incremental/*/receipt.json
             local-ci/incremental/*/dependencies.txt
             local-ci/incremental/*/tests.xml
             local-ci/incremental/*/tests.log
             local-ci/incremental/*/selection.json
+            local-ci/incremental/*/execution.json
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7
+
+  current-coverage:
+    name: Verify actual three-shard coverage
+    needs: incremental
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Require all six executions to succeed
+        env:
+          RESULT: ${{ needs.incremental.result }}
+        run: test "$RESULT" = success
+      - name: Download exact shard receipts and compare actual execution
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for version in 3.13 3.14; do
+            for shard in 0 1 2; do
+              gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+                --name "current-windows-$version-shard-$shard" --dir "local-ci/shards/$version/$shard"
+            done
+            python -m tools.ci.sharding --python "$version" --shards \
+              "local-ci/shards/$version/0/current" "local-ci/shards/$version/1/current" \
+              "local-ci/shards/$version/2/current" --output "local-ci/current/$version"
+          done
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: verified-current-coverage
+          path: local-ci/current/
+          if-no-files-found: error
+          retention-days: 7
 
   lock-diagnostics:
     name: Native lock diagnosis Windows Python 3.14 (control failures retained)
@@ -277,7 +318,7 @@ jobs:
 
   validation-v2-review:
     name: Independent V2 coverage comparison (no migration approval)
-    needs: [incremental, legacy]
+    needs: [current-coverage, legacy]
     if: always()
     runs-on: windows-latest
     timeout-minutes: 10
@@ -299,12 +340,10 @@ jobs:
         run: |
           gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name full-legacy-windows-3.14 --dir local-ci/full
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.14 --dir local-ci/current314
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.13 --dir local-ci/current313
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name verified-current-coverage --dir local-ci/current
           exit $LASTEXITCODE
       - name: Compare every original software node, historical record and frozen input
-        run: python tools/ci/validation_v2.py --full local-ci/full --current local-ci/current314/current --additional-current local-ci/current313/current --output local-ci/v2-review
+        run: python tools/ci/validation_v2.py --historical-only --full local-ci/full --current local-ci/current/3.14 --additional-current local-ci/current/3.13 --output local-ci/v2-review
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
@@ -314,7 +353,7 @@ jobs:
           retention-days: 14
 
   legacy:
-    name: Full legacy regression Windows Python 3.14 (failures retained)
+    name: Historical 186-record isolation Windows Python 3.14 (failures retained)
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -336,16 +375,18 @@ jobs:
           python -m pip install --no-deps .
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m pip check
-      - name: Run complete project regression with real failure propagation
-        run: python tools/ci/integration_checks.py --suite legacy --output local-ci/legacy
+      - name: Run only historical partition with real failure propagation
+        run: python tools/ci/integration_checks.py --suite historical --output local-ci/legacy
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: full-legacy-windows-3.14
           path: |
-            local-ci/legacy/legacy/receipt.json
-            local-ci/legacy/legacy/dependencies.txt
-            local-ci/legacy/legacy/tests.xml
-            local-ci/legacy/legacy/tests.log
+            local-ci/legacy/historical/receipt.json
+            local-ci/legacy/historical/dependencies.txt
+            local-ci/legacy/historical/tests.xml
+            local-ci/legacy/historical/tests.log
+            local-ci/legacy/historical/selection.json
+            local-ci/legacy/historical/execution.json
           if-no-files-found: error
           retention-days: 14

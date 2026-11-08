@@ -40,6 +40,7 @@ SUITES = {
     'locking': ['tests/research/test_forward_full_predictions.py',
                 'tests/research/test_forward_signal_recorder_phase4.py',
                 'tests/research/test_signal_lock_native.py'],
+    'historical': [],  # Only the immutable 186-record historical partition.
     'legacy': [],  # All configured tests, with no selection or deselection override.
 }
 
@@ -64,27 +65,45 @@ def summary(path):
     return counts
 
 
-def run(suite, output):
+def run(suite, output, shard=None):
     output.mkdir(parents=True, exist_ok=False)
     before = validation_inputs()
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-    command = [sys.executable, '-m', 'pytest', *SUITES[suite], '-q',
+    targets = SUITES[suite]
+    if suite == 'historical':
+        with (ROOT/'docs/ci/CI_BASELINE_FAILURE_MATRIX.csv').open(encoding='utf-8-sig', newline='') as stream:
+            import csv
+            targets = sorted({row['test_id'].split('::')[0] for row in csv.DictReader(stream)})
+    command = [sys.executable, '-u', '-m', 'pytest', *targets, '-v' if shard is not None else '-q',
                '--continue-on-collection-errors', '--basetemp='+str(output/'tmp'),
                '-o', 'cache_dir='+str(output/'pytest-cache'),
                '--junitxml='+str(output/'tests.xml')]
-    if suite == 'current':
-        command += ['-p', 'tools.ci.validation_layers',
-                    '--current-layer-inventory='+str(output/'selection.json')]
+    if suite in ('current', 'historical'):
+        command += ['-p', 'tools.ci.current_validation',
+                    '--current-layer-inventory='+str(output/'selection.json'),
+                    '--execution-inventory='+str(output/'execution.json')]
+    if suite == 'historical':
+        command += ['--historical-only']
+    if shard is not None:
+        command += ['--current-shard='+str(shard), '--durations=30']
     env = dict(os.environ, MPLBACKEND='Agg', PYTHONUTF8='1', PYTHONHASHSEED='0', TZ='UTC')
     env.pop('PYTHONPATH', None)
     dependencies = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze', '--all'], text=True)
     (output/'dependencies.txt').write_text(dependencies, encoding='utf-8')
     started = time.perf_counter()
+    print('Running:', subprocess.list2cmdline(command), flush=True)
     with (output/'tests.log').open('wb') as log:
-        code = subprocess.call(command, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
+        with subprocess.Popen(command, cwd=ROOT, env=env, stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT) as process:
+            for line in process.stdout:
+                log.write(line)
+                log.flush()
+                sys.stdout.buffer.write(line)
+                sys.stdout.buffer.flush()
+            code = process.wait()
     after = validation_inputs()
     unchanged = before == after
-    receipt = dict(schema='FACTORLAB_INCREMENTAL_CI_V1', suite=suite,
+    receipt = dict(schema='FACTORLAB_INCREMENTAL_CI_V1', suite=suite, shard=shard,
                    scope='FULL_PROJECT_REGRESSION' if suite == 'legacy' else 'DECLARED_INCREMENTAL_SCOPE',
                    status='PASS' if code == 0 and unchanged else 'FAIL',
                    exit_code=code, subject_sha=head,
@@ -93,7 +112,7 @@ def run(suite, output):
                    python=sys.version, platform=platform.platform(), command=command,
                    dependencies_sha256=hashlib.sha256(dependencies.encode()).hexdigest(),
                    environment={k: env[k] for k in ('MPLBACKEND', 'PYTHONUTF8', 'PYTHONHASHSEED', 'TZ')},
-                   targets=SUITES[suite], counts=summary(output/'tests.xml'),
+                   targets=targets, counts=summary(output/'tests.xml'),
                    validation_inputs_unchanged=unchanged, validation_input_sha256=after,
                    elapsed_seconds=time.perf_counter()-started,
                    financial_authorization='BLOCKED', formal_admission='FORMAL_ADMISSION_BLOCKED',
@@ -107,10 +126,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--suite', choices=[*SUITES, 'incremental'], required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--shard', type=int, choices=range(3))
     args = parser.parse_args()
+    if args.shard is not None and args.suite != 'current':
+        parser.error('--shard requires --suite current')
     output = args.output.resolve()
     selected = ['core', 'cross-market', 'financial-gates'] if args.suite == 'incremental' else [args.suite]
-    codes = [run(suite, output/suite) for suite in selected]
+    codes = [run(suite, output/suite, args.shard) for suite in selected]
     return max(codes)
 
 

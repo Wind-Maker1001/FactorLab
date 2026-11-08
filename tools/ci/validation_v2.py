@@ -21,11 +21,13 @@ def digest(path):
 def outcomes(path, collected=()):
     identities = {}
     for node in collected:
-        parts = node.split('::')
-        if len(parts) < 2:
+        module_path, separator, qualified = node.partition('::')
+        if not separator:
             continue
-        module = parts[0].removesuffix('.py').replace('/', '.')
-        key = ('.'.join([module, *parts[1:-1]]), parts[-1])
+        name, bracket, parameter = qualified.partition('[')
+        parts = name.split('::')
+        module = module_path.removesuffix('.py').replace('/', '.')
+        key = ('.'.join([module, *parts[:-1]]), parts[-1] + bracket + parameter)
         if key in identities and identities[key] != node:
             raise ValueError('ambiguous JUnit identity: '+repr(key))
         identities[key] = node
@@ -133,6 +135,7 @@ def main():
     p.add_argument('--current', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--additional-current', type=Path)
+    p.add_argument('--historical-only', action='store_true')
     a = p.parse_args()
     if digest(BASELINE) != BASELINE_SHA256:
         raise ValueError('coverage baseline bytes changed')
@@ -146,6 +149,15 @@ def main():
     collected = set(inventory['current']) | set(inventory['historical_collected'])
     full = outcomes(a.full/'tests.xml', collected)
     current = outcomes(a.current/'tests.xml', collected)
+    if a.historical_only:
+        # Current outcomes come from verified disjoint executions, not a second full run.
+        if set(full) != set(historical):
+            raise ValueError('actual isolated historical JUnit differs from original 186 records')
+        execution = json.loads((a.current/'execution.json').read_bytes())
+        if (execution['status'] != 'PASS' or not execution['actual_disjoint'] or
+                not execution['actual_union_equals_full_inventory'] or execution['count'] != len(current)):
+            raise ValueError('actual sharded coverage was not verified')
+        full = dict(full, **current)
     full_receipt = json.loads((a.full/'receipt.json').read_bytes())
     current_receipt = json.loads((a.current/'receipt.json').read_bytes())
     result = compare(baseline, historical, full, current, inventory)
@@ -172,6 +184,7 @@ def main():
               full_receipt['exit_code']==1 and current_receipt['exit_code']==0 and additional_ok)
     report = dict(schema='CURRENT_SOFTWARE_VALIDATION_V2_INDEPENDENT_REVIEW',
                   status='PASS' if passed else 'FAIL', subject_sha=full_receipt['subject_sha'],
+                  comparison_scope=('SHARDED_CURRENT_AND_ISOLATED_HISTORY' if a.historical_only else 'FULL_AND_CURRENT'),
                   pr_head=current_receipt.get('github_pr_head_sha'),
                   full_count=len(full), current_count=len(current), historical_count=len(historical),
                   full_outcomes=dict(Counter(full.values())), current_outcomes=dict(Counter(current.values())),

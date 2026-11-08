@@ -1,14 +1,16 @@
 # CI 精简验收
 
-当前状态：`BLOCKED`。Fast 远程运行数据待生成；受信任合并门禁需要独立 GitHub App 和一次 main 引导合入。不得将本报告当作正式金融准入或发布许可。
+main 已启用绑定独立 GitHub App 的受信任合并门禁。Full CI 三分片改造的端到端性能验收待实测；历史失败仍阻断完整发布，不构成正式金融准入或发布许可。
 
 ## 执行路径
 
 - 原 PR：Windows 3.13/3.14 各重复执行增量与全部软件测试，另行执行 Legacy、V2 比较、打包、双平台锁压力与历史锁诊断，共 8 个 Job。
 - 普通 PR：main 上的 `pull_request_target` 工作流判定风险；Windows Python 3.13 执行原 `integration_checks.py` 的 incremental、configuration、locking 与安装/依赖检查。三个增量套件目标不变，不删除任何测试。
 - 扩展 PR：基于 merge-base 文件差异与 Python 静态 import 消费者闭包判断影响；仅显式覆盖的模块可走快速路径。未知、新增、删除、重命名、文件类型/权限变化保守追加完整软件测试与 Windows/Linux 锁压力。CI、测试、测试配置、依赖及基线变更追加双版本完整软件验证、打包和 Environment 人工批准。标签与标题不参与选择。
-- Full：手动、每周一 UTC 03:17、`v*` 标签触发；保留双版本软件验证、Legacy、V2、原双平台锁验收、历史锁诊断与包验收；不重复先跑已被 current 覆盖的增量测试。旧 `factorlab.yml` 保留手动兼容入口。
-- 发布：`Full release gate` 要求所有完整检查成功。Legacy 原始非零退出码继续导致失败；V2 对照 186 条历史记录（50 FAIL、136 ERROR）与全部 current 结果，区分历史状态漂移、新回归和覆盖遗漏。当前历史失败未解决时完整发布仍阻断；本任务不修改历史矩阵、证据定义或正式准入。
+- Full：手动、每周一 UTC 03:17、`v*` 标签触发；Python 3.13/3.14 各三个独立 Windows Runner，每片串行。保留 V2、双平台锁验收、历史锁诊断与包验收；历史作业仅执行原 186 条隔离记录，不重复非历史基线。旧 `factorlab.yml` 保留手动兼容入口。
+- 分片：冻结的 `validation_layers.py` 先生成完整非历史清单，新插件再按模块分配。耗时来自 [42508208514](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42508208514) 的成功 `extended-3.13` JUnit（5584 条），来源及模块实测秒数保存在 `tools/ci/current_module_timings.json`。分片内保留原收集顺序；输出实时进度及 `--durations=30`。新模块缺少实测耗时会明确失败，不静默遗漏。
+- 覆盖：聚合器独立重算分片，核对实际开始、完成及 JUnit 三份记录，要求每版本三片无重复、互不重叠且并集严格等于原完整非历史清单；同时核对提交、依赖、运行时及冻结输入。分片失败、缺失、取消或覆盖异常均阻断 `Full release gate`。
+- 发布：`Full release gate` 要求所有完整检查成功。历史原始非零退出码继续导致失败；V2 对照 186 条历史记录（50 FAIL、136 ERROR）、已验证的 current 实际执行结果及原始冻结输入，不再额外执行一遍完整基线。历史失败未解决时完整发布仍阻断，不修改历史矩阵、证据定义或正式准入。
 
 ## 实际基线
 
@@ -34,27 +36,13 @@ PR 35 的 3.13 收据：core 455、cross-market 277、financial-gates 134、conf
 
 高风险 PR 的扩展验证不承诺 3～6 分钟；普通 Fast Job 的超时为 15 分钟，不能以超时转换成功。
 
-## 合并门禁激活
+## 合并门禁
 
-仓库审查时 main 无分支保护、无 ruleset。已创建两个仅允许 main 的 Environment：
-
-- `ci-control-review`：由仓库所有者手动批准控制面变更；允许所有者批准自己触发的运行，审批发生在工作流之外。
-- `ci-merge-publisher`：只供可信最终 Job 使用；不在其中执行或 checkout PR 代码。
-
-**BLOCKED：**需要仓库所有者创建并安装独立 GitHub App，仅授予本仓库 Commit statuses 写权限。在 `ci-merge-publisher` 中配置变量 `CI_GATE_APP_ID` 和 secret `CI_GATE_PRIVATE_KEY`。不要将私钥放在仓库、普通仓库 secret 或 PR 执行环境中。
-
-引导顺序：
-
-1. 审查并手动合入本 Draft PR，使可信工作流进入 main；本任务不自动合并。
-2. 配置 App 后，对现有 PR 同步或重新打开，生成针对精确 PR head 的 `FactorLab trusted merge gate` 状态。`pull_request_target` 自带检查绑定 base，因此最终 Job 必须另外向 head 发布 App 身份状态。
-3. main 分支保护启用 strict Required Check：context 为 `FactorLab trusted merge gate`，`app_id` 必须为上述独立 App 的数字 ID，启用管理员约束、禁止强推和删除。不要选择同名 GitHub Actions 检查，也不要使用不绑定 App 的状态名。
-4. 启用前确认状态来自该 App、绑定当前 head。旧 main 无强制检查可迁移；此次不会提前删除已配置的 Required Check。
-
-引导分支 push 仅用于本次实测；它无权访问 main-only 的发布/审批 Environment，不构成合并门禁验收。普通 PR Workflow 无写权限，checkout 不持久化凭证；只有最终 Job 使用 App 安装令牌，限本仓库 statuses 权限。Environment 设置和分支保护属于独立管理边界。
+main Ruleset `26809886` 已启用：必须通过 `FactorLab trusted merge gate`，绑定 integration ID `5670895`；禁止强推和删除，要求经 PR 合并。`ci-control-review` 保留控制面人工批准，`ci-merge-publisher` 仅供可信最终 Job 发布精确 PR head 的状态，不执行 PR 代码。PR 工作流无写权限且 checkout 不保存凭证。Full release gate 不代替该可信 App 合并状态。
 
 ## 验证与复现
 
-已执行：选择器覆盖未知/敏感/控制面变更、跨模块 import 消费者、失败/跳过/取消状态传播；既有 V2 丢失安全测试、历史漂移、新失败和伪造库存拒绝测试。Workflow 经 actionlint 1.7.12 验证。必要测试范围仍直接来自原 `integration_checks.py`。
+三分片定向验证：60 项通过（2.42 秒）；包括模块不拆分、完整分区、真实 pytest 执行记录、缺片、重复执行、计划正确但未执行、JUnit 漂移、失败/取消、收集错误、提交/输入/依赖/运行时漂移、金融关键节点及发布门禁传播。普通 PR 必要测试范围仍直接来自原 `integration_checks.py`；不修改共享 fixture、不启用 xdist、不修改研究算法。
 
 ```bash
 python -m pytest tests/security/test_pr_risk.py tests/security/test_validation_v2.py -q -o addopts=
