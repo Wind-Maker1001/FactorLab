@@ -1,0 +1,11 @@
+{
+  "python": "3.13.9",
+  "executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+  "base_commit": "fe2b250e03b7004fe795efd12e6d0076d7bc8f19",
+  "packages": {
+    "numpy": "2.3.4",
+    "pandas": "2.3.3",
+    "pyarrow": "22.0.0",
+    "pytest": "8.4.2"
+  }
+}

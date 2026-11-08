@@ -1,0 +1,77 @@
+fe2b250e03b7004fe795efd12e6d0076d7bc8f19
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_____ test_existing_public_metadata_stays_unknown_without_original_bytes ______
+
+    def test_existing_public_metadata_stays_unknown_without_original_bytes():
+        root = Path(__file__).resolve().parents[2]
+>       events = json.loads((root / "docs/research/evidence/five-year-data-feasibility-v1/pit-events.json").read_text(encoding="utf-8"))["events"]
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_pit_event_evidence.py:199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\local-runtimes\cpython-3.13.9-windows-x86_64-none\Lib\pathlib\_local.py:546: in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\local-runtimes\cpython-3.13.9-windows-x86_64-none\Lib\pathlib\_abc.py:632: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('<baseline-checkout>/docs/research/evidence/five-year-data-feasibility-v1/pit-events.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '<baseline-checkout>\\docs\\research\\evidence\\five-year-data-feasibility-v1\\pit-events.json'
+
+..\..\..\local-runtimes\cpython-3.13.9-windows-x86_64-none\Lib\pathlib\_local.py:537: FileNotFoundError
+______ test_public_receipts_bind_exact_published_bytes_across_checkouts _______
+
+    def test_public_receipts_bind_exact_published_bytes_across_checkouts():
+        root = Path(__file__).resolve().parents[2]
+        evidence = root / "docs/research/evidence/pit-effective-membership-evidence-v1"
+        for receipt_name, field in (("baseline-receipt.json", "public_outputs"),
+                                    ("regular-receipt.json", "public_files"),
+                                    ("conditional-receipt.json", "files")):
+>           receipt = json.loads((evidence / receipt_name).read_text(encoding="utf-8"))
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_pit_event_evidence.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\local-runtimes\cpython-3.13.9-windows-x86_64-none\Lib\pathlib\_local.py:546: in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\local-runtimes\cpython-3.13.9-windows-x86_64-none\Lib\pathlib\_abc.py:632: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('<baseline-checkout>/docs/research/evidence/pit-effective-membership-evidence-v1/baseline-receipt.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '<baseline-checkout>\\docs\\research\\evidence\\pit-effective-membership-evidence-v1\\baseline-receipt.json'
+
+..\..\..\local-runtimes\cpython-3.13.9-windows-x86_64-none\Lib\pathlib\_local.py:537: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/research/test_pit_event_evidence.py::test_existing_public_metadata_stays_unknown_without_original_bytes
+FAILED tests/research/test_pit_event_evidence.py::test_public_receipts_bind_exact_published_bytes_across_checkouts
+2 failed in 0.66s
