@@ -12,22 +12,32 @@ TIMINGS = ROOT / 'tools/ci/current_module_timings.json'
 SHARDS = 3
 
 
+def module_plan(nodes, weights):
+    """Unknown modules reserve at least the slowest measured module's cost."""
+    modules = sorted({node.split('::')[0] for node in nodes})
+    estimate = max(60.0, max(weights.values(), default=0.0))
+    return {module: dict(seconds=weights[module] if module in weights else estimate,
+                         status='MEASURED' if module in weights else 'UNMEASURED')
+            for module in modules}
+
+
 def partition(nodes, weights):
     if not nodes or len(nodes) != len(set(nodes)):
         raise ValueError('full current inventory must be nonempty and unique')
     modules = {}
     for node in nodes:
         modules.setdefault(node.split('::')[0], []).append(node)
-    missing = set(modules) - set(weights)
-    if missing:
-        raise ValueError('missing measured module timings: ' + repr(sorted(missing)))
+    plan = module_plan(nodes, weights)
     loads, assignments = [0.0] * SHARDS, {}
-    for module in sorted(modules, key=lambda m: (-weights[m], m)):
+    for module in sorted(modules, key=lambda m: (-plan[m]['seconds'], m)):
         shard = min(range(SHARDS), key=lambda i: (loads[i], i))
         assignments[module] = shard
-        loads[shard] += weights[module]
-    return [[node for node in nodes if assignments[node.split('::')[0]] == i]
-            for i in range(SHARDS)]
+        loads[shard] += plan[module]['seconds']
+    shards = [[node for node in nodes if assignments[node.split('::')[0]] == i]
+              for i in range(SHARDS)]
+    if any(not shard for shard in shards):
+        raise ValueError('empty shard: three nonempty module partitions required')
+    return shards
 
 
 def verify_execution(inventory, execution, observed, expected):
@@ -59,6 +69,8 @@ def aggregate(folders, output, python_version):
                                ('current', 'historical_collected', 'historical_collection_errors')):
             raise ValueError('full collection differs between shards')
         expected = partition(inventory['current'], weights)[index]
+        if inventory['module_plan'] != module_plan(inventory['current'], weights):
+            raise ValueError('measured/unmeasured module plan differs')
         observed = outcomes(folder / 'tests.xml', inventory['current'])
         verify_execution(inventory, execution, observed, expected)
         if set(combined) & set(observed):

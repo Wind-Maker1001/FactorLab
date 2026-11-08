@@ -1,6 +1,8 @@
 # CI 精简验收
 
-main 已启用绑定独立 GitHub App 的受信任合并门禁。Full CI 三分片改造的端到端性能验收待实测；历史失败仍阻断完整发布，不构成正式金融准入或发布许可。
+main 已启用绑定独立 GitHub App 的受信任合并门禁。Full CI 三分片验收当前 `BLOCKED`：[42515899004](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42515899004) 的六片因三个新增模块缺少历史耗时而在 collection 失败；尚无完整软件验证性能实测。已加入显式 `UNMEASURED` 估算分配，修复定向验证 44 项通过（2.85 秒），待一次必要 Full CI 重验。
+
+该次历史隔离实际执行 186 条，50 FAIL / 136 ERROR，原始退出码 1，与原历史清单一致；单独保留为历史失败，不计为本轮软件新回归，也不转换为通过。历史失败仍阻断完整发布，不构成正式金融准入或发布许可。
 
 ## 执行路径
 
@@ -8,7 +10,7 @@ main 已启用绑定独立 GitHub App 的受信任合并门禁。Full CI 三分�
 - 普通 PR：main 上的 `pull_request_target` 工作流判定风险；Windows Python 3.13 执行原 `integration_checks.py` 的 incremental、configuration、locking 与安装/依赖检查。三个增量套件目标不变，不删除任何测试。
 - 扩展 PR：基于 merge-base 文件差异与 Python 静态 import 消费者闭包判断影响；仅显式覆盖的模块可走快速路径。未知、新增、删除、重命名、文件类型/权限变化保守追加完整软件测试与 Windows/Linux 锁压力。CI、测试、测试配置、依赖及基线变更追加双版本完整软件验证、打包和 Environment 人工批准。标签与标题不参与选择。
 - Full：手动、每周一 UTC 03:17、`v*` 标签触发；Python 3.13/3.14 各三个独立 Windows Runner，每片串行。保留 V2、双平台锁验收、历史锁诊断与包验收；历史作业仅执行原 186 条隔离记录，不重复非历史基线。旧 `factorlab.yml` 保留手动兼容入口。
-- 分片：冻结的 `validation_layers.py` 先生成完整非历史清单，新插件再按模块分配。耗时来自 [42508208514](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42508208514) 的成功 `extended-3.13` JUnit（5584 条），来源及模块实测秒数保存在 `tools/ci/current_module_timings.json`。分片内保留原收集顺序；输出实时进度及 `--durations=30`。新模块缺少实测耗时会明确失败，不静默遗漏。
+- 分片：冻结的 `validation_layers.py` 先生成完整非历史清单，新插件再按模块分配。耗时来自 [42508208514](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42508208514) 的成功 `extended-3.13` JUnit（5584 条），来源及模块实测秒数保存在 `tools/ci/current_module_timings.json`。分片内保留原收集顺序；输出实时进度及 `--durations=30`。没有历史 JUnit 耗时的模块使用 `max(60 秒, 历史最慢模块实测秒数)` 作为确定性保守分配权重，在 `selection.json` 的 `module_plan` 中标记 `UNMEASURED`；该权重不是实测时间。已有耗时标记 `MEASURED` 并优先使用，不跳过模块；不足三个模块而产生空分片时明确失败。
 - 覆盖：聚合器独立重算分片，核对实际开始、完成及 JUnit 三份记录，要求每版本三片无重复、互不重叠且并集严格等于原完整非历史清单；同时核对提交、依赖、运行时及冻结输入。分片失败、缺失、取消或覆盖异常均阻断 `Full release gate`。
 - 发布：`Full release gate` 要求所有完整检查成功。历史原始非零退出码继续导致失败；V2 对照 186 条历史记录（50 FAIL、136 ERROR）、已验证的 current 实际执行结果及原始冻结输入，不再额外执行一遍完整基线。历史失败未解决时完整发布仍阻断，不修改历史矩阵、证据定义或正式准入。
 

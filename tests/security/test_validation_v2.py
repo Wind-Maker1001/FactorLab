@@ -107,6 +107,32 @@ def test_undefined_partition_is_refused(nodes, weights):
         sharding.partition(nodes, weights)
 
 
+@pytest.mark.parametrize('measured', [False, True])
+def test_new_modules_are_unmeasured_but_never_omitted(measured):
+    modules = ['tests/research/test_alpha_robustness.py',
+               'tests/research/test_factor_candidates.py',
+               'tests/research/test_pipeline_feedback.py']
+    nodes = [module + '::test_' + str(i) for module in modules for i in range(2)]
+    weights = {'existing.py': 205.881} if measured else {}
+    plan = sharding.module_plan(nodes, weights)
+    assert all(p == dict(seconds=205.881 if measured else 60.0, status='UNMEASURED')
+               for p in plan.values())
+    shards = sharding.partition(nodes, weights)
+    assert shards == sharding.partition(list(nodes), dict(weights))
+    assert all(shards)
+    assert sorted(n for shard in shards for n in shard) == sorted(nodes)
+    assert all(not (set(shards[i]) & set(shards[j])) for i in range(3) for j in range(i))
+    assert sharding.module_plan(['existing.py::test'], weights)['existing.py'] == (
+        dict(seconds=205.881, status='MEASURED') if measured else
+        dict(seconds=60.0, status='UNMEASURED'))
+
+
+@pytest.mark.parametrize('modules', [1, 2])
+def test_empty_shards_are_refused(modules):
+    with pytest.raises(ValueError, match='empty shard'):
+        sharding.partition([f'module{i}.py::test' for i in range(modules)], {})
+
+
 @pytest.fixture
 def shard_receipts(tmp_path, monkeypatch):
     nodes = [f'tests/{m}.py::test_node' for m in 'abc']
@@ -120,7 +146,8 @@ def shard_receipts(tmp_path, monkeypatch):
         folder.mkdir()
         folders.append(folder)
         inventory = dict(current=nodes, selected=[node], shard=i, shard_count=3,
-                         historical_collected=['old::test'], historical_collection_errors=['broken.py'])
+                         historical_collected=['old::test'], historical_collection_errors=['broken.py'],
+                         module_plan=sharding.module_plan(nodes, weights))
         execution = dict(started=[node], completed=[node], exit_code=0, collection_errors=[])
         receipt = dict(status='PASS', exit_code=0, validation_inputs_unchanged=True,
                        python='3.13.17', platform='Windows-2025Server', subject_sha='head',

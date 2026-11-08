@@ -43,8 +43,9 @@ def pytest_collection_modifyitems(config, items):
         inventory = json.loads(destination.read_bytes())
         shard = config.getoption('--current-shard')
         if shard is not None:
-            from tools.ci.sharding import TIMINGS, partition
+            from tools.ci.sharding import TIMINGS, module_plan, partition
             weights = json.loads(TIMINGS.read_bytes())['module_seconds']
+            inventory['module_plan'] = module_plan(inventory['current'], weights)
             nodes = set(partition(inventory['current'], weights)[shard])
             config.hook.pytest_deselected(items=[item for item in items if item.nodeid not in nodes])
             items[:] = [item for item in items if item.nodeid in nodes]
