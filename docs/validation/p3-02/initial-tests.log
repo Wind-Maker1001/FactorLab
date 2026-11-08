@@ -1,0 +1,8 @@
+Command:
+D:/Environments/factorlab-py313/Scripts/python.exe -m pytest tests/research/test_data_governance.py tests/research/test_datahub.py tests/research/test_local_admission_boundaries.py tests/research/test_qualification_admission_boundaries.py -q
+
+................................................................         [100%]
+64 passed in 46.85s
+Exit code: 0
+
+The status/missing diagnostic case was added after this run and is included in the final targeted run.

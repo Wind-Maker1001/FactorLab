@@ -1,0 +1,7 @@
+Command:
+D:/Environments/factorlab-py313/Scripts/python.exe -m pytest tests/research/test_data_governance.py tests/research/test_corporate_action_ledger.py tests/research/test_csmar_source_binding.py -q
+
+........................................................................ [ 88%]
+.........                                                                [100%]
+81 passed in 67.90s (0:01:07)
+Exit code: 0

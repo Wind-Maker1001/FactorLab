@@ -100,6 +100,7 @@ DataHub does not invent a fused dataset identity or bypass existing admission.
 Membership exposes exact supplied dates and rejects absent endpoint snapshots;
 it does not infer an exchange calendar or fill interior gaps. Status/market
 windows retain missing rows as missing. Existing downstream completeness checks
-remain authoritative. General announcements, automatic cross-source fusion,
-revision conflict governance and additional native CSMAR families are outside
-this version.
+remain authoritative. Optional [data governance](DATA_GOVERNANCE.md) adapters
+bind explicit archived versions and provide separate conflict diagnostics without
+changing `read` or existing adapter selection. General announcements, automatic
+cross-source fusion and additional native CSMAR families remain unsupported.
