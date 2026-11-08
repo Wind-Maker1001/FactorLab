@@ -1,0 +1,3406 @@
+{
+  "schema": "P309_ORIGINAL_EVIDENCE_V1",
+  "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+  "reproduction_command": "PYTHONPATH=src python -m examples.research.signal_propagation_synthetic --output <new-directory>",
+  "dependency_identity": "original-runs.json: environment.package_versions",
+  "source_identity": "original-runs.json: code (original runs were dirty; do not relabel as clean HEAD)",
+  "retrieval": "git show 99dafc24d6290164e33fadfef67559404173e660:docs/validation/p3-09/evidence/<path>",
+  "before": {
+    "files": 106,
+    "bytes": 5494184,
+    "lines": 104756
+  },
+  "files": [
+    {
+      "path": "accounting.json",
+      "sha256": "ee79d8ebb71d080f503e7d4b5b5a35ca3cca5d75d5a75a9f7402fb28848fe954",
+      "bytes": 1367,
+      "lines": 74,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/accounting.json",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "395d22220aaea835cfd199730e9b6626058834af077034e078b8bc5e4a1a1b0d",
+      "git_blob_bytes": 1294
+    },
+    {
+      "path": "equal/factor_score/decisions.csv",
+      "sha256": "1073d3659087b604651b5a4ac99cbb6379d137261309260698af93aae3d381f7",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/factor_score/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "7dcf0abcd0e0479f6370914780b446b9bc8c77802e536619d617af7cc6f2f8bb",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "equal/factor_score/evaluation.json",
+      "sha256": "f682607728ebb15f99ab4efafa12008b0a50c6f1d2812e331b92dc0e75f7f866",
+      "bytes": 187912,
+      "lines": 5324,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/factor_score/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "3b3bbe40fc4d9711747dfbc884c04b954843734b90aaa4a4f9e912c01ea4fbd3",
+      "git_blob_bytes": 182589
+    },
+    {
+      "path": "equal/factor_score/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/factor_score/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "equal/factor_score/target_comparison.csv",
+      "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+      "bytes": 41464,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/factor_score/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "00d71cd0811e66da087a8e70b310f1e5e9c31cbe3802eddb2719121b36e0de85",
+      "git_blob_bytes": 41151
+    },
+    {
+      "path": "equal/factor_score/targets.csv",
+      "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+      "bytes": 13093,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/factor_score/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "d97a68e2490e03bd967df9add91f50554eb4918bcae41197694d872a8a588996",
+      "git_blob_bytes": 12782
+    },
+    {
+      "path": "equal/factor_score/trades.csv",
+      "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+      "bytes": 5804,
+      "lines": 36,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/factor_score/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "56630781d3b27cace4cb404a0794e5aabb3b8b7814882566c746c79cd04c2ccc",
+      "git_blob_bytes": 5768
+    },
+    {
+      "path": "equal/lightgbm/decisions.csv",
+      "sha256": "3b7f03ac2d8d7874c33ede102f8e677bb9d3d385b866f3d3a742d346e9c06f04",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/lightgbm/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "80c6eb5b8e2e4f559901b091cd6a370dc471e4a025ed75225a71017e937e9175",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "equal/lightgbm/evaluation.json",
+      "sha256": "2160e49f6e41ee402cc8474480ab2006544bdeab56ef8e1cc37edf67c17bc2ad",
+      "bytes": 187816,
+      "lines": 5324,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/lightgbm/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "b84a91ff5ca5f28cb0c5556a23a4d7ca41990ea61f9af2d6eb7ef5fe4165472e",
+      "git_blob_bytes": 182493
+    },
+    {
+      "path": "equal/lightgbm/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/lightgbm/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "equal/lightgbm/target_comparison.csv",
+      "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+      "bytes": 41464,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/lightgbm/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "00d71cd0811e66da087a8e70b310f1e5e9c31cbe3802eddb2719121b36e0de85",
+      "git_blob_bytes": 41151
+    },
+    {
+      "path": "equal/lightgbm/targets.csv",
+      "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+      "bytes": 13093,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/lightgbm/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "d97a68e2490e03bd967df9add91f50554eb4918bcae41197694d872a8a588996",
+      "git_blob_bytes": 12782
+    },
+    {
+      "path": "equal/lightgbm/trades.csv",
+      "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+      "bytes": 5804,
+      "lines": 36,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/lightgbm/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "56630781d3b27cace4cb404a0794e5aabb3b8b7814882566c746c79cd04c2ccc",
+      "git_blob_bytes": 5768
+    },
+    {
+      "path": "equal/ridge/decisions.csv",
+      "sha256": "2be7a615b0327168eb62b7a6eafe04896bc753931f6e0b36850c2b3ed190de37",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/ridge/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "1158c6f04422feff70f12135e4af12b9790cbf64c0753114ed63217dde56ffd6",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "equal/ridge/evaluation.json",
+      "sha256": "f772d336e82b8ddac95259dab44e8039ecfd0637236d2c746953d34f004ecc68",
+      "bytes": 187770,
+      "lines": 5324,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/ridge/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "e3897c447b4b7957bd1ed9fbc05d31a245264f91cb7ccb5e61c0b4c7414f6a4e",
+      "git_blob_bytes": 182447
+    },
+    {
+      "path": "equal/ridge/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/ridge/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "equal/ridge/target_comparison.csv",
+      "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+      "bytes": 41464,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/ridge/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "00d71cd0811e66da087a8e70b310f1e5e9c31cbe3802eddb2719121b36e0de85",
+      "git_blob_bytes": 41151
+    },
+    {
+      "path": "equal/ridge/targets.csv",
+      "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+      "bytes": 13093,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/ridge/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "d97a68e2490e03bd967df9add91f50554eb4918bcae41197694d872a8a588996",
+      "git_blob_bytes": 12782
+    },
+    {
+      "path": "equal/ridge/trades.csv",
+      "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+      "bytes": 5804,
+      "lines": 36,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/ridge/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "56630781d3b27cace4cb404a0794e5aabb3b8b7814882566c746c79cd04c2ccc",
+      "git_blob_bytes": 5768
+    },
+    {
+      "path": "equal/xgboost/decisions.csv",
+      "sha256": "e61fab14ed7c4f1074d831fa7c64eb556d7f6e7d6957a7265dfaa6fa4228da7f",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/xgboost/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "3fab17d0301fc3c4e40173809817a40799214888b763536b1b349aede7b9a8b5",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "equal/xgboost/evaluation.json",
+      "sha256": "1234f65c8fe0c7d6179a1cdd6536b04d5f1d5df51efeb73c39685ef2c784fde6",
+      "bytes": 187829,
+      "lines": 5324,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/xgboost/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "1fbb4fe8f8c8c786ccc3b5dd79931444622bf63f0927fc99a7e8068e7ff6bb7d",
+      "git_blob_bytes": 182506
+    },
+    {
+      "path": "equal/xgboost/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/xgboost/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "equal/xgboost/target_comparison.csv",
+      "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+      "bytes": 41464,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/xgboost/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "00d71cd0811e66da087a8e70b310f1e5e9c31cbe3802eddb2719121b36e0de85",
+      "git_blob_bytes": 41151
+    },
+    {
+      "path": "equal/xgboost/targets.csv",
+      "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+      "bytes": 13093,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/xgboost/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "d97a68e2490e03bd967df9add91f50554eb4918bcae41197694d872a8a588996",
+      "git_blob_bytes": 12782
+    },
+    {
+      "path": "equal/xgboost/trades.csv",
+      "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+      "bytes": 5804,
+      "lines": 36,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal/xgboost/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "56630781d3b27cace4cb404a0794e5aabb3b8b7814882566c746c79cd04c2ccc",
+      "git_blob_bytes": 5768
+    },
+    {
+      "path": "equal-contrasts.csv",
+      "sha256": "738dff77a8eb65413a8445aad12dab48f5c519018722f65e6b029c70084a3561",
+      "bytes": 7435,
+      "lines": 79,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal-contrasts.csv",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "3a3b715805742458c0b0feaab9889828cb241ef02af700402f3905eab2c18faf",
+      "git_blob_bytes": 7356
+    },
+    {
+      "path": "equal-evaluation.csv",
+      "sha256": "6a47af1fcea15b1a769d7838e40607c6f113366708e6bff971c4348094a17dd3",
+      "bytes": 3197,
+      "lines": 65,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/equal-evaluation.csv",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "f3747f842ebed7a5573b42cd2f8b6d0830499f7fb14728665b1118f9b76b23e6",
+      "git_blob_bytes": 3132
+    },
+    {
+      "path": "minimum_variance/factor_score/decisions.csv",
+      "sha256": "ab4900a90ada45a4621cba6d1dcfa3c564db95ad1e8252e47a81ac6e5e74f309",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/factor_score/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "bb78e8c7181e3cfcf0ede881613ee88b93a0d48253192fbd02ca511bf8574a54",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "minimum_variance/factor_score/evaluation.json",
+      "sha256": "d84f4a6a80987fc5866045809b8d719279f3d1823fd76917cfb164b199763391",
+      "bytes": 251192,
+      "lines": 7084,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/factor_score/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f40cbef01d67b46bd909b67e44549fcd4b54fb7adb24ecde1e989de6fd6d26",
+      "git_blob_bytes": 244109
+    },
+    {
+      "path": "minimum_variance/factor_score/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/factor_score/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "minimum_variance/factor_score/target_comparison.csv",
+      "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+      "bytes": 39767,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/factor_score/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "4743e1e3ad00da0889fe1a725bcfe56196b4a6903039b9b69f46fc5aa0f1e0db",
+      "git_blob_bytes": 39454
+    },
+    {
+      "path": "minimum_variance/factor_score/targets.csv",
+      "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+      "bytes": 13107,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/factor_score/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "63ff6809b8a5014c0154ba6d16cca35df204f886e84a5afeb145f1d1dcd9b39d",
+      "git_blob_bytes": 12796
+    },
+    {
+      "path": "minimum_variance/factor_score/trades.csv",
+      "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+      "bytes": 20316,
+      "lines": 124,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/factor_score/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "32ca434f23ac636456d25fd8ea5cafd68957fcb6035af8b116fdbc86b2e1baf5",
+      "git_blob_bytes": 20192
+    },
+    {
+      "path": "minimum_variance/lightgbm/decisions.csv",
+      "sha256": "b2cb4f9c3bd515666dd5e99da27646683580bd0b2df4f480aeba77f6bcfabe5d",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/lightgbm/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "e0205e0fc7794e552422e1da111fb6aac1567d2098d0d538fe0b194cbae7f370",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "minimum_variance/lightgbm/evaluation.json",
+      "sha256": "19e136a44fe20ab7c400b7e3230582b03628344cea1282008912228c6eaf192b",
+      "bytes": 251096,
+      "lines": 7084,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/lightgbm/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "162c99c70075f789a781150d8aeb0ca7d552e565f69026efe7ea7d25013de57a",
+      "git_blob_bytes": 244013
+    },
+    {
+      "path": "minimum_variance/lightgbm/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/lightgbm/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "minimum_variance/lightgbm/target_comparison.csv",
+      "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+      "bytes": 39767,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/lightgbm/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "4743e1e3ad00da0889fe1a725bcfe56196b4a6903039b9b69f46fc5aa0f1e0db",
+      "git_blob_bytes": 39454
+    },
+    {
+      "path": "minimum_variance/lightgbm/targets.csv",
+      "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+      "bytes": 13107,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/lightgbm/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "63ff6809b8a5014c0154ba6d16cca35df204f886e84a5afeb145f1d1dcd9b39d",
+      "git_blob_bytes": 12796
+    },
+    {
+      "path": "minimum_variance/lightgbm/trades.csv",
+      "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+      "bytes": 20316,
+      "lines": 124,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/lightgbm/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "32ca434f23ac636456d25fd8ea5cafd68957fcb6035af8b116fdbc86b2e1baf5",
+      "git_blob_bytes": 20192
+    },
+    {
+      "path": "minimum_variance/ridge/decisions.csv",
+      "sha256": "c5eb9c5ead0d014186f65921a08fbd755e83bfa4727b8f225f81c57c60f009fa",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/ridge/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "02c6f8318c6612a2ddabb29961c5db29fc7116a6a36b327250b071dd1406151f",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "minimum_variance/ridge/evaluation.json",
+      "sha256": "ca39a80bfff4c38faa946dcb82f15860cb9c396db87328a20f1167e55a3aa4f9",
+      "bytes": 251050,
+      "lines": 7084,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/ridge/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "adf822606107a27ff3c49cdee633262ce3f6c6e9c088d43c2de36e126f36f623",
+      "git_blob_bytes": 243967
+    },
+    {
+      "path": "minimum_variance/ridge/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/ridge/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "minimum_variance/ridge/target_comparison.csv",
+      "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+      "bytes": 39767,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/ridge/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "4743e1e3ad00da0889fe1a725bcfe56196b4a6903039b9b69f46fc5aa0f1e0db",
+      "git_blob_bytes": 39454
+    },
+    {
+      "path": "minimum_variance/ridge/targets.csv",
+      "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+      "bytes": 13107,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/ridge/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "63ff6809b8a5014c0154ba6d16cca35df204f886e84a5afeb145f1d1dcd9b39d",
+      "git_blob_bytes": 12796
+    },
+    {
+      "path": "minimum_variance/ridge/trades.csv",
+      "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+      "bytes": 20316,
+      "lines": 124,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/ridge/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "32ca434f23ac636456d25fd8ea5cafd68957fcb6035af8b116fdbc86b2e1baf5",
+      "git_blob_bytes": 20192
+    },
+    {
+      "path": "minimum_variance/xgboost/decisions.csv",
+      "sha256": "b6f5950c582a8d9e13ed3e00d0568948936debf9f1a76106dc8b165fffd42ef3",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/xgboost/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "3ccadfa904439d027fec282c1e604296e9a570f1be4f4e004c442c77d4bb16e7",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "minimum_variance/xgboost/evaluation.json",
+      "sha256": "570db53493e9c140f7b4e3808c1653b190ae17c83da86520311d2f916f7f382f",
+      "bytes": 251109,
+      "lines": 7084,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/xgboost/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "feb0246db7afc5ad7e7757f2719cae0110b51ccda6d052472510b8ce32b9242d",
+      "git_blob_bytes": 244026
+    },
+    {
+      "path": "minimum_variance/xgboost/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/xgboost/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "minimum_variance/xgboost/target_comparison.csv",
+      "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+      "bytes": 39767,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/xgboost/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "4743e1e3ad00da0889fe1a725bcfe56196b4a6903039b9b69f46fc5aa0f1e0db",
+      "git_blob_bytes": 39454
+    },
+    {
+      "path": "minimum_variance/xgboost/targets.csv",
+      "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+      "bytes": 13107,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/xgboost/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "63ff6809b8a5014c0154ba6d16cca35df204f886e84a5afeb145f1d1dcd9b39d",
+      "git_blob_bytes": 12796
+    },
+    {
+      "path": "minimum_variance/xgboost/trades.csv",
+      "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+      "bytes": 20316,
+      "lines": 124,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance/xgboost/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "32ca434f23ac636456d25fd8ea5cafd68957fcb6035af8b116fdbc86b2e1baf5",
+      "git_blob_bytes": 20192
+    },
+    {
+      "path": "minimum_variance-contrasts.csv",
+      "sha256": "738dff77a8eb65413a8445aad12dab48f5c519018722f65e6b029c70084a3561",
+      "bytes": 7435,
+      "lines": 79,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance-contrasts.csv",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "3a3b715805742458c0b0feaab9889828cb241ef02af700402f3905eab2c18faf",
+      "git_blob_bytes": 7356
+    },
+    {
+      "path": "minimum_variance-evaluation.csv",
+      "sha256": "0dbf6524adb863fa0adb37c0a93ee6dc78e89951a2eb23fc20f1dacf58e0d615",
+      "bytes": 3201,
+      "lines": 65,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/minimum_variance-evaluation.csv",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "6d9f1d41e1592fcf3b2e56d9ad2deae436675c01ca02d0375e5476bf12f127db",
+      "git_blob_bytes": 3136
+    },
+    {
+      "path": "prediction-comparison.csv",
+      "sha256": "f22f4599f1595ae8cbe5384036e51e805145c42762f2b442900d8c979305bfba",
+      "bytes": 882,
+      "lines": 17,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/prediction-comparison.csv",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "b3fa245c07556c90ba279b139652f12e41af47e7a26d5734f52c84e8b85c62c3",
+      "git_blob_bytes": 865
+    },
+    {
+      "path": "reproduction.json",
+      "sha256": "a6ab548e7a3d3880070cbc70f8ad297f444a61725d3e92e9a9f505c6c104f0c5",
+      "bytes": 191,
+      "lines": 9,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/reproduction.json",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "adf38024da3768aca04bd03663af32051ab403355c5fa7173e07c50a5cc33b23",
+      "git_blob_bytes": 183
+    },
+    {
+      "path": "score/factor_score/decisions.csv",
+      "sha256": "2a367db151a306bfde021ef3356f01b1c19286dcecf36a12899e3b2f94364ae2",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "290110b38c4969ff5e1dbd552b57a7ce25e9135d1d6da90d7f95d658ffdc66e9",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "score/factor_score/evaluation.json",
+      "sha256": "c6b0ca6dca69b0e7d22aaa1ab73a8387f25a1f538183f4a24dd360f8dac24e0d",
+      "bytes": 297790,
+      "lines": 8384,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "f1bf2bd2db6872303dadda147ca4469f23e3054db2daa9d1faa83c754b7e7b3b",
+      "git_blob_bytes": 289407
+    },
+    {
+      "path": "score/factor_score/fit_audit.csv",
+      "sha256": "ac93f6ba9758a612b86b5d08434046eb68a79439eea63ddc293767ff69cb692f",
+      "bytes": 7477,
+      "lines": 10,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/fit_audit.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "0440c58c6b397fad87255a81e42a9ad98876b9c617d23b9afb35bb858ba55d04",
+      "git_blob_bytes": 7467
+    },
+    {
+      "path": "score/factor_score/folds.csv",
+      "sha256": "dbee364711233acf8b193a10c393fa37ced234ff6839482d17af5a3b41652e2b",
+      "bytes": 2415,
+      "lines": 4,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/folds.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "27fb77815330d93f4b0e3b1771ad49b3adcbb3c645ddc14590e1e7bce8633f75",
+      "git_blob_bytes": 2411
+    },
+    {
+      "path": "score/factor_score/nav.csv",
+      "sha256": "50a5ad9685e8e455b3471cb8a9866aa33e3b258a802fee8009e2df1d8b8177b8",
+      "bytes": 22685,
+      "lines": 111,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/nav.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "b34b1a3c433cc5d832838f44b1d67e91507de0602ef378dc3f7b6ed65d093011",
+      "git_blob_bytes": 22574
+    },
+    {
+      "path": "score/factor_score/positions.csv",
+      "sha256": "26ac7b343dbaceefcd00f417f6d6b0c07dbb53f48386bfa59a0fdf135967e084",
+      "bytes": 142064,
+      "lines": 1630,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/positions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "41deee76512aa96b8af6ff5d33093e00dde0e5ae0466db05964f87d38c75b555",
+      "git_blob_bytes": 140434
+    },
+    {
+      "path": "score/factor_score/predictions.csv",
+      "sha256": "099fb932fe3b86017783c501f89deed784084097f41c6b75bbefe76e26bb8c58",
+      "bytes": 165802,
+      "lines": 1553,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/predictions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "5df456ab2d92e424f14133d71865d4f6eab6b237fba2ca660c598807b8d75751",
+      "git_blob_bytes": 164249
+    },
+    {
+      "path": "score/factor_score/rankings.csv",
+      "sha256": "534a7b2b8c69e6b70ed2141d2c7daca1aab1e84cfb2478f69fb0e38b552f6014",
+      "bytes": 38548,
+      "lines": 311,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/rankings.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "bb2528890fb09f2eec31690f93e245fa10425354ca10b083f5af2f362a604e40",
+      "git_blob_bytes": 38237
+    },
+    {
+      "path": "score/factor_score/rejections.csv",
+      "sha256": "9590f2f85faf08bc8529dbbbba4a6042edcf3ca049463793f4ec424808d788c7",
+      "bytes": 207,
+      "lines": 3,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "e28c6b0325c6568cc21dfaee601405c12beb105ff788fa76ccddd9004e88d629",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "score/factor_score/target_comparison.csv",
+      "sha256": "b5c7b7167bfe69a0cda94511b1078e3b7ef53ca150ab948a11a14b6979755bbc",
+      "bytes": 38820,
+      "lines": 313,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "6894463c4cc34a57258b664aae57da1220b5bb68545b836feccbde90d673c4d3",
+      "git_blob_bytes": 38507
+    },
+    {
+      "path": "score/factor_score/targets.csv",
+      "sha256": "4a1b04819716dddb5fdfa6280378366ab31502adb777f9bdcadb6ab183304ad3",
+      "bytes": 12286,
+      "lines": 311,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "96233f92c292d7fbe872239db463f0fa021230861663acc3d80d193070b5939f",
+      "git_blob_bytes": 11975
+    },
+    {
+      "path": "score/factor_score/trades.csv",
+      "sha256": "f1ecdfd06d906217994ffebab7979010f67442f4d911c5a6127ee03c516451f8",
+      "bytes": 31000,
+      "lines": 189,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/factor_score/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "3332e39c5e06c80d62de53e1ddd0cdab4b89219384743886e6f42aa4226b9aa5",
+      "git_blob_bytes": 30811
+    },
+    {
+      "path": "score/lightgbm/decisions.csv",
+      "sha256": "f9fc23bbb5c24f08c8ffa8bf540a1dd9a76298dbf3718a41678c6229300affd4",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "96d1bc6bc176243753232647436a48c9fcad8940793bcf35efa96d3ae7f04f24",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "score/lightgbm/evaluation.json",
+      "sha256": "55929b03ce60413aae8cb8b821f68725b917a1d178cc8c380fc66bd7f1897d38",
+      "bytes": 261317,
+      "lines": 7364,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "0c2616b650c710d7d6ceb684ec80bcc7bcc5b56e931696c371d3f9184c222288",
+      "git_blob_bytes": 253954
+    },
+    {
+      "path": "score/lightgbm/fit_audit.csv",
+      "sha256": "f75b1890756c4d3f26f8563d145c3b1fce209353f797d6b8b943d86902763c82",
+      "bytes": 9421,
+      "lines": 10,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/fit_audit.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "3ec65c8c66a312a919a02cc5c4108a7d2fb56e18087eb38e566950f5d1a185fe",
+      "git_blob_bytes": 9411
+    },
+    {
+      "path": "score/lightgbm/folds.csv",
+      "sha256": "ad0e4181ae6297f53a1844b456a4dd4eb21ca9b65ab60e11b1c532407f76eac8",
+      "bytes": 2575,
+      "lines": 4,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/folds.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "162e55503e2447367cd308e6f33f299fa50e3a15b43197f47a032d4152dd812d",
+      "git_blob_bytes": 2571
+    },
+    {
+      "path": "score/lightgbm/nav.csv",
+      "sha256": "a5e7e6e2ebee84cde060cd6cdfc6132870c11f4addc8f95e4d37e9145ccccace",
+      "bytes": 22838,
+      "lines": 111,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/nav.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "ec048024a98dafc09f39930cbe85ac9000ed298d1654aa6506b8106dbef6572a",
+      "git_blob_bytes": 22727
+    },
+    {
+      "path": "score/lightgbm/positions.csv",
+      "sha256": "b4ad725d5fc8bf5300f0405e7634eb6935263d2565262aaf26bd2702a56e413d",
+      "bytes": 142171,
+      "lines": 1631,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/positions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "5b5f959a3016ecbcdb17b8fc1ac64ae55ca1c1784f534fafb84d11f62d38ac51",
+      "git_blob_bytes": 140540
+    },
+    {
+      "path": "score/lightgbm/predictions.csv",
+      "sha256": "50bec9138d46af7b9c2f68686715a82ca775b5e84354d85bf78e6c9a2c680883",
+      "bytes": 258264,
+      "lines": 1553,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/predictions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "cd574e113186a40dc1d7e85b2b4a3fabeb54c52ee8fb3da36677d5f751dcadc4",
+      "git_blob_bytes": 256711
+    },
+    {
+      "path": "score/lightgbm/rankings.csv",
+      "sha256": "27bb6ec11d06377e0211e73718ba5f3f9d3e50dbb6aa2337b381257545413547",
+      "bytes": 57097,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/rankings.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "7ad0b8a9a7b52f04a3722085d88adbfdfc525cc26f642eef4308a62fce5dca75",
+      "git_blob_bytes": 56786
+    },
+    {
+      "path": "score/lightgbm/rejections.csv",
+      "sha256": "e41bea8aae07970051d0d81d665e55f70c6f79ccc41328a128e64fc9c0b50402",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "d2a694c1d79c4b42d69944ea8728793278be4f4244492a932d53819ba88d0a4b",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "score/lightgbm/target_comparison.csv",
+      "sha256": "763214d1ab3bdaef4169779ccd3809e352f30dcc635f19c69823a9a8956431f9",
+      "bytes": 38946,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "1ff1d50bd740bc4f3fccd76eb725b4c39c7d2107ec85a541dea78ea2b4a3dd7d",
+      "git_blob_bytes": 38633
+    },
+    {
+      "path": "score/lightgbm/targets.csv",
+      "sha256": "cf6c8172f5fb318620dc48ed334831154735fd830fb67a65e8e51095eb3ee12a",
+      "bytes": 12472,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "dcf6ac6485a5efff71e6a7ccbbd61cdceb2d17bd5b94ad4a678eed0faf48a0a6",
+      "git_blob_bytes": 12161
+    },
+    {
+      "path": "score/lightgbm/trades.csv",
+      "sha256": "63509f2b65acc5cdcb9275f70b65fccb5d8f1c0ff39e1b50906e26ba084ee49c",
+      "bytes": 22611,
+      "lines": 138,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/lightgbm/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "a34beb56cf2a96b8e4fe2331797023d7e335f89a652771619b05f3db7b1441f2",
+      "git_blob_bytes": 22473
+    },
+    {
+      "path": "score/ridge/decisions.csv",
+      "sha256": "0a9b6712ee164371dcca6ecd7976b30c85048242092b20d5f22da340bda23d14",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "ab9ac46cfcc7abb9923ab84193728f998de7df993871c6d519b8d52c77e605e5",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "score/ridge/evaluation.json",
+      "sha256": "c9df4ebab1c333888e27549e9efbb1d05cdd98da9c6f6ad421c1018f3680018d",
+      "bytes": 260558,
+      "lines": 7344,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "be55fc0e46ae1eca45c6906329d6a3706f4720e94e14f144fa58649cad0cba38",
+      "git_blob_bytes": 253215
+    },
+    {
+      "path": "score/ridge/fit_audit.csv",
+      "sha256": "2d98ec0cbecd2bff994fc489e3b831be3a248c2d5373bd80048f2e1708e2a175",
+      "bytes": 7720,
+      "lines": 10,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/fit_audit.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82e95bd78ea15540cc8c96600b541677ddef3a89e5157862b1976e7f5737e405",
+      "git_blob_bytes": 7710
+    },
+    {
+      "path": "score/ridge/folds.csv",
+      "sha256": "634c8cfeb5884d865728edc4e4d1fb2bc6830e5f6d487f0df4a8260c8024d196",
+      "bytes": 2425,
+      "lines": 4,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/folds.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "478022f448c9cf42539dd807a1a00063668a0b4d3949fb98c72385dcd43672d7",
+      "git_blob_bytes": 2421
+    },
+    {
+      "path": "score/ridge/nav.csv",
+      "sha256": "48058abd4cf99a035a601d93906f20e916748b81a90a277c34d32449cbd60b64",
+      "bytes": 22879,
+      "lines": 111,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/nav.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "5b97e050de9a999db5f255f0d1d5b107054f82f3725a280929722501510387ab",
+      "git_blob_bytes": 22768
+    },
+    {
+      "path": "score/ridge/positions.csv",
+      "sha256": "13868c14276c45b748dcc7321ba84acf9e13aa43433ecc0528557e13e433d4d8",
+      "bytes": 136711,
+      "lines": 1571,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/positions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "20a828ac75c82db406c66e2b27f4aa249d55559bc1acee073d964d4944da048c",
+      "git_blob_bytes": 135140
+    },
+    {
+      "path": "score/ridge/predictions.csv",
+      "sha256": "badb5b9032d5d6fcc7fb046d7d203560cdcfbfcb967fa071b9ed005304132dcc",
+      "bytes": 185396,
+      "lines": 1553,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/predictions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "948db3015f08506575642ef07b6821140717e36b3522d733423a237e479a04b2",
+      "git_blob_bytes": 183843
+    },
+    {
+      "path": "score/ridge/rankings.csv",
+      "sha256": "167d15d81851c8abfad5b8fc1ad1228f39d72333cc21f1d2ce62c7d449ca2574",
+      "bytes": 42488,
+      "lines": 311,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/rankings.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "43de4616d585b4b765622e8c30c043103c9b8bab3c710c77870a62fb443dbf14",
+      "git_blob_bytes": 42177
+    },
+    {
+      "path": "score/ridge/rejections.csv",
+      "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+      "bytes": 207,
+      "lines": 3,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "82f884f1357d5c608fc6436c1bad7679a5dc378c12a962010bfe02ca70319a93",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "score/ridge/target_comparison.csv",
+      "sha256": "fe08937e56906db3bdde24171386163052431620e5b2cfdcb4473f35cd76c288",
+      "bytes": 38739,
+      "lines": 313,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "ac970b8803dd816085e588fc186df6233f228036d6e49ce6ece5464078645571",
+      "git_blob_bytes": 38426
+    },
+    {
+      "path": "score/ridge/targets.csv",
+      "sha256": "93c03902f058196c46bfe5d201fe67adc7c9fb0b653e961509f8d12f62d7c0cb",
+      "bytes": 12370,
+      "lines": 311,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "8eff7d5f51d42d8d46cb4165f3ca677abacedaf59b3464bd6d8ee972c1bbc0fe",
+      "git_blob_bytes": 12059
+    },
+    {
+      "path": "score/ridge/trades.csv",
+      "sha256": "25d5e98f975a71fcb062e4f4d7b28b4809b9895f21c7d646ef0dad137b794de2",
+      "bytes": 22461,
+      "lines": 137,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/ridge/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "43f137f93553ee51e639a2e9ebd56c7d8e3bdf95d9fb28cdeebf8750687b3bb9",
+      "git_blob_bytes": 22324
+    },
+    {
+      "path": "score/xgboost/decisions.csv",
+      "sha256": "db13e691d137ca76a94d33df7b681c500f390b178846c806d4639b82cbe25f0f",
+      "bytes": 3114,
+      "lines": 14,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/decisions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "41d419a0a2a6b34678f2a24c8edffa50cf4a72990102bae2509ce7fad53e8437",
+      "git_blob_bytes": 3100
+    },
+    {
+      "path": "score/xgboost/evaluation.json",
+      "sha256": "0c3a278b74a3a374a2f86eef3378936208524dd5a6f11ecd1982899eb1d84143",
+      "bytes": 278549,
+      "lines": 7844,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/evaluation.json",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "b467fdb20c8ceab7acfb9585f0e8b362459395bee19746c6bcafeff315971ee0",
+      "git_blob_bytes": 270706
+    },
+    {
+      "path": "score/xgboost/fit_audit.csv",
+      "sha256": "4cb27fee3c4664cca2d42cddb592cc0a9dabedfb84a96bf8aa297aa06f956481",
+      "bytes": 8917,
+      "lines": 10,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/fit_audit.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "8a77a4cbfaddcd920c49ebe9f61e8509fd470e24c099a2149d6d5cda50fe8bca",
+      "git_blob_bytes": 8907
+    },
+    {
+      "path": "score/xgboost/folds.csv",
+      "sha256": "982a6d6254fa08d1bdfef203d7d1d42a6f00b34838112ff1da216a2a4b95c621",
+      "bytes": 2491,
+      "lines": 4,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/folds.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "2188130c48845c8da4f30975793849384557b09cc9547af55e11ced302e7fb63",
+      "git_blob_bytes": 2487
+    },
+    {
+      "path": "score/xgboost/nav.csv",
+      "sha256": "be9200c4d4cd6b2cb2f31f0b5c929294eb55ae29f27bba9a149768f8dfb01dca",
+      "bytes": 22894,
+      "lines": 111,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/nav.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "c3f71fc34f707d786f7477149811480dfb78fab09228a5956a121660b72567b2",
+      "git_blob_bytes": 22783
+    },
+    {
+      "path": "score/xgboost/positions.csv",
+      "sha256": "3f51f7148da7a233a038a712321e8f6d7c00dfeecaa8ba005261ff32717ae652",
+      "bytes": 145658,
+      "lines": 1673,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/positions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "a5f3293efb3a2e95ea298427266e0ced233ddb54824454bda6ab00cef9c6b9a6",
+      "git_blob_bytes": 143985
+    },
+    {
+      "path": "score/xgboost/predictions.csv",
+      "sha256": "46f724a119a7404d782124b89d413feeb3a136cf2d14837eaa46d62229be4be1",
+      "bytes": 216247,
+      "lines": 1553,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/predictions.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "e5c05d3c90d996a1ed6816ed7b02f5f71d498a61edb88b096ef8cb34e49e5389",
+      "git_blob_bytes": 214694
+    },
+    {
+      "path": "score/xgboost/rankings.csv",
+      "sha256": "629893cb83b3ecc2278c889a6f66261ee2e6b53664e2ec92cebabf0d30115541",
+      "bytes": 48608,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/rankings.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "a7ce8e1c8a66a18dac21b53aa791418c642ac08c23cfdc404c1045b3604d9968",
+      "git_blob_bytes": 48297
+    },
+    {
+      "path": "score/xgboost/rejections.csv",
+      "sha256": "e41bea8aae07970051d0d81d665e55f70c6f79ccc41328a128e64fc9c0b50402",
+      "bytes": 207,
+      "lines": 3,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/rejections.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "d2a694c1d79c4b42d69944ea8728793278be4f4244492a932d53819ba88d0a4b",
+      "git_blob_bytes": 204
+    },
+    {
+      "path": "score/xgboost/target_comparison.csv",
+      "sha256": "c4e41faee4edf82ab7fd253dac718ed331e2df77ae476fca2a958327e2c3e721",
+      "bytes": 38694,
+      "lines": 313,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/target_comparison.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "b503b760dcf53931d965e354d1b0bf54b1a997e7746047b473454dd28d8caefa",
+      "git_blob_bytes": 38381
+    },
+    {
+      "path": "score/xgboost/targets.csv",
+      "sha256": "0270736de39a3c56c477ee2228a692f4be64a9bfc2cc7c6dcc2be82769719cfc",
+      "bytes": 12250,
+      "lines": 311,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/targets.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "9322e777a0571557a336b4882ff1f469d83f5bce6191d65c1df2ed75b7674d12",
+      "git_blob_bytes": 11939
+    },
+    {
+      "path": "score/xgboost/trades.csv",
+      "sha256": "dd56f946e9fd9a5621938f57a20a15f9afa08625d7cee6b78dcf3f84e421dbb9",
+      "bytes": 26613,
+      "lines": 162,
+      "retained": false,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score/xgboost/trades.csv",
+      "reproducibility": "generated synthetic result; pinned source and original environment required",
+      "git_blob_sha256": "a6191dfadbee27c662a20bcd86c53a32cd63888165b6578d2331280632816820",
+      "git_blob_bytes": 26451
+    },
+    {
+      "path": "score-contrasts.csv",
+      "sha256": "b149a3b1a7b648555442cec7d5491d5470ae7a5b25b93cd342487965dd62fb17",
+      "bytes": 9761,
+      "lines": 79,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score-contrasts.csv",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "5bf02b1e84a747b636012c2fb322a5fc1c43f79dc42084f9320273e0b3db7d81",
+      "git_blob_bytes": 9682
+    },
+    {
+      "path": "score-evaluation.csv",
+      "sha256": "2b887c6c838b9da24b0956f89dd726b9213dc247b7432fa94472e3a86591808e",
+      "bytes": 3179,
+      "lines": 65,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/score-evaluation.csv",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "2906688033b35f7e541d688291b2fcdaea5b9712a94ce773c0b9451c284e2a95",
+      "git_blob_bytes": 3114
+    },
+    {
+      "path": "summary.json",
+      "sha256": "1889f63aae02bd99841f4a7444a18a129c54b99dd62d41259043266bb18ecacd",
+      "bytes": 8439,
+      "lines": 237,
+      "retained": true,
+      "original_commit": "99dafc24d6290164e33fadfef67559404173e660",
+      "original_git_path": "docs/validation/p3-09/evidence/summary.json",
+      "reproducibility": "original acceptance receipt or aggregate; preserve verbatim",
+      "git_blob_sha256": "6ac24cb582c68b90cd8cb9b9f50752258c733ef39227a469a55b5712880ced4a",
+      "git_blob_bytes": 8203
+    }
+  ],
+  "original_runs": {
+    "p309-run3": [
+      {
+        "path": "equal/factor_score/decisions.csv",
+        "sha256": "1073d3659087b604651b5a4ac99cbb6379d137261309260698af93aae3d381f7",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/factor_score/evaluation.json",
+        "sha256": "f682607728ebb15f99ab4efafa12008b0a50c6f1d2812e331b92dc0e75f7f866",
+        "bytes": 187912,
+        "lines": 5324
+      },
+      {
+        "path": "equal/factor_score/fit_audit.csv",
+        "sha256": "ac93f6ba9758a612b86b5d08434046eb68a79439eea63ddc293767ff69cb692f",
+        "bytes": 7477,
+        "lines": 10
+      },
+      {
+        "path": "equal/factor_score/folds.csv",
+        "sha256": "dbee364711233acf8b193a10c393fa37ced234ff6839482d17af5a3b41652e2b",
+        "bytes": 2415,
+        "lines": 4
+      },
+      {
+        "path": "equal/factor_score/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/factor_score/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/factor_score/predictions.csv",
+        "sha256": "099fb932fe3b86017783c501f89deed784084097f41c6b75bbefe76e26bb8c58",
+        "bytes": 165802,
+        "lines": 1553
+      },
+      {
+        "path": "equal/factor_score/rankings.csv",
+        "sha256": "534a7b2b8c69e6b70ed2141d2c7daca1aab1e84cfb2478f69fb0e38b552f6014",
+        "bytes": 38548,
+        "lines": 311
+      },
+      {
+        "path": "equal/factor_score/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/factor_score/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/factor_score/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/factor_score/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal/lightgbm/decisions.csv",
+        "sha256": "3b7f03ac2d8d7874c33ede102f8e677bb9d3d385b866f3d3a742d346e9c06f04",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/lightgbm/evaluation.json",
+        "sha256": "2160e49f6e41ee402cc8474480ab2006544bdeab56ef8e1cc37edf67c17bc2ad",
+        "bytes": 187816,
+        "lines": 5324
+      },
+      {
+        "path": "equal/lightgbm/fit_audit.csv",
+        "sha256": "f75b1890756c4d3f26f8563d145c3b1fce209353f797d6b8b943d86902763c82",
+        "bytes": 9421,
+        "lines": 10
+      },
+      {
+        "path": "equal/lightgbm/folds.csv",
+        "sha256": "ad0e4181ae6297f53a1844b456a4dd4eb21ca9b65ab60e11b1c532407f76eac8",
+        "bytes": 2575,
+        "lines": 4
+      },
+      {
+        "path": "equal/lightgbm/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/lightgbm/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/lightgbm/predictions.csv",
+        "sha256": "50bec9138d46af7b9c2f68686715a82ca775b5e84354d85bf78e6c9a2c680883",
+        "bytes": 258264,
+        "lines": 1553
+      },
+      {
+        "path": "equal/lightgbm/rankings.csv",
+        "sha256": "27bb6ec11d06377e0211e73718ba5f3f9d3e50dbb6aa2337b381257545413547",
+        "bytes": 57097,
+        "lines": 311
+      },
+      {
+        "path": "equal/lightgbm/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/lightgbm/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/lightgbm/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/lightgbm/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal/ridge/decisions.csv",
+        "sha256": "2be7a615b0327168eb62b7a6eafe04896bc753931f6e0b36850c2b3ed190de37",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/ridge/evaluation.json",
+        "sha256": "f772d336e82b8ddac95259dab44e8039ecfd0637236d2c746953d34f004ecc68",
+        "bytes": 187770,
+        "lines": 5324
+      },
+      {
+        "path": "equal/ridge/fit_audit.csv",
+        "sha256": "2d98ec0cbecd2bff994fc489e3b831be3a248c2d5373bd80048f2e1708e2a175",
+        "bytes": 7720,
+        "lines": 10
+      },
+      {
+        "path": "equal/ridge/folds.csv",
+        "sha256": "634c8cfeb5884d865728edc4e4d1fb2bc6830e5f6d487f0df4a8260c8024d196",
+        "bytes": 2425,
+        "lines": 4
+      },
+      {
+        "path": "equal/ridge/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/ridge/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/ridge/predictions.csv",
+        "sha256": "badb5b9032d5d6fcc7fb046d7d203560cdcfbfcb967fa071b9ed005304132dcc",
+        "bytes": 185396,
+        "lines": 1553
+      },
+      {
+        "path": "equal/ridge/rankings.csv",
+        "sha256": "167d15d81851c8abfad5b8fc1ad1228f39d72333cc21f1d2ce62c7d449ca2574",
+        "bytes": 42488,
+        "lines": 311
+      },
+      {
+        "path": "equal/ridge/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/ridge/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/ridge/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/ridge/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal/xgboost/decisions.csv",
+        "sha256": "e61fab14ed7c4f1074d831fa7c64eb556d7f6e7d6957a7265dfaa6fa4228da7f",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/xgboost/evaluation.json",
+        "sha256": "1234f65c8fe0c7d6179a1cdd6536b04d5f1d5df51efeb73c39685ef2c784fde6",
+        "bytes": 187829,
+        "lines": 5324
+      },
+      {
+        "path": "equal/xgboost/fit_audit.csv",
+        "sha256": "4cb27fee3c4664cca2d42cddb592cc0a9dabedfb84a96bf8aa297aa06f956481",
+        "bytes": 8917,
+        "lines": 10
+      },
+      {
+        "path": "equal/xgboost/folds.csv",
+        "sha256": "982a6d6254fa08d1bdfef203d7d1d42a6f00b34838112ff1da216a2a4b95c621",
+        "bytes": 2491,
+        "lines": 4
+      },
+      {
+        "path": "equal/xgboost/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/xgboost/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/xgboost/predictions.csv",
+        "sha256": "46f724a119a7404d782124b89d413feeb3a136cf2d14837eaa46d62229be4be1",
+        "bytes": 216247,
+        "lines": 1553
+      },
+      {
+        "path": "equal/xgboost/rankings.csv",
+        "sha256": "629893cb83b3ecc2278c889a6f66261ee2e6b53664e2ec92cebabf0d30115541",
+        "bytes": 48608,
+        "lines": 311
+      },
+      {
+        "path": "equal/xgboost/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/xgboost/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/xgboost/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/xgboost/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal-contrasts.csv",
+        "sha256": "738dff77a8eb65413a8445aad12dab48f5c519018722f65e6b029c70084a3561",
+        "bytes": 7435,
+        "lines": 79
+      },
+      {
+        "path": "equal-evaluation.csv",
+        "sha256": "6a47af1fcea15b1a769d7838e40607c6f113366708e6bff971c4348094a17dd3",
+        "bytes": 3197,
+        "lines": 65
+      },
+      {
+        "path": "experiments/experiments/p309-equal-factor_score.json",
+        "sha256": "fc50b40192288cdb60d2724e2eebbe415bb01f19c63eb1c35f6f020e17678d6f",
+        "bytes": 1541,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-equal-lightgbm.json",
+        "sha256": "4e7792f74ec42e796aa488bc821f8f0a4367dcd1053e5a3eb46030f766931ffd",
+        "bytes": 1570,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-equal-ridge.json",
+        "sha256": "092d6ab46da74ac6dce6ae45c6829807f2c73d0db00955663b871451ff256933",
+        "bytes": 1501,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-equal-xgboost.json",
+        "sha256": "d7d474a66fbdf2897efc846d2267788ea457e14181dd0afc5c823e4bb89b9f03",
+        "bytes": 1540,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-factor_score.json",
+        "sha256": "7b64b8f0c396f8ea73468a71e5ef82ec39f2c69a57a6b95049cb2e4c33597434",
+        "bytes": 1574,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-lightgbm.json",
+        "sha256": "ff9ed6755cbfd8c2b56767ba6bc357543e93ee281b52c6a5f3274db8f8bd9fb6",
+        "bytes": 1603,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-ridge.json",
+        "sha256": "5d03838141600d19eca1043ca261ae9609cfd8bc57bd14cb733d32f90c97a8a2",
+        "bytes": 1534,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-xgboost.json",
+        "sha256": "7f4cba5cf3823277fd5ae687c90482f9f1069ffc560f56943607e2a4d98f7375",
+        "bytes": 1573,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-factor_score.json",
+        "sha256": "5213236c08b580913ac2a7657b7ab5eaa5396bdad1256d8610ac92781c33e906",
+        "bytes": 1541,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-lightgbm.json",
+        "sha256": "d6554e59ee22c56685f4c32811ccd9a9f86a196f053e18f34c9806a70cae553e",
+        "bytes": 1570,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-ridge.json",
+        "sha256": "aea036e08c284cbb41de049be3c3b105e0ede7d49f4e87d57aed5edc633071fb",
+        "bytes": 1501,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-xgboost.json",
+        "sha256": "cc7cfee7a173b2413ba889488b611dd66dd0d50c0b1094705c8a6dc92e7fa8cd",
+        "bytes": 1540,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-factor_score.json",
+        "sha256": "41d18ecec079d57d1698a654312acd1d08dbf6b9654ab455f1864cefd4b68d25",
+        "bytes": 4414,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-lightgbm.json",
+        "sha256": "311892d0b9a0c35c3cc89d6c38c7a61d9a1e17751589cc1ac28e878e7f788135",
+        "bytes": 4361,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-ridge.json",
+        "sha256": "4a627b7fdd69a31c104cea180865493833f2c84bd0f0de9012be7a80281a119a",
+        "bytes": 4321,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-xgboost.json",
+        "sha256": "2b5255c0b863f0bf16d6c643b0f09973d39b043b66ee80d1bd6f508e0ff3dcc5",
+        "bytes": 4349,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-factor_score.json",
+        "sha256": "52420e13ac4a51fc107ca8471f696c3cad8ef83c03e8eebbd635d2038fe4331d",
+        "bytes": 4558,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-lightgbm.json",
+        "sha256": "7754a76a6a16cdcd385284b6a75ce1d07d5b2e49f7287e200502d0a4a5ca443f",
+        "bytes": 4505,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-ridge.json",
+        "sha256": "431634834d8013377072b807ce572012219cbc47e7c7193fc9cf9a4be93bd0c5",
+        "bytes": 4465,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-xgboost.json",
+        "sha256": "0f9dfe5a07e502f06f0a6321f84fba64ed8c985fd879216e6af2642a94179e49",
+        "bytes": 4493,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-factor_score.json",
+        "sha256": "5514a7a116fd2bc8d411bbf2d7bf680dc1ff7a356f8ada573c6d9b92dd005411",
+        "bytes": 4416,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-lightgbm.json",
+        "sha256": "f4118bd8cf1d5688942884f234f01f847659808a5220e630a6a0a93fcd864c5e",
+        "bytes": 4358,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-ridge.json",
+        "sha256": "3663455ab3af00ab1c61059278efa2629bee82cb0e5b8f7254f38a1bb4ef7e4d",
+        "bytes": 4319,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-xgboost.json",
+        "sha256": "3d336507a26ce546f3cffd5e887169969291c6da5d9bf527cf12352af02884aa",
+        "bytes": 4334,
+        "lines": 1
+      },
+      {
+        "path": "minimum_variance/factor_score/decisions.csv",
+        "sha256": "ab4900a90ada45a4621cba6d1dcfa3c564db95ad1e8252e47a81ac6e5e74f309",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/factor_score/evaluation.json",
+        "sha256": "d84f4a6a80987fc5866045809b8d719279f3d1823fd76917cfb164b199763391",
+        "bytes": 251192,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/factor_score/fit_audit.csv",
+        "sha256": "ac93f6ba9758a612b86b5d08434046eb68a79439eea63ddc293767ff69cb692f",
+        "bytes": 7477,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/factor_score/folds.csv",
+        "sha256": "dbee364711233acf8b193a10c393fa37ced234ff6839482d17af5a3b41652e2b",
+        "bytes": 2415,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/factor_score/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/factor_score/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/factor_score/predictions.csv",
+        "sha256": "099fb932fe3b86017783c501f89deed784084097f41c6b75bbefe76e26bb8c58",
+        "bytes": 165802,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/factor_score/rankings.csv",
+        "sha256": "534a7b2b8c69e6b70ed2141d2c7daca1aab1e84cfb2478f69fb0e38b552f6014",
+        "bytes": 38548,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/factor_score/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/factor_score/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/factor_score/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/factor_score/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance/lightgbm/decisions.csv",
+        "sha256": "b2cb4f9c3bd515666dd5e99da27646683580bd0b2df4f480aeba77f6bcfabe5d",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/lightgbm/evaluation.json",
+        "sha256": "19e136a44fe20ab7c400b7e3230582b03628344cea1282008912228c6eaf192b",
+        "bytes": 251096,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/lightgbm/fit_audit.csv",
+        "sha256": "f75b1890756c4d3f26f8563d145c3b1fce209353f797d6b8b943d86902763c82",
+        "bytes": 9421,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/lightgbm/folds.csv",
+        "sha256": "ad0e4181ae6297f53a1844b456a4dd4eb21ca9b65ab60e11b1c532407f76eac8",
+        "bytes": 2575,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/lightgbm/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/lightgbm/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/lightgbm/predictions.csv",
+        "sha256": "50bec9138d46af7b9c2f68686715a82ca775b5e84354d85bf78e6c9a2c680883",
+        "bytes": 258264,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/lightgbm/rankings.csv",
+        "sha256": "27bb6ec11d06377e0211e73718ba5f3f9d3e50dbb6aa2337b381257545413547",
+        "bytes": 57097,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/lightgbm/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/lightgbm/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/lightgbm/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/lightgbm/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance/ridge/decisions.csv",
+        "sha256": "c5eb9c5ead0d014186f65921a08fbd755e83bfa4727b8f225f81c57c60f009fa",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/ridge/evaluation.json",
+        "sha256": "ca39a80bfff4c38faa946dcb82f15860cb9c396db87328a20f1167e55a3aa4f9",
+        "bytes": 251050,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/ridge/fit_audit.csv",
+        "sha256": "2d98ec0cbecd2bff994fc489e3b831be3a248c2d5373bd80048f2e1708e2a175",
+        "bytes": 7720,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/ridge/folds.csv",
+        "sha256": "634c8cfeb5884d865728edc4e4d1fb2bc6830e5f6d487f0df4a8260c8024d196",
+        "bytes": 2425,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/ridge/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/ridge/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/ridge/predictions.csv",
+        "sha256": "badb5b9032d5d6fcc7fb046d7d203560cdcfbfcb967fa071b9ed005304132dcc",
+        "bytes": 185396,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/ridge/rankings.csv",
+        "sha256": "167d15d81851c8abfad5b8fc1ad1228f39d72333cc21f1d2ce62c7d449ca2574",
+        "bytes": 42488,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/ridge/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/ridge/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/ridge/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/ridge/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance/xgboost/decisions.csv",
+        "sha256": "b6f5950c582a8d9e13ed3e00d0568948936debf9f1a76106dc8b165fffd42ef3",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/xgboost/evaluation.json",
+        "sha256": "570db53493e9c140f7b4e3808c1653b190ae17c83da86520311d2f916f7f382f",
+        "bytes": 251109,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/xgboost/fit_audit.csv",
+        "sha256": "4cb27fee3c4664cca2d42cddb592cc0a9dabedfb84a96bf8aa297aa06f956481",
+        "bytes": 8917,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/xgboost/folds.csv",
+        "sha256": "982a6d6254fa08d1bdfef203d7d1d42a6f00b34838112ff1da216a2a4b95c621",
+        "bytes": 2491,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/xgboost/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/xgboost/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/xgboost/predictions.csv",
+        "sha256": "46f724a119a7404d782124b89d413feeb3a136cf2d14837eaa46d62229be4be1",
+        "bytes": 216247,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/xgboost/rankings.csv",
+        "sha256": "629893cb83b3ecc2278c889a6f66261ee2e6b53664e2ec92cebabf0d30115541",
+        "bytes": 48608,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/xgboost/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/xgboost/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/xgboost/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/xgboost/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance-contrasts.csv",
+        "sha256": "738dff77a8eb65413a8445aad12dab48f5c519018722f65e6b029c70084a3561",
+        "bytes": 7435,
+        "lines": 79
+      },
+      {
+        "path": "minimum_variance-evaluation.csv",
+        "sha256": "0dbf6524adb863fa0adb37c0a93ee6dc78e89951a2eb23fc20f1dacf58e0d615",
+        "bytes": 3201,
+        "lines": 65
+      },
+      {
+        "path": "prediction-comparison.csv",
+        "sha256": "f22f4599f1595ae8cbe5384036e51e805145c42762f2b442900d8c979305bfba",
+        "bytes": 882,
+        "lines": 17
+      },
+      {
+        "path": "score/factor_score/decisions.csv",
+        "sha256": "2a367db151a306bfde021ef3356f01b1c19286dcecf36a12899e3b2f94364ae2",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/factor_score/evaluation.json",
+        "sha256": "c6b0ca6dca69b0e7d22aaa1ab73a8387f25a1f538183f4a24dd360f8dac24e0d",
+        "bytes": 297790,
+        "lines": 8384
+      },
+      {
+        "path": "score/factor_score/fit_audit.csv",
+        "sha256": "ac93f6ba9758a612b86b5d08434046eb68a79439eea63ddc293767ff69cb692f",
+        "bytes": 7477,
+        "lines": 10
+      },
+      {
+        "path": "score/factor_score/folds.csv",
+        "sha256": "dbee364711233acf8b193a10c393fa37ced234ff6839482d17af5a3b41652e2b",
+        "bytes": 2415,
+        "lines": 4
+      },
+      {
+        "path": "score/factor_score/nav.csv",
+        "sha256": "50a5ad9685e8e455b3471cb8a9866aa33e3b258a802fee8009e2df1d8b8177b8",
+        "bytes": 22685,
+        "lines": 111
+      },
+      {
+        "path": "score/factor_score/positions.csv",
+        "sha256": "26ac7b343dbaceefcd00f417f6d6b0c07dbb53f48386bfa59a0fdf135967e084",
+        "bytes": 142064,
+        "lines": 1630
+      },
+      {
+        "path": "score/factor_score/predictions.csv",
+        "sha256": "099fb932fe3b86017783c501f89deed784084097f41c6b75bbefe76e26bb8c58",
+        "bytes": 165802,
+        "lines": 1553
+      },
+      {
+        "path": "score/factor_score/rankings.csv",
+        "sha256": "534a7b2b8c69e6b70ed2141d2c7daca1aab1e84cfb2478f69fb0e38b552f6014",
+        "bytes": 38548,
+        "lines": 311
+      },
+      {
+        "path": "score/factor_score/rejections.csv",
+        "sha256": "9590f2f85faf08bc8529dbbbba4a6042edcf3ca049463793f4ec424808d788c7",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/factor_score/target_comparison.csv",
+        "sha256": "b5c7b7167bfe69a0cda94511b1078e3b7ef53ca150ab948a11a14b6979755bbc",
+        "bytes": 38820,
+        "lines": 313
+      },
+      {
+        "path": "score/factor_score/targets.csv",
+        "sha256": "4a1b04819716dddb5fdfa6280378366ab31502adb777f9bdcadb6ab183304ad3",
+        "bytes": 12286,
+        "lines": 311
+      },
+      {
+        "path": "score/factor_score/trades.csv",
+        "sha256": "f1ecdfd06d906217994ffebab7979010f67442f4d911c5a6127ee03c516451f8",
+        "bytes": 31000,
+        "lines": 189
+      },
+      {
+        "path": "score/lightgbm/decisions.csv",
+        "sha256": "f9fc23bbb5c24f08c8ffa8bf540a1dd9a76298dbf3718a41678c6229300affd4",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/lightgbm/evaluation.json",
+        "sha256": "55929b03ce60413aae8cb8b821f68725b917a1d178cc8c380fc66bd7f1897d38",
+        "bytes": 261317,
+        "lines": 7364
+      },
+      {
+        "path": "score/lightgbm/fit_audit.csv",
+        "sha256": "f75b1890756c4d3f26f8563d145c3b1fce209353f797d6b8b943d86902763c82",
+        "bytes": 9421,
+        "lines": 10
+      },
+      {
+        "path": "score/lightgbm/folds.csv",
+        "sha256": "ad0e4181ae6297f53a1844b456a4dd4eb21ca9b65ab60e11b1c532407f76eac8",
+        "bytes": 2575,
+        "lines": 4
+      },
+      {
+        "path": "score/lightgbm/nav.csv",
+        "sha256": "a5e7e6e2ebee84cde060cd6cdfc6132870c11f4addc8f95e4d37e9145ccccace",
+        "bytes": 22838,
+        "lines": 111
+      },
+      {
+        "path": "score/lightgbm/positions.csv",
+        "sha256": "b4ad725d5fc8bf5300f0405e7634eb6935263d2565262aaf26bd2702a56e413d",
+        "bytes": 142171,
+        "lines": 1631
+      },
+      {
+        "path": "score/lightgbm/predictions.csv",
+        "sha256": "50bec9138d46af7b9c2f68686715a82ca775b5e84354d85bf78e6c9a2c680883",
+        "bytes": 258264,
+        "lines": 1553
+      },
+      {
+        "path": "score/lightgbm/rankings.csv",
+        "sha256": "27bb6ec11d06377e0211e73718ba5f3f9d3e50dbb6aa2337b381257545413547",
+        "bytes": 57097,
+        "lines": 311
+      },
+      {
+        "path": "score/lightgbm/rejections.csv",
+        "sha256": "e41bea8aae07970051d0d81d665e55f70c6f79ccc41328a128e64fc9c0b50402",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/lightgbm/target_comparison.csv",
+        "sha256": "763214d1ab3bdaef4169779ccd3809e352f30dcc635f19c69823a9a8956431f9",
+        "bytes": 38946,
+        "lines": 313
+      },
+      {
+        "path": "score/lightgbm/targets.csv",
+        "sha256": "cf6c8172f5fb318620dc48ed334831154735fd830fb67a65e8e51095eb3ee12a",
+        "bytes": 12472,
+        "lines": 311
+      },
+      {
+        "path": "score/lightgbm/trades.csv",
+        "sha256": "63509f2b65acc5cdcb9275f70b65fccb5d8f1c0ff39e1b50906e26ba084ee49c",
+        "bytes": 22611,
+        "lines": 138
+      },
+      {
+        "path": "score/ridge/decisions.csv",
+        "sha256": "0a9b6712ee164371dcca6ecd7976b30c85048242092b20d5f22da340bda23d14",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/ridge/evaluation.json",
+        "sha256": "c9df4ebab1c333888e27549e9efbb1d05cdd98da9c6f6ad421c1018f3680018d",
+        "bytes": 260558,
+        "lines": 7344
+      },
+      {
+        "path": "score/ridge/fit_audit.csv",
+        "sha256": "2d98ec0cbecd2bff994fc489e3b831be3a248c2d5373bd80048f2e1708e2a175",
+        "bytes": 7720,
+        "lines": 10
+      },
+      {
+        "path": "score/ridge/folds.csv",
+        "sha256": "634c8cfeb5884d865728edc4e4d1fb2bc6830e5f6d487f0df4a8260c8024d196",
+        "bytes": 2425,
+        "lines": 4
+      },
+      {
+        "path": "score/ridge/nav.csv",
+        "sha256": "48058abd4cf99a035a601d93906f20e916748b81a90a277c34d32449cbd60b64",
+        "bytes": 22879,
+        "lines": 111
+      },
+      {
+        "path": "score/ridge/positions.csv",
+        "sha256": "13868c14276c45b748dcc7321ba84acf9e13aa43433ecc0528557e13e433d4d8",
+        "bytes": 136711,
+        "lines": 1571
+      },
+      {
+        "path": "score/ridge/predictions.csv",
+        "sha256": "badb5b9032d5d6fcc7fb046d7d203560cdcfbfcb967fa071b9ed005304132dcc",
+        "bytes": 185396,
+        "lines": 1553
+      },
+      {
+        "path": "score/ridge/rankings.csv",
+        "sha256": "167d15d81851c8abfad5b8fc1ad1228f39d72333cc21f1d2ce62c7d449ca2574",
+        "bytes": 42488,
+        "lines": 311
+      },
+      {
+        "path": "score/ridge/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/ridge/target_comparison.csv",
+        "sha256": "fe08937e56906db3bdde24171386163052431620e5b2cfdcb4473f35cd76c288",
+        "bytes": 38739,
+        "lines": 313
+      },
+      {
+        "path": "score/ridge/targets.csv",
+        "sha256": "93c03902f058196c46bfe5d201fe67adc7c9fb0b653e961509f8d12f62d7c0cb",
+        "bytes": 12370,
+        "lines": 311
+      },
+      {
+        "path": "score/ridge/trades.csv",
+        "sha256": "25d5e98f975a71fcb062e4f4d7b28b4809b9895f21c7d646ef0dad137b794de2",
+        "bytes": 22461,
+        "lines": 137
+      },
+      {
+        "path": "score/xgboost/decisions.csv",
+        "sha256": "db13e691d137ca76a94d33df7b681c500f390b178846c806d4639b82cbe25f0f",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/xgboost/evaluation.json",
+        "sha256": "0c3a278b74a3a374a2f86eef3378936208524dd5a6f11ecd1982899eb1d84143",
+        "bytes": 278549,
+        "lines": 7844
+      },
+      {
+        "path": "score/xgboost/fit_audit.csv",
+        "sha256": "4cb27fee3c4664cca2d42cddb592cc0a9dabedfb84a96bf8aa297aa06f956481",
+        "bytes": 8917,
+        "lines": 10
+      },
+      {
+        "path": "score/xgboost/folds.csv",
+        "sha256": "982a6d6254fa08d1bdfef203d7d1d42a6f00b34838112ff1da216a2a4b95c621",
+        "bytes": 2491,
+        "lines": 4
+      },
+      {
+        "path": "score/xgboost/nav.csv",
+        "sha256": "be9200c4d4cd6b2cb2f31f0b5c929294eb55ae29f27bba9a149768f8dfb01dca",
+        "bytes": 22894,
+        "lines": 111
+      },
+      {
+        "path": "score/xgboost/positions.csv",
+        "sha256": "3f51f7148da7a233a038a712321e8f6d7c00dfeecaa8ba005261ff32717ae652",
+        "bytes": 145658,
+        "lines": 1673
+      },
+      {
+        "path": "score/xgboost/predictions.csv",
+        "sha256": "46f724a119a7404d782124b89d413feeb3a136cf2d14837eaa46d62229be4be1",
+        "bytes": 216247,
+        "lines": 1553
+      },
+      {
+        "path": "score/xgboost/rankings.csv",
+        "sha256": "629893cb83b3ecc2278c889a6f66261ee2e6b53664e2ec92cebabf0d30115541",
+        "bytes": 48608,
+        "lines": 311
+      },
+      {
+        "path": "score/xgboost/rejections.csv",
+        "sha256": "e41bea8aae07970051d0d81d665e55f70c6f79ccc41328a128e64fc9c0b50402",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/xgboost/target_comparison.csv",
+        "sha256": "c4e41faee4edf82ab7fd253dac718ed331e2df77ae476fca2a958327e2c3e721",
+        "bytes": 38694,
+        "lines": 313
+      },
+      {
+        "path": "score/xgboost/targets.csv",
+        "sha256": "0270736de39a3c56c477ee2228a692f4be64a9bfc2cc7c6dcc2be82769719cfc",
+        "bytes": 12250,
+        "lines": 311
+      },
+      {
+        "path": "score/xgboost/trades.csv",
+        "sha256": "dd56f946e9fd9a5621938f57a20a15f9afa08625d7cee6b78dcf3f84e421dbb9",
+        "bytes": 26613,
+        "lines": 162
+      },
+      {
+        "path": "score-contrasts.csv",
+        "sha256": "b149a3b1a7b648555442cec7d5491d5470ae7a5b25b93cd342487965dd62fb17",
+        "bytes": 9761,
+        "lines": 79
+      },
+      {
+        "path": "score-evaluation.csv",
+        "sha256": "2b887c6c838b9da24b0956f89dd726b9213dc247b7432fa94472e3a86591808e",
+        "bytes": 3179,
+        "lines": 65
+      },
+      {
+        "path": "summary.json",
+        "sha256": "1889f63aae02bd99841f4a7444a18a129c54b99dd62d41259043266bb18ecacd",
+        "bytes": 8439,
+        "lines": 237
+      }
+    ],
+    "p309-run4": [
+      {
+        "path": "equal/factor_score/decisions.csv",
+        "sha256": "1073d3659087b604651b5a4ac99cbb6379d137261309260698af93aae3d381f7",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/factor_score/evaluation.json",
+        "sha256": "f682607728ebb15f99ab4efafa12008b0a50c6f1d2812e331b92dc0e75f7f866",
+        "bytes": 187912,
+        "lines": 5324
+      },
+      {
+        "path": "equal/factor_score/fit_audit.csv",
+        "sha256": "ac93f6ba9758a612b86b5d08434046eb68a79439eea63ddc293767ff69cb692f",
+        "bytes": 7477,
+        "lines": 10
+      },
+      {
+        "path": "equal/factor_score/folds.csv",
+        "sha256": "dbee364711233acf8b193a10c393fa37ced234ff6839482d17af5a3b41652e2b",
+        "bytes": 2415,
+        "lines": 4
+      },
+      {
+        "path": "equal/factor_score/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/factor_score/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/factor_score/predictions.csv",
+        "sha256": "099fb932fe3b86017783c501f89deed784084097f41c6b75bbefe76e26bb8c58",
+        "bytes": 165802,
+        "lines": 1553
+      },
+      {
+        "path": "equal/factor_score/rankings.csv",
+        "sha256": "534a7b2b8c69e6b70ed2141d2c7daca1aab1e84cfb2478f69fb0e38b552f6014",
+        "bytes": 38548,
+        "lines": 311
+      },
+      {
+        "path": "equal/factor_score/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/factor_score/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/factor_score/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/factor_score/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal/lightgbm/decisions.csv",
+        "sha256": "3b7f03ac2d8d7874c33ede102f8e677bb9d3d385b866f3d3a742d346e9c06f04",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/lightgbm/evaluation.json",
+        "sha256": "2160e49f6e41ee402cc8474480ab2006544bdeab56ef8e1cc37edf67c17bc2ad",
+        "bytes": 187816,
+        "lines": 5324
+      },
+      {
+        "path": "equal/lightgbm/fit_audit.csv",
+        "sha256": "f75b1890756c4d3f26f8563d145c3b1fce209353f797d6b8b943d86902763c82",
+        "bytes": 9421,
+        "lines": 10
+      },
+      {
+        "path": "equal/lightgbm/folds.csv",
+        "sha256": "ad0e4181ae6297f53a1844b456a4dd4eb21ca9b65ab60e11b1c532407f76eac8",
+        "bytes": 2575,
+        "lines": 4
+      },
+      {
+        "path": "equal/lightgbm/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/lightgbm/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/lightgbm/predictions.csv",
+        "sha256": "50bec9138d46af7b9c2f68686715a82ca775b5e84354d85bf78e6c9a2c680883",
+        "bytes": 258264,
+        "lines": 1553
+      },
+      {
+        "path": "equal/lightgbm/rankings.csv",
+        "sha256": "27bb6ec11d06377e0211e73718ba5f3f9d3e50dbb6aa2337b381257545413547",
+        "bytes": 57097,
+        "lines": 311
+      },
+      {
+        "path": "equal/lightgbm/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/lightgbm/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/lightgbm/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/lightgbm/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal/ridge/decisions.csv",
+        "sha256": "2be7a615b0327168eb62b7a6eafe04896bc753931f6e0b36850c2b3ed190de37",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/ridge/evaluation.json",
+        "sha256": "f772d336e82b8ddac95259dab44e8039ecfd0637236d2c746953d34f004ecc68",
+        "bytes": 187770,
+        "lines": 5324
+      },
+      {
+        "path": "equal/ridge/fit_audit.csv",
+        "sha256": "2d98ec0cbecd2bff994fc489e3b831be3a248c2d5373bd80048f2e1708e2a175",
+        "bytes": 7720,
+        "lines": 10
+      },
+      {
+        "path": "equal/ridge/folds.csv",
+        "sha256": "634c8cfeb5884d865728edc4e4d1fb2bc6830e5f6d487f0df4a8260c8024d196",
+        "bytes": 2425,
+        "lines": 4
+      },
+      {
+        "path": "equal/ridge/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/ridge/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/ridge/predictions.csv",
+        "sha256": "badb5b9032d5d6fcc7fb046d7d203560cdcfbfcb967fa071b9ed005304132dcc",
+        "bytes": 185396,
+        "lines": 1553
+      },
+      {
+        "path": "equal/ridge/rankings.csv",
+        "sha256": "167d15d81851c8abfad5b8fc1ad1228f39d72333cc21f1d2ce62c7d449ca2574",
+        "bytes": 42488,
+        "lines": 311
+      },
+      {
+        "path": "equal/ridge/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/ridge/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/ridge/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/ridge/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal/xgboost/decisions.csv",
+        "sha256": "e61fab14ed7c4f1074d831fa7c64eb556d7f6e7d6957a7265dfaa6fa4228da7f",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "equal/xgboost/evaluation.json",
+        "sha256": "1234f65c8fe0c7d6179a1cdd6536b04d5f1d5df51efeb73c39685ef2c784fde6",
+        "bytes": 187829,
+        "lines": 5324
+      },
+      {
+        "path": "equal/xgboost/fit_audit.csv",
+        "sha256": "4cb27fee3c4664cca2d42cddb592cc0a9dabedfb84a96bf8aa297aa06f956481",
+        "bytes": 8917,
+        "lines": 10
+      },
+      {
+        "path": "equal/xgboost/folds.csv",
+        "sha256": "982a6d6254fa08d1bdfef203d7d1d42a6f00b34838112ff1da216a2a4b95c621",
+        "bytes": 2491,
+        "lines": 4
+      },
+      {
+        "path": "equal/xgboost/nav.csv",
+        "sha256": "afc59d5f59e468624246500b2dff463b309eb18cc4a8460bd080270f8a8aa22f",
+        "bytes": 22376,
+        "lines": 111
+      },
+      {
+        "path": "equal/xgboost/positions.csv",
+        "sha256": "dd221e1b067a927954117a28cfe61c9404649feb04b6391eb248e437e9598332",
+        "bytes": 201074,
+        "lines": 2298
+      },
+      {
+        "path": "equal/xgboost/predictions.csv",
+        "sha256": "46f724a119a7404d782124b89d413feeb3a136cf2d14837eaa46d62229be4be1",
+        "bytes": 216247,
+        "lines": 1553
+      },
+      {
+        "path": "equal/xgboost/rankings.csv",
+        "sha256": "629893cb83b3ecc2278c889a6f66261ee2e6b53664e2ec92cebabf0d30115541",
+        "bytes": 48608,
+        "lines": 311
+      },
+      {
+        "path": "equal/xgboost/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "equal/xgboost/target_comparison.csv",
+        "sha256": "89b5622fc505c7c31170d82751e95225a7c73293f1475d4fec7e230a9fc3501e",
+        "bytes": 41464,
+        "lines": 313
+      },
+      {
+        "path": "equal/xgboost/targets.csv",
+        "sha256": "e7587bcc87f5af48dd858e8b9a4af883844de589a2697218623c2e8caf74ffce",
+        "bytes": 13093,
+        "lines": 311
+      },
+      {
+        "path": "equal/xgboost/trades.csv",
+        "sha256": "51664508fb38f1ce2e3c0f1efb4e3f28ddcfe7b873a36647b5de77355f922e70",
+        "bytes": 5804,
+        "lines": 36
+      },
+      {
+        "path": "equal-contrasts.csv",
+        "sha256": "738dff77a8eb65413a8445aad12dab48f5c519018722f65e6b029c70084a3561",
+        "bytes": 7435,
+        "lines": 79
+      },
+      {
+        "path": "equal-evaluation.csv",
+        "sha256": "6a47af1fcea15b1a769d7838e40607c6f113366708e6bff971c4348094a17dd3",
+        "bytes": 3197,
+        "lines": 65
+      },
+      {
+        "path": "experiments/experiments/p309-equal-factor_score.json",
+        "sha256": "fc50b40192288cdb60d2724e2eebbe415bb01f19c63eb1c35f6f020e17678d6f",
+        "bytes": 1541,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-equal-lightgbm.json",
+        "sha256": "4e7792f74ec42e796aa488bc821f8f0a4367dcd1053e5a3eb46030f766931ffd",
+        "bytes": 1570,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-equal-ridge.json",
+        "sha256": "092d6ab46da74ac6dce6ae45c6829807f2c73d0db00955663b871451ff256933",
+        "bytes": 1501,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-equal-xgboost.json",
+        "sha256": "d7d474a66fbdf2897efc846d2267788ea457e14181dd0afc5c823e4bb89b9f03",
+        "bytes": 1540,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-factor_score.json",
+        "sha256": "7b64b8f0c396f8ea73468a71e5ef82ec39f2c69a57a6b95049cb2e4c33597434",
+        "bytes": 1574,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-lightgbm.json",
+        "sha256": "ff9ed6755cbfd8c2b56767ba6bc357543e93ee281b52c6a5f3274db8f8bd9fb6",
+        "bytes": 1603,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-ridge.json",
+        "sha256": "5d03838141600d19eca1043ca261ae9609cfd8bc57bd14cb733d32f90c97a8a2",
+        "bytes": 1534,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-minimum_variance-xgboost.json",
+        "sha256": "7f4cba5cf3823277fd5ae687c90482f9f1069ffc560f56943607e2a4d98f7375",
+        "bytes": 1573,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-factor_score.json",
+        "sha256": "5213236c08b580913ac2a7657b7ab5eaa5396bdad1256d8610ac92781c33e906",
+        "bytes": 1541,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-lightgbm.json",
+        "sha256": "d6554e59ee22c56685f4c32811ccd9a9f86a196f053e18f34c9806a70cae553e",
+        "bytes": 1570,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-ridge.json",
+        "sha256": "aea036e08c284cbb41de049be3c3b105e0ede7d49f4e87d57aed5edc633071fb",
+        "bytes": 1501,
+        "lines": 1
+      },
+      {
+        "path": "experiments/experiments/p309-score-xgboost.json",
+        "sha256": "cc7cfee7a173b2413ba889488b611dd66dd0d50c0b1094705c8a6dc92e7fa8cd",
+        "bytes": 1540,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-factor_score.json",
+        "sha256": "09d5b032258096a75a9ee5dfad7c166866dd9c2c7f52552e153e22cf309ede33",
+        "bytes": 4414,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-lightgbm.json",
+        "sha256": "775471d31e46c9e7c5bc7f454456e590b87be809736626f4e1dcee5d691b144a",
+        "bytes": 4361,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-ridge.json",
+        "sha256": "4386515fe5da346cf8649e0abf834a9308d8d1eac5f7d09b94cc3e2a33efbeee",
+        "bytes": 4321,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-equal-xgboost.json",
+        "sha256": "517d915d3ea15e0c6bf33bcacc2d0c8720445112e5e90dc84c4b4a7c017c9d45",
+        "bytes": 4349,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-factor_score.json",
+        "sha256": "3d3006fa87965ee236c95b63fb04e32504933b402b6ad83e8f7bc26a0f94218f",
+        "bytes": 4558,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-lightgbm.json",
+        "sha256": "d97bfebaf50be616eff90c9d6301813c2bfee4c69684a29d354260886aaaed86",
+        "bytes": 4505,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-ridge.json",
+        "sha256": "9fae9105620115583603ecc0df5a3ac68895262aa09ab9247e6e5c8cc748254c",
+        "bytes": 4465,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-minimum_variance-xgboost.json",
+        "sha256": "9177842f77b87cff061960b35ce61bb4dacb6425f4eb56bc0c2db88b5d845669",
+        "bytes": 4493,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-factor_score.json",
+        "sha256": "7d5c73811ece4369d73469d62740eab5df93c4f21d2519f6a35ee2f8d2be95f8",
+        "bytes": 4416,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-lightgbm.json",
+        "sha256": "423c788a6372f80e8e23243f1b2c2a6aa7e901f321256bc68c4d8d614fe9f203",
+        "bytes": 4358,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-ridge.json",
+        "sha256": "e09ead0054fc36fd70e8288820ac77bbebebcd905f4297f6cb61bd892298f3f2",
+        "bytes": 4319,
+        "lines": 1
+      },
+      {
+        "path": "experiments/runs/p309-score-xgboost.json",
+        "sha256": "2c9db0fb755ad09522d7c71047208069927732c0ff1cad6b0d55ae3367b49de1",
+        "bytes": 4334,
+        "lines": 1
+      },
+      {
+        "path": "minimum_variance/factor_score/decisions.csv",
+        "sha256": "ab4900a90ada45a4621cba6d1dcfa3c564db95ad1e8252e47a81ac6e5e74f309",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/factor_score/evaluation.json",
+        "sha256": "d84f4a6a80987fc5866045809b8d719279f3d1823fd76917cfb164b199763391",
+        "bytes": 251192,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/factor_score/fit_audit.csv",
+        "sha256": "ac93f6ba9758a612b86b5d08434046eb68a79439eea63ddc293767ff69cb692f",
+        "bytes": 7477,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/factor_score/folds.csv",
+        "sha256": "dbee364711233acf8b193a10c393fa37ced234ff6839482d17af5a3b41652e2b",
+        "bytes": 2415,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/factor_score/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/factor_score/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/factor_score/predictions.csv",
+        "sha256": "099fb932fe3b86017783c501f89deed784084097f41c6b75bbefe76e26bb8c58",
+        "bytes": 165802,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/factor_score/rankings.csv",
+        "sha256": "534a7b2b8c69e6b70ed2141d2c7daca1aab1e84cfb2478f69fb0e38b552f6014",
+        "bytes": 38548,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/factor_score/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/factor_score/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/factor_score/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/factor_score/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance/lightgbm/decisions.csv",
+        "sha256": "b2cb4f9c3bd515666dd5e99da27646683580bd0b2df4f480aeba77f6bcfabe5d",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/lightgbm/evaluation.json",
+        "sha256": "19e136a44fe20ab7c400b7e3230582b03628344cea1282008912228c6eaf192b",
+        "bytes": 251096,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/lightgbm/fit_audit.csv",
+        "sha256": "f75b1890756c4d3f26f8563d145c3b1fce209353f797d6b8b943d86902763c82",
+        "bytes": 9421,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/lightgbm/folds.csv",
+        "sha256": "ad0e4181ae6297f53a1844b456a4dd4eb21ca9b65ab60e11b1c532407f76eac8",
+        "bytes": 2575,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/lightgbm/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/lightgbm/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/lightgbm/predictions.csv",
+        "sha256": "50bec9138d46af7b9c2f68686715a82ca775b5e84354d85bf78e6c9a2c680883",
+        "bytes": 258264,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/lightgbm/rankings.csv",
+        "sha256": "27bb6ec11d06377e0211e73718ba5f3f9d3e50dbb6aa2337b381257545413547",
+        "bytes": 57097,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/lightgbm/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/lightgbm/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/lightgbm/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/lightgbm/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance/ridge/decisions.csv",
+        "sha256": "c5eb9c5ead0d014186f65921a08fbd755e83bfa4727b8f225f81c57c60f009fa",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/ridge/evaluation.json",
+        "sha256": "ca39a80bfff4c38faa946dcb82f15860cb9c396db87328a20f1167e55a3aa4f9",
+        "bytes": 251050,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/ridge/fit_audit.csv",
+        "sha256": "2d98ec0cbecd2bff994fc489e3b831be3a248c2d5373bd80048f2e1708e2a175",
+        "bytes": 7720,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/ridge/folds.csv",
+        "sha256": "634c8cfeb5884d865728edc4e4d1fb2bc6830e5f6d487f0df4a8260c8024d196",
+        "bytes": 2425,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/ridge/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/ridge/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/ridge/predictions.csv",
+        "sha256": "badb5b9032d5d6fcc7fb046d7d203560cdcfbfcb967fa071b9ed005304132dcc",
+        "bytes": 185396,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/ridge/rankings.csv",
+        "sha256": "167d15d81851c8abfad5b8fc1ad1228f39d72333cc21f1d2ce62c7d449ca2574",
+        "bytes": 42488,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/ridge/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/ridge/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/ridge/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/ridge/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance/xgboost/decisions.csv",
+        "sha256": "b6f5950c582a8d9e13ed3e00d0568948936debf9f1a76106dc8b165fffd42ef3",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "minimum_variance/xgboost/evaluation.json",
+        "sha256": "570db53493e9c140f7b4e3808c1653b190ae17c83da86520311d2f916f7f382f",
+        "bytes": 251109,
+        "lines": 7084
+      },
+      {
+        "path": "minimum_variance/xgboost/fit_audit.csv",
+        "sha256": "4cb27fee3c4664cca2d42cddb592cc0a9dabedfb84a96bf8aa297aa06f956481",
+        "bytes": 8917,
+        "lines": 10
+      },
+      {
+        "path": "minimum_variance/xgboost/folds.csv",
+        "sha256": "982a6d6254fa08d1bdfef203d7d1d42a6f00b34838112ff1da216a2a4b95c621",
+        "bytes": 2491,
+        "lines": 4
+      },
+      {
+        "path": "minimum_variance/xgboost/nav.csv",
+        "sha256": "affe26652cd8a9c6fbea3c90a8b5a2f342f323acd44ebc0372448447f1c604ca",
+        "bytes": 22692,
+        "lines": 111
+      },
+      {
+        "path": "minimum_variance/xgboost/positions.csv",
+        "sha256": "e104f2326443aff765ebc33bef344dbf82d533d575112423789e7afaee72090d",
+        "bytes": 142731,
+        "lines": 1638
+      },
+      {
+        "path": "minimum_variance/xgboost/predictions.csv",
+        "sha256": "46f724a119a7404d782124b89d413feeb3a136cf2d14837eaa46d62229be4be1",
+        "bytes": 216247,
+        "lines": 1553
+      },
+      {
+        "path": "minimum_variance/xgboost/rankings.csv",
+        "sha256": "629893cb83b3ecc2278c889a6f66261ee2e6b53664e2ec92cebabf0d30115541",
+        "bytes": 48608,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/xgboost/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "minimum_variance/xgboost/target_comparison.csv",
+        "sha256": "03cb931571e8584aa23f9dfabddc917c2e69fdb48c8d0f530afaa2ee8b2ced20",
+        "bytes": 39767,
+        "lines": 313
+      },
+      {
+        "path": "minimum_variance/xgboost/targets.csv",
+        "sha256": "4a2d22abec74b492c305e3e58318354d269ae0ee267bf652dbce5dc11f4419bb",
+        "bytes": 13107,
+        "lines": 311
+      },
+      {
+        "path": "minimum_variance/xgboost/trades.csv",
+        "sha256": "f8c3b0d069a4c7870c20ea85ae617031ba77155294a4157927cd3be89a0e9c87",
+        "bytes": 20316,
+        "lines": 124
+      },
+      {
+        "path": "minimum_variance-contrasts.csv",
+        "sha256": "738dff77a8eb65413a8445aad12dab48f5c519018722f65e6b029c70084a3561",
+        "bytes": 7435,
+        "lines": 79
+      },
+      {
+        "path": "minimum_variance-evaluation.csv",
+        "sha256": "0dbf6524adb863fa0adb37c0a93ee6dc78e89951a2eb23fc20f1dacf58e0d615",
+        "bytes": 3201,
+        "lines": 65
+      },
+      {
+        "path": "prediction-comparison.csv",
+        "sha256": "f22f4599f1595ae8cbe5384036e51e805145c42762f2b442900d8c979305bfba",
+        "bytes": 882,
+        "lines": 17
+      },
+      {
+        "path": "score/factor_score/decisions.csv",
+        "sha256": "2a367db151a306bfde021ef3356f01b1c19286dcecf36a12899e3b2f94364ae2",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/factor_score/evaluation.json",
+        "sha256": "c6b0ca6dca69b0e7d22aaa1ab73a8387f25a1f538183f4a24dd360f8dac24e0d",
+        "bytes": 297790,
+        "lines": 8384
+      },
+      {
+        "path": "score/factor_score/fit_audit.csv",
+        "sha256": "ac93f6ba9758a612b86b5d08434046eb68a79439eea63ddc293767ff69cb692f",
+        "bytes": 7477,
+        "lines": 10
+      },
+      {
+        "path": "score/factor_score/folds.csv",
+        "sha256": "dbee364711233acf8b193a10c393fa37ced234ff6839482d17af5a3b41652e2b",
+        "bytes": 2415,
+        "lines": 4
+      },
+      {
+        "path": "score/factor_score/nav.csv",
+        "sha256": "50a5ad9685e8e455b3471cb8a9866aa33e3b258a802fee8009e2df1d8b8177b8",
+        "bytes": 22685,
+        "lines": 111
+      },
+      {
+        "path": "score/factor_score/positions.csv",
+        "sha256": "26ac7b343dbaceefcd00f417f6d6b0c07dbb53f48386bfa59a0fdf135967e084",
+        "bytes": 142064,
+        "lines": 1630
+      },
+      {
+        "path": "score/factor_score/predictions.csv",
+        "sha256": "099fb932fe3b86017783c501f89deed784084097f41c6b75bbefe76e26bb8c58",
+        "bytes": 165802,
+        "lines": 1553
+      },
+      {
+        "path": "score/factor_score/rankings.csv",
+        "sha256": "534a7b2b8c69e6b70ed2141d2c7daca1aab1e84cfb2478f69fb0e38b552f6014",
+        "bytes": 38548,
+        "lines": 311
+      },
+      {
+        "path": "score/factor_score/rejections.csv",
+        "sha256": "9590f2f85faf08bc8529dbbbba4a6042edcf3ca049463793f4ec424808d788c7",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/factor_score/target_comparison.csv",
+        "sha256": "b5c7b7167bfe69a0cda94511b1078e3b7ef53ca150ab948a11a14b6979755bbc",
+        "bytes": 38820,
+        "lines": 313
+      },
+      {
+        "path": "score/factor_score/targets.csv",
+        "sha256": "4a1b04819716dddb5fdfa6280378366ab31502adb777f9bdcadb6ab183304ad3",
+        "bytes": 12286,
+        "lines": 311
+      },
+      {
+        "path": "score/factor_score/trades.csv",
+        "sha256": "f1ecdfd06d906217994ffebab7979010f67442f4d911c5a6127ee03c516451f8",
+        "bytes": 31000,
+        "lines": 189
+      },
+      {
+        "path": "score/lightgbm/decisions.csv",
+        "sha256": "f9fc23bbb5c24f08c8ffa8bf540a1dd9a76298dbf3718a41678c6229300affd4",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/lightgbm/evaluation.json",
+        "sha256": "55929b03ce60413aae8cb8b821f68725b917a1d178cc8c380fc66bd7f1897d38",
+        "bytes": 261317,
+        "lines": 7364
+      },
+      {
+        "path": "score/lightgbm/fit_audit.csv",
+        "sha256": "f75b1890756c4d3f26f8563d145c3b1fce209353f797d6b8b943d86902763c82",
+        "bytes": 9421,
+        "lines": 10
+      },
+      {
+        "path": "score/lightgbm/folds.csv",
+        "sha256": "ad0e4181ae6297f53a1844b456a4dd4eb21ca9b65ab60e11b1c532407f76eac8",
+        "bytes": 2575,
+        "lines": 4
+      },
+      {
+        "path": "score/lightgbm/nav.csv",
+        "sha256": "a5e7e6e2ebee84cde060cd6cdfc6132870c11f4addc8f95e4d37e9145ccccace",
+        "bytes": 22838,
+        "lines": 111
+      },
+      {
+        "path": "score/lightgbm/positions.csv",
+        "sha256": "b4ad725d5fc8bf5300f0405e7634eb6935263d2565262aaf26bd2702a56e413d",
+        "bytes": 142171,
+        "lines": 1631
+      },
+      {
+        "path": "score/lightgbm/predictions.csv",
+        "sha256": "50bec9138d46af7b9c2f68686715a82ca775b5e84354d85bf78e6c9a2c680883",
+        "bytes": 258264,
+        "lines": 1553
+      },
+      {
+        "path": "score/lightgbm/rankings.csv",
+        "sha256": "27bb6ec11d06377e0211e73718ba5f3f9d3e50dbb6aa2337b381257545413547",
+        "bytes": 57097,
+        "lines": 311
+      },
+      {
+        "path": "score/lightgbm/rejections.csv",
+        "sha256": "e41bea8aae07970051d0d81d665e55f70c6f79ccc41328a128e64fc9c0b50402",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/lightgbm/target_comparison.csv",
+        "sha256": "763214d1ab3bdaef4169779ccd3809e352f30dcc635f19c69823a9a8956431f9",
+        "bytes": 38946,
+        "lines": 313
+      },
+      {
+        "path": "score/lightgbm/targets.csv",
+        "sha256": "cf6c8172f5fb318620dc48ed334831154735fd830fb67a65e8e51095eb3ee12a",
+        "bytes": 12472,
+        "lines": 311
+      },
+      {
+        "path": "score/lightgbm/trades.csv",
+        "sha256": "63509f2b65acc5cdcb9275f70b65fccb5d8f1c0ff39e1b50906e26ba084ee49c",
+        "bytes": 22611,
+        "lines": 138
+      },
+      {
+        "path": "score/ridge/decisions.csv",
+        "sha256": "0a9b6712ee164371dcca6ecd7976b30c85048242092b20d5f22da340bda23d14",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/ridge/evaluation.json",
+        "sha256": "c9df4ebab1c333888e27549e9efbb1d05cdd98da9c6f6ad421c1018f3680018d",
+        "bytes": 260558,
+        "lines": 7344
+      },
+      {
+        "path": "score/ridge/fit_audit.csv",
+        "sha256": "2d98ec0cbecd2bff994fc489e3b831be3a248c2d5373bd80048f2e1708e2a175",
+        "bytes": 7720,
+        "lines": 10
+      },
+      {
+        "path": "score/ridge/folds.csv",
+        "sha256": "634c8cfeb5884d865728edc4e4d1fb2bc6830e5f6d487f0df4a8260c8024d196",
+        "bytes": 2425,
+        "lines": 4
+      },
+      {
+        "path": "score/ridge/nav.csv",
+        "sha256": "48058abd4cf99a035a601d93906f20e916748b81a90a277c34d32449cbd60b64",
+        "bytes": 22879,
+        "lines": 111
+      },
+      {
+        "path": "score/ridge/positions.csv",
+        "sha256": "13868c14276c45b748dcc7321ba84acf9e13aa43433ecc0528557e13e433d4d8",
+        "bytes": 136711,
+        "lines": 1571
+      },
+      {
+        "path": "score/ridge/predictions.csv",
+        "sha256": "badb5b9032d5d6fcc7fb046d7d203560cdcfbfcb967fa071b9ed005304132dcc",
+        "bytes": 185396,
+        "lines": 1553
+      },
+      {
+        "path": "score/ridge/rankings.csv",
+        "sha256": "167d15d81851c8abfad5b8fc1ad1228f39d72333cc21f1d2ce62c7d449ca2574",
+        "bytes": 42488,
+        "lines": 311
+      },
+      {
+        "path": "score/ridge/rejections.csv",
+        "sha256": "0b27a8275428e5b37e769971212644fcc8fe3c2811a440c0cabc6afc4190e659",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/ridge/target_comparison.csv",
+        "sha256": "fe08937e56906db3bdde24171386163052431620e5b2cfdcb4473f35cd76c288",
+        "bytes": 38739,
+        "lines": 313
+      },
+      {
+        "path": "score/ridge/targets.csv",
+        "sha256": "93c03902f058196c46bfe5d201fe67adc7c9fb0b653e961509f8d12f62d7c0cb",
+        "bytes": 12370,
+        "lines": 311
+      },
+      {
+        "path": "score/ridge/trades.csv",
+        "sha256": "25d5e98f975a71fcb062e4f4d7b28b4809b9895f21c7d646ef0dad137b794de2",
+        "bytes": 22461,
+        "lines": 137
+      },
+      {
+        "path": "score/xgboost/decisions.csv",
+        "sha256": "db13e691d137ca76a94d33df7b681c500f390b178846c806d4639b82cbe25f0f",
+        "bytes": 3114,
+        "lines": 14
+      },
+      {
+        "path": "score/xgboost/evaluation.json",
+        "sha256": "0c3a278b74a3a374a2f86eef3378936208524dd5a6f11ecd1982899eb1d84143",
+        "bytes": 278549,
+        "lines": 7844
+      },
+      {
+        "path": "score/xgboost/fit_audit.csv",
+        "sha256": "4cb27fee3c4664cca2d42cddb592cc0a9dabedfb84a96bf8aa297aa06f956481",
+        "bytes": 8917,
+        "lines": 10
+      },
+      {
+        "path": "score/xgboost/folds.csv",
+        "sha256": "982a6d6254fa08d1bdfef203d7d1d42a6f00b34838112ff1da216a2a4b95c621",
+        "bytes": 2491,
+        "lines": 4
+      },
+      {
+        "path": "score/xgboost/nav.csv",
+        "sha256": "be9200c4d4cd6b2cb2f31f0b5c929294eb55ae29f27bba9a149768f8dfb01dca",
+        "bytes": 22894,
+        "lines": 111
+      },
+      {
+        "path": "score/xgboost/positions.csv",
+        "sha256": "3f51f7148da7a233a038a712321e8f6d7c00dfeecaa8ba005261ff32717ae652",
+        "bytes": 145658,
+        "lines": 1673
+      },
+      {
+        "path": "score/xgboost/predictions.csv",
+        "sha256": "46f724a119a7404d782124b89d413feeb3a136cf2d14837eaa46d62229be4be1",
+        "bytes": 216247,
+        "lines": 1553
+      },
+      {
+        "path": "score/xgboost/rankings.csv",
+        "sha256": "629893cb83b3ecc2278c889a6f66261ee2e6b53664e2ec92cebabf0d30115541",
+        "bytes": 48608,
+        "lines": 311
+      },
+      {
+        "path": "score/xgboost/rejections.csv",
+        "sha256": "e41bea8aae07970051d0d81d665e55f70c6f79ccc41328a128e64fc9c0b50402",
+        "bytes": 207,
+        "lines": 3
+      },
+      {
+        "path": "score/xgboost/target_comparison.csv",
+        "sha256": "c4e41faee4edf82ab7fd253dac718ed331e2df77ae476fca2a958327e2c3e721",
+        "bytes": 38694,
+        "lines": 313
+      },
+      {
+        "path": "score/xgboost/targets.csv",
+        "sha256": "0270736de39a3c56c477ee2228a692f4be64a9bfc2cc7c6dcc2be82769719cfc",
+        "bytes": 12250,
+        "lines": 311
+      },
+      {
+        "path": "score/xgboost/trades.csv",
+        "sha256": "dd56f946e9fd9a5621938f57a20a15f9afa08625d7cee6b78dcf3f84e421dbb9",
+        "bytes": 26613,
+        "lines": 162
+      },
+      {
+        "path": "score-contrasts.csv",
+        "sha256": "b149a3b1a7b648555442cec7d5491d5470ae7a5b25b93cd342487965dd62fb17",
+        "bytes": 9761,
+        "lines": 79
+      },
+      {
+        "path": "score-evaluation.csv",
+        "sha256": "2b887c6c838b9da24b0956f89dd726b9213dc247b7432fa94472e3a86591808e",
+        "bytes": 3179,
+        "lines": 65
+      },
+      {
+        "path": "summary.json",
+        "sha256": "1889f63aae02bd99841f4a7444a18a129c54b99dd62d41259043266bb18ecacd",
+        "bytes": 8439,
+        "lines": 237
+      }
+    ]
+  },
+  "retrieval_note": "Git blobs use repository-normalized line endings; sha256 describes original Windows run bytes, git_blob_sha256 describes git show bytes."
+}

@@ -33,6 +33,22 @@ D:/Environments/factorlab-py313/Scripts/python.exe -m pytest -q tests/research/t
 
 The CLI writes prediction/fit identities, rankings, decision receipts, targets, engine target comparisons, trades, rejections, holdings, NAV, ResearchEvaluation results and ExperimentTracker records. The checked-in evidence is a compact selection; full generated datasets and duplicate per-mode predictions are not archived. Synthetic RankIC and returns are software-test outputs, not evidence of real-market alpha.
 
+## Evidence retention
+
+`evidence/manifest.json` binds every originally committed evidence file by path, SHA256, byte size and line count, and inventories both original full runs. Removed generated tables remain retrievable verbatim from commit `99dafc24d6290164e33fadfef67559404173e660` using `git show <commit>:docs/validation/p3-09/evidence/<path>`. This is an existing published preservation location, not a replacement experiment.
+
+`evidence/original-runs.json` preserves the original experiment definitions and run records for both accepted runs, including dependency versions, commands, factor identities, artifact hashes and code provenance. The actual runs report baseline commit `e1ebe0dec9eb0b585972565167eff0c29a7f1d62` with `git_dirty=true`; the published implementation commit must not be represented as their clean executed HEAD. The recorded diff hash identifies the dirty state but is not itself a saved source patch. Exact historical source reconstruction therefore remains qualified by that provenance.
+
+Original aggregate results, accounting and reproduction receipts remain unchanged. Two score-mode model chains retain rankings, decisions, targets, rounded desired positions, trades, rejections, holdings and NAV; all four models retain fit audits, folds, decisions and NAV. The remaining repeated evaluation objects and generated tables are represented by their original identities rather than rewritten values. Synthetic outputs can be regenerated through the reproduction entry above; original acceptance receipts and provenance are historical records, not regenerable acceptance claims.
+
+The latest P3-07B `prediction_targets()` is a separate research-pipeline adapter. P3-09 retains its local synthetic adapter; no cross-module refactor or business-code change is required. A merge-tree check against main `a33d8e323fc6c0313f907e022c9e5dc32bfe3147` found no file conflicts.
+
+## Compaction verification
+
+**P309_EVIDENCE_COMPACTED**. All tracker-bound artifacts in both original runs passed SHA256 verification. The 106 original checked-in evidence files are individually inventoried; 38 remain verbatim and 68 generated files are represented by their hashes and preserved original commit. Windows original bytes and normalized Git blobs have separate hash fields. Retained JSON/CSV parsing, report evidence references, historical retrieval hashes and reproduction-entry syntax passed. Seven P3-09 intervention tests passed again in 23.98 seconds. Business code is unchanged, so the 492-test historical regression receipt is retained without rerunning that suite.
+
+`evidence/original-ci.json` is a snapshot for original HEAD `99dafc24d6290164e33fadfef67559404173e660`, not validation of the compaction commit. Package, both lock acceptance jobs and native lock diagnosis succeeded at capture; Current Software V2 and historical Legacy were still running. Historical Legacy failures are not automatically new regressions. New-HEAD CI must be evaluated separately before merge readiness. Main has no branch protection or repository rulesets at inspection.
+
 ## Acceptance
 
 The four-model / three-objective experiment completed. Seven new deterministic intervention tests passed (25.38 seconds); the directly related regression suite passed 492 tests in the earlier combined run. That initial combined run also passed six new tests, with the remaining future-data intervention subsequently corrected and passed: realized future labels must be allowed to change, while prior decision scores and instructions must remain unchanged.
