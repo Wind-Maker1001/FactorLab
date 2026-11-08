@@ -123,22 +123,35 @@ class GovernanceStore:
         """Report exact field differences; never return a fused table."""
         left = self.read(source, kind, version=version, symbol=symbol, start=start, end=end)
         right = self.read(other_source, kind, version=other_version, symbol=symbol, start=start, end=end)
-        keys = ["date", "symbol"] if "symbol" in left.data and "symbol" in right.data else ["date"]
-        a, b = left.data.set_index(keys), right.data.set_index(keys)
-        conflicts = []
-        for key in a.index.union(b.index):
-            for field in a.columns.union(b.columns):
-                x = a.at[key, field] if key in a.index and field in a else None
-                y = b.at[key, field] if key in b.index and field in b else None
-                missing_x, missing_y = bool(pd.isna(x)), bool(pd.isna(y))
-                if (missing_x and missing_y) or (not missing_x and not missing_y and x == y):
-                    continue
-                conflicts.append({"key": key, "field": field,
-                    "type": ("MISSING" if missing_x or missing_y else
-                             "STATUS" if field in {"trade_status", "is_st", "is_member"}
-                             else "VALUE"),
-                    "left": {"source": source, "version": version, "value": x,
-                             "evidence": left.metadata.provenance["original_artifacts"]},
-                    "right": {"source": other_source, "version": other_version, "value": y,
-                              "evidence": right.metadata.provenance["original_artifacts"]}})
-        return tuple(conflicts)
+        return diagnose_tables(left, right, source=source, version=version,
+                               other_source=other_source, other_version=other_version)
+
+
+def diagnose_tables(left, right, *, source, version, other_source, other_version, fields=None):
+    """Compare explicit DataHub results without archiving or merging them.
+
+    Callers must establish matching units/semantics before selecting fields.
+    """
+    keys = ["date", "symbol"] if "symbol" in left.data and "symbol" in right.data else ["date"]
+    if left.data.duplicated(keys).any() or right.data.duplicated(keys).any():
+        raise DataQualityError('duplicate comparison keys')
+    a, b = left.data.set_index(keys), right.data.set_index(keys)
+    if fields is not None:
+        a, b = a.reindex(columns=fields), b.reindex(columns=fields)
+    conflicts = []
+    for key in a.index.union(b.index):
+        for field in a.columns.union(b.columns):
+            x = a.at[key, field] if key in a.index and field in a else None
+            y = b.at[key, field] if key in b.index and field in b else None
+            missing_x, missing_y = bool(pd.isna(x)), bool(pd.isna(y))
+            if (missing_x and missing_y) or (not missing_x and not missing_y and x == y):
+                continue
+            conflicts.append({"key": key, "field": field,
+                "type": ("MISSING" if missing_x or missing_y else
+                         "STATUS" if field in {"trade_status", "is_st", "is_member"}
+                         else "VALUE"),
+                "left": {"source": source, "version": version, "value": x,
+                         "evidence": left.metadata.provenance.get("original_artifacts", left.metadata.provenance)},
+                "right": {"source": other_source, "version": other_version, "value": y,
+                          "evidence": right.metadata.provenance.get("original_artifacts", right.metadata.provenance)}})
+    return tuple(conflicts)
