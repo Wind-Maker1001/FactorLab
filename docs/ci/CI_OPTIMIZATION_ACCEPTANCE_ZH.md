@@ -1,8 +1,12 @@
 # CI 精简验收
 
-main 已启用绑定独立 GitHub App 的受信任合并门禁。Full CI 三分片验收当前 `BLOCKED`：[42515899004](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42515899004) 的六片因三个新增模块缺少历史耗时而在 collection 失败；尚无完整软件验证性能实测。已加入显式 `UNMEASURED` 估算分配，修复定向验证 44 项通过（2.85 秒），待一次必要 Full CI 重验。
+main 已启用绑定独立 GitHub App 的受信任合并门禁。三分片工程验收状态为 `SHARD_ENGINEERING_PASS`；Full CI 发布状态为 `FULL_RELEASE_BLOCKED`。
 
-该次历史隔离实际执行 186 条，50 FAIL / 136 ERROR，原始退出码 1，与原历史清单一致；单独保留为历史失败，不计为本轮软件新回归，也不转换为通过。历史失败仍阻断完整发布，不构成正式金融准入或发布许可。
+[Full CI #42516533467](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42516533467)（提交 [`31702b4`](https://github.com/Wind-Maker1001/FactorLab/commit/31702b4)）中 Python 3.13/3.14 六片全部 PASS，实际覆盖汇总和 Independent V2 比较 PASS，端到端墙钟时间 **16 分 50 秒**，达到 15–18 分钟目标。历史隔离仍实际执行 186 条，50 FAIL / 136 ERROR，退出码 1；该历史失败单独报告，不计作本轮新回归、不转换为通过，因而 Full release gate 继续 FAIL。
+
+必要收据：[`verified-current-coverage`](https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/13631599845)、[`independent-v2-coverage`](https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/13631878746)、[`full-legacy-windows-3.14`](https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/13631791937)。此前 collection 阻塞 [#42515899004](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42515899004) 已由显式 `UNMEASURED` 保守权重修复；定向回归 44 项通过（2.85 秒）。
+
+`SHARD_ENGINEERING_PASS` 仅表示六片实际覆盖、分片互斥/全集并集和 V2 比较通过；不表示金融发布或历史迁移通过。`FULL_RELEASE_BLOCKED` 是预期的真实历史失败传播。该状态不构成正式金融准入或发布许可。
 
 ## 执行路径
 
@@ -28,13 +32,14 @@ PR 35 的 3.13 收据：core 455、cross-market 277、financial-gates 134、conf
 
 | 指标 | 优化前（PR 35） | 优化后 |
 |---|---:|---|
-| PR 总耗时 | 2695 秒 | NOT_VERIFIED |
-| 核心测试耗时（core 收据） | 42.953 秒 | NOT_VERIFIED |
-| Runner 启动（Set up job 步骤） | 待汇总 | NOT_VERIFIED |
-| 3.13 依赖安装 | 70 秒 | NOT_VERIFIED |
-| Job 数 | 8 | 普通路径声明 3 个运行 Job；实测 NOT_VERIFIED |
-| 测试执行数量 | 增量/配置/基础锁 1030；另重复全量 | NOT_VERIFIED |
-| 加速比例 | — | NOT_VERIFIED |
+| Full workflow 总耗时 | 2695 秒（旧 PR 35） | **1010 秒（16:50）** |
+| 3.13 完整软件耗时 | 2028 秒（旧单 Runner） | 三片分别 642、837、651 秒；并行墙钟取最长 837 秒 |
+| 3.14 完整软件耗时 | 未列入旧表 | 三片分别 712、607、952 秒；并行墙钟取最长 952 秒 |
+| Runner 启动（Set up job 步骤） | 待汇总 | 已包含在作业耗时；不从端到端结论中剥离 |
+| Job 数 | 8 | 14（含六片、覆盖聚合与既有门禁） |
+| 测试执行数量 | 完整软件 5574 次 | 六片实际覆盖并集严格等于每版本完整非历史清单；V2 PASS |
+| 性能目标 | — | **达到 15–18 分钟目标** |
+| 发布结果 | FAIL（Legacy 保留） | `SHARD_ENGINEERING_PASS`；`FULL_RELEASE_BLOCKED`（历史失败） |
 
 高风险 PR 的扩展验证不承诺 3～6 分钟；普通 Fast Job 的超时为 15 分钟，不能以超时转换成功。
 
