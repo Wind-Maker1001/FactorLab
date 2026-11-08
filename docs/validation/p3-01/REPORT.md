@@ -91,7 +91,9 @@ on a clean checkout of the base SHA using the same environment:
   tests/research/test_pit_event_evidence.py::test_public_receipts_bind_exact_published_bytes_across_checkouts -q
 ```
 
-`SHA256SUMS` binds the delivered implementation, API document, tests and logs.
+`SHA256SUMS` binds canonical Git repository bytes of the delivered implementation,
+API document, tests and logs, not platform-dependent checkout line endings. To
+recompute an entry, use `git show HEAD:<path> | sha256sum` from Git Bash.
 Logs normalize absolute checkout paths to portable placeholders. No raw supplier
 data or synthetic supplier archives are archived in this change.
 
