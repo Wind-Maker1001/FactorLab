@@ -1,0 +1,52 @@
+.......                                                                  [100%]
+7 passed in 2.12s
+{
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "synthetic": true,
+  "execution_mode": "incremental_feedback",
+  "turnover_limit": 0.8,
+  "seconds": 28.65400559999398,
+  "dataset_identity": "6c47fd3a7baf1271384c39d9ffbd4331b3d8ad9265bb55c09773ea76c33d80d0",
+  "models": {
+    "factor_score": {
+      "folds": 3,
+      "predictions": 1552,
+      "rank_ic": 0.3204645788993615,
+      "trades": 123,
+      "rejections": 2,
+      "final_nav": 0.9862016347695403,
+      "final_cash": 45752.942946311836
+    },
+    "ridge": {
+      "folds": 3,
+      "predictions": 1552,
+      "rank_ic": 0.3239975676497415,
+      "trades": 123,
+      "rejections": 2,
+      "final_nav": 0.9862016347695403,
+      "final_cash": 45752.942946311836
+    },
+    "lightgbm": {
+      "folds": 3,
+      "predictions": 1552,
+      "rank_ic": 0.30802407106045343,
+      "trades": 123,
+      "rejections": 2,
+      "final_nav": 0.9862016347695403,
+      "final_cash": 45752.942946311836
+    },
+    "xgboost": {
+      "folds": 3,
+      "predictions": 1552,
+      "rank_ic": 0.3113658964719668,
+      "trades": 123,
+      "rejections": 2,
+      "final_nav": 0.9862016347695403,
+      "final_cash": 45752.942946311836
+    }
+  },
+  "queried_runs": 4,
+  "compared_runs": 4
+}
+
+[exited with code 0]

@@ -1,0 +1,133 @@
+{
+  "summary": {
+    "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+    "synthetic": true,
+    "execution_mode": "incremental_feedback",
+    "turnover_limit": 0.8,
+    "seconds": 28.65400559999398,
+    "dataset_identity": "6c47fd3a7baf1271384c39d9ffbd4331b3d8ad9265bb55c09773ea76c33d80d0",
+    "models": {
+      "factor_score": {
+        "folds": 3,
+        "predictions": 1552,
+        "rank_ic": 0.3204645788993615,
+        "trades": 123,
+        "rejections": 2,
+        "final_nav": 0.9862016347695403,
+        "final_cash": 45752.942946311836
+      },
+      "ridge": {
+        "folds": 3,
+        "predictions": 1552,
+        "rank_ic": 0.3239975676497415,
+        "trades": 123,
+        "rejections": 2,
+        "final_nav": 0.9862016347695403,
+        "final_cash": 45752.942946311836
+      },
+      "lightgbm": {
+        "folds": 3,
+        "predictions": 1552,
+        "rank_ic": 0.30802407106045343,
+        "trades": 123,
+        "rejections": 2,
+        "final_nav": 0.9862016347695403,
+        "final_cash": 45752.942946311836
+      },
+      "xgboost": {
+        "folds": 3,
+        "predictions": 1552,
+        "rank_ic": 0.3113658964719668,
+        "trades": 123,
+        "rejections": 2,
+        "final_nav": 0.9862016347695403,
+        "final_cash": 45752.942946311836
+      }
+    },
+    "queried_runs": 4,
+    "compared_runs": 4
+  },
+  "experiments": [
+    {
+      "model": "factor_score",
+      "experiment_id": "p313-synthetic-incremental_feedback-factor_score-incremental_feedback",
+      "definition_hash": "6133a66895a5260fb44087aeaf8edbaf349c6651938e33b9dcb8f9553bed66aa",
+      "execution_sources": {
+        "application/research_pipeline.py": "b8e30219bcb8d01f405f43a80eba82394011a2fa38fbfb9fad732c73fe625580",
+        "backtest/execution.py": "7e2b6e939255bb44f45fdd8543f8ca58d25c9fbb246d624dbd4ec82790d0afcb",
+        "backtest/session.py": "c5842261609afc6175d482698a1018f402157a9b8eb321933816414ead83fd68",
+        "portfolio/feedback.py": "bc6f99f919a54c50b7fbfff22e3c09069cd4614386e5b2f87d3136fa21f29004",
+        "portfolio/optimizer.py": "1feb80bcfeec556df184ac51371dacac6f4ed42a09ba7b5fc66d4c02cbf22b4b"
+      },
+      "folds": 3,
+      "decisions": 13,
+      "nav_rows": 110,
+      "max_estimated_turnover": 0.8,
+      "decision_sha256": "a323ee0c666467cf9259aeff7ec3ddc31f4da1b3bd719b397d68e0a0e30e8ae9",
+      "nav_sha256": "67f06a4d0498f62dea13cb02120c74a14dfa3619b96128f1f6dd20e269184db9"
+    },
+    {
+      "model": "lightgbm",
+      "experiment_id": "p313-synthetic-incremental_feedback-lightgbm-incremental_feedback",
+      "definition_hash": "86c3df339627582b40513ba76500faf916c82cc8ec5806842da80dcfb2e06a8c",
+      "execution_sources": {
+        "application/research_pipeline.py": "b8e30219bcb8d01f405f43a80eba82394011a2fa38fbfb9fad732c73fe625580",
+        "backtest/execution.py": "7e2b6e939255bb44f45fdd8543f8ca58d25c9fbb246d624dbd4ec82790d0afcb",
+        "backtest/session.py": "c5842261609afc6175d482698a1018f402157a9b8eb321933816414ead83fd68",
+        "portfolio/feedback.py": "bc6f99f919a54c50b7fbfff22e3c09069cd4614386e5b2f87d3136fa21f29004",
+        "portfolio/optimizer.py": "1feb80bcfeec556df184ac51371dacac6f4ed42a09ba7b5fc66d4c02cbf22b4b"
+      },
+      "folds": 3,
+      "decisions": 13,
+      "nav_rows": 110,
+      "max_estimated_turnover": 0.8,
+      "decision_sha256": "f445bd88e1be46ceb1b4b84c51183a934618ff9349d4a3098118d22d378aca0f",
+      "nav_sha256": "67f06a4d0498f62dea13cb02120c74a14dfa3619b96128f1f6dd20e269184db9"
+    },
+    {
+      "model": "ridge",
+      "experiment_id": "p313-synthetic-incremental_feedback-ridge-incremental_feedback",
+      "definition_hash": "450427a88135aca77baa551cfa9ff0e05b39d07dda52953895531710504a1ddd",
+      "execution_sources": {
+        "application/research_pipeline.py": "b8e30219bcb8d01f405f43a80eba82394011a2fa38fbfb9fad732c73fe625580",
+        "backtest/execution.py": "7e2b6e939255bb44f45fdd8543f8ca58d25c9fbb246d624dbd4ec82790d0afcb",
+        "backtest/session.py": "c5842261609afc6175d482698a1018f402157a9b8eb321933816414ead83fd68",
+        "portfolio/feedback.py": "bc6f99f919a54c50b7fbfff22e3c09069cd4614386e5b2f87d3136fa21f29004",
+        "portfolio/optimizer.py": "1feb80bcfeec556df184ac51371dacac6f4ed42a09ba7b5fc66d4c02cbf22b4b"
+      },
+      "folds": 3,
+      "decisions": 13,
+      "nav_rows": 110,
+      "max_estimated_turnover": 0.8,
+      "decision_sha256": "c0ee2e6f948b7cbcc9e9f435975cd72719e0a43e0b1f8246c1ebd2a922f138c8",
+      "nav_sha256": "67f06a4d0498f62dea13cb02120c74a14dfa3619b96128f1f6dd20e269184db9"
+    },
+    {
+      "model": "xgboost",
+      "experiment_id": "p313-synthetic-incremental_feedback-xgboost-incremental_feedback",
+      "definition_hash": "b42fad48a9d0a9d845ffa871b831287972d49af1b476427fb1842da8edd6de4d",
+      "execution_sources": {
+        "application/research_pipeline.py": "b8e30219bcb8d01f405f43a80eba82394011a2fa38fbfb9fad732c73fe625580",
+        "backtest/execution.py": "7e2b6e939255bb44f45fdd8543f8ca58d25c9fbb246d624dbd4ec82790d0afcb",
+        "backtest/session.py": "c5842261609afc6175d482698a1018f402157a9b8eb321933816414ead83fd68",
+        "portfolio/feedback.py": "bc6f99f919a54c50b7fbfff22e3c09069cd4614386e5b2f87d3136fa21f29004",
+        "portfolio/optimizer.py": "1feb80bcfeec556df184ac51371dacac6f4ed42a09ba7b5fc66d4c02cbf22b4b"
+      },
+      "folds": 3,
+      "decisions": 13,
+      "nav_rows": 110,
+      "max_estimated_turnover": 0.8,
+      "decision_sha256": "fb4f8dc88d7c3b8b7b473fe4a23312131f6b5bd93f434a4c9ae2e735f68b44bd",
+      "nav_sha256": "67f06a4d0498f62dea13cb02120c74a14dfa3619b96128f1f6dd20e269184db9"
+    }
+  ],
+  "assertions": {
+    "four_models": true,
+    "unique_identities": true,
+    "mode_changes_definition_hash": true,
+    "actual_weights_reconciled_every_decision": true,
+    "gap_sessions_preserved": true,
+    "target_deviations_observed": true,
+    "turnover_limit": 0.8
+  }
+}

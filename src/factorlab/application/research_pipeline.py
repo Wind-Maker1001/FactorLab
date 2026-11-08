@@ -19,6 +19,7 @@ from factorlab.evaluation.research import EvaluationContext, ResearchEvaluation,
 from factorlab.experiments import ExperimentTracker
 from factorlab.experiments.provenance import capture_provenance
 from factorlab.portfolio import OptimizationInput, OptimizerConfig, PortfolioOptimizer
+from factorlab.portfolio.feedback import ExecutionFeedback, SaleRestriction
 from factorlab.validation import ExpandingWalkForwardSplitter, WalkForwardRunner
 
 BOUNDARY = 'NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED'
@@ -61,6 +62,14 @@ class ResearchPipelineConfig:
     minimum_cross_section: int = 5
     chunked: ChunkedConfig = field(default_factory=ChunkedConfig)
     fees: FeeSchedule = field(default_factory=FeeSchedule.a_share_default)
+    execution_mode: str = 'batch'
+    sale_restrictions: tuple[SaleRestriction, ...] = ()
+
+    def __post_init__(self):
+        if self.execution_mode not in {'batch', 'incremental_feedback'}:
+            raise ValueError('execution_mode must be batch or incremental_feedback')
+        if self.execution_mode == 'batch' and self.sale_restrictions:
+            raise ValueError('sale_restrictions require incremental_feedback')
 
 
 @dataclass(frozen=True)
@@ -123,6 +132,53 @@ def prediction_targets(predictions, returns, *, model_name, optimizer, lookback,
             solver_status=json.dumps(optimized.solver_status, sort_keys=True),
             target_weights=json.dumps(optimized.target_weights.to_dict(), sort_keys=True)))
     return pd.concat(targets, ignore_index=True), pd.DataFrame(receipts)
+
+
+def feedback_execution(predictions, returns, *, model_name, optimizer, lookback, every,
+                       engine, bars, benchmark, sale_restrictions=()):
+    """Allocate at known local closes, advancing the existing ledger on every day."""
+    if optimizer.config.objective == 'mean_variance':
+        raise ValueError('mean_variance requires separately PIT-qualified expected returns; scores are not returns')
+    if lookback < 2 or every < 1:
+        raise ValueError('risk lookback >= 2 and rebalance interval >= 1 required')
+    groups = dict(list(predictions.groupby('date', sort=True))[::every])
+    session = engine.start_session(bars, benchmark, signal_date=predictions.date.min())
+    feedback = ExecutionFeedback(session, optimizer)
+    targets, receipts = [], []
+    for day in pd.DatetimeIndex(benchmark.date).sort_values():
+        if day < predictions.date.min():
+            continue
+        if day != session.snapshot.as_of.normalize():
+            feedback.advance()
+        if day not in groups:
+            continue
+        group = groups[day].sort_values('symbol')
+        symbols = tuple(group.symbol)
+        risk = returns.loc[returns.index <= day, list(symbols)].tail(lookback)
+        scores = group.set_index('symbol').score.rank(method='average', pct=True)
+        decision = feedback.optimize(OptimizationInput(symbols=symbols,
+            decision_time=session.snapshot.as_of, returns=risk, scores=scores),
+            signal_time=day + pd.Timedelta(hours=15),
+            sale_restrictions=tuple(r for r in sale_restrictions
+                if pd.Timestamp(r.known_at) <= session.snapshot.as_of
+                and pd.Timestamp(r.through) >= session.next_execution_date))
+        optimized, snapshot = decision.optimization, decision.snapshot
+        target = optimized.target_weights.rename_axis('symbol').rename('target_weight').reset_index()
+        target['date'] = day
+        targets.append(target)
+        receipts.append(dict(date=day, prediction_time=day, model_name=model_name,
+            fold=int(group.fold.iloc[0]), symbols=json.dumps(symbols),
+            prediction_identity=frame_hash(group[['date', 'symbol', 'fold', 'score']].reset_index(drop=True)),
+            risk_first_date=risk.index.min(), risk_last_date=risk.index.max(), risk_rows=len(risk),
+            input_identity=optimized.input_identity, config_identity=optimized.config_identity,
+            solver_status=json.dumps(optimized.solver_status, sort_keys=True),
+            target_weights=json.dumps(optimized.target_weights.to_dict(), sort_keys=True),
+            decision_time=decision.decision_time, execution_time=decision.execution_time,
+            actual_weights=json.dumps(snapshot.security_weights.to_dict(), sort_keys=True),
+            previous_targets=json.dumps(dict(snapshot.last_targets), sort_keys=True),
+            cash=snapshot.cash, nav=snapshot.nav, cash_weight=snapshot.cash_weight,
+            estimated_gross_security_turnover=optimized.turnover))
+    return pd.concat(targets, ignore_index=True), pd.DataFrame(receipts), session.result
 
 
 class ResearchPipeline:
@@ -195,19 +251,25 @@ class ResearchPipeline:
                 minimum_cross_section=c.minimum_cross_section, **runner_options)
             walk = runner.run_partitioned(dataset, calendar=research_dates)
             model_identity = frame_hash(walk.diagnostic_audit)
-            target, decision = prediction_targets(walk.predictions, returns,
-                model_name=model, optimizer=PortfolioOptimizer(c.optimizer),
-                lookback=c.risk_lookback, every=c.rebalance_sessions)
             fit_identities = {fold: frame_hash(group[['model_name', 'model_parameters',
                 'feature_names', 'fit_source_sha256']].drop_duplicates().reset_index(drop=True))
                 for fold, group in walk.diagnostic_audit.groupby('fold')}
-            decision['model_identity'] = decision.fold.map(fit_identities)
             first, last = walk.predictions.date.min(), walk.predictions.date.max()
             execution_dates = calendar[(calendar >= first) & (calendar <= calendar[calendar.get_loc(last) + 1])]
-            executed = AShareExecutionBacktester(c.execution, fee_schedule=c.fees).run_target_weights(target,
-                tables['bars'].loc[tables['bars'].date.isin(execution_dates)].merge(
-                    tables['status'], on=['date', 'symbol'], validate='one_to_one'),
-                tables['benchmark'].loc[tables['benchmark'].date.isin(execution_dates)])
+            bars = tables['bars'].loc[tables['bars'].date.isin(execution_dates)].merge(
+                tables['status'], on=['date', 'symbol'], validate='one_to_one')
+            benchmark = tables['benchmark'].loc[tables['benchmark'].date.isin(execution_dates)]
+            engine = AShareExecutionBacktester(c.execution, fee_schedule=c.fees)
+            allocation = dict(model_name=model, optimizer=PortfolioOptimizer(c.optimizer),
+                lookback=c.risk_lookback, every=c.rebalance_sessions)
+            if c.execution_mode == 'incremental_feedback':
+                target, decision, executed = feedback_execution(walk.predictions, returns,
+                    engine=engine, bars=bars, benchmark=benchmark,
+                    sale_restrictions=c.sale_restrictions, **allocation)
+            else:
+                target, decision = prediction_targets(walk.predictions, returns, **allocation)
+                executed = engine.run_target_weights(target, bars, benchmark)
+            decision['model_identity'] = decision.fold.map(fit_identities)
             context = dict(dataset_id=dataset.identity_hash,
                 universe_id=frame_hash(membership), label=runner.target_col,
                 label_id=json.dumps(dict(target=runner.target_col, holding_days=c.builder.options.holding_days,
@@ -242,7 +304,14 @@ class ResearchPipeline:
                 indent=2, allow_nan=False) + '\n', encoding='utf-8')
             artifacts['report'] = dict(path=str(report.resolve()), sha256=file_hash(report))
             experiment_id = c.experiment_id + '-' + model
+            if c.execution_mode != 'batch':
+                experiment_id += '-' + c.execution_mode
             definition = dict(model=model, parameters=_json_value(dict(model_options=_model_configuration(options),
+                execution_mode=c.execution_mode,
+                sale_restrictions=_json_value([asdict(r) for r in c.sale_restrictions]),
+                execution_sources={name: file_hash(Path(__file__).resolve().parents[1] / name)
+                    for name in ('application/research_pipeline.py', 'portfolio/feedback.py',
+                                 'portfolio/optimizer.py', 'backtest/session.py', 'backtest/execution.py')},
                 portfolio=asdict(c.optimizer), risk_lookback=c.risk_lookback,
                 rebalance_sessions=c.rebalance_sessions, execution=asdict(c.execution))),
                 factors=dataset.manifest['binding']['factors'],
