@@ -1,0 +1,32 @@
+...........F................                                             [100%]
+================================== FAILURES ===================================
+_________________________ test_rebuild_and_bad_input __________________________
+
+tmp_path = WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-qwe13/pytest-108/test_rebuild_and_bad_input0')
+definition = {'costs': {'mode': 'NOT_APPLICABLE_PREDICTION'}, 'dataset': {'sha256': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'factor_id': 'REV1', 'version': '1'}], 'label': {'name': 'EXCESS_RET5'}, ...}
+
+    def test_rebuild_and_bad_input(tmp_path, definition):
+        tracker = ExperimentTracker(tmp_path)
+        tracker.create_experiment("e1", definition)
+        add(tracker)
+>       tracker.index.unlink()
+
+tests\research\test_experiment_tracker.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-qwe13/pytest-108/test_rebuild_and_bad_input0/index.sqlite3')
+missing_ok = False
+
+    def unlink(self, missing_ok=False):
+        """
+        Remove this file or link.
+        If the path is a directory, use rmdir() instead.
+        """
+        try:
+>           os.unlink(self)
+E           PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\qwe13\\AppData\\Local\\Temp\\pytest-of-qwe13\\pytest-108\\test_rebuild_and_bad_input0\\index.sqlite3'
+
+..\..\FactorLab-independent-candidate\local-runtimes\cpython-3.13.9-windows-x86_64-none\Lib\pathlib\_local.py:746: PermissionError
+=========================== short test summary info ===========================
+FAILED tests/research/test_experiment_tracker.py::test_rebuild_and_bad_input
+1 failed, 27 passed in 19.86s
