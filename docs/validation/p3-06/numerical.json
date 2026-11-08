@@ -1,0 +1,20 @@
+{
+  "actual_shares": {
+    "000001.SZ": 600,
+    "600000.SH": 100
+  },
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "buy_notional": 7000.0,
+  "final_cash": 2986.5,
+  "final_nav": 0.99865,
+  "first_turnover": 0.7,
+  "input_identity": "7bd07531e646ec248e09c35f913779ca4306f9cdcf60b4b19e2b98ae43b4bc63",
+  "optimizer_gross_security_turnover": 0.8,
+  "sell_notional": 0.0,
+  "synthetic": true,
+  "target_weights": {
+    "000001.SZ": 0.6399999999999999,
+    "600000.SH": 0.16000000000000011
+  },
+  "turnover_denominator": 10000.0
+}

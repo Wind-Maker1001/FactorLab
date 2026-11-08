@@ -9,7 +9,7 @@ rejections. It never claims to reconstruct order-book queues.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import math
 from typing import Dict, List, Optional, Tuple
 
@@ -17,10 +17,26 @@ import numpy as np
 import pandas as pd
 
 from factorlab.backtest.fees import FeeBreakdown, FeeSchedule
-from factorlab.backtest.rules import PriceLimitSchedule
+from factorlab.backtest.rules import PriceLimitSchedule, classify_board
 from factorlab.data.schema import normalize_symbol
 from factorlab.errors import ConfigurationError, SchemaError
 from factorlab.portfolio.topk import TopKPortfolio
+
+
+@dataclass(frozen=True)
+class OrderSizeRule:
+    """Minimum order quantity and incremental shares above that minimum."""
+
+    minimum: int = 100
+    increment: int = 100
+
+    def __post_init__(self):
+        for value in (self.minimum, self.increment):
+            if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value <= 0:
+                raise ConfigurationError("order minimum and increment must be positive integers")
+
+    def round(self, shares):
+        return 0 if shares < self.minimum else self.minimum + (int(shares) - self.minimum) // self.increment * self.increment
 
 
 @dataclass(frozen=True)
@@ -30,6 +46,10 @@ class ExecutionBacktestConfig:
     minimum_cross_section: int = 20
     initial_cash: float = 1_000_000.0
     board_lot: int = 100
+    target_order_sizes: dict[str, OrderSizeRule] = field(default_factory=lambda: {
+        "main": OrderSizeRule(), "chinext": OrderSizeRule(),
+        "star": OrderSizeRule(200, 1),
+    })
     t_plus_one: bool = True
     reject_suspended: bool = True
     price_limit_tolerance_bps: float = 5.0
@@ -47,6 +67,9 @@ class ExecutionBacktestConfig:
                 or int(value) <= 0
             ):
                 raise ConfigurationError("%s must be a positive integer" % name)
+        for key, rule in self.target_order_sizes.items():
+            if not isinstance(key, str) or not isinstance(rule, OrderSizeRule):
+                raise ConfigurationError("target_order_sizes requires board/symbol keys and OrderSizeRule values")
         if isinstance(self.initial_cash, bool):
             raise ConfigurationError("initial_cash must be finite and positive")
         try:
@@ -89,6 +112,7 @@ class ExecutionBacktestResult:
     positions: pd.DataFrame
     rejections: pd.DataFrame
     signals: pd.DataFrame
+    target_comparison: pd.DataFrame = field(default_factory=pd.DataFrame)
 
 
 @dataclass
@@ -310,12 +334,16 @@ def _affordable_quantity(
     board_lot: int,
     trade_date: pd.Timestamp,
     fees: FeeSchedule,
+    minimum: int | None = None,
 ) -> int:
-    requested_lots = requested // board_lot
+    offset = 0 if minimum is None else minimum - board_lot
+    if minimum is not None and requested < minimum:
+        return 0
+    requested_lots = (requested - offset) // board_lot
     low, high = 0, requested_lots
     while low < high:
         middle = (low + high + 1) // 2
-        quantity = middle * board_lot
+        quantity = offset + middle * board_lot
         notional = quantity * price
         required_cash = notional + fees.calculate(
             trade_date, "buy", notional
@@ -324,7 +352,7 @@ def _affordable_quantity(
             low = middle
         else:
             high = middle - 1
-    return low * board_lot
+    return offset + low * board_lot if low else 0
 
 
 _TRADE_COLUMNS = [
@@ -404,6 +432,56 @@ class AShareExecutionBacktester:
         if selected.empty:
             raise SchemaError("no valid Top-K signals are available")
 
+        return self._run_selected(selected, prepared_bars, benchmark_data)
+
+    def run_target_weights(self, targets, bars, benchmark):
+        """Execute complete long-only target snapshots at the next session open.
+
+        ``targets`` has date (naive daily signal date), symbol and target_weight.
+        Missing securities in a snapshot target zero, including old holdings.
+        No retries or implicit weight renormalization. Buy priority is symbol order.
+        Optional optimizer_turnover is the optimizer's gross security-weight change,
+        repeated consistently across each snapshot; it is not executed turnover.
+        """
+        required = {"date", "symbol", "target_weight"}
+        if not isinstance(targets, pd.DataFrame) or targets.empty or not required.issubset(targets):
+            raise SchemaError("targets require nonempty date, symbol, target_weight")
+        selected = targets.copy()
+        dates = pd.to_datetime(selected["date"], errors="raise")
+        if dates.isna().any() or dates.dt.tz is not None or not dates.equals(dates.dt.normalize()):
+            raise SchemaError("target dates must be naive daily signal dates")
+        selected["date"] = dates
+        selected["symbol"] = selected["symbol"].map(normalize_symbol)
+        if selected.duplicated(["date", "symbol"]).any():
+            raise SchemaError("duplicate target date/symbol")
+        weights = pd.to_numeric(selected["target_weight"], errors="raise")
+        if not np.isfinite(weights).all() or (weights < 0).any():
+            raise SchemaError("target weights must be finite and nonnegative")
+        selected["target_weight"] = weights
+        if (selected.groupby("date").target_weight.sum() > 1 + 1e-8).any():
+            raise SchemaError("target weights must sum to at most one")
+        if "optimizer_turnover" in selected:
+            for _, group in selected.groupby("date"):
+                values = group.optimizer_turnover
+                if values.nunique(dropna=False) != 1 or not np.isfinite(values).all() or (values < 0).any():
+                    raise SchemaError("optimizer_turnover must be a consistent finite nonnegative snapshot value")
+        selected = selected.sort_values(["date", "symbol"], kind="mergesort")
+        selected["rank"] = selected.groupby("date").cumcount() + 1
+        selected["score"] = np.nan
+        prepared = _prepare_bars(bars, self.config)
+        benchmark_data = _prepare_benchmark(benchmark, self.config.benchmark_open_price_column,
+                                            self.config.benchmark_close_price_column)
+        return self._run_selected(selected, prepared, benchmark_data, explicit=True)
+
+    def _size_rule(self, symbol):
+        rules = self.config.target_order_sizes
+        key = symbol if symbol in rules else classify_board(symbol)
+        if key not in rules:
+            raise ConfigurationError("missing target order-size rule for %s" % symbol)
+        return rules[key]
+
+    def _run_selected(self, selected, prepared_bars, benchmark_data, *, explicit=False):
+        calendar = pd.DatetimeIndex(benchmark_data["date"])
         calendar_position = {day: number for number, day in enumerate(calendar)}
         executions: Dict[pd.Timestamp, pd.DataFrame] = {}
         accepted: List[pd.DataFrame] = []
@@ -416,6 +494,8 @@ class AShareExecutionBacktester:
                     % signal_day.date()
                 )
             execution_day = calendar[position + 1]
+            if execution_day in executions:
+                raise SchemaError("multiple signals map to the same execution date")
             payload = group.copy()
             payload["execution_date"] = execution_day
             executions[execution_day] = payload
@@ -442,6 +522,7 @@ class AShareExecutionBacktester:
         trade_rows: List[dict] = []
         rejection_rows: List[dict] = []
         position_rows: List[dict] = []
+        comparison_rows = []
 
         for day in calendar[start_position:]:
             day_bars = prepared_bars.loc[
@@ -477,13 +558,21 @@ class AShareExecutionBacktester:
                 signal_date = pd.Timestamp(orders["date"].iloc[0])
                 order_lookup = orders.set_index("symbol")
                 target_shares: Dict[str, int] = {}
+                comparison_symbols = set(book.symbols()) | set(order_lookup.index)
                 for symbol in sorted(set(order_lookup.index)):
                     row = day_bars.loc[symbol] if symbol in day_bars.index else None
                     price = (
                         np.nan if row is None else row[self.config.open_price_column]
                     )
-                    if pd.isna(price) or float(price) <= 0.0:
+                    weight = float(order_lookup.loc[symbol, "target_weight"])
+                    if explicit and weight == 0:
+                        target_shares[symbol] = 0
+                    elif pd.isna(price) or float(price) <= 0.0:
                         target_shares[symbol] = book.total_shares(symbol)
+                        if explicit:
+                            rejection_rows.append(dict(signal_date=signal_date, execution_date=day,
+                                symbol=symbol, side="target", score=np.nan, rank=order_lookup.loc[symbol, "rank"],
+                                requested_shares=np.nan, rejected_shares=np.nan, reason="missing_open"))
                     else:
                         weight = float(order_lookup.loc[symbol, "target_weight"])
                         lots = math.floor(
@@ -493,6 +582,17 @@ class AShareExecutionBacktester:
                             / self.config.board_lot
                         )
                         target_shares[symbol] = int(lots * self.config.board_lot)
+                        if explicit:
+                            current = book.total_shares(symbol)
+                            rule = self._size_rule(symbol)
+                            raw_desired = math.floor(pretrade_value * weight / float(price))
+                            desired = (rule.round(raw_desired) if current == 0 else
+                                       raw_desired // rule.increment * rule.increment)
+                            if desired > current:
+                                target_shares[symbol] = current + rule.round(desired - current)
+                            else:
+                                reduction = current - desired
+                                target_shares[symbol] = current - (current if desired == 0 else rule.round(reduction))
 
                 for symbol in book.symbols():
                     current = book.total_shares(symbol)
@@ -530,7 +630,7 @@ class AShareExecutionBacktester:
                     if requested == 0:
                         # A selected, unheld symbol with no opening price must
                         # still leave an auditable rejection rather than vanish.
-                        if current == 0 and (
+                        if not explicit and current == 0 and (
                             symbol not in day_bars.index
                             or pd.isna(
                                 day_bars.loc[symbol, self.config.open_price_column]
@@ -561,12 +661,28 @@ class AShareExecutionBacktester:
                         requested_shares=requested,
                         cash=cash,
                         metadata=pd.Series(metadata._asdict()),
+                        size_rule=self._size_rule(symbol) if explicit else None,
                     )
                     if executed is not None:
                         _, notional, breakdown, cash = executed
                         daily_buy_notional += notional
                         daily_cost += breakdown.total
                         daily_trade_count += 1
+
+                if explicit:
+                    open_marks = dict(open_values)
+                    for symbol in book.symbols():
+                        if symbol not in open_marks:
+                            open_marks[symbol] = float(day_bars.loc[symbol, self.config.open_price_column])
+                    posttrade_value = cash + sum(book.total_shares(symbol) * open_marks[symbol] for symbol in book.symbols())
+                    for symbol in sorted(comparison_symbols):
+                        target_weight = float(order_lookup.loc[symbol, "target_weight"]) if symbol in order_lookup.index else 0.0
+                        actual = book.total_shares(symbol) * open_marks.get(symbol, 0.0) / posttrade_value
+                        missing = symbol in order_lookup.index and target_weight > 0 and (symbol not in day_bars.index or pd.isna(day_bars.loc[symbol, self.config.open_price_column]))
+                        comparison_rows.append(dict(signal_date=signal_date, execution_date=day, symbol=symbol,
+                            target_weight=target_weight, target_shares=np.nan if missing else target_shares.get(symbol, 0),
+                            actual_shares=book.total_shares(symbol), actual_weight=actual,
+                            weight_deviation=actual-target_weight, valuation="posttrade_open_or_previous_mark"))
 
             portfolio_value = cash
             marks: Dict[str, float] = {}
@@ -641,6 +757,11 @@ class AShareExecutionBacktester:
                         daily_cost / pretrade_value if pretrade_value > 0 else 0.0
                     ),
                     "turnover": turnover,
+                    "buy_notional": daily_buy_notional,
+                    "sell_notional": daily_sell_notional,
+                    "turnover_denominator": pretrade_value,
+                    "optimizer_turnover": (executions[day]["optimizer_turnover"].iloc[0]
+                        if day in executions and "optimizer_turnover" in executions[day] else np.nan),
                     "holdings": len(book.symbols()),
                     "executed_orders": daily_trade_count,
                 }
@@ -648,6 +769,7 @@ class AShareExecutionBacktester:
 
         return ExecutionBacktestResult(
             nav=pd.DataFrame(nav_rows),
+            target_comparison=pd.DataFrame(comparison_rows),
             trades=pd.DataFrame(trade_rows, columns=_TRADE_COLUMNS),
             positions=pd.DataFrame(position_rows, columns=_POSITION_COLUMNS),
             rejections=pd.DataFrame(rejection_rows, columns=_REJECTION_COLUMNS),
@@ -699,6 +821,7 @@ class AShareExecutionBacktester:
         requested_shares: int,
         cash: float,
         metadata: Optional[pd.Series],
+        size_rule: Optional[OrderSizeRule] = None,
     ) -> Optional[Tuple[int, float, FeeBreakdown, float]]:
         rank = np.nan if metadata is None else metadata.get("rank", np.nan)
         score = np.nan if metadata is None else metadata.get("score", np.nan)
@@ -760,16 +883,13 @@ class AShareExecutionBacktester:
             quantity = min(quantity, sellable)
             reject(requested_shares - quantity, "t_plus_one")
         else:
-            lot_rounded = quantity // self.config.board_lot * self.config.board_lot
+            rule = size_rule or OrderSizeRule(self.config.board_lot, self.config.board_lot)
+            lot_rounded = rule.round(quantity)
             reject(quantity - lot_rounded, "board_lot")
-            quantity = _affordable_quantity(
-                cash,
-                float(price),
-                lot_rounded,
-                self.config.board_lot,
-                execution_date,
-                self.fee_schedule,
-            )
+            # Below the minimum is not a legal partial fill. Search legal increments.
+            affordable = _affordable_quantity(cash, float(price), lot_rounded,
+                                               rule.increment, execution_date, self.fee_schedule, rule.minimum)
+            quantity = rule.round(affordable)
             reject(lot_rounded - quantity, "cash_constraint")
         if quantity <= 0:
             return None
@@ -829,5 +949,6 @@ __all__ = [
     "ExecutionBacktestConfig",
     "ExecutionBacktestResult",
     "PositionBook",
+    "OrderSizeRule",
     "run_execution_backtest",
 ]
