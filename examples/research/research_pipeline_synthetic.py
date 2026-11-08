@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import time
 
+import numpy as np
 import pandas as pd
 
 from factorlab.application.research_pipeline import (
@@ -97,17 +98,41 @@ def configured(output, *, dynamic=True, models=None):
     return config, DataHub({'synthetic': provider}), provider
 
 
-def run(output):
+def run(output, execution_mode='batch', turnover_limit=None):
     started = time.perf_counter()
     config, hub, _ = configured(output)
+    config = replace(config, execution_mode=execution_mode,
+        experiment_id='p313-synthetic-' + execution_mode,
+        optimizer=replace(config.optimizer, turnover_limit=turnover_limit))
     result = ResearchPipeline(config).run(hub,
         tracker=ExperimentTracker(Path(output) / 'experiments'),
         repo_root=Path(__file__).resolve().parents[2],
-        command=['python', '-m', 'examples.research.research_pipeline_synthetic', '--output', str(output)])
-    summary = dict(boundary=BOUNDARY, synthetic=True, seconds=time.perf_counter() - started,
+        command=['python', '-m', 'examples.research.research_pipeline_synthetic', '--output', str(output),
+                 '--execution-mode', execution_mode] +
+                ([] if turnover_limit is None else ['--turnover-limit', str(turnover_limit)]))
+    summary = dict(boundary=BOUNDARY, synthetic=True, execution_mode=execution_mode,
+        turnover_limit=turnover_limit, seconds=time.perf_counter() - started,
         dataset_identity=result.dataset.identity_hash, models={})
     for model, walk in result.walk_forward.items():
         execution = result.executions[model]
+        assert 2 <= len(walk.fold_summary) <= 3
+        nav = execution.nav.set_index('date')
+        market = execution.positions.groupby('date').market_value.sum().reindex(nav.index, fill_value=0)
+        np.testing.assert_allclose(nav.cash + market, nav.portfolio_value, rtol=1e-12)
+        np.testing.assert_allclose(nav.portfolio_value/config.execution.initial_cash, nav.strategy_nav, rtol=1e-12)
+        np.testing.assert_allclose(config.execution.initial_cash +
+            (nav.sell_notional-nav.buy_notional-nav.transaction_cost).cumsum(), nav.cash, rtol=1e-12)
+        pd.testing.assert_frame_equal(result.evaluations[model][1].tables['daily'], execution.nav)
+        decision = result.decisions[model]
+        if execution_mode == 'incremental_feedback':
+            assert (decision.decision_time.dt.hour == 15).all()
+            assert (decision.execution_time > decision.decision_time).all()
+            for row in decision.itertuples():
+                weights, target = json.loads(row.actual_weights), json.loads(row.target_weights)
+                expected = sum(abs(target.get(s, 0)-weights.get(s, 0)) for s in set(weights) | set(target))
+                np.testing.assert_allclose(row.estimated_gross_security_turnover, expected, atol=1e-8)
+                if turnover_limit is not None:
+                    assert expected <= turnover_limit + 1e-8
         summary['models'][model] = dict(folds=len(walk.fold_summary), predictions=len(walk.predictions),
             rank_ic=result.evaluations[model][0].metrics['prediction_rank_ic_mean'].value,
             trades=len(execution.trades), rejections=len(execution.rejections),
@@ -124,4 +149,7 @@ def run(output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=BOUNDARY)
     parser.add_argument('--output', type=Path, required=True)
-    run(parser.parse_args().output)
+    parser.add_argument('--execution-mode', choices=['batch', 'incremental_feedback'], default='batch')
+    parser.add_argument('--turnover-limit', type=float)
+    args = parser.parse_args()
+    run(args.output, args.execution_mode, args.turnover_limit)
