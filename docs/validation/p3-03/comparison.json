@@ -1,0 +1,10 @@
+{
+  "equivalence": "EXACT",
+  "dense_observed_peak_rss_bytes": 406773760,
+  "window_observed_peak_rss_bytes": 315940864,
+  "rss_reduction_percent": 22.330077534991442,
+  "elapsed_reduction_percent": 26.06947538532366,
+  "logical_read_ratio": 3.0583638785475316,
+  "sampling": "Maximum across independent total and fold 10ms samplers; cached logical I/O, not physical disk traffic",
+  "runs_per_path": 1
+}

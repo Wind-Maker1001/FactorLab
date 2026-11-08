@@ -9,7 +9,7 @@ exactly once.  In particular, no train-plus-validation refit is performed.
 from __future__ import annotations
 
 from copy import copy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace as dataclass_replace
 import hashlib
 import json
 from pathlib import Path
@@ -73,6 +73,7 @@ class WalkForwardResult:
     factor_selection: pd.DataFrame = field(default_factory=pd.DataFrame)
     factor_quality: pd.DataFrame = field(default_factory=pd.DataFrame)
     factor_redundancy: pd.DataFrame = field(default_factory=pd.DataFrame)
+    resource_usage: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     @property
     def validation_candidate_metrics(self) -> pd.DataFrame:
@@ -481,15 +482,26 @@ class WalkForwardRunner:
         return value
 
     def run(
-        self,
-        data: pd.DataFrame,
-        *,
-        calendar: Optional[Iterable[object]] = None,
-        entry_date_col: str = "entry_date",
-        exit_date_col: str = "exit_date",
+        self, data: pd.DataFrame, *, calendar=None,
+        entry_date_col="entry_date", exit_date_col="exit_date",
     ) -> WalkForwardResult:
         """Run all folds and return test-only predictions plus audit tables."""
+        return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+                         exit_date_col=exit_date_col)
 
+    def run_partitioned(
+        self, dataset, *, calendar, entry_date_col="entry_date", exit_date_col="exit_date",
+    ) -> WalkForwardResult:
+        """Opt-in verified window materialization; models still fit DataFrames."""
+        from factorlab.validation.partitioned_walk_forward import PartitionedWalkForwardSource
+        self._validate_runtime_columns(entry_date_col, exit_date_col)
+        source = PartitionedWalkForwardSource(dataset, self, entry_date_col, exit_date_col)
+        result = self._run(source.metadata, calendar=calendar,
+                           entry_date_col=entry_date_col, exit_date_col=exit_date_col,
+                           source=source)
+        return dataclass_replace(result, resource_usage=pd.DataFrame(source.measurements))
+
+    def _validate_runtime_columns(self, entry_date_col, exit_date_col):
         entry_date_col = self._column_name("entry_date_col", entry_date_col)
         exit_date_col = self._column_name("exit_date_col", exit_date_col)
         runtime_semantic_columns = {
@@ -514,17 +526,17 @@ class WalkForwardRunner:
                 "feature_names must not contain target or reserved audit columns: %s"
                 % ", ".join(leaked_features)
             )
-        prepared = self._validate_data(data)
-        missing_audit_columns = [
-            name
-            for name in (entry_date_col, exit_date_col)
-            if name not in prepared.columns
-        ]
-        if missing_audit_columns:
-            raise WalkForwardRunError(
-                "label-window audit columns are required: %s"
-                % ", ".join(missing_audit_columns)
-            )
+    def _run(
+        self, data, *, calendar, entry_date_col, exit_date_col, source=None,
+    ) -> WalkForwardResult:
+        if source is None:
+            self._validate_runtime_columns(entry_date_col, exit_date_col)
+            prepared = self._validate_data(data)
+        else:
+            planning = copy(self)
+            planning.feature_names = ()
+            prepared = planning._validate_data(data)
+        self._validate_audit_columns(prepared.columns, entry_date_col, exit_date_col)
         try:
             folds = list(
                 self.splitter.split(
@@ -543,17 +555,21 @@ class WalkForwardRunner:
         if self.factor_selector is not None:
             # Verify V2 identity when present. Plain research frames receive a
             # content-and-pins identity, without any provenance certification.
-            if IDENTITY_ATTR in data.attrs:
-                identity = check_identity(data.attrs[IDENTITY_ATTR])
-                if frame_hash(data) != identity.get("dataset_content_hash"):
-                    raise WalkForwardRunError("Dataset identity content mismatch")
+            if source is not None or IDENTITY_ATTR in data.attrs:
+                if source is None:
+                    identity = check_identity(data.attrs[IDENTITY_ATTR])
+                    if frame_hash(data) != identity.get("dataset_content_hash"):
+                        raise WalkForwardRunError("Dataset identity content mismatch")
+                else:
+                    identity = source.dataset.manifest["binding"]
                 pins = {json.dumps(r, sort_keys=True) for r in identity.get("factors", [])}
                 expected = {json.dumps(r, sort_keys=True) for r in
                             [dict(factor_id=r.factor_id, version=r.version, definition_hash=r.definition_hash)
                              for r in self.factor_selector.factor_refs]}
                 if pins != expected or identity.get("snapshot_hash") != self.factor_selector.snapshot.snapshot_hash:
                     raise WalkForwardRunError("Dataset identity candidate pins mismatch")
-                dataset_identity_hash = data.attrs[IDENTITY_ATTR]["identity_hash"]
+                dataset_identity_hash = (source.dataset.identity_hash if source is not None
+                                         else data.attrs[IDENTITY_ATTR]["identity_hash"])
             else:
                 dataset_identity_hash = json_hash({"content": frame_hash(prepared),
                     "snapshot": self.factor_selector.snapshot.snapshot_hash,
@@ -571,11 +587,10 @@ class WalkForwardRunner:
         diagnostic_audit_rows: List[dict] = []
         selection_rows, quality_parts, redundancy_parts = [], [], []
 
-        for fold in folds:
+        fold_frames = (source.fold_frames(prepared, folds) if source is not None
+                       else self._fold_frames(prepared, folds))
+        for fold, train, validation, test in fold_frames:
             execution = self
-            train = prepared.iloc[fold.train_indices]
-            validation = prepared.iloc[fold.validation_indices]
-            test = prepared.iloc[fold.test_indices]
             selection = None
             if self.factor_selector is not None:
                 selection = self.factor_selector.select(
@@ -847,6 +862,9 @@ class WalkForwardRunner:
                         json.dumps(binding, indent=2, sort_keys=True, allow_nan=False) + "\n",
                         encoding="utf-8")
 
+            if source is not None:
+                del train, validation, test, train_labeled, stages, stage_source
+
         predictions = pd.concat(prediction_parts, ignore_index=True)
         # The pre-flight check should make this impossible; retain a final
         # assertion so future runner changes cannot silently double-count OOS.
@@ -887,25 +905,28 @@ class WalkForwardRunner:
             diagnostic_audit=pd.DataFrame(diagnostic_audit_rows, columns=DIAGNOSTIC_AUDIT_COLUMNS),
         )
 
+    def _validate_required_columns(self, columns):
+        if len(columns) != len(set(columns)):
+            raise WalkForwardRunError("data must not contain duplicate column names")
+        required = {self.date_col, self.symbol_col, self.target_col}.union(self.feature_names)
+        if self.regime_col is not None:
+            required.add(self.regime_col)
+        missing = sorted(required.difference(columns))
+        if missing:
+            raise WalkForwardRunError("data is missing required columns: %s" % ", ".join(missing))
+
+    @staticmethod
+    def _validate_audit_columns(columns, entry_date_col, exit_date_col):
+        missing = [name for name in (entry_date_col, exit_date_col) if name not in columns]
+        if missing:
+            raise WalkForwardRunError("label-window audit columns are required: %s" % ", ".join(missing))
+
     def _validate_data(self, data: pd.DataFrame) -> pd.DataFrame:
         if not isinstance(data, pd.DataFrame):
             raise WalkForwardRunError("data must be a pandas DataFrame")
         if data.empty:
             raise WalkForwardRunError("data must not be empty")
-        if data.columns.has_duplicates:
-            raise WalkForwardRunError("data must not contain duplicate column names")
-        required = {
-            self.date_col,
-            self.symbol_col,
-            self.target_col,
-        }.union(self.feature_names)
-        if self.regime_col is not None:
-            required.add(self.regime_col)
-        missing = sorted(required.difference(data.columns))
-        if missing:
-            raise WalkForwardRunError(
-                "data is missing required columns: %s" % ", ".join(missing)
-            )
+        self._validate_required_columns(data.columns)
         prepared = data.copy().reset_index(drop=True)
         prepared[self.date_col] = _normalise_dates(
             prepared[self.date_col], self.date_col
@@ -937,6 +958,12 @@ class WalkForwardRunner:
                                          feature, allow_nan=True)
         _validate_numeric_column(prepared, self.target_col, allow_nan=True)
         return prepared
+
+    @staticmethod
+    def _fold_frames(prepared, folds):
+        for fold in folds:
+            yield (fold, prepared.iloc[fold.train_indices],
+                   prepared.iloc[fold.validation_indices], prepared.iloc[fold.test_indices])
 
     def _assert_unique_test_observations(
         self, data: pd.DataFrame, folds: Sequence[WalkForwardFold]

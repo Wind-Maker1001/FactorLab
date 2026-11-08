@@ -248,9 +248,12 @@ class PartitionedDataset:
     def __init__(self, path, *, expected_binding=None, expected_identity_hash=None,
                  expected_input_hashes=None):
         self.path = Path(path)
+        self.read_stats = dict(checksum_bytes=0, parquet_bytes=0, partitions=0,
+                               decoded_rows=0, materialized_rows=0)
         try:
             self.manifest = json.loads((self.path / "manifest.json").read_text(encoding="utf-8"))
             payload = check_identity(self.manifest)
+            self._opened_identity_hash = self.identity_hash
             if payload["format"] != "FACTORLAB_PARTITIONED_V1":
                 raise SchemaError("Unsupported partition format")
             if expected_identity_hash is not None and self.identity_hash != expected_identity_hash:
@@ -271,7 +274,7 @@ class PartitionedDataset:
                         or (previous is not None and record["date_start"] <= previous)):
                     raise SchemaError("Overlapping or invalid partition date ranges")
                 previous = record["date_end"]
-                if file_hash(self.path / record["file"]) != record["sha256"]:
+                if self._checksum(record) != record["sha256"]:
                     raise SchemaError("Partition checksum mismatch")
             if (sum(r["rows"] for r in records) != payload["rows"]
                     or payload["rows"] != payload.get("expected_rows", payload["rows"])):
@@ -283,22 +286,82 @@ class PartitionedDataset:
     def identity_hash(self):
         return self.manifest["identity_hash"]
 
-    def iter_partitions(self):
-        for record in self.manifest["partitions"]:
+    def _checksum(self, record):
+        path = self.path / record["file"]
+        self.read_stats["checksum_bytes"] += path.stat().st_size
+        return file_hash(path)
+
+    def _check_manifest(self):
+        try:
+            current = json.loads((self.path / "manifest.json").read_text(encoding="utf-8"))
+            check_identity(current)
+            check_identity(self.manifest)
+            if current != self.manifest or self.identity_hash != self._opened_identity_hash:
+                raise SchemaError("Partition identity changed after opening")
+            if {p.name for p in self.path.iterdir()} != {
+                    "manifest.json", *(r["file"] for r in self.manifest["partitions"])}:
+                raise SchemaError("Partition inventory changed after opening")
+        except (OSError, ValueError, TypeError) as exc:
+            raise SchemaError("Invalid partition inventory: " + str(exc)) from exc
+
+    def _read_partition(self, record):
+        try:
             path = self.path / record["file"]
-            if file_hash(path) != record["sha256"]:
+            if self._checksum(record) != record["sha256"]:
                 raise SchemaError("Partition changed after opening")
             frame = pd.read_parquet(path)
+            self.read_stats["parquet_bytes"] += path.stat().st_size
+            self.read_stats["partitions"] += 1
+            self.read_stats["decoded_rows"] += len(frame)
             _keys(frame, frame.date.unique(), "partition")
             if (len(frame) != record["rows"] or _schema(frame) != self.manifest["schema"]
                     or frame_hash(frame) != record["content_hash"]
                     or frame_hash(frame[["date", "symbol"]]) != record["keys_hash"]
-                    or frame.duplicated(["date", "symbol"]).any()
                     or frame.date.min().isoformat() != record["date_start"]
                     or frame.date.max().isoformat() != record["date_end"]
                     or not frame.equals(frame.sort_values(["date", "symbol"]).reset_index(drop=True))):
                 raise SchemaError("Partition schema/content/primary key mismatch")
-            yield frame
+            return frame
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            raise SchemaError("Invalid partition: " + str(exc)) from exc
+
+    def iter_partitions(self):
+        self._check_manifest()
+        for record in self.manifest["partitions"]:
+            yield self._read_partition(record)
+
+    def read_metadata(self, columns):
+        """Verify every partition, retaining only the requested planning columns."""
+        return pd.concat((part.loc[:, columns] for part in self.iter_partitions()),
+                         ignore_index=True)
+
+    def read_dates(self, dates):
+        """Materialize exact signal dates from intersecting, fully verified partitions.
+
+        Complete partitions are decoded for content verification, including boundary
+        rows outside the request. Those rows are never returned to the consumer.
+        The window carries the source layout receipt, not a full-frame identity.
+        """
+        dates = pd.DatetimeIndex(dates)
+        if (dates.empty or dates.hasnans or dates.tz is not None
+                or dates.has_duplicates or not dates.is_monotonic_increasing
+                or not dates.equals(dates.normalize())):
+            raise ConfigurationError("Nonempty sorted unique daily dates required")
+        self._check_manifest()
+        parts = []
+        for record in self.manifest["partitions"]:
+            if ((dates >= pd.Timestamp(record["date_start"]))
+                    & (dates <= pd.Timestamp(record["date_end"]))).any():
+                frame = self._read_partition(record)
+                parts.append(frame.loc[frame.date.isin(dates)])
+        if not parts:
+            raise SchemaError("Requested dates are absent from partition dataset")
+        result = pd.concat(parts, ignore_index=True)
+        if len(dates.difference(pd.DatetimeIndex(result.date.unique()))):
+            raise SchemaError("Requested dates are absent from partition dataset")
+        self.read_stats["materialized_rows"] += len(result)
+        result.attrs["partitioned_source_identity"] = self.identity_hash
+        return result
 
     def verify(self):
         for _ in self.iter_partitions():
@@ -307,6 +370,7 @@ class PartitionedDataset:
 
     def to_frame(self):
         result = pd.concat(self.iter_partitions(), ignore_index=True)
+        self.read_stats["materialized_rows"] += len(result)
         if self.manifest["kind"] == "dataset":
             result.attrs[IDENTITY_ATTR] = seal({
                 **self.manifest["binding"], "input_hashes": self.manifest["input_hashes"],

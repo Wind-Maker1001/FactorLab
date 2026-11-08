@@ -1,0 +1,23 @@
+{
+  "base_commit": "d165c65a17c1ff4b7d174a063a6607589cd38522",
+  "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+  "packages": {
+    "numpy": "2.3.4",
+    "pandas": "2.3.3",
+    "pyarrow": "22.0.0",
+    "scikit-learn": "1.7.2",
+    "lightgbm": "4.6.0",
+    "xgboost": "2.1.4",
+    "psutil": "7.2.2",
+    "pytest": "8.4.2"
+  },
+  "source_sha256": {
+    "src/factorlab/dataset/partitioned.py": "af52f65dd4420ec3e1c45c78c20d77511cea9bfc3e6a9571c2aeea4e6a77ae3d",
+    "src/factorlab/validation/walk_forward.py": "fcb0e4f6d9d3977b840a7d05c8ba3f2c132834f5fb4900ab1296d3fa40150141",
+    "src/factorlab/validation/partitioned_walk_forward.py": "39c1e2d4b31318ac010bed5861151fa0b306bdcf7050f2e10d3290270010a0e2",
+    "tests/research/test_partitioned_walk_forward.py": "60894e3d799d7208dba775b8a151032555afb7f454ea312a69ba733d62010e33",
+    "examples/research/partitioned_walk_forward.py": "7b08c4ff18ea8668171a1978b41180e3cea056ffd397cb02a9df9981fbeb0783"
+  },
+  "measurement_driver_sha256": "b91fe4a522da1c2e844c9985782265a7f74ed9297175a7249b0c8b37ad30d33e"
+}
