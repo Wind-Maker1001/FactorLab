@@ -1,0 +1,74 @@
+[
+  {
+    "mode": "equal",
+    "model": "factor_score",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "equal",
+    "model": "ridge",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "equal",
+    "model": "lightgbm",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "equal",
+    "model": "xgboost",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "score",
+    "model": "factor_score",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "score",
+    "model": "ridge",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "score",
+    "model": "lightgbm",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "score",
+    "model": "xgboost",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "minimum_variance",
+    "model": "factor_score",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "minimum_variance",
+    "model": "ridge",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "minimum_variance",
+    "model": "lightgbm",
+    "accounting": true,
+    "next_session": true
+  },
+  {
+    "mode": "minimum_variance",
+    "model": "xgboost",
+    "accounting": true,
+    "next_session": true
+  }
+]
