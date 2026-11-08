@@ -1,0 +1,12 @@
+Base: d165c65a17c1ff4b7d174a063a6607589cd38522
+Interpreter: D:/Environments/factorlab-py313/Scripts/python.exe
+
+Command:
+python -m pytest tests/research/test_research_evaluation.py tests/research/test_prediction_metrics_phase2.py tests/research/test_portfolio_backtest_phase2.py tests/research/test_model_robustness.py tests/research/test_factor_ablation.py tests/research/test_execution_backtest_phase3.py -q
+
+........................................................................ [ 55%]
+.........................................................                [100%]
+129 passed in 56.92s
+
+Exit code: 0
+This run preceded addition of the actual-execution integration test; that test is covered by the subsequent factor/integration run.
