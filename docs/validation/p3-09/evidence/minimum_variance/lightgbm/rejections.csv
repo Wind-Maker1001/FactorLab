@@ -1,0 +1,3 @@
+signal_date,execution_date,symbol,side,score,rank,requested_shares,rejected_shares,reason
+2023-07-24,2023-07-25,000001.SZ,sell,,,300,300,suspended
+2023-07-31,2023-08-01,000001.SZ,sell,,,300,300,suspended

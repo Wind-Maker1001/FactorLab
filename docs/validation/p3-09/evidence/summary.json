@@ -1,0 +1,237 @@
+{
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "synthetic": true,
+  "results": {
+    "equal": {
+      "factor_score": {
+        "rank_ic": 0.083607783520827,
+        "final_nav": 0.9894435538105463,
+        "trades": 35,
+        "rejections": 2,
+        "costs": 230.70292815726,
+        "turnover": 0.8771545478117391,
+        "prediction_identity": "eb137936b1bd230c536d305b78178b8a7d65c2a8aa71a0bce4fd15350f3f4b87",
+        "target_identity": "9cd9000db16968a3d9f43850953cc76ce8960c75b7715c17843f9ceac41c0af9"
+      },
+      "ridge": {
+        "rank_ic": 0.3239975676497415,
+        "final_nav": 0.9894435538105463,
+        "trades": 35,
+        "rejections": 2,
+        "costs": 230.70292815726,
+        "turnover": 0.8771545478117391,
+        "prediction_identity": "c6ddd6a02eb77f8a245ad64523c1b31e6c5074012e0528a3109d9ea120fbb01b",
+        "target_identity": "9cd9000db16968a3d9f43850953cc76ce8960c75b7715c17843f9ceac41c0af9"
+      },
+      "lightgbm": {
+        "rank_ic": 0.30589722259943875,
+        "final_nav": 0.9894435538105463,
+        "trades": 35,
+        "rejections": 2,
+        "costs": 230.70292815726,
+        "turnover": 0.8771545478117391,
+        "prediction_identity": "6546e2f764f222e30a1c479d861191d2c317f4e4d3df95308996a150df98a290",
+        "target_identity": "9cd9000db16968a3d9f43850953cc76ce8960c75b7715c17843f9ceac41c0af9"
+      },
+      "xgboost": {
+        "rank_ic": 0.31332196985025274,
+        "final_nav": 0.9894435538105463,
+        "trades": 35,
+        "rejections": 2,
+        "costs": 230.70292815726,
+        "turnover": 0.8771545478117391,
+        "prediction_identity": "3a569b813575c1739b750b4a7173d7ffb71033203e9154e0d8cfc9ed047630a7",
+        "target_identity": "9cd9000db16968a3d9f43850953cc76ce8960c75b7715c17843f9ceac41c0af9"
+      },
+      "transmission": {
+        "target_to_trades_numerator": 0,
+        "target_to_trades_denominator": 0,
+        "target_to_trades_rate": null,
+        "scores_changed_to_ranking_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        },
+        "ranking_changed_to_target_changed": {
+          "numerator": 0,
+          "denominator": 78,
+          "rate": 0.0
+        },
+        "target_changed_to_orders_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "orders_changed_to_trades_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "trades_changed_to_holdings_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "holdings_changed_to_nav_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        }
+      }
+    },
+    "score": {
+      "factor_score": {
+        "rank_ic": 0.083607783520827,
+        "final_nav": 0.9819985959085336,
+        "trades": 188,
+        "rejections": 2,
+        "costs": 1380.4837056768752,
+        "turnover": 3.2086716773730233,
+        "prediction_identity": "eb137936b1bd230c536d305b78178b8a7d65c2a8aa71a0bce4fd15350f3f4b87",
+        "target_identity": "f6f5e44ab70ab6704224fc7b2ec1744557ac771ccd7dd1600eacb88ac4bd1074"
+      },
+      "ridge": {
+        "rank_ic": 0.3239975676497415,
+        "final_nav": 1.0252423243047804,
+        "trades": 136,
+        "rejections": 2,
+        "costs": 989.4365751473927,
+        "turnover": 2.4083047532292996,
+        "prediction_identity": "c6ddd6a02eb77f8a245ad64523c1b31e6c5074012e0528a3109d9ea120fbb01b",
+        "target_identity": "eb1a3abb4e829d61406f99a6760d104267d4ad804fd12368afe6b20fb3f10d13"
+      },
+      "lightgbm": {
+        "rank_ic": 0.30589722259943875,
+        "final_nav": 1.0267962658081926,
+        "trades": 137,
+        "rejections": 2,
+        "costs": 974.9435854435103,
+        "turnover": 2.304093977694557,
+        "prediction_identity": "6546e2f764f222e30a1c479d861191d2c317f4e4d3df95308996a150df98a290",
+        "target_identity": "61e6b278902facd23668f8feb3a95ba732d3b33886695cf9803ef13778c8d3a4"
+      },
+      "xgboost": {
+        "rank_ic": 0.31332196985025274,
+        "final_nav": 1.0261266578717334,
+        "trades": 161,
+        "rejections": 2,
+        "costs": 1179.6180445265823,
+        "turnover": 2.8350928694276156,
+        "prediction_identity": "3a569b813575c1739b750b4a7173d7ffb71033203e9154e0d8cfc9ed047630a7",
+        "target_identity": "5d3a84a79d20e33c43dc0047912f2ce07ebc9ad8c80aaaefd82e8e45f44f6e7c"
+      },
+      "transmission": {
+        "target_to_trades_numerator": 78,
+        "target_to_trades_denominator": 78,
+        "target_to_trades_rate": 1.0,
+        "scores_changed_to_ranking_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        },
+        "ranking_changed_to_target_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        },
+        "target_changed_to_orders_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        },
+        "orders_changed_to_trades_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        },
+        "trades_changed_to_holdings_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        },
+        "holdings_changed_to_nav_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        }
+      }
+    },
+    "minimum_variance": {
+      "factor_score": {
+        "rank_ic": 0.083607783520827,
+        "final_nav": 0.9862016347695403,
+        "trades": 123,
+        "rejections": 2,
+        "costs": 866.3209818565595,
+        "turnover": 2.087353063521507,
+        "prediction_identity": "eb137936b1bd230c536d305b78178b8a7d65c2a8aa71a0bce4fd15350f3f4b87",
+        "target_identity": "02b6766ecd21ba722f63e52eacccdeec83b01b8804575e9c00ccf65e37377ab9"
+      },
+      "ridge": {
+        "rank_ic": 0.3239975676497415,
+        "final_nav": 0.9862016347695403,
+        "trades": 123,
+        "rejections": 2,
+        "costs": 866.3209818565595,
+        "turnover": 2.087353063521507,
+        "prediction_identity": "c6ddd6a02eb77f8a245ad64523c1b31e6c5074012e0528a3109d9ea120fbb01b",
+        "target_identity": "02b6766ecd21ba722f63e52eacccdeec83b01b8804575e9c00ccf65e37377ab9"
+      },
+      "lightgbm": {
+        "rank_ic": 0.30589722259943875,
+        "final_nav": 0.9862016347695403,
+        "trades": 123,
+        "rejections": 2,
+        "costs": 866.3209818565595,
+        "turnover": 2.087353063521507,
+        "prediction_identity": "6546e2f764f222e30a1c479d861191d2c317f4e4d3df95308996a150df98a290",
+        "target_identity": "02b6766ecd21ba722f63e52eacccdeec83b01b8804575e9c00ccf65e37377ab9"
+      },
+      "xgboost": {
+        "rank_ic": 0.31332196985025274,
+        "final_nav": 0.9862016347695403,
+        "trades": 123,
+        "rejections": 2,
+        "costs": 866.3209818565595,
+        "turnover": 2.087353063521507,
+        "prediction_identity": "3a569b813575c1739b750b4a7173d7ffb71033203e9154e0d8cfc9ed047630a7",
+        "target_identity": "02b6766ecd21ba722f63e52eacccdeec83b01b8804575e9c00ccf65e37377ab9"
+      },
+      "transmission": {
+        "target_to_trades_numerator": 0,
+        "target_to_trades_denominator": 0,
+        "target_to_trades_rate": null,
+        "scores_changed_to_ranking_changed": {
+          "numerator": 78,
+          "denominator": 78,
+          "rate": 1.0
+        },
+        "ranking_changed_to_target_changed": {
+          "numerator": 0,
+          "denominator": 78,
+          "rate": 0.0
+        },
+        "target_changed_to_orders_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "orders_changed_to_trades_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "trades_changed_to_holdings_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "holdings_changed_to_nav_changed": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": null
+        }
+      }
+    }
+  }
+}

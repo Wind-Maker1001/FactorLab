@@ -1,0 +1,9 @@
+{
+  "summary_exact_match": true,
+  "csv_exact_matches": 139,
+  "excluded_fields": [
+    "tracker timestamps",
+    "tracker absolute artifact paths",
+    "environment provenance"
+  ]
+}
