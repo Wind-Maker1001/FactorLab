@@ -1,0 +1,351 @@
+name: FactorLab full validation
+on:
+  workflow_dispatch:
+  workflow_call:
+  schedule:
+    - cron: '17 3 * * 1'
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: factorlab-integration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+env:
+  MPLBACKEND: Agg
+  PYTHONUTF8: '1'
+  FACTORLAB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+jobs:
+  release-gate:
+    name: Full release gate
+    needs: [package, incremental, legacy, lock-diagnostics, lock-acceptance-v2, validation-v2-review]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Require every full validation job to pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        shell: python {0}
+        run: |
+          import json, os
+          results = json.loads(os.environ['RESULTS'])
+          print(json.dumps(results, indent=2))
+          raise SystemExit(any(job['result'] != 'success' for job in results.values()))
+  package:
+    name: Package Windows Python 3.14
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            requirements/*.txt
+            pyproject.toml
+      - name: Install public build and runtime dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/cross-market.txt
+      - name: Build wheel and sdist
+        run: python -m build --outdir local-ci/distributions
+      - name: Verify licenses, module bytes and publication boundaries
+        run: python tools/migration/inspect_distributions.py local-ci/distributions
+      - name: Reject malformed and private distributions
+        run: python tools/migration/check_distribution_rejections.py local-ci/distributions local-ci/archive-attacks
+      - name: Validate wheel and sdist installs, imports, CLI and offline demo
+        run: python tools/migration/packaging_ci.py local-ci/distributions local-ci/packaging
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: package-windows-3.14
+          path: |
+            local-ci/distributions/*.whl
+            local-ci/distributions/*.tar.gz
+            local-ci/packaging/receipt.json
+            local-ci/packaging/*.log
+            local-ci/packaging/*-smoke.json
+            local-ci/packaging/publication-scan.json
+            local-ci/archive-attacks/**/*.json
+          if-no-files-found: error
+          retention-days: 14
+  incremental:
+    name: Core, cross-market and financial gates Windows Python ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.14', '3.13']
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ~/AppData/Local/pip/Cache
+          key: factorlab-pip-Windows-${{ matrix.python }}-${{ hashFiles('requirements/*.txt', 'pyproject.toml') }}
+      - name: Install public test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
+      - name: Install project and check dependencies
+        run: |
+          python -m pip install --no-deps .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip check
+      - name: CURRENT_SOFTWARE_VALIDATION_V2 (all nonhistorical tests)
+        run: python tools/ci/integration_checks.py --suite current --output local-ci/incremental
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: incremental-windows-${{ matrix.python }}
+          path: |
+            local-ci/incremental/*/receipt.json
+            local-ci/incremental/*/dependencies.txt
+            local-ci/incremental/*/tests.xml
+            local-ci/incremental/*/tests.log
+            local-ci/incremental/*/selection.json
+          if-no-files-found: error
+          retention-days: 14
+
+  lock-diagnostics:
+    name: Native lock diagnosis Windows Python 3.14 (control failures retained)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            requirements/*.txt
+            pyproject.toml
+      - name: Resolve immutable historical controls and record preflight
+        id: history
+        shell: python {0}
+        run: |
+          import json, platform, subprocess, sys
+          from pathlib import Path
+
+          root = Path('local-ci/lock-diagnostics')
+          root.mkdir(parents=True, exist_ok=True)
+          receipt = dict(schema='FACTORLAB_LOCK_REFERENCE_PREFLIGHT_V1',
+                         status='BLOCKED', python=sys.version, windows=platform.platform(),
+                         commands=[], controls=[])
+
+          def git(*args, required=True):
+              p = subprocess.run(['git', *args], capture_output=True, text=True)
+              receipt['commands'].append(dict(args=list(args), returncode=p.returncode,
+                                               stdout=p.stdout, stderr=p.stderr))
+              if required and p.returncode:
+                  raise RuntimeError(f'git {args}: exit {p.returncode}: {p.stderr}')
+              return p
+
+          try:
+              receipt['checkout_commit'] = git('rev-parse', 'HEAD').stdout.strip()
+              receipt['checkout_tree'] = git('rev-parse', 'HEAD^{tree}').stdout.strip()
+              receipt['shallow'] = git('rev-parse', '--is-shallow-repository').stdout.strip()
+              for label, expected in (
+                  ('main', 'afac4f9d4c2b123c0b32787ccd1cf67fe965c723'),
+                  ('input', 'ed2b4c1a0a10afd794c674b14d105b748b01b9c8'),
+              ):
+                  control = dict(label=label, expected_commit=expected)
+                  receipt['controls'].append(control)
+                  control['present_before_fetch'] = git('cat-file', '-e', expected + '^{commit}', required=False).returncode == 0
+                  # Public fixed repository, exact SHA, no stored credentials or mutable-ref fallback.
+                  git('-c', 'credential.helper=', 'fetch', '--no-tags',
+                      'https://github.com/Wind-Maker1001/FactorLab.git', expected)
+                  actual = git('rev-parse', 'FETCH_HEAD^{commit}').stdout.strip()
+                  control['fetched_commit'] = actual
+                  if actual != expected:
+                      raise RuntimeError(f'{label}: expected {expected}, received {actual}')
+                  control['tree'] = git('rev-parse', expected + '^{tree}').stdout.strip()
+                  source = 'local-ci/lock-' + label
+                  git('worktree', 'add', '--detach', source, expected)
+                  control['worktree_commit'] = git('-C', source, 'rev-parse', 'HEAD').stdout.strip()
+                  if control['worktree_commit'] != expected:
+                      raise RuntimeError(f'{label}: worktree identity mismatch')
+              receipt['status'] = 'PASS'
+          except Exception as exc:
+              receipt['error'] = f'{type(exc).__name__}: {exc}'
+              raise
+          finally:
+              (root / 'reference-preflight.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+      - name: Install test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - name: Compare public main, input PR head and repaired head without test retries
+        shell: python {0}
+        run: |
+          import json, platform, subprocess, sys
+          from pathlib import Path
+
+          root = Path('local-ci/lock-diagnostics')
+          receipt = dict(schema='FACTORLAB_LOCK_EXECUTION_V1', python=sys.version,
+                         windows=platform.platform(), groups=[], status='FAIL', exit_code=1)
+          try:
+              for label, source in (('main', 'local-ci/lock-main'), ('input', 'local-ci/lock-input'), ('current', '.')):
+                  identity = subprocess.check_output(['git', '-C', source, 'show', '-s', '--format=%H %T', 'HEAD'], text=True).strip().split()
+                  group = dict(label=label, commit=identity[0], tree=identity[1])
+                  receipt['groups'].append(group)
+                  p = subprocess.run([sys.executable, 'tools/ci/windows_lock_probe.py', '--source', source,
+                                      '--output', str(root / label), '--iterations', '100'])
+                  group['raw_exit_code'] = p.returncode
+                  diagnostic = root / label / 'native-diagnostic.json'
+                  group['diagnostic_exists'] = diagnostic.is_file()
+                  group['diagnostic_valid'] = False
+                  if diagnostic.is_file():
+                      try:
+                          data = json.loads(diagnostic.read_text(encoding='utf-8'))
+                          group['diagnostic_valid'] = (data['subject_sha'] == group['commit'] and
+                              data['iterations'] == len(data['rounds']) == 100 and
+                              data['passed'] + data['failed'] == 100)
+                      except (ValueError, KeyError, TypeError) as exc:
+                          group['validation_error'] = str(exc)
+              receipt['exit_code'] = max(g['raw_exit_code'] if g['raw_exit_code'] >= 0 else 1 for g in receipt['groups'])
+              if not all(g['diagnostic_valid'] for g in receipt['groups']):
+                  receipt['exit_code'] = max(1, receipt['exit_code'])
+              receipt['status'] = 'PASS' if receipt['exit_code'] == 0 else 'FAIL'
+          except Exception as exc:
+              receipt['error'] = f'{type(exc).__name__}: {exc}'
+              raise
+          finally:
+              (root / 'execution.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+          sys.exit(receipt['exit_code'])
+      - name: Upload reference and execution receipts even on failure
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: lock-reference-receipts-windows-3.14
+          path: |
+            local-ci/lock-diagnostics/reference-preflight.json
+            local-ci/lock-diagnostics/execution.json
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always() && steps.history.outcome == 'success'
+        with:
+          name: bounded-lock-diagnostics-windows-3.14
+          path: local-ci/lock-diagnostics/*/native-diagnostic.json
+          if-no-files-found: error
+          retention-days: 14
+
+  lock-acceptance-v2:
+    name: Lock acceptance ${{ matrix.os }} Python 3.14
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            requirements/*.txt
+            pyproject.toml
+      - name: Install public test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - name: Bounded stress and fail-closed fault injection
+        run: python tools/ci/lock_acceptance.py --output local-ci/lock-acceptance --thread-rounds 100 --process-rounds 12
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: lock-acceptance-${{ matrix.os }}-3.14
+          path: |
+            local-ci/lock-acceptance/LOCK_CONCURRENCY_TEST_RESULTS.json
+            local-ci/lock-acceptance/faults.xml
+            local-ci/lock-acceptance/faults.log
+          if-no-files-found: error
+          retention-days: 14
+
+  validation-v2-review:
+    name: Independent V2 coverage comparison (no migration approval)
+    needs: [incremental, legacy]
+    if: always()
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            requirements/*.txt
+            pyproject.toml
+      - name: Retrieve actual complete and software reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name full-legacy-windows-3.14 --dir local-ci/full
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.14 --dir local-ci/current314
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name incremental-windows-3.13 --dir local-ci/current313
+          exit $LASTEXITCODE
+      - name: Compare every original software node, historical record and frozen input
+        run: python tools/ci/validation_v2.py --full local-ci/full --current local-ci/current314/current --additional-current local-ci/current313/current --output local-ci/v2-review
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: independent-v2-coverage
+          path: local-ci/v2-review/*
+          if-no-files-found: error
+          retention-days: 14
+
+  legacy:
+    name: Full legacy regression Windows Python 3.14 (failures retained)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            requirements/*.txt
+            pyproject.toml
+      - name: Install public dependencies and project
+        run: |
+          python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip install --no-deps .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip check
+      - name: Run complete project regression with real failure propagation
+        run: python tools/ci/integration_checks.py --suite legacy --output local-ci/legacy
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: full-legacy-windows-3.14
+          path: |
+            local-ci/legacy/legacy/receipt.json
+            local-ci/legacy/legacy/dependencies.txt
+            local-ci/legacy/legacy/tests.xml
+            local-ci/legacy/legacy/tests.log
+          if-no-files-found: error
+          retention-days: 14
