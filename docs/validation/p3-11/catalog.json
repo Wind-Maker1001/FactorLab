@@ -1,0 +1,1550 @@
+[
+  {
+    "factor_id": "C_amount_dispersion_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 9,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "70a3ed5fb0bf96e63aa44efdf0ce3eddfb68eb1ef36c83fb3cb6470dd8ca481d",
+    "family": "amount_dispersion",
+    "category": "liquidity_proxy",
+    "window": 10,
+    "formula": "SafeDiv(RollingStd(amount,10),RollingMean(amount,10))",
+    "structural_relation": "amount_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_amount_dispersion_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 19,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "62bdbeb62db40132f427abd927bfdab7ecbf6377a063af15d5cac044cda40a17",
+    "family": "amount_dispersion",
+    "category": "liquidity_proxy",
+    "window": 20,
+    "formula": "SafeDiv(RollingStd(amount,20),RollingMean(amount,20))",
+    "structural_relation": "amount_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_amount_dispersion_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 4,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "b6a221bf5127c65e105f987f5a41c24fda12cf5559aa0cbb5494de7fa8398416",
+    "family": "amount_dispersion",
+    "category": "liquidity_proxy",
+    "window": 5,
+    "formula": "SafeDiv(RollingStd(amount,5),RollingMean(amount,5))",
+    "structural_relation": "amount_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_amount_dispersion_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 59,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "437a452c34ce67114e19c1850e6c85fef720f1f187faae3a0487b14a4c2d6938",
+    "family": "amount_dispersion",
+    "category": "liquidity_proxy",
+    "window": 60,
+    "formula": "SafeDiv(RollingStd(amount,60),RollingMean(amount,60))",
+    "structural_relation": "amount_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_amount_surprise_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 9,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "09d3c79a16ac4682d853ed06e8954b504ffa6c3f9605dbd86804f249902eabcc",
+    "family": "amount_surprise",
+    "category": "liquidity_proxy",
+    "window": 10,
+    "formula": "Sub(SafeDiv(amount,RollingMean(amount,10)),1)",
+    "structural_relation": "amount_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_amount_surprise_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 19,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "e7dbad8cd50cd73439ea171ccb973e8190e9f280e0e23998c850634f36ac85bf",
+    "family": "amount_surprise",
+    "category": "liquidity_proxy",
+    "window": 20,
+    "formula": "Sub(SafeDiv(amount,RollingMean(amount,20)),1)",
+    "structural_relation": "amount_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_amount_surprise_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 4,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "8b8c37d2e906a05a5cfa3fe7bb99204f8eeee439e24dca85907fd4341e63e879",
+    "family": "amount_surprise",
+    "category": "liquidity_proxy",
+    "window": 5,
+    "formula": "Sub(SafeDiv(amount,RollingMean(amount,5)),1)",
+    "structural_relation": "amount_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_amount_surprise_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "amount"
+    ],
+    "lookback": 59,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"},{\"args\":[{\"op\":\"Field\",\"value\":\"amount\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "f55dcfda4efecfb09ae431f4450fb40aa5c76c475bc770c31cd78671380a9d13",
+    "family": "amount_surprise",
+    "category": "liquidity_proxy",
+    "window": 60,
+    "formula": "Sub(SafeDiv(amount,RollingMean(amount,60)),1)",
+    "structural_relation": "amount_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_intraday_return_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_open"
+    ],
+    "lookback": 9,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"op\":\"Field\",\"value\":\"adj_open\"}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}],\"op\":\"RollingMean\",\"param\":10}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "66f05dffa0a0fd07eb794d715d2c17ddb926fbc90d28932e206c83da3e116fdd",
+    "family": "intraday_return",
+    "category": "momentum_reversal",
+    "window": 10,
+    "formula": "RollingMean(Sub(SafeDiv(adj_close,adj_open),1),10)",
+    "structural_relation": "intraday_return: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_intraday_return_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_open"
+    ],
+    "lookback": 19,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"op\":\"Field\",\"value\":\"adj_open\"}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}],\"op\":\"RollingMean\",\"param\":20}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "d431e371bb893562f04fa755baf71303191cddbff893e17fb2640d9589bc64d5",
+    "family": "intraday_return",
+    "category": "momentum_reversal",
+    "window": 20,
+    "formula": "RollingMean(Sub(SafeDiv(adj_close,adj_open),1),20)",
+    "structural_relation": "intraday_return: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_intraday_return_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_open"
+    ],
+    "lookback": 4,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"op\":\"Field\",\"value\":\"adj_open\"}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}],\"op\":\"RollingMean\",\"param\":5}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "584452628979ef9534da51dbdc9d20447ef7de6cd27faee548a68b90bf5e68b3",
+    "family": "intraday_return",
+    "category": "momentum_reversal",
+    "window": 5,
+    "formula": "RollingMean(Sub(SafeDiv(adj_close,adj_open),1),5)",
+    "structural_relation": "intraday_return: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_intraday_return_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_open"
+    ],
+    "lookback": 59,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"op\":\"Field\",\"value\":\"adj_open\"}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}],\"op\":\"RollingMean\",\"param\":60}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "3cfe5f17f5e4ef8aefbb4df65891aa80e46f2b84e7de81295dd327746e53bdcb",
+    "family": "intraday_return",
+    "category": "momentum_reversal",
+    "window": 60,
+    "formula": "RollingMean(Sub(SafeDiv(adj_close,adj_open),1),60)",
+    "structural_relation": "intraday_return: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_mean_slope_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 10,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "507ebfad0dc61b84a87b1bed7a4b456126310ba94a670820b176fd594479bb39",
+    "family": "mean_slope",
+    "category": "trend",
+    "window": 10,
+    "formula": "Sub(SafeDiv(RollingMean(adj_close,10),Lag(RollingMean(adj_close,10),1)),1)",
+    "structural_relation": "mean_slope: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_mean_slope_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 20,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702",
+    "family": "mean_slope",
+    "category": "trend",
+    "window": 20,
+    "formula": "Sub(SafeDiv(RollingMean(adj_close,20),Lag(RollingMean(adj_close,20),1)),1)",
+    "structural_relation": "mean_slope: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_mean_slope_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 5,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "e99dbafa2c7894cce5690c75951802ed35a9b00af5d2c93756ffc9502ccb79b5",
+    "family": "mean_slope",
+    "category": "trend",
+    "window": 5,
+    "formula": "Sub(SafeDiv(RollingMean(adj_close,5),Lag(RollingMean(adj_close,5),1)),1)",
+    "structural_relation": "mean_slope: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_mean_slope_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 60,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60},{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce",
+    "family": "mean_slope",
+    "category": "trend",
+    "window": 60,
+    "formula": "Sub(SafeDiv(RollingMean(adj_close,60),Lag(RollingMean(adj_close,60),1)),1)",
+    "structural_relation": "mean_slope: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_momentum_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 10,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "ad30aa050a3d7cb00305c2f6f49224352b66e00bcdebe2e8453e421de63ed900",
+    "family": "momentum",
+    "category": "momentum_reversal",
+    "window": 10,
+    "formula": "Sub(SafeDiv(adj_close,Lag(adj_close,10)),1)",
+    "structural_relation": "momentum: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_momentum_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 20,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "21dd1f0579a4cd62b5e36084c5e449bb359b268630ee15a3c0a156c9f2a02066",
+    "family": "momentum",
+    "category": "momentum_reversal",
+    "window": 20,
+    "formula": "Sub(SafeDiv(adj_close,Lag(adj_close,20)),1)",
+    "structural_relation": "momentum: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_momentum_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 5,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "498598f337ebc2ca2143f6ffda8c7239bc36b362095dd5a06985a1aaeab6ed84",
+    "family": "momentum",
+    "category": "momentum_reversal",
+    "window": 5,
+    "formula": "Sub(SafeDiv(adj_close,Lag(adj_close,5)),1)",
+    "structural_relation": "momentum: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_momentum_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 60,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "8a712cd5a85aeca2fe1adac1c387b39c4743b8a34ab99fe2726f74bb637c6eed",
+    "family": "momentum",
+    "category": "momentum_reversal",
+    "window": 60,
+    "formula": "Sub(SafeDiv(adj_close,Lag(adj_close,60)),1)",
+    "structural_relation": "momentum: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_deviation_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 9,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99",
+    "family": "price_deviation",
+    "category": "trend",
+    "window": 10,
+    "formula": "Sub(SafeDiv(adj_close,RollingMean(adj_close,10)),1)",
+    "structural_relation": "price_deviation: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_deviation_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 19,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "93538b00af819ddd89f0531da31c44a8eeab1515740f23687c752ce0aa23ff14",
+    "family": "price_deviation",
+    "category": "trend",
+    "window": 20,
+    "formula": "Sub(SafeDiv(adj_close,RollingMean(adj_close,20)),1)",
+    "structural_relation": "price_deviation: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_deviation_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 4,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e",
+    "family": "price_deviation",
+    "category": "trend",
+    "window": 5,
+    "formula": "Sub(SafeDiv(adj_close,RollingMean(adj_close,5)),1)",
+    "structural_relation": "price_deviation: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_deviation_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 59,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "83e1407a717ebe9c7035d9b78568d68dc65a676fb73e08f1fd25c4fb2603cd93",
+    "family": "price_deviation",
+    "category": "trend",
+    "window": 60,
+    "formula": "Sub(SafeDiv(adj_close,RollingMean(adj_close,60)),1)",
+    "structural_relation": "price_deviation: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_dispersion_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 9,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "8dde04c0e5f2578351d9899e66de521b9947f39ca2396265fb93f47ff21ba15e",
+    "family": "price_dispersion",
+    "category": "volatility",
+    "window": 10,
+    "formula": "SafeDiv(RollingStd(adj_close,10),RollingMean(adj_close,10))",
+    "structural_relation": "price_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_dispersion_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 19,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "3bf66d22923e50ed3db7a672af4c52be8f184ea3db3cbfe7dc6490572e576dc0",
+    "family": "price_dispersion",
+    "category": "volatility",
+    "window": 20,
+    "formula": "SafeDiv(RollingStd(adj_close,20),RollingMean(adj_close,20))",
+    "structural_relation": "price_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_dispersion_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 4,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "a5b4021698a80784c3606e840b80057912dbd1908378571d8587b85323dff106",
+    "family": "price_dispersion",
+    "category": "volatility",
+    "window": 5,
+    "formula": "SafeDiv(RollingStd(adj_close,5),RollingMean(adj_close,5))",
+    "structural_relation": "price_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_price_dispersion_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 59,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "84a911653effc3fe0187234bb3f41d8d862d368f7b1dfec664fed9a73572dd3e",
+    "family": "price_dispersion",
+    "category": "volatility",
+    "window": 60,
+    "formula": "SafeDiv(RollingStd(adj_close,60),RollingMean(adj_close,60))",
+    "structural_relation": "price_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_relative_range_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_high",
+      "adj_low"
+    ],
+    "lookback": 9,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_high\"},{\"op\":\"Field\",\"value\":\"adj_low\"}],\"op\":\"Sub\"},{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"SafeDiv\"}],\"op\":\"RollingMean\",\"param\":10}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "45bfe313cedacd0db19d826a447fbfbdbdf4ebba5696dd6c64ee29c24a6ca51c",
+    "family": "relative_range",
+    "category": "volatility",
+    "window": 10,
+    "formula": "RollingMean(SafeDiv(Sub(adj_high,adj_low),adj_close),10)",
+    "structural_relation": "relative_range: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_relative_range_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_high",
+      "adj_low"
+    ],
+    "lookback": 19,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_high\"},{\"op\":\"Field\",\"value\":\"adj_low\"}],\"op\":\"Sub\"},{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"SafeDiv\"}],\"op\":\"RollingMean\",\"param\":20}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "3526f3499feb1061ae9b3bd9a6485bef6ff8a21df5015f11ce606055105d746c",
+    "family": "relative_range",
+    "category": "volatility",
+    "window": 20,
+    "formula": "RollingMean(SafeDiv(Sub(adj_high,adj_low),adj_close),20)",
+    "structural_relation": "relative_range: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_relative_range_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_high",
+      "adj_low"
+    ],
+    "lookback": 4,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_high\"},{\"op\":\"Field\",\"value\":\"adj_low\"}],\"op\":\"Sub\"},{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"SafeDiv\"}],\"op\":\"RollingMean\",\"param\":5}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "d7887694195e58e472b668881e8d297dc77828e69fd29036ec81a72dd18cdaf8",
+    "family": "relative_range",
+    "category": "volatility",
+    "window": 5,
+    "formula": "RollingMean(SafeDiv(Sub(adj_high,adj_low),adj_close),5)",
+    "structural_relation": "relative_range: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_relative_range_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close",
+      "adj_high",
+      "adj_low"
+    ],
+    "lookback": 59,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"adj_high\"},{\"op\":\"Field\",\"value\":\"adj_low\"}],\"op\":\"Sub\"},{\"op\":\"Field\",\"value\":\"adj_close\"}],\"op\":\"SafeDiv\"}],\"op\":\"RollingMean\",\"param\":60}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "ea58f8a8a86dd75b03ef39fab04644cbf8f5a06c08fd95654795292a23e3ade9",
+    "family": "relative_range",
+    "category": "volatility",
+    "window": 60,
+    "formula": "RollingMean(SafeDiv(Sub(adj_high,adj_low),adj_close),60)",
+    "structural_relation": "relative_range: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_mean_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 10,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingMean\",\"param\":10}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f",
+    "family": "return_mean",
+    "category": "momentum_reversal",
+    "window": 10,
+    "formula": "RollingMean(RET1,10)",
+    "structural_relation": "return_mean: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_mean_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 20,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingMean\",\"param\":20}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "62be9ca25cccd55b9792c73e23b74957b8d6d5f75b713808054c918e5170773c",
+    "family": "return_mean",
+    "category": "momentum_reversal",
+    "window": 20,
+    "formula": "RollingMean(RET1,20)",
+    "structural_relation": "return_mean: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_mean_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 5,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingMean\",\"param\":5}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "9500c526d4edaab52975b4408a22cd1b828858272f38506ba8aac60a50f8caa6",
+    "family": "return_mean",
+    "category": "momentum_reversal",
+    "window": 5,
+    "formula": "RollingMean(RET1,5)",
+    "structural_relation": "return_mean: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_mean_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 60,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingMean\",\"param\":60}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "d8c6ba69ab08ca46153fd4e3e70ac510f3b9cf9ccbb34b875f85d6be9c39369f",
+    "family": "return_mean",
+    "category": "momentum_reversal",
+    "window": 60,
+    "formula": "RollingMean(RET1,60)",
+    "structural_relation": "return_mean: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_volatility_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 10,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingStd\",\"param\":10}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "cea52bf8dfcc1783971a8fb5e48ee88748c650717cfdc4c6a84d71863aa9c3fb",
+    "family": "return_volatility",
+    "category": "volatility",
+    "window": 10,
+    "formula": "RollingStd(RET1,10)",
+    "structural_relation": "return_volatility: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_volatility_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 20,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingStd\",\"param\":20}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "f54ad358ffa75b1cc73198a2f1ac37b8f7bc0330495f78e1611ad8cabec570b9",
+    "family": "return_volatility",
+    "category": "volatility",
+    "window": 20,
+    "formula": "RollingStd(RET1,20)",
+    "structural_relation": "return_volatility: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_volatility_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 5,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingStd\",\"param\":5}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "63a59aab435d3a2a50b3c4a14d639b43714ea6ffadcf6b4091573046c5faeac3",
+    "family": "return_volatility",
+    "category": "volatility",
+    "window": 5,
+    "formula": "RollingStd(RET1,5)",
+    "structural_relation": "return_volatility: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_return_volatility_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "adj_close"
+    ],
+    "lookback": 60,
+    "price_basis": [
+      "HFQ"
+    ],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"RET1\"}],\"op\":\"RollingStd\",\"param\":60}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "53a67cfb99bdf0f4c8e9c37a0c84c63d1156e033b47347bda513342bf8a71a6a",
+    "family": "return_volatility",
+    "category": "volatility",
+    "window": 60,
+    "formula": "RollingStd(RET1,60)",
+    "structural_relation": "return_volatility: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_dispersion_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 9,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingStd\",\"param\":10}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f",
+    "family": "turnover_dispersion",
+    "category": "liquidity_proxy",
+    "window": 10,
+    "formula": "RollingStd(turnover,10)",
+    "structural_relation": "turnover_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_dispersion_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 19,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingStd\",\"param\":20}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "6f672eca49c329ee87ab4441a76022b5cab6f4f1ae3ed749116d82f34920aa48",
+    "family": "turnover_dispersion",
+    "category": "liquidity_proxy",
+    "window": 20,
+    "formula": "RollingStd(turnover,20)",
+    "structural_relation": "turnover_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_dispersion_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 4,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingStd\",\"param\":5}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "983eb078893f2dd8486a346c955172f7dd03f4c5536efd215687d448ba54d2d6",
+    "family": "turnover_dispersion",
+    "category": "liquidity_proxy",
+    "window": 5,
+    "formula": "RollingStd(turnover,5)",
+    "structural_relation": "turnover_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_dispersion_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 59,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingStd\",\"param\":60}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "bfd41b46f9895e194280b2da160f03febfd69e3e9370b7ae8fd28fefc269e8b1",
+    "family": "turnover_dispersion",
+    "category": "liquidity_proxy",
+    "window": 60,
+    "formula": "RollingStd(turnover,60)",
+    "structural_relation": "turnover_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_level_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 9,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":10}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f",
+    "family": "turnover_level",
+    "category": "liquidity_proxy",
+    "window": 10,
+    "formula": "RollingMean(turnover,10)",
+    "structural_relation": "turnover_level: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_level_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 19,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":20}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc",
+    "family": "turnover_level",
+    "category": "liquidity_proxy",
+    "window": 20,
+    "formula": "RollingMean(turnover,20)",
+    "structural_relation": "turnover_level: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_level_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 4,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":5}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639",
+    "family": "turnover_level",
+    "category": "liquidity_proxy",
+    "window": 5,
+    "formula": "RollingMean(turnover,5)",
+    "structural_relation": "turnover_level: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_level_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 59,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":60}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a",
+    "family": "turnover_level",
+    "category": "liquidity_proxy",
+    "window": 60,
+    "formula": "RollingMean(turnover,60)",
+    "structural_relation": "turnover_level: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_surprise_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 9,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "edcb05d87f2288ba3748490025deb2f827e01b3e9fa83e137a194b6f6129f103",
+    "family": "turnover_surprise",
+    "category": "liquidity_proxy",
+    "window": 10,
+    "formula": "Sub(SafeDiv(turnover,RollingMean(turnover,10)),1)",
+    "structural_relation": "turnover_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_surprise_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 19,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "081419c6c6038ff381e6148a53eea31ae3f54527e9ef3133fcadbd41ab4f373e",
+    "family": "turnover_surprise",
+    "category": "liquidity_proxy",
+    "window": 20,
+    "formula": "Sub(SafeDiv(turnover,RollingMean(turnover,20)),1)",
+    "structural_relation": "turnover_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_surprise_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 4,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "03d587cbb7371e8983a2eac48e4e2d6f753277aa16b79f3eec99820ecdb18be6",
+    "family": "turnover_surprise",
+    "category": "liquidity_proxy",
+    "window": 5,
+    "formula": "Sub(SafeDiv(turnover,RollingMean(turnover,5)),1)",
+    "structural_relation": "turnover_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_turnover_surprise_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "turnover"
+    ],
+    "lookback": 59,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"},{\"args\":[{\"op\":\"Field\",\"value\":\"turnover\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "0c214b8e1f813c05d050210fd971ca95e53938a784c7c41a9b38edf8e4affdb1",
+    "family": "turnover_surprise",
+    "category": "liquidity_proxy",
+    "window": 60,
+    "formula": "Sub(SafeDiv(turnover,RollingMean(turnover,60)),1)",
+    "structural_relation": "turnover_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_dispersion_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 9,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":10},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "7d0949fe8c46f3fd913388198e6c4cdc68edd2c96229e1e034d0a14d0f68e46b",
+    "family": "volume_dispersion",
+    "category": "volume_price",
+    "window": 10,
+    "formula": "SafeDiv(RollingStd(volume,10),RollingMean(volume,10))",
+    "structural_relation": "volume_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_dispersion_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 19,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":20},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "fb6a24d70253ac6bc44e804abaec3495aac09c9d018ee8edf75d387f16e0080c",
+    "family": "volume_dispersion",
+    "category": "volume_price",
+    "window": 20,
+    "formula": "SafeDiv(RollingStd(volume,20),RollingMean(volume,20))",
+    "structural_relation": "volume_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_dispersion_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 4,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "118bfa10b2e8d46b3a9d00480b32139c709ea5b1e057c40e1cf0d9d6b0e0bfce",
+    "family": "volume_dispersion",
+    "category": "volume_price",
+    "window": 5,
+    "formula": "SafeDiv(RollingStd(volume,5),RollingMean(volume,5))",
+    "structural_relation": "volume_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_dispersion_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 59,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingStd\",\"param\":60},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"SafeDiv\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "ac3dbf553c77a58ceb3659a5145fca45c7a7082cbc1a3f290d6f5e45f17f3758",
+    "family": "volume_dispersion",
+    "category": "volume_price",
+    "window": 60,
+    "formula": "SafeDiv(RollingStd(volume,60),RollingMean(volume,60))",
+    "structural_relation": "volume_dispersion: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_growth_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 10,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Lag\",\"param\":10}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "157a128fd74c81c7ae927dfd5f1543d7f1ef3b06e6e05e291a65e0603abaa4c1",
+    "family": "volume_growth",
+    "category": "volume_price",
+    "window": 10,
+    "formula": "Sub(SafeDiv(volume,Lag(volume,10)),1)",
+    "structural_relation": "volume_growth: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_growth_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 20,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "784df7bb1b4e94f74dbf258b9000ee165378c9ccb215d61bc86ab42cc844f11d",
+    "family": "volume_growth",
+    "category": "volume_price",
+    "window": 20,
+    "formula": "Sub(SafeDiv(volume,Lag(volume,20)),1)",
+    "structural_relation": "volume_growth: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_growth_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 5,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "35a53af9729fd418c3417b66cd55c749937d97f2f44c418ad4ff24e32700c4e9",
+    "family": "volume_growth",
+    "category": "volume_price",
+    "window": 5,
+    "formula": "Sub(SafeDiv(volume,Lag(volume,5)),1)",
+    "structural_relation": "volume_growth: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_growth_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 60,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "bad624bfff868c7bd5a6921cfe603a54b2700e10be4be125ee6e8f2801a56cb5",
+    "family": "volume_growth",
+    "category": "volume_price",
+    "window": 60,
+    "formula": "Sub(SafeDiv(volume,Lag(volume,60)),1)",
+    "structural_relation": "volume_growth: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_surprise_10",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 9,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":10}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "277f75a66b0ff51de56ad3e86055248e7a40c5ce2ac38dce8d37fb97b5d5f672",
+    "family": "volume_surprise",
+    "category": "volume_price",
+    "window": 10,
+    "formula": "Sub(SafeDiv(volume,RollingMean(volume,10)),1)",
+    "structural_relation": "volume_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_surprise_20",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 19,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "6dd2d116f4f7c63c172f8afc097e8c3891990f13b4c85c87da2c6421cad5be38",
+    "family": "volume_surprise",
+    "category": "volume_price",
+    "window": 20,
+    "formula": "Sub(SafeDiv(volume,RollingMean(volume,20)),1)",
+    "structural_relation": "volume_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_surprise_5",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 4,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "3099e4f3b48d660ae2d91c27f3793d737f3d83ab7542dfa81bb8481c50b568c5",
+    "family": "volume_surprise",
+    "category": "volume_price",
+    "window": 5,
+    "formula": "Sub(SafeDiv(volume,RollingMean(volume,5)),1)",
+    "structural_relation": "volume_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  },
+  {
+    "factor_id": "C_volume_surprise_60",
+    "version": "p311-v1",
+    "kind": "expression",
+    "implementation": "discovery-ast-v1",
+    "input_fields": [
+      "volume"
+    ],
+    "lookback": 59,
+    "price_basis": [],
+    "dependencies": [],
+    "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+    "frequency": "1d",
+    "availability": "SESSION_CLOSE",
+    "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+    "definition_hash": "8e79068135340f79250c28398c48e8efdc9d5cf427c917380d47151960af1cf8",
+    "family": "volume_surprise",
+    "category": "volume_price",
+    "window": 60,
+    "formula": "Sub(SafeDiv(volume,RollingMean(volume,60)),1)",
+    "structural_relation": "volume_surprise: window variants; cross-family correlation unverified",
+    "status": "AVAILABLE"
+  }
+]

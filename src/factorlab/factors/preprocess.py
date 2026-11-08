@@ -55,6 +55,7 @@ def preprocess_cross_sections(
     if not 0 <= lower_quantile < upper_quantile <= 1:
         raise ConfigurationError("Invalid winsorization quantiles")
     result = frame.copy()
+    # TODO: batch raw/processed column assembly; 78-factor runs fragment this frame.
     for name in names:
         result[raw_prefix + name] = result[name]
         if method == "mad":
