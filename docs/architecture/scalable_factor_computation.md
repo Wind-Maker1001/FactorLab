@@ -33,8 +33,15 @@ verified = builder.read_partitioned(
 for complete_dates in verified.iter_partitions():
     consume(complete_dates)
 
-# 小规模接入原四模型和 WalkForwardRunner；此调用会显式物化全部宽表。
+# 显式全量适配：保留原 DataFrame 消费方式。
 research_frame = verified.to_frame()
+
+# 可选精确日期读取；只解码相交分区，返回完整日期横截面。
+window = verified.read_dates(explicit_signal_dates)
+
+# 窗口级 Walk-forward；calendar 必须是显式研究日历，不含构建预热期。
+result = runner.run_partitioned(verified, calendar=research_calendar)
+fold_resources = result.resource_usage
 ```
 
 `PartitionedDataset(path)` 可读取原始因子分区；DatasetBuilder 的读取入口还核对
@@ -92,8 +99,29 @@ manifest 本身封存 identity_hash；这是校验和，不能证明未受信任
 没有实现源端 Parquet 流式化；当前验收规模可行，不能外推为无限证券/日期。
 最终宽表只按日期块常驻，但每个证券组暂存该组全部候选输出。
 
-原四模型和选择器仍消费全量 DataFrame；`to_frame()` 是明确的内存适配器，
-不代表 125 万行 × 300 因子的训练/回测已获得低内存认证。
+原四模型和选择器仍消费 DataFrame。`to_frame()` 全量物化；可选
+`WalkForwardRunner.run_partitioned()` 先逐分区验证并保留窄规划表，再复用原 Splitter
+获得逐证券标签成熟度、Purge/Embargo 掩码，只物化当前折所需的日期宽表。
+选择器仍对该折完整 Train 候选池统一统计、去冗余、排序并冻结方向；模型工厂、
+Validation 选优、Train-only 拟合与 Test 单次预测不变，没有流式或增量训练。
+扩展 Train、方向转换副本、模型矩阵与跨折诊断输出仍占内存。
+这不代表 125 万行 × 300 因子的训练/回测已获得低内存认证。
+
+`read_metadata(columns)` 验证全部分区，只保留规划列；`read_dates(dates)` 返回精确、
+递增且唯一的显式日期，不重新计算因子、预热或标签。窗口边缘分区仍完整解码，
+以维持已有内容/主键哈希合同，过滤后才交给训练消费者；不会把边缘的未来行
+交给历史 Train 选择。每次读取检查 manifest 身份、目录库存及选中文件的哈希。
+规划阶段验证所有分区，但数据身份核验不是 PIT 或金融来源证明。
+
+`read_stats` 累计区分 `checksum_bytes`（文件 SHA-256 扫描）、`parquet_bytes`
+（完整解码分区的文件大小）、`decoded_rows` 与 `materialized_rows`。
+它们不是物理磁盘 I/O 或 Arrow 实际传输字节；进程 I/O 另行测量。
+无跨折缓存，重叠训练窗口会重复读取和核验。
+`resource_usage` 给出规划与各折的增量读取统计、实际阶段行数、耗时和
+10ms 采样进程树峰值 RSS（可能遗漏更短瞬态）；此可选入口需要 psutil。
+窗口携带 `partitioned_source_identity` 布局身份，而不是伪造完整 DataFrame 的内容身份；
+选择收据中的 `dataset_identity_hash` 绑定这一源身份，因此其
+`model_prediction_identity` 与全量适配收据不同，Train 统计、选择哈希及预测不受影响。
 选择器已有 `summary_only=True` 去冗余路径，保留 O(F²) 汇总证据，
 逐日执行相关矩阵与成对缺失/恒等检查。300 因子有 44,850 对，
 不保存 2,500 × 44,850 条逐日明细，但 CPU 成本仍随日期及因子对增长。

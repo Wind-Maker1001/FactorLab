@@ -1,0 +1,10 @@
+{
+  "identity_hash": "b5585d37b8c4ccde384ae745ea8dbd2f4c964d8649c2d8524fec4d81db68c7c3",
+  "rows": 26800,
+  "partitions": 17,
+  "manifest_sha256": "27b9a8235a4518e7dd48f2964238bc1a5850632e66a7265cda009c1d45bfab69",
+  "factor_count": 40,
+  "symbols": 80,
+  "sessions": 400,
+  "warning": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED"
+}

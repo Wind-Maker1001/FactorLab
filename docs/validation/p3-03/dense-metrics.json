@@ -1,0 +1,111 @@
+{
+  "mode": "dense",
+  "python": "3.13.9",
+  "end_to_end_seconds": 72.93954220000887,
+  "peak_rss_bytes": 405233664,
+  "elapsed_seconds": 72.93088950001402,
+  "source_identity_hash": "b5585d37b8c4ccde384ae745ea8dbd2f4c964d8649c2d8524fec4d81db68c7c3",
+  "read_stats": {
+    "checksum_bytes": 50815380,
+    "parquet_bytes": 25407690,
+    "partitions": 17,
+    "decoded_rows": 26800,
+    "materialized_rows": 26800
+  },
+  "process_read_bytes": 76772250,
+  "process_write_bytes": 0,
+  "rows": 26800,
+  "folds": 5,
+  "fold_rows": [
+    {
+      "fold": 0,
+      "train_rows": 1280,
+      "train_labeled_rows": 1280,
+      "validation_rows": 1360,
+      "test_rows": 1600
+    },
+    {
+      "fold": 1,
+      "train_rows": 6560,
+      "train_labeled_rows": 6555,
+      "validation_rows": 1280,
+      "test_rows": 1680
+    },
+    {
+      "fold": 2,
+      "train_rows": 11840,
+      "train_labeled_rows": 11828,
+      "validation_rows": 1200,
+      "test_rows": 1760
+    },
+    {
+      "fold": 3,
+      "train_rows": 17120,
+      "train_labeled_rows": 17102,
+      "validation_rows": 1120,
+      "test_rows": 1760
+    },
+    {
+      "fold": 4,
+      "train_rows": 22240,
+      "train_labeled_rows": 22222,
+      "validation_rows": 1200,
+      "test_rows": 1760
+    }
+  ],
+  "prediction_rows": 8560,
+  "prediction_sha256": "25b0925a8bc106af97b5a99b3f91c9944ec82b5b413f60b8484edfae100a6e66",
+  "fold_summary_sha256": "00f42eccfe305b7de1ae493c2a07ce8d7d77b4496c6b02a28bde09578a9becee",
+  "measurements": [
+    {
+      "phase": "fold",
+      "fold": 0,
+      "train_rows": 1280,
+      "validation_rows": 1360,
+      "test_rows": 1600,
+      "peak_rss_bytes": 283648000,
+      "elapsed_seconds": 4.430418500007363
+    },
+    {
+      "phase": "fold",
+      "fold": 1,
+      "train_rows": 6560,
+      "validation_rows": 1280,
+      "test_rows": 1680,
+      "peak_rss_bytes": 312303616,
+      "elapsed_seconds": 10.465450599993346
+    },
+    {
+      "phase": "fold",
+      "fold": 2,
+      "train_rows": 11840,
+      "validation_rows": 1200,
+      "test_rows": 1760,
+      "peak_rss_bytes": 340561920,
+      "elapsed_seconds": 15.116731900023296
+    },
+    {
+      "phase": "fold",
+      "fold": 3,
+      "train_rows": 17120,
+      "validation_rows": 1120,
+      "test_rows": 1760,
+      "peak_rss_bytes": 373628928,
+      "elapsed_seconds": 19.17742590000853
+    },
+    {
+      "phase": "fold",
+      "fold": 4,
+      "train_rows": 22240,
+      "validation_rows": 1200,
+      "test_rows": 1760,
+      "peak_rss_bytes": 406773760,
+      "elapsed_seconds": 22.672699400020065
+    }
+  ],
+  "source_hashes": {
+    "dataset/partitioned.py": "af52f65dd4420ec3e1c45c78c20d77511cea9bfc3e6a9571c2aeea4e6a77ae3d",
+    "validation/walk_forward.py": "fcb0e4f6d9d3977b840a7d05c8ba3f2c132834f5fb4900ab1296d3fa40150141",
+    "validation/partitioned_walk_forward.py": "39c1e2d4b31318ac010bed5861151fa0b306bdcf7050f2e10d3290270010a0e2"
+  }
+}

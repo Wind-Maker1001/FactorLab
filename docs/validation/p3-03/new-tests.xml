@@ -1,0 +1,1612 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="14" time="8.156" timestamp="2026-11-08T19:33:58.507078+08:00" hostname="Desktop"><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[False-factor_score]" time="2.324"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011DEF82CFC0&gt;
+model = 'factor_score', dynamic = False
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF732CF0&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[False-ridge]" time="0.269"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011DEF82CE90&gt;
+model = 'ridge', dynamic = False
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF82B9D0&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[False-lightgbm]" time="0.259"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011DEF7F3530&gt;
+model = 'lightgbm', dynamic = False
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF82BC50&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[False-xgboost]" time="0.265"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011DEF8BD8C0&gt;
+model = 'xgboost', dynamic = False
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF82CB00&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[True-factor_score]" time="0.275"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011DEF8BDBF0&gt;
+model = 'factor_score', dynamic = True
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF82F490&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[True-ridge]" time="0.282"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011DEF8B5B50&gt;
+model = 'ridge', dynamic = True
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF7FCEF0&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[True-lightgbm]" time="0.275"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011DEF8B6850&gt;
+model = 'lightgbm', dynamic = True
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF8BDF20&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_four_models_exact_inputs_and_outputs[True-xgboost]" time="0.274"><failure message="factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011E2F988F50&gt;
+model = 'xgboost', dynamic = True
+
+    @pytest.mark.parametrize("model", ["factor_score", "ridge", "lightgbm", "xgboost"])
+    @pytest.mark.parametrize("dynamic", [False, True])
+    def test_four_models_exact_inputs_and_outputs(bundle, monkeypatch, model, dynamic):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, model, dynamic)
+        stages = []
+        original_fit = WalkForwardRunner._fit_and_select
+        original_predict_frame = WalkForwardRunner._prediction_frame
+    
+        def fit(self, fold, train, validation, **kwargs):
+            stages.append(("fit", fold, train.reset_index(drop=True).copy(),
+                           validation.reset_index(drop=True).copy()))
+            return original_fit(self, fold, train, validation, **kwargs)
+    
+        def predict_frame(self, frame, *args, **kwargs):
+            stages.append(("prediction", frame.reset_index(drop=True).copy()))
+            return original_predict_frame(self, frame, *args, **kwargs)
+    
+        monkeypatch.setattr(WalkForwardRunner, "_fit_and_select", fit)
+        monkeypatch.setattr(WalkForwardRunner, "_prediction_frame", predict_frame)
+&gt;       dense = runner.run(dataset.to_frame(), calendar=dates)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\research\test_partitioned_walk_forward.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:489: in run
+    return self._run(data, calendar=calendar, entry_date_col=entry_date_col,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF8BE360&gt;
+data =           date     symbol       open  ...  raw_VOL5  raw_VOL60  raw_VOLUME_RATIO
+0   2023-04-03  000001.SZ  10.061023 ...     1.088173
+919 2023-09-08  000008.SZ  20.409866  ...  0.008635   0.008313          0.775141
+
+[920 rows x 56 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError</failure></testcase><testcase classname="tests.research.test_partitioned_walk_forward" name="test_exact_dates_masks_types_and_intersecting_partitions" time="0.317" /><testcase classname="tests.research.test_partitioned_walk_forward" name="test_changed_partition_rejected[missing]" time="0.029" /><testcase classname="tests.research.test_partitioned_walk_forward" name="test_changed_partition_rejected[corrupt]" time="0.027" /><testcase classname="tests.research.test_partitioned_walk_forward" name="test_changed_partition_rejected[identity]" time="0.026" /><testcase classname="tests.research.test_partitioned_walk_forward" name="test_changed_partition_rejected[overlap]" time="0.025" /><testcase classname="tests.research.test_partitioned_walk_forward" name="test_candidate_pins_checked" time="0.438"><failure message="AssertionError: Regex pattern did not match.&#10; Regex: 'candidate pins'&#10; Input: 'fold 0 has no usable train, validation, or test rows'">bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+
+    def test_candidate_pins_checked(bundle):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, "ridge", True)
+        runner.factor_selector = replace(runner.factor_selector,
+                                         factor_refs=builder.factor_refs[:-1])
+        with pytest.raises(ValueError, match="candidate pins"):
+&gt;           runner.run_partitioned(dataset, calendar=dates)
+
+tests\research\test_partitioned_walk_forward.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\factorlab\validation\walk_forward.py:498: in run_partitioned
+    result = self._run(source.metadata, calendar=calendar,
+src\factorlab\validation\walk_forward.py:548: in _run
+    folds = list(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;factorlab.validation.splitter.ExpandingWalkForwardSplitter object at 0x0000011DEF8B6950&gt;
+data =           date     symbol  EXCESS_RET5 entry_date  exit_date
+0   2023-04-03  000001.SZ     0.015174 2023-04-04 2023-04...         NaN        NaT        NaT
+919 2023-09-08  000008.SZ          NaN        NaT        NaT
+
+[920 rows x 5 columns]
+
+    def split(
+        self,
+        data: pd.DataFrame,
+        *,
+        date_col: str = "date",
+        entry_date_col: str = "entry_date",
+        exit_date_col: str = "exit_date",
+        calendar: Optional[Iterable[object]] = None,
+    ) -&gt; Iterator[WalkForwardFold]:
+        """Yield folds using original DataFrame row positions.
+    
+        Supplying an explicit market calendar is recommended when the input
+        frame can omit all stocks on a session.  Otherwise the sorted unique
+        values in ``date_col`` form the trading calendar.  Data must itself be
+        chronologically sorted; silently sorting it would make returned row
+        positions surprising.
+        """
+    
+        if not isinstance(data, pd.DataFrame):
+            raise WalkForwardError("data must be a pandas DataFrame")
+        if date_col not in data.columns:
+            raise WalkForwardError("data is missing date column %r" % date_col)
+        if data.empty:
+            raise WalkForwardError("data must not be empty")
+    
+        row_index = pd.RangeIndex(len(data))
+        row_dates_index = _normalise_dates(data[date_col], date_col)
+        row_dates = pd.Series(row_dates_index, index=row_index, name=date_col)
+        if not row_dates.is_monotonic_increasing:
+            raise WalkForwardError("data must be sorted chronologically by %s" % date_col)
+    
+        if calendar is None:
+            trading_calendar = pd.DatetimeIndex(row_dates.drop_duplicates())
+        else:
+            trading_calendar = _unique_calendar(calendar)
+            outside = pd.DatetimeIndex(row_dates.drop_duplicates()).difference(
+                trading_calendar
+            )
+            if len(outside):
+                raise WalkForwardError(
+                    "data contains signal dates outside the supplied calendar"
+                )
+        trading_calendar = _unique_calendar(trading_calendar)
+    
+        missing_label_columns = [
+            name
+            for name in (entry_date_col, exit_date_col)
+            if name not in data.columns
+        ]
+        if missing_label_columns:
+            raise WalkForwardError(
+                "entry_date and exit_date columns are required for label-window audit"
+            )
+        entry = self._optional_date_series(data[entry_date_col], entry_date_col)
+        exit_ = self._optional_date_series(data[exit_date_col], exit_date_col)
+        known = entry.notna() &amp; exit_.notna()
+        invalid = known &amp; ((entry &lt;= row_dates) | (exit_ &lt;= entry))
+        if invalid.any():
+            raise WalkForwardError(
+                "label audit requires date &lt; entry_date &lt; exit_date"
+            )
+        label_dates: Tuple[pd.Series, pd.Series] = entry, exit_
+    
+        produced = 0
+        anchor = trading_calendar[0]
+        fold_number = 0
+        while True:
+            train_end = anchor + pd.DateOffset(
+                months=self.initial_train_months + fold_number * self.step_months
+            )
+            validation_end = train_end + pd.DateOffset(months=self.validation_months)
+            test_end = validation_end + pd.DateOffset(months=self.test_months)
+    
+            nominal_train = _window(trading_calendar, anchor, train_end)
+            nominal_validation = _window(trading_calendar, train_end, validation_end)
+            nominal_test = _window(trading_calendar, validation_end, test_end)
+    
+            if not len(nominal_test):
+                break
+            # A test window is half-open.  Require the supplied calendar to
+            # reach its final expected weekday; otherwise a few tail sessions
+            # must not be presented as a full multi-month Test fold.  This is
+            # intentionally conservative around exchange holidays.
+            expected_test_tail = (test_end - pd.offsets.BDay(1)).normalize()
+            if trading_calendar[-1] &lt; expected_test_tail:
+                break
+            if not len(nominal_train) or not len(nominal_validation):
+                break
+    
+            train_allowed, purged = _trim_end(nominal_train, self.purge_days)
+            validation_allowed, embargoed = _trim_end(
+                nominal_validation, self.embargo_days
+            )
+            if not len(train_allowed) or not len(validation_allowed):
+                raise WalkForwardError(
+                    "purge/embargo removes an entire train or validation window"
+                )
+    
+            validation_first = validation_allowed[0]
+            test_first = nominal_test[0]
+            train_mask = row_dates.isin(train_allowed)
+            validation_mask = row_dates.isin(validation_allowed)
+            test_mask = row_dates.isin(nominal_test)
+    
+            entry, exit_ = label_dates
+            complete = entry.notna() &amp; exit_.notna()
+            incomplete_removed = int(
+                ((train_mask | validation_mask | test_mask) &amp; ~complete).sum()
+            )
+            train_overlap = train_mask &amp; complete &amp; (exit_ &gt;= validation_first)
+            validation_overlap = validation_mask &amp; complete &amp; (exit_ &gt;= test_first)
+            train_mask &amp;= complete &amp; (exit_ &lt; validation_first)
+            validation_mask &amp;= complete &amp; (exit_ &lt; test_first)
+            test_mask &amp;= complete
+            train_max_exit = self._max_date(exit_[train_mask])
+            validation_max_exit = self._max_date(exit_[validation_mask])
+            audit = BoundaryAudit(
+                train_overlap_rows_removed=int(train_overlap.sum()),
+                validation_overlap_rows_removed=int(validation_overlap.sum()),
+                incomplete_label_rows_removed=incomplete_removed,
+                train_max_exit_date=train_max_exit,
+                validation_max_exit_date=validation_max_exit,
+                validation_first_date=validation_first,
+                test_first_date=test_first,
+            )
+    
+            train_positions = row_index[train_mask.to_numpy()].to_numpy(dtype=np.int64)
+            validation_positions = row_index[
+                validation_mask.to_numpy()
+            ].to_numpy(dtype=np.int64)
+            test_positions = row_index[test_mask.to_numpy()].to_numpy(dtype=np.int64)
+            if not len(train_positions) or not len(validation_positions) or not len(test_positions):
+&gt;               raise WalkForwardError(
+                    "fold %d has no usable train, validation, or test rows" % fold_number
+                )
+E               factorlab.validation.splitter.WalkForwardError: fold 0 has no usable train, validation, or test rows
+
+src\factorlab\validation\splitter.py:305: WalkForwardError
+
+During handling of the above exception, another exception occurred:
+
+bundle = (&lt;factorlab.dataset.builder.DatasetBuilder object at 0x0000011DEF731E80&gt;, DatetimeIndex(['2023-01-02', '2023-01-03', '...atetime64[ns]', length=180, freq='B'), &lt;factorlab.dataset.partitioned.PartitionedDataset object at 0x0000011DEF82BB10&gt;)
+
+    def test_candidate_pins_checked(bundle):
+        builder, dates, dataset = bundle
+        runner = make_runner(builder, "ridge", True)
+        runner.factor_selector = replace(runner.factor_selector,
+                                         factor_refs=builder.factor_refs[:-1])
+&gt;       with pytest.raises(ValueError, match="candidate pins"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'candidate pins'
+E        Input: 'fold 0 has no usable train, validation, or test rows'
+
+tests\research\test_partitioned_walk_forward.py:160: AssertionError</failure></testcase></testsuite></testsuites>
