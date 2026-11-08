@@ -57,7 +57,10 @@ class ProviderAdapter:
                 coverage="STATIC_BUNDLE; NO_FILL; HISTORICAL_AVAILABILITY_UNKNOWN",
                 provenance={"manifest_sha256": self.provider.manifest_sha256,
                             "bundle_version": self.provider.bundle_version,
-                            "declared_source_version": manifest["source_version"]},
+                            "declared_source_version": manifest["source_version"],
+                            "source_file_sha256": manifest[
+                                "stocks_file_sha256" if kind == "daily_bars"
+                                else "benchmark_file_sha256"]},
             )
         return QueryResult(data, metadata)
 
