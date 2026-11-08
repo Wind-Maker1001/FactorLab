@@ -63,6 +63,7 @@ class OptimizationInput:
     industries: Mapping[str, str] | None = None
     benchmark_industries: Mapping[str, float] | None = None
     previous_weights: pd.Series | None = None
+    minimum_weights: pd.Series | None = None
 
 
 @dataclass(frozen=True)
@@ -198,6 +199,22 @@ class PortfolioOptimizer:
         turnover_active = c.turnover_limit is not None
         if turnover_active and (previous is None or not np.isfinite(c.turnover_limit) or c.turnover_limit < 0):
             _invalid("turnover limit requires previous holdings and a nonnegative finite limit")
+        minimum = np.zeros(n)
+        minimum_record = None
+        if data.minimum_weights is not None:
+            floors = data.minimum_weights
+            if not _labels(floors.index):
+                _invalid("minimum_weights require unique string symbols")
+            values = _vector(floors, sorted(floors.index), "minimum_weights")
+            if (values < 0).any():
+                _invalid("minimum_weights must be nonnegative")
+            floors = pd.Series(values, index=sorted(floors.index))
+            if (floors.loc[~floors.index.isin(names)] > c.tolerance).any():
+                raise OptimizationError("infeasible", "locked holding is outside target universe")
+            minimum = floors.reindex(names, fill_value=0).to_numpy(dtype=float)
+            minimum_record = floors.to_dict()
+            if (minimum > c.max_weight).any() or minimum.sum() > c.investment + c.tolerance:
+                raise OptimizationError("infeasible", "locked holdings exceed budget or weight cap")
         dimensions = 2*n if turnover_active else n
         rows, limits, row_names = [], [], []
         industries = dict(data.industries or {})
@@ -237,7 +254,7 @@ class PortfolioOptimizer:
         a = np.array(rows).reshape((-1, dimensions))
         b = np.array(limits)
         budget = np.r_[np.ones(n), np.zeros(dimensions-n)]
-        bounds = [(0, c.max_weight)]*n + [(0, None)]*(dimensions-n)
+        bounds = [(float(lower), c.max_weight) for lower in minimum] + [(0, None)]*(dimensions-n)
         feasible = linprog(np.zeros(dimensions), A_ub=a if len(a) else None,
                            b_ub=b if len(a) else None, A_eq=budget[None, :],
                            b_eq=[c.investment], bounds=bounds, method="highs")
@@ -264,7 +281,7 @@ class PortfolioOptimizer:
             if len(a):
                 constraints.append(LinearConstraint(a, -np.inf, b))
             result = minimize(objective, feasible.x, jac=gradient, method="SLSQP",
-                              bounds=Bounds(np.zeros(dimensions), np.r_[np.full(n, c.max_weight), np.full(dimensions-n, np.inf)]),
+                              bounds=Bounds(np.r_[minimum, np.zeros(dimensions-n)], np.r_[np.full(n, c.max_weight), np.full(dimensions-n, np.inf)]),
                               constraints=constraints, options={"ftol": min(c.tolerance*.01, 1e-12), "maxiter": c.max_iterations})
             if not result.success:
                 raise OptimizationError("solver_failed", str(result.message))
@@ -277,6 +294,8 @@ class PortfolioOptimizer:
                   "long_only": bool(weights.min() >= -c.tolerance),
                   "max_weight": bool(weights.max() <= c.max_weight+c.tolerance)}
         checks.update({label: bool(row @ solution <= bound+c.tolerance) for label, row, bound in zip(row_names, a, b)})
+        if minimum_record is not None:
+            checks["minimum_weights"] = bool((weights >= minimum-c.tolerance).all())
         if turnover_active:
             checks["turnover"] = bool(turnover <= c.turnover_limit+c.tolerance)
         if not all(checks.values()):
@@ -287,6 +306,8 @@ class PortfolioOptimizer:
                   "scores": None if scores is None else scores.tolist(), "expected_returns": None if mu is None else mu.tolist(),
                   "expected_return_definition": data.expected_return_definition, "industries": industries,
                   "benchmark_industries": benchmark, "previous_weights": previous_record}
+        if minimum_record is not None:
+            record["minimum_weights"] = minimum_record
         parameters = {"config": configuration, "inputs": record, "numpy": np.__version__, "scipy": scipy.__version__,
                       "covariance_roundoff_tolerance": numerical_tolerance}
         return OptimizationResult(pd.Series(weights, index=pd.Index(names, name="symbol"), name="target_weight"),

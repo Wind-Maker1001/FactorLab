@@ -1,0 +1,184 @@
+{
+  "status": "P310_SYNTHETIC_DETERMINISTIC",
+  "admission": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "corporate_actions_status": "UNKNOWN",
+  "decisions": [
+    {
+      "decision_time": "2024-01-02 15:00:00",
+      "signal_time": "2024-01-02 15:00:00",
+      "execution_time": "2024-01-03 09:30:00",
+      "previous_actual_weights": {},
+      "previous_cash_weight": 1.0,
+      "target_weights": {
+        "000001.SZ": 0.25,
+        "000002.SZ": 0.25
+      },
+      "target_cash_weight": 0.5,
+      "optimizer_gross_turnover": 0.5,
+      "actual_shares": {
+        "000001.SZ": 200,
+        "000002.SZ": 200
+      },
+      "cash": 5790.0,
+      "nav": 9990.0,
+      "actual_weights": {
+        "000001.SZ": 0.2002002002002002,
+        "000002.SZ": 0.22022022022022023
+      },
+      "fill_reports": [
+        {
+          "signal_date": "2024-01-02 00:00:00",
+          "execution_date": "2024-01-03 00:00:00",
+          "symbol": "000001.SZ",
+          "side": "buy",
+          "score": null,
+          "rank": 1,
+          "requested_shares": 200,
+          "executed_shares": 200,
+          "execution_price": 10.0,
+          "trade_notional": 2000.0,
+          "commission": 5.0,
+          "stamp_duty": 0.0,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 0.0,
+          "transaction_cost": 5.0,
+          "cash_after": 7995.0,
+          "reported_at": "2024-01-03 09:30:00"
+        },
+        {
+          "signal_date": "2024-01-02 00:00:00",
+          "execution_date": "2024-01-03 00:00:00",
+          "symbol": "000002.SZ",
+          "side": "buy",
+          "score": null,
+          "rank": 2,
+          "requested_shares": 200,
+          "executed_shares": 200,
+          "execution_price": 11.0,
+          "trade_notional": 2200.0,
+          "commission": 5.0,
+          "stamp_duty": 0.0,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 0.0,
+          "transaction_cost": 5.0,
+          "cash_after": 5790.0,
+          "reported_at": "2024-01-03 09:30:00"
+        }
+      ],
+      "rejections": []
+    },
+    {
+      "decision_time": "2024-01-03 15:00:00",
+      "signal_time": "2024-01-03 15:00:00",
+      "execution_time": "2024-01-04 09:30:00",
+      "previous_actual_weights": {
+        "000001.SZ": 0.2002002002002002,
+        "000002.SZ": 0.22022022022022023
+      },
+      "previous_cash_weight": 0.5795795795795796,
+      "target_weights": {
+        "000001.SZ": 0.0,
+        "000002.SZ": 0.5
+      },
+      "target_cash_weight": 0.5,
+      "optimizer_gross_turnover": 0.47997997997998,
+      "actual_shares": {
+        "000002.SZ": 400
+      },
+      "cash": 5580.0,
+      "nav": 9980.0,
+      "actual_weights": {
+        "000002.SZ": 0.4408817635270541
+      },
+      "fill_reports": [
+        {
+          "signal_date": "2024-01-03 00:00:00",
+          "execution_date": "2024-01-04 00:00:00",
+          "symbol": "000001.SZ",
+          "side": "sell",
+          "score": null,
+          "rank": "1",
+          "requested_shares": 200,
+          "executed_shares": 200,
+          "execution_price": 10.0,
+          "trade_notional": 2000.0,
+          "commission": 5.0,
+          "stamp_duty": 0.0,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 0.0,
+          "transaction_cost": 5.0,
+          "cash_after": 7785.0,
+          "reported_at": "2024-01-04 09:30:00"
+        },
+        {
+          "signal_date": "2024-01-03 00:00:00",
+          "execution_date": "2024-01-04 00:00:00",
+          "symbol": "000002.SZ",
+          "side": "buy",
+          "score": null,
+          "rank": 2,
+          "requested_shares": 200,
+          "executed_shares": 200,
+          "execution_price": 11.0,
+          "trade_notional": 2200.0,
+          "commission": 5.0,
+          "stamp_duty": 0.0,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 0.0,
+          "transaction_cost": 5.0,
+          "cash_after": 5580.0,
+          "reported_at": "2024-01-04 09:30:00"
+        }
+      ],
+      "rejections": []
+    }
+  ],
+  "nav": [
+    {
+      "date": "2024-01-03 00:00:00",
+      "signal_date": "2024-01-02 00:00:00",
+      "strategy_nav": 0.999,
+      "benchmark_nav": 1.0,
+      "excess_nav": 0.999,
+      "portfolio_value": 9990.0,
+      "cash": 5790.0,
+      "strategy_return": -0.0010000000000000009,
+      "benchmark_return": 0.0,
+      "transaction_cost": 10.0,
+      "transaction_cost_rate": 0.001,
+      "turnover": 0.42,
+      "buy_notional": 4200.0,
+      "sell_notional": 0.0,
+      "turnover_denominator": 10000.0,
+      "optimizer_turnover": 0.5,
+      "holdings": 2,
+      "executed_orders": 2,
+      "gross_security_turnover": 0.42
+    },
+    {
+      "date": "2024-01-04 00:00:00",
+      "signal_date": "2024-01-03 00:00:00",
+      "strategy_nav": 0.998,
+      "benchmark_nav": 1.0,
+      "excess_nav": 0.998,
+      "portfolio_value": 9980.0,
+      "cash": 5580.0,
+      "strategy_return": -0.0010010010010009784,
+      "benchmark_return": 0.0,
+      "transaction_cost": 10.0,
+      "transaction_cost_rate": 0.001001001001001001,
+      "turnover": 0.22022022022022023,
+      "buy_notional": 2200.0,
+      "sell_notional": 2000.0,
+      "turnover_denominator": 9990.0,
+      "optimizer_turnover": 0.47997997997998,
+      "holdings": 1,
+      "executed_orders": 2,
+      "gross_security_turnover": 0.42042042042042044
+    }
+  ]
+}
