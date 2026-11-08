@@ -1,0 +1,244 @@
+name: FactorLab PR validation
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+  # Bootstrap measurement only; the trusted target trigger takes over after merge.
+  push:
+    branches: [ci/fast-pr-full-validation]
+permissions:
+  contents: read
+concurrency:
+  group: factorlab-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+env:
+  MPLBACKEND: Agg
+  PYTHONUTF8: '1'
+  FACTORLAB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+jobs:
+  risk:
+    name: Trusted risk selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      current: ${{ steps.select.outputs.current }}
+      locking: ${{ steps.select.outputs.locking }}
+      package: ${{ steps.select.outputs.package }}
+      review: ${{ steps.select.outputs.review }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted
+          persist-credentials: false
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.sha }}
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select conservative extensions from trusted base
+        id: select
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || 'origin/main' }}
+        run: python trusted/tools/ci/pr_risk.py --repository candidate --base "$BASE" --head HEAD --output risk.json --github-output "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: pr-risk
+          path: risk.json
+          retention-days: 14
+  fast:
+    name: Fast Python 3.13
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      # Restore only: untrusted PR code must never save caches in the target/main scope.
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ~/AppData/Local/pip/Cache
+          key: factorlab-pip-Windows-3.13-${{ hashFiles('requirements/*.txt', 'pyproject.toml') }}
+      - name: Install controlled test dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
+      - name: Install package and check dependency compatibility
+        run: |
+          python -m pip install --no-deps .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip check
+      - name: Core, cross-market and financial gates
+        run: python tools/ci/integration_checks.py --suite incremental --output local-ci/pr
+      - name: Configuration and import compatibility
+        if: ${{ !cancelled() }}
+        run: python tools/ci/integration_checks.py --suite configuration --output local-ci/pr
+      - name: Basic locking contracts
+        if: ${{ !cancelled() }}
+        run: python tools/ci/integration_checks.py --suite locking --output local-ci/pr
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ !cancelled() }}
+        with:
+          name: fast-pr-receipts
+          path: |
+            local-ci/pr/*/receipt.json
+            local-ci/pr/*/tests.xml
+            local-ci/pr/*/tests.log
+          if-no-files-found: error
+          retention-days: 14
+  control-review:
+    name: CI control review
+    needs: risk
+    if: needs.risk.outputs.review == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    environment: ci-control-review
+    steps:
+      - run: printf '%s\n' 'Control changes approved for this exact workflow run.'
+  current:
+    name: Extended software Python ${{ matrix.python }}
+    needs: risk
+    if: needs.risk.outputs.current == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.13', '3.14']
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install dependencies and package
+        run: |
+          python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip install --no-deps .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip check
+      - run: python tools/ci/integration_checks.py --suite current --output local-ci/extended
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ !cancelled() }}
+        with:
+          name: extended-${{ matrix.python }}
+          path: |
+            local-ci/extended/current/receipt.json
+            local-ci/extended/current/selection.json
+            local-ci/extended/current/tests.xml
+            local-ci/extended/current/tests.log
+          if-no-files-found: error
+          retention-days: 14
+  locking:
+    name: Extended lock ${{ matrix.os }}
+    needs: risk
+    if: needs.risk.outputs.locking == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - run: python tools/ci/lock_acceptance.py --output local-ci/locks --thread-rounds 100 --process-rounds 12
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ !cancelled() }}
+        with:
+          name: pr-lock-${{ matrix.os }}
+          path: |
+            local-ci/locks/LOCK_CONCURRENCY_TEST_RESULTS.json
+            local-ci/locks/faults.xml
+            local-ci/locks/faults.log
+          if-no-files-found: error
+          retention-days: 14
+  package:
+    name: Extended package Python 3.14
+    needs: risk
+    if: needs.risk.outputs.package == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/cross-market.txt
+      - run: python -m build --outdir local-ci/distributions
+      - run: python tools/migration/inspect_distributions.py local-ci/distributions
+      - run: python tools/migration/check_distribution_rejections.py local-ci/distributions local-ci/archive-attacks
+      - run: python tools/migration/packaging_ci.py local-ci/distributions local-ci/packaging
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ !cancelled() }}
+        with:
+          name: pr-package
+          path: |
+            local-ci/packaging/receipt.json
+            local-ci/packaging/*.log
+            local-ci/archive-attacks/**/*.json
+          if-no-files-found: error
+          retention-days: 14
+  merge-gate:
+    name: FactorLab merge gate
+    environment: ci-merge-publisher
+    needs: [risk, fast, control-review, current, locking, package]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      # FIXME: Install the dedicated status-only App and bind its ID in branch protection before activation.
+      - uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        id: publisher
+        with:
+          app-id: ${{ vars.CI_GATE_APP_ID }}
+          private-key: ${{ secrets.CI_GATE_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: FactorLab
+          permission-statuses: write
+      - name: Reject missing, failed or cancelled mandatory checks
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+          GH_TOKEN: ${{ steps.publisher.outputs.token }}
+          STATUS_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: python {0}
+        run: |
+          import json, os, urllib.request
+          results = json.loads(os.environ['RESULTS'])
+          risk = results['risk']
+          required = ['risk', 'fast'] + [job for key, job in (
+              ('review', 'control-review'), ('current', 'current'),
+              ('locking', 'locking'), ('package', 'package'))
+              if risk.get('outputs', {}).get(key) == 'true']
+          print(json.dumps(results, indent=2))
+          failed = any(results[job]['result'] != 'success' for job in required)
+          payload = dict(state='failure' if failed else 'success',
+                         context='FactorLab trusted merge gate',
+                         description='Mandatory Fast and risk extensions ' + ('failed' if failed else 'passed'),
+                         target_url=os.environ['GITHUB_SERVER_URL'] + '/' + os.environ['GITHUB_REPOSITORY'] +
+                                    '/actions/runs/' + os.environ['GITHUB_RUN_ID'])
+          request = urllib.request.Request(os.environ['GITHUB_API_URL'] + '/repos/' +
+              os.environ['GITHUB_REPOSITORY'] + '/statuses/' + os.environ['STATUS_SHA'],
+              data=json.dumps(payload).encode(), headers={
+                  'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                  'Accept': 'application/vnd.github+json'}, method='POST')
+          with urllib.request.urlopen(request) as response:
+              print(response.status)
+          raise SystemExit(failed)
