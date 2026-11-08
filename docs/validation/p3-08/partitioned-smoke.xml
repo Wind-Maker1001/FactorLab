@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="2.351" timestamp="2026-11-08T23:49:32.697520+08:00" hostname="Desktop"><testcase classname="tests.research.test_datahub" name="test_local_to_registry_dataset_and_tiny_partitioned_smoke" time="0.811" /></testsuite></testsuites>

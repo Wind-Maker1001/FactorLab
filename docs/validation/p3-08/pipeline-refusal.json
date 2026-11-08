@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "outcome": "REJECTED_BEFORE_DATASET_BUILD",
+  "pipeline_revision": "9283a6e82183ad589aa5d4e34e86ee35c2f0446c",
+  "reason": "MARKET DATA QUALIFICATION REQUIRED: research requires replayable v2 qualification; provider has no qualification package; schema-v1 bundles are diagnostic only",
+  "input_scope": "ACTUAL_CANDIDATE_BARS_WITH_SCHEMA_ONLY_AUXILIARY_PLACEHOLDERS",
+  "formal_test_research_end": "2018-12-27"
+}
