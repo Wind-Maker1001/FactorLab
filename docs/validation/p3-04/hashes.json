@@ -1,0 +1,15 @@
+{
+  "baseline": "d165c65a17c1ff4b7d174a063a6607589cd38522",
+  "python": "3.13.9",
+  "sha256": {
+    "docs/experiment-tracker.md": "31b3fdc2baa3c0886ba64da83d413e989a1382f77ea52fdc735f44f07f91a302",
+    "docs/validation/p3-04/final-tracker-tests.log": "679d5b898ac33974011d9bacfdd12cbab39316dce93955cf8264889f6540b371",
+    "docs/validation/p3-04/initial-tests.log": "31b2c94056a5ab1c4a780425ca3389cd6981988726428d73a7a58c6d8462fc86",
+    "docs/validation/p3-04/targeted-tests.log": "3e50c664d7023b76b61f219631798ca596e6525580c1d41303b63b8ec2900359",
+    "src/factorlab/experiments/__init__.py": "96e890e23633916aa2bd04ffd5f090b05ceb955bb91b6a5d50627e694ca4648d",
+    "src/factorlab/experiments/adapters.py": "6e875f6f26ffbeb4992e9304c5db9184e86e9ff622f6081a36e30a940f93de32",
+    "src/factorlab/experiments/provenance.py": "2e7b636211c5342b4a7048366530e099ed724b00b0af5ed67c4717ef24184c77",
+    "src/factorlab/experiments/tracker.py": "a3a2cd84a22a838975cb31a163a08159c927affd3738f9994982c9780ef518e0",
+    "tests/research/test_experiment_tracker.py": "0257574338ab312b93d53d04e097d508cc276177042c143c7de7614b60dabe0f"
+  }
+}
