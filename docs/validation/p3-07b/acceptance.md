@@ -57,10 +57,10 @@ legacy-wide run, second Python matrix or independent review was run.
 Four immutable experiments/runs were queried and compared. Index reconstruction
 and artifact-backed reproduction lookup pass. `synthetic-result.json` contains
 the run summary, data identity, reproduction receipt and reconciliation evidence;
-`pipeline-tests.xml` is the targeted test receipt. Local full execution artifacts
-and authoritative ExperimentTracker JSON records remain under
-`.tmp/p307b-final/`; dataset partitions there are regenerable, not duplicate
-archival evidence. The run's code identity explicitly records the baseline commit
+`pipeline-tests.xml` is the targeted test receipt. Full execution artifacts and authoritative ExperimentTracker JSON records are
+preserved in `evidence/`; the SQLite index is rebuildable. The original local
+artifact paths remain in the records to preserve the observed run identity.
+Dataset partitions are regenerable and excluded from the evidence bundle. The run's code identity explicitly records the baseline commit
 and dirty-worktree fingerprint of the implementation under test.
 
 ## Reproduce
