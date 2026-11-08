@@ -6,6 +6,7 @@ from .execution import (
     ExecutionBacktestConfig,
     ExecutionBacktestResult,
     PositionBook,
+    OrderSizeRule,
     run_execution_backtest,
 )
 from .fees import FeeBreakdown, FeeRule, FeeSchedule
@@ -22,6 +23,7 @@ __all__ = [
     "FeeRule",
     "FeeSchedule",
     "PositionBook",
+    "OrderSizeRule",
     "PriceLimitBounds",
     "PriceLimitRule",
     "PriceLimitSchedule",
