@@ -130,6 +130,14 @@ PIT主要阻塞是两源目标记录的原始历史版本、首次分发及修�
 
 可以继续推进的是R03供应商字段核验、将现有158标题对应正文做目标类别/修订关系调查，以及在取得版本合同后对本地候选做受控映射。TODO：按R01—R10补齐未闭合原件和合同；未取得证据前保持矩阵UNKNOWN，不补历史known_at、不将0行变成无事件、不生成正式资格包。
 
+## CI 发布字节修复（2026-11-09）
+
+可信运行 [42629544576](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42629544576) 的 Fast 与 Python 3.13 Shard 2 在发布包验证中报 `artifact hash mismatch: local-observations.json`。原 HEAD `d614c9aeeaa7f9962c3b7ab27a0e5610b69f3aad` 的该 Blob 为80,326字节、1,927个LF，SHA-256为 `a701c9dbb8ce8a15a505a6c7662423e16f69b6c2262fecee3606213795a55624`；工作区为82,253字节、1,927个CRLF，摘要恰为收据已固定的 `f1f8842fc29d31dc025901d338e34c88d882ad66eaeacdc5238f735166f3d31e`。逐字节比较证明唯一差异为CRLF→LF，JSON解析结果相等；`additional-observations.json` 同样受影响。
+
+本地 `core.autocrlf=true`，JSON文本写入使用平台默认换行，观察文件则按原字节复制。目录级 `* -text` 已冻结发布字节，但原提交仍含两个LF Blob，与工作区及收据的CRLF表示不一致；普通 `git add` 未更新这些被判定未修改的文件，须用 `git add --renormalize` 按现行属性重新写入索引。修复保留收据及全部证据语义、来源身份，仅将两个Blob恢复为既有收据绑定的原始字节，不重新序列化JSON、不重算或改写收据、不放宽核验器。篡改拒绝、固定基线来源身份和发布核验不依赖Git历史的合同保持不变。
+
+Python 3.13全新独立检出（`core.autocrlf=false`）先在原HEAD复现两项同样失败（2 failed / 2.07秒）；检出修复提交后，四个artifact的工作区、Git Blob、索引和新检出字节均逐一匹配原收据。两个失败测试分别为 **1 passed / 1.19秒**（[字节与来源绑定](ci-byte-binding-test.xml)）及 **1 passed / 1.18秒**（[无历史依赖](ci-no-history-test.xml)），完整新增套件 **30 passed / 1.30秒**（[新检出结果](ci-fresh-checkout-tests.xml)）。独立运行发布包 `--verify` 返回 `PASS / LOCAL_ENGINEERING_EVIDENCE_BINDINGS_ONLY`；金融边界及38项矩阵计数不变。完整套件保留并通过篡改负例、同版本标签下分片收据替换拒绝、固定基线身份、LF/CRLF兼容和禁止访问Git历史的回归。
+
 ## 八、复现与受控验证
 
 使用现有Python 3.13环境及pandas/pyarrow/pytest。`CS`为既有prepared-v4，`BQ`为现有BigQuant Raw，`EV`为该CS候选已有evidence目录；原件不复制入仓库。所有输出使用新路径，在可信仓库根目录启动解释器：

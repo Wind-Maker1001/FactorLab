@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="1.193" timestamp="2026-11-09T22:09:14.826518+08:00" hostname="Desktop"><testcase classname="tests.evidence.test_p4_d01_evidence" name="test_committed_bundle_binds_bytes_and_upstream_sources" time="0.010" /></testsuite></testsuites>
