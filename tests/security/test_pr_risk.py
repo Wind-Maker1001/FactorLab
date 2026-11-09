@@ -148,6 +148,7 @@ def test_p3_d05_mixed_additions_are_not_a_ci_control_change():
     'tools/data/__init__.py', 'tools/data/subdir/audit.py',
     'tools/data/candidate_preflight.py', 'tests/evidence/test_pit_archive_verifiers.py',
     'docs/validation/p3-d05/run.py', 'docs/validation/p3-d05/logic.yml',
+    'docs/validation/v2/BASELINE_4157.json',
 ])
 def test_disguised_control_or_unclassified_changes_remain_high_risk(path):
     result = classify([path], changes=[('A', path)])
