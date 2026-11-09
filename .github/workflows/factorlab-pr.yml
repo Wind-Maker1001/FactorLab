@@ -2,7 +2,7 @@ name: FactorLab PR validation
 on:
   pull_request_target:
     branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
   # Bootstrap measurement only; the trusted target trigger takes over after merge.
   push:
