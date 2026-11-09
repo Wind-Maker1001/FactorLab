@@ -1,0 +1,5 @@
+{
+  "window": 20,
+  "deviations": 2.0,
+  "mode": "mean_reversion"
+}

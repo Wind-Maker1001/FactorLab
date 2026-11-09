@@ -1,0 +1,8 @@
+{
+  "entry_window": 20,
+  "exit_window": 10,
+  "atr_window": 14,
+  "trend_window": 50,
+  "atr_multiple": 3.0,
+  "risk_fraction": 0.01
+}
