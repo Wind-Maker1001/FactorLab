@@ -1,0 +1,31 @@
+{
+  "url": "https://bigquant.com/data/datasources/cn_stock_bar1d",
+  "collected_at": "2026-11-09T14:44:58.035110+00:00",
+  "status": 200,
+  "actual_url": "https://bigquant.com/data/datasources/cn_stock_bar1d",
+  "content_type": "text/html; charset=utf-8",
+  "sha256": "b9c7a124276256f6df1162255829bb9fed0ac927c4c663de448a9b8eeb928c32",
+  "bytes": 56726,
+  "extracts": [
+    "        股票后复权日行情数据获取-BigQuant量化交易数据库",
+    "        content=\"BigQuant量化交易数据库提供股票后复权日行情的数据获取接口，该表记录了股票市场中各证券的日行情数据，特别采用后复权价格来展示。主要字段包含累计后复权因子、开高低收、昨收盘价、成交笔数、换手率、涨跌停价等。\" />",
+    "    <meta name=\"keywords\" content=\"股票后复权日行情,股票后复权日行情数据接口,股票后复权日行情数据获取\" />",
+    "                    股票后复权日行情",
+    "                    该表记录了股票市场中各证券的日行情数据，特别采用后复权价格来展示。主要字段包含累计后复权因子、开高低收、昨收盘价、成交笔数、换手率、涨跌停价等。",
+    "al_bar1d](https:&#47;&#47;bigquant.com&#47;data&#47;datasources&#47;cn_stock_real_bar1d) 的后复权版本，每只股票每个交易日一行，字段相同。区别是价格类字段为后复权口径，成交量、成交额、成交笔数、换手率和 `adjust_factor` 与未复权表一致。",
+    "## 三、后复权口径",
+    "后复权价格由未复权价格乘以累计后复权因子得到：",
+    "后复权价格 = 未复权价格 * adjust_factor",
+    "| adjust_factor | 累计后复权因子，与 `cn_stock_real_bar1d` 同一天的取值一致 |",
+    "| pre_close &#47; open &#47; high &#47; low &#47; close | 后复权的前收盘价、开盘价、最高价、最低价、收盘价 |",
+    "| upper_limit &#47; lower_limit | 后复权的涨停价和跌停价，等于未复权涨跌停价乘以 `adjust_factor` |",
+    "- 平台字段说明把 `upper_limit`、`lower_limit` 写作“涨停价”“跌停价”，实测取值是后复权口径，以本文为准。",
+    "                                        最低价（后复权）",
+    "                                        最高价（后复权）",
+    "                                        昨收盘价（后复权）",
+    "                                        涨跌幅（后复权）",
+    "                                        开盘价（后复权）",
+    "                                        累计后复权因子",
+    "                                        收盘价（后复权）"
+  ]
+}

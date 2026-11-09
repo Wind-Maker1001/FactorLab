@@ -1,0 +1,7 @@
+request_id,status,new_progress,remaining,next_action
+R03,PARTIAL_NOT_SENT,Four-record representation experiment; current BQ yuan/daily-total claim,"Historical precision, currency, trade scope and revision contract",VENDOR_REQUESTS.md
+R04,PARTIAL_NOT_SENT,Official discovery responses saved,Historical starting list and complete change chain,VENDOR_REQUESTS.md
+R09,PARTIAL_NOT_SENT,Two current non-PDF SSE responses identified,Two official 2017 PDFs and version/publication logs,VENDOR_REQUESTS.md
+R01,PARTIAL_NOT_SENT,Prior CSMAR dictionary reused,Historical vintages and first distribution,VENDOR_REQUESTS.md
+R02,PARTIAL_NOT_SENT,Current public supplier semantics only,Historical vintages and first distribution,VENDOR_REQUESTS.md
+R07,PARTIAL_NOT_SENT,Current price-gap and cumulative claims saved,"Historical algorithm, absolute anchor, precision and revisions",VENDOR_REQUESTS.md
