@@ -1,0 +1,3127 @@
+{
+  "definitions": [
+    {
+      "experiment_id": "p309-equal-factor_score",
+      "id": "p309-equal-factor_score",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "factor_score",
+        "parameters": {
+          "family": "p309",
+          "objective": "equal",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "bba9bcbc47db07cfd74b4de686fbeb1be7b055275625c35c0f4582a0ecd724be"
+    },
+    {
+      "experiment_id": "p309-equal-lightgbm",
+      "id": "p309-equal-lightgbm",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "lightgbm",
+        "parameters": {
+          "family": "p309",
+          "objective": "equal",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "6ebf6f0af53114529a14128af943db2413fbf14a358b7b9f66293c006c4df6df"
+    },
+    {
+      "experiment_id": "p309-equal-ridge",
+      "id": "p309-equal-ridge",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "ridge",
+        "parameters": {
+          "family": "p309",
+          "objective": "equal",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "096fef94ab1e4fc7391a219a1eebc85325bee16442a82135669010e687db0a2f"
+    },
+    {
+      "experiment_id": "p309-equal-xgboost",
+      "id": "p309-equal-xgboost",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "xgboost",
+        "parameters": {
+          "family": "p309",
+          "objective": "equal",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "08ade2ede53d671e66ed77f678f28eeee2dfd4b41bea24e2d127f72b7df110e3"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-factor_score",
+      "id": "p309-minimum_variance-factor_score",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "factor_score",
+        "parameters": {
+          "family": "p309",
+          "objective": "minimum_variance",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "aaeff8f6445765580c7efba25038e74dfe7d16d72a5a5dcacae5b4aaaa484f00"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-lightgbm",
+      "id": "p309-minimum_variance-lightgbm",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "lightgbm",
+        "parameters": {
+          "family": "p309",
+          "objective": "minimum_variance",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "ffd7a7bcca4066678c1442bb5bb0b6ee23b9ccd3f41869dc6b2e23d3fff2c26e"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-ridge",
+      "id": "p309-minimum_variance-ridge",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "ridge",
+        "parameters": {
+          "family": "p309",
+          "objective": "minimum_variance",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "ebada6c5f0891cc0c6d3ea6e56437fdc14ae88bc2136515032c6d0e6e0721b80"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-xgboost",
+      "id": "p309-minimum_variance-xgboost",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "xgboost",
+        "parameters": {
+          "family": "p309",
+          "objective": "minimum_variance",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "156c53f3df5a78dbde456af769c34349e443e2405b1303ae14567afbd86d7098"
+    },
+    {
+      "experiment_id": "p309-score-factor_score",
+      "id": "p309-score-factor_score",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "factor_score",
+        "parameters": {
+          "family": "p309",
+          "objective": "score",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "466a6f7f4161996590af829c6278362761f289514bdbe16b1749691fa5ff6188"
+    },
+    {
+      "experiment_id": "p309-score-lightgbm",
+      "id": "p309-score-lightgbm",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "lightgbm",
+        "parameters": {
+          "family": "p309",
+          "objective": "score",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "cdf9f685792d87a62dee1423a2c0c4171ba5cdc2d293382db9b1251b4ab9d55e"
+    },
+    {
+      "experiment_id": "p309-score-ridge",
+      "id": "p309-score-ridge",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "ridge",
+        "parameters": {
+          "family": "p309",
+          "objective": "score",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "9dde70cd0c4445128e500418ce575134a83e0b8edbcdc61afb4620c6408c36dd"
+    },
+    {
+      "experiment_id": "p309-score-xgboost",
+      "id": "p309-score-xgboost",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "P309:99dafc24d6290164e33fadfef67559404173e660"
+        },
+        "factors": [
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "xgboost",
+        "parameters": {
+          "family": "p309",
+          "objective": "score",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "eb8e1281534191b5f7f7c0ccee4c8909ef03fd9c0e003e971335a4a4a1a21b6a",
+          "source": "published fold receipts"
+        },
+        "windows": {
+          "test": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-10-03 00:00:00"
+          ],
+          "validation": [
+            "2023-06-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "65a4ce2b567b79bf2fbb545b2c0474e23840bd1722dbb8e091362f6102d05642"
+    },
+    {
+      "experiment_id": "p311-supplement-score-baseline14",
+      "id": "p311-supplement-score-baseline14",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "59046532f4f10266459efd7fd0808e85c528efeef265fe94bf8c73439cfd7b2c"
+        },
+        "factors": [
+          {
+            "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3",
+            "factor_id": "AMIHU20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "704a78a7f02180a65c53d4bacd72ba305c2a3d11ba8a2ab324a8461e153896fc",
+            "factor_id": "MA20_MA60",
+            "version": "1"
+          },
+          {
+            "definition_hash": "27ee515c6ae36a50ff605a0299b9c235b5efc02b0de6ca2068d3f7a9d7605409",
+            "factor_id": "MA5_MA20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245",
+            "factor_id": "MOM20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "eedada5d9fde3f18111a962c5de86af3cb77e4fb359a739a58a3d281c753a024",
+            "factor_id": "MOM60",
+            "version": "1"
+          },
+          {
+            "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad",
+            "factor_id": "PRICE_MA20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa",
+            "factor_id": "REV1",
+            "version": "1"
+          },
+          {
+            "definition_hash": "23c90e7c31872cb3e00d8780adf135c358cf98f318134f03f829525210b43ca4",
+            "factor_id": "REV5",
+            "version": "1"
+          },
+          {
+            "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5",
+            "factor_id": "TURN20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "eb7d520a963c03ff87b72418dfe0f40353f504883d4689ae7537ba3e317785b6",
+            "factor_id": "TURN5",
+            "version": "1"
+          },
+          {
+            "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e",
+            "factor_id": "VOL20",
+            "version": "1"
+          },
+          {
+            "definition_hash": "fba7582e52373fbdcd301bf1c5ca8f5ce3a6d2f4c084e151952d921c1bfe63b2",
+            "factor_id": "VOL5",
+            "version": "1"
+          },
+          {
+            "definition_hash": "de281eec2be69bcf98c868f81d0c2b6bf527d5786870c281eb9a34dd98ed43dd",
+            "factor_id": "VOL60",
+            "version": "1"
+          },
+          {
+            "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e",
+            "factor_id": "VOLUME_RATIO",
+            "version": "1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "baseline14",
+        "parameters": {
+          "family": "p311-supplement",
+          "objective": "score",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "369385e7fced4c90f97f893287175aac2a9fd59c89122c2d7ef8c0dbe8002adf",
+          "source": "P311 frozen Train selection"
+        },
+        "windows": {
+          "test": [
+            "2023-08-03 00:00:00",
+            "2024-02-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ],
+          "validation": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "e27fbd302ffc37f36eeb0c96338256419f83ddb4fd7b62454a54b8ac9d34fad3"
+    },
+    {
+      "experiment_id": "p311-supplement-score-fixed64",
+      "id": "p311-supplement-score-fixed64",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "59046532f4f10266459efd7fd0808e85c528efeef265fe94bf8c73439cfd7b2c"
+        },
+        "factors": [
+          {
+            "definition_hash": "70a3ed5fb0bf96e63aa44efdf0ce3eddfb68eb1ef36c83fb3cb6470dd8ca481d",
+            "factor_id": "C_amount_dispersion_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "62bdbeb62db40132f427abd927bfdab7ecbf6377a063af15d5cac044cda40a17",
+            "factor_id": "C_amount_dispersion_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "b6a221bf5127c65e105f987f5a41c24fda12cf5559aa0cbb5494de7fa8398416",
+            "factor_id": "C_amount_dispersion_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "437a452c34ce67114e19c1850e6c85fef720f1f187faae3a0487b14a4c2d6938",
+            "factor_id": "C_amount_dispersion_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "09d3c79a16ac4682d853ed06e8954b504ffa6c3f9605dbd86804f249902eabcc",
+            "factor_id": "C_amount_surprise_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "e7dbad8cd50cd73439ea171ccb973e8190e9f280e0e23998c850634f36ac85bf",
+            "factor_id": "C_amount_surprise_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "8b8c37d2e906a05a5cfa3fe7bb99204f8eeee439e24dca85907fd4341e63e879",
+            "factor_id": "C_amount_surprise_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "f55dcfda4efecfb09ae431f4450fb40aa5c76c475bc770c31cd78671380a9d13",
+            "factor_id": "C_amount_surprise_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "66f05dffa0a0fd07eb794d715d2c17ddb926fbc90d28932e206c83da3e116fdd",
+            "factor_id": "C_intraday_return_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "d431e371bb893562f04fa755baf71303191cddbff893e17fb2640d9589bc64d5",
+            "factor_id": "C_intraday_return_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "584452628979ef9534da51dbdc9d20447ef7de6cd27faee548a68b90bf5e68b3",
+            "factor_id": "C_intraday_return_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "3cfe5f17f5e4ef8aefbb4df65891aa80e46f2b84e7de81295dd327746e53bdcb",
+            "factor_id": "C_intraday_return_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "507ebfad0dc61b84a87b1bed7a4b456126310ba94a670820b176fd594479bb39",
+            "factor_id": "C_mean_slope_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702",
+            "factor_id": "C_mean_slope_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "e99dbafa2c7894cce5690c75951802ed35a9b00af5d2c93756ffc9502ccb79b5",
+            "factor_id": "C_mean_slope_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce",
+            "factor_id": "C_mean_slope_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "ad30aa050a3d7cb00305c2f6f49224352b66e00bcdebe2e8453e421de63ed900",
+            "factor_id": "C_momentum_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "21dd1f0579a4cd62b5e36084c5e449bb359b268630ee15a3c0a156c9f2a02066",
+            "factor_id": "C_momentum_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "498598f337ebc2ca2143f6ffda8c7239bc36b362095dd5a06985a1aaeab6ed84",
+            "factor_id": "C_momentum_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "8a712cd5a85aeca2fe1adac1c387b39c4743b8a34ab99fe2726f74bb637c6eed",
+            "factor_id": "C_momentum_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99",
+            "factor_id": "C_price_deviation_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "93538b00af819ddd89f0531da31c44a8eeab1515740f23687c752ce0aa23ff14",
+            "factor_id": "C_price_deviation_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e",
+            "factor_id": "C_price_deviation_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "83e1407a717ebe9c7035d9b78568d68dc65a676fb73e08f1fd25c4fb2603cd93",
+            "factor_id": "C_price_deviation_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "8dde04c0e5f2578351d9899e66de521b9947f39ca2396265fb93f47ff21ba15e",
+            "factor_id": "C_price_dispersion_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "3bf66d22923e50ed3db7a672af4c52be8f184ea3db3cbfe7dc6490572e576dc0",
+            "factor_id": "C_price_dispersion_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "a5b4021698a80784c3606e840b80057912dbd1908378571d8587b85323dff106",
+            "factor_id": "C_price_dispersion_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "84a911653effc3fe0187234bb3f41d8d862d368f7b1dfec664fed9a73572dd3e",
+            "factor_id": "C_price_dispersion_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "45bfe313cedacd0db19d826a447fbfbdbdf4ebba5696dd6c64ee29c24a6ca51c",
+            "factor_id": "C_relative_range_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "3526f3499feb1061ae9b3bd9a6485bef6ff8a21df5015f11ce606055105d746c",
+            "factor_id": "C_relative_range_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "d7887694195e58e472b668881e8d297dc77828e69fd29036ec81a72dd18cdaf8",
+            "factor_id": "C_relative_range_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "ea58f8a8a86dd75b03ef39fab04644cbf8f5a06c08fd95654795292a23e3ade9",
+            "factor_id": "C_relative_range_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f",
+            "factor_id": "C_return_mean_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "62be9ca25cccd55b9792c73e23b74957b8d6d5f75b713808054c918e5170773c",
+            "factor_id": "C_return_mean_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "9500c526d4edaab52975b4408a22cd1b828858272f38506ba8aac60a50f8caa6",
+            "factor_id": "C_return_mean_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "d8c6ba69ab08ca46153fd4e3e70ac510f3b9cf9ccbb34b875f85d6be9c39369f",
+            "factor_id": "C_return_mean_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "cea52bf8dfcc1783971a8fb5e48ee88748c650717cfdc4c6a84d71863aa9c3fb",
+            "factor_id": "C_return_volatility_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "f54ad358ffa75b1cc73198a2f1ac37b8f7bc0330495f78e1611ad8cabec570b9",
+            "factor_id": "C_return_volatility_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "63a59aab435d3a2a50b3c4a14d639b43714ea6ffadcf6b4091573046c5faeac3",
+            "factor_id": "C_return_volatility_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "53a67cfb99bdf0f4c8e9c37a0c84c63d1156e033b47347bda513342bf8a71a6a",
+            "factor_id": "C_return_volatility_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f",
+            "factor_id": "C_turnover_dispersion_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "6f672eca49c329ee87ab4441a76022b5cab6f4f1ae3ed749116d82f34920aa48",
+            "factor_id": "C_turnover_dispersion_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "983eb078893f2dd8486a346c955172f7dd03f4c5536efd215687d448ba54d2d6",
+            "factor_id": "C_turnover_dispersion_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "bfd41b46f9895e194280b2da160f03febfd69e3e9370b7ae8fd28fefc269e8b1",
+            "factor_id": "C_turnover_dispersion_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f",
+            "factor_id": "C_turnover_level_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc",
+            "factor_id": "C_turnover_level_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639",
+            "factor_id": "C_turnover_level_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a",
+            "factor_id": "C_turnover_level_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "edcb05d87f2288ba3748490025deb2f827e01b3e9fa83e137a194b6f6129f103",
+            "factor_id": "C_turnover_surprise_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "081419c6c6038ff381e6148a53eea31ae3f54527e9ef3133fcadbd41ab4f373e",
+            "factor_id": "C_turnover_surprise_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "03d587cbb7371e8983a2eac48e4e2d6f753277aa16b79f3eec99820ecdb18be6",
+            "factor_id": "C_turnover_surprise_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "0c214b8e1f813c05d050210fd971ca95e53938a784c7c41a9b38edf8e4affdb1",
+            "factor_id": "C_turnover_surprise_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "7d0949fe8c46f3fd913388198e6c4cdc68edd2c96229e1e034d0a14d0f68e46b",
+            "factor_id": "C_volume_dispersion_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "fb6a24d70253ac6bc44e804abaec3495aac09c9d018ee8edf75d387f16e0080c",
+            "factor_id": "C_volume_dispersion_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "118bfa10b2e8d46b3a9d00480b32139c709ea5b1e057c40e1cf0d9d6b0e0bfce",
+            "factor_id": "C_volume_dispersion_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "ac3dbf553c77a58ceb3659a5145fca45c7a7082cbc1a3f290d6f5e45f17f3758",
+            "factor_id": "C_volume_dispersion_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "157a128fd74c81c7ae927dfd5f1543d7f1ef3b06e6e05e291a65e0603abaa4c1",
+            "factor_id": "C_volume_growth_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "784df7bb1b4e94f74dbf258b9000ee165378c9ccb215d61bc86ab42cc844f11d",
+            "factor_id": "C_volume_growth_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "35a53af9729fd418c3417b66cd55c749937d97f2f44c418ad4ff24e32700c4e9",
+            "factor_id": "C_volume_growth_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "bad624bfff868c7bd5a6921cfe603a54b2700e10be4be125ee6e8f2801a56cb5",
+            "factor_id": "C_volume_growth_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "277f75a66b0ff51de56ad3e86055248e7a40c5ce2ac38dce8d37fb97b5d5f672",
+            "factor_id": "C_volume_surprise_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "6dd2d116f4f7c63c172f8afc097e8c3891990f13b4c85c87da2c6421cad5be38",
+            "factor_id": "C_volume_surprise_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "3099e4f3b48d660ae2d91c27f3793d737f3d83ab7542dfa81bb8481c50b568c5",
+            "factor_id": "C_volume_surprise_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "8e79068135340f79250c28398c48e8efdc9d5cf427c917380d47151960af1cf8",
+            "factor_id": "C_volume_surprise_60",
+            "version": "p311-v1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "fixed64",
+        "parameters": {
+          "family": "p311-supplement",
+          "objective": "score",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "369385e7fced4c90f97f893287175aac2a9fd59c89122c2d7ef8c0dbe8002adf",
+          "source": "P311 frozen Train selection"
+        },
+        "windows": {
+          "test": [
+            "2023-08-03 00:00:00",
+            "2024-02-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ],
+          "validation": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "ada665d41dcbb5f0c0b3c17afde3c29c399a6db8ee54f2981f1962dfdfcfd6cc"
+    },
+    {
+      "experiment_id": "p311-supplement-score-selected10",
+      "id": "p311-supplement-score-selected10",
+      "kind": "experiments",
+      "payload": {
+        "costs": {
+          "benchmark_close_price_column": "adj_close",
+          "benchmark_open_price_column": "adj_open",
+          "board_lot": 100,
+          "close_price_column": "raw_close",
+          "initial_cash": 100000,
+          "minimum_cross_section": 5,
+          "open_price_column": "raw_open",
+          "price_limit_tolerance_bps": 5.0,
+          "rebalance_days": 5,
+          "reject_suspended": true,
+          "t_plus_one": true,
+          "target_order_sizes": {
+            "chinext": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "main": {
+              "increment": 100,
+              "minimum": 100
+            },
+            "star": {
+              "increment": 1,
+              "minimum": 200
+            }
+          },
+          "top_k": 20
+        },
+        "dataset": {
+          "identity": "59046532f4f10266459efd7fd0808e85c528efeef265fe94bf8c73439cfd7b2c"
+        },
+        "factors": [
+          {
+            "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702",
+            "factor_id": "C_mean_slope_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce",
+            "factor_id": "C_mean_slope_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "8a712cd5a85aeca2fe1adac1c387b39c4743b8a34ab99fe2726f74bb637c6eed",
+            "factor_id": "C_momentum_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99",
+            "factor_id": "C_price_deviation_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e",
+            "factor_id": "C_price_deviation_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f",
+            "factor_id": "C_return_mean_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "62be9ca25cccd55b9792c73e23b74957b8d6d5f75b713808054c918e5170773c",
+            "factor_id": "C_return_mean_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "f54ad358ffa75b1cc73198a2f1ac37b8f7bc0330495f78e1611ad8cabec570b9",
+            "factor_id": "C_return_volatility_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f",
+            "factor_id": "C_turnover_dispersion_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "6f672eca49c329ee87ab4441a76022b5cab6f4f1ae3ed749116d82f34920aa48",
+            "factor_id": "C_turnover_dispersion_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f",
+            "factor_id": "C_turnover_level_10",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc",
+            "factor_id": "C_turnover_level_20",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639",
+            "factor_id": "C_turnover_level_5",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a",
+            "factor_id": "C_turnover_level_60",
+            "version": "p311-v1"
+          },
+          {
+            "definition_hash": "784df7bb1b4e94f74dbf258b9000ee165378c9ccb215d61bc86ab42cc844f11d",
+            "factor_id": "C_volume_growth_20",
+            "version": "p311-v1"
+          }
+        ],
+        "label": {
+          "definition": "EXCESS_RET5:next_open:5"
+        },
+        "model": "selected10",
+        "parameters": {
+          "family": "p311-supplement",
+          "objective": "score",
+          "protocol": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+            "costs": [
+              "base",
+              "slippage20",
+              "commission15"
+            ],
+            "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled",
+            "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+            "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+            "inference": {
+              "bootstrap_block_days": 10,
+              "bootstrap_repetitions": 500,
+              "confidence_level": 0.95,
+              "hac_lags": 5,
+              "holding_days": 5,
+              "min_coverage": 0.8,
+              "min_valid_days": 30,
+              "random_seed": 42
+            },
+            "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+            "initial_cash": 100000,
+            "investment": 0.8,
+            "lag_sessions": 5,
+            "max_weight": 0.15,
+            "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+            "objectives": [
+              "equal",
+              "minimum_variance",
+              "score"
+            ],
+            "random_seeds": [
+              17,
+              29,
+              43
+            ],
+            "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill"
+          }
+        },
+        "walk_forward": {
+          "folds": "369385e7fced4c90f97f893287175aac2a9fd59c89122c2d7ef8c0dbe8002adf",
+          "source": "P311 frozen Train selection"
+        },
+        "windows": {
+          "test": [
+            "2023-08-03 00:00:00",
+            "2024-02-03 00:00:00"
+          ],
+          "train": [
+            "2023-04-03 00:00:00",
+            "2023-11-03 00:00:00"
+          ],
+          "validation": [
+            "2023-07-03 00:00:00",
+            "2023-12-03 00:00:00"
+          ]
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "93493e26ddf129735bac71242f6e3bab4527e38487427f07e563c81c245c509e"
+    }
+  ],
+  "runs": [
+    {
+      "experiment_id": "p309-equal-factor_score",
+      "id": "p309-equal-factor_score",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "bba9bcbc47db07cfd74b4de686fbeb1be7b055275625c35c0f4582a0ecd724be",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-equal-factor_score.json",
+              "sha256": "cb50b13b9f3ec78277fccbd40c436e7104f5eb1b0481802bb0566ffce979df03"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.010556446189453728
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:00:55.413229+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "0a7f7568ce8e450db97b1cc9b9da626955031e6bd1d4d64fed9dda685c5f90b5"
+    },
+    {
+      "experiment_id": "p309-equal-lightgbm",
+      "id": "p309-equal-lightgbm",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "6ebf6f0af53114529a14128af943db2413fbf14a358b7b9f66293c006c4df6df",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-equal-lightgbm.json",
+              "sha256": "1ad3d590f2e9082794497975acf0e7a3e72d1742b6783b155ea00493dfd86813"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.010556446189453728
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:00:56.766475+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "3f026161af7f958f262caeeebc2538086967791c6d71b96b6069ced48e8ec44f"
+    },
+    {
+      "experiment_id": "p309-equal-ridge",
+      "id": "p309-equal-ridge",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "096fef94ab1e4fc7391a219a1eebc85325bee16442a82135669010e687db0a2f",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-equal-ridge.json",
+              "sha256": "6a1300e64ef5c497d503ee769364b64155b048f43844c899462a74169b377822"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.010556446189453728
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:00:56.088685+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "99f166afe14666bc417d4e2db4143aea66de4cb3681f4760e4112469b0072017"
+    },
+    {
+      "experiment_id": "p309-equal-xgboost",
+      "id": "p309-equal-xgboost",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "08ade2ede53d671e66ed77f678f28eeee2dfd4b41bea24e2d127f72b7df110e3",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-equal-xgboost.json",
+              "sha256": "81e3b49e16abdccb03d7f813e630f622bf9a29387d30b453b6328343832c39ca"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.010556446189453728
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:00:57.467486+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "956077e920573f58c0e4086de23f74230f3b072bb552c491a5f7c9c85d0ef0b8"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-factor_score",
+      "id": "p309-minimum_variance-factor_score",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "aaeff8f6445765580c7efba25038e74dfe7d16d72a5a5dcacae5b4aaaa484f00",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-minimum_variance-factor_score.json",
+              "sha256": "e883bd5d4e3d12fd5be241152f4985a24b71f700a5dea2311a174bd59046d8d6"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.013798365230459742
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:00:58.905054+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "ec7b919e47da8183a164934b2297a0287a3ccbd16793633a05f5f75f2c5311d8"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-lightgbm",
+      "id": "p309-minimum_variance-lightgbm",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "ffd7a7bcca4066678c1442bb5bb0b6ee23b9ccd3f41869dc6b2e23d3fff2c26e",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-minimum_variance-lightgbm.json",
+              "sha256": "aab0c47b3cbccec01744751e2e8fea14a20d5ac100d4b44b2dac9fba441f94c4"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.013798365230459742
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:01:00.437866+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "d2f1faff10ddebdac52b02633d1271b0c7393cc163f0ac45d1df43163c494214"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-ridge",
+      "id": "p309-minimum_variance-ridge",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "ebada6c5f0891cc0c6d3ea6e56437fdc14ae88bc2136515032c6d0e6e0721b80",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-minimum_variance-ridge.json",
+              "sha256": "10265ad2d42efeae9290862d1ac55fb2c3afefeec2213826e84f3a608dddd916"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.013798365230459742
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:00:59.664266+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "398b60af1ecc301b55bcc8a4b2db70ec5daa47cfb313914cdc2a19d2d5a8f3b8"
+    },
+    {
+      "experiment_id": "p309-minimum_variance-xgboost",
+      "id": "p309-minimum_variance-xgboost",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "156c53f3df5a78dbde456af769c34349e443e2405b1303ae14567afbd86d7098",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-minimum_variance-xgboost.json",
+              "sha256": "68ef572e6823f70c3cd733235b0287e44a593d98df9e12acce16e89547b2449a"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.013798365230459742
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:01:01.218175+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "37e8d976cb0ea38be5199446eb9dec9008cdff96e757f9dcc61b4cecfa55b0c7"
+    },
+    {
+      "experiment_id": "p309-score-factor_score",
+      "id": "p309-score-factor_score",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "466a6f7f4161996590af829c6278362761f289514bdbe16b1749691fa5ff6188",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-score-factor_score.json",
+              "sha256": "68b74c142a3737df88dfb97aa5527f52ad6a3ce162038f3b167b386bc67e9491"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.018001404091466444
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:01:02.543198+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "b2c6807073296900fdf39a9b65f0d1925e90c7d638d69be5c193797c214bf3cb"
+    },
+    {
+      "experiment_id": "p309-score-lightgbm",
+      "id": "p309-score-lightgbm",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "cdf9f685792d87a62dee1423a2c0c4171ba5cdc2d293382db9b1251b4ab9d55e",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-score-lightgbm.json",
+              "sha256": "a4fe19c1510c96c81302fe25c41a01284384ac4d2f9b8b907ef3d2325257a164"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": 0.02679626580819261
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:01:05.633811+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "7c49591f6f39b2d71e0b38c6615e37d9bf53c71d23262a3eff4504bbdc6580c5"
+    },
+    {
+      "experiment_id": "p309-score-ridge",
+      "id": "p309-score-ridge",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "9dde70cd0c4445128e500418ce575134a83e0b8edbcdc61afb4620c6408c36dd",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-score-ridge.json",
+              "sha256": "7bdfcec2a5d51f485ada3f2b2be930249ca98e37562284d6f875753e792cf91e"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": 0.02524232430478035
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:01:04.132782+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "1c456136a527dadcfd4b82c0cbe16d239eac862192ac17b7aac49a4d91508139"
+    },
+    {
+      "experiment_id": "p309-score-xgboost",
+      "id": "p309-score-xgboost",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "65a4ce2b567b79bf2fbb545b2c0474e23840bd1722dbb8e091362f6102d05642",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p309-score-xgboost.json",
+              "sha256": "8a2ed5c505d1848510a85278a940badc169273b1b7aca0aa8235ee3e7b90c499"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": 0.026126657871733405
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:01:07.166253+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "a18d11603588f3b009e297893d2664be44f715755f7b591f94b6b2e55e673316"
+    },
+    {
+      "experiment_id": "p311-supplement-score-baseline14",
+      "id": "p311-supplement-score-baseline14",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "e27fbd302ffc37f36eeb0c96338256419f83ddb4fd7b62454a54b8ac9d34fad3",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p311-supplement-score-baseline14.json",
+              "sha256": "6b7a15245da2ec54cff361240ff226e3e8125900c5c65edb3bf847487bf0ff19"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": -0.017947187858903924
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:02:02.427196+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "feaa43aff064c36b8872c0d90cc9ec64dd659d38c2d45042bd911fa7932c9cca"
+    },
+    {
+      "experiment_id": "p311-supplement-score-fixed64",
+      "id": "p311-supplement-score-fixed64",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "ada665d41dcbb5f0c0b3c17afde3c29c399a6db8ee54f2981f1962dfdfcfd6cc",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p311-supplement-score-fixed64.json",
+              "sha256": "41c1faeec646a6facabe37aee985710cab06b171294afe6f2a95018047b38a9e"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": 0.0031884622400715212
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:02:03.411709+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "f6232eb9c287a975354cc0a0282da18a01f2ad50d5a85adcd3cadc6154a1a2c5"
+    },
+    {
+      "experiment_id": "p311-supplement-score-selected10",
+      "id": "p311-supplement-score-selected10",
+      "kind": "runs",
+      "payload": {
+        "definition_hash": "93493e26ddf129735bac71242f6e3bab4527e38487427f07e563c81c245c509e",
+        "run": {
+          "artifacts": {
+            "summary": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p3-r14-return-attribution\\research\\p3-r14-final\\p311-supplement-score-selected10.json",
+              "sha256": "d8631c7f9f1f4d1a1a358ff86815d1638a3e1879d9bcf24f65df8d8a6309e950"
+            }
+          },
+          "code": {
+            "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+            "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7",
+            "git_dirty": true,
+            "tree": "09b22e88057a957c95035787d740e6976a787c47"
+          },
+          "command": [
+            "python",
+            "-m",
+            "examples.research.return_attribution_synthetic",
+            "--output",
+            "research\\p3-r14-final"
+          ],
+          "environment": {
+            "package_versions": {
+              "PyYAML": "6.0.3",
+              "akshare": "1.18.88",
+              "baostock": "0.8.9",
+              "lightgbm": "4.6.0",
+              "matplotlib": "3.10.7",
+              "numpy": "2.3.4",
+              "pandas": "2.3.3",
+              "pyarrow": "22.0.0",
+              "pytest": "8.4.2",
+              "scikit-learn": "1.7.2",
+              "scipy": "1.16.3",
+              "tzdata": "2026.4",
+              "xgboost": "2.1.4"
+            },
+            "platform": "Windows-11-10.0.26340-SP0",
+            "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+            "python_version": "3.13.9"
+          },
+          "portfolio_metrics": {
+            "net_return": 0.052748455114145276
+          },
+          "prediction_metrics": {},
+          "qualification": "SYNTHETIC",
+          "status": "SUCCEEDED",
+          "test_status": "NOT_RUN",
+          "timestamp": "2026-11-09T04:02:04.383276+00:00",
+          "validation": {
+            "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE"
+          }
+        }
+      },
+      "schema": "FACTORLAB_EXPERIMENT_V1",
+      "sha256": "c4f06b8aafbbc0ffe6e2b4a4bcb4c7ba38f075dbfc1278b645e94cceaae4f292"
+    }
+  ],
+  "retention": "Full regenerable run is local; this receipt preserves immutable tracker bindings without the rebuildable SQLite index."
+}
