@@ -156,6 +156,8 @@ def test_batch_calls_shared_diagnostics_without_cross_source_fusion():
     assert result['research_diagnostics']['vendor'] == research_readiness(inputs, **options)
     assert result['comparisons'] == []
     assert all(source['gates']['FORMAL']['status'] == 'FAIL' for source in result['sources'])
+    assert all('sources bound' in source['gates']['STATUS']['reason'] for source in result['sources'])
+    assert all('member-day source bound' in source['gates']['PIT']['reason'] for source in result['sources'])
 
 
 @pytest.mark.parametrize('corrupt', [False, True])

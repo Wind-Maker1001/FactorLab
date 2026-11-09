@@ -132,6 +132,15 @@ def batch_readiness(hub, queries: tuple[CandidateQuery, ...], *, calendar,
             research_reports[source] = research_readiness(**options,
                 start=query.start, end=query.end,
                 research_start=query.research_start, research_end=query.research_end)
+            for report in reports:
+                if report['query']['source'] == source:
+                    bindings = research_reports[source]['bindings']
+                    if {'status', 'listings'}.issubset(bindings):
+                        report['gates']['STATUS'] = dict(status='UNKNOWN',
+                            reason='Observed historical status/listing sources bound; independent historical qualification UNKNOWN')
+                    if 'membership' in bindings:
+                        report['gates']['PIT'] = dict(status='UNKNOWN',
+                            reason='Observed member-day source bound; historical known_at and certified stable identity UNKNOWN')
     return dict(schema='P3D07_READINESS_V1', status='PARTIAL', boundary=BOUNDARY,
         research_diagnostics=research_reports,
         calendar=dict(id=calendar_id, kind=calendar_kind, sessions=len(dates),

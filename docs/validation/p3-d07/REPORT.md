@@ -105,6 +105,7 @@ purge／embargo均为5日。D06另发现输入范围10条OHLC关系异常，涉�
 - 定向套件首轮58 passed（31.25秒）；增加缺字段及收据测试后61 passed（16.31秒），见 `targeted-tests.xml`、`final-tests.xml`。
 - 补充资格优先于补价的断言后，新增套件11 passed（1.89秒），见 `classification-tests.xml`。
 - 本次受控适配器与统一CLI补充回归2 passed（4.99秒），见 `adapter-cli-tests.xml`；完整CLI实际输出包含共享78因子统计及正式主线固定收据。此处行情为合成归档夹具，不宣称重新完成真实五年研究。
+- 证据绑定后的门禁语义回归12 passed（5.27秒），见 `batch-gates-tests.xml`：STATUS/PIT仍UNKNOWN，但明确区分已绑定观察源与尚未取得历史资格，不再声称完全没有绑定。
 
 仅提交聚合JSON、补证清单、JUnit及软件，不包含商业库证券日原值。过渡JSON和误目录空JUnit已清理；没有新缓存或大型归档。
 
@@ -127,3 +128,9 @@ python -I -B -X utf8 tools/data/audit_p3_d07.py --bigquant-root '<BQ>' --members
 ```
 
 `end` 是标签端点读取边界，研究窗口阶段右端仍不含；不同来源不自动拼接。未传研究资产时旧 RAW CLI 继续工作，但不会伪造78因子/成员/状态结果。
+
+## GitHub 工程验收
+
+主线 ruleset `26809886` 要求 `FactorLab trusted merge gate`，绑定 integration ID `5670895`；`ci-merge-publisher` 环境中的 `CI_GATE_APP_ID` 同为 `5670895`。工作流从可信 base 选择风险，Fast 必跑，Extended/current/locking/package 和 `ci-control-review` 按风险结果执行。`ci-control-review` 为人工审批环境，不能由软件测试替代。
+
+当前工程阶段为 **WAITING 新HEAD可信CI／按规则所需审批**，不以旧HEAD成功批准本次集成。PR保持OPEN，不自动合并。金融资格保持阻断。工作树中的既有 `src/factorlab/demo.py` 换行差异保留，不纳入集成提交。
