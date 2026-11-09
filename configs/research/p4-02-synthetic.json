@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "experiment_id": "p4-02-synthetic",
+  "source_kind": "SYNTHETIC",
+  "data": {"generator": "make_synthetic_data-v1", "seed": 20261014, "sessions": 270, "securities": 24, "version": "seed-20261014-v1"},
+  "factors": [{"name": "MOM20", "version": "1"}, {"name": "REV1", "version": "1"}],
+  "models": {
+    "factor_score": {"version": "1", "seed": 42, "parameters": {}},
+    "ridge": {"version": "1", "seed": 42, "parameters": {"alpha": 1.0}},
+    "lightgbm": {"version": "1", "seed": 42, "parameters": {"n_estimators": 8, "num_leaves": 7, "min_child_samples": 10}},
+    "xgboost": {"version": "1", "seed": 42, "parameters": {"n_estimators": 8, "max_depth": 2}}
+  },
+  "research": {"start": "2023-04-03", "end": "2023-12-15", "risk_lookback": 40, "rebalance_sessions": 5},
+  "split": {"initial_train_months": 2, "validation_months": 1, "test_months": 1, "step_months": 2, "purge_days": 5, "embargo_days": 5},
+  "label": {"holding_days": 5, "entry_price": "next_open"},
+  "portfolio": {"objective": "minimum_variance", "investment": 0.8, "max_weight": 0.15, "shrinkage": 0.2, "turnover_limit": null},
+  "execution": {"mode": "batch", "initial_cash": 100000},
+  "costs": {"commission_bps": 3, "minimum_commission_cny": 5, "slippage_bps": 5}
+}

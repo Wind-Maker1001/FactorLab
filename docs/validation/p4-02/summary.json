@@ -1,0 +1,463 @@
+{
+  "evidence": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "dataset_identity": "6c47fd3a7baf1271384c39d9ffbd4331b3d8ad9265bb55c09773ea76c33d80d0",
+  "execution_mode": "batch",
+  "objective": "minimum_variance",
+  "run_ids": [
+    "p4-02-synthetic-factor_score",
+    "p4-02-synthetic-ridge",
+    "p4-02-synthetic-lightgbm",
+    "p4-02-synthetic-xgboost"
+  ],
+  "models": {
+    "factor_score": {
+      "folds": 3,
+      "predictions": 1552,
+      "prediction_metrics": {
+        "prediction_rank_ic_mean": {
+          "value": 0.3204645788993615,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_rank_icir": {
+          "value": 1.8978263606111603,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_ic_mean": {
+          "value": 0.3161029773702607,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_icir": {
+          "value": 1.8800546803156188,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "portfolio_metrics": {
+        "cumulative_return": {
+          "value": -0.013798365230460963,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_return": {
+          "value": -0.031329645304153386,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_volatility": {
+          "value": 0.018208810316507444,
+          "status": "OK",
+          "reason": ""
+        },
+        "sharpe_ratio": {
+          "value": -1.738972264331866,
+          "status": "OK",
+          "reason": ""
+        },
+        "sortino_ratio": {
+          "value": -2.292179496947655,
+          "status": "OK",
+          "reason": ""
+        },
+        "maximum_drawdown": {
+          "value": -0.02355106442321342,
+          "status": "OK",
+          "reason": ""
+        },
+        "calmar_ratio": {
+          "value": -1.3302857459501025,
+          "status": "OK",
+          "reason": ""
+        },
+        "benchmark_return": {
+          "value": 0.11023747651026516,
+          "status": "OK",
+          "reason": ""
+        },
+        "excess_return": {
+          "value": -0.12403584174072613,
+          "status": "OK",
+          "reason": ""
+        },
+        "tracking_error": {
+          "value": 0.03501837957029956,
+          "status": "OK",
+          "reason": ""
+        },
+        "information_ratio": {
+          "value": -7.759152516149188,
+          "status": "OK",
+          "reason": ""
+        },
+        "win_rate": {
+          "value": 0.4636363636363636,
+          "status": "OK",
+          "reason": ""
+        },
+        "portfolio_turnover": {
+          "value": 2.087353063521507,
+          "status": "OK",
+          "reason": ""
+        },
+        "total_transaction_cost": {
+          "value": 866.3209818565593,
+          "status": "OK",
+          "reason": ""
+        },
+        "number_of_trades": {
+          "value": 123.0,
+          "status": "OK",
+          "reason": ""
+        },
+        "average_holdings": {
+          "value": 14.881818181818181,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "final_nav": 0.9862016347695403,
+      "transaction_cost_cny": 866.3209818565593,
+      "trades": 123,
+      "rejections": 2
+    },
+    "ridge": {
+      "folds": 3,
+      "predictions": 1552,
+      "prediction_metrics": {
+        "prediction_rank_ic_mean": {
+          "value": 0.3239975676497415,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_rank_icir": {
+          "value": 1.8837706085010102,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_ic_mean": {
+          "value": 0.32628085371930865,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_icir": {
+          "value": 1.986040065700064,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "portfolio_metrics": {
+        "cumulative_return": {
+          "value": -0.013798365230460963,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_return": {
+          "value": -0.031329645304153386,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_volatility": {
+          "value": 0.018208810316507444,
+          "status": "OK",
+          "reason": ""
+        },
+        "sharpe_ratio": {
+          "value": -1.738972264331866,
+          "status": "OK",
+          "reason": ""
+        },
+        "sortino_ratio": {
+          "value": -2.292179496947655,
+          "status": "OK",
+          "reason": ""
+        },
+        "maximum_drawdown": {
+          "value": -0.02355106442321342,
+          "status": "OK",
+          "reason": ""
+        },
+        "calmar_ratio": {
+          "value": -1.3302857459501025,
+          "status": "OK",
+          "reason": ""
+        },
+        "benchmark_return": {
+          "value": 0.11023747651026516,
+          "status": "OK",
+          "reason": ""
+        },
+        "excess_return": {
+          "value": -0.12403584174072613,
+          "status": "OK",
+          "reason": ""
+        },
+        "tracking_error": {
+          "value": 0.03501837957029956,
+          "status": "OK",
+          "reason": ""
+        },
+        "information_ratio": {
+          "value": -7.759152516149188,
+          "status": "OK",
+          "reason": ""
+        },
+        "win_rate": {
+          "value": 0.4636363636363636,
+          "status": "OK",
+          "reason": ""
+        },
+        "portfolio_turnover": {
+          "value": 2.087353063521507,
+          "status": "OK",
+          "reason": ""
+        },
+        "total_transaction_cost": {
+          "value": 866.3209818565593,
+          "status": "OK",
+          "reason": ""
+        },
+        "number_of_trades": {
+          "value": 123.0,
+          "status": "OK",
+          "reason": ""
+        },
+        "average_holdings": {
+          "value": 14.881818181818181,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "final_nav": 0.9862016347695403,
+      "transaction_cost_cny": 866.3209818565593,
+      "trades": 123,
+      "rejections": 2
+    },
+    "lightgbm": {
+      "folds": 3,
+      "predictions": 1552,
+      "prediction_metrics": {
+        "prediction_rank_ic_mean": {
+          "value": 0.30802407106045343,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_rank_icir": {
+          "value": 1.745225217189847,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_ic_mean": {
+          "value": 0.2944732235177349,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_icir": {
+          "value": 1.685560792691703,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "portfolio_metrics": {
+        "cumulative_return": {
+          "value": -0.013798365230460963,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_return": {
+          "value": -0.031329645304153386,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_volatility": {
+          "value": 0.018208810316507444,
+          "status": "OK",
+          "reason": ""
+        },
+        "sharpe_ratio": {
+          "value": -1.738972264331866,
+          "status": "OK",
+          "reason": ""
+        },
+        "sortino_ratio": {
+          "value": -2.292179496947655,
+          "status": "OK",
+          "reason": ""
+        },
+        "maximum_drawdown": {
+          "value": -0.02355106442321342,
+          "status": "OK",
+          "reason": ""
+        },
+        "calmar_ratio": {
+          "value": -1.3302857459501025,
+          "status": "OK",
+          "reason": ""
+        },
+        "benchmark_return": {
+          "value": 0.11023747651026516,
+          "status": "OK",
+          "reason": ""
+        },
+        "excess_return": {
+          "value": -0.12403584174072613,
+          "status": "OK",
+          "reason": ""
+        },
+        "tracking_error": {
+          "value": 0.03501837957029956,
+          "status": "OK",
+          "reason": ""
+        },
+        "information_ratio": {
+          "value": -7.759152516149188,
+          "status": "OK",
+          "reason": ""
+        },
+        "win_rate": {
+          "value": 0.4636363636363636,
+          "status": "OK",
+          "reason": ""
+        },
+        "portfolio_turnover": {
+          "value": 2.087353063521507,
+          "status": "OK",
+          "reason": ""
+        },
+        "total_transaction_cost": {
+          "value": 866.3209818565593,
+          "status": "OK",
+          "reason": ""
+        },
+        "number_of_trades": {
+          "value": 123.0,
+          "status": "OK",
+          "reason": ""
+        },
+        "average_holdings": {
+          "value": 14.881818181818181,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "final_nav": 0.9862016347695403,
+      "transaction_cost_cny": 866.3209818565593,
+      "trades": 123,
+      "rejections": 2
+    },
+    "xgboost": {
+      "folds": 3,
+      "predictions": 1552,
+      "prediction_metrics": {
+        "prediction_rank_ic_mean": {
+          "value": 0.3113658964719668,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_rank_icir": {
+          "value": 1.9692543442906676,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_ic_mean": {
+          "value": 0.2965516061706246,
+          "status": "OK",
+          "reason": ""
+        },
+        "prediction_icir": {
+          "value": 1.8122131968008022,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "portfolio_metrics": {
+        "cumulative_return": {
+          "value": -0.013798365230460963,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_return": {
+          "value": -0.031329645304153386,
+          "status": "OK",
+          "reason": ""
+        },
+        "annualized_volatility": {
+          "value": 0.018208810316507444,
+          "status": "OK",
+          "reason": ""
+        },
+        "sharpe_ratio": {
+          "value": -1.738972264331866,
+          "status": "OK",
+          "reason": ""
+        },
+        "sortino_ratio": {
+          "value": -2.292179496947655,
+          "status": "OK",
+          "reason": ""
+        },
+        "maximum_drawdown": {
+          "value": -0.02355106442321342,
+          "status": "OK",
+          "reason": ""
+        },
+        "calmar_ratio": {
+          "value": -1.3302857459501025,
+          "status": "OK",
+          "reason": ""
+        },
+        "benchmark_return": {
+          "value": 0.11023747651026516,
+          "status": "OK",
+          "reason": ""
+        },
+        "excess_return": {
+          "value": -0.12403584174072613,
+          "status": "OK",
+          "reason": ""
+        },
+        "tracking_error": {
+          "value": 0.03501837957029956,
+          "status": "OK",
+          "reason": ""
+        },
+        "information_ratio": {
+          "value": -7.759152516149188,
+          "status": "OK",
+          "reason": ""
+        },
+        "win_rate": {
+          "value": 0.4636363636363636,
+          "status": "OK",
+          "reason": ""
+        },
+        "portfolio_turnover": {
+          "value": 2.087353063521507,
+          "status": "OK",
+          "reason": ""
+        },
+        "total_transaction_cost": {
+          "value": 866.3209818565593,
+          "status": "OK",
+          "reason": ""
+        },
+        "number_of_trades": {
+          "value": 123.0,
+          "status": "OK",
+          "reason": ""
+        },
+        "average_holdings": {
+          "value": 14.881818181818181,
+          "status": "OK",
+          "reason": ""
+        }
+      },
+      "final_nav": 0.9862016347695403,
+      "transaction_cost_cny": 866.3209818565593,
+      "trades": 123,
+      "rejections": 2
+    }
+  }
+}
