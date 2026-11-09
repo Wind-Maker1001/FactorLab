@@ -255,7 +255,8 @@ def test_merge_gate_rejects_failures_and_missing_extensions(monkeypatch):
 
     workflow = yaml.load((Path(__file__).resolve().parents[2] /
         '.github/workflows/factorlab-pr.yml').read_text(), Loader=yaml.BaseLoader)
-    script = next(step['run'] for step in workflow['jobs']['merge-gate']['steps'] if 'run' in step)
+    script = next(step['run'] for step in workflow['jobs']['merge-gate']['steps']
+                  if step.get('shell') == 'python {0}')
     from unittest.mock import MagicMock
     import urllib.request
     response = MagicMock()
@@ -265,7 +266,7 @@ def test_merge_gate_rejects_failures_and_missing_extensions(monkeypatch):
         GITHUB_RUN_ID='123', STATUS_SHA='a' * 40, GH_TOKEN='test').items():
         monkeypatch.setenv(name, value)
     results = {name: {'result': 'success'} for name in (
-        'risk', 'fast', 'control-review', 'current', 'locking', 'package')}
+        'risk', 'fast', 'control-review', 'current', 'current-coverage', 'locking', 'package')}
     results['risk']['outputs'] = dict(current='true', locking='true', package='true', review='true')
     for job in results:
         for status in ('failure', 'skipped', 'cancelled'):
@@ -275,10 +276,30 @@ def test_merge_gate_rejects_failures_and_missing_extensions(monkeypatch):
             with pytest.raises(SystemExit) as exc:
                 exec(compile(script, '<merge-gate>', 'exec'), {})
             assert exc.value.code
-    monkeypatch.setenv('RESULTS', json.dumps(results))
-    with pytest.raises(SystemExit) as exc:
-        exec(compile(script, '<merge-gate>', 'exec'), {})
-    assert not exc.value.code
+            assert json.loads(response.call_args.args[0].data)['state'] == 'failure'
+    for job in ('current', 'current-coverage'):
+        attack = {key: value for key, value in results.items() if key != job}
+        monkeypatch.setenv('RESULTS', json.dumps(attack))
+        with pytest.raises(SystemExit) as exc:
+            exec(compile(script, '<merge-gate>', 'exec'), {})
+        assert exc.value.code
+    for invalid in ({}, dict(current='false', locking='false', package='false', review='unknown')):
+        attack = dict(results, risk=dict(result='success', outputs=invalid))
+        monkeypatch.setenv('RESULTS', json.dumps(attack))
+        with pytest.raises(SystemExit) as exc:
+            exec(compile(script, '<merge-gate>', 'exec'), {})
+        assert exc.value.code
+    for low_risk in (False, True):
+        passing = json.loads(json.dumps(results))
+        if low_risk:
+            passing['risk']['outputs'] = dict.fromkeys(('current', 'locking', 'package', 'review'), 'false')
+            for job in ('control-review', 'current', 'current-coverage', 'locking', 'package'):
+                passing[job]['result'] = 'skipped'
+        monkeypatch.setenv('RESULTS', json.dumps(passing))
+        with pytest.raises(SystemExit) as exc:
+            exec(compile(script, '<merge-gate>', 'exec'), {})
+        assert not exc.value.code
+        assert json.loads(response.call_args.args[0].data)['state'] == 'success'
 
 
 def test_fast_consumes_trusted_plan_and_runner():
@@ -294,6 +315,67 @@ def test_fast_consumes_trusted_plan_and_runner():
     assert 'python -I trusted/tools/ci/integration_checks.py' in targeted
     assert '--risk-plan trusted-risk/risk.json' in targeted
     assert any('execution.json' in step.get('with', {}).get('path', '') for step in fast['steps'])
+
+
+@pytest.mark.parametrize('parents,is_pr,subject,passes', [
+    ('base head', 'true', 'merge', True),
+    ('other head', 'true', 'merge', False),
+    ('base other', 'true', 'merge', False),
+    ('base head extra', 'true', 'merge', False),
+    ('', 'false', 'head', True),
+    ('', 'false', 'other', False),
+])
+def test_risk_binds_exact_event_parents(monkeypatch, tmp_path, parents, is_pr, subject, passes):
+    from tools.ci import pr_identity
+    monkeypatch.setattr(pr_identity, 'git',
+                        lambda repository, *args: subject if args[0] == 'rev-parse' else parents)
+    expected = dict(pr=47 if is_pr == 'true' else None, base='base', pr_head='head')
+    if passes:
+        assert pr_identity.subject(tmp_path, expected) == subject
+    else:
+        with pytest.raises(ValueError):
+            pr_identity.subject(tmp_path, expected)
+
+
+
+def test_pr_shards_and_coverage_use_one_trusted_subject():
+    from pathlib import Path
+    import yaml
+    workflow = yaml.load((Path(__file__).resolve().parents[2] /
+        '.github/workflows/factorlab-pr.yml').read_text(), Loader=yaml.BaseLoader)
+    jobs = workflow['jobs']
+    current = jobs['current']
+    assert current['strategy'] == dict(**{'fail-fast': 'false'},
+                                      matrix=dict(python=['3.13', '3.14'], shard=['0', '1', '2']))
+    assert current['if'] == "needs.risk.outputs.current == 'true'"
+    assert any('--suite current --shard ${{ matrix.shard }}' in step.get('run', '')
+               for step in current['steps'])
+    for name in ('fast', 'current', 'locking', 'package'):
+        checkout = jobs[name]['steps'][0]
+        assert checkout['with']['ref'] == '${{ needs.risk.outputs.subject }}'
+        assert checkout['with']['persist-credentials'] == 'false'
+    artifact = current['steps'][-1]['with']
+    assert artifact['name'] == 'extended-${{ matrix.python }}-shard-${{ matrix.shard }}'
+    assert 'local-ci/extended/*/execution.json' in artifact['path']
+    assert 'local-ci/extended/*/dependencies.txt' in artifact['path']
+    coverage = jobs['current-coverage']
+    assert coverage['needs'] == ['risk', 'current']
+    assert 'always()' in coverage['if'] and "needs.risk.outputs.current == 'true'" in coverage['if']
+    assert coverage['steps'][0]['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
+    assert any('test "$RESULT" = success' in step.get('run', '') for step in coverage['steps'])
+    aggregate = next(step['run'] for step in coverage['steps'] if '--pr-shards' in step.get('run', ''))
+    assert 'for version in 3.13 3.14' in aggregate and 'for shard in 0 1 2' in aggregate
+    for flag in ('subject-sha', 'pr-head-sha', 'trusted-base-sha', 'event-sha', 'run-id', 'run-attempt'):
+        assert '--' + flag in aggregate
+    gate = jobs['merge-gate']
+    assert 'current-coverage' in gate['needs'] and gate['if'] == 'always()'
+    assert gate['environment'] == 'ci-merge-publisher'
+    assert any('test "$APP_ID" = 5670895' in step.get('run', '') for step in gate['steps'])
+    assert jobs['control-review']['environment'] == 'ci-control-review'
+    assert 'pull_request_target' in workflow['on']
+    for job in jobs.values():
+        assert 'continue-on-error' not in job
+        assert all('continue-on-error' not in step for step in job.get('steps', []))
 
 
 def test_full_retains_real_legacy_failure_and_release_block():
