@@ -1,6 +1,6 @@
 include LICENSE NOTICE README.md RELEASE_NOTES.md CONTRIBUTING.md SECURITY.md pyproject.toml MANIFEST.in
 recursive-include src/factorlab *.py *.yaml
-recursive-include configs/research *.yaml
+recursive-include configs/research *.yaml *.json
 recursive-include requirements *.txt
 recursive-include tests *.py *.json *.parquet *.csv
 recursive-include docs/user *.md

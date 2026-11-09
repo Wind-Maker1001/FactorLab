@@ -8,6 +8,7 @@ import time
 
 from factorlab.application.research_pipeline import BOUNDARY, ResearchPipeline
 from factorlab.dataset.identity import file_hash
+from factorlab.dataset.partitioned import _require_psutil
 from factorlab.experiments import ExperimentTracker
 from factorlab.experiments.provenance import capture_provenance
 from tools.research.pipeline_config import canonical, configure, identity, load_config
@@ -59,6 +60,7 @@ def chinese_summary(summary):
 def run(config_path, output):
     started, cpu = time.perf_counter(), time.process_time()
     document = load_config(config_path)
+    psutil = _require_psutil()
     output = Path(output).resolve()
     config, hub, data_identity = configure(document, output)
     # Exclusive directory creation reserves the experiment before any artifacts.
@@ -81,7 +83,6 @@ def run(config_path, output):
     write_json(output / 'reproduction.json', dict(command=command, cwd='repository root',
         environment='Use the exact Python/package versions in identity.json; set PYTHONPATH=src.',
         config_sha256=identity(document), dataset_identity=result.dataset.identity_hash))
-    import psutil
     write_json(output / 'resources.json', dict(wall_seconds=time.perf_counter()-started,
         cpu_seconds=time.process_time()-cpu, final_rss_bytes=psutil.Process().memory_info().rss,
         rss_measurement='final process RSS; not peak or model-exclusive memory',

@@ -97,6 +97,23 @@ def test_seeded_provider_reproducible(document, tmp_path):
     assert identity(document) == identity(json.loads(json.dumps(document, sort_keys=True)))
 
 
+def test_missing_psutil_rejected_before_research(monkeypatch, tmp_path):
+    import builtins
+
+    original_import = builtins.__import__
+
+    def without_psutil(name, *args, **kwargs):
+        if name == 'psutil':
+            raise ModuleNotFoundError("No module named 'psutil'", name='psutil')
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, '__import__', without_psutil)
+    output = tmp_path / 'missing-psutil'
+    with pytest.raises(ConfigurationError, match='pip install -r requirements/scalable-compute.txt'):
+        main(['--config', str(EXAMPLE), '--output', str(output)])
+    assert not output.exists()
+
+
 def test_existing_output_rejected_without_overwrite(tmp_path):
     target = tmp_path / 'existing'
     target.mkdir()
@@ -119,19 +136,59 @@ def test_summary_separates_estimands():
         assert term in text
 
 
-def test_saved_e2e_receipts_and_negative_integrity():
-    """Use the one explicit acceptance run; no second four-model training run."""
-    import os
-    directory = os.environ.get('FACTORLAB_P402_ACCEPTANCE')
-    if directory is None:
-        pytest.skip('set FACTORLAB_P402_ACCEPTANCE to the completed CLI output')
-    output = Path(directory)
+def test_workflow_receipts_and_negative_integrity(tmp_path):
+    """Exercise real immutable records with explicit untrained receipt fixtures."""
+    from factorlab.dataset.identity import file_hash
+    from factorlab.experiments import ExperimentTracker
+    from tools.research.run_pipeline import write_json
+
+    output = tmp_path
+    document = load_config(EXAMPLE)
+    write_json(output / 'normalized-config.json', document)
+    write_json(output / 'identity.json', {'data': {'fixture': 'receipt-only'}})
+    summary = dict(execution_mode='batch', objective='minimum_variance', models={})
+    write_json(output / 'summary.json', summary)
+    (output / 'SUMMARY.zh-CN.md').write_text(chinese_summary(summary), encoding='utf-8')
+    for name in ('reproduction.json', 'resources.json'):
+        write_json(output / name, {'status': 'NOT_MEASURED'})
+    (output / 'comparison.csv').write_text('model\n', encoding='utf-8')
+    tracker = ExperimentTracker(output / 'experiments')
+    definition = dict(model='receipt-fixture', parameters={}, factors=[],
+        dataset={'sha256': 'b' * 64}, label={'name': 'EXCESS_RET5'},
+        windows={'train': None, 'validation': None, 'test': None}, walk_forward={}, costs={})
+    options = dict(code={'commit': 'c' * 40, 'tree': 'd' * 40},
+        environment={'python': 'receipt-fixture'}, command=['receipt-fixture'],
+        status='NOT_RUN', qualification='SYNTHETIC')
+    run_ids = list(document['models'])
+    for name in run_ids:
+        tracker.create_experiment(name, definition)
+        tracker.append_run(name, name, **options)
+    workflow_id = 'receipt-workflow'
+    definition = dict(definition, parameters=dict(config_sha256=identity(document),
+        configuration=document, data_identity={'fixture': 'receipt-only'}, run_ids=run_ids))
+    tracker.create_experiment(workflow_id, definition)
+    tracker.append_run(workflow_id, workflow_id, **options, artifacts={
+        name: dict(path=str(output / name), sha256=file_hash(output / name))
+        for name in ('summary.json', 'normalized-config.json', 'identity.json', 'SUMMARY.zh-CN.md')})
+    write_json(output / 'receipt.json', dict(workflow_run_id=workflow_id,
+        config_sha256=identity(document), dataset_identity='b' * 64, model_run_ids=run_ids,
+        files={str(path.relative_to(output)): file_hash(path)
+               for path in output.iterdir() if path.is_file()}))
     receipt = verify(output)
     assert len(receipt['model_run_ids']) == 4
-    summary = json.loads((output / 'summary.json').read_text(encoding='utf-8'))
-    for model in summary['models'].values():
-        assert model['folds'] == 3
-        assert model['predictions'] > 0
+    manifest_path = output / 'receipt.json'
+    original_manifest = manifest_path.read_bytes()
+    for key, value, error in (
+        ('config_sha256', '0' * 64, 'configuration identity mismatch'),
+        ('dataset_identity', '0' * 64, 'dataset identity mismatch'),
+        ('model_run_ids', run_ids[:-1], 'model run identity mismatch'),
+    ):
+        try:
+            write_json(manifest_path, dict(receipt, **{key: value}))
+            with pytest.raises(ValueError, match=error):
+                verify(output)
+        finally:
+            manifest_path.write_bytes(original_manifest)
     for name in ('summary.json', 'normalized-config.json', 'identity.json'):
         path = output / name
         original = path.read_bytes()
@@ -152,9 +209,8 @@ def test_saved_e2e_receipts_and_negative_integrity():
     verify(output)
 
 
-def test_saved_ridge_reproduction_and_mode_contract(tmp_path):
-    """One Ridge refit on saved features; reuse scores for both execution modes."""
-    import os
+def test_ridge_reproduction_and_mode_contract(tmp_path):
+    """Train only Ridge on local synthetic features; reuse scores for both modes."""
     import numpy as np
     import pandas as pd
     from factorlab.application.research_pipeline import prediction_targets, feedback_execution
@@ -164,12 +220,19 @@ def test_saved_ridge_reproduction_and_mode_contract(tmp_path):
     from factorlab.validation import WalkForwardRunner
     from examples.research.research_pipeline_synthetic import configured
 
-    directory = os.environ.get('FACTORLAB_P402_ACCEPTANCE')
-    if directory is None:
-        pytest.skip('set FACTORLAB_P402_ACCEPTANCE to the completed CLI output')
-    output = Path(directory)
-    document = load_config(output / 'normalized-config.json')
-    config, _, _ = configure(document, tmp_path)
+    from dataclasses import replace
+    from factorlab.application.research_pipeline import ResearchPipeline
+    from tools.research.run_pipeline import summarize
+
+    output = tmp_path / 'ridge-source'
+    document = load_config(EXAMPLE)
+    config, hub, _ = configure(document, output)
+    config = replace(config, models={'ridge': config.models['ridge']})
+    from factorlab.experiments import ExperimentTracker
+
+    result = ResearchPipeline(config).run(hub, tracker=ExperimentTracker(output / 'experiments'),
+        repo_root=ROOT, command=['pytest', 'ridge-reproduction'])
+    summary = summarize(result, config)
     _, _, provider = configured(tmp_path)
     dates = provider.tables['calendar']
     research_dates = dates[(dates >= config.research_start) & (dates <= config.research_end)]
@@ -186,7 +249,6 @@ def test_saved_ridge_reproduction_and_mode_contract(tmp_path):
     from factorlab.metrics import evaluate_predictions
     prediction = evaluate_predictions(walk.predictions, target_col='EXCESS_RET5', top_k=10,
                                       minimum_cross_section=5, fold_col='fold')
-    summary = json.loads((output / 'summary.json').read_text(encoding='utf-8'))
     for metric, value in summary['models']['ridge']['prediction_metrics'].items():
         np.testing.assert_allclose(prediction.overall.iloc[0][metric], value['value'], rtol=1e-12, atol=1e-12)
     saved = pd.read_csv(output / 'ridge/targets.csv', parse_dates=['date'])
