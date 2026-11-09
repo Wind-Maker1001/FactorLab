@@ -31,7 +31,8 @@ def _gap(query, condition, category, evidence):
 
 
 def batch_readiness(hub, queries: tuple[CandidateQuery, ...], *, calendar,
-                    calendar_id: str, calendar_kind: str, units: dict):
+                    calendar_id: str, calendar_kind: str, units: dict,
+                    research_inputs: dict | None = None):
     """Use an explicit common grid and independently selected source versions.
 
     Gap categories are evidence requests, not repair authorization. No code aliases,
@@ -108,12 +109,36 @@ def batch_readiness(hub, queries: tuple[CandidateQuery, ...], *, calendar,
         if conflicts:
             gaps.append(_gap(left_q, 'CROSS_SOURCE', 4,
                 'Independent matching unit/precision/field definitions for both versions; retain differences, never select by priority'))
+    research_reports = {}
+    if research_inputs:
+        from factorlab.diagnostics.research_readiness import research_readiness
+        for source, options in research_inputs.items():
+            selected = [q for q in queries if q.source == source]
+            if not selected:
+                raise ValueError('research source absent from batch queries')
+            query = selected[0]
+            if query.holding_days != 5:
+                raise ValueError('D06 research diagnostics require the existing five-session label horizon')
+            market = options['inputs'].get('bars')
+            if market is not None:
+                version = market.metadata.provenance.get('governance_version', market.metadata.data_version)
+                if version != query.version:
+                    raise ValueError('research bars version differs from batch version')
+                observed_sources = {result.metadata.source_id for q, result in results if q.source == source}
+                if observed_sources != {market.metadata.source_id}:
+                    raise ValueError('research bars source differs from batch source')
+                if not market.data.symbol.isin([q.symbol for q in selected]).all():
+                    raise ValueError('research bars contain unselected securities')
+            research_reports[source] = research_readiness(**options,
+                start=query.start, end=query.end,
+                research_start=query.research_start, research_end=query.research_end)
     return dict(schema='P3D07_READINESS_V1', status='PARTIAL', boundary=BOUNDARY,
+        research_diagnostics=research_reports,
         calendar=dict(id=calendar_id, kind=calendar_kind, sessions=len(dates),
                       historical_qualification='UNKNOWN'),
         sources=reports, comparisons=comparisons, gaps=gaps,
         research_window=dict(status='UNKNOWN', qualified_window=None,
-            reason='No financially qualified historical window; D06 analyzer is not merged',
+            reason='No financially qualified historical window; shared D06 engineering results are separate',
             original14='UNKNOWN', candidates64='UNKNOWN',
             label_values_computed=False),
         gap_categories={1: 'LOCAL_PARSE_OR_MAPPING', 2: 'ACTUAL_SOURCE_RETRIEVAL_REQUIRED',

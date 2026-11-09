@@ -22,18 +22,21 @@ from factorlab.diagnostics.real_data_readiness import batch_readiness
 
 
 def d06_reference(revision):
-    """Read committed aggregate evidence, not executable unmerged source."""
+    """Read aggregate evidence only from an ancestor of the integrated checkout."""
     repo = Path(__file__).resolve().parents[2]
     commit = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', revision + '^{commit}'], text=True).strip()
+    subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', commit, 'HEAD'], check=True)
     payloads = {}
     for name in ('diagnostics.json', 'walk-forward-windows.csv', 'factors.csv'):
         payloads[name] = subprocess.check_output(['git', '-C', str(repo), 'show',
             commit + ':docs/validation/p3-d06/' + name])
     summary = json.loads(payloads['diagnostics.json'])
     windows = list(csv.DictReader(StringIO(payloads['walk-forward-windows.csv'].decode('utf-8-sig'))))
-    return dict(commit=commit, upstream_pr=41, integration='UNMERGED_REFERENCE_ONLY',
+    return dict(commit=commit, upstream_pr=41, integration='MERGED_MAIN_RECEIPT',
         artifact_sha256={n: sha256(b) for n, b in payloads.items()},
         observations_origin='REUSED_UPSTREAM_RUN_NOT_RECOMPUTED',
+        source='P3D06_COMMITTED_AGGREGATES', version=commit,
+        effective_date=summary['window'], known_at='UNKNOWN', source_kind='AGGREGATE_RECEIPT',
         window=summary['window'], membership=summary['membership'],
         factors=summary['factors'], source_quality=summary['source_quality'],
         label_endpoints=summary['label_endpoints'],
@@ -43,27 +46,41 @@ def d06_reference(revision):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--stock-zip', type=Path, required=True)
+    parser.add_argument('--stock-zip', type=Path)
+    parser.add_argument('--bigquant-root', type=Path)
+    parser.add_argument('--membership-zip', type=Path)
     parser.add_argument('--csmar-candidate', type=Path)
     parser.add_argument('--symbols', nargs='+', required=True)
     for name in ('start', 'end', 'research-start', 'research-end'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--upstream-d06-ref')
+    parser.add_argument('--upstream-d06-ref', default='f3cbdb54d51780eb394b1a30b326914a4965ad89')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    bq = bigquant(args.stock_zip, args.start, args.end, symbols=tuple(args.symbols))
+    research_inputs = {}
+    if args.bigquant_root:
+        if not args.membership_zip or args.stock_zip:
+            parser.error('--bigquant-root requires --membership-zip and excludes --stock-zip')
+        from d06_readiness_adapter import load_research
+        bq, research_inputs['bigquant'] = load_research(args.bigquant_root, args.membership_zip,
+            symbols=args.symbols, start=args.start, end=args.end)
+    else:
+        if not args.stock_zip or args.membership_zip:
+            parser.error('select --stock-zip or --bigquant-root with --membership-zip')
+        bq = bigquant(args.stock_zip, args.start, args.end, symbols=tuple(args.symbols))
     adapters = {'bigquant': bq}
     if args.csmar_candidate:
         adapters['csmar'], _ = csmar(args.csmar_candidate)
     # This grid detects differences between selected observations, not missing
     # sessions common to every source; independent calendar evidence stays UNKNOWN.
-    calendar = pd.DatetimeIndex(sorted(set().union(*(set(a.frame.date) for a in adapters.values()))))
+    calendar = (pd.DatetimeIndex(research_inputs['bigquant']['inputs']['calendar'].data.date)
+        if research_inputs else pd.DatetimeIndex(sorted(set().union(*(set(a.frame.date) for a in adapters.values())))))
     queries = tuple(CandidateQuery(name, adapter.metadata.data_version, symbol,
         args.start, args.end, args.research_start, args.research_end)
         for name, adapter in adapters.items() for symbol in args.symbols)
     report = batch_readiness(DataHub(adapters), queries, calendar=calendar,
-        calendar_id='EXPLICIT_BATCH_OBSERVATION_UNION',
-        calendar_kind='OBSERVED_SECURITY_SESSIONS_ONLY',
+        calendar_id='BIGQUANT_CN_SESSIONS' if research_inputs else 'EXPLICIT_BATCH_OBSERVATION_UNION',
+        calendar_kind='VENDOR_CALENDAR_UNCERTIFIED' if research_inputs else 'OBSERVED_SECURITY_SESSIONS_ONLY',
+        research_inputs=research_inputs,
         units={'prices': 'UNKNOWN_VENDOR_CONTRACT', 'volume': 'UNKNOWN_VENDOR_CONTRACT',
                'amount': 'UNKNOWN_VENDOR_CONTRACT'})
     report['run'] = dict(symbols=args.symbols, start=args.start, end=args.end,
@@ -73,7 +90,10 @@ def main():
         implementation_sha256={name: sha256((Path(__file__).resolve().parents[2] / name).read_bytes())
             for name in ('tools/data/audit_p3_d07.py', 'tools/data/candidate_preflight.py',
                          'src/factorlab/diagnostics/candidate_preflight.py',
-                         'src/factorlab/diagnostics/real_data_readiness.py')})
+                         'src/factorlab/diagnostics/real_data_readiness.py',
+                         'src/factorlab/diagnostics/research_coverage.py',
+                         'src/factorlab/diagnostics/research_readiness.py',
+                         'tools/data/d06_readiness_adapter.py')})
     if args.upstream_d06_ref:
         report['upstream_d06'] = d06_reference(args.upstream_d06_ref)
     with args.output.open('x', encoding='utf-8') as target:
