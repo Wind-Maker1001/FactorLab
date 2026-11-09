@@ -1,0 +1,9 @@
+{
+  "url": "https://bigquant.com/data/datasources/cn_stock_real_bar1d",
+  "collected_at": "2026-11-09T14:44:16.604616+00:00",
+  "status": 200,
+  "actual_url": "https://bigquant.com/data/datasources/cn_stock_real_bar1d",
+  "content_type": "text/html; charset=utf-8",
+  "sha256": "4e39622183adf843f14421dbe77debd73d12e72795e45f0167b63714af14bce5",
+  "bytes": 57623
+}
