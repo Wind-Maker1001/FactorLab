@@ -1,0 +1,12 @@
+{
+  "url": "https://www.csindex.com.cn/",
+  "collected_at": "2026-11-09T14:44:58.035110+00:00",
+  "status": 200,
+  "actual_url": "https://www.csindex.com.cn/",
+  "content_type": "text/html",
+  "sha256": "6fafb173ded9054df9b1f0e0580d752221190287670bf75678f90d0620dc0124",
+  "bytes": 19563,
+  "extracts": [
+    "JavaScript enabled. Please enable it to continue.</strong></noscript><div id=\"app\"></div><script src=\"/static/js/chunk-vendors.fb17fd3c.js\"></script><script src=\"/static/js/app.b2b04bea.js\"></script></body></html>"
+  ]
+}

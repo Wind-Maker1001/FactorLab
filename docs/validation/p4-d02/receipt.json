@@ -1,0 +1,71 @@
+{
+  "schema": "P4D02_TARGETED_EVIDENCE_V1",
+  "created_at": "2026-11-09T14:48:02.163964+00:00",
+  "baseline_revision": "4b1baad1f661be5728cfb79ee9a4db5bc1b9f32f",
+  "status": "PARTIAL",
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "matrix_status_changes": [],
+  "matrix_counts": {
+    "PASS": 13,
+    "FAIL": 2,
+    "UNKNOWN": 19,
+    "NOT_APPLICABLE": 4
+  },
+  "new_official_announcement_pdfs": [],
+  "baseline_artifacts": {
+    "docs/validation/p4-d01/bundle/receipt.json": "398f243a1e84f1e4f2f4d10749b1fc1c1c86f4aae55b64e432c39d3f76643af5",
+    "docs/validation/p4-d01/bundle/evidence-index.json": "f669ede929820e5577e312cdfaa58e4af5d2ae8f9f96a4ed39a7b98d341f13b0",
+    "docs/validation/p4-d01/bundle/EVIDENCE_MATRIX.csv": "28c468969200f37441a6531b571dd9f08e252c6ea65bbdbc0683b99e614fe2a4",
+    "docs/validation/p4-d01/bundle/local-observations.json": "f1f8842fc29d31dc025901d338e34c88d882ad66eaeacdc5238f735166f3d31e",
+    "docs/validation/p4-d01/bundle/additional-observations.json": "8350d5afb3a2004769cfb9e9b9701e630aea8bc129118e6391b7c289d2f88f5b"
+  },
+  "artifacts": {
+    ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+    "AMOUNT_EXPERIMENT.json": "8fee63a0f7c61c58d576244232bcf4a2db6b1b624a4c7d10d63f6416487d2158",
+    "EVIDENCE_UPDATES.csv": "44c24ff8f7bedeb32d45121b9f54fa036060212e0fb814086243dc9b8930b0e5",
+    "MEMBERSHIP_EVIDENCE.csv": "58de9647c4b044182a598f2218987277fe16007f198f03df64b9092889dc8861",
+    "REPORT.md": "63b446ba6d64e23f288a0f4f99139fbe233fae136f9a69a0a5288a7d605c1b8e",
+    "REQUEST_STATUS.csv": "7780c2c8a677d50ba4d181cbe6e1eaf0696793471cb31b448003b2af0b5e0062",
+    "SOURCE_INDEX.json": "2b9570b5557876ab6b4a89585774e814dc962b57007bb47634bcb8b5c127bd0c",
+    "sources/S02/response.bin": "d88101bcd9231bc1fa3dea509b7f878b7a42816abc198ef700d0af7ad142b837",
+    "sources/S03/response.bin": "d88101bcd9231bc1fa3dea509b7f878b7a42816abc198ef700d0af7ad142b837",
+    "sources/S04/response.bin": "94a966b1af920915c83bd5542a68d033ec7caf2274de356fa5652df2fd1bc32c",
+    "sources/S05/response.bin": "60032b0c922f920efc735206b92b4926a8ea65b5680da11c103349dd9125c7bc",
+    "sources/S06/response.bin": "94a966b1af920915c83bd5542a68d033ec7caf2274de356fa5652df2fd1bc32c",
+    "sources/S07/response.bin": "c6357afd1a2366ffd8a538bf2b06ca3ea9ec15f70a2d41b359259190f5dccd98",
+    "sources/S08/response.bin": "4e39622183adf843f14421dbe77debd73d12e72795e45f0167b63714af14bce5",
+    "sources/S09/response.bin": "6fafb173ded9054df9b1f0e0580d752221190287670bf75678f90d0620dc0124",
+    "sources/S10/response.bin": "1b5dc26f4257ab1d6fc258617e8b03b5c481d32048b11fcbee3a569213915478",
+    "sources/S11/response.bin": "b9c7a124276256f6df1162255829bb9fed0ac927c4c663de448a9b8eeb928c32",
+    "sources/S12/response.bin": "ec70d95cb496c1614d03deb46769050a2e22e5a7a460ba166b9f02ba3171715c",
+    "sources/S13/response.bin": "f88d44c63e034bf10378145bc6345e5909b39fbc3215212e820530464bc327a1",
+    "sources/S14/response.bin": "94a966b1af920915c83bd5542a68d033ec7caf2274de356fa5652df2fd1bc32c",
+    "sources/S15/response.bin": "f731dc147385b21f32e7364bc6570a78c4067e7086d50b2d870843cf260c70eb",
+    "VENDOR_REQUESTS.md": "7054590dcc7d6208e98a17fca72a0fd12360f0650b6bafdd22f855317009f8c3",
+    "sources/S01/receipt.json": "c0caf89114af3a969baf8585336a1f73bb528e7bb5c3eeafb323ea9c7a4ea4d3",
+    "sources/S02/receipt.json": "2676dd44c2206d59cbf86ce614a74e7741b16f5e362b1d2cba095782f81f1cde",
+    "sources/S03/receipt.json": "c292c04c629a1494ebf85f2f43345d1a3a73b669ed8ded7ff40fa7c1e9d2b318",
+    "sources/S04/receipt.json": "1424c9c3c538b641859f3df8149910d8252dcf64c65fbfab19bff2d30bd0b409",
+    "sources/S05/receipt.json": "aee7da57922e61c09d534bb6eab035e1309adb3d137bbafa8aa0787f6904ad79",
+    "sources/S06/receipt.json": "5c1e27038e263efcc2af4167d76054d3fb45b7c57ac41ebc5437be5ba2ecedf5",
+    "sources/S07/receipt.json": "a30b63bc911b0f4a3503deb5a40b7eed69b4d3c9a7f3939a1c49c810d5782706",
+    "sources/S08/receipt.json": "cc93cae40a204bc9c9c01c1061940729d05fa5c564d196f06d999e34dea378d8",
+    "sources/S09/receipt.json": "ad8d91dee80ba6cf2dd49db0dd3c2dd99b0fe65df20e8faf806456bca09b2263",
+    "sources/S10/receipt.json": "f4c23218fe8991eeb89b9908606376a4f1788847fa0b97bc7ebac046e6881f8e",
+    "sources/S11/receipt.json": "b5d19e64aee248ca8c059a78caa1869683b40f85db8c028a62c3e9c36253e528",
+    "sources/S12/receipt.json": "4169e3d3da8694041d718288fa643e278cbec339fadc632f67bebddb6924930b",
+    "sources/S13/receipt.json": "4fa3b162297b6b658908b02cb4c379a687ae9af3df99d7a0c5236ceb4e57df44",
+    "sources/S14/receipt.json": "dfe77691fdbb53503975c6eddc00e1f699af1000782651292743b79783d09a7e",
+    "sources/S15/receipt.json": "59c54a69141ec33ebfb88bf6baa4027624aef50eeea53e775a166a8bfc9c210f",
+    "tests.xml": "aaf1059d867fbef8c2f4034b866f4e52be06b50c3c386df90cd6a0b71180a658"
+  },
+  "implementation_artifacts": {
+    "tools/evidence/audit_p4_d02.py": "73a513032da1a55f63ce73bad70013e0cda20a2c9f8b82e21bad8a67f6bbeaa8",
+    "tests/evidence/test_p4_d02_evidence.py": "53198ab23dbc9f8c7cde7b9bf7487c2ea51145367936f80692f5cd423b1a6575"
+  },
+  "test_result": {
+    "passed": 46,
+    "failed": 0,
+    "seconds": 1.54
+  }
+}

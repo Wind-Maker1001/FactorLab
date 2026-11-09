@@ -1,0 +1,9 @@
+{
+  "url": "https://www.csindex.com.cn/csindex-home/search/search-content?searchInput=中证500&pageNum=1&pageSize=10",
+  "collected_at": "2026-11-09T14:44:16.603113+00:00",
+  "status": 200,
+  "actual_url": "https://www.csindex.com.cn/csindex-home/search/search-content?searchInput=%E4%B8%AD%E8%AF%81500&pageNum=1&pageSize=10",
+  "content_type": "application/json",
+  "sha256": "94a966b1af920915c83bd5542a68d033ec7caf2274de356fa5652df2fd1bc32c",
+  "bytes": 85
+}

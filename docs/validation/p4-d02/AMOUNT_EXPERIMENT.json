@@ -1,0 +1,86 @@
+{
+  "schema": "P4D02_AMOUNT_EXPERIMENT_V1",
+  "input_sha256": "78ca3f76d0c8865f69a6f4ec3fd14192e3dae5674ba971babb112163545945f5",
+  "source_versions": {
+    "csmar": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+    "bigquant": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6"
+  },
+  "evidence_status": "PREVIOUS_EVIDENCE_REUSED",
+  "observations": [
+    {
+      "date": "2017-02-27",
+      "native_input_sha256": "5b0af237908cd5a7a4484f24f963a64917f919c5fe4b4f6c00046a56c155d241",
+      "native_decimal_exactly_representable_binary64": true,
+      "native_to_prepared_equal": true,
+      "exact_equal": false,
+      "bigquant_minus_csmar_exact": "-2.98023223876953125E-8",
+      "signed_ulps": -1.0,
+      "adjacent_binary64": true,
+      "candidate_decimal_places_equal": {
+        "0": true,
+        "2": true,
+        "4": true,
+        "6": true,
+        "8": false
+      }
+    },
+    {
+      "date": "2017-05-03",
+      "native_input_sha256": "347e1135688c938904fc8edaa91c5ee9108b240fe3cb37c35ef5db70694c0004",
+      "native_decimal_exactly_representable_binary64": true,
+      "native_to_prepared_equal": true,
+      "exact_equal": false,
+      "bigquant_minus_csmar_exact": "-2.98023223876953125E-8",
+      "signed_ulps": -1.0,
+      "adjacent_binary64": true,
+      "candidate_decimal_places_equal": {
+        "0": true,
+        "2": true,
+        "4": true,
+        "6": true,
+        "8": false
+      }
+    },
+    {
+      "date": "2018-10-12",
+      "native_input_sha256": "290cb147efe02d795d3c3750beb60eaf2f0a45a474d11fd8f197270b2c59076b",
+      "native_decimal_exactly_representable_binary64": true,
+      "native_to_prepared_equal": true,
+      "exact_equal": false,
+      "bigquant_minus_csmar_exact": "5.9604644775390625E-8",
+      "signed_ulps": 1.0,
+      "adjacent_binary64": true,
+      "candidate_decimal_places_equal": {
+        "0": true,
+        "2": true,
+        "4": true,
+        "6": true,
+        "8": false
+      }
+    },
+    {
+      "date": "2018-12-13",
+      "native_input_sha256": "ee2a9f9c541cc58d0b668ec8876fb550ae750b2e0b93965f1c83c87849c53d5b",
+      "native_decimal_exactly_representable_binary64": true,
+      "native_to_prepared_equal": true,
+      "exact_equal": false,
+      "bigquant_minus_csmar_exact": "2.98023223876953125E-8",
+      "signed_ulps": 1.0,
+      "adjacent_binary64": true,
+      "candidate_decimal_places_equal": {
+        "0": true,
+        "2": true,
+        "4": true,
+        "6": true,
+        "8": false
+      }
+    }
+  ],
+  "economic_unit_bigquant": "UNKNOWN",
+  "bigquant_original_decimal_input": "UNKNOWN",
+  "supplier_algorithm": "UNRESOLVED",
+  "historical_known_at": "UNKNOWN",
+  "exact_cross_source_status": "FAIL",
+  "candidate_rule_certified": false,
+  "note": "Rounding agreement is a candidate experiment, not a field or precision contract."
+}
