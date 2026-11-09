@@ -144,7 +144,10 @@ def preflight(hub: DataHub, query: CandidateQuery, *, calendar, calendar_id: str
     frame = result.data.copy()
     required = {'date', 'symbol', *RAW_FIELDS, 'volume'}
     if not required.issubset(frame):
-        raise ValueError('candidate missing required columns: ' + str(sorted(required - set(frame))))
+        return CandidateDataDiagnostics(query, 'ACCESSIBLE_READ_REJECTED', asdict(result.metadata),
+            {'input': _check('FAIL', reason='candidate missing required columns',
+                             missing_columns=sorted(required - set(frame)))}, (),
+            {'status': 'NOT_RUN'}, ('REQUIRED_FIELDS_MISSING',))
     frame['date'] = pd.to_datetime(frame.date)
     if not frame.symbol.eq(query.symbol).all() or not frame.date.between(query.start, query.end).all():
         raise ValueError('source returned rows outside requested security/window')

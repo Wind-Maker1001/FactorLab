@@ -1,0 +1,2106 @@
+{
+  "schema": "P3D07_READINESS_V1",
+  "status": "PARTIAL",
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "calendar": {
+    "id": "EXPLICIT_BATCH_OBSERVATION_UNION",
+    "kind": "OBSERVED_SECURITY_SESSIONS_ONLY",
+    "sessions": 28,
+    "historical_qualification": "UNKNOWN"
+  },
+  "sources": [
+    {
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+        "symbol": "600068.SH",
+        "start": "2021-09-13",
+        "end": "2021-10-29",
+        "research_start": "2021-09-28",
+        "research_end": "2021-10-29",
+        "holding_days": 5
+      },
+      "accessibility": "ACCESSIBLE",
+      "source": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+        "calendar_id": null,
+        "calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "selected_archive_binding": {
+            "members": [
+              {
+                "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+                "sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+                "receipt_sha256": "5e594e3cfe9c133ff50922748cdb3f73691dec67d9ca7dbf6f74670fc3508bf6"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+                "sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+                "receipt_sha256": "b49e476a97f1da4fb9a993deba574759a9ac35bf116662149f14d38567b5567f"
+              }
+            ],
+            "schemas": {
+              "stock/cn_stock_real_bar1d/schema.json": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076"
+            }
+          },
+          "source_kind": "REAL_CANDIDATE",
+          "unit_contract": "UNKNOWN",
+          "archive": "BQ/stock.zip"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "table_sha256": "41a2c92e5aa7b2583f16094b4e4334a252ab3837eb43efcdc9fc5b9c08c7fa0f",
+        "symbol": "600068.SH",
+        "identity_evidence": null,
+        "field_units": {
+          "prices": "UNKNOWN_VENDOR_CONTRACT",
+          "volume": "UNKNOWN_VENDOR_CONTRACT",
+          "amount": "UNKNOWN_VENDOR_CONTRACT"
+        },
+        "diagnostic_calendar_id": "EXPLICIT_BATCH_OBSERVATION_UNION",
+        "diagnostic_calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+      },
+      "checks": {
+        "coverage": {
+          "status": "FAIL",
+          "rows": 0,
+          "unique_security_dates": 0,
+          "missing_sessions": 28,
+          "outside_calendar": 0,
+          "warmup_rows": 0,
+          "research_rows": 0,
+          "first": null,
+          "last": null
+        },
+        "duplicates": {
+          "status": "PASS",
+          "excess": 0
+        },
+        "missing": {
+          "status": "PASS",
+          "counts": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          }
+        },
+        "ohlc": {
+          "status": "PASS",
+          "order_violations": 0,
+          "nonpositive_prices": 0
+        },
+        "anomalies": {
+          "status": "PASS",
+          "nonfinite_nonnull": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          },
+          "negative_flow_rows": 0,
+          "economic_outliers": "UNKNOWN"
+        },
+        "units": {
+          "status": "UNKNOWN",
+          "evidence": {
+            "prices": "UNKNOWN_VENDOR_CONTRACT",
+            "volume": "UNKNOWN_VENDOR_CONTRACT",
+            "amount": "UNKNOWN_VENDOR_CONTRACT"
+          },
+          "reason": "Descriptions require vendor contract; not independently certified"
+        },
+        "identity": {
+          "status": "UNKNOWN",
+          "evidence": null
+        },
+        "calendar": {
+          "status": "UNKNOWN",
+          "calendar_id": "EXPLICIT_BATCH_OBSERVATION_UNION",
+          "kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+        },
+        "time_fields": {
+          "status": "UNKNOWN",
+          "effective_at": "date",
+          "provider_available_at": null,
+          "acquired_at": null,
+          "first_distribution": "UNKNOWN",
+          "revisions": "UNKNOWN"
+        },
+        "corporate_actions": {
+          "status": "UNKNOWN",
+          "evidence": {},
+          "reason": "Candidate counts or empty observations do not prove all-category coverage"
+        },
+        "pit": {
+          "status": "UNKNOWN",
+          "evidence": "PIT_UNVERIFIED"
+        },
+        "hfq": {
+          "status": "UNKNOWN",
+          "evidence": "HFQ_UNVERIFIED"
+        },
+        "formal_admission": {
+          "status": "FAIL",
+          "evidence": "FORMAL_ADMISSION_BLOCKED"
+        }
+      },
+      "factors": [
+        {
+          "definition": {
+            "factor_id": "RAW_MOM5",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 5,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9631c69dea916b57b6c0a2ee7b2ca47e08ee1b9c5efbb3a93b6575119f656a94"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "data_sha256": "41a2c92e5aa7b2583f16094b4e4334a252ab3837eb43efcdc9fc5b9c08c7fa0f",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 5,
+          "denominator": 19,
+          "status": "UNKNOWN",
+          "reason": "Invalid or empty market input",
+          "preflight_outcome": "NOT_RUN"
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9b70bd8ed875534636902ff6e9de6ab44dd98c9722de0187a529f967eb1b3df8"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "data_sha256": "41a2c92e5aa7b2583f16094b4e4334a252ab3837eb43efcdc9fc5b9c08c7fa0f",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 20,
+          "denominator": 19,
+          "status": "UNKNOWN",
+          "reason": "Invalid or empty market input",
+          "preflight_outcome": "NOT_RUN"
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM60",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 60,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9472671290286b9576929d6e7c23ffc739fbbc5de03ea25e697bf775aa30cf9b"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "data_sha256": "41a2c92e5aa7b2583f16094b4e4334a252ab3837eb43efcdc9fc5b9c08c7fa0f",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 60,
+          "denominator": 19,
+          "status": "UNKNOWN",
+          "reason": "Invalid or empty market input",
+          "preflight_outcome": "NOT_RUN"
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_PRICE_MA20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "6d53e43b44226827e6c6fba461666f7660e8d9bab3d7f5ca996969c8a63d0e12"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "data_sha256": "41a2c92e5aa7b2583f16094b4e4334a252ab3837eb43efcdc9fc5b9c08c7fa0f",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 19,
+          "status": "UNKNOWN",
+          "reason": "Invalid or empty market input",
+          "preflight_outcome": "NOT_RUN"
+        },
+        {
+          "definition": {
+            "factor_id": "VOLUME_RATIO",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOLUME_RATIO",
+            "input_fields": [
+              "volume"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "data_sha256": "41a2c92e5aa7b2583f16094b4e4334a252ab3837eb43efcdc9fc5b9c08c7fa0f",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 19,
+          "status": "UNKNOWN",
+          "reason": "Invalid or empty market input",
+          "preflight_outcome": "NOT_RUN"
+        },
+        {
+          "definition": {
+            "factor_id": "MOM20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:MOM20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "VOL20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOL20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "PRICE_MA20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:PRICE_MA20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "AMIHU20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:AMIHU20",
+            "input_fields": [
+              "adj_close",
+              "amount"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "TURN20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:TURN20",
+            "input_fields": [
+              "turnover"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600068.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        }
+      ],
+      "labels": {
+        "status": "UNKNOWN",
+        "preflight_outcome": "NOT_RUN"
+      },
+      "blocking_evidence": [
+        "HISTORICAL_FIRST_DISTRIBUTION_UNKNOWN",
+        "REVISION_CHAIN_UNKNOWN",
+        "HISTORICAL_IDENTITY_UNVERIFIED",
+        "INDEPENDENT_CALENDAR_UNVERIFIED",
+        "ALL_CATEGORY_ACTION_COVERAGE_UNKNOWN",
+        "HFQ_ALGORITHM_ANCHOR_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED"
+      ],
+      "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+      "gates": {
+        "RAW": {
+          "status": "FAIL",
+          "scope": "ENGINEERING_ONLY",
+          "checks": [
+            "coverage",
+            "duplicates",
+            "missing",
+            "ohlc",
+            "anomalies"
+          ]
+        },
+        "ADJUSTMENT": {
+          "status": "UNKNOWN",
+          "reason": "HFQ_UNVERIFIED"
+        },
+        "STATUS": {
+          "status": "UNKNOWN",
+          "reason": "No bound historical ST/suspension/listing/delisting evidence"
+        },
+        "PIT": {
+          "status": "UNKNOWN",
+          "reason": "No bound membership knowledge times or historical revision chain"
+        },
+        "SOURCE_BINDING": {
+          "status": "UNKNOWN",
+          "reason": "Content identity is not independent upstream certification"
+        },
+        "FORMAL": {
+          "status": "FAIL",
+          "reason": "FORMAL_ADMISSION_BLOCKED"
+        }
+      }
+    },
+    {
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+        "symbol": "601868.SH",
+        "start": "2021-09-13",
+        "end": "2021-10-29",
+        "research_start": "2021-09-28",
+        "research_end": "2021-10-29",
+        "holding_days": 5
+      },
+      "accessibility": "ACCESSIBLE",
+      "source": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+        "calendar_id": null,
+        "calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "selected_archive_binding": {
+            "members": [
+              {
+                "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+                "sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+                "receipt_sha256": "5e594e3cfe9c133ff50922748cdb3f73691dec67d9ca7dbf6f74670fc3508bf6"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+                "sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+                "receipt_sha256": "b49e476a97f1da4fb9a993deba574759a9ac35bf116662149f14d38567b5567f"
+              }
+            ],
+            "schemas": {
+              "stock/cn_stock_real_bar1d/schema.json": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076"
+            }
+          },
+          "source_kind": "REAL_CANDIDATE",
+          "unit_contract": "UNKNOWN",
+          "archive": "BQ/stock.zip"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "table_sha256": "8f6c79744cc58f8a7f228d7697291bb14e4337d9d0f4c14adb4caf2d36167d64",
+        "symbol": "601868.SH",
+        "identity_evidence": null,
+        "field_units": {
+          "prices": "UNKNOWN_VENDOR_CONTRACT",
+          "volume": "UNKNOWN_VENDOR_CONTRACT",
+          "amount": "UNKNOWN_VENDOR_CONTRACT"
+        },
+        "diagnostic_calendar_id": "EXPLICIT_BATCH_OBSERVATION_UNION",
+        "diagnostic_calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+      },
+      "checks": {
+        "coverage": {
+          "status": "FAIL",
+          "rows": 19,
+          "unique_security_dates": 19,
+          "missing_sessions": 9,
+          "outside_calendar": 0,
+          "warmup_rows": 0,
+          "research_rows": 19,
+          "first": "2021-09-28",
+          "last": "2021-10-29"
+        },
+        "duplicates": {
+          "status": "PASS",
+          "excess": 0
+        },
+        "missing": {
+          "status": "PASS",
+          "counts": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          }
+        },
+        "ohlc": {
+          "status": "PASS",
+          "order_violations": 0,
+          "nonpositive_prices": 0
+        },
+        "anomalies": {
+          "status": "PASS",
+          "nonfinite_nonnull": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          },
+          "negative_flow_rows": 0,
+          "economic_outliers": "UNKNOWN"
+        },
+        "units": {
+          "status": "UNKNOWN",
+          "evidence": {
+            "prices": "UNKNOWN_VENDOR_CONTRACT",
+            "volume": "UNKNOWN_VENDOR_CONTRACT",
+            "amount": "UNKNOWN_VENDOR_CONTRACT"
+          },
+          "reason": "Descriptions require vendor contract; not independently certified"
+        },
+        "identity": {
+          "status": "UNKNOWN",
+          "evidence": null
+        },
+        "calendar": {
+          "status": "UNKNOWN",
+          "calendar_id": "EXPLICIT_BATCH_OBSERVATION_UNION",
+          "kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+        },
+        "time_fields": {
+          "status": "UNKNOWN",
+          "effective_at": "date",
+          "provider_available_at": null,
+          "acquired_at": null,
+          "first_distribution": "UNKNOWN",
+          "revisions": "UNKNOWN"
+        },
+        "corporate_actions": {
+          "status": "UNKNOWN",
+          "evidence": {},
+          "reason": "Candidate counts or empty observations do not prove all-category coverage"
+        },
+        "pit": {
+          "status": "UNKNOWN",
+          "evidence": "PIT_UNVERIFIED"
+        },
+        "hfq": {
+          "status": "UNKNOWN",
+          "evidence": "HFQ_UNVERIFIED"
+        },
+        "formal_admission": {
+          "status": "FAIL",
+          "evidence": "FORMAL_ADMISSION_BLOCKED"
+        }
+      },
+      "factors": [
+        {
+          "definition": {
+            "factor_id": "RAW_MOM5",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 5,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9631c69dea916b57b6c0a2ee7b2ca47e08ee1b9c5efbb3a93b6575119f656a94"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "data_sha256": "8f6c79744cc58f8a7f228d7697291bb14e4337d9d0f4c14adb4caf2d36167d64",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 5,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 14,
+          "missing_rate": 0.2631578947368421,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9b70bd8ed875534636902ff6e9de6ab44dd98c9722de0187a529f967eb1b3df8"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "data_sha256": "8f6c79744cc58f8a7f228d7697291bb14e4337d9d0f4c14adb4caf2d36167d64",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 20,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 0,
+          "missing_rate": 1.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM60",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 60,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9472671290286b9576929d6e7c23ffc739fbbc5de03ea25e697bf775aa30cf9b"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "data_sha256": "8f6c79744cc58f8a7f228d7697291bb14e4337d9d0f4c14adb4caf2d36167d64",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 60,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 0,
+          "missing_rate": 1.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_PRICE_MA20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "6d53e43b44226827e6c6fba461666f7660e8d9bab3d7f5ca996969c8a63d0e12"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "data_sha256": "8f6c79744cc58f8a7f228d7697291bb14e4337d9d0f4c14adb4caf2d36167d64",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 0,
+          "missing_rate": 1.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "VOLUME_RATIO",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOLUME_RATIO",
+            "input_fields": [
+              "volume"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "data_sha256": "8f6c79744cc58f8a7f228d7697291bb14e4337d9d0f4c14adb4caf2d36167d64",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 0,
+          "missing_rate": 1.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "MOM20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:MOM20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "VOL20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOL20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "PRICE_MA20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:PRICE_MA20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "AMIHU20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:AMIHU20",
+            "input_fields": [
+              "adj_close",
+              "amount"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "TURN20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:TURN20",
+            "input_fields": [
+              "turnover"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "601868.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        }
+      ],
+      "labels": {
+        "status": "PASS",
+        "purpose": "RETROSPECTIVE_UNCERTIFIED_BOUNDARIES_ONLY",
+        "implementation": "factorlab.labels.forward_return.build_forward_excess_return_labels",
+        "holding_days": 5,
+        "entry_offset": 1,
+        "exit_offset": 6,
+        "research_observations": 19,
+        "raw_future_coverage": 13,
+        "incomplete_future_coverage": 6,
+        "last_signal_with_observed_exit": "2021-10-21",
+        "last_observed_exit": "2021-10-29",
+        "historical_maturity": "UNKNOWN",
+        "provider_first_distribution": "UNKNOWN",
+        "revisions": "UNKNOWN",
+        "adjusted_open_and_benchmark": "NOT_AVAILABLE",
+        "label_generation": "NOT_RUN",
+        "company_action_effect": "UNVERIFIED",
+        "note": "Observed exit date is not proof of historically available label version."
+      },
+      "blocking_evidence": [
+        "HISTORICAL_FIRST_DISTRIBUTION_UNKNOWN",
+        "REVISION_CHAIN_UNKNOWN",
+        "HISTORICAL_IDENTITY_UNVERIFIED",
+        "INDEPENDENT_CALENDAR_UNVERIFIED",
+        "ALL_CATEGORY_ACTION_COVERAGE_UNKNOWN",
+        "HFQ_ALGORITHM_ANCHOR_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED"
+      ],
+      "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+      "gates": {
+        "RAW": {
+          "status": "FAIL",
+          "scope": "ENGINEERING_ONLY",
+          "checks": [
+            "coverage",
+            "duplicates",
+            "missing",
+            "ohlc",
+            "anomalies"
+          ]
+        },
+        "ADJUSTMENT": {
+          "status": "UNKNOWN",
+          "reason": "HFQ_UNVERIFIED"
+        },
+        "STATUS": {
+          "status": "UNKNOWN",
+          "reason": "No bound historical ST/suspension/listing/delisting evidence"
+        },
+        "PIT": {
+          "status": "UNKNOWN",
+          "reason": "No bound membership knowledge times or historical revision chain"
+        },
+        "SOURCE_BINDING": {
+          "status": "UNKNOWN",
+          "reason": "Content identity is not independent upstream certification"
+        },
+        "FORMAL": {
+          "status": "FAIL",
+          "reason": "FORMAL_ADMISSION_BLOCKED"
+        }
+      }
+    },
+    {
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+        "symbol": "600363.SH",
+        "start": "2021-09-13",
+        "end": "2021-10-29",
+        "research_start": "2021-09-28",
+        "research_end": "2021-10-29",
+        "holding_days": 5
+      },
+      "accessibility": "ACCESSIBLE",
+      "source": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+        "calendar_id": null,
+        "calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "selected_archive_binding": {
+            "members": [
+              {
+                "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+                "sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+                "receipt_sha256": "5e594e3cfe9c133ff50922748cdb3f73691dec67d9ca7dbf6f74670fc3508bf6"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+                "sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+                "receipt_sha256": "b49e476a97f1da4fb9a993deba574759a9ac35bf116662149f14d38567b5567f"
+              }
+            ],
+            "schemas": {
+              "stock/cn_stock_real_bar1d/schema.json": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076"
+            }
+          },
+          "source_kind": "REAL_CANDIDATE",
+          "unit_contract": "UNKNOWN",
+          "archive": "BQ/stock.zip"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "table_sha256": "1cde00202d618de15066e26811ab9bdc4556f1844cb785322312a416f960010a",
+        "symbol": "600363.SH",
+        "identity_evidence": null,
+        "field_units": {
+          "prices": "UNKNOWN_VENDOR_CONTRACT",
+          "volume": "UNKNOWN_VENDOR_CONTRACT",
+          "amount": "UNKNOWN_VENDOR_CONTRACT"
+        },
+        "diagnostic_calendar_id": "EXPLICIT_BATCH_OBSERVATION_UNION",
+        "diagnostic_calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+      },
+      "checks": {
+        "coverage": {
+          "status": "PASS",
+          "rows": 28,
+          "unique_security_dates": 28,
+          "missing_sessions": 0,
+          "outside_calendar": 0,
+          "warmup_rows": 9,
+          "research_rows": 19,
+          "first": "2021-09-13",
+          "last": "2021-10-29"
+        },
+        "duplicates": {
+          "status": "PASS",
+          "excess": 0
+        },
+        "missing": {
+          "status": "PASS",
+          "counts": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          }
+        },
+        "ohlc": {
+          "status": "PASS",
+          "order_violations": 0,
+          "nonpositive_prices": 0
+        },
+        "anomalies": {
+          "status": "PASS",
+          "nonfinite_nonnull": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          },
+          "negative_flow_rows": 0,
+          "economic_outliers": "UNKNOWN"
+        },
+        "units": {
+          "status": "UNKNOWN",
+          "evidence": {
+            "prices": "UNKNOWN_VENDOR_CONTRACT",
+            "volume": "UNKNOWN_VENDOR_CONTRACT",
+            "amount": "UNKNOWN_VENDOR_CONTRACT"
+          },
+          "reason": "Descriptions require vendor contract; not independently certified"
+        },
+        "identity": {
+          "status": "UNKNOWN",
+          "evidence": null
+        },
+        "calendar": {
+          "status": "UNKNOWN",
+          "calendar_id": "EXPLICIT_BATCH_OBSERVATION_UNION",
+          "kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+        },
+        "time_fields": {
+          "status": "UNKNOWN",
+          "effective_at": "date",
+          "provider_available_at": null,
+          "acquired_at": null,
+          "first_distribution": "UNKNOWN",
+          "revisions": "UNKNOWN"
+        },
+        "corporate_actions": {
+          "status": "UNKNOWN",
+          "evidence": {},
+          "reason": "Candidate counts or empty observations do not prove all-category coverage"
+        },
+        "pit": {
+          "status": "UNKNOWN",
+          "evidence": "PIT_UNVERIFIED"
+        },
+        "hfq": {
+          "status": "UNKNOWN",
+          "evidence": "HFQ_UNVERIFIED"
+        },
+        "formal_admission": {
+          "status": "FAIL",
+          "evidence": "FORMAL_ADMISSION_BLOCKED"
+        }
+      },
+      "factors": [
+        {
+          "definition": {
+            "factor_id": "RAW_MOM5",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 5,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9631c69dea916b57b6c0a2ee7b2ca47e08ee1b9c5efbb3a93b6575119f656a94"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "data_sha256": "1cde00202d618de15066e26811ab9bdc4556f1844cb785322312a416f960010a",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 5,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 19,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9b70bd8ed875534636902ff6e9de6ab44dd98c9722de0187a529f967eb1b3df8"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "data_sha256": "1cde00202d618de15066e26811ab9bdc4556f1844cb785322312a416f960010a",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 20,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 8,
+          "missing_rate": 0.5789473684210527,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM60",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 60,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9472671290286b9576929d6e7c23ffc739fbbc5de03ea25e697bf775aa30cf9b"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "data_sha256": "1cde00202d618de15066e26811ab9bdc4556f1844cb785322312a416f960010a",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 60,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 0,
+          "missing_rate": 1.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_PRICE_MA20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "6d53e43b44226827e6c6fba461666f7660e8d9bab3d7f5ca996969c8a63d0e12"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "data_sha256": "1cde00202d618de15066e26811ab9bdc4556f1844cb785322312a416f960010a",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 9,
+          "missing_rate": 0.5263157894736842,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "VOLUME_RATIO",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOLUME_RATIO",
+            "input_fields": [
+              "volume"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+          },
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "data_sha256": "1cde00202d618de15066e26811ab9bdc4556f1844cb785322312a416f960010a",
+          "identity_evidence": null,
+          "input_window": [
+            "2021-09-13",
+            "2021-10-29"
+          ],
+          "calculation_window": [
+            "2021-09-28",
+            "2021-10-29"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 19,
+          "status": "PASS",
+          "valid_samples": 9,
+          "missing_rate": 0.5263157894736842,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "MOM20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:MOM20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "VOL20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOL20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "PRICE_MA20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:PRICE_MA20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "AMIHU20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:AMIHU20",
+            "input_fields": [
+              "adj_close",
+              "amount"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        },
+        {
+          "definition": {
+            "factor_id": "TURN20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:TURN20",
+            "input_fields": [
+              "turnover"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+          },
+          "status": "UNKNOWN",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+          "symbol": "600363.SH",
+          "preflight_outcome": "NOT_AVAILABLE"
+        }
+      ],
+      "labels": {
+        "status": "PASS",
+        "purpose": "RETROSPECTIVE_UNCERTIFIED_BOUNDARIES_ONLY",
+        "implementation": "factorlab.labels.forward_return.build_forward_excess_return_labels",
+        "holding_days": 5,
+        "entry_offset": 1,
+        "exit_offset": 6,
+        "research_observations": 19,
+        "raw_future_coverage": 13,
+        "incomplete_future_coverage": 6,
+        "last_signal_with_observed_exit": "2021-10-21",
+        "last_observed_exit": "2021-10-29",
+        "historical_maturity": "UNKNOWN",
+        "provider_first_distribution": "UNKNOWN",
+        "revisions": "UNKNOWN",
+        "adjusted_open_and_benchmark": "NOT_AVAILABLE",
+        "label_generation": "NOT_RUN",
+        "company_action_effect": "UNVERIFIED",
+        "note": "Observed exit date is not proof of historically available label version."
+      },
+      "blocking_evidence": [
+        "HISTORICAL_FIRST_DISTRIBUTION_UNKNOWN",
+        "REVISION_CHAIN_UNKNOWN",
+        "HISTORICAL_IDENTITY_UNVERIFIED",
+        "INDEPENDENT_CALENDAR_UNVERIFIED",
+        "ALL_CATEGORY_ACTION_COVERAGE_UNKNOWN",
+        "HFQ_ALGORITHM_ANCHOR_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED"
+      ],
+      "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+      "gates": {
+        "RAW": {
+          "status": "PASS",
+          "scope": "ENGINEERING_ONLY",
+          "checks": [
+            "coverage",
+            "duplicates",
+            "missing",
+            "ohlc",
+            "anomalies"
+          ]
+        },
+        "ADJUSTMENT": {
+          "status": "UNKNOWN",
+          "reason": "HFQ_UNVERIFIED"
+        },
+        "STATUS": {
+          "status": "UNKNOWN",
+          "reason": "No bound historical ST/suspension/listing/delisting evidence"
+        },
+        "PIT": {
+          "status": "UNKNOWN",
+          "reason": "No bound membership knowledge times or historical revision chain"
+        },
+        "SOURCE_BINDING": {
+          "status": "UNKNOWN",
+          "reason": "Content identity is not independent upstream certification"
+        },
+        "FORMAL": {
+          "status": "FAIL",
+          "reason": "FORMAL_ADMISSION_BLOCKED"
+        }
+      }
+    }
+  ],
+  "comparisons": [],
+  "gaps": [
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600068.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "RAW",
+      "category": 4,
+      "required_evidence": "Establish historical eligibility and null/absence semantics first; only then request missing original observations. Pre-listing and post-delisting prices must not be manufactured"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600068.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "PIT",
+      "category": 3,
+      "required_evidence": "Historical payload vintages, first-distribution timestamps/timezones and replacement/retraction chain; membership and status included"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600068.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "ADJUSTMENT",
+      "category": 4,
+      "required_evidence": "All-category official action coverage, implementation/revision originals, independent reference, algorithm and absolute anchor"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600068.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "STATUS",
+      "category": 4,
+      "required_evidence": "Independent historical ST/suspension/listing/delisting and official session evidence"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600068.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "SOURCE_BINDING",
+      "category": 4,
+      "required_evidence": "Independent scoped identity, economic units and upstream-to-normalized source contracts"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600068.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "FORMAL",
+      "category": 5,
+      "required_evidence": "Formal review after evidence and existing deterministic parser contracts are complete; not repairable by threshold changes"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "601868.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "RAW",
+      "category": 4,
+      "required_evidence": "Establish historical eligibility and null/absence semantics first; only then request missing original observations. Pre-listing and post-delisting prices must not be manufactured"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "601868.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "PIT",
+      "category": 3,
+      "required_evidence": "Historical payload vintages, first-distribution timestamps/timezones and replacement/retraction chain; membership and status included"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "601868.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "ADJUSTMENT",
+      "category": 4,
+      "required_evidence": "All-category official action coverage, implementation/revision originals, independent reference, algorithm and absolute anchor"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "601868.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "STATUS",
+      "category": 4,
+      "required_evidence": "Independent historical ST/suspension/listing/delisting and official session evidence"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "601868.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "SOURCE_BINDING",
+      "category": 4,
+      "required_evidence": "Independent scoped identity, economic units and upstream-to-normalized source contracts"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "601868.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "FORMAL",
+      "category": 5,
+      "required_evidence": "Formal review after evidence and existing deterministic parser contracts are complete; not repairable by threshold changes"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600363.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "PIT",
+      "category": 3,
+      "required_evidence": "Historical payload vintages, first-distribution timestamps/timezones and replacement/retraction chain; membership and status included"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600363.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "ADJUSTMENT",
+      "category": 4,
+      "required_evidence": "All-category official action coverage, implementation/revision originals, independent reference, algorithm and absolute anchor"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600363.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "STATUS",
+      "category": 4,
+      "required_evidence": "Independent historical ST/suspension/listing/delisting and official session evidence"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600363.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "SOURCE_BINDING",
+      "category": 4,
+      "required_evidence": "Independent scoped identity, economic units and upstream-to-normalized source contracts"
+    },
+    {
+      "source": "bigquant",
+      "version": "sha256:9954e564fae9362178a8c9c5ff368a314f086050a731bca6aa55a61363d907ed",
+      "symbol": "600363.SH",
+      "start": "2021-09-13",
+      "end": "2021-10-29",
+      "condition": "FORMAL",
+      "category": 5,
+      "required_evidence": "Formal review after evidence and existing deterministic parser contracts are complete; not repairable by threshold changes"
+    }
+  ],
+  "research_window": {
+    "status": "UNKNOWN",
+    "qualified_window": null,
+    "reason": "No financially qualified historical window; D06 analyzer is not merged",
+    "original14": "UNKNOWN",
+    "candidates64": "UNKNOWN",
+    "label_values_computed": false
+  },
+  "gap_categories": {
+    "1": "LOCAL_PARSE_OR_MAPPING",
+    "2": "ACTUAL_SOURCE_RETRIEVAL_REQUIRED",
+    "3": "VENDOR_TIME_OR_REVISION_EVIDENCE",
+    "4": "OFFICIAL_OR_INDEPENDENT_EVIDENCE",
+    "5": "UNRESOLVED_UNDER_CURRENT_CONDITIONS"
+  },
+  "run": {
+    "symbols": [
+      "600068.SH",
+      "601868.SH",
+      "600363.SH"
+    ],
+    "start": "2021-09-13",
+    "end": "2021-10-29",
+    "research_start": "2021-09-28",
+    "research_end": "2021-10-29",
+    "software_revision": "d2f52c05ddaf86f493ae38c792aaf961ff652bb0",
+    "implementation_sha256": {
+      "tools/data/audit_p3_d07.py": "196fc823996a188fdb67ab52d13970a5489c94289a3b9d6e65f6dbd965cb5ebc",
+      "tools/data/candidate_preflight.py": "229fdcfd5496dbb8d2af7fb69b84624e94f86448c9e287975157a3deca8d2834",
+      "src/factorlab/diagnostics/candidate_preflight.py": "421d7d2eea40532a0725ded682e3cbba949ea5e7308120d1b35b659868ea8627",
+      "src/factorlab/diagnostics/real_data_readiness.py": "6f05956b0fe251bc0aea5b9252651f8a9658bf6f6b8985922a02a6ecc527e20c"
+    }
+  },
+  "upstream_d06": {
+    "commit": "0372cbaa2fa096ba19944b96d77f014e566a3371",
+    "upstream_pr": 41,
+    "integration": "UNMERGED_REFERENCE_ONLY",
+    "artifact_sha256": {
+      "diagnostics.json": "9740c93253454e2080ebf242635304840ed796c40b611d098988fae23f78fbdc",
+      "walk-forward-windows.csv": "f7ea6b6625ec1c5d86d6f5f80de5dd3221f9cd1e7f2e8567cebd4b5b8921e99d",
+      "factors.csv": "6a7c721b95be1a776a0b0b8677c5abfd9ce0c744da931d2cd3bc39bf7e365f9f"
+    },
+    "observations_origin": "REUSED_UPSTREAM_RUN_NOT_RECOMPUTED",
+    "window": {
+      "start": "2021-09-13",
+      "end": "2026-09-11",
+      "warm_start": "2021-01-13",
+      "tail_end": "2026-10-11",
+      "calendar_source": "BigQuant trading_days market_code=CN",
+      "calendar_sessions": 1388,
+      "research_calendar_sessions": 1211,
+      "member_dates_absent_from_vendor_calendar": 0
+    },
+    "membership": {
+      "source_observed_range": [
+        "2021-09-13",
+        "2026-09-30"
+      ],
+      "member_days": 605500,
+      "unique_keys": 605500,
+      "dates": 1211,
+      "securities": 932,
+      "min_daily_members": 500,
+      "max_daily_members": 500,
+      "known_at_certified_member_days": 0,
+      "stable_identity_certified_member_days": 0
+    },
+    "factors": {
+      "catalog_snapshot_hash": "df737cd443a259311f91e8615bfddd6f4408dd3ec05e933612e9c7d674b76a15",
+      "computed": 78,
+      "with_any_finite_member_value": 78,
+      "all14_finite_member_days": 598112,
+      "all64_finite_member_days": 598112,
+      "all78_finite_member_days": 598112,
+      "all78_with_label_endpoints": 597723,
+      "all78_structurally_eligible_with_label_endpoints": 597623,
+      "financially_admitted": 0
+    },
+    "source_quality": {
+      "invalid_input_rows": 10,
+      "quarantined_securities": 2,
+      "quarantined_member_days": 1517,
+      "invalid_rows_within_research_dates": 0,
+      "invalid_rows_outside_research_dates": 10,
+      "by_reason": {
+        "raw_ohlc_invalid": 10,
+        "adj_ohlc_invalid": 10,
+        "volume_negative": 0,
+        "amount_negative": 0,
+        "turnover_negative": 0,
+        "infinite_input": 0
+      },
+      "quarantined_codes": [
+        "600363.SH",
+        "601198.SH"
+      ],
+      "policy": "WHOLE_SECURITY_COMPUTATION_BLOCKED; originals unchanged; coverage is a lower bound"
+    },
+    "label_endpoints": {
+      "holding_days": 5,
+      "entry_offset": 1,
+      "exit_offset": 6,
+      "available": 604299,
+      "missing": 1201,
+      "returns_computed": false,
+      "future_status_execution_and_corporate_actions_certified": false
+    },
+    "minimum_candidate": [
+      {
+        "candidate": "minimum_12_3_3",
+        "fold": "0",
+        "stage": "Train",
+        "window_start": "2021-09-13",
+        "window_end_exclusive": "2022-09-13",
+        "nominal_member_days": "120500",
+        "after_split_member_days": "117500",
+        "removed_by_gaps_or_label_dates": "3000",
+        "signal_dates": "235",
+        "securities": "600",
+        "purge_days_config": "5",
+        "embargo_days_config": "5",
+        "purged_dates_in_fold": "5",
+        "embargoed_dates_in_fold": "5",
+        "train_overlap_removed_fold": "500",
+        "validation_overlap_removed_fold": "500",
+        "all14_finite": "115395",
+        "all14_with_label_endpoints": "115286",
+        "all14_structurally_eligible": "115252",
+        "all14_daily_min": "485",
+        "all14_days_below_20": "0",
+        "all64_finite": "115395",
+        "all64_with_label_endpoints": "115286",
+        "all64_structurally_eligible": "115252",
+        "all64_daily_min": "485",
+        "all64_days_below_20": "0",
+        "all78_finite": "115395",
+        "all78_with_label_endpoints": "115286",
+        "all78_structurally_eligible": "115252",
+        "all78_daily_min": "485",
+        "all78_days_below_20": "0",
+        "all78_eligible_coverage": "0.980868085106383",
+        "label_endpoints_missing": "292",
+        "structural_ineligible": "313",
+        "financial_admitted_days": "0"
+      },
+      {
+        "candidate": "minimum_12_3_3",
+        "fold": "0",
+        "stage": "Validation",
+        "window_start": "2022-09-13",
+        "window_end_exclusive": "2022-12-13",
+        "nominal_member_days": "30000",
+        "after_split_member_days": "27000",
+        "removed_by_gaps_or_label_dates": "3000",
+        "signal_dates": "54",
+        "securities": "500",
+        "purge_days_config": "5",
+        "embargo_days_config": "5",
+        "purged_dates_in_fold": "5",
+        "embargoed_dates_in_fold": "5",
+        "train_overlap_removed_fold": "500",
+        "validation_overlap_removed_fold": "500",
+        "all14_finite": "26655",
+        "all14_with_label_endpoints": "26628",
+        "all14_structurally_eligible": "26628",
+        "all14_daily_min": "490",
+        "all14_days_below_20": "0",
+        "all64_finite": "26655",
+        "all64_with_label_endpoints": "26628",
+        "all64_structurally_eligible": "26628",
+        "all64_daily_min": "490",
+        "all64_days_below_20": "0",
+        "all78_finite": "26655",
+        "all78_with_label_endpoints": "26628",
+        "all78_structurally_eligible": "26628",
+        "all78_daily_min": "490",
+        "all78_days_below_20": "0",
+        "all78_eligible_coverage": "0.9862222222222222",
+        "label_endpoints_missing": "37",
+        "structural_ineligible": "20",
+        "financial_admitted_days": "0"
+      },
+      {
+        "candidate": "minimum_12_3_3",
+        "fold": "0",
+        "stage": "Test",
+        "window_start": "2022-12-13",
+        "window_end_exclusive": "2023-03-13",
+        "nominal_member_days": "29000",
+        "after_split_member_days": "29000",
+        "removed_by_gaps_or_label_dates": "0",
+        "signal_dates": "58",
+        "securities": "500",
+        "purge_days_config": "5",
+        "embargo_days_config": "5",
+        "purged_dates_in_fold": "5",
+        "embargoed_dates_in_fold": "5",
+        "train_overlap_removed_fold": "500",
+        "validation_overlap_removed_fold": "500",
+        "all14_finite": "28429",
+        "all14_with_label_endpoints": "28401",
+        "all14_structurally_eligible": "28401",
+        "all14_daily_min": "489",
+        "all14_days_below_20": "0",
+        "all64_finite": "28429",
+        "all64_with_label_endpoints": "28401",
+        "all64_structurally_eligible": "28401",
+        "all64_daily_min": "489",
+        "all64_days_below_20": "0",
+        "all78_finite": "28429",
+        "all78_with_label_endpoints": "28401",
+        "all78_structurally_eligible": "28401",
+        "all78_daily_min": "489",
+        "all78_days_below_20": "0",
+        "all78_eligible_coverage": "0.9793448275862069",
+        "label_endpoints_missing": "77",
+        "structural_ineligible": "52",
+        "financial_admitted_days": "0"
+      }
+    ],
+    "financial_qualification": "UNKNOWN",
+    "admitted_member_days": 0
+  }
+}
