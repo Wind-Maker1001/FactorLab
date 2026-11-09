@@ -18,6 +18,18 @@ main 已启用绑定独立 GitHub App 的受信任合并门禁。三分片工程
 - 覆盖：聚合器独立重算分片，核对实际开始、完成及 JUnit 三份记录，要求每版本三片无重复、互不重叠且并集严格等于原完整非历史清单；同时核对提交、依赖、运行时及冻结输入。分片失败、缺失、取消或覆盖异常均阻断 `Full release gate`。
 - 发布：`Full release gate` 要求所有完整检查成功。历史原始非零退出码继续导致失败；V2 对照 186 条历史记录（50 FAIL、136 ERROR）、已验证的 current 实际执行结果及原始冻结输入，不再额外执行一遍完整基线。历史失败未解决时完整发布仍阻断，不修改历史矩阵、证据定义或正式准入。
 
+## PR Extended 三分片验收
+
+本次定向验证：本地 Python 3.12.7 执行 `tests/security`，188 项通过（142.24 秒），包含六片聚合、负例、可信风险分类、门禁和独立安全边界；`actionlint` 1.7.12 检查 PR / Full 工作流通过。
+
+PR 接入的真实六分片运行：`NOT_RUN`。合成安全收据不作为真实测试覆盖或性能证据；本 PR 的新方案耗时、Runner 总时间与新旧覆盖一致性均为 `NOT_MEASURED`。上线前的可信验证继续使用 main 的工作流，不能用候选工作流替代控制面批准。
+
+旧未分片 PR 实测基线为 [42508208514](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42508208514)：3.13/3.14 Extended Software Job 分别为 2296 / 2200 秒，总 Runner Job 时间 4496 秒，最长 2296 秒；其中实际 current 测试步骤为 2196 / 2103 秒。Job 时间包含安装和制品上传，不含排队。
+
+已有 Full 三分片 [42516533467](https://github.com/Wind-Maker1001/FactorLab/actions/runs/42516533467) 的 GitHub Job 实测：3.13 shard 0/1/2 为 642 / 837 / 651 秒，3.14 为 832 / 607 / 952 秒；六片合计 4521 秒，最长 952 秒，覆盖汇总 14 秒。这是不同提交上的 Full 历史参考，不是本 PR 的性能测量或加速比。
+
+PR 身份绑定包含事件 PR HEAD、固定 merge subject、可信 base、事件 SHA、run ID 和 run attempt。只重跑失败 Job 会留下旧 attempt 的成功片，汇总将拒绝混用；需要完整重跑以产生同一次 attempt 的六片证据。
+
 ## 实际基线
 
 以下为最近三个 PR 最新已完成运行；总耗时为 workflow `createdAt` 到 `updatedAt`，包含排队及依赖等待，不是单个 Job 时间。

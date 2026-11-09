@@ -162,6 +162,94 @@ def shard_receipts(tmp_path, monkeypatch):
     return folders, tmp_path / 'combined'
 
 
+@pytest.fixture
+def pr_shard_receipts(shard_receipts, tmp_path):
+    import hashlib
+    import shutil
+    folders, _ = shard_receipts
+    root = tmp_path / 'pr'
+    identity = dict(subject_sha='merge', github_pr_head_sha='pr-head', trusted_base_sha='base',
+                    github_event_sha='event', github_run_id='123', github_run_attempt='2')
+    for version in ('3.13', '3.14'):
+        for shard, source in enumerate(folders):
+            folder = root / version / str(shard) / 'current'
+            shutil.copytree(source, folder)
+            receipt = json.loads((folder / 'receipt.json').read_bytes())
+            dependencies = 'pytest==8.0\nfactorlab==1.0\n'
+            (folder / 'dependencies.txt').write_text(dependencies, encoding='utf-8')
+            receipt.update(identity, suite='current', shard=shard, python=version + '.0',
+                           dependencies_sha256=hashlib.sha256(dependencies.encode()).hexdigest())
+            (folder / 'receipt.json').write_text(json.dumps(receipt))
+    return root, tmp_path / 'verified-pr', identity
+
+
+def test_pr_six_shards_verify_both_python_versions(pr_shard_receipts):
+    root, output, identity = pr_shard_receipts
+    sharding.aggregate_pr(root, output, identity)
+    for version in ('3.13', '3.14'):
+        receipt = json.loads((output / version / 'receipt.json').read_bytes())
+        assert receipt['counts']['passed'] == 3
+        assert all(receipt[key] == value for key, value in identity.items())
+
+
+@pytest.mark.parametrize('attack', [
+    'subject_sha', 'github_pr_head_sha', 'trusted_base_sha', 'github_event_sha',
+    'github_run_id', 'github_run_attempt', 'missing', 'duplicate', 'failed', 'cancelled',
+    'suite', 'receipt_shard', 'overlap', 'omission', 'dependencies', 'dependency_file',
+    'environment', 'inputs', 'cross_python', 'all_stale', 'all_wrong_head', 'missing_identity',
+])
+def test_pr_six_shard_faults_fail_closed(pr_shard_receipts, attack):
+    root, output, identity = pr_shard_receipts
+    folder = root / '3.14' / '1' / 'current'
+    path = folder / 'receipt.json'
+    receipt = json.loads(path.read_bytes())
+    if attack in identity:
+        receipt[attack] = 'wrong'
+    elif attack in ('all_stale', 'all_wrong_head'):
+        key = 'github_run_attempt' if attack == 'all_stale' else 'github_pr_head_sha'
+        for candidate in root.glob('*/*/current/receipt.json'):
+            data = json.loads(candidate.read_bytes())
+            data[key] = 'old'
+            candidate.write_text(json.dumps(data))
+    elif attack == 'missing_identity':
+        identity['trusted_base_sha'] = ''
+    elif attack == 'missing':
+        (folder / 'execution.json').unlink()
+    elif attack in ('duplicate', 'overlap', 'omission'):
+        name = 'selection.json' if attack == 'duplicate' else 'execution.json'
+        target = folder / name
+        data = json.loads(target.read_bytes())
+        if attack == 'duplicate':
+            data['shard'] = 0
+        else:
+            data['started'] = data['completed'] = ['tests/a.py::test_node'] if attack == 'overlap' else []
+        target.write_text(json.dumps(data))
+    elif attack in ('failed', 'cancelled'):
+        receipt['exit_code'] = 1 if attack == 'failed' else 2
+    elif attack == 'suite':
+        receipt['suite'] = 'incremental'
+    elif attack == 'receipt_shard':
+        receipt['shard'] = 0
+    elif attack == 'dependencies':
+        receipt['dependencies_sha256'] = 'wrong'
+    elif attack == 'dependency_file':
+        (folder / 'dependencies.txt').write_text('other==1\n')
+    elif attack == 'environment':
+        receipt['environment']['TZ'] = 'other'
+    elif attack == 'inputs':
+        for candidate in (root / '3.14').glob('*/current/receipt.json'):
+            data = json.loads(candidate.read_bytes())
+            data['validation_input_sha256'] = {'other': 'bytes'}
+            candidate.write_text(json.dumps(data))
+    elif attack == 'cross_python':
+        receipt['python'] = '3.13.0'
+    if attack not in ('all_stale', 'all_wrong_head', 'inputs'):
+        path.write_text(json.dumps(receipt))
+    with pytest.raises((ValueError, FileNotFoundError)):
+        sharding.aggregate_pr(root, output, identity)
+    assert not (output / '3.14' / 'receipt.json').exists()
+
+
 def test_actual_shards_aggregate_without_reexecuting_tests(shard_receipts):
     folders, output = shard_receipts
     sharding.aggregate(folders, output, '3.13')
