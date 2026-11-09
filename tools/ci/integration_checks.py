@@ -10,6 +10,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 ROOT = Path(__file__).resolve().parents[2]
 SUITES = {
     'core': [
@@ -65,11 +66,23 @@ def summary(path):
     return counts
 
 
-def run(suite, output, shard=None):
+def run(suite, output, shard=None, risk_plan=None):
     output.mkdir(parents=True, exist_ok=False)
     before = validation_inputs()
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-    targets = SUITES[suite]
+    if suite == 'targeted':
+        from targeted_validation import validate_plan
+        targets = validate_plan(ROOT, risk_plan)
+        if not targets:
+            receipt = dict(schema='FACTORLAB_INCREMENTAL_CI_V1', suite=suite,
+                           subject_sha=head, status='PASS', targets=[],
+                           counts=dict(tests=0), required_execution_observed=True,
+                           reason='trusted plan requires no additional tests')
+            (output/'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+            print('No additional tests required by trusted plan', flush=True)
+            return 0
+    else:
+        targets = SUITES[suite]
     if suite == 'historical':
         with (ROOT/'docs/ci/CI_BASELINE_FAILURE_MATRIX.csv').open(encoding='utf-8-sig', newline='') as stream:
             import csv
@@ -78,6 +91,9 @@ def run(suite, output, shard=None):
                '--continue-on-collection-errors', '--basetemp='+str(output/'tmp'),
                '-o', 'cache_dir='+str(output/'pytest-cache'),
                '--junitxml='+str(output/'tests.xml')]
+    if suite == 'targeted':
+        command = [sys.executable, '-I', '-u', str(Path(__file__).with_name('targeted_validation.py')),
+                   '--execution-inventory='+str(output/'execution.json'), *command[4:]]
     if suite in ('current', 'historical'):
         command += ['-p', 'tools.ci.current_validation',
                     '--current-layer-inventory='+str(output/'selection.json'),
@@ -103,9 +119,13 @@ def run(suite, output, shard=None):
             code = process.wait()
     after = validation_inputs()
     unchanged = before == after
+    observed = True
+    if suite == 'targeted':
+        from targeted_validation import evidence_passed
+        observed = evidence_passed(output/'execution.json', targets)
     receipt = dict(schema='FACTORLAB_INCREMENTAL_CI_V1', suite=suite, shard=shard,
                    scope='FULL_PROJECT_REGRESSION' if suite == 'legacy' else 'DECLARED_INCREMENTAL_SCOPE',
-                   status='PASS' if code == 0 and unchanged else 'FAIL',
+                   status='PASS' if code == 0 and unchanged and observed else 'FAIL',
                    exit_code=code, subject_sha=head,
                    github_event_sha=os.environ.get('GITHUB_SHA'),
                    github_pr_head_sha=os.environ.get('FACTORLAB_PR_HEAD_SHA'),
@@ -114,25 +134,36 @@ def run(suite, output, shard=None):
                    environment={k: env[k] for k in ('MPLBACKEND', 'PYTHONUTF8', 'PYTHONHASHSEED', 'TZ')},
                    targets=targets, counts=summary(output/'tests.xml'),
                    validation_inputs_unchanged=unchanged, validation_input_sha256=after,
+                   required_execution_observed=observed,
                    elapsed_seconds=time.perf_counter()-started,
                    financial_authorization='BLOCKED', formal_admission='FORMAL_ADMISSION_BLOCKED',
                    pit='PIT_UNVERIFIED', hfq='HFQ_UNVERIFIED', no_live_money=True)
     (output/'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n', encoding='utf-8')
     print(suite, receipt['status'], json.dumps(receipt['counts']), 'exit', code, flush=True)
-    return code if code else int(not unchanged)
+    return code if code else int(not unchanged or not observed)
 
 
 def main():
+    global ROOT
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--suite', choices=[*SUITES, 'incremental'], required=True)
+    parser.add_argument('--repository', type=Path)
+    parser.add_argument('--risk-plan', type=Path)
+    parser.add_argument('--suite', choices=[*SUITES, 'incremental', 'targeted'], required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--shard', type=int, choices=range(3))
     args = parser.parse_args()
     if args.shard is not None and args.suite != 'current':
         parser.error('--shard requires --suite current')
+    if args.suite == 'targeted' and (args.repository is None or args.risk_plan is None):
+        parser.error('--suite targeted requires --repository and --risk-plan')
+    if args.risk_plan is not None and args.suite != 'targeted':
+        parser.error('--risk-plan requires --suite targeted')
+    if args.repository is not None:
+        ROOT = args.repository.resolve()
+    risk_plan = json.loads(args.risk_plan.read_text(encoding='utf-8')) if args.risk_plan else None
     output = args.output.resolve()
     selected = ['core', 'cross-market', 'financial-gates'] if args.suite == 'incremental' else [args.suite]
-    codes = [run(suite, output/suite, args.shard) for suite in selected]
+    codes = [run(suite, output/suite, args.shard, risk_plan) for suite in selected]
     return max(codes)
 
 
