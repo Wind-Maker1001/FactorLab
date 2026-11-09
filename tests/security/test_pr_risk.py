@@ -146,6 +146,7 @@ def test_p3_d05_mixed_additions_are_not_a_ci_control_change():
     'tests/security/test_pr_risk.py', '.github/workflows/factorlab-pr.yml',
     'requirements/dev.txt', 'tests/evidence/conftest.py',
     'tools/data/__init__.py', 'tools/data/subdir/audit.py',
+    'tools/data/candidate_preflight.py', 'tests/evidence/test_pit_archive_verifiers.py',
     'docs/validation/p3-d05/run.py', 'docs/validation/p3-d05/logic.yml',
 ])
 def test_disguised_control_or_unclassified_changes_remain_high_risk(path):
