@@ -1,5 +1,6 @@
 """Module-balanced current validation and independent execution-receipt aggregation."""
 import argparse
+import hashlib
 from collections import Counter
 import json
 from pathlib import Path
@@ -51,6 +52,28 @@ def verify_execution(inventory, execution, observed, expected):
         raise ValueError('actual JUnit coverage or outcomes differ')
     if execution['exit_code'] != 0 or execution['collection_errors']:
         raise ValueError('pytest execution or collection failed')
+
+
+def aggregate_pr(root, output, identity):
+    """Bind both Python coverage checks to this trusted workflow's exact subject."""
+    if not all(identity.values()):
+        raise ValueError('complete expected PR validation identity required')
+    inputs = None
+    for version in ('3.13', '3.14'):
+        folders = [root / version / str(shard) / 'current' for shard in range(SHARDS)]
+        for shard, folder in enumerate(folders):
+            receipt = json.loads((folder / 'receipt.json').read_bytes())
+            if any(receipt.get(key) != value for key, value in identity.items()):
+                raise ValueError('shard differs from expected PR validation identity')
+            if receipt['suite'] != 'current' or receipt['shard'] != shard:
+                raise ValueError('wrong suite or receipt shard identity')
+            dependencies = (folder / 'dependencies.txt').read_text(encoding='utf-8')
+            if hashlib.sha256(dependencies.encode()).hexdigest() != receipt['dependencies_sha256']:
+                raise ValueError('dependency evidence differs from receipt')
+            if inputs is not None and receipt['validation_input_sha256'] != inputs:
+                raise ValueError('frozen inputs differ across Python versions')
+            inputs = receipt['validation_input_sha256']
+        aggregate(folders, output / version, version)
 
 
 def aggregate(folders, output, python_version):
@@ -114,11 +137,29 @@ def aggregate(folders, output, python_version):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--shards', nargs=3, type=Path, required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument('--shards', nargs=3, type=Path)
+    source.add_argument('--pr-shards', type=Path)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--python', choices=['3.13', '3.14'], required=True)
+    parser.add_argument('--python', choices=['3.13', '3.14'])
+    parser.add_argument('--subject-sha')
+    parser.add_argument('--pr-head-sha')
+    parser.add_argument('--trusted-base-sha')
+    parser.add_argument('--event-sha')
+    parser.add_argument('--run-id')
+    parser.add_argument('--run-attempt')
     args = parser.parse_args()
-    aggregate(args.shards, args.output, args.python)
+    if args.pr_shards is not None:
+        identity = dict(subject_sha=args.subject_sha, github_pr_head_sha=args.pr_head_sha,
+                        trusted_base_sha=args.trusted_base_sha, github_event_sha=args.event_sha,
+                        github_run_id=args.run_id, github_run_attempt=args.run_attempt)
+        if args.python is not None or not all(identity.values()):
+            parser.error('--pr-shards requires exact PR, subject, base, event and run identity, not --python')
+        aggregate_pr(args.pr_shards, args.output, identity)
+    else:
+        if args.python is None:
+            parser.error('--shards requires --python')
+        aggregate(args.shards, args.output, args.python)
 
 
 if __name__ == '__main__':
