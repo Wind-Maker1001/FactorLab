@@ -1,0 +1,2 @@
+# Preserve receipt-bound publication bytes across Windows and Linux checkouts.
+* -text

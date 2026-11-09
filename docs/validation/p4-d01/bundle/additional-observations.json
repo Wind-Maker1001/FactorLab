@@ -1,0 +1,67 @@
+{
+  "cn_stock_dividend": {
+    "target_rows": 4,
+    "nulls": {
+      "date": 0,
+      "symbol": 0,
+      "report_date": 0,
+      "publish_date": 0,
+      "bonus_rate": 4,
+      "conversed_rate": 4,
+      "cash_before_tax": 0,
+      "cash_after_tax": 0,
+      "register_date": 0,
+      "ex_date": 0
+    }
+  },
+  "cn_stock_allotment": {
+    "target_rows": 0,
+    "nulls": {
+      "date": 0,
+      "symbol": 0,
+      "publish_date": 0,
+      "allotment_price": 0,
+      "allotment_rate": 0,
+      "allotment_shares": 0,
+      "register_date": 0,
+      "exright_date": 0,
+      "allot_listdate": 0
+    }
+  },
+  "cn_stock_adjust_factor": {
+    "target_rows": 8,
+    "nulls": {
+      "date": 0,
+      "symbol": 0,
+      "type": 0,
+      "adjust_factor": 0,
+      "method": 0
+    }
+  },
+  "cn_stock_bar1d": {
+    "target_rows": 487,
+    "nulls": {
+      "date": 0,
+      "symbol": 0,
+      "open": 0,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "adjust_factor": 0,
+      "turn": 0
+    }
+  },
+  "csi500_membership": {
+    "index": "000905.SH",
+    "index_rows": 243493,
+    "index_dates": 487,
+    "first": "2017-01-03",
+    "last": "2018-12-28",
+    "target_member_rows": 0,
+    "target_unique_dates": 0,
+    "target_change_rows": 0,
+    "known_at": "UNKNOWN",
+    "historical_membership_qualification": "UNKNOWN",
+    "meaning": "CURRENT_VENDOR_OBSERVATION_NOT_OFFICIAL_MEMBERSHIP_OR_NONMEMBERSHIP_PROOF"
+  }
+}

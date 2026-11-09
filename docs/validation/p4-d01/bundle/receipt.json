@@ -1,0 +1,28 @@
+{
+  "schema": "P4D01_LOCAL_EVIDENCE_V1",
+  "status": "PARTIAL",
+  "created_at_utc": "2026-11-09T13:43:37.878439+00:00",
+  "security": "601857.SH",
+  "period": [
+    "2017-01-03",
+    "2018-12-28"
+  ],
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "qualification_report": false,
+  "matrix_counts": {
+    "PASS": 13,
+    "FAIL": 2,
+    "UNKNOWN": 19,
+    "NOT_APPLICABLE": 4
+  },
+  "artifacts": {
+    "local-observations.json": "f1f8842fc29d31dc025901d338e34c88d882ad66eaeacdc5238f735166f3d31e",
+    "additional-observations.json": "8350d5afb3a2004769cfb9e9b9701e630aea8bc129118e6391b7c289d2f88f5b",
+    "evidence-index.json": "f669ede929820e5577e312cdfaa58e4af5d2ae8f9f96a4ed39a7b98d341f13b0",
+    "EVIDENCE_MATRIX.csv": "28c468969200f37441a6531b571dd9f08e252c6ea65bbdbc0683b99e614fe2a4"
+  },
+  "provenance": "D05_READER_REEXECUTED; D03_D04_D06_D07_RESULTS_EXPLICITLY_REUSED",
+  "raw_shard_binding": "local-observations.json sources.bigquant.source.provenance.selected_archive_binding",
+  "original_replay": "CSMAR prepared/native and selected BQ receipts; original XLSX/large ZIP historical references not rescanned",
+  "repository_evidence_binding": "Pinned base Git blob bytes; private originals retain exact raw byte hashes"
+}
