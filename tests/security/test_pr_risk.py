@@ -260,3 +260,15 @@ def test_git_risk_selector_records_additions_and_targeted_tests(tmp_path):
     encoded = dict(line.split('=', 1) for line in gh_output.read_text().splitlines())
     assert json.loads(base64.b64decode(encoded['targeted'])) == result['targeted_paths']
     assert set(encoded) == {'current', 'locking', 'package', 'review', 'targeted'}
+    research_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'],
+                                            cwd=repo, text=True).strip()
+    (repo / 'tools/data/audit_p3_d05.py').unlink()
+    subprocess.run(['git', 'add', '-u'], cwd=repo, check=True)
+    subprocess.run(['git', 'commit', '-qm', 'delete diagnostic'], cwd=repo, check=True)
+    subprocess.run([sys.executable, str(selector), '--repository', str(repo),
+                    '--base', research_head, '--head', 'HEAD',
+                    '--output', str(output), '--github-output', str(gh_output)],
+                   check=True)
+    deleted = json.loads(output.read_text())
+    assert deleted['current'] and deleted['locking']
+    assert deleted['targeted_paths'] == []
