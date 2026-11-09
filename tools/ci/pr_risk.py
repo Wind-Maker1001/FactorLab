@@ -105,6 +105,53 @@ def contents(repository, entries):
     return result
 
 
+def output_path_literals(parsed):
+    """Exclude only paths proven to be receivers of pathlib write-only operations."""
+    constructors = {alias.asname or alias.name for node in parsed.body
+                    if isinstance(node, ast.ImportFrom) and node.module == 'pathlib'
+                    for alias in node.names if alias.name == 'Path'}
+    bindings = []
+    for node in ast.walk(parsed):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            bindings.append(node.id)
+        elif isinstance(node, ast.arg):
+            bindings.append(node.arg)
+        elif isinstance(node, (ast.ExceptHandler, ast.MatchAs, ast.MatchStar)) and node.name:
+            bindings.append(node.name)
+        elif isinstance(node, ast.MatchMapping) and node.rest:
+            bindings.append(node.rest)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            bindings.append(node.name)
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            bindings.extend(alias.asname or alias.name.split('.')[0] for alias in node.names)
+    parents = {child: node for node in ast.walk(parsed) for child in ast.iter_child_nodes(node)}
+    constructors = {name for name in constructors if bindings.count(name) == 1 and
+                    '*' not in bindings and all(
+                        isinstance(parents.get(node), ast.Call) and parents[node].func is node
+                        for node in ast.walk(parsed) if isinstance(node, ast.Name) and node.id == name)}
+
+    # TODO: Prove helper-parameter and assigned-path provenance before excluding
+    # their output receivers; a write-like method on an unknown object may read.
+    def path_expression(node):
+        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                and node.func.id in constructors):
+            return (not node.keywords and all(isinstance(argument, ast.Name) or
+                    (isinstance(argument, ast.Constant) and isinstance(argument.value, str))
+                    for argument in node.args))
+        return (isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div)
+                and isinstance(node.right, ast.Constant) and isinstance(node.right.value, str)
+                and path_expression(node.left))
+
+    ignored = set()
+    for node in ast.walk(parsed):
+        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                and node.func.attr in ('write_text', 'write_bytes')
+                and path_expression(node.func.value)):
+            ignored.update(child for child in ast.walk(node.func.value)
+                           if isinstance(child, ast.Constant) and isinstance(child.value, str))
+    return ignored
+
+
 def graph(texts, names):
     modules = {}
     for path in texts:
@@ -121,6 +168,7 @@ def graph(texts, names):
         literals = []
         if path.endswith('.py'):
             parsed = ast.parse(text, filename=path)
+            outputs = output_path_literals(parsed)
             package = path.removeprefix('src/').removesuffix('.py').replace('/', '.')
             if not path.endswith('/__init__.py'):
                 package = package.rpartition('.')[0]
@@ -139,7 +187,7 @@ def graph(texts, names):
                     prefix = '.'.join(package.split('.')[:len(package.split('.')) - node.level + 1]) if node.level else ''
                     base = '.'.join(p for p in (prefix, node.module) if p)
                     imports.extend([base, *(base + '.' + a.name for a in node.names)])
-                elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+                elif isinstance(node, ast.Constant) and isinstance(node.value, str) and node not in outputs:
                     literals.append(node.value)
                 elif isinstance(node, ast.Call):
                     name = node.func.id if isinstance(node.func, ast.Name) else node.func.attr if isinstance(node.func, ast.Attribute) else ''
@@ -160,8 +208,9 @@ def graph(texts, names):
             # does not change that inventory. Runtime consumers of the evidence
             # itself are still discovered from their own source/configuration.
             literals = [] if path.startswith('docs/') else [text]
-        # Match full paths and sufficiently specific basename references, including
-        # literal directory/glob inputs. Computed references are never resolved by executing code.
+        # TODO: Resolve basename-only input provenance and path-comparison literals;
+        # unknown references still conservatively connect every same-named file.
+        # Computed references are never resolved by executing code.
         for dependency in names:
             basename = PurePosixPath(dependency).name
             module = dependency.removeprefix('src/').removesuffix('.py').replace('/', '.')
