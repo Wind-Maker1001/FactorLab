@@ -12,7 +12,7 @@ import pandas as pd
 
 from factorlab.backtest.execution import (
     AShareExecutionBacktester, ExecutionBacktestConfig, PositionBook,
-    _prepare_bars, _TRADE_COLUMNS, _REJECTION_COLUMNS,
+    _prepare_bars, _trade_frame, _REJECTION_COLUMNS,
 )
 from factorlab.errors import SchemaError
 
@@ -121,7 +121,7 @@ def run_target_positions(targets, bars, calendar, config=None, fee_schedule=None
     nav = pd.DataFrame(ledger)
     nav["strategy_return"] = nav.strategy_nav.pct_change()
     nav.loc[0, "strategy_return"] = nav.strategy_nav.iloc[0] - 1.0
-    result = dict(nav=nav, trades=pd.DataFrame(trades, columns=_TRADE_COLUMNS),
+    result = dict(nav=nav, trades=_trade_frame(trades),
                   rejections=pd.DataFrame(rejections, columns=_REJECTION_COLUMNS))
     if actions is not None:
         result.update(entitlements=pd.DataFrame(actions.entitlements), payments=pd.DataFrame(actions.audit),
