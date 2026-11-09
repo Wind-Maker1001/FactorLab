@@ -26,6 +26,7 @@ jobs:
       locking: ${{ steps.select.outputs.locking }}
       package: ${{ steps.select.outputs.package }}
       review: ${{ steps.select.outputs.review }}
+      targeted: ${{ steps.select.outputs.targeted }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
@@ -50,6 +51,7 @@ jobs:
           retention-days: 14
   fast:
     name: Fast Python 3.13
+    needs: risk
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
@@ -80,6 +82,10 @@ jobs:
       - name: Basic locking contracts
         if: ${{ !cancelled() }}
         run: python tools/ci/integration_checks.py --suite locking --output local-ci/pr
+      - name: Validate changed evidence tests and standalone diagnostic syntax
+        env:
+          TARGETED_PATHS: ${{ needs.risk.outputs.targeted }}
+        run: python tools/ci/pr_targeted.py --encoded $env:TARGETED_PATHS --output local-ci/pr/targeted
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ !cancelled() }}
         with:
