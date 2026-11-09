@@ -21,15 +21,37 @@ from factorlab.diagnostics.candidate_preflight import CandidateQuery
 from factorlab.diagnostics.real_data_readiness import batch_readiness
 
 
-def d06_reference(revision):
-    """Read aggregate evidence only from an ancestor of the integrated checkout."""
-    repo = Path(__file__).resolve().parents[2]
-    commit = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', revision + '^{commit}'], text=True).strip()
-    subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', commit, 'HEAD'], check=True)
+D06_COMMIT = 'f3cbdb54d51780eb394b1a30b326914a4965ad89'
+D06_ARTIFACTS = {
+    'diagnostics.json': '9740c93253454e2080ebf242635304840ed796c40b611d098988fae23f78fbdc',
+    'walk-forward-windows.csv': 'f7ea6b6625ec1c5d86d6f5f80de5dd3221f9cd1e7f2e8567cebd4b5b8921e99d',
+    'factors.csv': '6a7c721b95be1a776a0b0b8677c5abfd9ce0c744da931d2cd3bc39bf7e365f9f',
+}
+
+
+def d06_reference(revision, *, repository=None):
+    """Read pinned D06 aggregates after proving ancestry of the exact checkout.
+
+    Shallow checkouts fetch only the immutable checkout's ancestry from origin;
+    no branch ref or caller-selected revision is fetched or trusted.
+    """
+    if revision != D06_COMMIT:
+        raise ValueError('D06 reference must match the fixed merged commit')
+    repo = Path(repository) if repository is not None else Path(__file__).resolve().parents[2]
+    git = ['git', '-C', str(repo)]
+    if subprocess.check_output(git + ['rev-parse', '--is-shallow-repository'], text=True).strip() == 'true':
+        subject = subprocess.check_output(git + ['rev-parse', 'HEAD'], text=True).strip()
+        subprocess.run(git + ['fetch', '--no-tags', '--no-write-fetch-head', '--unshallow', 'origin', subject], check=True)
+    commit = subprocess.check_output(git + ['rev-parse', revision + '^{commit}'], text=True).strip()
+    if commit != D06_COMMIT or subprocess.check_output(git + ['cat-file', '-t', commit], text=True).strip() != 'commit':
+        raise ValueError('D06 object identity mismatch')
+    subprocess.run(git + ['merge-base', '--is-ancestor', commit, 'HEAD'], check=True)
     payloads = {}
     for name in ('diagnostics.json', 'walk-forward-windows.csv', 'factors.csv'):
         payloads[name] = subprocess.check_output(['git', '-C', str(repo), 'show',
             commit + ':docs/validation/p3-d06/' + name])
+    if {name: sha256(payload) for name, payload in payloads.items()} != D06_ARTIFACTS:
+        raise ValueError('D06 aggregate content identity mismatch')
     summary = json.loads(payloads['diagnostics.json'])
     windows = list(csv.DictReader(StringIO(payloads['walk-forward-windows.csv'].decode('utf-8-sig'))))
     return dict(commit=commit, upstream_pr=41, integration='MERGED_MAIN_RECEIPT',
@@ -53,7 +75,7 @@ def main():
     parser.add_argument('--symbols', nargs='+', required=True)
     for name in ('start', 'end', 'research-start', 'research-end'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--upstream-d06-ref', default='f3cbdb54d51780eb394b1a30b326914a4965ad89')
+    parser.add_argument('--upstream-d06-ref', default=D06_COMMIT)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     research_inputs = {}

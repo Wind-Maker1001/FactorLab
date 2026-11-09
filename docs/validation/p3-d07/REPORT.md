@@ -1,6 +1,6 @@
 # P3-D07：多证券真实数据准备与证据边界
 
-2026-11-09；集成主线基线 `53913b3188c49671a313891e3192ebcfcf5c0b9b`，D06 合并提交 `f3cbdb54d51780eb394b1a30b326914a4965ad89`。
+2026-11-09；集成主线基线 `23415fe470c390522e572a5d135b0417ac1ad031`，D06 合并提交 `f3cbdb54d51780eb394b1a30b326914a4965ad89`。
 
 **PARTIAL — NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
@@ -119,7 +119,15 @@ python -I -B -X utf8 tools/data/audit_p3_d07.py --stock-zip '<BQ>/stock.zip' --c
 python -I -B -X utf8 -c "import sys; sys.path.insert(0, '<repo>/src'); import pytest; sys.exit(pytest.main(['-q', '-p', 'no:cacheprovider', 'tests/research/test_real_data_readiness.py', 'tests/research/test_candidate_preflight.py', 'tests/research/test_qualification_admission_boundaries.py']))"
 ```
 
-`--upstream-d06-ref` 默认固定正式合并提交，仅接受当前集成分支祖先；读取固定Git对象的聚合JSON／CSV，不执行引用对象中的源码。
+`--upstream-d06-ref` 仅接受正式 D06 固定合并提交。浅仓库按当前不可变 HEAD 从 origin 获取其祖先闭包（不获取可变分支或任意输入 revision），随后校验固定提交类型、SHA、祖先关系及三个聚合文件的固定内容哈希。完整仓库不取远端；对象缺失、非祖先、取回失败及证据缺失／篡改均拒绝。只读取聚合JSON／CSV，不执行引用对象中的源码。
+
+### Fast 浅克隆根因与复现
+
+失败运行 `42613256602` 的固定 subject `47ddb9f4038732971bc4d9436a29c67e52aa69e2` 使用 depth=2。以相同 subject 和深度重建候选检出后：`rev-parse HEAD` 返回上述 SHA、退出0；`rev-parse --is-shallow-repository` 为 true、退出0；D06 `cat-file -t` 退出128；`merge-base --is-ancestor` 退出128；固定 `diagnostics.json` 的 `git show` 退出128。原 CLI 失败测试实际重现 **1 failed / 6.29秒**，异常为固定提交 `rev-parse ...^{commit}` 退出128。
+
+完整集成工作树 `9b9734c6ea202f42b9160c96784d6f70301b2147` 中 shallow=false、D06对象类型commit、祖先检查及固定证据读取均退出0。原集成模块在完整仓库 **11 passed / 11.04秒**；不是错误仓库路径、D06替换或证据路径迁移。只替换诊断脚本后，在同一浅克隆内执行原失败测试得到 **1 passed / 10.82秒**。
+
+选择只在 D07 历史收据消费者中按固定 subject 获取祖先闭包，而不扩大所有 Job 检出、不引入任意 revision 信任或替代收据合同。单独获取 D06 对象不能修复 shallow boundary 的祖先证明；按猜测深度深化会引入历史长度阈值。此方案保留原祖先证明，只取该 subject 可达历史，无数据供应商载荷或五年计算。新增浅／完整一致性、错误SHA、取回失败、缺失对象、非祖先、缺失证据及篡改拒绝回归。修复后定向组合 **156 passed / 0 failed / 0 skipped / 88.83秒**，见 `shallow-receipt-tests.xml`，包含上述 D07／D06 及正式金融拒绝回归和既有六分片合成收据负例。正式六分片执行及可信门禁验收：**WAITING 新HEAD运行**。
 
 完整共享诊断入口（消费现有本地资产，输出新文件）：
 
