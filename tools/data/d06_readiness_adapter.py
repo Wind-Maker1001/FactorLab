@@ -35,7 +35,7 @@ def load_research(root, membership_zip, *, symbols, start, end):
         content = table_sha256(frame)
         version = 'sha256:' + sha256(json_bytes(entries))
         inputs[kind] = QueryResult(frame, SourceMetadata(source, version,
-            provenance=dict(source_kind='REAL_CANDIDATE', table_sha256=content,
+            provenance=dict(source_kind='REAL_CANDIDATE', research_table_sha256=content,
                 input_members=entries, historical_version='UNKNOWN',
                 mapping='D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED')))
 

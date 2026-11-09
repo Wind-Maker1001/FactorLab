@@ -88,7 +88,7 @@ def test_input_identity_rejected(change):
     elif change == 'version':
         metadata = replace(metadata, data_version='v2')
     else:
-        metadata = replace(metadata, provenance={'table_sha256': '0' * 64})
+        metadata = replace(metadata, provenance={'research_table_sha256': '0' * 64})
     inputs['bars'] = replace(inputs['bars'], metadata=metadata)
     with pytest.raises(ValueError, match='identity'):
         research_readiness(inputs, **options)

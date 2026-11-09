@@ -14,7 +14,7 @@ D06 的 `join_members`、`field_profile`、`market_quality`、`factor_diagnostic
 
 `batch_readiness(..., research_inputs=...)` 调用共享研究诊断。统一 CLI `audit_p3_d07.py --bigquant-root ... --membership-zip ...` 通过受控 `d06_readiness_adapter` 复用 D06 的 `Archive` 和既有 `SelectedTableAdapter`，不引入数据存储框架。每个消费分片校验收据，按来源/版本隔离。成员日、上市退市、ST/停牌、调整价、基准及日历带独立内容身份；公司行为沿用 `CorporateActionAdapter` 返回的事件版本包绑定，未提供时 UNKNOWN，不根据行情推导公司行为。
 
-研究输入逐项要求显式 source/version；保留 effective_date、source_kind、内容身份及原始元数据。导出时间不转换为 known_at；当前回顾性输入的历史首次可得时间和历史版本仍 UNKNOWN。观察级成员/代码和上市退市边界不是独立认证 PIT 身份。缺行先按已有边界分类，无法确定历史资格时返回 UNKNOWN，不判定供应商漏数。
+研究输入逐项要求显式 source/version（治理归档使用 `governance_version`）；保留 effective_date、source_kind、内容身份及原始元数据。Governance 的 `table_sha256` 保留为完整归档身份，不误当作范围查询结果哈希；适配器提供 `research_table_sha256` 时按其明确范围校验，原始分片身份仍由既有读取器核对。导出时间不转换为 known_at；当前回顾性输入的历史首次可得时间和历史版本仍 UNKNOWN。观察级成员/代码和上市退市边界不是独立认证 PIT 身份。缺行先按已有边界分类，无法确定历史资格时返回 UNKNOWN，不判定供应商漏数。
 
 因子只消费至声明研究截止日，标签端点消费至显式输入截止日；区间外未来异常不能整证券隔离历史结果。保留 D06 的整证券隔离和原值，不修复异常。历史长度不足的候选窗口为 UNKNOWN，不缩短窗口、不放松 purge/embargo。工程数值、来源可追溯、历史身份、正式金融资格分别输出；`research_window` 保留金融窗口 UNKNOWN，实际工程结果在 `research_diagnostics`。下列两次真实数据诊断及其 JSON 是原运行证据，本次接口集成不重新宣称五年计算。
 
@@ -58,7 +58,7 @@ BigQuant 所读分片逐个核对收据SHA256；版本由分片、收据和schem
 
 ## 六门禁与四态
 
-|条件|本轮结果|含义|
+|条件|原两次真实运行结果|含义|
 |---|---|---|
 |RAW|4查询PASS、3查询FAIL|仅基础数值及声明网格完整性；不是源合同已认证|
 |ADJUSTMENT|UNKNOWN|HFQ算法、锚点、独立参考和修订链未绑定|
@@ -99,7 +99,7 @@ purge／embargo均为5日。D06另发现输入范围10条OHLC关系异常，涉�
 
 原D07新增11项继续覆盖：多证券隔离、缺行／空值及固定分母、异常不修复、冲突使用同一次读取且不融合、显式版本失配、未来行扰动不改变历史结果、重复键、缺字段继续批处理、多个窗口拒绝、双证券读取、收据字节修订拒绝。正式门禁负向测试使用未修改的 `assert_formal_market_admission`。
 
-本次增加共享D06逐因子/窗口输出对照、统一批处理调用、来源/版本/内容身份拒绝、历史成员缺证据、上市前缺行归因、缺调整价不替换、未来区间异常、受控归档收据、公司行为版本/时点引用、缺ST/停牌状态及短窗口测试。首轮75项中3项失败，暴露D06默认24/3/3候选不适用于短输入；修正为D07显式选择足够历史的候选后78项通过。加入事件/状态证据测试后，Python 3.13定向组合 **80 passed / 45.88秒**，见 `integration-tests.xml`。默认D06 CLI计算、14/64/78定义及金融门禁均保留。
+本次增加共享D06逐因子/窗口输出对照、统一批处理调用、来源/版本/内容身份拒绝、历史成员缺证据、上市前缺行归因、缺调整价不替换、未来区间异常、受控归档收据、公司行为版本/时点引用、缺ST/停牌状态及短窗口测试。首轮75项中3项失败，暴露D06默认24/3/3候选不适用于短输入；修正为D07显式选择足够历史的候选后78项通过。加入事件/状态及Governance范围身份测试后，Python 3.13最终定向组合 **81 passed / 46.23秒**，见 `integration-tests.xml`。默认D06 CLI计算、14/64/78定义及金融门禁均保留。
 
 - 首次测试命令误在父目录运行，退出4、0 tests；不是软件测试失败。误生成的空JUnit已清理。
 - 定向套件首轮58 passed（31.25秒）；增加缺字段及收据测试后61 passed（16.31秒），见 `targeted-tests.xml`、`final-tests.xml`。

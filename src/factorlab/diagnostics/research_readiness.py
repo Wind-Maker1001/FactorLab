@@ -37,12 +37,13 @@ def research_readiness(inputs: dict[str, QueryResult], *, identities: dict[str, 
     frames, bindings = {}, {}
     for kind, result in inputs.items():
         metadata = result.metadata
-        if (metadata.source_id, metadata.data_version) != identities[kind] or not metadata.data_version:
+        selected_version = metadata.provenance.get('governance_version', metadata.data_version)
+        if (metadata.source_id, selected_version) != identities[kind] or not selected_version:
             raise ValueError('research source/version differs from selected identity: ' + kind)
         if kind == 'corporate_actions':
             # CorporateActionAdapter already applies effective/knowledge selection
             # to immutable event vintages; do not flatten away their identities.
-            bindings[kind] = dict(source=metadata.source_id, version=metadata.data_version,
+            bindings[kind] = dict(source=metadata.source_id, version=selected_version,
                 effective_date=dict(start=start, end=end), known_at='UNKNOWN',
                 source_kind=metadata.provenance.get('source_kind', metadata.provenance.get('history_kind', 'UNKNOWN')),
                 content_identity=sha256(json_bytes(result.data)), metadata=asdict(metadata),
@@ -65,12 +66,13 @@ def research_readiness(inputs: dict[str, QueryResult], *, identities: dict[str, 
         if kind != 'corporate_actions' and keys and frame.duplicated(keys).any():
             raise ValueError('duplicate research keys: ' + kind)
         content = table_sha256(frame)
-        # A supplied table digest is an identity assertion, not optional advice.
-        expected_content = metadata.provenance.get('table_sha256')
+        # Governance's table_sha256 identifies the full archived capture, not a
+        # scoped query. Only a digest explicitly scoped to this result is checked.
+        expected_content = metadata.provenance.get('research_table_sha256')
         if expected_content is not None and expected_content != table_sha256(result.data):
             raise ValueError('research content identity mismatch: ' + kind)
         frames[kind] = frame
-        bindings[kind] = dict(source=metadata.source_id, version=metadata.data_version,
+        bindings[kind] = dict(source=metadata.source_id, version=selected_version,
             effective_date=dict(start=start, end=end),
             known_at='UNKNOWN',
             historical_version=metadata.provenance.get('historical_version', 'UNKNOWN'),

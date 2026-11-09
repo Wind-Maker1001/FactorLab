@@ -57,3 +57,32 @@ def test_bound_missing_status_is_not_healthy_and_short_windows_are_unknown():
     assert all(row['null_on_present_keys'] == 25 for row in report['status_observations'])
     assert report['historical_identity'] == 'UNKNOWN'
     assert report['formal_admission'] == 'FAIL'
+
+
+def test_governance_scoped_query_keeps_capture_identity_without_false_hash_rejection(tmp_path):
+    from factorlab.data.evidence import snapshot_file, table_sha256
+    from factorlab.data.governance import GovernanceStore
+    path = tmp_path / 'source.txt'
+    path.write_text('synthetic source capture')
+    artifact = snapshot_file(path, 'FIXTURE', '2026-01-01T00:00:00+00:00')
+    frame = pd.DataFrame(dict(date=pd.bdate_range('2021-01-04', periods=3), symbol='600000.SH', raw_open=10.))
+
+    class Adapter:
+        capabilities = frozenset({'daily_bars'})
+
+        def read(self, kind, **kwargs):
+            return QueryResult(frame.copy(), SourceMetadata('FIXTURE', 'vendor-v1',
+                provenance={'references': [{'source_sha256': artifact.sha256}]}))
+
+    store = GovernanceStore(tmp_path / 'governance')
+    store.capture(DataHub({'fixture': Adapter()}), 'fixture', 'daily_bars',
+        version='capture-v1', symbol='600000.SH', start='2021-01-04', end='2021-01-06',
+        artifacts=(artifact,), acquired_at='2026-01-01T00:00:00+00:00')
+    selected = store.read('fixture', 'daily_bars', version='capture-v1', symbol='600000.SH',
+        start='2021-01-05', end='2021-01-05')
+    assert selected.metadata.provenance['table_sha256'] != table_sha256(selected.data)
+    report = research_readiness({'bars': selected}, identities={'bars': ('FIXTURE', 'capture-v1')},
+        start='2021-01-05', end='2021-01-05', research_start='2021-01-05', research_end='2021-01-05')
+    assert report['bindings']['bars']['version'] == 'capture-v1'
+    assert report['bindings']['bars']['content_identity'] == table_sha256(selected.data)
+    assert report['bindings']['bars']['known_at'] == 'UNKNOWN'
