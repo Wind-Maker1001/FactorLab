@@ -20,12 +20,17 @@ CONTROL_FILES = ('pyproject.toml', 'MANIFEST.in', 'setup.cfg', 'setup.py',
 ROOT_DOCUMENTS = ('README.md', 'LICENSE', 'NOTICE', 'CONTRIBUTING.md', 'SECURITY.md')
 RESEARCH_DOCUMENT_EXTENSIONS = ('.md', '.txt', '.csv', '.json', '.xml',
                                 '.pdf', '.png', '.jpg', '.jpeg', '.sha256')
+# Existing independent evidence checks and admission preflight are not ordinary diagnostics.
+PROTECTED_RESEARCH_PATHS = (
+    'tests/evidence/test_pit_archive_verifiers.py',
+    'tools/data/candidate_preflight.py',
+)
 
 
 def targeted_path(path):
     """Only standalone diagnostics and ordinary evidence tests qualify."""
     parts = path.split('/')
-    return (len(parts) == 3 and
+    return (path not in PROTECTED_RESEARCH_PATHS and len(parts) == 3 and
             ((parts[:2] == ['tools', 'data'] and path.endswith('.py') and
               parts[2] not in ('__init__.py', 'conftest.py')) or
              (parts[:2] == ['tests', 'evidence'] and parts[2].startswith('test_') and
