@@ -47,6 +47,12 @@ PR 35 的 3.13 收据：core 455、cross-market 277、financial-gates 134、conf
 
 main Ruleset `26809886` 已启用：必须通过 `FactorLab trusted merge gate`，绑定 integration ID `5670895`；禁止强推和删除，要求经 PR 合并。`ci-control-review` 保留控制面人工批准，`ci-merge-publisher` 仅供可信最终 Job 发布精确 PR head 的状态，不执行 PR 代码。PR 工作流无写权限且 checkout 不保存凭证。Full release gate 不代替该可信 App 合并状态。
 
+## PR 验证对象部署边界
+
+身份绑定修复须由部署前 main 的既有可信工作流验收，并取得该 HEAD 对应的 `ci-control-review` 批准与专用 App 门禁；本地身份测试不等同于新工作流已部署。合并后需以新事件验收完整固定对象链路，再重新验证受影响 PR。若 GitHub merge ref 尚未反映事件 HEAD 或 base，正确结果是关闭执行，而不是验证旧对象后批准新 HEAD。
+
+该修复不依赖分片聚合 Bootstrap；后续 PR 分片工作流集成必须保留固定对象、事件父提交和 Run/attempt 绑定，不可恢复各 Job 单独解析 merge ref。控制面修复不改变研究结果或金融准入。
+
 ## 验证与复现
 
 三分片定向验证：60 项通过（2.42 秒）；包括模块不拆分、完整分区、真实 pytest 执行记录、缺片、重复执行、计划正确但未执行、JUnit 漂移、失败/取消、收集错误、提交/输入/依赖/运行时漂移、金融关键节点及发布门禁传播。普通 PR 必要测试范围仍直接来自原 `integration_checks.py`；不修改共享 fixture、不启用 xdist、不修改研究算法。
