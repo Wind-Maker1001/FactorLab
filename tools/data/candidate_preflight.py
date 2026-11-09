@@ -69,7 +69,7 @@ def csmar(root):
     return SelectedTableAdapter(frame, metadata), evidence
 
 
-def bigquant(path, start, end):
+def bigquant(path, start, end, *, symbols=('601857.SH',)):
     pieces, members, schemas = [], [], {}
     with zipfile.ZipFile(path) as archive:
         for name in archive.namelist():
@@ -80,9 +80,11 @@ def bigquant(path, start, end):
                 continue
             payload = archive.read(name)
             receipt = archive.read(name + '.receipt.json')
+            if sha256(payload) != json.loads(receipt)['sha256']:
+                raise ValueError('BigQuant partition differs from its receipt: ' + name)
             table = pq.read_table(BytesIO(payload), columns=['date', 'instrument', 'open', 'high', 'low', 'close', 'volume', 'amount'])
             frame = table.to_pandas()
-            frame = frame.loc[frame.instrument.eq('601857.SH') & frame.date.between(start, end)]
+            frame = frame.loc[frame.instrument.isin(symbols) & frame.date.between(start, end)]
             pieces.append(frame)
             members.append(dict(member=name, sha256=sha256(payload), receipt_sha256=sha256(receipt)))
         schema_name = 'stock/cn_stock_real_bar1d/schema.json'
