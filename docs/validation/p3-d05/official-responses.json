@@ -1,0 +1,900 @@
+{
+  "schema": "P3D05_OFFICIAL_RESPONSES_V1",
+  "indices": [
+    {
+      "receipt": {
+        "url": "https://query.sse.com.cn/security/stock/queryCompanyBulletin.do?isPagination=true&productId=601857&keyWord=&securityType=0101%2C120100%2C020100%2C020200%2C120200&reportType2=&reportType=ALL&beginDate=2017-01-01&endDate=2017-12-31&pageHelp.pageSize=1000&pageHelp.pageCount=50&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=5",
+        "status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "encoding": null,
+        "acquired_at_utc": "2026-11-09T03:49:42.777731+00:00",
+        "sha256": "c14da760e858b520bdf770e1bc66c23c14af24eb56fdeabd43b8679a8ab8c3b3",
+        "bytes": 225231
+      },
+      "query_begin": "2017-01-01",
+      "query_end": "2017-12-31",
+      "total": 90,
+      "returned": 90,
+      "unique_urls": 90,
+      "page_count": 1,
+      "pagination_coverage": "PASS",
+      "scope": "CURRENT_ENDPOINT_RESPONSE_ONLY_NOT_HISTORICAL_OR_EVENT_COMPLETENESS",
+      "implementation_notices": [
+        {
+          "TITLE": "中国石油2017年半年度A股分红实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-09-08/601857_20170908_1.pdf",
+          "SSEDATE": "2017-09-08",
+          "ADDDATE": "2017-09-07 18:05:11"
+        },
+        {
+          "TITLE": "中国石油2016年年度末期A股分红派息实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-16/601857_20170616_1.pdf",
+          "SSEDATE": "2017-06-16",
+          "ADDDATE": "2017-06-15 18:40:18"
+        }
+      ],
+      "title_inventory": [
+        {
+          "TITLE": "中国石油关于聘任公司副总裁的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-12-29/601857_20171229_1.pdf",
+          "SSEDATE": "2017-12-29"
+        },
+        {
+          "TITLE": "中国石油关于公司控股股东、实际控制人完成改制并更名的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-12-20/601857_20171220_1.pdf",
+          "SSEDATE": "2017-12-20"
+        },
+        {
+          "TITLE": "中国石油关于公司控股股东拟发行可交换公司债券获核准的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-11-22/601857_20171122_1.pdf",
+          "SSEDATE": "2017-11-22"
+        },
+        {
+          "TITLE": "中国石油关于公司控股股东拟发行可交换公司债券对持有的部分本公司A股股票办理担保及信托登记的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-11-22/601857_20171122_2.pdf",
+          "SSEDATE": "2017-11-22"
+        },
+        {
+          "TITLE": "中国石油2012年公司债券（第一期）（5年期）本息兑付及摘牌公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-11-15/601857_20171115_1.pdf",
+          "SSEDATE": "2017-11-15"
+        },
+        {
+          "TITLE": "中国石油2012年公司债券（第一期）（10年期和15年期）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-11-15/601857_20171115_2.pdf",
+          "SSEDATE": "2017-11-15"
+        },
+        {
+          "TITLE": "中国石油章程",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-10-31/601857_20171031_3.pdf",
+          "SSEDATE": "2017-10-31"
+        },
+        {
+          "TITLE": "中国石油2017年第三季度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-10-31/601857_2017_3.pdf",
+          "SSEDATE": "2017-10-31"
+        },
+        {
+          "TITLE": "中国石油2017年第一次临时股东大会决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-10-27/601857_20171027_1.pdf",
+          "SSEDATE": "2017-10-27"
+        },
+        {
+          "TITLE": "中国石油2017年第一次临时股东大会法律意见书",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-10-27/601857_20171027_2.pdf",
+          "SSEDATE": "2017-10-27"
+        },
+        {
+          "TITLE": "中国石油2017年第一次临时股东大会文件",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-10-19/601857_20171019_1.pdf",
+          "SSEDATE": "2017-10-19"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-10-17/601857_20171017_1.pdf",
+          "SSEDATE": "2017-10-17"
+        },
+        {
+          "TITLE": "中国石油关于公司股东拟发行可交换公司债券的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-09-16/601857_20170916_1.pdf",
+          "SSEDATE": "2017-09-16"
+        },
+        {
+          "TITLE": "中国石油关于国有股份无偿划转完成过户登记的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-09-13/601857_20170913_1.pdf",
+          "SSEDATE": "2017-09-13"
+        },
+        {
+          "TITLE": "中国石油：股份转让承诺函",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-09-13/601857_20170913_2.pdf",
+          "SSEDATE": "2017-09-13"
+        },
+        {
+          "TITLE": "中国石油关于召开2017年第一次临时股东大会的通知",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-09-09/601857_20170909_1.pdf",
+          "SSEDATE": "2017-09-09"
+        },
+        {
+          "TITLE": "中国石油2017年半年度A股分红实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-09-08/601857_20170908_1.pdf",
+          "SSEDATE": "2017-09-08"
+        },
+        {
+          "TITLE": "中国石油公开发行2017年公司债券（第一期）在上海证券交易所上市的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-09-01/601857_20170901_1.pdf",
+          "SSEDATE": "2017-09-01"
+        },
+        {
+          "TITLE": "中国石油监事会2017年第4次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_20170825_1.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油关于修订《监事会组织和议事规则》的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_20170825_2.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油董事会2017年第5次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_20170825_3.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油关于修订《公司章程》及相关议事规则的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_20170825_4.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油持续性关联交易公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_20170825_5.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油独立非执行董事关于审议持续性关联交易事项的独立意见",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_20170825_6.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_20170825_9.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油2017年半年度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_2017_z.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油2017年半年度报告摘要",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-25/601857_2017_zzy.pdf",
+          "SSEDATE": "2017-08-25"
+        },
+        {
+          "TITLE": "中国石油2017年公司债券（第一期）发行结果公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-21/601857_20170821_1.pdf",
+          "SSEDATE": "2017-08-21"
+        },
+        {
+          "TITLE": "中国石油2017年公司债券（第一期）票面利率公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-17/601857_20170817_1.pdf",
+          "SSEDATE": "2017-08-17"
+        },
+        {
+          "TITLE": "中国石油：关于延长中国石油天然气股份有限公司公开发行2017年公司债券（第一期）簿记建档时间的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-16/601857_20170816_1.pdf",
+          "SSEDATE": "2017-08-16"
+        },
+        {
+          "TITLE": "中国石油公开发行2017年公司债券（第一期）募集说明书（面向合格投资者）",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-15/601857_20170815_1.pdf",
+          "SSEDATE": "2017-08-15"
+        },
+        {
+          "TITLE": "中国石油公开发行2017年公司债券（第一期）发行公告（面向合格投资者）",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-15/601857_20170815_2.pdf",
+          "SSEDATE": "2017-08-15"
+        },
+        {
+          "TITLE": "中国石油公开发行2017年公司债券（第一期）募集说明书摘要（面向合格投资者）",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-15/601857_20170815_3.pdf",
+          "SSEDATE": "2017-08-15"
+        },
+        {
+          "TITLE": "中国石油2017年公司债券（第一期）信用评级报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-15/601857_20170815_4.pdf",
+          "SSEDATE": "2017-08-15"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-08-03/601857_20170803_1.pdf",
+          "SSEDATE": "2017-08-03"
+        },
+        {
+          "TITLE": "中国石油2017年半年度业绩预告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-07-27/601857_20170727_1.pdf",
+          "SSEDATE": "2017-07-27"
+        },
+        {
+          "TITLE": "中国石油关于公司股东完成可交换公司债券发行的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-07-19/601857_20170719_1.pdf",
+          "SSEDATE": "2017-07-19"
+        },
+        {
+          "TITLE": "中国石油2016年度内部控制评价报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-07-05/601857_20170705_1.pdf",
+          "SSEDATE": "2017-07-05"
+        },
+        {
+          "TITLE": "中国石油关于公司控股股东拟发行可交换公司债券获核准的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-07-04/601857_20170704_1.pdf",
+          "SSEDATE": "2017-07-04"
+        },
+        {
+          "TITLE": "中国石油关于公司控股股东拟发行可交换公司债券对持有的部分本公司A股股票办理担保及信托登记的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-07-04/601857_20170704_2.pdf",
+          "SSEDATE": "2017-07-04"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第一期）受托管理事务报告（2016年度）",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-29/601857_20170629_1.pdf",
+          "SSEDATE": "2017-06-29"
+        },
+        {
+          "TITLE": "中国石油公司债券2016年度受托管理事务报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-29/601857_20170629_2.pdf",
+          "SSEDATE": "2017-06-29"
+        },
+        {
+          "TITLE": "中国石油关于国有股份无偿划转进展的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-28/601857_20170628_1.pdf",
+          "SSEDATE": "2017-06-28"
+        },
+        {
+          "TITLE": "中国石油2016年年度末期A股分红派息实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-16/601857_20170616_1.pdf",
+          "SSEDATE": "2017-06-16"
+        },
+        {
+          "TITLE": "中国石油2016年年度股东大会决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-09/601857_20170609_1.pdf",
+          "SSEDATE": "2017-06-09"
+        },
+        {
+          "TITLE": "中国石油关于选举职工监事的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-09/601857_20170609_2.pdf",
+          "SSEDATE": "2017-06-09"
+        },
+        {
+          "TITLE": "中国石油监事会2017年第3次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-09/601857_20170609_3.pdf",
+          "SSEDATE": "2017-06-09"
+        },
+        {
+          "TITLE": "中国石油董事会2017年第4次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-09/601857_20170609_4.pdf",
+          "SSEDATE": "2017-06-09"
+        },
+        {
+          "TITLE": "中国石油2016年年度股东大会的法律意见书",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-09/601857_20170609_5.pdf",
+          "SSEDATE": "2017-06-09"
+        },
+        {
+          "TITLE": "中国石油独立非执行董事关于审议聘任公司副总裁事项的独立意见",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-09/601857_20170609_6.pdf",
+          "SSEDATE": "2017-06-09"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-09/601857_20170609_7.pdf",
+          "SSEDATE": "2017-06-09"
+        },
+        {
+          "TITLE": "中国石油关于2012年公司债券、2013年公司债券及2016年公司债券跟踪评级结果的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-01/601857_20170601_1.pdf",
+          "SSEDATE": "2017-06-01"
+        },
+        {
+          "TITLE": "中国石油公司债券2017年跟踪评级报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-06-01/601857_20170601_2.pdf",
+          "SSEDATE": "2017-06-01"
+        },
+        {
+          "TITLE": "中国石油关于国有股份无偿划转的提示性公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-05-27/601857_20170527_1.pdf",
+          "SSEDATE": "2017-05-27"
+        },
+        {
+          "TITLE": "中国石油2016年年度股东大会文件",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-05-26/601857_20170526_1.pdf",
+          "SSEDATE": "2017-05-26"
+        },
+        {
+          "TITLE": "中国石油关于2016年年度股东大会增加临时提案的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-05-06/601857_20170506_1.pdf",
+          "SSEDATE": "2017-05-06"
+        },
+        {
+          "TITLE": "中国石油监事会2017年第2次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-28/601857_20170428_1.pdf",
+          "SSEDATE": "2017-04-28"
+        },
+        {
+          "TITLE": "中国石油董事会2017年第3次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-28/601857_20170428_2.pdf",
+          "SSEDATE": "2017-04-28"
+        },
+        {
+          "TITLE": "中国石油独立非执行董事关于董事会2017年第3次会议议案的独立意见",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-28/601857_20170428_4.pdf",
+          "SSEDATE": "2017-04-28"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-28/601857_20170428_6.pdf",
+          "SSEDATE": "2017-04-28"
+        },
+        {
+          "TITLE": "中国石油2017年第一季度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-28/601857_2017_1.pdf",
+          "SSEDATE": "2017-04-28"
+        },
+        {
+          "TITLE": "中国石油2012年公司债券（第一期）债券受托管理人报告（2016年度）",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-27/601857_20170427_1.pdf",
+          "SSEDATE": "2017-04-27"
+        },
+        {
+          "TITLE": "中国石油2013年公司债券（第一期）债券受托管理人报告（2016年度）",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-27/601857_20170427_2.pdf",
+          "SSEDATE": "2017-04-27"
+        },
+        {
+          "TITLE": "中国石油关于召开2016年年度股东大会的通知",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-21/601857_20170421_1.pdf",
+          "SSEDATE": "2017-04-21"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-14/601857_20170414_1.pdf",
+          "SSEDATE": "2017-04-14"
+        },
+        {
+          "TITLE": "中国石油关于公司股东拟发行可交换公司债券的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-08/601857_20170408_1.pdf",
+          "SSEDATE": "2017-04-08"
+        },
+        {
+          "TITLE": "中国石油2017年第一季度业绩预告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-04-08/601857_20170408_2.pdf",
+          "SSEDATE": "2017-04-08"
+        },
+        {
+          "TITLE": "中国石油2016年度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_2016_n.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油2016年度业绩公告（年度报告摘要）",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_2016_nzy.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油监事会2017年第1次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_1.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油：内部控制审计报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_10.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油2016年度审计委员会履职报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_11.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油董事会2017年第2次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_2.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油独立董事对公司对外担保情况的专项说明及独立意见",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_5.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油：审计报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_6.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油：2016年度非经营性资金占用及其他关联资金往来情况的专项说明",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_7.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油独立董事2016年度述职报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_8.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油2016可持续发展报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-31/601857_20170331_9.pdf",
+          "SSEDATE": "2017-03-31"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第三期）（品种一）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-16/601857_20170316_1.pdf",
+          "SSEDATE": "2017-03-16"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第三期）（品种二）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-16/601857_20170316_2.pdf",
+          "SSEDATE": "2017-03-16"
+        },
+        {
+          "TITLE": "中国石油2013年公司债券（第一期）（品种一）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-07/601857_20170307_1.pdf",
+          "SSEDATE": "2017-03-07"
+        },
+        {
+          "TITLE": "中国石油2013年公司债券（第一期）（品种二）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-07/601857_20170307_2.pdf",
+          "SSEDATE": "2017-03-07"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-03-03/601857_20170303_1.pdf",
+          "SSEDATE": "2017-03-03"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-02-25/601857_20170225_1.pdf",
+          "SSEDATE": "2017-02-25"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第二期）（品种一）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-02-24/601857_20170224_1.pdf",
+          "SSEDATE": "2017-02-24"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第二期）（品种二）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-02-24/601857_20170224_2.pdf",
+          "SSEDATE": "2017-02-24"
+        },
+        {
+          "TITLE": "中国石油2016年年度业绩预告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-01-26/601857_20170126_1.pdf",
+          "SSEDATE": "2017-01-26"
+        },
+        {
+          "TITLE": "中国石油关于聘任公司财务总监的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-01-26/601857_20170126_2.pdf",
+          "SSEDATE": "2017-01-26"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第一期）（品种一）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-01-11/601857_20170111_1.pdf",
+          "SSEDATE": "2017-01-11"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第一期）（品种二）2017年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2017-01-11/601857_20170111_2.pdf",
+          "SSEDATE": "2017-01-11"
+        }
+      ]
+    },
+    {
+      "receipt": {
+        "url": "https://query.sse.com.cn/security/stock/queryCompanyBulletin.do?isPagination=true&productId=601857&keyWord=&securityType=0101%2C120100%2C020100%2C020200%2C120200&reportType2=&reportType=ALL&beginDate=2018-01-01&endDate=2018-12-31&pageHelp.pageSize=1000&pageHelp.pageCount=50&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=5",
+        "status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "encoding": null,
+        "acquired_at_utc": "2026-11-09T03:49:42.787315+00:00",
+        "sha256": "37f1123208e207c83bd8d0840206078b108d2fc2767bb1cc0dc0d327bb776083",
+        "bytes": 170611
+      },
+      "query_begin": "2018-01-01",
+      "query_end": "2018-12-31",
+      "total": 68,
+      "returned": 68,
+      "unique_urls": 68,
+      "page_count": 1,
+      "pagination_coverage": "PASS",
+      "scope": "CURRENT_ENDPOINT_RESPONSE_ONLY_NOT_HISTORICAL_OR_EVENT_COMPLETENESS",
+      "implementation_notices": [
+        {
+          "TITLE": "中国石油2018年半年度A股分红派息实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-09-14/601857_20180914_1.pdf",
+          "SSEDATE": "2018-09-14",
+          "ADDDATE": "2018-09-13 16:09:33"
+        },
+        {
+          "TITLE": "中国石油2017年年度末期A股分红派息实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-13/601857_20180613_1.pdf",
+          "SSEDATE": "2018-06-13",
+          "ADDDATE": "2018-06-12 16:56:53"
+        }
+      ],
+      "title_inventory": [
+        {
+          "TITLE": "中国石油2012年公司债券（第一期）债券受托管理事务临时报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-11-26/601857_20181126_1.pdf",
+          "SSEDATE": "2018-11-26"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第一期）2018年临时受托管理事务报告（二）",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-11-22/601857_20181122_1.pdf",
+          "SSEDATE": "2018-11-22"
+        },
+        {
+          "TITLE": "中国石油：关于中国石油天然气股份有限公司公司债券的临时受托管理事务报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-11-19/601857_20181119_1.pdf",
+          "SSEDATE": "2018-11-19"
+        },
+        {
+          "TITLE": "中国石油2012年公司债券（第一期）（10年期和15年期）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-11-16/601857_20181116_1.pdf",
+          "SSEDATE": "2018-11-16"
+        },
+        {
+          "TITLE": "中国石油关于公司董事、总裁辞任的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-11-15/601857_20181115_1.pdf",
+          "SSEDATE": "2018-11-15"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-11-15/601857_20181115_2.pdf",
+          "SSEDATE": "2018-11-15"
+        },
+        {
+          "TITLE": "中国石油2018年第三季度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-10-31/601857_2018_3.pdf",
+          "SSEDATE": "2018-10-31"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-10-10/601857_20181010_1.pdf",
+          "SSEDATE": "2018-10-10"
+        },
+        {
+          "TITLE": "中国石油董事会2018年第5次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-09-29/601857_20180929_1.pdf",
+          "SSEDATE": "2018-09-29"
+        },
+        {
+          "TITLE": "中国石油2018年半年度A股分红派息实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-09-14/601857_20180914_1.pdf",
+          "SSEDATE": "2018-09-14"
+        },
+        {
+          "TITLE": "中国石油监事会2018年第3次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-08-31/601857_20180831_1.pdf",
+          "SSEDATE": "2018-08-31"
+        },
+        {
+          "TITLE": "中国石油董事会2018年第4次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-08-31/601857_20180831_2.pdf",
+          "SSEDATE": "2018-08-31"
+        },
+        {
+          "TITLE": "中国石油2018年半年度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-08-31/601857_2018_z.pdf",
+          "SSEDATE": "2018-08-31"
+        },
+        {
+          "TITLE": "中国石油2018年半年度报告摘要",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-08-31/601857_2018_zzy.pdf",
+          "SSEDATE": "2018-08-31"
+        },
+        {
+          "TITLE": "中国石油2017年公司债券（第一期）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-08-14/601857_20180814_1.pdf",
+          "SSEDATE": "2018-08-14"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-08-14/601857_20180814_2.pdf",
+          "SSEDATE": "2018-08-14"
+        },
+        {
+          "TITLE": "中国石油2018年半年度业绩预增公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-07-31/601857_20180731_1.pdf",
+          "SSEDATE": "2018-07-31"
+        },
+        {
+          "TITLE": "中国石油：关于中国石油天然气股份有限公司公司债券的临时受托管理事务报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-07-16/601857_20180716_1.pdf",
+          "SSEDATE": "2018-07-16"
+        },
+        {
+          "TITLE": "中国石油关于国有股份无偿划转完成过户登记的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-30/601857_20180630_1.pdf",
+          "SSEDATE": "2018-06-30"
+        },
+        {
+          "TITLE": "中国石油公司债券2017年度受托管理事务报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-21/601857_20180621_1.pdf",
+          "SSEDATE": "2018-06-21"
+        },
+        {
+          "TITLE": "中国石油2017年年度末期A股分红派息实施公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-13/601857_20180613_1.pdf",
+          "SSEDATE": "2018-06-13"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第一期）受托管理事务报告（2017年度）",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-11/601857_20180611_1.pdf",
+          "SSEDATE": "2018-06-11"
+        },
+        {
+          "TITLE": "中国石油关于国有股份无偿划转的提示性公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-08/601857_20180608_1.pdf",
+          "SSEDATE": "2018-06-08"
+        },
+        {
+          "TITLE": "中国石油关于公司董事辞任的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-08/601857_20180608_2.pdf",
+          "SSEDATE": "2018-06-08"
+        },
+        {
+          "TITLE": "中国石油2017年年度股东大会决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-06/601857_20180606_1.pdf",
+          "SSEDATE": "2018-06-06"
+        },
+        {
+          "TITLE": "中国石油2017年年度股东大会法律意见书",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-06/601857_20180606_2.pdf",
+          "SSEDATE": "2018-06-06"
+        },
+        {
+          "TITLE": "中国石油董事会2018年第3次会议决议及聘任总裁、副总裁及总工程师辞任的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-06/601857_20180606_3.pdf",
+          "SSEDATE": "2018-06-06"
+        },
+        {
+          "TITLE": "中国石油内幕信息知情人登记管理办法",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-06-06/601857_20180606_4.pdf",
+          "SSEDATE": "2018-06-06"
+        },
+        {
+          "TITLE": "中国石油2017年年度股东大会文件",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-05-29/601857_20180529_1.pdf",
+          "SSEDATE": "2018-05-29"
+        },
+        {
+          "TITLE": "中国石油关于2012年公司债券、2013年公司债券、2016年公司债券及2017年公司债券跟踪评级结果的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-05-23/601857_20180523_1.pdf",
+          "SSEDATE": "2018-05-23"
+        },
+        {
+          "TITLE": "中国石油关于参加北京辖区上市公司投资者集体接待日的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-05-16/601857_20180516_1.pdf",
+          "SSEDATE": "2018-05-16"
+        },
+        {
+          "TITLE": "中国石油2018年第一季度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-28/601857_2018_1.pdf",
+          "SSEDATE": "2018-04-28"
+        },
+        {
+          "TITLE": "中国石油关于召开2017年年度股东大会的通知",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-19/601857_20180419_2.pdf",
+          "SSEDATE": "2018-04-19"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-12/601857_20180412_1.pdf",
+          "SSEDATE": "2018-04-12"
+        },
+        {
+          "TITLE": "中国石油2017年公司债券（第一期）债券受托管理人报告（2017年度）",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-12/601857_20180412_2.pdf",
+          "SSEDATE": "2018-04-12"
+        },
+        {
+          "TITLE": "中国石油2013年公司债券（第一期）债券受托管理人报告（2017年度）",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-12/601857_20180412_3.pdf",
+          "SSEDATE": "2018-04-12"
+        },
+        {
+          "TITLE": "中国石油2012年公司债券（第一期）债券受托管理人报告（2017年度）",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-12/601857_20180412_4.pdf",
+          "SSEDATE": "2018-04-12"
+        },
+        {
+          "TITLE": "中国石油：2012年公司债券（第一期）债券受托管理事务临时报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-11/601857_20180411_1.pdf",
+          "SSEDATE": "2018-04-11"
+        },
+        {
+          "TITLE": "中国石油：2013年公司债券（第一期）债券受托管理事务临时报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-11/601857_20180411_2.pdf",
+          "SSEDATE": "2018-04-11"
+        },
+        {
+          "TITLE": "中国石油：2017年公司债券（第一期）债券受托管理事务临时报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-11/601857_20180411_3.pdf",
+          "SSEDATE": "2018-04-11"
+        },
+        {
+          "TITLE": "中国石油：2016年公司债券（第一期）2018年临时受托管理事务报告（一）",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-09/601857_20180409_1.pdf",
+          "SSEDATE": "2018-04-09"
+        },
+        {
+          "TITLE": "中国石油：关于中国石油天然气股份有限公司公司债券的临时受托管理事务报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-04/601857_20180404_1.pdf",
+          "SSEDATE": "2018-04-04"
+        },
+        {
+          "TITLE": "中国石油关于公司董事、总裁辞任的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-04-03/601857_20180403_1.pdf",
+          "SSEDATE": "2018-04-03"
+        },
+        {
+          "TITLE": "中国石油2017年度报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_2017_n.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油2017年度业绩公告（年度报告摘要）",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_2017_nzy.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油2017年度审计委员会履职报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_10.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油监事会2018年第1次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_11.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油董事会2018年第1次会议决议公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_12.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油2018年度对外担保安排的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_13.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油独立董事对公司对外担保情况的专项说明及独立意见",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_3.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油：2017年度审计报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_4.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油：2017年度非经营性资金占用及其他关联资金往来情况专项说明",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_5.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油独立董事2017年度述职报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_6.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油2017年度内部控制评价报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_7.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油可持续发展报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_8.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油：2017年度内控审计报告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-23/601857_20180323_9.pdf",
+          "SSEDATE": "2018-03-23"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第三期）（品种二）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-20/601857_20180320_1.pdf",
+          "SSEDATE": "2018-03-20"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第三期）（品种一）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-20/601857_20180320_2.pdf",
+          "SSEDATE": "2018-03-20"
+        },
+        {
+          "TITLE": "中国石油2013年公司债券（第一期）（5年期）本息兑付及摘牌公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-07/601857_20180307_1.pdf",
+          "SSEDATE": "2018-03-07"
+        },
+        {
+          "TITLE": "中国石油2013年公司债券（第一期）（10年期）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-07/601857_20180307_2.pdf",
+          "SSEDATE": "2018-03-07"
+        },
+        {
+          "TITLE": "中国石油H股公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-03-01/601857_20180301_1.pdf",
+          "SSEDATE": "2018-03-01"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第二期）（品种一）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-02-27/601857_20180227_1.pdf",
+          "SSEDATE": "2018-02-27"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第二期）（品种二）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-02-27/601857_20180227_2.pdf",
+          "SSEDATE": "2018-02-27"
+        },
+        {
+          "TITLE": "中国石油关于公司控股股东完成可交换公司债券发行的公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-02-09/601857_20180209_1.pdf",
+          "SSEDATE": "2018-02-09"
+        },
+        {
+          "TITLE": "中国石油关于控股股东2018年公开发行可交换公司债券网上获配投资者缴款的提示性公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-02-03/601857_20180203_1.pdf",
+          "SSEDATE": "2018-02-03"
+        },
+        {
+          "TITLE": "中国石油2017年年度业绩预增公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-01-31/601857_20180131_1.pdf",
+          "SSEDATE": "2018-01-31"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第一期）（品种一）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-01-13/601857_20180113_1.pdf",
+          "SSEDATE": "2018-01-13"
+        },
+        {
+          "TITLE": "中国石油2016年公司债券（第一期）（品种二）2018年付息公告",
+          "URL": "/disclosure/listedinfo/announcement/c/2018-01-13/601857_20180113_2.pdf",
+          "SSEDATE": "2018-01-13"
+        }
+      ]
+    }
+  ],
+  "pdf_attempts": [
+    {
+      "receipt": {
+        "url": "https://www.sse.com.cn/disclosure/listedinfo/announcement/c/2017-06-16/601857_20170616_1.pdf",
+        "final_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/2017-06-16/601857_20170616_1.pdf",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "acquired_at_utc": "2026-11-09T03:49:18.537460+00:00",
+        "sha256": "f18a68b7fb0966ab2a40fecbe9c1b9d46bbf6eb48d4ae29a4f74bb3b90a6a75a",
+        "bytes": 3872,
+        "magic": "b'\\x1f\\x8b\\x08\\x00\\x00\\x00\\x00\\x00\\x04\\x03\\xb2\\xc9(\\xc9\\xcd\\xb1\\xb3)N.\\xca,(\\xb1\\xe3R\\x80\\x82\\xb2\\xc4\"\\x85\\xc4\\xa2tC[u\\x17s3\\x03SK3\\x17\\x03#C7\\x037SS\\x03\\x0bGsWg\\x17CcsW37\\x177gS\\x13GK\\x03\\x17\\'cuk\\xb8f\\xa8\\x19`\\ndP\\xbcA\\x85\\x89\\x85\\xa1\\x85mZi^r'"
+      },
+      "pdf_magic_present": false,
+      "official_pdf_qualification": "UNKNOWN",
+      "reason": "Response format alone does not authenticate a notice; inspect original document"
+    },
+    {
+      "receipt": {
+        "url": "https://www.sse.com.cn/disclosure/listedinfo/announcement/c/2017-09-08/601857_20170908_1.pdf",
+        "final_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/2017-09-08/601857_20170908_1.pdf",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "acquired_at_utc": "2026-11-09T03:49:18.534649+00:00",
+        "sha256": "f18a68b7fb0966ab2a40fecbe9c1b9d46bbf6eb48d4ae29a4f74bb3b90a6a75a",
+        "bytes": 3872,
+        "magic": "b'\\x1f\\x8b\\x08\\x00\\x00\\x00\\x00\\x00\\x04\\x03\\xb2\\xc9(\\xc9\\xcd\\xb1\\xb3)N.\\xca,(\\xb1\\xe3R\\x80\\x82\\xb2\\xc4\"\\x85\\xc4\\xa2tC[u\\x17s3\\x03SK3\\x17\\x03#C7\\x037SS\\x03\\x0bGsWg\\x17CcsW37\\x177gS\\x13GK\\x03\\x17\\'cuk\\xb8f\\xa8\\x19`\\ndP\\xbcA\\x85\\x89\\x85\\xa1\\x85mZi^r'"
+      },
+      "pdf_magic_present": false,
+      "official_pdf_qualification": "UNKNOWN",
+      "reason": "Response format alone does not authenticate a notice; inspect original document"
+    }
+  ],
+  "event_completeness": "UNKNOWN",
+  "historical_revision_chain": "UNKNOWN",
+  "first_public_time": "UNKNOWN"
+}
