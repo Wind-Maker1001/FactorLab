@@ -38,6 +38,9 @@ jobs:
           path: candidate
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
       - name: Select conservative extensions from trusted base
         id: select
         env:
@@ -50,6 +53,7 @@ jobs:
           retention-days: 14
   fast:
     name: Fast Python 3.13
+    needs: risk
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
@@ -80,6 +84,20 @@ jobs:
       - name: Basic locking contracts
         if: ${{ !cancelled() }}
         run: python tools/ci/integration_checks.py --suite locking --output local-ci/pr
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        if: ${{ !cancelled() }}
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: ${{ !cancelled() }}
+        with:
+          name: pr-risk
+          path: trusted-risk
+      - name: Trusted targeted test execution
+        if: ${{ !cancelled() }}
+        run: python -I trusted/tools/ci/integration_checks.py --repository . --risk-plan trusted-risk/risk.json --suite targeted --output local-ci/pr
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ !cancelled() }}
         with:
@@ -88,6 +106,7 @@ jobs:
             local-ci/pr/*/receipt.json
             local-ci/pr/*/tests.xml
             local-ci/pr/*/tests.log
+            local-ci/pr/*/execution.json
           if-no-files-found: error
           retention-days: 14
   control-review:
