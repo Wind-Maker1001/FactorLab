@@ -145,7 +145,8 @@ def main():
     if any(targeted_path(path) and path.startswith('tools/data/') for path in paths) and any(
             path.startswith('src/factorlab/') and path not in paths for path in affected):
         result['current'] = result['locking'] = True
-    targets = sorted(path for path in paths if targeted_path(path))
+    # Deleted targets cannot be run; deletion still forces extended validation.
+    targets = sorted(path for status, path in changes if status != 'D' and targeted_path(path))
     result['targeted_paths'] = targets
     result['unusual_added_modes'] = nonregular_additions
     result.update(base=a.base, head=a.head, files=paths, affected=affected)
