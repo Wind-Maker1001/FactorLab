@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 from factorlab.backtest.fees import FeeBreakdown, FeeSchedule
+from factorlab.backtest.capacity import ResearchExecutionScenario, ResearchFeeQuote
 from factorlab.backtest.rules import PriceLimitSchedule, classify_board
 from factorlab.data.schema import normalize_symbol
 from factorlab.errors import ConfigurationError, SchemaError
@@ -371,9 +372,20 @@ _TRADE_COLUMNS = [
     "transfer_fee",
     "side_fee",
     "slippage",
+    "research_fixed_slippage",
+    "market_impact",
     "transaction_cost",
     "cash_after",
 ]
+def _trade_frame(rows):
+    if rows:
+        return pd.DataFrame(rows, columns=_TRADE_COLUMNS)
+    identifiers = {'signal_date', 'execution_date', 'symbol', 'side'}
+    return pd.DataFrame({column: pd.Series(dtype=(
+        'datetime64[ns]' if column.endswith('_date') else 'object' if column in identifiers else 'float64'
+    )) for column in _TRADE_COLUMNS})
+
+
 _REJECTION_COLUMNS = [
     "signal_date",
     "execution_date",
@@ -404,7 +416,9 @@ class AShareExecutionBacktester:
         config: Optional[ExecutionBacktestConfig] = None,
         fee_schedule: Optional[FeeSchedule] = None,
         price_limit_schedule: Optional[PriceLimitSchedule] = None,
+        research_scenario: ResearchExecutionScenario | None = None,
     ) -> None:
+        self.research_scenario = research_scenario
         self.config = config or ExecutionBacktestConfig()
         self.fee_schedule = fee_schedule or FeeSchedule.a_share_default()
         self.price_limit_schedule = (
@@ -806,7 +820,7 @@ class AShareExecutionBacktester:
         return ExecutionBacktestResult(
             nav=pd.DataFrame(nav_rows),
             target_comparison=pd.DataFrame(comparison_rows),
-            trades=pd.DataFrame(trade_rows, columns=_TRADE_COLUMNS),
+            trades=_trade_frame(trade_rows),
             positions=pd.DataFrame(position_rows, columns=_POSITION_COLUMNS),
             rejections=pd.DataFrame(rejection_rows, columns=_REJECTION_COLUMNS),
             signals=pd.concat(accepted, ignore_index=True)
@@ -910,6 +924,13 @@ class AShareExecutionBacktester:
             reject(requested_shares, "%s_price_limit" % side)
             return None
 
+        scenario = self.research_scenario
+        observation = None if scenario is None else scenario.observation(symbol, signal_date)
+        if scenario is not None and scenario.needs_liquidity and observation is None:
+            reject(requested_shares, "liquidity_NOT_COMPUTABLE")
+            return None
+        fees = self.fee_schedule if scenario is None else ResearchFeeQuote(
+            self.fee_schedule, scenario, observation, float(price))
         quantity = int(requested_shares)
         if side == "sell":
             sellable = book.sellable_shares(
@@ -924,21 +945,44 @@ class AShareExecutionBacktester:
                 unrestricted = size_rule.round(unrestricted)
             reject(quantity - unrestricted, "sale_restriction")
             quantity = unrestricted
-        else:
+        if scenario is not None and scenario.participation_limit is not None:
+            # Consume the authoritative fills, not a second capacity ledger.
+            used = 0.0
+            for trade in reversed(trade_rows):
+                if trade["execution_date"] != execution_date:
+                    break
+                if trade["symbol"] == symbol:
+                    used += trade["executed_shares"] if observation.basis == 'shares' else trade["trade_notional"]
+            remaining = max(0.0, observation.average * scenario.participation_limit - used)
+            cap = int(math.floor(remaining if observation.basis == 'shares' else remaining / float(price)))
+            limited = min(quantity, cap)
+            if limited < quantity:
+                if scenario.fill_policy == 'reject':
+                    limited = 0
+                else:
+                    rule = size_rule or OrderSizeRule(self.config.board_lot, self.config.board_lot)
+                    limited = rule.round(limited)
+                reject(quantity - limited, "capacity_constraint")
+                quantity = limited
+        if side == "buy":
             rule = size_rule or OrderSizeRule(self.config.board_lot, self.config.board_lot)
             lot_rounded = rule.round(quantity)
             reject(quantity - lot_rounded, "board_lot")
             # Below the minimum is not a legal partial fill. Search legal increments.
             affordable = _affordable_quantity(cash, float(price), lot_rounded,
-                                               rule.increment, execution_date, self.fee_schedule, rule.minimum)
+                                               rule.increment, execution_date, fees, rule.minimum)
             quantity = rule.round(affordable)
             reject(lot_rounded - quantity, "cash_constraint")
         if quantity <= 0:
             return None
 
         notional = float(quantity * float(price))
-        breakdown = self.fee_schedule.calculate(execution_date, side, notional)
+        breakdown = fees.calculate(execution_date, side, notional)
+        fixed, impact = (0.0, 0.0) if scenario is None else fees.components(notional)
         if side == "sell":
+            if breakdown.total > cash + notional:
+                reject(quantity, "cash_constraint")
+                return None
             book.sell(
                 symbol,
                 execution_date,
@@ -965,6 +1009,8 @@ class AShareExecutionBacktester:
                 "execution_price": float(price),
                 "trade_notional": notional,
                 **breakdown.to_dict(),
+                "research_fixed_slippage": fixed,
+                "market_impact": impact,
                 "cash_after": cash_after,
             }
         )

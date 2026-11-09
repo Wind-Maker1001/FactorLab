@@ -10,6 +10,7 @@ import pandas as pd
 
 from factorlab.backtest import AShareExecutionBacktester, ExecutionBacktestConfig
 from factorlab.backtest.fees import FeeSchedule
+from factorlab.backtest.capacity import ResearchExecutionScenario
 from factorlab.data.admission import assert_formal_market_admission
 from factorlab.data.hub import DataHub
 from factorlab.dataset import DatasetBuilder
@@ -64,6 +65,7 @@ class ResearchPipelineConfig:
     fees: FeeSchedule = field(default_factory=FeeSchedule.a_share_default)
     execution_mode: str = 'batch'
     sale_restrictions: tuple[SaleRestriction, ...] = ()
+    research_scenario: ResearchExecutionScenario | None = None
 
     def __post_init__(self):
         if self.execution_mode not in {'batch', 'incremental_feedback'}:
@@ -259,7 +261,8 @@ class ResearchPipeline:
             bars = tables['bars'].loc[tables['bars'].date.isin(execution_dates)].merge(
                 tables['status'], on=['date', 'symbol'], validate='one_to_one')
             benchmark = tables['benchmark'].loc[tables['benchmark'].date.isin(execution_dates)]
-            engine = AShareExecutionBacktester(c.execution, fee_schedule=c.fees)
+            engine = AShareExecutionBacktester(c.execution, fee_schedule=c.fees,
+                research_scenario=c.research_scenario)
             allocation = dict(model_name=model, optimizer=PortfolioOptimizer(c.optimizer),
                 lookback=c.risk_lookback, every=c.rebalance_sessions)
             if c.execution_mode == 'incremental_feedback':
@@ -321,7 +324,10 @@ class ResearchPipeline:
                     str(walk.fold_summary[name + '_end'].max().date())] for name in ('train', 'validation', 'test')},
                 walk_forward=_json_value(vars(c.splitter)),
                 costs=_json_value(dict(execution=asdict(c.execution),
-                    fee_rules=[asdict(rule) for rule in c.fees.rules])))
+                    fee_rules=[asdict(rule) for rule in c.fees.rules],
+                    **({} if c.research_scenario is None else dict(
+                        research_scenario=asdict(c.research_scenario),
+                        research_source=file_hash(Path(__file__).resolve().parents[1] / 'backtest/capacity.py'))))))
             tracker.create_experiment(experiment_id, definition)
             tracker.append_run(experiment_id, experiment_id, **provenance, command=command,
                 status='SUCCEEDED', qualification=c.source_kind,

@@ -1,0 +1,53 @@
+{
+  "schema": "P3D06_TARGETED_VALIDATION_V1",
+  "final": {
+    "command": "python -I -B -X utf8 -m pytest tests/evidence/test_p3_d06_diagnostic.py -q -p no:cacheprovider",
+    "passed": 6,
+    "failed": 0,
+    "seconds": 2.45,
+    "cases": [
+      "missing key versus present null and historical code successor",
+      "duplicate source keys rejected without fusion",
+      "next-session label endpoints preserve missing security and benchmark dates",
+      "warmup before membership and missing-session propagation through actual 78 definitions",
+      "invalid warmup blocks security with original source unchanged",
+      "actual exit-date maturity in addition to configured purge and embargo"
+    ]
+  },
+  "earlier_attempts": [
+    {
+      "kind": "test_fixture",
+      "passed": 4,
+      "failed": 1,
+      "seconds": 7.56,
+      "cause": "Expression engine requires canonical exchange-qualified symbol; fixture used A",
+      "resolution": "Corrected fixture symbol and valid OHLC relationships; did not relax production validation"
+    },
+    {
+      "kind": "corrected_tests_before_real_data",
+      "passed": 5,
+      "failed": 0,
+      "seconds": 2.01
+    },
+    {
+      "kind": "real_data_first_attempt",
+      "status": "REJECTED_BY_EXISTING_ENGINE",
+      "completed_symbol_progress": 512,
+      "population_codes": 932,
+      "exception": "DiscoveryError: INVALID_INPUT: invalid raw_OHLC relationship",
+      "resolution": "Added explicit source-quality aggregation and conservative whole-security computation blocking without source changes; final complete run succeeded",
+      "independent_total_resources": "NOT_MEASURED",
+      "repeated_source_scan": "One necessary repeat after failed process had no recoverable in-memory inputs"
+    }
+  ],
+  "real_data_final": {
+    "status": "COMPLETED",
+    "main_wall_seconds": 125.95215490000555,
+    "extension_wall_seconds": 0.49235119999502786,
+    "factor_definitions_with_finite_values": 78,
+    "fold_stage_rows": 78,
+    "label_returns_computed": false,
+    "model_fits": 0,
+    "financial_gate_changes": 0
+  }
+}

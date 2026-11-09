@@ -86,14 +86,14 @@ class ExecutionSession:
 
     @property
     def result(self):
-        from .execution import ExecutionBacktestResult, _TRADE_COLUMNS, _POSITION_COLUMNS, _REJECTION_COLUMNS
+        from .execution import ExecutionBacktestResult, _trade_frame, _POSITION_COLUMNS, _REJECTION_COLUMNS
         if self._rows is None:
             raise SchemaError("advance a session before requesting execution results")
         nav, trades, positions, rejections, comparisons = self._rows
         nav_frame = pd.DataFrame(nav)
         nav_frame['gross_security_turnover'] = (nav_frame.buy_notional + nav_frame.sell_notional) / nav_frame.turnover_denominator
         return ExecutionBacktestResult(
-            nav=nav_frame, trades=pd.DataFrame(trades, columns=_TRADE_COLUMNS),
+            nav=nav_frame, trades=_trade_frame(trades),
             positions=pd.DataFrame(positions, columns=_POSITION_COLUMNS),
             rejections=pd.DataFrame(rejections, columns=_REJECTION_COLUMNS),
             signals=pd.concat(self._accepted, ignore_index=True) if self._accepted else pd.DataFrame(),

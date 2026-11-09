@@ -1,0 +1,1319 @@
+[
+  {
+    "fold": 0,
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0.0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "df737cd443a259311f91e8615bfddd6f4408dd3ec05e933612e9c7d674b76a15",
+    "candidate_refs": [
+      {
+        "factor_id": "C_amount_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "70a3ed5fb0bf96e63aa44efdf0ce3eddfb68eb1ef36c83fb3cb6470dd8ca481d"
+      },
+      {
+        "factor_id": "C_amount_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "62bdbeb62db40132f427abd927bfdab7ecbf6377a063af15d5cac044cda40a17"
+      },
+      {
+        "factor_id": "C_amount_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "b6a221bf5127c65e105f987f5a41c24fda12cf5559aa0cbb5494de7fa8398416"
+      },
+      {
+        "factor_id": "C_amount_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "437a452c34ce67114e19c1850e6c85fef720f1f187faae3a0487b14a4c2d6938"
+      },
+      {
+        "factor_id": "C_amount_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "09d3c79a16ac4682d853ed06e8954b504ffa6c3f9605dbd86804f249902eabcc"
+      },
+      {
+        "factor_id": "C_amount_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "e7dbad8cd50cd73439ea171ccb973e8190e9f280e0e23998c850634f36ac85bf"
+      },
+      {
+        "factor_id": "C_amount_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "8b8c37d2e906a05a5cfa3fe7bb99204f8eeee439e24dca85907fd4341e63e879"
+      },
+      {
+        "factor_id": "C_amount_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "f55dcfda4efecfb09ae431f4450fb40aa5c76c475bc770c31cd78671380a9d13"
+      },
+      {
+        "factor_id": "C_intraday_return_10",
+        "version": "p311-v1",
+        "definition_hash": "66f05dffa0a0fd07eb794d715d2c17ddb926fbc90d28932e206c83da3e116fdd"
+      },
+      {
+        "factor_id": "C_intraday_return_20",
+        "version": "p311-v1",
+        "definition_hash": "d431e371bb893562f04fa755baf71303191cddbff893e17fb2640d9589bc64d5"
+      },
+      {
+        "factor_id": "C_intraday_return_5",
+        "version": "p311-v1",
+        "definition_hash": "584452628979ef9534da51dbdc9d20447ef7de6cd27faee548a68b90bf5e68b3"
+      },
+      {
+        "factor_id": "C_intraday_return_60",
+        "version": "p311-v1",
+        "definition_hash": "3cfe5f17f5e4ef8aefbb4df65891aa80e46f2b84e7de81295dd327746e53bdcb"
+      },
+      {
+        "factor_id": "C_mean_slope_10",
+        "version": "p311-v1",
+        "definition_hash": "507ebfad0dc61b84a87b1bed7a4b456126310ba94a670820b176fd594479bb39"
+      },
+      {
+        "factor_id": "C_mean_slope_20",
+        "version": "p311-v1",
+        "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702"
+      },
+      {
+        "factor_id": "C_mean_slope_5",
+        "version": "p311-v1",
+        "definition_hash": "e99dbafa2c7894cce5690c75951802ed35a9b00af5d2c93756ffc9502ccb79b5"
+      },
+      {
+        "factor_id": "C_mean_slope_60",
+        "version": "p311-v1",
+        "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce"
+      },
+      {
+        "factor_id": "C_momentum_10",
+        "version": "p311-v1",
+        "definition_hash": "ad30aa050a3d7cb00305c2f6f49224352b66e00bcdebe2e8453e421de63ed900"
+      },
+      {
+        "factor_id": "C_momentum_20",
+        "version": "p311-v1",
+        "definition_hash": "21dd1f0579a4cd62b5e36084c5e449bb359b268630ee15a3c0a156c9f2a02066"
+      },
+      {
+        "factor_id": "C_momentum_5",
+        "version": "p311-v1",
+        "definition_hash": "498598f337ebc2ca2143f6ffda8c7239bc36b362095dd5a06985a1aaeab6ed84"
+      },
+      {
+        "factor_id": "C_momentum_60",
+        "version": "p311-v1",
+        "definition_hash": "8a712cd5a85aeca2fe1adac1c387b39c4743b8a34ab99fe2726f74bb637c6eed"
+      },
+      {
+        "factor_id": "C_price_deviation_10",
+        "version": "p311-v1",
+        "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99"
+      },
+      {
+        "factor_id": "C_price_deviation_20",
+        "version": "p311-v1",
+        "definition_hash": "93538b00af819ddd89f0531da31c44a8eeab1515740f23687c752ce0aa23ff14"
+      },
+      {
+        "factor_id": "C_price_deviation_5",
+        "version": "p311-v1",
+        "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e"
+      },
+      {
+        "factor_id": "C_price_deviation_60",
+        "version": "p311-v1",
+        "definition_hash": "83e1407a717ebe9c7035d9b78568d68dc65a676fb73e08f1fd25c4fb2603cd93"
+      },
+      {
+        "factor_id": "C_price_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "8dde04c0e5f2578351d9899e66de521b9947f39ca2396265fb93f47ff21ba15e"
+      },
+      {
+        "factor_id": "C_price_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "3bf66d22923e50ed3db7a672af4c52be8f184ea3db3cbfe7dc6490572e576dc0"
+      },
+      {
+        "factor_id": "C_price_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "a5b4021698a80784c3606e840b80057912dbd1908378571d8587b85323dff106"
+      },
+      {
+        "factor_id": "C_price_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "84a911653effc3fe0187234bb3f41d8d862d368f7b1dfec664fed9a73572dd3e"
+      },
+      {
+        "factor_id": "C_relative_range_10",
+        "version": "p311-v1",
+        "definition_hash": "45bfe313cedacd0db19d826a447fbfbdbdf4ebba5696dd6c64ee29c24a6ca51c"
+      },
+      {
+        "factor_id": "C_relative_range_20",
+        "version": "p311-v1",
+        "definition_hash": "3526f3499feb1061ae9b3bd9a6485bef6ff8a21df5015f11ce606055105d746c"
+      },
+      {
+        "factor_id": "C_relative_range_5",
+        "version": "p311-v1",
+        "definition_hash": "d7887694195e58e472b668881e8d297dc77828e69fd29036ec81a72dd18cdaf8"
+      },
+      {
+        "factor_id": "C_relative_range_60",
+        "version": "p311-v1",
+        "definition_hash": "ea58f8a8a86dd75b03ef39fab04644cbf8f5a06c08fd95654795292a23e3ade9"
+      },
+      {
+        "factor_id": "C_return_mean_10",
+        "version": "p311-v1",
+        "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f"
+      },
+      {
+        "factor_id": "C_return_mean_20",
+        "version": "p311-v1",
+        "definition_hash": "62be9ca25cccd55b9792c73e23b74957b8d6d5f75b713808054c918e5170773c"
+      },
+      {
+        "factor_id": "C_return_mean_5",
+        "version": "p311-v1",
+        "definition_hash": "9500c526d4edaab52975b4408a22cd1b828858272f38506ba8aac60a50f8caa6"
+      },
+      {
+        "factor_id": "C_return_mean_60",
+        "version": "p311-v1",
+        "definition_hash": "d8c6ba69ab08ca46153fd4e3e70ac510f3b9cf9ccbb34b875f85d6be9c39369f"
+      },
+      {
+        "factor_id": "C_return_volatility_10",
+        "version": "p311-v1",
+        "definition_hash": "cea52bf8dfcc1783971a8fb5e48ee88748c650717cfdc4c6a84d71863aa9c3fb"
+      },
+      {
+        "factor_id": "C_return_volatility_20",
+        "version": "p311-v1",
+        "definition_hash": "f54ad358ffa75b1cc73198a2f1ac37b8f7bc0330495f78e1611ad8cabec570b9"
+      },
+      {
+        "factor_id": "C_return_volatility_5",
+        "version": "p311-v1",
+        "definition_hash": "63a59aab435d3a2a50b3c4a14d639b43714ea6ffadcf6b4091573046c5faeac3"
+      },
+      {
+        "factor_id": "C_return_volatility_60",
+        "version": "p311-v1",
+        "definition_hash": "53a67cfb99bdf0f4c8e9c37a0c84c63d1156e033b47347bda513342bf8a71a6a"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "6f672eca49c329ee87ab4441a76022b5cab6f4f1ae3ed749116d82f34920aa48"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "983eb078893f2dd8486a346c955172f7dd03f4c5536efd215687d448ba54d2d6"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "bfd41b46f9895e194280b2da160f03febfd69e3e9370b7ae8fd28fefc269e8b1"
+      },
+      {
+        "factor_id": "C_turnover_level_10",
+        "version": "p311-v1",
+        "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f"
+      },
+      {
+        "factor_id": "C_turnover_level_20",
+        "version": "p311-v1",
+        "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc"
+      },
+      {
+        "factor_id": "C_turnover_level_5",
+        "version": "p311-v1",
+        "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639"
+      },
+      {
+        "factor_id": "C_turnover_level_60",
+        "version": "p311-v1",
+        "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a"
+      },
+      {
+        "factor_id": "C_turnover_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "edcb05d87f2288ba3748490025deb2f827e01b3e9fa83e137a194b6f6129f103"
+      },
+      {
+        "factor_id": "C_turnover_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "081419c6c6038ff381e6148a53eea31ae3f54527e9ef3133fcadbd41ab4f373e"
+      },
+      {
+        "factor_id": "C_turnover_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "03d587cbb7371e8983a2eac48e4e2d6f753277aa16b79f3eec99820ecdb18be6"
+      },
+      {
+        "factor_id": "C_turnover_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "0c214b8e1f813c05d050210fd971ca95e53938a784c7c41a9b38edf8e4affdb1"
+      },
+      {
+        "factor_id": "C_volume_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "7d0949fe8c46f3fd913388198e6c4cdc68edd2c96229e1e034d0a14d0f68e46b"
+      },
+      {
+        "factor_id": "C_volume_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "fb6a24d70253ac6bc44e804abaec3495aac09c9d018ee8edf75d387f16e0080c"
+      },
+      {
+        "factor_id": "C_volume_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "118bfa10b2e8d46b3a9d00480b32139c709ea5b1e057c40e1cf0d9d6b0e0bfce"
+      },
+      {
+        "factor_id": "C_volume_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "ac3dbf553c77a58ceb3659a5145fca45c7a7082cbc1a3f290d6f5e45f17f3758"
+      },
+      {
+        "factor_id": "C_volume_growth_10",
+        "version": "p311-v1",
+        "definition_hash": "157a128fd74c81c7ae927dfd5f1543d7f1ef3b06e6e05e291a65e0603abaa4c1"
+      },
+      {
+        "factor_id": "C_volume_growth_20",
+        "version": "p311-v1",
+        "definition_hash": "784df7bb1b4e94f74dbf258b9000ee165378c9ccb215d61bc86ab42cc844f11d"
+      },
+      {
+        "factor_id": "C_volume_growth_5",
+        "version": "p311-v1",
+        "definition_hash": "35a53af9729fd418c3417b66cd55c749937d97f2f44c418ad4ff24e32700c4e9"
+      },
+      {
+        "factor_id": "C_volume_growth_60",
+        "version": "p311-v1",
+        "definition_hash": "bad624bfff868c7bd5a6921cfe603a54b2700e10be4be125ee6e8f2801a56cb5"
+      },
+      {
+        "factor_id": "C_volume_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "277f75a66b0ff51de56ad3e86055248e7a40c5ce2ac38dce8d37fb97b5d5f672"
+      },
+      {
+        "factor_id": "C_volume_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "6dd2d116f4f7c63c172f8afc097e8c3891990f13b4c85c87da2c6421cad5be38"
+      },
+      {
+        "factor_id": "C_volume_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "3099e4f3b48d660ae2d91c27f3793d737f3d83ab7542dfa81bb8481c50b568c5"
+      },
+      {
+        "factor_id": "C_volume_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "8e79068135340f79250c28398c48e8efdc9d5cf427c917380d47151960af1cf8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "C_price_deviation_10",
+        "version": "p311-v1",
+        "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99"
+      },
+      {
+        "factor_id": "C_return_mean_10",
+        "version": "p311-v1",
+        "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f"
+      },
+      {
+        "factor_id": "C_price_deviation_5",
+        "version": "p311-v1",
+        "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e"
+      },
+      {
+        "factor_id": "C_return_mean_20",
+        "version": "p311-v1",
+        "definition_hash": "62be9ca25cccd55b9792c73e23b74957b8d6d5f75b713808054c918e5170773c"
+      },
+      {
+        "factor_id": "C_mean_slope_60",
+        "version": "p311-v1",
+        "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce"
+      },
+      {
+        "factor_id": "C_turnover_level_60",
+        "version": "p311-v1",
+        "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a"
+      },
+      {
+        "factor_id": "C_turnover_level_5",
+        "version": "p311-v1",
+        "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639"
+      },
+      {
+        "factor_id": "C_return_volatility_20",
+        "version": "p311-v1",
+        "definition_hash": "f54ad358ffa75b1cc73198a2f1ac37b8f7bc0330495f78e1611ad8cabec570b9"
+      },
+      {
+        "factor_id": "C_volume_growth_20",
+        "version": "p311-v1",
+        "definition_hash": "784df7bb1b4e94f74dbf258b9000ee165378c9ccb215d61bc86ab42cc844f11d"
+      },
+      {
+        "factor_id": "C_turnover_level_10",
+        "version": "p311-v1",
+        "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f"
+      }
+    ],
+    "selected_features": [
+      "C_price_deviation_10",
+      "C_return_mean_10",
+      "C_price_deviation_5",
+      "C_return_mean_20",
+      "C_mean_slope_60",
+      "C_turnover_level_60",
+      "C_turnover_level_5",
+      "C_return_volatility_20",
+      "C_volume_growth_20",
+      "C_turnover_level_10"
+    ],
+    "directions": {
+      "C_price_deviation_10": 1,
+      "C_return_mean_10": 1,
+      "C_price_deviation_5": 1,
+      "C_return_mean_20": 1,
+      "C_mean_slope_60": -1,
+      "C_turnover_level_60": 1,
+      "C_turnover_level_5": -1,
+      "C_return_volatility_20": 1,
+      "C_volume_growth_20": -1,
+      "C_turnover_level_10": -1
+    },
+    "selection_train_sha256": "3a4963d1c76297eedcdca86d5292f3bb8de7edfd2f0af0eb7028276ae27c0d37",
+    "quality_sha256": "95ac51d5d0889ceac68704a74a89c6678ea30d1db4cff22b3b57d2280b455489",
+    "redundancy_sha256": "885655cb857ec66e471ec3df7a1213c401feedd39c1ffad429928e0f8077e536",
+    "eligible_count": 36,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "1dd1de49b0f43e57d393cc16d92054c04735a20b131ee1c259f721f4407b4e5e",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-07-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-07-03T00:00:00",
+      "2023-08-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-08-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "train_max_exit": "2023-06-30T00:00:00"
+  },
+  {
+    "fold": 1,
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0.0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "df737cd443a259311f91e8615bfddd6f4408dd3ec05e933612e9c7d674b76a15",
+    "candidate_refs": [
+      {
+        "factor_id": "C_amount_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "70a3ed5fb0bf96e63aa44efdf0ce3eddfb68eb1ef36c83fb3cb6470dd8ca481d"
+      },
+      {
+        "factor_id": "C_amount_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "62bdbeb62db40132f427abd927bfdab7ecbf6377a063af15d5cac044cda40a17"
+      },
+      {
+        "factor_id": "C_amount_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "b6a221bf5127c65e105f987f5a41c24fda12cf5559aa0cbb5494de7fa8398416"
+      },
+      {
+        "factor_id": "C_amount_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "437a452c34ce67114e19c1850e6c85fef720f1f187faae3a0487b14a4c2d6938"
+      },
+      {
+        "factor_id": "C_amount_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "09d3c79a16ac4682d853ed06e8954b504ffa6c3f9605dbd86804f249902eabcc"
+      },
+      {
+        "factor_id": "C_amount_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "e7dbad8cd50cd73439ea171ccb973e8190e9f280e0e23998c850634f36ac85bf"
+      },
+      {
+        "factor_id": "C_amount_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "8b8c37d2e906a05a5cfa3fe7bb99204f8eeee439e24dca85907fd4341e63e879"
+      },
+      {
+        "factor_id": "C_amount_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "f55dcfda4efecfb09ae431f4450fb40aa5c76c475bc770c31cd78671380a9d13"
+      },
+      {
+        "factor_id": "C_intraday_return_10",
+        "version": "p311-v1",
+        "definition_hash": "66f05dffa0a0fd07eb794d715d2c17ddb926fbc90d28932e206c83da3e116fdd"
+      },
+      {
+        "factor_id": "C_intraday_return_20",
+        "version": "p311-v1",
+        "definition_hash": "d431e371bb893562f04fa755baf71303191cddbff893e17fb2640d9589bc64d5"
+      },
+      {
+        "factor_id": "C_intraday_return_5",
+        "version": "p311-v1",
+        "definition_hash": "584452628979ef9534da51dbdc9d20447ef7de6cd27faee548a68b90bf5e68b3"
+      },
+      {
+        "factor_id": "C_intraday_return_60",
+        "version": "p311-v1",
+        "definition_hash": "3cfe5f17f5e4ef8aefbb4df65891aa80e46f2b84e7de81295dd327746e53bdcb"
+      },
+      {
+        "factor_id": "C_mean_slope_10",
+        "version": "p311-v1",
+        "definition_hash": "507ebfad0dc61b84a87b1bed7a4b456126310ba94a670820b176fd594479bb39"
+      },
+      {
+        "factor_id": "C_mean_slope_20",
+        "version": "p311-v1",
+        "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702"
+      },
+      {
+        "factor_id": "C_mean_slope_5",
+        "version": "p311-v1",
+        "definition_hash": "e99dbafa2c7894cce5690c75951802ed35a9b00af5d2c93756ffc9502ccb79b5"
+      },
+      {
+        "factor_id": "C_mean_slope_60",
+        "version": "p311-v1",
+        "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce"
+      },
+      {
+        "factor_id": "C_momentum_10",
+        "version": "p311-v1",
+        "definition_hash": "ad30aa050a3d7cb00305c2f6f49224352b66e00bcdebe2e8453e421de63ed900"
+      },
+      {
+        "factor_id": "C_momentum_20",
+        "version": "p311-v1",
+        "definition_hash": "21dd1f0579a4cd62b5e36084c5e449bb359b268630ee15a3c0a156c9f2a02066"
+      },
+      {
+        "factor_id": "C_momentum_5",
+        "version": "p311-v1",
+        "definition_hash": "498598f337ebc2ca2143f6ffda8c7239bc36b362095dd5a06985a1aaeab6ed84"
+      },
+      {
+        "factor_id": "C_momentum_60",
+        "version": "p311-v1",
+        "definition_hash": "8a712cd5a85aeca2fe1adac1c387b39c4743b8a34ab99fe2726f74bb637c6eed"
+      },
+      {
+        "factor_id": "C_price_deviation_10",
+        "version": "p311-v1",
+        "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99"
+      },
+      {
+        "factor_id": "C_price_deviation_20",
+        "version": "p311-v1",
+        "definition_hash": "93538b00af819ddd89f0531da31c44a8eeab1515740f23687c752ce0aa23ff14"
+      },
+      {
+        "factor_id": "C_price_deviation_5",
+        "version": "p311-v1",
+        "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e"
+      },
+      {
+        "factor_id": "C_price_deviation_60",
+        "version": "p311-v1",
+        "definition_hash": "83e1407a717ebe9c7035d9b78568d68dc65a676fb73e08f1fd25c4fb2603cd93"
+      },
+      {
+        "factor_id": "C_price_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "8dde04c0e5f2578351d9899e66de521b9947f39ca2396265fb93f47ff21ba15e"
+      },
+      {
+        "factor_id": "C_price_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "3bf66d22923e50ed3db7a672af4c52be8f184ea3db3cbfe7dc6490572e576dc0"
+      },
+      {
+        "factor_id": "C_price_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "a5b4021698a80784c3606e840b80057912dbd1908378571d8587b85323dff106"
+      },
+      {
+        "factor_id": "C_price_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "84a911653effc3fe0187234bb3f41d8d862d368f7b1dfec664fed9a73572dd3e"
+      },
+      {
+        "factor_id": "C_relative_range_10",
+        "version": "p311-v1",
+        "definition_hash": "45bfe313cedacd0db19d826a447fbfbdbdf4ebba5696dd6c64ee29c24a6ca51c"
+      },
+      {
+        "factor_id": "C_relative_range_20",
+        "version": "p311-v1",
+        "definition_hash": "3526f3499feb1061ae9b3bd9a6485bef6ff8a21df5015f11ce606055105d746c"
+      },
+      {
+        "factor_id": "C_relative_range_5",
+        "version": "p311-v1",
+        "definition_hash": "d7887694195e58e472b668881e8d297dc77828e69fd29036ec81a72dd18cdaf8"
+      },
+      {
+        "factor_id": "C_relative_range_60",
+        "version": "p311-v1",
+        "definition_hash": "ea58f8a8a86dd75b03ef39fab04644cbf8f5a06c08fd95654795292a23e3ade9"
+      },
+      {
+        "factor_id": "C_return_mean_10",
+        "version": "p311-v1",
+        "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f"
+      },
+      {
+        "factor_id": "C_return_mean_20",
+        "version": "p311-v1",
+        "definition_hash": "62be9ca25cccd55b9792c73e23b74957b8d6d5f75b713808054c918e5170773c"
+      },
+      {
+        "factor_id": "C_return_mean_5",
+        "version": "p311-v1",
+        "definition_hash": "9500c526d4edaab52975b4408a22cd1b828858272f38506ba8aac60a50f8caa6"
+      },
+      {
+        "factor_id": "C_return_mean_60",
+        "version": "p311-v1",
+        "definition_hash": "d8c6ba69ab08ca46153fd4e3e70ac510f3b9cf9ccbb34b875f85d6be9c39369f"
+      },
+      {
+        "factor_id": "C_return_volatility_10",
+        "version": "p311-v1",
+        "definition_hash": "cea52bf8dfcc1783971a8fb5e48ee88748c650717cfdc4c6a84d71863aa9c3fb"
+      },
+      {
+        "factor_id": "C_return_volatility_20",
+        "version": "p311-v1",
+        "definition_hash": "f54ad358ffa75b1cc73198a2f1ac37b8f7bc0330495f78e1611ad8cabec570b9"
+      },
+      {
+        "factor_id": "C_return_volatility_5",
+        "version": "p311-v1",
+        "definition_hash": "63a59aab435d3a2a50b3c4a14d639b43714ea6ffadcf6b4091573046c5faeac3"
+      },
+      {
+        "factor_id": "C_return_volatility_60",
+        "version": "p311-v1",
+        "definition_hash": "53a67cfb99bdf0f4c8e9c37a0c84c63d1156e033b47347bda513342bf8a71a6a"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "6f672eca49c329ee87ab4441a76022b5cab6f4f1ae3ed749116d82f34920aa48"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "983eb078893f2dd8486a346c955172f7dd03f4c5536efd215687d448ba54d2d6"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "bfd41b46f9895e194280b2da160f03febfd69e3e9370b7ae8fd28fefc269e8b1"
+      },
+      {
+        "factor_id": "C_turnover_level_10",
+        "version": "p311-v1",
+        "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f"
+      },
+      {
+        "factor_id": "C_turnover_level_20",
+        "version": "p311-v1",
+        "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc"
+      },
+      {
+        "factor_id": "C_turnover_level_5",
+        "version": "p311-v1",
+        "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639"
+      },
+      {
+        "factor_id": "C_turnover_level_60",
+        "version": "p311-v1",
+        "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a"
+      },
+      {
+        "factor_id": "C_turnover_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "edcb05d87f2288ba3748490025deb2f827e01b3e9fa83e137a194b6f6129f103"
+      },
+      {
+        "factor_id": "C_turnover_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "081419c6c6038ff381e6148a53eea31ae3f54527e9ef3133fcadbd41ab4f373e"
+      },
+      {
+        "factor_id": "C_turnover_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "03d587cbb7371e8983a2eac48e4e2d6f753277aa16b79f3eec99820ecdb18be6"
+      },
+      {
+        "factor_id": "C_turnover_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "0c214b8e1f813c05d050210fd971ca95e53938a784c7c41a9b38edf8e4affdb1"
+      },
+      {
+        "factor_id": "C_volume_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "7d0949fe8c46f3fd913388198e6c4cdc68edd2c96229e1e034d0a14d0f68e46b"
+      },
+      {
+        "factor_id": "C_volume_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "fb6a24d70253ac6bc44e804abaec3495aac09c9d018ee8edf75d387f16e0080c"
+      },
+      {
+        "factor_id": "C_volume_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "118bfa10b2e8d46b3a9d00480b32139c709ea5b1e057c40e1cf0d9d6b0e0bfce"
+      },
+      {
+        "factor_id": "C_volume_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "ac3dbf553c77a58ceb3659a5145fca45c7a7082cbc1a3f290d6f5e45f17f3758"
+      },
+      {
+        "factor_id": "C_volume_growth_10",
+        "version": "p311-v1",
+        "definition_hash": "157a128fd74c81c7ae927dfd5f1543d7f1ef3b06e6e05e291a65e0603abaa4c1"
+      },
+      {
+        "factor_id": "C_volume_growth_20",
+        "version": "p311-v1",
+        "definition_hash": "784df7bb1b4e94f74dbf258b9000ee165378c9ccb215d61bc86ab42cc844f11d"
+      },
+      {
+        "factor_id": "C_volume_growth_5",
+        "version": "p311-v1",
+        "definition_hash": "35a53af9729fd418c3417b66cd55c749937d97f2f44c418ad4ff24e32700c4e9"
+      },
+      {
+        "factor_id": "C_volume_growth_60",
+        "version": "p311-v1",
+        "definition_hash": "bad624bfff868c7bd5a6921cfe603a54b2700e10be4be125ee6e8f2801a56cb5"
+      },
+      {
+        "factor_id": "C_volume_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "277f75a66b0ff51de56ad3e86055248e7a40c5ce2ac38dce8d37fb97b5d5f672"
+      },
+      {
+        "factor_id": "C_volume_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "6dd2d116f4f7c63c172f8afc097e8c3891990f13b4c85c87da2c6421cad5be38"
+      },
+      {
+        "factor_id": "C_volume_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "3099e4f3b48d660ae2d91c27f3793d737f3d83ab7542dfa81bb8481c50b568c5"
+      },
+      {
+        "factor_id": "C_volume_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "8e79068135340f79250c28398c48e8efdc9d5cf427c917380d47151960af1cf8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "C_price_deviation_10",
+        "version": "p311-v1",
+        "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99"
+      },
+      {
+        "factor_id": "C_return_mean_10",
+        "version": "p311-v1",
+        "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f"
+      },
+      {
+        "factor_id": "C_price_deviation_5",
+        "version": "p311-v1",
+        "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e"
+      },
+      {
+        "factor_id": "C_mean_slope_20",
+        "version": "p311-v1",
+        "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702"
+      },
+      {
+        "factor_id": "C_momentum_60",
+        "version": "p311-v1",
+        "definition_hash": "8a712cd5a85aeca2fe1adac1c387b39c4743b8a34ab99fe2726f74bb637c6eed"
+      },
+      {
+        "factor_id": "C_turnover_level_5",
+        "version": "p311-v1",
+        "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639"
+      },
+      {
+        "factor_id": "C_turnover_level_10",
+        "version": "p311-v1",
+        "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f"
+      },
+      {
+        "factor_id": "C_turnover_level_60",
+        "version": "p311-v1",
+        "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a"
+      },
+      {
+        "factor_id": "C_turnover_level_20",
+        "version": "p311-v1",
+        "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f"
+      }
+    ],
+    "selected_features": [
+      "C_price_deviation_10",
+      "C_return_mean_10",
+      "C_price_deviation_5",
+      "C_mean_slope_20",
+      "C_momentum_60",
+      "C_turnover_level_5",
+      "C_turnover_level_10",
+      "C_turnover_level_60",
+      "C_turnover_level_20",
+      "C_turnover_dispersion_10"
+    ],
+    "directions": {
+      "C_price_deviation_10": 1,
+      "C_return_mean_10": 1,
+      "C_price_deviation_5": 1,
+      "C_mean_slope_20": 1,
+      "C_momentum_60": -1,
+      "C_turnover_level_5": -1,
+      "C_turnover_level_10": -1,
+      "C_turnover_level_60": 1,
+      "C_turnover_level_20": -1,
+      "C_turnover_dispersion_10": -1
+    },
+    "selection_train_sha256": "a9cfd899fbe34f225647c157d7023bd5a03edc494effc3fe46728b02717dd38c",
+    "quality_sha256": "13545fee9c800a87cf1390927451993984531d6c53261aef5a573e1f332942c9",
+    "redundancy_sha256": "8f62cb3a362a5f8e9c8a0095d8a2cca5a40ed8694a54d3c7afc35a68da0485a9",
+    "eligible_count": 36,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "c1e31aafb635005760274b371d171e48f00782db69ae708aef8e736d1738382f",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-09-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-09-03T00:00:00",
+      "2023-10-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-10-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "train_max_exit": "2023-09-01T00:00:00"
+  },
+  {
+    "fold": 2,
+    "rule_version": "TRAIN_FACTOR_SELECTION_V1",
+    "parameters": {
+      "k": 10,
+      "minimum_selected": 1,
+      "shortfall_policy": "use_available",
+      "minimum_coverage": 0.8,
+      "maximum_missing_ratio": 0.2,
+      "maximum_nonfinite_ratio": 0.0,
+      "minimum_observations": 100,
+      "minimum_cross_section": 12,
+      "minimum_dates": 20,
+      "minimum_abs_rank_ic": 0.01,
+      "minimum_direction_consistency": 0.5,
+      "minimum_pair_coverage": 0.8,
+      "redundancy_threshold": 0.95,
+      "orient_by_train_ic": true
+    },
+    "snapshot_hash": "df737cd443a259311f91e8615bfddd6f4408dd3ec05e933612e9c7d674b76a15",
+    "candidate_refs": [
+      {
+        "factor_id": "C_amount_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "70a3ed5fb0bf96e63aa44efdf0ce3eddfb68eb1ef36c83fb3cb6470dd8ca481d"
+      },
+      {
+        "factor_id": "C_amount_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "62bdbeb62db40132f427abd927bfdab7ecbf6377a063af15d5cac044cda40a17"
+      },
+      {
+        "factor_id": "C_amount_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "b6a221bf5127c65e105f987f5a41c24fda12cf5559aa0cbb5494de7fa8398416"
+      },
+      {
+        "factor_id": "C_amount_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "437a452c34ce67114e19c1850e6c85fef720f1f187faae3a0487b14a4c2d6938"
+      },
+      {
+        "factor_id": "C_amount_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "09d3c79a16ac4682d853ed06e8954b504ffa6c3f9605dbd86804f249902eabcc"
+      },
+      {
+        "factor_id": "C_amount_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "e7dbad8cd50cd73439ea171ccb973e8190e9f280e0e23998c850634f36ac85bf"
+      },
+      {
+        "factor_id": "C_amount_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "8b8c37d2e906a05a5cfa3fe7bb99204f8eeee439e24dca85907fd4341e63e879"
+      },
+      {
+        "factor_id": "C_amount_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "f55dcfda4efecfb09ae431f4450fb40aa5c76c475bc770c31cd78671380a9d13"
+      },
+      {
+        "factor_id": "C_intraday_return_10",
+        "version": "p311-v1",
+        "definition_hash": "66f05dffa0a0fd07eb794d715d2c17ddb926fbc90d28932e206c83da3e116fdd"
+      },
+      {
+        "factor_id": "C_intraday_return_20",
+        "version": "p311-v1",
+        "definition_hash": "d431e371bb893562f04fa755baf71303191cddbff893e17fb2640d9589bc64d5"
+      },
+      {
+        "factor_id": "C_intraday_return_5",
+        "version": "p311-v1",
+        "definition_hash": "584452628979ef9534da51dbdc9d20447ef7de6cd27faee548a68b90bf5e68b3"
+      },
+      {
+        "factor_id": "C_intraday_return_60",
+        "version": "p311-v1",
+        "definition_hash": "3cfe5f17f5e4ef8aefbb4df65891aa80e46f2b84e7de81295dd327746e53bdcb"
+      },
+      {
+        "factor_id": "C_mean_slope_10",
+        "version": "p311-v1",
+        "definition_hash": "507ebfad0dc61b84a87b1bed7a4b456126310ba94a670820b176fd594479bb39"
+      },
+      {
+        "factor_id": "C_mean_slope_20",
+        "version": "p311-v1",
+        "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702"
+      },
+      {
+        "factor_id": "C_mean_slope_5",
+        "version": "p311-v1",
+        "definition_hash": "e99dbafa2c7894cce5690c75951802ed35a9b00af5d2c93756ffc9502ccb79b5"
+      },
+      {
+        "factor_id": "C_mean_slope_60",
+        "version": "p311-v1",
+        "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce"
+      },
+      {
+        "factor_id": "C_momentum_10",
+        "version": "p311-v1",
+        "definition_hash": "ad30aa050a3d7cb00305c2f6f49224352b66e00bcdebe2e8453e421de63ed900"
+      },
+      {
+        "factor_id": "C_momentum_20",
+        "version": "p311-v1",
+        "definition_hash": "21dd1f0579a4cd62b5e36084c5e449bb359b268630ee15a3c0a156c9f2a02066"
+      },
+      {
+        "factor_id": "C_momentum_5",
+        "version": "p311-v1",
+        "definition_hash": "498598f337ebc2ca2143f6ffda8c7239bc36b362095dd5a06985a1aaeab6ed84"
+      },
+      {
+        "factor_id": "C_momentum_60",
+        "version": "p311-v1",
+        "definition_hash": "8a712cd5a85aeca2fe1adac1c387b39c4743b8a34ab99fe2726f74bb637c6eed"
+      },
+      {
+        "factor_id": "C_price_deviation_10",
+        "version": "p311-v1",
+        "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99"
+      },
+      {
+        "factor_id": "C_price_deviation_20",
+        "version": "p311-v1",
+        "definition_hash": "93538b00af819ddd89f0531da31c44a8eeab1515740f23687c752ce0aa23ff14"
+      },
+      {
+        "factor_id": "C_price_deviation_5",
+        "version": "p311-v1",
+        "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e"
+      },
+      {
+        "factor_id": "C_price_deviation_60",
+        "version": "p311-v1",
+        "definition_hash": "83e1407a717ebe9c7035d9b78568d68dc65a676fb73e08f1fd25c4fb2603cd93"
+      },
+      {
+        "factor_id": "C_price_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "8dde04c0e5f2578351d9899e66de521b9947f39ca2396265fb93f47ff21ba15e"
+      },
+      {
+        "factor_id": "C_price_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "3bf66d22923e50ed3db7a672af4c52be8f184ea3db3cbfe7dc6490572e576dc0"
+      },
+      {
+        "factor_id": "C_price_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "a5b4021698a80784c3606e840b80057912dbd1908378571d8587b85323dff106"
+      },
+      {
+        "factor_id": "C_price_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "84a911653effc3fe0187234bb3f41d8d862d368f7b1dfec664fed9a73572dd3e"
+      },
+      {
+        "factor_id": "C_relative_range_10",
+        "version": "p311-v1",
+        "definition_hash": "45bfe313cedacd0db19d826a447fbfbdbdf4ebba5696dd6c64ee29c24a6ca51c"
+      },
+      {
+        "factor_id": "C_relative_range_20",
+        "version": "p311-v1",
+        "definition_hash": "3526f3499feb1061ae9b3bd9a6485bef6ff8a21df5015f11ce606055105d746c"
+      },
+      {
+        "factor_id": "C_relative_range_5",
+        "version": "p311-v1",
+        "definition_hash": "d7887694195e58e472b668881e8d297dc77828e69fd29036ec81a72dd18cdaf8"
+      },
+      {
+        "factor_id": "C_relative_range_60",
+        "version": "p311-v1",
+        "definition_hash": "ea58f8a8a86dd75b03ef39fab04644cbf8f5a06c08fd95654795292a23e3ade9"
+      },
+      {
+        "factor_id": "C_return_mean_10",
+        "version": "p311-v1",
+        "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f"
+      },
+      {
+        "factor_id": "C_return_mean_20",
+        "version": "p311-v1",
+        "definition_hash": "62be9ca25cccd55b9792c73e23b74957b8d6d5f75b713808054c918e5170773c"
+      },
+      {
+        "factor_id": "C_return_mean_5",
+        "version": "p311-v1",
+        "definition_hash": "9500c526d4edaab52975b4408a22cd1b828858272f38506ba8aac60a50f8caa6"
+      },
+      {
+        "factor_id": "C_return_mean_60",
+        "version": "p311-v1",
+        "definition_hash": "d8c6ba69ab08ca46153fd4e3e70ac510f3b9cf9ccbb34b875f85d6be9c39369f"
+      },
+      {
+        "factor_id": "C_return_volatility_10",
+        "version": "p311-v1",
+        "definition_hash": "cea52bf8dfcc1783971a8fb5e48ee88748c650717cfdc4c6a84d71863aa9c3fb"
+      },
+      {
+        "factor_id": "C_return_volatility_20",
+        "version": "p311-v1",
+        "definition_hash": "f54ad358ffa75b1cc73198a2f1ac37b8f7bc0330495f78e1611ad8cabec570b9"
+      },
+      {
+        "factor_id": "C_return_volatility_5",
+        "version": "p311-v1",
+        "definition_hash": "63a59aab435d3a2a50b3c4a14d639b43714ea6ffadcf6b4091573046c5faeac3"
+      },
+      {
+        "factor_id": "C_return_volatility_60",
+        "version": "p311-v1",
+        "definition_hash": "53a67cfb99bdf0f4c8e9c37a0c84c63d1156e033b47347bda513342bf8a71a6a"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "6f672eca49c329ee87ab4441a76022b5cab6f4f1ae3ed749116d82f34920aa48"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "983eb078893f2dd8486a346c955172f7dd03f4c5536efd215687d448ba54d2d6"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "bfd41b46f9895e194280b2da160f03febfd69e3e9370b7ae8fd28fefc269e8b1"
+      },
+      {
+        "factor_id": "C_turnover_level_10",
+        "version": "p311-v1",
+        "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f"
+      },
+      {
+        "factor_id": "C_turnover_level_20",
+        "version": "p311-v1",
+        "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc"
+      },
+      {
+        "factor_id": "C_turnover_level_5",
+        "version": "p311-v1",
+        "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639"
+      },
+      {
+        "factor_id": "C_turnover_level_60",
+        "version": "p311-v1",
+        "definition_hash": "70dd66617b607bfa4ed04d151885b26468c5371f354e553efb4c5109ce7d0c0a"
+      },
+      {
+        "factor_id": "C_turnover_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "edcb05d87f2288ba3748490025deb2f827e01b3e9fa83e137a194b6f6129f103"
+      },
+      {
+        "factor_id": "C_turnover_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "081419c6c6038ff381e6148a53eea31ae3f54527e9ef3133fcadbd41ab4f373e"
+      },
+      {
+        "factor_id": "C_turnover_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "03d587cbb7371e8983a2eac48e4e2d6f753277aa16b79f3eec99820ecdb18be6"
+      },
+      {
+        "factor_id": "C_turnover_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "0c214b8e1f813c05d050210fd971ca95e53938a784c7c41a9b38edf8e4affdb1"
+      },
+      {
+        "factor_id": "C_volume_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "7d0949fe8c46f3fd913388198e6c4cdc68edd2c96229e1e034d0a14d0f68e46b"
+      },
+      {
+        "factor_id": "C_volume_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "fb6a24d70253ac6bc44e804abaec3495aac09c9d018ee8edf75d387f16e0080c"
+      },
+      {
+        "factor_id": "C_volume_dispersion_5",
+        "version": "p311-v1",
+        "definition_hash": "118bfa10b2e8d46b3a9d00480b32139c709ea5b1e057c40e1cf0d9d6b0e0bfce"
+      },
+      {
+        "factor_id": "C_volume_dispersion_60",
+        "version": "p311-v1",
+        "definition_hash": "ac3dbf553c77a58ceb3659a5145fca45c7a7082cbc1a3f290d6f5e45f17f3758"
+      },
+      {
+        "factor_id": "C_volume_growth_10",
+        "version": "p311-v1",
+        "definition_hash": "157a128fd74c81c7ae927dfd5f1543d7f1ef3b06e6e05e291a65e0603abaa4c1"
+      },
+      {
+        "factor_id": "C_volume_growth_20",
+        "version": "p311-v1",
+        "definition_hash": "784df7bb1b4e94f74dbf258b9000ee165378c9ccb215d61bc86ab42cc844f11d"
+      },
+      {
+        "factor_id": "C_volume_growth_5",
+        "version": "p311-v1",
+        "definition_hash": "35a53af9729fd418c3417b66cd55c749937d97f2f44c418ad4ff24e32700c4e9"
+      },
+      {
+        "factor_id": "C_volume_growth_60",
+        "version": "p311-v1",
+        "definition_hash": "bad624bfff868c7bd5a6921cfe603a54b2700e10be4be125ee6e8f2801a56cb5"
+      },
+      {
+        "factor_id": "C_volume_surprise_10",
+        "version": "p311-v1",
+        "definition_hash": "277f75a66b0ff51de56ad3e86055248e7a40c5ce2ac38dce8d37fb97b5d5f672"
+      },
+      {
+        "factor_id": "C_volume_surprise_20",
+        "version": "p311-v1",
+        "definition_hash": "6dd2d116f4f7c63c172f8afc097e8c3891990f13b4c85c87da2c6421cad5be38"
+      },
+      {
+        "factor_id": "C_volume_surprise_5",
+        "version": "p311-v1",
+        "definition_hash": "3099e4f3b48d660ae2d91c27f3793d737f3d83ab7542dfa81bb8481c50b568c5"
+      },
+      {
+        "factor_id": "C_volume_surprise_60",
+        "version": "p311-v1",
+        "definition_hash": "8e79068135340f79250c28398c48e8efdc9d5cf427c917380d47151960af1cf8"
+      }
+    ],
+    "selected_refs": [
+      {
+        "factor_id": "C_price_deviation_10",
+        "version": "p311-v1",
+        "definition_hash": "c97af35bad7b7490bd387d49728dad19c4339c08f56f18fb53ce320b60fa7e99"
+      },
+      {
+        "factor_id": "C_return_mean_10",
+        "version": "p311-v1",
+        "definition_hash": "64405080c1c2d1522ea9187e820949af3e76cff4f993d26f582e4d93d4e1f01f"
+      },
+      {
+        "factor_id": "C_price_deviation_5",
+        "version": "p311-v1",
+        "definition_hash": "c381f55dbeba67e4fdfe03f8fef9a8b1ac247b636701c60567a36ae82d839d1e"
+      },
+      {
+        "factor_id": "C_mean_slope_20",
+        "version": "p311-v1",
+        "definition_hash": "05616af45b927a3e46459711d5978ba22d5e3653751e44ca1fa38b1c5e42f702"
+      },
+      {
+        "factor_id": "C_mean_slope_60",
+        "version": "p311-v1",
+        "definition_hash": "3dcbf246d84ae0130534ca07fb0b1d1e98ecaebdc54114599907ddd0b01b86ce"
+      },
+      {
+        "factor_id": "C_turnover_level_20",
+        "version": "p311-v1",
+        "definition_hash": "75346c33660d29bf5e7e4b12ac931fb288f5e39081cdaed13dc988532ec15ddc"
+      },
+      {
+        "factor_id": "C_turnover_level_5",
+        "version": "p311-v1",
+        "definition_hash": "d637283b50cadbb090a70e3aa05f16b259c680a259d7d533c7d32f6a29981639"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_20",
+        "version": "p311-v1",
+        "definition_hash": "6f672eca49c329ee87ab4441a76022b5cab6f4f1ae3ed749116d82f34920aa48"
+      },
+      {
+        "factor_id": "C_turnover_level_10",
+        "version": "p311-v1",
+        "definition_hash": "5055b540c980908251b7645404eeffb1139cfa8033b3b61e47f976f60f3c713f"
+      },
+      {
+        "factor_id": "C_turnover_dispersion_10",
+        "version": "p311-v1",
+        "definition_hash": "05a098652cae0016758fd7774dfcedcb3474a3bf62732ee71f7289ba4493807f"
+      }
+    ],
+    "selected_features": [
+      "C_price_deviation_10",
+      "C_return_mean_10",
+      "C_price_deviation_5",
+      "C_mean_slope_20",
+      "C_mean_slope_60",
+      "C_turnover_level_20",
+      "C_turnover_level_5",
+      "C_turnover_dispersion_20",
+      "C_turnover_level_10",
+      "C_turnover_dispersion_10"
+    ],
+    "directions": {
+      "C_price_deviation_10": 1,
+      "C_return_mean_10": 1,
+      "C_price_deviation_5": 1,
+      "C_mean_slope_20": 1,
+      "C_mean_slope_60": -1,
+      "C_turnover_level_20": -1,
+      "C_turnover_level_5": -1,
+      "C_turnover_dispersion_20": -1,
+      "C_turnover_level_10": -1,
+      "C_turnover_dispersion_10": -1
+    },
+    "selection_train_sha256": "90f269ab5de842effb7ce87ed43c138deebeece0321f8f2100fc991e98488e2e",
+    "quality_sha256": "db699568df549dbc636845a155bf5ceb75fa2188143cc1ad8cf3df01eaa0f6ad",
+    "redundancy_sha256": "a090ddda662b30adcd43ac71caa6578e30a7249044c73eb6a12da5416ac19d73",
+    "eligible_count": 40,
+    "selected_count": 10,
+    "shortfall": false,
+    "selection_hash": "73adcf819c0fcc70bf80fa92996efd5bfad1cf521e08fc7931b6107e5e5332b2",
+    "train_window": [
+      "2023-04-03T00:00:00",
+      "2023-11-03T00:00:00"
+    ],
+    "validation_window": [
+      "2023-11-03T00:00:00",
+      "2023-12-03T00:00:00"
+    ],
+    "test_window": [
+      "2023-12-03T00:00:00",
+      "2024-02-03T00:00:00"
+    ],
+    "train_max_exit": "2023-11-02T00:00:00"
+  }
+]

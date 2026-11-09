@@ -1,0 +1,139 @@
+{
+  "protocol": {
+    "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+    "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+    "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+    "objectives": [
+      "equal",
+      "minimum_variance",
+      "score"
+    ],
+    "investment": 0.8,
+    "max_weight": 0.15,
+    "random_seeds": [
+      17,
+      29,
+      43
+    ],
+    "lag_sessions": 5,
+    "initial_cash": 100000,
+    "costs": [
+      "base",
+      "slippage20",
+      "commission15"
+    ],
+    "inference": {
+      "confidence_level": 0.95,
+      "hac_lags": 5,
+      "bootstrap_block_days": 10,
+      "bootstrap_repetitions": 500,
+      "min_valid_days": 30,
+      "min_coverage": 0.8,
+      "holding_days": 5,
+      "random_seed": 42
+    },
+    "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+    "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+    "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+    "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill",
+    "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled"
+  },
+  "inputs": {
+    "docs\\validation\\p3-09\\evidence\\summary.json": "1889f63aae02bd99841f4a7444a18a129c54b99dd62d41259043266bb18ecacd",
+    "docs\\validation\\p3-11\\results\\daily.csv": "0c5c0707a83788c112537ae30ca609631a70198950bb86aab41e617f919a739b",
+    "docs\\validation\\p3-11\\results\\manifest.json": "49a7cc350e499517bc16a30a051fa257b73521989a0cc2d962329f5c4711fb59",
+    "docs\\validation\\p3-12\\results.json": "d2ecde5bc44884178eaed51bf3e21f1072caa800e5bb0534892cb0f5c87fc405",
+    "docs\\validation\\p3-12\\receipt.json": "2975c995bc8700d425463982f6ebfd09089c59ff0a57917c3f326cb9b6236f28",
+    "docs\\validation\\p3-13\\receipt.json": "1dafd7f88a44c46ca3e2b3c0b21c62f3afd0d83fa4ee3250359ac14e637dab30",
+    "examples\\research\\return_attribution_synthetic.py": "7330969e8688b49e3895545d0fa861bfa5ac6513141b7924640d7d7646da10ec",
+    "examples\\research\\return_attribution_deterministic.py": "3f6f48e7cb4070c7a54d7e1c11ad3db7f83caf0a2da6b56ad982f298a8138a93",
+    "src\\factorlab\\evaluation\\return_attribution.py": "7820513f1876924a97b0a9a0c2b511bafe5042e42d7b1cffd41e2ce3ae1e2b86",
+    "tests\\research\\test_return_attribution.py": "38ae76fbf2dcc25e79def47d688864cdc647c7402761c7b6a21ce4feb4f22441"
+  },
+  "historical_prediction_hashes": {
+    "factor_score": "905149e7aaac1181f5b1af59af6aca0a6a5a382651eb93286fbfed4b1e4fc4f7",
+    "ridge": "24c158cab4f2fdcd0795f871b624bb563eaefe371b9040e50c20a6a7c2b65692",
+    "lightgbm": "bf7c6ef327989b90088bd16b2140dd5ea099d3ded6eedcb7b60c63519d55667e",
+    "xgboost": "d475f6a1e7091ef9fb8a2effc7e1977e11ad7d4b99ebe1815a7197950e0e6056"
+  },
+  "environment": {
+    "python": "3.13.9",
+    "packages": {
+      "numpy": "2.3.4",
+      "pandas": "2.3.3",
+      "scipy": "1.16.3",
+      "scikit-learn": "1.7.2"
+    }
+  },
+  "provenance": {
+    "code": {
+      "commit": "51e6975c313fe575b4242d8f167cfeeb22d4000e",
+      "tree": "09b22e88057a957c95035787d740e6976a787c47",
+      "git_dirty": true,
+      "git_diff_sha256": "fe9c29e160a48cac59eb324ccdb00cc0f7b9ea3884eaf64fe562bc6685b6a1f7"
+    },
+    "environment": {
+      "python_version": "3.13.9",
+      "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "package_versions": {
+        "numpy": "2.3.4",
+        "pandas": "2.3.3",
+        "pyarrow": "22.0.0",
+        "scipy": "1.16.3",
+        "scikit-learn": "1.7.2",
+        "matplotlib": "3.10.7",
+        "akshare": "1.18.88",
+        "baostock": "0.8.9",
+        "lightgbm": "4.6.0",
+        "xgboost": "2.1.4",
+        "PyYAML": "6.0.3",
+        "pytest": "8.4.2",
+        "tzdata": "2026.4"
+      }
+    }
+  },
+  "rows": 15,
+  "negative_control_path_status": "NOT_COMPUTABLE: P312 retains summary/inference, not fills; no invented shuffled path",
+  "artifacts": {
+    "cost-sensitivity.csv": "beb29a134659936c242f7e034895d727c3dd2c84c9c70864c892f8ba3d45c5ba",
+    "daily-attribution.csv": "6bda1cf5288ed19b2026ae547656c8f2801c0a68c165c29575ca88a43de5896c",
+    "deterministic.json": "ce7f2f012d2f42ba16644fbd6b88b421c7bad0999d7dafd6db81e0ca3bc29420",
+    "execution-deviation.csv": "a4b8eb4a53a030a2ad32fb69bb5909d371e10c8ef5b4903881139a1b89008488",
+    "factor-baseline14-folds.csv": "8400d49cc17ca4d27c7399a5a864e2b2cb32d3e5eedea347e9a287282d7fb050",
+    "factor-baseline14-predictions.csv": "36b01f2aa5ac7df4960187f089d6e167a17423ecf5d9b08ae8b6b43dfb123e9c",
+    "factor-fixed64-folds.csv": "9e776fb9e0d6a95d32633d22b21b5a59e5b0f1a9244d82c87d7418691eecefe7",
+    "factor-fixed64-predictions.csv": "45351695c9481363938aa6d154899bfd3d0f88e75354cb614754bb32246c3554",
+    "factor-plans.json": "d04e63f77ebb9a131f35a68829921347fc34f5cf4688e82f174658aa93d723d0",
+    "factor-selected10-folds.csv": "109ce66ee3ea0c88a18bd48469db7fce05e451276531035fcaf6bc3b2439444e",
+    "factor-selected10-predictions.csv": "03a5c0700c1de04196985786591e890430323e2e93f05fcbb94247623c5b5a23",
+    "inference.csv": "f72ba1d3a8b6e0927790791b8e76c19fe32e7f22582645a4005bbc0644e87086",
+    "negative-control-prediction-inference.csv": "32eabb2aaa02c6c60419e6579ec4a362a9779d6ccd97b1915d43de556adb6781",
+    "negative-control-results.csv": "0cb10eb5c59dd5d93fe90656cdf67108491505bf801ee1a3003dca9a992fb135",
+    "negative-control-return-inference.csv": "9f577da9910a23cbafa206bd4b0908003c11dbab1e963d1ccd535a55e9f08c96",
+    "p309-equal-factor_score.json": "cb50b13b9f3ec78277fccbd40c436e7104f5eb1b0481802bb0566ffce979df03",
+    "p309-equal-lightgbm.json": "1ad3d590f2e9082794497975acf0e7a3e72d1742b6783b155ea00493dfd86813",
+    "p309-equal-ridge.json": "6a1300e64ef5c497d503ee769364b64155b048f43844c899462a74169b377822",
+    "p309-equal-transmission.csv": "485459b724dbe650e8b270b61fefcacc05a464c69bb5a6693b3377579c794581",
+    "p309-equal-xgboost.json": "81e3b49e16abdccb03d7f813e630f622bf9a29387d30b453b6328343832c39ca",
+    "p309-minimum_variance-factor_score.json": "e883bd5d4e3d12fd5be241152f4985a24b71f700a5dea2311a174bd59046d8d6",
+    "p309-minimum_variance-lightgbm.json": "aab0c47b3cbccec01744751e2e8fea14a20d5ac100d4b44b2dac9fba441f94c4",
+    "p309-minimum_variance-ridge.json": "10265ad2d42efeae9290862d1ac55fb2c3afefeec2213826e84f3a608dddd916",
+    "p309-minimum_variance-transmission.csv": "485459b724dbe650e8b270b61fefcacc05a464c69bb5a6693b3377579c794581",
+    "p309-minimum_variance-xgboost.json": "68ef572e6823f70c3cd733235b0287e44a593d98df9e12acce16e89547b2449a",
+    "p309-score-factor_score.json": "68b74c142a3737df88dfb97aa5527f52ad6a3ce162038f3b167b386bc67e9491",
+    "p309-score-lightgbm.json": "a4fe19c1510c96c81302fe25c41a01284384ac4d2f9b8b907ef3d2325257a164",
+    "p309-score-ridge.json": "7bdfcec2a5d51f485ada3f2b2be930249ca98e37562284d6f875753e792cf91e",
+    "p309-score-transmission.csv": "dc73457b29a4768064493a4fb170c61c315e2f59c242c11e5cce4eaa83da8537",
+    "p309-score-xgboost.json": "8a2ed5c505d1848510a85278a940badc169273b1b7aca0aa8235ee3e7b90c499",
+    "p311-supplement-score-baseline14.json": "6b7a15245da2ec54cff361240ff226e3e8125900c5c65edb3bf847487bf0ff19",
+    "p311-supplement-score-fixed64.json": "41c1faeec646a6facabe37aee985710cab06b171294afe6f2a95018047b38a9e",
+    "p311-supplement-score-selected10.json": "d8631c7f9f1f4d1a1a358ff86815d1638a3e1879d9bcf24f65df8d8a6309e950",
+    "p311-supplement-score-transmission.csv": "ea51a0f4fe9dd409ddb18871d6b1de3be8aa2926559e0ed91485c26a3ace0d6b",
+    "paired-returns.csv": "c5c8b67fd6abbcfdf9a8e6a8ea712acab94bbff5ebd2ad4713c9d6152e34961f",
+    "portfolio-summary.csv": "d9283a84515d7ae5143912eac8ce48dfa60155ce949f972c0e50044f796cafb2",
+    "prediction-comparison.csv": "2b993a276f61d6f8529620af8eb0f2a8b0da6ba355c8d36bc6896928f70cd3a9",
+    "protocol.json": "901c95438b8ebe7ec19f28e3ccba7974d65f70f1148aa1ac51c11ffd9e509765",
+    "transmission-summary.json": "5e4e2761e9503cba9dada72b1c7d7ffa91f1334fbd2b8cf971e4d3cb7fa85639"
+  }
+}

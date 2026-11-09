@@ -1,0 +1,39 @@
+{
+  "boundary": "SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE",
+  "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+  "historical_predictions": "99dafc24d6290164e33fadfef67559404173e660",
+  "objectives": [
+    "equal",
+    "minimum_variance",
+    "score"
+  ],
+  "investment": 0.8,
+  "max_weight": 0.15,
+  "random_seeds": [
+    17,
+    29,
+    43
+  ],
+  "lag_sessions": 5,
+  "initial_cash": 100000,
+  "costs": [
+    "base",
+    "slippage20",
+    "commission15"
+  ],
+  "inference": {
+    "confidence_level": 0.95,
+    "hac_lags": 5,
+    "bootstrap_block_days": 10,
+    "bootstrap_repetitions": 500,
+    "min_valid_days": 30,
+    "min_coverage": 0.8,
+    "holding_days": 5,
+    "random_seed": 42
+  },
+  "inference_families": "P309 four score portfolios minus equal; separate four-model daily RankIC minus factor_score",
+  "negative_controls": "P312 published complete 13-contrast family retained, not pooled with P309",
+  "factor_supplement": "FactorScore only: baseline14/fixed64/Train-only selected10; fixed parameters; descriptive",
+  "supplemental_risk": "latest 40 close-known complete cross-universe return observations; no price fill",
+  "counterfactual": "stress fees explicitly re-executed; fixed-fill repricing separately labeled"
+}

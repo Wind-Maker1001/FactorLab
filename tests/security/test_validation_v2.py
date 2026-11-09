@@ -250,6 +250,35 @@ def test_pr_six_shard_faults_fail_closed(pr_shard_receipts, attack):
     assert not (output / '3.14' / 'receipt.json').exists()
 
 
+def test_full_shard_cli_accepts_legacy_receipts(shard_receipts, monkeypatch):
+    folders, output = shard_receipts
+    monkeypatch.setattr(sys, 'argv', ['sharding', '--shards', *map(str, folders),
+                                     '--python', '3.13', '--output', str(output)])
+    sharding.main()
+    receipt = json.loads((output / 'receipt.json').read_bytes())
+    assert receipt['counts']['passed'] == 3
+    assert 'trusted_base_sha' not in receipt
+    assert 'github_run_id' not in receipt
+    assert 'github_run_attempt' not in receipt
+
+
+@pytest.mark.parametrize('missing', ['--subject-sha', '--pr-head-sha', '--trusted-base-sha',
+                                     '--event-sha', '--run-id', '--run-attempt'])
+def test_pr_shard_cli_requires_each_identity(pr_shard_receipts, monkeypatch, missing):
+    root, output, identity = pr_shard_receipts
+    flags = dict(zip(['--subject-sha', '--pr-head-sha', '--trusted-base-sha',
+                      '--event-sha', '--run-id', '--run-attempt'], identity.values()))
+    arguments = ['sharding', '--pr-shards', str(root), '--output', str(output)]
+    for flag, value in flags.items():
+        if flag != missing:
+            arguments.extend([flag, value])
+    monkeypatch.setattr(sys, 'argv', arguments)
+    with pytest.raises(SystemExit) as exc:
+        sharding.main()
+    assert exc.value.code == 2
+    assert not output.exists()
+
+
 def test_actual_shards_aggregate_without_reexecuting_tests(shard_receipts):
     folders, output = shard_receipts
     sharding.aggregate(folders, output, '3.13')
