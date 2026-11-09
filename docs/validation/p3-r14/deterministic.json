@@ -1,0 +1,584 @@
+[
+  {
+    "objective": "equal",
+    "swapped": false,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.4,
+      0.4
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000001.SZ",
+        "executed_shares": 4000
+      },
+      {
+        "symbol": "000002.SZ",
+        "executed_shares": 4000
+      }
+    ],
+    "final_shares": [
+      4000,
+      4000
+    ],
+    "final_nav": 1.07936,
+    "net_return": 0.0793600000000001,
+    "gross_pnl_same_fills": 8000.0,
+    "costs": 64.0,
+    "net_pnl": 7936.0,
+    "gross_contribution": 0.08,
+    "fee_contribution": -0.00064,
+    "mean_cash_weight": 0.18839845227005173,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.8,
+    "legacy_one_way_turnover": 0.8,
+    "mean_close_security_hhi": 0.33142908526237475,
+    "rejections": 0,
+    "fills": 2,
+    "rejection_reasons": {},
+    "execution_identity": "1afca6bf2bcd6691757d8bdb0331b2384be0f7320de510b42fa1ce99e50405c9",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "equal",
+    "swapped": false,
+    "initial_cash": 100,
+    "target_weights": [
+      0.4,
+      0.4
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "equal",
+    "swapped": true,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.4,
+      0.4
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000001.SZ",
+        "executed_shares": 4000
+      },
+      {
+        "symbol": "000002.SZ",
+        "executed_shares": 4000
+      }
+    ],
+    "final_shares": [
+      4000,
+      4000
+    ],
+    "final_nav": 1.07936,
+    "net_return": 0.0793600000000001,
+    "gross_pnl_same_fills": 8000.0,
+    "costs": 64.0,
+    "net_pnl": 7936.0,
+    "gross_contribution": 0.08,
+    "fee_contribution": -0.00064,
+    "mean_cash_weight": 0.18839845227005173,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.8,
+    "legacy_one_way_turnover": 0.8,
+    "mean_close_security_hhi": 0.33142908526237475,
+    "rejections": 0,
+    "fills": 2,
+    "rejection_reasons": {},
+    "execution_identity": "1afca6bf2bcd6691757d8bdb0331b2384be0f7320de510b42fa1ce99e50405c9",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "equal",
+    "swapped": true,
+    "initial_cash": 100,
+    "target_weights": [
+      0.4,
+      0.4
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "minimum_variance",
+    "swapped": false,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.5012658227848099,
+      0.29873417721519013
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000001.SZ",
+        "executed_shares": 5000
+      },
+      {
+        "symbol": "000002.SZ",
+        "executed_shares": 2900
+      }
+    ],
+    "final_shares": [
+      5000,
+      2900
+    ],
+    "final_nav": 1.0993680000000001,
+    "net_return": 0.09936800000000012,
+    "gross_pnl_same_fills": 10000.000000000004,
+    "costs": 63.2,
+    "net_pnl": 9936.800000000003,
+    "gross_contribution": 0.10000000000000003,
+    "fee_contribution": -0.0006320000000000001,
+    "mean_cash_weight": 0.1952080741902504,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.79,
+    "legacy_one_way_turnover": 0.79,
+    "mean_close_security_hhi": 0.35921585226103253,
+    "rejections": 0,
+    "fills": 2,
+    "rejection_reasons": {},
+    "execution_identity": "64d408ad84fa4f65b370c13b13847e2a09c6b887f2bb7c2d6fecace975285fd5",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "minimum_variance",
+    "swapped": false,
+    "initial_cash": 100,
+    "target_weights": [
+      0.5012658227848099,
+      0.29873417721519013
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "minimum_variance",
+    "swapped": true,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.5012658227848099,
+      0.29873417721519013
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000001.SZ",
+        "executed_shares": 5000
+      },
+      {
+        "symbol": "000002.SZ",
+        "executed_shares": 2900
+      }
+    ],
+    "final_shares": [
+      5000,
+      2900
+    ],
+    "final_nav": 1.0993680000000001,
+    "net_return": 0.09936800000000012,
+    "gross_pnl_same_fills": 10000.000000000004,
+    "costs": 63.2,
+    "net_pnl": 9936.800000000003,
+    "gross_contribution": 0.10000000000000003,
+    "fee_contribution": -0.0006320000000000001,
+    "mean_cash_weight": 0.1952080741902504,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.79,
+    "legacy_one_way_turnover": 0.79,
+    "mean_close_security_hhi": 0.35921585226103253,
+    "rejections": 0,
+    "fills": 2,
+    "rejection_reasons": {},
+    "execution_identity": "64d408ad84fa4f65b370c13b13847e2a09c6b887f2bb7c2d6fecace975285fd5",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "minimum_variance",
+    "swapped": true,
+    "initial_cash": 100,
+    "target_weights": [
+      0.5012658227848099,
+      0.29873417721519013
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "score",
+    "swapped": false,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.26666666666666666,
+      0.5333333333333333
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000001.SZ",
+        "executed_shares": 2600
+      },
+      {
+        "symbol": "000002.SZ",
+        "executed_shares": 5300
+      }
+    ],
+    "final_shares": [
+      2600,
+      5300
+    ],
+    "final_nav": 1.0513679999999999,
+    "net_return": 0.05136799999999986,
+    "gross_pnl_same_fills": 5199.999999999988,
+    "costs": 63.2,
+    "net_pnl": 5136.799999999988,
+    "gross_contribution": 0.05199999999999988,
+    "fee_contribution": -0.0006320000000000001,
+    "mean_cash_weight": 0.20172908558689376,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.79,
+    "legacy_one_way_turnover": 0.79,
+    "mean_close_security_hhi": 0.34387490871943893,
+    "rejections": 0,
+    "fills": 2,
+    "rejection_reasons": {},
+    "execution_identity": "4e0ebe98ae60f716f41896847a26130342f3babaf0020d34461d1e65c8e45656",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "score",
+    "swapped": false,
+    "initial_cash": 100,
+    "target_weights": [
+      0.26666666666666666,
+      0.5333333333333333
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "score",
+    "swapped": true,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.5333333333333333,
+      0.26666666666666666
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000001.SZ",
+        "executed_shares": 5300
+      },
+      {
+        "symbol": "000002.SZ",
+        "executed_shares": 2600
+      }
+    ],
+    "final_shares": [
+      5300,
+      2600
+    ],
+    "final_nav": 1.1053680000000001,
+    "net_return": 0.10536800000000013,
+    "gross_pnl_same_fills": 10600.000000000004,
+    "costs": 63.2,
+    "net_pnl": 10536.800000000003,
+    "gross_contribution": 0.10600000000000004,
+    "fee_contribution": -0.0006320000000000001,
+    "mean_cash_weight": 0.19443276873653884,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.79,
+    "legacy_one_way_turnover": 0.79,
+    "mean_close_security_hhi": 0.37702150298501363,
+    "rejections": 0,
+    "fills": 2,
+    "rejection_reasons": {},
+    "execution_identity": "5e5efea1adc75ad65bc08b0f89dbc2d7c18c67680aa803d621ee69ebc0c4621c",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "score",
+    "swapped": true,
+    "initial_cash": 100,
+    "target_weights": [
+      0.5333333333333333,
+      0.26666666666666666
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "mean_variance",
+    "swapped": false,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.0,
+      0.8
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000002.SZ",
+        "executed_shares": 8000
+      }
+    ],
+    "final_shares": [
+      8000
+    ],
+    "final_nav": 0.99936,
+    "net_return": -0.0006399999999999739,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 64.0,
+    "net_pnl": -64.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.00064,
+    "mean_cash_weight": 0.1994876721101505,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.8,
+    "legacy_one_way_turnover": 0.8,
+    "mean_close_security_hhi": 0.6408199871036259,
+    "rejections": 0,
+    "fills": 1,
+    "rejection_reasons": {},
+    "execution_identity": "0400ad068aebb270715032f3d71ced1b750bc4d6acc4c7c6691abebd90da0d17",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "mean_variance",
+    "swapped": false,
+    "initial_cash": 100,
+    "target_weights": [
+      0.0,
+      0.8
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "mean_variance",
+    "swapped": true,
+    "initial_cash": 100000,
+    "target_weights": [
+      0.8000000000000004,
+      0.0
+    ],
+    "filled_shares": [
+      {
+        "symbol": "000001.SZ",
+        "executed_shares": 8000
+      }
+    ],
+    "final_shares": [
+      8000
+    ],
+    "final_nav": 1.15936,
+    "net_return": 0.15935999999999995,
+    "gross_pnl_same_fills": 16000.0,
+    "costs": 64.0,
+    "net_pnl": 15936.0,
+    "gross_contribution": 0.16,
+    "fee_contribution": -0.00064,
+    "mean_cash_weight": 0.17883962434826628,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.8,
+    "legacy_one_way_turnover": 0.8,
+    "mean_close_security_hhi": 0.6744464764992888,
+    "rejections": 0,
+    "fills": 1,
+    "rejection_reasons": {},
+    "execution_identity": "49abb946641e953182010ff7a136f0be11e874d737a37309e94e22dea2294bd3",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  },
+  {
+    "objective": "mean_variance",
+    "swapped": true,
+    "initial_cash": 100,
+    "target_weights": [
+      0.8000000000000004,
+      0.0
+    ],
+    "filled_shares": [],
+    "final_shares": [],
+    "final_nav": 1.0,
+    "net_return": 0.0,
+    "gross_pnl_same_fills": 0.0,
+    "costs": 0.0,
+    "net_pnl": 0.0,
+    "gross_contribution": 0.0,
+    "fee_contribution": -0.0,
+    "mean_cash_weight": 1.0,
+    "cash_opportunity_contribution": 0.0,
+    "gross_security_turnover": 0.0,
+    "legacy_one_way_turnover": 0.0,
+    "mean_close_security_hhi": 0.0,
+    "rejections": 0,
+    "fills": 0,
+    "rejection_reasons": {},
+    "execution_identity": "ff1477060bdb8cbaf0d59247c1f17dab4b1ac93c896ccdd9d20d0928f9e170aa",
+    "gross_estimand": "same observed fills, explicit costs added back; not zero-cost counterfactual",
+    "cash_estimand": "previous-close cash times negative benchmark return; descriptive opportunity cost",
+    "target_turnover_status": "NOT_COMPUTABLE: requires decision-time actual-weight snapshot",
+    "expected_return_status": "NOT_COMPUTABLE: model scores are not qualified expected returns"
+  }
+]

@@ -1,0 +1,2566 @@
+{
+  "bigquant_tables": {
+    "stock": {
+      "cn_stock_bar1d": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "afe556ec7d20fc1429993c19406528cf81e0948a7e9cc63f3b224fb54b2e4ed7",
+        "partitions": 121,
+        "receipt_rows_claim": 10853543,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_real_bar1d": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076",
+        "partitions": 121,
+        "receipt_rows_claim": 10853543,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_limit_price": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "95ea8997a163a14d6cb0abb929775b5882b925f612a4e4d0ec8540e2d1585fae",
+        "partitions": 121,
+        "receipt_rows_claim": 10825886,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_basic_info": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "full_name",
+            "type": "string"
+          },
+          {
+            "name": "en_name",
+            "type": "string"
+          },
+          {
+            "name": "used_name",
+            "type": "string"
+          },
+          {
+            "name": "instrument_b",
+            "type": "string"
+          },
+          {
+            "name": "name_b",
+            "type": "string"
+          },
+          {
+            "name": "instrument_hk",
+            "type": "string"
+          },
+          {
+            "name": "name_hk",
+            "type": "string"
+          },
+          {
+            "name": "exchange",
+            "type": "string"
+          },
+          {
+            "name": "list_sector",
+            "type": "int8"
+          },
+          {
+            "name": "security_type",
+            "type": "string"
+          },
+          {
+            "name": "industry",
+            "type": "string"
+          },
+          {
+            "name": "office_addr",
+            "type": "string"
+          },
+          {
+            "name": "regster_addr",
+            "type": "string"
+          },
+          {
+            "name": "register_captial",
+            "type": "double"
+          },
+          {
+            "name": "nums_employees",
+            "type": "double"
+          },
+          {
+            "name": "nums_managers",
+            "type": "double"
+          },
+          {
+            "name": "law_firm",
+            "type": "string"
+          },
+          {
+            "name": "account_firm",
+            "type": "string"
+          },
+          {
+            "name": "profile",
+            "type": "string"
+          },
+          {
+            "name": "estab_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "list_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "delist_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "online_list",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "ipo_price",
+            "type": "double"
+          },
+          {
+            "name": "ipo_nums",
+            "type": "double"
+          },
+          {
+            "name": "ipo_pe",
+            "type": "double"
+          },
+          {
+            "name": "ipo_parvalue",
+            "type": "double"
+          },
+          {
+            "name": "net_amount_funds",
+            "type": "double"
+          },
+          {
+            "name": "offline_dtor",
+            "type": "double"
+          },
+          {
+            "name": "dtor",
+            "type": "double"
+          },
+          {
+            "name": "f_open",
+            "type": "double"
+          },
+          {
+            "name": "f_high",
+            "type": "double"
+          },
+          {
+            "name": "f_close",
+            "type": "double"
+          },
+          {
+            "name": "f_turnover",
+            "type": "double"
+          },
+          {
+            "name": "corp_nature",
+            "type": "string"
+          },
+          {
+            "name": "corp_scale",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "efcc16dac448c094ba29998b90660ab1646db1c00e883fe2234d9cd635a97cd4",
+        "partitions": 1,
+        "receipt_rows_claim": 5924,
+        "query_start_claim": null,
+        "query_end_claim": null,
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_status": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "st_status",
+            "type": "int8"
+          },
+          {
+            "name": "is_risk_warning",
+            "type": "int8"
+          },
+          {
+            "name": "suspended",
+            "type": "int8"
+          },
+          {
+            "name": "price_limit_status",
+            "type": "int8"
+          },
+          {
+            "name": "exdr",
+            "type": "int8"
+          }
+        ],
+        "schema_sha256": "4122efa267439d9697d5eff2c0ae1ff8ecf5b28292170d83550da580dec20ae2",
+        "partitions": 121,
+        "receipt_rows_claim": 10853543,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_dividend": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "report_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "publish_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "bonus_rate",
+            "type": "double"
+          },
+          {
+            "name": "conversed_rate",
+            "type": "double"
+          },
+          {
+            "name": "cash_before_tax",
+            "type": "double"
+          },
+          {
+            "name": "cash_after_tax",
+            "type": "double"
+          },
+          {
+            "name": "register_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "ex_date",
+            "type": "timestamp[ns]"
+          }
+        ],
+        "schema_sha256": "ce4e0e124a24251c7ac457b9129694d270c8382061c78b8cf906133ba561a48b",
+        "partitions": 11,
+        "receipt_rows_claim": 35508,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_allotment": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "publish_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "allotment_price",
+            "type": "double"
+          },
+          {
+            "name": "allotment_rate",
+            "type": "double"
+          },
+          {
+            "name": "allotment_shares",
+            "type": "int64"
+          },
+          {
+            "name": "register_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "exright_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "allot_listdate",
+            "type": "timestamp[ns]"
+          }
+        ],
+        "schema_sha256": "dcdb167a44e7d9d879e03f2383cedd2df6c2729cf955773be9d64068f952ac50",
+        "partitions": 11,
+        "receipt_rows_claim": 71,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_st": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "special_treatment",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "87dc24bb7189bd92d535d5d03409db96f4c0604df0e49b913e9df704e66df88e",
+        "partitions": 1,
+        "receipt_rows_claim": 5896,
+        "query_start_claim": null,
+        "query_end_claim": null,
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_suspend": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "suspend_period",
+            "type": "int64"
+          },
+          {
+            "name": "suspend_reason",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "5869656f513bf7606e026dc6ef880d331670503282c540a13ce05948ba6f76bf",
+        "partitions": 121,
+        "receipt_rows_claim": 134005,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_name_change": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "start_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "end_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "9520ee3c72ed704ca0f994fc0e9b00f0b27a93fe027963ea9095b72149a04004",
+        "partitions": 11,
+        "receipt_rows_claim": 18422,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_adjust_factor": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "method",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "bc7675ace802835c4b8ca948b539106ee8ccfb9b827b75fd25793f067c12e34c",
+        "partitions": 121,
+        "receipt_rows_claim": 69310,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_static_data": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "exchange",
+            "type": "string"
+          },
+          {
+            "name": "trading_day",
+            "type": "int32"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "security_status",
+            "type": "int32"
+          },
+          {
+            "name": "suspended",
+            "type": "int8"
+          },
+          {
+            "name": "st_status",
+            "type": "int8"
+          },
+          {
+            "name": "exdr",
+            "type": "int8"
+          },
+          {
+            "name": "in_delist",
+            "type": "int8"
+          },
+          {
+            "name": "price_tick",
+            "type": "double"
+          },
+          {
+            "name": "crd_buy_flag",
+            "type": "int8"
+          },
+          {
+            "name": "crd_sell_flag",
+            "type": "int8"
+          },
+          {
+            "name": "day_trading",
+            "type": "int8"
+          },
+          {
+            "name": "public_float_share",
+            "type": "int64"
+          }
+        ],
+        "schema_sha256": "a784a1daf7684c588f204b373009d6d6f1b8311040ac663ea7d7285c36c74665",
+        "partitions": 11,
+        "receipt_rows_claim": 3088301,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      }
+    },
+    "common": {
+      "all_trading_days": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "market_code",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "ac629ec8aeffa5fd93b642bae98b85097c397413ba4723c54a28785d4a19cd58",
+        "partitions": 11,
+        "receipt_rows_claim": 7405,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "trading_days": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "market_code",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "096e74ccdc7a7acfadea62d1c635cbd5ab609592896c0ba108f8fc41fb35a008",
+        "partitions": 11,
+        "receipt_rows_claim": 18130,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "papertrading_trading_days": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "market_code",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "6e275ba9f07f93dce8bce6580fdb8aca85a905db5134679655d5623d11cf8e28",
+        "partitions": 11,
+        "receipt_rows_claim": 761,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "holidays": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "market_code",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "c389304b73c1cc89858d5be119cb436699fa15498390f63e37bd4feb62cd5397",
+        "partitions": 11,
+        "receipt_rows_claim": 181,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_instruments": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "8c949cab395f822ed980a9bcb82f9c29c223fe5fde31f003bdb709aa25f3f9e9",
+        "partitions": 11,
+        "receipt_rows_claim": 10853543,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_future_instruments": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "trading_code",
+            "type": "string"
+          },
+          {
+            "name": "product_code",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "a180dcf3662d359e4dcfd742ec81e937a38d88cc172d731055bc2ce7e6f2db83",
+        "partitions": 11,
+        "receipt_rows_claim": 2120002,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_fund_instruments": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "5cf9f24e4689604a7ac017e4d31ebf8d56946822de489f89dba8c00406c0b040",
+        "partitions": 11,
+        "receipt_rows_claim": 2736479,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_index_instruments": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "ac478963d6469734b042b23c16ec5dba7a878f4ec720a0034dd98cc2719beab6",
+        "partitions": 11,
+        "receipt_rows_claim": 76541,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_cbond_instruments": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "b06c556822f37a5dd4370206d439c01f8164e20d424166bedad18492e72019b0",
+        "partitions": 11,
+        "receipt_rows_claim": 751665,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cnhk_stock_instruments": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "a0d1110136ea3cca910460df87216ddc509e90ef2871c0c007d1da2ec655cd71",
+        "partitions": 11,
+        "receipt_rows_claim": 5053459,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "us_stock_instruments": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "c5f2118d9bb13ea4f083e2d2eae3aa62d05ee57198325734fd9b5b8f81f63e55",
+        "partitions": 11,
+        "receipt_rows_claim": 4076229,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "sgx_stock_instruments": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "14a87f51baa5dd34b3a4dc190535caa746c20bc849a4ebf04696e63f741309bd",
+        "partitions": 11,
+        "receipt_rows_claim": 503042,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "all_instruments": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "instrument_id",
+            "type": "int32"
+          },
+          {
+            "name": "product_code",
+            "type": "int8"
+          },
+          {
+            "name": "product_name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "6c20418f255072437a4f4eb9fb45dbf028e510155f8c2116d6211d699b5e1978",
+        "partitions": 1,
+        "receipt_rows_claim": 206286,
+        "query_start_claim": null,
+        "query_end_claim": null,
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_revoked_instruments": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "new_instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "new_name",
+            "type": "string"
+          },
+          {
+            "name": "change_date",
+            "type": "timestamp[ns]"
+          }
+        ],
+        "schema_sha256": "1eefa60b6ac00a2fdb965e15831ce1cca9858d47128ef4a94877246627285f1e",
+        "partitions": 11,
+        "receipt_rows_claim": 4,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      }
+    },
+    "index": {
+      "cn_stock_index_bar1d": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "bc6906bcf99485c545afec25c842d5feca85c2a88f097a7221d969765cf7dd6c",
+        "partitions": 11,
+        "receipt_rows_claim": 271677,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_index_concept_bar1d": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "double"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "22d577d789eadd276b4f1581adef6d9f24074006b7ca5d51af9258da53b8ca21",
+        "partitions": 121,
+        "receipt_rows_claim": 707414,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_index_component": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "member_code",
+            "type": "string"
+          },
+          {
+            "name": "member_name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "d6f3f86e186497c8216fcf8707a76d49d57c184fe645df1b6c74080ca5f8682e",
+        "partitions": 121,
+        "receipt_rows_claim": 113344142,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_index_concept_component": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "member_code",
+            "type": "string"
+          },
+          {
+            "name": "member_name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "047854bb674d99ed2d08ccb07f580623fb6931e07a70a78e7b5a30b6c3a177b9",
+        "partitions": 121,
+        "receipt_rows_claim": 80470659,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_index_weight": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "member_code",
+            "type": "string"
+          },
+          {
+            "name": "member_name",
+            "type": "string"
+          },
+          {
+            "name": "weight",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "85e9ddb06c69a7ca19e8f31ec7535ee9c6116debb56ef1d244b92fca4b71ce3e",
+        "partitions": 121,
+        "receipt_rows_claim": 42422890,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_index_change": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "member_code",
+            "type": "string"
+          },
+          {
+            "name": "member_name",
+            "type": "string"
+          },
+          {
+            "name": "inout_flag",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "049cbf4808cfdf130ccc80e91f5090ea330057e2349fe9acdce93226bae96c23",
+        "partitions": 11,
+        "receipt_rows_claim": 122112,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_cbond_index_components": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "member_code",
+            "type": "string"
+          },
+          {
+            "name": "member_name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "33280db187d6e04504b6b59aa08285e61c65f83592b6095fbe758b19bd942bb5",
+        "partitions": 11,
+        "receipt_rows_claim": 728923,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_index_static_data": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "exchange",
+            "type": "string"
+          },
+          {
+            "name": "trading_day",
+            "type": "int32"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          },
+          {
+            "name": "security_status",
+            "type": "int32"
+          },
+          {
+            "name": "suspended",
+            "type": "int8"
+          },
+          {
+            "name": "st_status",
+            "type": "int8"
+          },
+          {
+            "name": "exdr",
+            "type": "int8"
+          },
+          {
+            "name": "in_delist",
+            "type": "int8"
+          },
+          {
+            "name": "price_tick",
+            "type": "double"
+          },
+          {
+            "name": "crd_buy_flag",
+            "type": "int8"
+          },
+          {
+            "name": "crd_sell_flag",
+            "type": "int8"
+          },
+          {
+            "name": "day_trading",
+            "type": "int8"
+          },
+          {
+            "name": "public_float_share",
+            "type": "int64"
+          }
+        ],
+        "schema_sha256": "3f99793d4f9f1693673e050aaca27a62022806cc667281b9a7a70b5a65e60e21",
+        "partitions": 11,
+        "receipt_rows_claim": 242844,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_index_info": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "base_time",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "base_point",
+            "type": "int64"
+          },
+          {
+            "name": "list_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "delist_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "weight_method",
+            "type": "string"
+          },
+          {
+            "name": "publisher",
+            "type": "string"
+          },
+          {
+            "name": "section",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "499eda7252b10de4421d3d0c7b379c20eca9872ed25309fd77b3a717ab7b42c5",
+        "partitions": 1,
+        "receipt_rows_claim": 121,
+        "query_start_claim": null,
+        "query_end_claim": null,
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      }
+    },
+    "industry": {
+      "cn_stock_industry_sw_bar1d": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "double"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "991b102b39802ffc87c3f1cd5260aca733cee21086ebe0d4f730d58effa83dd4",
+        "partitions": 121,
+        "receipt_rows_claim": 76541,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_industry_bar1d": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "method",
+            "type": "int8"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "167d819c2ab0f3a5c1671aa24236185796a74a90db781e724bf405c633520062",
+        "partitions": 121,
+        "receipt_rows_claim": 3890826,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_industry_real_bar1d": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "method",
+            "type": "int8"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "1069189f159937f408f02cc69c438e0d08ef71aa48e1fa120f0f120f7251e665",
+        "partitions": 121,
+        "receipt_rows_claim": 3890826,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_industry": {
+        "fields": [
+          {
+            "name": "industry",
+            "type": "string"
+          },
+          {
+            "name": "industry_level1_name",
+            "type": "string"
+          },
+          {
+            "name": "industry_level1_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level2_name",
+            "type": "string"
+          },
+          {
+            "name": "industry_level2_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level3_name",
+            "type": "string"
+          },
+          {
+            "name": "industry_level3_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level4_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level4_name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "ab19d44bd73a2190eb31672a91f676d491ba225474a891f54079c4c6ad06051d",
+        "partitions": 1,
+        "receipt_rows_claim": 960,
+        "query_start_claim": null,
+        "query_end_claim": null,
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_industry_component": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "industry",
+            "type": "string"
+          },
+          {
+            "name": "industry_name",
+            "type": "string"
+          },
+          {
+            "name": "industry_instrument",
+            "type": "string"
+          },
+          {
+            "name": "industry_level1_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level1_name",
+            "type": "string"
+          },
+          {
+            "name": "industry_level2_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level2_name",
+            "type": "string"
+          },
+          {
+            "name": "industry_level3_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level3_name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "b0949e87ada04c7e9fc9251b3d8f7cdfe9e3d61558f2c8fce5bf0bee4636f44b",
+        "partitions": 121,
+        "receipt_rows_claim": 32290117,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_industry_index_mapper": {
+        "fields": [
+          {
+            "name": "industry_level1_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_level1_name",
+            "type": "string"
+          },
+          {
+            "name": "index_level1_code",
+            "type": "string"
+          },
+          {
+            "name": "kind",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "450212291edf92a44bd1f86f9c379f704ba42b0bcb03438950001dbf52cadd6c",
+        "partitions": 1,
+        "receipt_rows_claim": 31,
+        "query_start_claim": null,
+        "query_end_claim": null,
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_industry_change": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "industry",
+            "type": "string"
+          },
+          {
+            "name": "industry_level",
+            "type": "int8"
+          },
+          {
+            "name": "industry_code",
+            "type": "string"
+          },
+          {
+            "name": "industry_name",
+            "type": "string"
+          },
+          {
+            "name": "change_flag",
+            "type": "int8"
+          }
+        ],
+        "schema_sha256": "89e3b065db2fde8e69074277437d97c76723f491bd39f3bb18ef3b1b1bf199b2",
+        "partitions": 11,
+        "receipt_rows_claim": 21292,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      }
+    },
+    "factor": {
+      "cn_stock_valuation": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "total_market_cap",
+            "type": "double"
+          },
+          {
+            "name": "float_market_cap",
+            "type": "double"
+          },
+          {
+            "name": "dividend_yield_ratio",
+            "type": "double"
+          },
+          {
+            "name": "pe_ttm",
+            "type": "double"
+          },
+          {
+            "name": "pe_leading",
+            "type": "double"
+          },
+          {
+            "name": "pe_trailing",
+            "type": "double"
+          },
+          {
+            "name": "pb",
+            "type": "double"
+          },
+          {
+            "name": "ps_ttm",
+            "type": "double"
+          },
+          {
+            "name": "ps_leading",
+            "type": "double"
+          },
+          {
+            "name": "ps_trailing",
+            "type": "double"
+          },
+          {
+            "name": "pcf_net_ttm",
+            "type": "double"
+          },
+          {
+            "name": "pcf_net_leading",
+            "type": "double"
+          },
+          {
+            "name": "pcf_op_ttm",
+            "type": "double"
+          },
+          {
+            "name": "pcf_op_leading",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "6c6900e599b139f6a8c8ba563fcc9a63bb8d83099c8745be6e995b638849ae51",
+        "partitions": 121,
+        "receipt_rows_claim": 10853104,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_factors_base": {
+        "fields": [
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "list_sector",
+            "type": "int8"
+          },
+          {
+            "name": "list_date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "price_limit_status",
+            "type": "int8"
+          },
+          {
+            "name": "st_status",
+            "type": "int8"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          },
+          {
+            "name": "total_market_cap",
+            "type": "double"
+          },
+          {
+            "name": "float_market_cap",
+            "type": "double"
+          },
+          {
+            "name": "list_days",
+            "type": "int64"
+          },
+          {
+            "name": "trading_days",
+            "type": "int64"
+          },
+          {
+            "name": "total_shares",
+            "type": "double"
+          },
+          {
+            "name": "float_total",
+            "type": "double"
+          },
+          {
+            "name": "float_ratio",
+            "type": "double"
+          },
+          {
+            "name": "price_ampolitude",
+            "type": "double"
+          },
+          {
+            "name": "financing_balance",
+            "type": "double"
+          },
+          {
+            "name": "securities_lending_balance",
+            "type": "double"
+          },
+          {
+            "name": "financing_net_purchase",
+            "type": "double"
+          },
+          {
+            "name": "financing_purchase",
+            "type": "double"
+          },
+          {
+            "name": "financing_repayment",
+            "type": "double"
+          },
+          {
+            "name": "sw2021_level1",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level2",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level3",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level1",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level2",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level3",
+            "type": "string"
+          },
+          {
+            "name": "cs_level1",
+            "type": "string"
+          },
+          {
+            "name": "cs_level2",
+            "type": "string"
+          },
+          {
+            "name": "cs_level3",
+            "type": "string"
+          },
+          {
+            "name": "suspended",
+            "type": "int8"
+          },
+          {
+            "name": "margin_trading_status",
+            "type": "int8"
+          },
+          {
+            "name": "is_szzs",
+            "type": "int8"
+          },
+          {
+            "name": "is_sh50",
+            "type": "int8"
+          },
+          {
+            "name": "is_hs300",
+            "type": "int8"
+          },
+          {
+            "name": "is_kc50",
+            "type": "int8"
+          },
+          {
+            "name": "is_zz1000",
+            "type": "int8"
+          },
+          {
+            "name": "is_zz100",
+            "type": "int8"
+          },
+          {
+            "name": "is_zz500",
+            "type": "int8"
+          },
+          {
+            "name": "is_szcz",
+            "type": "int8"
+          },
+          {
+            "name": "is_cybz",
+            "type": "int8"
+          },
+          {
+            "name": "is_sz100",
+            "type": "int8"
+          },
+          {
+            "name": "is_bz50",
+            "type": "int8"
+          },
+          {
+            "name": "is_zza500",
+            "type": "int8"
+          },
+          {
+            "name": "szzs_high",
+            "type": "double"
+          },
+          {
+            "name": "szzs_open",
+            "type": "double"
+          },
+          {
+            "name": "szzs_low",
+            "type": "double"
+          },
+          {
+            "name": "szzs_close",
+            "type": "double"
+          },
+          {
+            "name": "szzs_volume",
+            "type": "double"
+          },
+          {
+            "name": "szzs_amount",
+            "type": "double"
+          },
+          {
+            "name": "sh50_high",
+            "type": "double"
+          },
+          {
+            "name": "sh50_open",
+            "type": "double"
+          },
+          {
+            "name": "sh50_low",
+            "type": "double"
+          },
+          {
+            "name": "sh50_close",
+            "type": "double"
+          },
+          {
+            "name": "sh50_volume",
+            "type": "double"
+          },
+          {
+            "name": "sh50_amount",
+            "type": "double"
+          },
+          {
+            "name": "hs300_high",
+            "type": "double"
+          },
+          {
+            "name": "hs300_open",
+            "type": "double"
+          },
+          {
+            "name": "hs300_low",
+            "type": "double"
+          },
+          {
+            "name": "hs300_close",
+            "type": "double"
+          },
+          {
+            "name": "hs300_volume",
+            "type": "double"
+          },
+          {
+            "name": "hs300_amount",
+            "type": "double"
+          },
+          {
+            "name": "kc50_high",
+            "type": "double"
+          },
+          {
+            "name": "kc50_open",
+            "type": "double"
+          },
+          {
+            "name": "kc50_low",
+            "type": "double"
+          },
+          {
+            "name": "kc50_close",
+            "type": "double"
+          },
+          {
+            "name": "kc50_volume",
+            "type": "double"
+          },
+          {
+            "name": "kc50_amount",
+            "type": "double"
+          },
+          {
+            "name": "zz1000_high",
+            "type": "double"
+          },
+          {
+            "name": "zz1000_open",
+            "type": "double"
+          },
+          {
+            "name": "zz1000_low",
+            "type": "double"
+          },
+          {
+            "name": "zz1000_close",
+            "type": "double"
+          },
+          {
+            "name": "zz1000_volume",
+            "type": "double"
+          },
+          {
+            "name": "zz1000_amount",
+            "type": "double"
+          },
+          {
+            "name": "zz100_high",
+            "type": "double"
+          },
+          {
+            "name": "zz100_open",
+            "type": "double"
+          },
+          {
+            "name": "zz100_low",
+            "type": "double"
+          },
+          {
+            "name": "zz100_close",
+            "type": "double"
+          },
+          {
+            "name": "zz100_volume",
+            "type": "double"
+          },
+          {
+            "name": "zz100_amount",
+            "type": "double"
+          },
+          {
+            "name": "zz500_high",
+            "type": "double"
+          },
+          {
+            "name": "zz500_open",
+            "type": "double"
+          },
+          {
+            "name": "zz500_low",
+            "type": "double"
+          },
+          {
+            "name": "zz500_close",
+            "type": "double"
+          },
+          {
+            "name": "zz500_volume",
+            "type": "double"
+          },
+          {
+            "name": "zz500_amount",
+            "type": "double"
+          },
+          {
+            "name": "szcz_high",
+            "type": "double"
+          },
+          {
+            "name": "szcz_open",
+            "type": "double"
+          },
+          {
+            "name": "szcz_low",
+            "type": "double"
+          },
+          {
+            "name": "szcz_close",
+            "type": "double"
+          },
+          {
+            "name": "szcz_volume",
+            "type": "double"
+          },
+          {
+            "name": "szcz_amount",
+            "type": "double"
+          },
+          {
+            "name": "cybz_high",
+            "type": "double"
+          },
+          {
+            "name": "cybz_open",
+            "type": "double"
+          },
+          {
+            "name": "cybz_low",
+            "type": "double"
+          },
+          {
+            "name": "cybz_close",
+            "type": "double"
+          },
+          {
+            "name": "cybz_volume",
+            "type": "double"
+          },
+          {
+            "name": "cybz_amount",
+            "type": "double"
+          },
+          {
+            "name": "sz100_high",
+            "type": "double"
+          },
+          {
+            "name": "sz100_open",
+            "type": "double"
+          },
+          {
+            "name": "sz100_low",
+            "type": "double"
+          },
+          {
+            "name": "sz100_close",
+            "type": "double"
+          },
+          {
+            "name": "sz100_volume",
+            "type": "double"
+          },
+          {
+            "name": "sz100_amount",
+            "type": "double"
+          },
+          {
+            "name": "bz50_high",
+            "type": "double"
+          },
+          {
+            "name": "bz50_open",
+            "type": "double"
+          },
+          {
+            "name": "bz50_low",
+            "type": "double"
+          },
+          {
+            "name": "bz50_close",
+            "type": "double"
+          },
+          {
+            "name": "bz50_volume",
+            "type": "double"
+          },
+          {
+            "name": "bz50_amount",
+            "type": "double"
+          },
+          {
+            "name": "zza500_high",
+            "type": "double"
+          },
+          {
+            "name": "zza500_open",
+            "type": "double"
+          },
+          {
+            "name": "zza500_low",
+            "type": "double"
+          },
+          {
+            "name": "zza500_close",
+            "type": "double"
+          },
+          {
+            "name": "zza500_volume",
+            "type": "double"
+          },
+          {
+            "name": "zza500_amount",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "9610d228a7f786d05e301d021d4376ef3922542a15e0f868d29ee9121b48cfa8",
+        "partitions": 121,
+        "receipt_rows_claim": 10855144,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_factors_industry": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "sw_level1_close",
+            "type": "double"
+          },
+          {
+            "name": "sw_level1_open",
+            "type": "double"
+          },
+          {
+            "name": "sw_level1_high",
+            "type": "double"
+          },
+          {
+            "name": "sw_level1_low",
+            "type": "double"
+          },
+          {
+            "name": "sw_level1_volume",
+            "type": "double"
+          },
+          {
+            "name": "sw_level1_amount",
+            "type": "double"
+          },
+          {
+            "name": "sw_level1_turn",
+            "type": "double"
+          },
+          {
+            "name": "sw_level1_name",
+            "type": "string"
+          },
+          {
+            "name": "sw_level_index_code",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level1",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level2",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level3",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level1",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level2",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level3",
+            "type": "string"
+          },
+          {
+            "name": "cs_level1",
+            "type": "string"
+          },
+          {
+            "name": "cs_level2",
+            "type": "string"
+          },
+          {
+            "name": "cs_level3",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level1_name",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level2_name",
+            "type": "string"
+          },
+          {
+            "name": "sw2021_level3_name",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level1_name",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level2_name",
+            "type": "string"
+          },
+          {
+            "name": "sw2014_level3_name",
+            "type": "string"
+          },
+          {
+            "name": "cs_level1_name",
+            "type": "string"
+          },
+          {
+            "name": "cs_level2_name",
+            "type": "string"
+          },
+          {
+            "name": "cs_level3_name",
+            "type": "string"
+          }
+        ],
+        "schema_sha256": "c92403b4d2c88fc96b891bf5e423f1a7f9f82529ae0084669874ff4604c0400c",
+        "partitions": 121,
+        "receipt_rows_claim": 10853543,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_factors_ta_macd": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "macd_hist_12269",
+            "type": "double"
+          },
+          {
+            "name": "macd_hist_8215",
+            "type": "double"
+          },
+          {
+            "name": "macd_diff_5_20_5",
+            "type": "double"
+          },
+          {
+            "name": "macd_diff_8_34_7",
+            "type": "double"
+          },
+          {
+            "name": "macd_diff_12_26_9",
+            "type": "double"
+          },
+          {
+            "name": "macd_diff_10_50_10",
+            "type": "double"
+          },
+          {
+            "name": "macd_dea_5_20_5",
+            "type": "double"
+          },
+          {
+            "name": "macd_dea_8_34_7",
+            "type": "double"
+          },
+          {
+            "name": "macd_dea_12_26_9",
+            "type": "double"
+          },
+          {
+            "name": "macd_dea_10_50_10",
+            "type": "double"
+          },
+          {
+            "name": "macd_hist_5_20_5",
+            "type": "double"
+          },
+          {
+            "name": "macd_hist_8_34_7",
+            "type": "double"
+          },
+          {
+            "name": "macd_hist_10_50_10",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "42ceebef03d36a3cc6ccb856c6d115c01d6e58854163c79e57ef9ced63055a0b",
+        "partitions": 121,
+        "receipt_rows_claim": 10853543,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      },
+      "cn_stock_factors_hf_fz_drip_stone": {
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "drip_stone",
+            "type": "double"
+          },
+          {
+            "name": "drip_stone_pure",
+            "type": "double"
+          },
+          {
+            "name": "drip_stone_smooth",
+            "type": "double"
+          }
+        ],
+        "schema_sha256": "ef7cc94321836b5d1bce713f3103525437d9c06f1a962dd05aebd12c28c57732",
+        "partitions": 121,
+        "receipt_rows_claim": 10452094,
+        "query_start_claim": "2016-11-07",
+        "query_end_claim": "2026-11-06",
+        "evidence_level": "SCHEMA_AND_RECEIPTS_NOT_ROW_COVERAGE"
+      }
+    }
+  },
+  "indexed_historical_file_counts": {
+    "BaiduNetdiskDownload": 192,
+    "CNRDS Raw": 81,
+    "CSMAR Raw": 50,
+    "vipdoc": 9374,
+    "csmar_catalog_top_level_keys": [
+      "formal_status",
+      "schema",
+      "source_priority",
+      "sources"
+    ]
+  },
+  "raw_table_observed_edge_partitions": [
+    {
+      "observed_start": "2016-11-07",
+      "observed_end": "2016-11-30",
+      "rows": 53544,
+      "securities": 2989
+    },
+    {
+      "observed_start": "2026-11-02",
+      "observed_end": "2026-11-06",
+      "rows": 27890,
+      "securities": 5579
+    }
+  ]
+}

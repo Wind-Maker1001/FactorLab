@@ -1,0 +1,547 @@
+{
+  "schema": "P3D06_EXTENSION_CONDITIONS_V1",
+  "status": "PARTIAL",
+  "calendar_source": "BigQuant CN; not independent exchange certification",
+  "calendar_start": "2016-11-07",
+  "calendar_end": "2026-11-06",
+  "calendar_dates": 2429,
+  "dates_before_existing_jq_membership": 1184,
+  "dates_after_existing_jq_membership": 34,
+  "csi500_component_samples": [
+    {
+      "sample_start": "2016-11-07",
+      "sample_end": "2016-11-30",
+      "observed_start": "2016-11-07",
+      "observed_end": "2016-11-30",
+      "rows": 9000,
+      "unique_member_date_keys": 9000,
+      "dates": 18,
+      "securities": 500,
+      "min_daily_members": 500,
+      "max_daily_members": 500
+    },
+    {
+      "sample_start": "2021-08-01",
+      "sample_end": "2021-08-31",
+      "observed_start": "2021-08-02",
+      "observed_end": "2021-08-31",
+      "rows": 11000,
+      "unique_member_date_keys": 11000,
+      "dates": 22,
+      "securities": 500,
+      "min_daily_members": 500,
+      "max_daily_members": 500
+    },
+    {
+      "sample_start": "2026-11-01",
+      "sample_end": "2026-11-06",
+      "observed_start": "2026-11-02",
+      "observed_end": "2026-11-06",
+      "rows": 2500,
+      "unique_member_date_keys": 2500,
+      "dates": 5,
+      "securities": 500,
+      "min_daily_members": 500,
+      "max_daily_members": 500
+    }
+  ],
+  "csi500_change_table": {
+    "rows": 2025,
+    "unique_action_keys": 2025,
+    "start": "2016-12-12",
+    "end": "2026-10-19",
+    "securities": 1232,
+    "action_counts": {
+      "1": 1013,
+      "0": 1012
+    },
+    "nulls": {
+      "date": 0,
+      "symbol": 0,
+      "member_code": 0,
+      "inout_flag": 0
+    },
+    "time_semantics": "date exists; announcement/implementation/first-distribution contract UNKNOWN",
+    "certified_known_at_actions": 0
+  },
+  "full_decade_component_coverage": "UNKNOWN_NOT_SCANNED; 121 partition receipts are not daily coverage",
+  "csmar_catalog_sources": 55,
+  "csmar_catalog_profiles": [
+    {
+      "family": "IDX_Chgsmp",
+      "catalog_workbooks": 6,
+      "workbooks_with_row_profiles": 0,
+      "physical_rows_claim": null,
+      "date_min_claim": null,
+      "date_max_claim": null,
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    },
+    {
+      "family": "IDX_Idxtrd",
+      "catalog_workbooks": 8,
+      "workbooks_with_row_profiles": 0,
+      "physical_rows_claim": null,
+      "date_min_claim": null,
+      "date_max_claim": null,
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    },
+    {
+      "family": "IDX_Smprat",
+      "catalog_workbooks": 5,
+      "workbooks_with_row_profiles": 0,
+      "physical_rows_claim": null,
+      "date_min_claim": null,
+      "date_max_claim": null,
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    },
+    {
+      "family": "TRDNEW_Capchg",
+      "catalog_workbooks": 1,
+      "workbooks_with_row_profiles": 1,
+      "physical_rows_claim": 144074,
+      "date_min_claim": "1991-04-03",
+      "date_max_claim": "2026-10-20",
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    },
+    {
+      "family": "TRDNEW_Co",
+      "catalog_workbooks": 1,
+      "workbooks_with_row_profiles": 1,
+      "physical_rows_claim": 6025,
+      "date_min_claim": "1991-04-03",
+      "date_max_claim": "2026-10-16",
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    },
+    {
+      "family": "TRDNEW_Cptl",
+      "catalog_workbooks": 1,
+      "workbooks_with_row_profiles": 1,
+      "physical_rows_claim": 72305,
+      "date_min_claim": "1991-02-26",
+      "date_max_claim": "2026-10-20",
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    },
+    {
+      "family": "TRDNEW_Dalyr",
+      "catalog_workbooks": 15,
+      "workbooks_with_row_profiles": 15,
+      "physical_rows_claim": 13242853,
+      "date_min_claim": "2015-01-01",
+      "date_max_claim": "2026-10-20",
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    },
+    {
+      "family": "TRD_AdjustFactor",
+      "catalog_workbooks": 1,
+      "workbooks_with_row_profiles": 1,
+      "physical_rows_claim": 62523,
+      "date_min_claim": "1991-02-26",
+      "date_max_claim": "2026-10-20",
+      "evidence_level": "EXISTING_NATIVE_CATALOG_NOT_RESCANNED",
+      "missing_rate": "UNKNOWN",
+      "unique_security_date_keys": "UNKNOWN"
+    }
+  ],
+  "input_members": [
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2016-11-07_2016-12-31.parquet",
+      "actual_sha256": "b03c0e2f52c2e8dfca620db27b3e101fe98697eb8efc491c1bb6d12918ccff63",
+      "receipt_sha256": "b03c0e2f52c2e8dfca620db27b3e101fe98697eb8efc491c1bb6d12918ccff63",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:49+00:00",
+      "physical_rows": 270,
+      "uncompressed_bytes": 1415,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2017-01-01_2017-12-31.parquet",
+      "actual_sha256": "275c36f65e9e02113055dc9e5214b187a5458be95c2b27ae0fff82600fbce180",
+      "receipt_sha256": "275c36f65e9e02113055dc9e5214b187a5458be95c2b27ae0fff82600fbce180",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:49+00:00",
+      "physical_rows": 1746,
+      "uncompressed_bytes": 4278,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2018-01-01_2018-12-31.parquet",
+      "actual_sha256": "59560de9d98f19d3c9d6c7e697eb5e075e90e71162d68ac96c17318976763a5f",
+      "receipt_sha256": "59560de9d98f19d3c9d6c7e697eb5e075e90e71162d68ac96c17318976763a5f",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:49+00:00",
+      "physical_rows": 1742,
+      "uncompressed_bytes": 4246,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2019-01-01_2019-12-31.parquet",
+      "actual_sha256": "f52b35831020d41b439b49c10b34540f81423bb5ebe6cc9847a754d8dcdabf6d",
+      "receipt_sha256": "f52b35831020d41b439b49c10b34540f81423bb5ebe6cc9847a754d8dcdabf6d",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:49+00:00",
+      "physical_rows": 1739,
+      "uncompressed_bytes": 4314,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2020-01-01_2020-12-31.parquet",
+      "actual_sha256": "4d10f37b61948534628cefd22aa4b526be2a3f9246eeb855070fb919cde80e26",
+      "receipt_sha256": "4d10f37b61948534628cefd22aa4b526be2a3f9246eeb855070fb919cde80e26",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1749,
+      "uncompressed_bytes": 4254,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2021-01-01_2021-12-31.parquet",
+      "actual_sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+      "receipt_sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1751,
+      "uncompressed_bytes": 4298,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2022-01-01_2022-12-31.parquet",
+      "actual_sha256": "743bd2c1abf7848d9358404afcb28d14e51b293876648f86ebc748074c8e3024",
+      "receipt_sha256": "743bd2c1abf7848d9358404afcb28d14e51b293876648f86ebc748074c8e3024",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1746,
+      "uncompressed_bytes": 4300,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2023-01-01_2023-12-31.parquet",
+      "actual_sha256": "cbf43d5b461dc379a8edfe7c412ead84198d37831bc94403f6779af1337fa08b",
+      "receipt_sha256": "cbf43d5b461dc379a8edfe7c412ead84198d37831bc94403f6779af1337fa08b",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1741,
+      "uncompressed_bytes": 4165,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2024-01-01_2024-12-31.parquet",
+      "actual_sha256": "f85c955e9a24ca797b93024ac4b017a5a685359252588fee2e7df48ce469a1c5",
+      "receipt_sha256": "f85c955e9a24ca797b93024ac4b017a5a685359252588fee2e7df48ce469a1c5",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:51+00:00",
+      "physical_rows": 1998,
+      "uncompressed_bytes": 4023,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2025-01-01_2025-12-31.parquet",
+      "actual_sha256": "3ea98ec2a4659034616d083f136defe3bc99185feef56042c1e8d3509ccfd24c",
+      "receipt_sha256": "3ea98ec2a4659034616d083f136defe3bc99185feef56042c1e8d3509ccfd24c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:51+00:00",
+      "physical_rows": 1967,
+      "uncompressed_bytes": 4178,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2026-01-01_2026-11-06.parquet",
+      "actual_sha256": "8dd7a3a3717c4f1a6bd71cfc5424ca2d174cf53ef50524b649f5d20be1af659a",
+      "receipt_sha256": "8dd7a3a3717c4f1a6bd71cfc5424ca2d174cf53ef50524b649f5d20be1af659a",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:51+00:00",
+      "physical_rows": 1681,
+      "uncompressed_bytes": 2887,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_component/2016-11-07_2016-11-30.parquet",
+      "actual_sha256": "88fdfeca58f451aeda5261ef0a3b8fd43198433ebedd6ecb31904ecf15207524",
+      "receipt_sha256": "88fdfeca58f451aeda5261ef0a3b8fd43198433ebedd6ecb31904ecf15207524",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:23:43+00:00",
+      "physical_rows": 661160,
+      "uncompressed_bytes": 2267408,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_component/2021-08-01_2021-08-31.parquet",
+      "actual_sha256": "dba54b1ca7c2212fef2140cd4220c92e1b2bb1e8366e8a77dd89eac5e6a781bf",
+      "receipt_sha256": "dba54b1ca7c2212fef2140cd4220c92e1b2bb1e8366e8a77dd89eac5e6a781bf",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:25:07+00:00",
+      "physical_rows": 996376,
+      "uncompressed_bytes": 4123195,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_component/2026-11-01_2026-11-06.parquet",
+      "actual_sha256": "0013f733e904c945c614b21496052d166f7686ccfd6f67118a2422d993951a3a",
+      "receipt_sha256": "0013f733e904c945c614b21496052d166f7686ccfd6f67118a2422d993951a3a",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:26:55+00:00",
+      "physical_rows": 286190,
+      "uncompressed_bytes": 1464639,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2016-11-07_2016-12-31.parquet",
+      "actual_sha256": "05de82aa5d2d52903af901550c51652d708d9e23ed05601c4e05e441c88cf776",
+      "receipt_sha256": "05de82aa5d2d52903af901550c51652d708d9e23ed05601c4e05e441c88cf776",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:30:59+00:00",
+      "physical_rows": 1030,
+      "uncompressed_bytes": 11077,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2017-01-01_2017-12-31.parquet",
+      "actual_sha256": "acdd4dd868c0a95ecdd0609f158b6e25f5d0ec0321c111a31c7593620fe73959",
+      "receipt_sha256": "acdd4dd868c0a95ecdd0609f158b6e25f5d0ec0321c111a31c7593620fe73959",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:30:59+00:00",
+      "physical_rows": 13303,
+      "uncompressed_bytes": 56971,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2018-01-01_2018-12-31.parquet",
+      "actual_sha256": "60647e803681545b4153e67a6b1bbd2c7ba560ffb419092bb733bc56b22e4ac6",
+      "receipt_sha256": "60647e803681545b4153e67a6b1bbd2c7ba560ffb419092bb733bc56b22e4ac6",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:30:59+00:00",
+      "physical_rows": 12261,
+      "uncompressed_bytes": 49291,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2019-01-01_2019-12-31.parquet",
+      "actual_sha256": "b502ba2382a10235619e2e734012db4536d62cdd9de7f5f417ddcfd90e8e0fbc",
+      "receipt_sha256": "b502ba2382a10235619e2e734012db4536d62cdd9de7f5f417ddcfd90e8e0fbc",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:30:59+00:00",
+      "physical_rows": 16643,
+      "uncompressed_bytes": 57145,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2020-01-01_2020-12-31.parquet",
+      "actual_sha256": "70318d48016d14ce104ab3bd4e848c8b9f31769b5d1330770cbac4aa081c8ad3",
+      "receipt_sha256": "70318d48016d14ce104ab3bd4e848c8b9f31769b5d1330770cbac4aa081c8ad3",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:31:00+00:00",
+      "physical_rows": 11928,
+      "uncompressed_bytes": 55513,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2021-01-01_2021-12-31.parquet",
+      "actual_sha256": "f9be23e4a962cc5f3d9c435412ef40a2561cc0d54155a2c06dbc487da8780f18",
+      "receipt_sha256": "f9be23e4a962cc5f3d9c435412ef40a2561cc0d54155a2c06dbc487da8780f18",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:31:00+00:00",
+      "physical_rows": 11564,
+      "uncompressed_bytes": 56308,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2022-01-01_2022-12-31.parquet",
+      "actual_sha256": "739436f04ac3a0c7e94caa0a4faf99ef7e5ea76c13e8d9f53a021520b89b0008",
+      "receipt_sha256": "739436f04ac3a0c7e94caa0a4faf99ef7e5ea76c13e8d9f53a021520b89b0008",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:31:00+00:00",
+      "physical_rows": 11381,
+      "uncompressed_bytes": 55442,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2023-01-01_2023-12-31.parquet",
+      "actual_sha256": "95db84da865a74da60b377dcb27568d158823db593fe2067db1ed2d6b1a2fe6c",
+      "receipt_sha256": "95db84da865a74da60b377dcb27568d158823db593fe2067db1ed2d6b1a2fe6c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:31:00+00:00",
+      "physical_rows": 13208,
+      "uncompressed_bytes": 77874,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2024-01-01_2024-12-31.parquet",
+      "actual_sha256": "95d29f61ef69d17c35d830a725ca656effdc398465d44d5fcecdd936570389f2",
+      "receipt_sha256": "95d29f61ef69d17c35d830a725ca656effdc398465d44d5fcecdd936570389f2",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:31:01+00:00",
+      "physical_rows": 12337,
+      "uncompressed_bytes": 67320,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2025-01-01_2025-12-31.parquet",
+      "actual_sha256": "288c90dd87746c25e3a94fbf49cfdfdf1a4ced88d478dbb46d5f2b2f14b8f862",
+      "receipt_sha256": "288c90dd87746c25e3a94fbf49cfdfdf1a4ced88d478dbb46d5f2b2f14b8f862",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:31:01+00:00",
+      "physical_rows": 10139,
+      "uncompressed_bytes": 57838,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_change/2026-01-01_2026-11-06.parquet",
+      "actual_sha256": "9f679d5e86bc2065e33cd433e4c99cfe3b71966b1f34a96a29746308f02f8e53",
+      "receipt_sha256": "9f679d5e86bc2065e33cd433e4c99cfe3b71966b1f34a96a29746308f02f8e53",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:31:01+00:00",
+      "physical_rows": 8318,
+      "uncompressed_bytes": 49049,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "member_code",
+        "inout_flag"
+      ]
+    },
+    {
+      "asset": "CSMAR_existing_catalog",
+      "actual_sha256": "c406fc65e69e26100df3d90bee276fc80d2b7d4ab704c7b8f2fbcac2dc651584"
+    }
+  ],
+  "resources": {
+    "wall_seconds": 0.49235119999502786,
+    "peak_working_set_bytes": 321650688,
+    "parquet_partitions": 25,
+    "projected_parquet_physical_rows": 2083968,
+    "uncompressed_bytes": 8491428
+  }
+}
