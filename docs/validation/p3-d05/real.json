@@ -1,0 +1,1927 @@
+{
+  "schema": "P3D05_REAL_EVIDENCE_V1",
+  "status": "P3D05_PARTIAL",
+  "created_at_utc": "2026-11-09T03:52:55.916375+00:00",
+  "python": "3.13.9",
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "security": "601857.SH",
+  "sources": {
+    "csmar": {
+      "query": {
+        "source": "csmar",
+        "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+        "symbol": "601857.SH",
+        "start": "2017-01-03",
+        "end": "2018-12-28",
+        "research_start": "2018-01-01",
+        "research_end": "2018-12-28",
+        "holding_days": 5
+      },
+      "accessibility": "ACCESSIBLE",
+      "source": {
+        "source_id": "CSMAR",
+        "data_version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+        "calendar_id": null,
+        "calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY; OFFICIAL_CALENDAR_UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "PARTIAL",
+        "time_fields": {},
+        "provenance": {
+          "manifest_sha256": "d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "selected_files": {
+            "market/bars.parquet": "4e133161fcd361ac19440a257674ff40ec941137e4702db4b6599605ee9d8a16",
+            "corporate_actions/events.json": "1d77499a28d32d20d76f21bd61d327de0aaf3f53f77ce3e0c76005c4fe07e456",
+            "calendar/observed_sessions.parquet": "6c216b1dfdfc0f6e0cf05771ba25ce19c4f1073722ac7a12d01a5f819a96df28"
+          },
+          "input_catalog_sha256": "715b647e6580c0cb799772088fd3a29dc2f4ecd9438b7333cd54ff0b0fc59505",
+          "source_kind": "REAL_CANDIDATE",
+          "identity": "CURRENT_NATIVE_COMPANY_RECORD; HISTORICAL_IDENTITY_UNVERIFIED",
+          "original_vendor_replay": "REUSED_PREPARED_V4_NOT_RERUN"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "table_sha256": "6115e9451a24b543184cf38b86c1a4ff61ccb95d306ec326b5ac09de8fc997c3",
+        "symbol": "601857.SH",
+        "identity_evidence": "CURRENT_NATIVE_COMPANY_RECORD",
+        "field_units": {
+          "prices": "CNY candidate",
+          "volume": "candidate shares; BQ contract UNKNOWN",
+          "amount": "candidate CNY; BQ precision contract UNKNOWN"
+        },
+        "diagnostic_calendar_id": "csmar-observed-dates",
+        "diagnostic_calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+      },
+      "checks": {
+        "coverage": {
+          "status": "PASS",
+          "rows": 487,
+          "unique_security_dates": 487,
+          "missing_sessions": 0,
+          "outside_calendar": 0,
+          "warmup_rows": 244,
+          "research_rows": 243,
+          "first": "2017-01-03",
+          "last": "2018-12-28"
+        },
+        "duplicates": {
+          "status": "PASS",
+          "excess": 0
+        },
+        "missing": {
+          "status": "PASS",
+          "counts": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          }
+        },
+        "ohlc": {
+          "status": "PASS",
+          "order_violations": 0,
+          "nonpositive_prices": 0
+        },
+        "anomalies": {
+          "status": "PASS",
+          "nonfinite_nonnull": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          },
+          "negative_flow_rows": 0,
+          "economic_outliers": "UNKNOWN"
+        },
+        "units": {
+          "status": "UNKNOWN",
+          "evidence": {
+            "prices": "CNY candidate",
+            "volume": "candidate shares; BQ contract UNKNOWN",
+            "amount": "candidate CNY; BQ precision contract UNKNOWN"
+          },
+          "reason": "Descriptions require vendor contract; not independently certified"
+        },
+        "identity": {
+          "status": "UNKNOWN",
+          "evidence": "CURRENT_NATIVE_COMPANY_RECORD"
+        },
+        "calendar": {
+          "status": "UNKNOWN",
+          "calendar_id": "csmar-observed-dates",
+          "kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+        },
+        "time_fields": {
+          "status": "UNKNOWN",
+          "effective_at": "date",
+          "provider_available_at": null,
+          "acquired_at": null,
+          "first_distribution": "UNKNOWN",
+          "revisions": "UNKNOWN"
+        },
+        "corporate_actions": {
+          "status": "UNKNOWN",
+          "evidence": {
+            "coverage": "PARTIAL",
+            "count": 4,
+            "event_types": {
+              "CASH_DIVIDEND": 4
+            },
+            "missing_record_dates": 4,
+            "execution_status": {
+              "BLOCKED_MISSING_RECORD_DATE_AND_REVIEWED_TERMS": 4
+            },
+            "available_at_semantics": "2026 candidate preparation, NOT historical first distribution",
+            "event_sha256": "1d77499a28d32d20d76f21bd61d327de0aaf3f53f77ce3e0c76005c4fe07e456"
+          },
+          "reason": "Candidate counts or empty observations do not prove all-category coverage"
+        },
+        "pit": {
+          "status": "UNKNOWN",
+          "evidence": "PIT_UNVERIFIED"
+        },
+        "hfq": {
+          "status": "UNKNOWN",
+          "evidence": "HFQ_UNVERIFIED"
+        },
+        "formal_admission": {
+          "status": "FAIL",
+          "evidence": "FORMAL_ADMISSION_BLOCKED"
+        }
+      },
+      "factors": [
+        {
+          "definition": {
+            "factor_id": "RAW_MOM5",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 5,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9631c69dea916b57b6c0a2ee7b2ca47e08ee1b9c5efbb3a93b6575119f656a94"
+          },
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH",
+          "data_sha256": "6115e9451a24b543184cf38b86c1a4ff61ccb95d306ec326b5ac09de8fc997c3",
+          "identity_evidence": "CURRENT_NATIVE_COMPANY_RECORD",
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 5,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "csmar@sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9b70bd8ed875534636902ff6e9de6ab44dd98c9722de0187a529f967eb1b3df8"
+          },
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH",
+          "data_sha256": "6115e9451a24b543184cf38b86c1a4ff61ccb95d306ec326b5ac09de8fc997c3",
+          "identity_evidence": "CURRENT_NATIVE_COMPANY_RECORD",
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 20,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "csmar@sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM60",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 60,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9472671290286b9576929d6e7c23ffc739fbbc5de03ea25e697bf775aa30cf9b"
+          },
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH",
+          "data_sha256": "6115e9451a24b543184cf38b86c1a4ff61ccb95d306ec326b5ac09de8fc997c3",
+          "identity_evidence": "CURRENT_NATIVE_COMPANY_RECORD",
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 60,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "csmar@sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_PRICE_MA20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "6d53e43b44226827e6c6fba461666f7660e8d9bab3d7f5ca996969c8a63d0e12"
+          },
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH",
+          "data_sha256": "6115e9451a24b543184cf38b86c1a4ff61ccb95d306ec326b5ac09de8fc997c3",
+          "identity_evidence": "CURRENT_NATIVE_COMPANY_RECORD",
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "csmar@sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "VOLUME_RATIO",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOLUME_RATIO",
+            "input_fields": [
+              "volume"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+          },
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH",
+          "data_sha256": "6115e9451a24b543184cf38b86c1a4ff61ccb95d306ec326b5ac09de8fc997c3",
+          "identity_evidence": "CURRENT_NATIVE_COMPANY_RECORD",
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "csmar@sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "MOM20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:MOM20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "VOL20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOL20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "PRICE_MA20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:PRICE_MA20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "AMIHU20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:AMIHU20",
+            "input_fields": [
+              "adj_close",
+              "amount"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "TURN20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:TURN20",
+            "input_fields": [
+              "turnover"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "csmar",
+          "version": "sha256:d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+          "symbol": "601857.SH"
+        }
+      ],
+      "labels": {
+        "status": "PASS",
+        "purpose": "RETROSPECTIVE_UNCERTIFIED_BOUNDARIES_ONLY",
+        "implementation": "factorlab.labels.forward_return.build_forward_excess_return_labels",
+        "holding_days": 5,
+        "entry_offset": 1,
+        "exit_offset": 6,
+        "research_observations": 243,
+        "raw_future_coverage": 237,
+        "incomplete_future_coverage": 6,
+        "last_signal_with_observed_exit": "2018-12-20",
+        "last_observed_exit": "2018-12-28",
+        "historical_maturity": "UNKNOWN",
+        "provider_first_distribution": "UNKNOWN",
+        "revisions": "UNKNOWN",
+        "adjusted_open_and_benchmark": "NOT_AVAILABLE",
+        "label_generation": "NOT_RUN",
+        "company_action_effect": "UNVERIFIED",
+        "note": "Observed exit date is not proof of historically available label version."
+      },
+      "blocking_evidence": [
+        "HISTORICAL_FIRST_DISTRIBUTION_UNKNOWN",
+        "REVISION_CHAIN_UNKNOWN",
+        "HISTORICAL_IDENTITY_UNVERIFIED",
+        "INDEPENDENT_CALENDAR_UNVERIFIED",
+        "ALL_CATEGORY_ACTION_COVERAGE_UNKNOWN",
+        "HFQ_ALGORITHM_ANCHOR_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED"
+      ],
+      "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+      "formal_gate": {
+        "status": "PASS",
+        "outcome": "REJECTED",
+        "reason": "MARKET DATA QUALIFICATION REQUIRED: research requires replayable v2 qualification; provider has no qualification package; schema-v1 bundles are diagnostic only"
+      },
+      "observed_boundaries": {
+        "2017": {
+          "count": 244,
+          "first": "2017-01-03",
+          "last": "2017-12-29"
+        },
+        "2018": {
+          "count": 243,
+          "first": "2018-01-02",
+          "last": "2018-12-28"
+        }
+      }
+    },
+    "bigquant": {
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+        "symbol": "601857.SH",
+        "start": "2017-01-03",
+        "end": "2018-12-28",
+        "research_start": "2018-01-01",
+        "research_end": "2018-12-28",
+        "holding_days": 5
+      },
+      "accessibility": "ACCESSIBLE",
+      "source": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+        "calendar_id": null,
+        "calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "selected_archive_binding": {
+            "members": [
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-01-01_2017-01-31.parquet",
+                "sha256": "e7dfecd20e3d722c3f00fa060e22a7651f738b74c1acb0393560ba77e97abae0",
+                "receipt_sha256": "b2cfd20c52e4462ba8363899bf35430b377b2ceb971505b64be026d78cee765e"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-02-01_2017-02-28.parquet",
+                "sha256": "059de5c031fe2b9a4205d334f66478620b8a2942e2e668a325b378920fb5a952",
+                "receipt_sha256": "03f632daa68dbec2b9457a4c955266847347c785ba67e14db2a9c5f269087e34"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-03-01_2017-03-31.parquet",
+                "sha256": "0cec9d7555e15e27964351a4d6c973cc7c75c8fd56186347b171664f16398622",
+                "receipt_sha256": "be32ff349f5bfb0c54de0d98e63f6d42db67e7ddeaca7af2795dab3d2c92b869"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-04-01_2017-04-30.parquet",
+                "sha256": "c5f1310050d4aeb84d7b0d856a8f23642cfd98b8038d9d1ba5382deecfaa2eaa",
+                "receipt_sha256": "e4b52f20b9da7bca00d4d1eb2449700ac2368660754a07a83e46790f1fd03ffc"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-05-01_2017-05-31.parquet",
+                "sha256": "445f8740739ad08e28fdc4df782474318478bf7329c76bc7a00bab23c8f92cba",
+                "receipt_sha256": "9cc0519d53a9a297cf18cded677242343108cf3a6bd6fef55aafc2a4a6bb1bdc"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-06-01_2017-06-30.parquet",
+                "sha256": "059f2da3bf34ddf2ca10ff672628b87ef9c5d4cfc50fe5e126c00f7ffe78f787",
+                "receipt_sha256": "79d93600031f220da651caff6725b1acd234b806863e74e998d5a1f58a9d2e16"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-07-01_2017-07-31.parquet",
+                "sha256": "d8371479450dbc0cbcd0b4800fbdbe7942cdf3386f78f7c63855506ee257d974",
+                "receipt_sha256": "8d9e41bcb230bd3f9477630e5c8f621ecb107918232d08eec4378c71d6bdaa0c"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-08-01_2017-08-31.parquet",
+                "sha256": "bc0be86be97553f2ea64a0c63d3a93e7ea9adf99555a62ea5f0b2fcb0170c97d",
+                "receipt_sha256": "9f2648fb17e571c520ef785122a31b747537934d7d14740532119e7c109dfd19"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-09-01_2017-09-30.parquet",
+                "sha256": "0df0a022da5a6ab3ff6f7c2bb29e7e1f4f11dc9960aa4741a37136f07d805e80",
+                "receipt_sha256": "636658330a1ac2016d033a6a2a0675d25d762905149a0a4803be716b68a083ea"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-10-01_2017-10-31.parquet",
+                "sha256": "0cc5c57cfc9c39ecbd1f7b1f0576efd68c4cf6f96bd6b7a2850e3d43f45c1417",
+                "receipt_sha256": "60121a92b384927406aededde3249a01c3f92e59b198c371984545deaae7e5ef"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-11-01_2017-11-30.parquet",
+                "sha256": "a9b1ca7063fe95b67f61a7bccb9a2520723979df2c0e63347f18b6130f921dbb",
+                "receipt_sha256": "e97546bd7ebc8d122a51f63dad361ee8c5a4908c9bc9c80d5716e959f3805d8d"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2017-12-01_2017-12-31.parquet",
+                "sha256": "f686e486de1dbcf8346f017a49901f374a2951a976477fa499984954d6c70a56",
+                "receipt_sha256": "1269bbca4f8d9ae28b76cd9afd940210bfccc87734cf843fea429f8b42347df8"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-01-01_2018-01-31.parquet",
+                "sha256": "533a5c7dd788326b09f8f2cd474d9db72c3ed61398a745d397513919202f5796",
+                "receipt_sha256": "c02265488b85884634b7f0c0b6203bce615fc2a30213cf348f845a0398b86432"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-02-01_2018-02-28.parquet",
+                "sha256": "73177cdebd68cd6d0be6b782a584194eacf37115736da6ed2dd66fb05badeb9d",
+                "receipt_sha256": "1c0c24cc4b547a24b71e0cbed90d4637da8d990086b0c08f2fa3d363ea19891d"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-03-01_2018-03-31.parquet",
+                "sha256": "5efca1a3d1d930e67314acc573e44047685c093a88b9613276735a388dfccc8c",
+                "receipt_sha256": "91e6e061abd6a300c54729786a1c369b5d86f9d75f7d32a2d4c839112b4abd98"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-04-01_2018-04-30.parquet",
+                "sha256": "ecfda57bb43d956febe0941fa4478ffbc2152dd77d72002e0391c0c42449cdf9",
+                "receipt_sha256": "48022458e9681028afbf13e035c2fcff007fe6b2b525644ed9416c2c7110e1f5"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-05-01_2018-05-31.parquet",
+                "sha256": "b16b763e2b9c163af63c00aafa4481d2625a05f06b47b12ebc85d8dc7bef1fd4",
+                "receipt_sha256": "4570e8162b8387eb090a13bc9b00d1acb396c22f801749745c9e194fe42b1c73"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-06-01_2018-06-30.parquet",
+                "sha256": "862e8afe03239516098b40a9d819e9288d1112e99bb2da11dbab6af692ab517b",
+                "receipt_sha256": "e39cac0f9e67cea72bb3aaa352389941a40d3715ed7c7313dcb0ef240859c985"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-07-01_2018-07-31.parquet",
+                "sha256": "575098219e278e457e5d125bc7e268df47de631d189baa098da5ba8b2c31f0bb",
+                "receipt_sha256": "0e6662d24a19efc9c967cd9a03a2faf9512050835abe73acb7997a083bbbb8aa"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-08-01_2018-08-31.parquet",
+                "sha256": "6d0e3e21d4442f68874a975fee01dd2d509a712da92f3cbd101da3bf9b47768b",
+                "receipt_sha256": "39eb8186beffd0d26eccd149a4f490671d9a6b87ebc863d25cb3ee43584b65e8"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-09-01_2018-09-30.parquet",
+                "sha256": "0f111f53def6ca5dfc79a5d95e336659a7fd865391f4dbbd9aa8ddf7686928c9",
+                "receipt_sha256": "6b8bca5be577acd04660fca86b290110ebe2397634d135ebf6b9c3958971eabc"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-10-01_2018-10-31.parquet",
+                "sha256": "9daa250a4193f37f22c7d61e3424f3dc2e724be6b1f82dbdbba567ebd18ea170",
+                "receipt_sha256": "d0c7ab291a1768f5828155db4d11c90a4929dcc2fe58bdc08dbe61c85b1293b8"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-11-01_2018-11-30.parquet",
+                "sha256": "df5d1de635f14b9b7b9ecdab1d4fb5828de0f14750fbbcf47a92bd3e26c9addb",
+                "receipt_sha256": "71aa9381b4301e91c5be4da6669cf126a6fdfa23738c966b238ddeace6ffc780"
+              },
+              {
+                "member": "stock/cn_stock_real_bar1d/2018-12-01_2018-12-31.parquet",
+                "sha256": "f79ae4993e5581b65bca3ae11b4fb2e9b3ba8dbcf6ba69d9223a39996b947b4c",
+                "receipt_sha256": "577e194cc1859b38b6d3b6d10e25cb488af1760e04c3df786e11c7be9fcfaf50"
+              }
+            ],
+            "schemas": {
+              "stock/cn_stock_real_bar1d/schema.json": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076"
+            }
+          },
+          "source_kind": "REAL_CANDIDATE",
+          "unit_contract": "UNKNOWN",
+          "archive": "BQ/stock.zip"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "table_sha256": "4ef6155a8304848ccd5232e1c0dfd88fb28f0780744b8a0f2aa960b41f9e2172",
+        "symbol": "601857.SH",
+        "identity_evidence": null,
+        "field_units": {
+          "prices": "CNY candidate",
+          "volume": "candidate shares; BQ contract UNKNOWN",
+          "amount": "candidate CNY; BQ precision contract UNKNOWN"
+        },
+        "diagnostic_calendar_id": "bigquant-observed-dates",
+        "diagnostic_calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+      },
+      "checks": {
+        "coverage": {
+          "status": "PASS",
+          "rows": 487,
+          "unique_security_dates": 487,
+          "missing_sessions": 0,
+          "outside_calendar": 0,
+          "warmup_rows": 244,
+          "research_rows": 243,
+          "first": "2017-01-03",
+          "last": "2018-12-28"
+        },
+        "duplicates": {
+          "status": "PASS",
+          "excess": 0
+        },
+        "missing": {
+          "status": "PASS",
+          "counts": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          }
+        },
+        "ohlc": {
+          "status": "PASS",
+          "order_violations": 0,
+          "nonpositive_prices": 0
+        },
+        "anomalies": {
+          "status": "PASS",
+          "nonfinite_nonnull": {
+            "raw_open": 0,
+            "raw_high": 0,
+            "raw_low": 0,
+            "raw_close": 0,
+            "volume": 0,
+            "amount": 0
+          },
+          "negative_flow_rows": 0,
+          "economic_outliers": "UNKNOWN"
+        },
+        "units": {
+          "status": "UNKNOWN",
+          "evidence": {
+            "prices": "CNY candidate",
+            "volume": "candidate shares; BQ contract UNKNOWN",
+            "amount": "candidate CNY; BQ precision contract UNKNOWN"
+          },
+          "reason": "Descriptions require vendor contract; not independently certified"
+        },
+        "identity": {
+          "status": "UNKNOWN",
+          "evidence": null
+        },
+        "calendar": {
+          "status": "UNKNOWN",
+          "calendar_id": "bigquant-observed-dates",
+          "kind": "OBSERVED_SECURITY_SESSIONS_ONLY"
+        },
+        "time_fields": {
+          "status": "UNKNOWN",
+          "effective_at": "date",
+          "provider_available_at": null,
+          "acquired_at": null,
+          "first_distribution": "UNKNOWN",
+          "revisions": "UNKNOWN"
+        },
+        "corporate_actions": {
+          "status": "UNKNOWN",
+          "evidence": {},
+          "reason": "Candidate counts or empty observations do not prove all-category coverage"
+        },
+        "pit": {
+          "status": "UNKNOWN",
+          "evidence": "PIT_UNVERIFIED"
+        },
+        "hfq": {
+          "status": "UNKNOWN",
+          "evidence": "HFQ_UNVERIFIED"
+        },
+        "formal_admission": {
+          "status": "FAIL",
+          "evidence": "FORMAL_ADMISSION_BLOCKED"
+        }
+      },
+      "factors": [
+        {
+          "definition": {
+            "factor_id": "RAW_MOM5",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 5,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9631c69dea916b57b6c0a2ee7b2ca47e08ee1b9c5efbb3a93b6575119f656a94"
+          },
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH",
+          "data_sha256": "4ef6155a8304848ccd5232e1c0dfd88fb28f0780744b8a0f2aa960b41f9e2172",
+          "identity_evidence": null,
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 5,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9b70bd8ed875534636902ff6e9de6ab44dd98c9722de0187a529f967eb1b3df8"
+          },
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH",
+          "data_sha256": "4ef6155a8304848ccd5232e1c0dfd88fb28f0780744b8a0f2aa960b41f9e2172",
+          "identity_evidence": null,
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 20,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_MOM60",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 60,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "9472671290286b9576929d6e7c23ffc739fbbc5de03ea25e697bf775aa30cf9b"
+          },
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH",
+          "data_sha256": "4ef6155a8304848ccd5232e1c0dfd88fb28f0780744b8a0f2aa960b41f9e2172",
+          "identity_evidence": null,
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 60,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "RAW_PRICE_MA20",
+            "version": "1",
+            "kind": "expression",
+            "implementation": "discovery-ast-v1",
+            "input_fields": [
+              "raw_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "RAW"
+            ],
+            "dependencies": [],
+            "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "6d53e43b44226827e6c6fba461666f7660e8d9bab3d7f5ca996969c8a63d0e12"
+          },
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH",
+          "data_sha256": "4ef6155a8304848ccd5232e1c0dfd88fb28f0780744b8a0f2aa960b41f9e2172",
+          "identity_evidence": null,
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "VOLUME_RATIO",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOLUME_RATIO",
+            "input_fields": [
+              "volume"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "2b73bfd96adb1993b13a9cfc72bcd96113cd6923d4a9dd453f83157f7f34bd5e"
+          },
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH",
+          "data_sha256": "4ef6155a8304848ccd5232e1c0dfd88fb28f0780744b8a0f2aa960b41f9e2172",
+          "identity_evidence": null,
+          "input_window": [
+            "2017-01-03",
+            "2018-12-28"
+          ],
+          "calculation_window": [
+            "2018-01-01",
+            "2018-12-28"
+          ],
+          "required_prior_sessions": 19,
+          "denominator": 243,
+          "status": "PASS",
+          "valid_samples": 243,
+          "missing_rate": 0.0,
+          "illegal_values": 0,
+          "context": {
+            "data_source": "bigquant@sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+            "availability_evidence": "RETROSPECTIVE_UNCERTIFIED",
+            "no_live_money": true,
+            "pit_status": "PIT_UNVERIFIED",
+            "hfq_status": "HFQ_UNVERIFIED",
+            "admission_status": "FORMAL_ADMISSION_BLOCKED"
+          }
+        },
+        {
+          "definition": {
+            "factor_id": "MOM20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:MOM20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "VOL20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:VOL20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "a832f2cb283d69607dd6da57a83e9975ef3572ca459b63b8942185f0809d642e"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "PRICE_MA20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:PRICE_MA20",
+            "input_fields": [
+              "adj_close"
+            ],
+            "lookback": 19,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "12d89b0fa4e1b3f2adb059ffaebb22e757acf8200e3003ee19986059943527ad"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "AMIHU20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:AMIHU20",
+            "input_fields": [
+              "adj_close",
+              "amount"
+            ],
+            "lookback": 20,
+            "price_basis": [
+              "HFQ"
+            ],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "860626f95b8a067c736b32473cb8feb8abf1f9ceee5bca80abf6d0c7d54e02e3"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH"
+        },
+        {
+          "definition": {
+            "factor_id": "TURN20",
+            "version": "1",
+            "kind": "builtin",
+            "implementation": "phase1-v1:TURN20",
+            "input_fields": [
+              "turnover"
+            ],
+            "lookback": 19,
+            "price_basis": [],
+            "dependencies": [],
+            "expression_json": "",
+            "frequency": "1d",
+            "availability": "SESSION_CLOSE",
+            "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+            "definition_hash": "5ab67cb2148f95889b8bfdbe5d01ca41c1cb28899addd4a7a90d2aa5605ba4d5"
+          },
+          "status": "NOT_AVAILABLE",
+          "reason": "Certified adjusted prices or qualified turnover unavailable; no RAW substitution",
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH"
+        }
+      ],
+      "labels": {
+        "status": "PASS",
+        "purpose": "RETROSPECTIVE_UNCERTIFIED_BOUNDARIES_ONLY",
+        "implementation": "factorlab.labels.forward_return.build_forward_excess_return_labels",
+        "holding_days": 5,
+        "entry_offset": 1,
+        "exit_offset": 6,
+        "research_observations": 243,
+        "raw_future_coverage": 237,
+        "incomplete_future_coverage": 6,
+        "last_signal_with_observed_exit": "2018-12-20",
+        "last_observed_exit": "2018-12-28",
+        "historical_maturity": "UNKNOWN",
+        "provider_first_distribution": "UNKNOWN",
+        "revisions": "UNKNOWN",
+        "adjusted_open_and_benchmark": "NOT_AVAILABLE",
+        "label_generation": "NOT_RUN",
+        "company_action_effect": "UNVERIFIED",
+        "note": "Observed exit date is not proof of historically available label version."
+      },
+      "blocking_evidence": [
+        "HISTORICAL_FIRST_DISTRIBUTION_UNKNOWN",
+        "REVISION_CHAIN_UNKNOWN",
+        "HISTORICAL_IDENTITY_UNVERIFIED",
+        "INDEPENDENT_CALENDAR_UNVERIFIED",
+        "ALL_CATEGORY_ACTION_COVERAGE_UNKNOWN",
+        "HFQ_ALGORITHM_ANCHOR_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED"
+      ],
+      "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+      "formal_gate": {
+        "status": "PASS",
+        "outcome": "REJECTED",
+        "reason": "MARKET DATA QUALIFICATION REQUIRED: research requires replayable v2 qualification; provider has no qualification package; schema-v1 bundles are diagnostic only"
+      },
+      "observed_boundaries": {
+        "2017": {
+          "count": 244,
+          "first": "2017-01-03",
+          "last": "2017-12-29"
+        },
+        "2018": {
+          "count": 243,
+          "first": "2018-01-02",
+          "last": "2018-12-28"
+        }
+      }
+    }
+  },
+  "cross_source": {
+    "status": "FAIL",
+    "meaning": "EXACT_VALUES_NOT_CERTIFIED_SEMANTICS",
+    "differences": [
+      {
+        "date": "2017-02-27",
+        "field": "amount",
+        "type": "VALUE",
+        "bigquant_minus_csmar_exact": "-2.98023223876953125E-8",
+        "absolute_delta": 2.9802322387695312e-08,
+        "ulps_at_csmar": 1.0
+      },
+      {
+        "date": "2017-05-03",
+        "field": "amount",
+        "type": "VALUE",
+        "bigquant_minus_csmar_exact": "-2.98023223876953125E-8",
+        "absolute_delta": 2.9802322387695312e-08,
+        "ulps_at_csmar": 1.0
+      },
+      {
+        "date": "2018-10-12",
+        "field": "amount",
+        "type": "VALUE",
+        "bigquant_minus_csmar_exact": "5.9604644775390625E-8",
+        "absolute_delta": 5.960464477539063e-08,
+        "ulps_at_csmar": 1.0
+      },
+      {
+        "date": "2018-12-13",
+        "field": "amount",
+        "type": "VALUE",
+        "bigquant_minus_csmar_exact": "2.98023223876953125E-8",
+        "absolute_delta": 2.9802322387695312e-08,
+        "ulps_at_csmar": 1.0
+      }
+    ],
+    "date_keys_equal": true,
+    "merged": false,
+    "authoritative_source": null,
+    "cause": "UNKNOWN"
+  },
+  "native": {
+    "verified_files": {
+      "provenance/TRDNEW_Dalyr-0-native.parquet": "2f0ed08199faa28e0f2a961ba6a51af3309cc29581c86778f128248bab96bfc9",
+      "provenance/TRDNEW_Dalyr-0-lineage.parquet": "79f0e2f3a442c3a600a05424402bdf4c1e97d8d053e33c44b9f37f439094e5ed",
+      "provenance/TRDNEW_Co-0-native.parquet": "e10184b6a3968a28ef94c6ded385f0d70113b753fa1dfc477dcc3848fc02db5a"
+    },
+    "native_rows_in_window": 519,
+    "filling_counts": {
+      "0": 487,
+      "2": 32
+    },
+    "native_duplicate_keys": 0,
+    "unfilled_keys_equal_prepared": true,
+    "native_decimal_to_prepared_binary64_mismatches": 0,
+    "Trdsta_counts_unfilled": {
+      "1.0": 487
+    },
+    "amount_locations": [
+      {
+        "date": "2017-02-27",
+        "member": "TRDNEW_Dalyr2.xlsx",
+        "sheet": "sheet1",
+        "row_number": 987376,
+        "native_values_sha256": "dc495b057b30ff1f389bdeddca1c07a6b17ee410bcbae5889cf907daefa68a3c"
+      },
+      {
+        "date": "2017-05-03",
+        "member": "TRDNEW_Dalyr2.xlsx",
+        "sheet": "sheet1",
+        "row_number": 987423,
+        "native_values_sha256": "a88c2dc3612e2d5f12a534e9f2f0a0b5915966e3307b9d3dd6f5f5aa0d849beb"
+      },
+      {
+        "date": "2018-10-12",
+        "member": "TRDNEW_Dalyr2.xlsx",
+        "sheet": "sheet1",
+        "row_number": 987800,
+        "native_values_sha256": "1057c11ad9df5ad08ae2f93af60b212a2e3e678e805206455e85ac260125272c"
+      },
+      {
+        "date": "2018-12-13",
+        "member": "TRDNEW_Dalyr2.xlsx",
+        "sheet": "sheet1",
+        "row_number": 987844,
+        "native_values_sha256": "6913b02ec963c76ad18e2b693bd42b9fceb68f0db89a01278b89d378b2eba19d"
+      }
+    ],
+    "company_current_snapshot_rows": 1,
+    "identity_qualification": "UNKNOWN",
+    "historical_status_qualification": "UNKNOWN"
+  },
+  "security_status": {
+    "rows": 487,
+    "duplicate_keys": 0,
+    "missing_observed_dates": 0,
+    "extra_dates": 0,
+    "nulls": {
+      "date": 0,
+      "instrument": 0,
+      "st_status": 0,
+      "is_risk_warning": 0,
+      "suspended": 0,
+      "price_limit_status": 0,
+      "exdr": 0
+    },
+    "raw_code_counts": {
+      "st_status": {
+        "0": 487
+      },
+      "is_risk_warning": {
+        "0": 487
+      },
+      "suspended": {
+        "0": 487
+      },
+      "price_limit_status": {
+        "2": 487
+      },
+      "exdr": {
+        "0": 483,
+        "1": 4
+      }
+    },
+    "suspend_table_target_rows": 0,
+    "basic_snapshot_target_rows": 1,
+    "qualification": "UNKNOWN",
+    "binding": {
+      "members": [
+        {
+          "member": "stock/cn_stock_status/2017-01-01_2017-01-31.parquet",
+          "sha256": "66819647ff60fc41d619fa76574630b77f309cb33d8d740fb1259b169c7fab7f",
+          "receipt_sha256": "26e9816894135cc7d4c854c86f5910a6656ebaa5cd30e30736f26faaede03744",
+          "exported_at_utc": "2026-11-07T12:21:33+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-02-01_2017-02-28.parquet",
+          "sha256": "378c923235840a72a7ae839ca09597ae5d102e56ba9819623f5a072ee5e99b8c",
+          "receipt_sha256": "90425034b287d55ffec746b0930b2e8f2683102385b5c54351abbbae50dc02e4",
+          "exported_at_utc": "2026-11-07T12:21:34+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-03-01_2017-03-31.parquet",
+          "sha256": "a85c6e5af16ec82eef46dcd6f0fcb8e42186cd4ff6ca0942973dc2970898755a",
+          "receipt_sha256": "36a8508c6ea9f0a9d56151ea35439821f7d2b40492f880c2a9f964a6d32bb539",
+          "exported_at_utc": "2026-11-07T12:21:34+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-04-01_2017-04-30.parquet",
+          "sha256": "007a18a85b8ce684859d08925d1da700907f9ffe947aa089d39b85c351b1d57a",
+          "receipt_sha256": "d3fbe580cbe21b61a1ed0c2103b4e8ffeb786acf91306e99471f1c2abf9b5724",
+          "exported_at_utc": "2026-11-07T12:21:35+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-05-01_2017-05-31.parquet",
+          "sha256": "bbc32b335ebcd953f6076f99588928323145504300d02ee693e4ab4663d8d40b",
+          "receipt_sha256": "da742c7849f71d37465794b08e661eab347f12c5bc767c9dce36166da19ba1bf",
+          "exported_at_utc": "2026-11-07T12:21:35+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-06-01_2017-06-30.parquet",
+          "sha256": "8e352459f6eb2e1e24a83f4c02452bc7574bd3c955f7ab0ded352480263a4e66",
+          "receipt_sha256": "024c0812e6147b3cf110aca6a05f40d923011d4b2a8281af93135b74c07d4f2d",
+          "exported_at_utc": "2026-11-07T12:21:35+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-07-01_2017-07-31.parquet",
+          "sha256": "1751aff17d3698f694c43d698249492a761d90386cb936a348311aea8f37969b",
+          "receipt_sha256": "0cfc2a351cbab994fe1cdeea35c4f70b483e4c24ecae026c80cd23dc3bfc7354",
+          "exported_at_utc": "2026-11-07T12:21:35+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-08-01_2017-08-31.parquet",
+          "sha256": "f7dea1bcd2743a99e1128f331fbcb1a0f0657a3d6e83892e3acf656b23e72ef6",
+          "receipt_sha256": "3c8a7cb00bf43174b01834a56046675d3d37cb771eb739f3b5646b7ecf7ccb8e",
+          "exported_at_utc": "2026-11-07T12:21:36+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-09-01_2017-09-30.parquet",
+          "sha256": "c461fc675263bd0aabd14c156f40b26d596ddf15c2df61be5ed9be72bb3e9260",
+          "receipt_sha256": "63c29dd02e90c8fea522209e459d4fd1ee0216c29ca95b1b7b6114873d2abcc9",
+          "exported_at_utc": "2026-11-07T12:21:36+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-10-01_2017-10-31.parquet",
+          "sha256": "6bf69ceaf93accfbbf6a44cfe56cfac6d45f1a77b8954bf2c362d7261ba3266d",
+          "receipt_sha256": "c40d22751cbea5035bed43f9dcb433b866d77d55193ae18af68f47a5251edcaf",
+          "exported_at_utc": "2026-11-07T12:21:36+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-11-01_2017-11-30.parquet",
+          "sha256": "7dbc887eab4dc766a8176a2b54817ab9d1fa2a1d1fc1e08fe02602df4ffff1e0",
+          "receipt_sha256": "37782d59dbf925cd99ecd358be61961e026d7561122b8bc9f1cbe69c1129b677",
+          "exported_at_utc": "2026-11-07T12:21:36+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2017-12-01_2017-12-31.parquet",
+          "sha256": "8115d9f914ea767f17b9508c385e4fd403242a5c6e763c4d676a08770c8d083b",
+          "receipt_sha256": "f72bf79a73ceb588d044df0a6dee25849ab9be59e6bfce074c8322bdc20d9797",
+          "exported_at_utc": "2026-11-07T12:21:37+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-01-01_2018-01-31.parquet",
+          "sha256": "111b1a7405a9a7134d6a709be304409115a775896e09469612db1f10a767ca0f",
+          "receipt_sha256": "32bd985b82578bf180b496791f931dd5539a72457a4e4b0d900fe76366d77aff",
+          "exported_at_utc": "2026-11-07T12:21:37+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-02-01_2018-02-28.parquet",
+          "sha256": "c6a62d9898bf30b7c6c1a8ccd0a2362f047c4213c274815decbbb410ac0912e7",
+          "receipt_sha256": "eff53977440fc1eddf2348e6dd7433edb7980e88d7a5cffcb2e1ee87972ad3e4",
+          "exported_at_utc": "2026-11-07T12:21:37+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-03-01_2018-03-31.parquet",
+          "sha256": "f24e0a3733382b509956749a1d357670a68d180f2f82bf843e0fa1cdcd12b1e5",
+          "receipt_sha256": "08f3bfae06a2132fbe36c42f1cab8b169c4ace061d162baa6c2cea498741ed7c",
+          "exported_at_utc": "2026-11-07T12:21:37+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-04-01_2018-04-30.parquet",
+          "sha256": "0e12fa481dd4907a076702f90478f7bae0f3a8d96d4ad12587714ef06e44d72b",
+          "receipt_sha256": "6c8a707e893bc818bc85b0e85282a492997c2bd6cf15861266a96b9520903b38",
+          "exported_at_utc": "2026-11-07T12:21:37+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-05-01_2018-05-31.parquet",
+          "sha256": "d08a27a7c92a4ba87f2fafe8c13d0e29b866a29fe4a2fcf6ec0c066eb64dfd99",
+          "receipt_sha256": "703f60418bdbf011d375fbe175a3047181b7ef201c0de180f6565101519fb8a8",
+          "exported_at_utc": "2026-11-07T12:21:38+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-06-01_2018-06-30.parquet",
+          "sha256": "e897b4fb664ebb9d553f88fdf5f1934c4d2735a1274eb0e6750afe36b4a05030",
+          "receipt_sha256": "ebcd6acccfd2fdef8c2d4d6db2aef52653d00affe5ef56e126785315ae450621",
+          "exported_at_utc": "2026-11-07T12:21:38+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-07-01_2018-07-31.parquet",
+          "sha256": "4910ff6dd9dc66e547debb856d7b5fd12821ae869c81b0a909cc1a02e0bdb54c",
+          "receipt_sha256": "3d13ffa4aa7002c35cb2a167bce05cdb53a5e11b87c1c60ceb48722c55ef9e90",
+          "exported_at_utc": "2026-11-07T12:21:38+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-08-01_2018-08-31.parquet",
+          "sha256": "2b76af472b0225aa6c9470d9eefa5cbe472870d76944875aca12c8f5b0247ed9",
+          "receipt_sha256": "4208fe4c4e4ebc9e1a337590efeb6ef3f706acf4fb2d7a7d22e925a1a7b9e8eb",
+          "exported_at_utc": "2026-11-07T12:21:38+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-09-01_2018-09-30.parquet",
+          "sha256": "b805382c2c879928283c85ac2223f639fdd051b321664313394e368ff87e164e",
+          "receipt_sha256": "5145a23b14e1e218560345203a733589ccfe2c478e26fca5b947324718bef893",
+          "exported_at_utc": "2026-11-07T12:21:39+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-10-01_2018-10-31.parquet",
+          "sha256": "0bacd4ab46abcaac08eb5b82affdb0126bad70c8e1ddc45a248675ff5d0f57b0",
+          "receipt_sha256": "c0aef7dfe059a3e768b5b1577181ce695ebce54e83d618d63bf3307020150775",
+          "exported_at_utc": "2026-11-07T12:21:39+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-11-01_2018-11-30.parquet",
+          "sha256": "922dd07825f5a31444b2735589cabf7e14babde8b44f1af320dc8ef719c86723",
+          "receipt_sha256": "2a8c9a3ad3592c55a65f5bb24318bc1401b77ba60e68f179e08d06fa0b840a4f",
+          "exported_at_utc": "2026-11-07T12:21:39+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_status/2018-12-01_2018-12-31.parquet",
+          "sha256": "4a79a425603f0d33c30f6531a44b3bb64a8a0d5f5ebd69f6613b8e9a785ddc64",
+          "receipt_sha256": "e544c28bd813e8f4cdad673dc05656651ea9eb74f6148083501c3c0e8581610c",
+          "exported_at_utc": "2026-11-07T12:21:39+00:00",
+          "receipt_payload_hash_matches": true
+        }
+      ],
+      "schema_sha256": "4122efa267439d9697d5eff2c0ae1ff8ecf5b28292170d83550da580dec20ae2"
+    },
+    "suspend_binding": {
+      "members": [
+        {
+          "member": "stock/cn_stock_suspend/2017-01-01_2017-01-31.parquet",
+          "sha256": "99ac8e7fb47e992082574a5093cce5e379a83b557fb90b0d67d882925a1c3951",
+          "receipt_sha256": "cb456428670688b83ec98dddb484bada6a68d83fed7f58760e20aa34a2baefaf",
+          "exported_at_utc": "2026-11-07T12:22:08+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-02-01_2017-02-28.parquet",
+          "sha256": "cb2bf863649bd64e7ac3149265be60aa8c601fa85c77efd908594fef1dec7f0c",
+          "receipt_sha256": "187b0e0d1234db18bc27b803e1b7b39effb6c7b4f1ac20897c5a1d40aaf89519",
+          "exported_at_utc": "2026-11-07T12:22:08+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-03-01_2017-03-31.parquet",
+          "sha256": "56b649ce46d09688a7c594bf26575bf211f114024e7ecdd1e95b3cc190fef2a3",
+          "receipt_sha256": "126252bc36d6a0d2db3d27afcb9ec69d158f9e1a1bd350c25764aa8e09a3d706",
+          "exported_at_utc": "2026-11-07T12:22:09+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-04-01_2017-04-30.parquet",
+          "sha256": "e257cb7d056c82a7f7a3ce25c04a38d256ed6e84251fe77c490ee83373cb355c",
+          "receipt_sha256": "f9bb5ab19f18b741703488fffe67ead8df0c4bfb695d33c9bd00dadc648dcf84",
+          "exported_at_utc": "2026-11-07T12:22:09+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-05-01_2017-05-31.parquet",
+          "sha256": "d43806e411b4166b21620b4ffb309f9d187ec58186dd0f6dc3b680b9730d9180",
+          "receipt_sha256": "4c1915fadcce5ca67a78319e1149eec8c4db00ecd9842d335d3af87f1db5614d",
+          "exported_at_utc": "2026-11-07T12:22:09+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-06-01_2017-06-30.parquet",
+          "sha256": "155beafaa638815c127192c18a200b90bd39131bb5c22eecee22d9ed05ba6a19",
+          "receipt_sha256": "d195f076bb17126a1f6240e50c0fe6edc57e217cbc2599d9bafbb1f6b56f4dfa",
+          "exported_at_utc": "2026-11-07T12:22:09+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-07-01_2017-07-31.parquet",
+          "sha256": "68186c2a226a7823d40bb5d9d7758f33bf04cd45b4fc34ab086b91890b08fea2",
+          "receipt_sha256": "6fb0afdaad32385989d860e4b4aa62c7bd7641945155bda935c90ea7f94b5f3f",
+          "exported_at_utc": "2026-11-07T12:22:09+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-08-01_2017-08-31.parquet",
+          "sha256": "7d088df8a742a8d273711a1f2f726b4f4496fdbff6a333408f968b37b7a56a71",
+          "receipt_sha256": "0f762bbb8715d3827006e94b7dde7b80467c90258511fb2f7256d73d4a798fab",
+          "exported_at_utc": "2026-11-07T12:22:10+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-09-01_2017-09-30.parquet",
+          "sha256": "acc169d3ff47fb4f8fea774db6311af271f557d5f9ae589db2b02b8e6acee6d5",
+          "receipt_sha256": "c24c835c07b2b9b922abbb619b108f62ee306bba7d82ca5551020b1907b10c50",
+          "exported_at_utc": "2026-11-07T12:22:10+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-10-01_2017-10-31.parquet",
+          "sha256": "27830871a22c0b52d55cd75a7eac3289f11a62d1fc32d53d9882424085b47b8d",
+          "receipt_sha256": "1c5ef9cbd13e205f3cd257da1d4d2472c7c8280ed9412c5d6aa78644b78a6e24",
+          "exported_at_utc": "2026-11-07T12:22:10+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-11-01_2017-11-30.parquet",
+          "sha256": "3e3d2e8a6f55699d1a99ff597528d9cae034654515c8945013f882da985a771c",
+          "receipt_sha256": "1fbaa5c6d0a1b52906c9ee1b431a365b97965e50645f996c2f18299deb56429d",
+          "exported_at_utc": "2026-11-07T12:22:10+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2017-12-01_2017-12-31.parquet",
+          "sha256": "142321f30df65d84ae37047a3831a6c890328bc0dd29e4ae0e6e877e6da4071b",
+          "receipt_sha256": "26dd8c280ca50dbc15f64b7e18168de72da242fc1b91ab9d92815af7dfc7c338",
+          "exported_at_utc": "2026-11-07T12:22:11+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-01-01_2018-01-31.parquet",
+          "sha256": "c89856ca978d42ce446a0af97c03a566c73be9c2a377b9d4d55d4b8acf7fcaca",
+          "receipt_sha256": "a298373c65ac7dba789d76b92cf9795b80b82a597c0d244774a7ff0de9024f06",
+          "exported_at_utc": "2026-11-07T12:22:11+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-02-01_2018-02-28.parquet",
+          "sha256": "6f2985091c089493537aac7aef28cd2a2442dbdcfd29ad865e0d87747447d0da",
+          "receipt_sha256": "08fb412b0382b23e6edccf0802a2ffbb118875fab5aa9ff766edccfd1b745141",
+          "exported_at_utc": "2026-11-07T12:22:11+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-03-01_2018-03-31.parquet",
+          "sha256": "4999952c9cd9c8243ef73c2fd2620318b44463268b55e40a6b8283f3dce27416",
+          "receipt_sha256": "3c9aa3133d5d8e7d57aaf9d334c243dd01066f811b6d37c55211569a1eff1040",
+          "exported_at_utc": "2026-11-07T12:22:11+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-04-01_2018-04-30.parquet",
+          "sha256": "b8c8124ddc5967b2ef3531909b154b037a58b1f4f9c73b6a847e5cb191bf2108",
+          "receipt_sha256": "18ac45e0bc60b411ac962794020e94cffecfffebc3673b8b7f221e055d1c8a30",
+          "exported_at_utc": "2026-11-07T12:22:11+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-05-01_2018-05-31.parquet",
+          "sha256": "77a912ba2a80e0e47be6d782bea63fc97f78fc44afc76eb3388e5cd0b4d58abc",
+          "receipt_sha256": "f4af979e16e8b7bf4c302a900e8efedd277407a2a4f9c533192ec822a3caab28",
+          "exported_at_utc": "2026-11-07T12:22:12+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-06-01_2018-06-30.parquet",
+          "sha256": "ffac25036e491d0583aec1750008a982de5f25f025d9afda9ef62a729eeadc55",
+          "receipt_sha256": "07413779e6ec49b9bcf54fd9d669d98883304d67cebc25eb82470c09a1ac143b",
+          "exported_at_utc": "2026-11-07T12:22:12+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-07-01_2018-07-31.parquet",
+          "sha256": "0a0f8f1a89059ad3f78d9ff878a9288be4e9a7ac4b64d0507cb2eed9b76799a2",
+          "receipt_sha256": "366f478ab02c07e6d6011ea2cacbd143c1968642cefdd2a1ce38e4d890f73e17",
+          "exported_at_utc": "2026-11-07T12:22:12+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-08-01_2018-08-31.parquet",
+          "sha256": "d3fca96ced9c591dfe61710dc04edbcea1a800d1f848d467c88e613a6e13a0d4",
+          "receipt_sha256": "ba673dc06faf8b521978583974f27bd2246c21c1c4182ad190989a49438fcf04",
+          "exported_at_utc": "2026-11-07T12:22:12+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-09-01_2018-09-30.parquet",
+          "sha256": "63d9ffbd765063abccbbc2a2b2eccfb9a0fde2840dfe2d0788fd5db06aefd821",
+          "receipt_sha256": "f98719cfd8d1b9cde9bfc152d6513e78b0bd698d0a2ec1c4d139e48521622bf6",
+          "exported_at_utc": "2026-11-07T12:22:12+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-10-01_2018-10-31.parquet",
+          "sha256": "65573f75840936cd6e49b122355e19fbc2c4dd5c1cf3f97572edfc2b16c9f2ba",
+          "receipt_sha256": "2aae0491fa3cb75ab342e4f30466636754f4b2f64cf678d1c34781e26b344a34",
+          "exported_at_utc": "2026-11-07T12:22:13+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-11-01_2018-11-30.parquet",
+          "sha256": "10051d5543b3ce8353d381522d49bee9b97a339fc51b7e7fb1f3b9e9f1ba5dd7",
+          "receipt_sha256": "75ce3e187f2dd882251b957f7a3038b4a33f82639dc7527703214fef3263799d",
+          "exported_at_utc": "2026-11-07T12:22:13+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "stock/cn_stock_suspend/2018-12-01_2018-12-31.parquet",
+          "sha256": "27859a00e696638043346bea96d94d89f04ed766a538ad98c82867be5194acb0",
+          "receipt_sha256": "e87060e7d9ac0edf2e409edc9989ea0a52fb94ea7f840a6009080cba1831b5a7",
+          "exported_at_utc": "2026-11-07T12:22:13+00:00",
+          "receipt_payload_hash_matches": true
+        }
+      ],
+      "schema_sha256": "5869656f513bf7606e026dc6ef880d331670503282c540a13ce05948ba6f76bf"
+    },
+    "basic_binding": {
+      "members": [
+        {
+          "member": "stock/cn_stock_basic_info/unpartitioned_snapshot.parquet",
+          "sha256": "8701bb46e9a551746143d1c152e32003c964d71fd23993012e27907ee634df66",
+          "receipt_sha256": "34665191a4eba08d7e5a1b1cac5fe7985932e88504161f5a6cfd04658d2aa681",
+          "exported_at_utc": "2026-11-07T12:21:32+00:00",
+          "receipt_payload_hash_matches": true
+        }
+      ],
+      "schema_sha256": "efcc16dac448c094ba29998b90660ab1646db1c00e883fe2234d9cd635a97cd4"
+    }
+  },
+  "calendar": {
+    "source": "BigQuant/common/trading_days",
+    "market_code": "CN",
+    "rows": 487,
+    "duplicate_keys": 0,
+    "boundaries": {
+      "2017": {
+        "count": 244,
+        "first": "2017-01-03",
+        "last": "2017-12-29"
+      },
+      "2018": {
+        "count": 243,
+        "first": "2018-01-02",
+        "last": "2018-12-28"
+      }
+    },
+    "missing_bar_dates": 0,
+    "bar_dates_outside_calendar": 0,
+    "independent_of_security_observations": true,
+    "independent_official_source": "UNKNOWN",
+    "qualification": "UNKNOWN",
+    "binding": {
+      "members": [
+        {
+          "member": "common/trading_days/2017-01-01_2017-12-31.parquet",
+          "sha256": "275c36f65e9e02113055dc9e5214b187a5458be95c2b27ae0fff82600fbce180",
+          "receipt_sha256": "045df0e0a2ba85a7e2eedf763eb9983bba0df7170ad273e7e21708448d78bafb",
+          "exported_at_utc": "2026-11-07T12:48:49+00:00",
+          "receipt_payload_hash_matches": true
+        },
+        {
+          "member": "common/trading_days/2018-01-01_2018-12-31.parquet",
+          "sha256": "59560de9d98f19d3c9d6c7e697eb5e075e90e71162d68ac96c17318976763a5f",
+          "receipt_sha256": "6f066ccbf3793b4feb876b9a393ab5889e4695ca8bd742846d6280c889d6487d",
+          "exported_at_utc": "2026-11-07T12:48:49+00:00",
+          "receipt_payload_hash_matches": true
+        }
+      ],
+      "schema_sha256": "096e74ccdc7a7acfadea62d1c635cbd5ab609592896c0ba108f8fc41fb35a008"
+    }
+  },
+  "actions": {
+    "schema": "P3D03_BOUNDED_DIAGNOSTIC_V1",
+    "security": "601857.SH",
+    "window": [
+      "2017-01-03",
+      "2018-12-28"
+    ],
+    "status": "P3D03_PARTIAL",
+    "restrictions": [
+      "NO LIVE MONEY",
+      "PIT_UNVERIFIED",
+      "HFQ_UNVERIFIED",
+      "FORMAL_ADMISSION_BLOCKED"
+    ],
+    "counts": {
+      "csmar_cash_candidates": 4,
+      "bigquant_dividend_candidates": 4,
+      "matching_cash_date_pairs_binary64_tolerance_1e_14": 4,
+      "csmar_only_dates": 0,
+      "bigquant_only_dates": 0,
+      "csmar_factor_rows": 4,
+      "bigquant_factor_rows": 8,
+      "bigquant_allotment_rows": 0,
+      "bigquant_null_bonus_rate": 4,
+      "bigquant_null_conversed_rate": 4
+    },
+    "coverage": "UNKNOWN",
+    "vendor_historical_available_at": "UNKNOWN",
+    "revisions": "UNKNOWN",
+    "source_members": {
+      "cn_stock_dividend": [
+        "stock/cn_stock_dividend/2017-01-01_2017-12-31.parquet",
+        "stock/cn_stock_dividend/2018-01-01_2018-12-31.parquet"
+      ],
+      "cn_stock_allotment": [
+        "stock/cn_stock_allotment/2017-01-01_2017-12-31.parquet",
+        "stock/cn_stock_allotment/2018-01-01_2018-12-31.parquet"
+      ],
+      "cn_stock_adjust_factor": [
+        "stock/cn_stock_adjust_factor/2017-01-01_2017-01-31.parquet",
+        "stock/cn_stock_adjust_factor/2017-02-01_2017-02-28.parquet",
+        "stock/cn_stock_adjust_factor/2017-03-01_2017-03-31.parquet",
+        "stock/cn_stock_adjust_factor/2017-04-01_2017-04-30.parquet",
+        "stock/cn_stock_adjust_factor/2017-05-01_2017-05-31.parquet",
+        "stock/cn_stock_adjust_factor/2017-06-01_2017-06-30.parquet",
+        "stock/cn_stock_adjust_factor/2017-07-01_2017-07-31.parquet",
+        "stock/cn_stock_adjust_factor/2017-08-01_2017-08-31.parquet",
+        "stock/cn_stock_adjust_factor/2017-09-01_2017-09-30.parquet",
+        "stock/cn_stock_adjust_factor/2017-10-01_2017-10-31.parquet",
+        "stock/cn_stock_adjust_factor/2017-11-01_2017-11-30.parquet",
+        "stock/cn_stock_adjust_factor/2017-12-01_2017-12-31.parquet",
+        "stock/cn_stock_adjust_factor/2018-01-01_2018-01-31.parquet",
+        "stock/cn_stock_adjust_factor/2018-02-01_2018-02-28.parquet",
+        "stock/cn_stock_adjust_factor/2018-03-01_2018-03-31.parquet",
+        "stock/cn_stock_adjust_factor/2018-04-01_2018-04-30.parquet",
+        "stock/cn_stock_adjust_factor/2018-05-01_2018-05-31.parquet",
+        "stock/cn_stock_adjust_factor/2018-06-01_2018-06-30.parquet",
+        "stock/cn_stock_adjust_factor/2018-07-01_2018-07-31.parquet",
+        "stock/cn_stock_adjust_factor/2018-08-01_2018-08-31.parquet",
+        "stock/cn_stock_adjust_factor/2018-09-01_2018-09-30.parquet",
+        "stock/cn_stock_adjust_factor/2018-10-01_2018-10-31.parquet",
+        "stock/cn_stock_adjust_factor/2018-11-01_2018-11-30.parquet",
+        "stock/cn_stock_adjust_factor/2018-12-01_2018-12-31.parquet"
+      ]
+    },
+    "factor_differences_derived_not_vendor_rows": [
+      {
+        "event_date": "2017-06-22",
+        "candidate_forward_minus_csmar": "4.248704663212435233160621762E-7",
+        "bigquant_minus_csmar_forward": "-0.0002573471502591",
+        "bigquant_minus_csmar_backward": "0.0002603333333333",
+        "bigquant_method": "price_gap"
+      },
+      {
+        "event_date": "2017-09-15",
+        "candidate_forward_minus_csmar": "-1.556662515566625155666251557E-7",
+        "bigquant_minus_csmar_forward": "-0.000092310087173",
+        "bigquant_minus_csmar_backward": "0.000093969849246",
+        "bigquant_method": "price_gap"
+      },
+      {
+        "event_date": "2018-06-21",
+        "candidate_forward_minus_csmar": "1.617250673854447439353099730E-8",
+        "bigquant_minus_csmar_forward": "0.0000997466307278",
+        "bigquant_minus_csmar_backward": "-0.0001018260869565",
+        "bigquant_method": "price_gap"
+      },
+      {
+        "event_date": "2018-09-21",
+        "candidate_forward_minus_csmar": "2.857142857142857142857142857E-7",
+        "bigquant_minus_csmar_forward": "-0.000133642857143",
+        "bigquant_minus_csmar_backward": "0.0001365614430667",
+        "bigquant_method": "price_gap"
+      }
+    ],
+    "notice_text_checks": [
+      {
+        "notice": "201806",
+        "cash_text_match": true,
+        "ex_date_text_match": true,
+        "record_date_text_match": true,
+        "historical_pdf_sha256_reference": "9e26fe2216c5264e809b92cfe4cb8c0e47c14961d203a9c2889d4f1285361f51",
+        "retrieved_at_reference": "2026-11-05T04:41:28.676079+00:00"
+      },
+      {
+        "notice": "201809",
+        "cash_text_match": true,
+        "ex_date_text_match": true,
+        "record_date_text_match": true,
+        "historical_pdf_sha256_reference": "79b1e9ee30b0a3e7a71df9e803c33a620169d61646ed2f77b8367e366b0653c6",
+        "retrieved_at_reference": "2026-11-05T04:41:28.676097+00:00"
+      }
+    ],
+    "hash_policy": "HISTORICAL_RECEIPT_REFERENCES_ONLY; INPUTS_READ_ONLY; NO_REHASH"
+  },
+  "eligibility": {
+    "raw_feature_computability": {
+      "status": "PASS",
+      "scope": "RETROSPECTIVE_ONLY",
+      "evidence": "sources"
+    },
+    "adjusted_feature_computability": {
+      "status": "UNKNOWN",
+      "reason": "Unqualified adjusted-price contract",
+      "evidence": "actions"
+    },
+    "historical_labels": {
+      "status": "UNKNOWN",
+      "reason": "PIT, HFQ and historical status unverified",
+      "evidence": "sources"
+    },
+    "corporate_action_execution": {
+      "status": "UNKNOWN",
+      "reason": "Coverage, revision, tax and settlement evidence incomplete",
+      "evidence": "actions"
+    },
+    "formal_admission": {
+      "status": "FAIL",
+      "reason": "Existing formal gate rejected both diagnostics",
+      "evidence": "sources.*.formal_gate"
+    }
+  },
+  "execution": {
+    "labels_generated": false,
+    "backtest_run": false
+  }
+}

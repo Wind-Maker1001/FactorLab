@@ -1,0 +1,142 @@
+{
+  "p309-equal": {
+    "target_to_trades_numerator": 0,
+    "target_to_trades_denominator": 0,
+    "target_to_trades_rate": null,
+    "scores_changed_to_ranking_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    },
+    "ranking_changed_to_target_changed": {
+      "numerator": 0,
+      "denominator": 78,
+      "rate": 0.0
+    },
+    "target_changed_to_rounded_desired_positions_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "rounded_desired_positions_changed_to_trades_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "trades_changed_to_holdings_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "holdings_changed_to_nav_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    }
+  },
+  "p309-minimum_variance": {
+    "target_to_trades_numerator": 0,
+    "target_to_trades_denominator": 0,
+    "target_to_trades_rate": null,
+    "scores_changed_to_ranking_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    },
+    "ranking_changed_to_target_changed": {
+      "numerator": 0,
+      "denominator": 78,
+      "rate": 0.0
+    },
+    "target_changed_to_rounded_desired_positions_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "rounded_desired_positions_changed_to_trades_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "trades_changed_to_holdings_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "holdings_changed_to_nav_changed": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    }
+  },
+  "p309-score": {
+    "target_to_trades_numerator": 78,
+    "target_to_trades_denominator": 78,
+    "target_to_trades_rate": 1.0,
+    "scores_changed_to_ranking_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    },
+    "ranking_changed_to_target_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    },
+    "target_changed_to_rounded_desired_positions_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    },
+    "rounded_desired_positions_changed_to_trades_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    },
+    "trades_changed_to_holdings_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    },
+    "holdings_changed_to_nav_changed": {
+      "numerator": 78,
+      "denominator": 78,
+      "rate": 1.0
+    }
+  },
+  "p311-supplement-score": {
+    "target_to_trades_numerator": 81,
+    "target_to_trades_denominator": 81,
+    "target_to_trades_rate": 1.0,
+    "scores_changed_to_ranking_changed": {
+      "numerator": 81,
+      "denominator": 81,
+      "rate": 1.0
+    },
+    "ranking_changed_to_target_changed": {
+      "numerator": 81,
+      "denominator": 81,
+      "rate": 1.0
+    },
+    "target_changed_to_rounded_desired_positions_changed": {
+      "numerator": 81,
+      "denominator": 81,
+      "rate": 1.0
+    },
+    "rounded_desired_positions_changed_to_trades_changed": {
+      "numerator": 81,
+      "denominator": 81,
+      "rate": 1.0
+    },
+    "trades_changed_to_holdings_changed": {
+      "numerator": 81,
+      "denominator": 81,
+      "rate": 1.0
+    },
+    "holdings_changed_to_nav_changed": {
+      "numerator": 81,
+      "denominator": 81,
+      "rate": 1.0
+    }
+  }
+}

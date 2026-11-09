@@ -1,0 +1,145 @@
+{
+  "schema": "P3D06_AGGREGATE_V1",
+  "money": "NO LIVE MONEY",
+  "pit": "PIT_UNVERIFIED",
+  "hfq": "HFQ_UNVERIFIED",
+  "formal": "FORMAL_ADMISSION_BLOCKED",
+  "status": "PARTIAL",
+  "window": {
+    "start": "2021-09-13",
+    "end": "2026-09-11",
+    "warm_start": "2021-01-13",
+    "tail_end": "2026-10-11",
+    "calendar_source": "BigQuant trading_days market_code=CN",
+    "calendar_sessions": 1388,
+    "research_calendar_sessions": 1211,
+    "member_dates_absent_from_vendor_calendar": 0
+  },
+  "membership": {
+    "source_observed_range": [
+      "2021-09-13",
+      "2026-09-30"
+    ],
+    "member_days": 605500,
+    "unique_keys": 605500,
+    "dates": 1211,
+    "securities": 932,
+    "min_daily_members": 500,
+    "max_daily_members": 500,
+    "known_at_certified_member_days": 0,
+    "stable_identity_certified_member_days": 0
+  },
+  "baseline_recheck": {
+    "missing_keys": 292,
+    "null_ohlc_present_keys": 564,
+    "any_ohlc_amount_preclose_null_present_keys": 565,
+    "old_605500_292_564_exact": true,
+    "missing_by_code": {
+      "300114.SZ": 283,
+      "600068.SH": 9
+    },
+    "complete_raw_ohlc_member_days": 604644
+  },
+  "status_observations": {
+    "st_status": {
+      "0.0": 605147,
+      "nan": 292,
+      "1.0": 35,
+      "2.0": 26
+    },
+    "is_risk_warning": {
+      "0.0": 605147,
+      "nan": 292,
+      "1.0": 61
+    },
+    "suspended": {
+      "0.0": 604644,
+      "1.0": 564,
+      "nan": 292
+    },
+    "price_limit_status": {
+      "2.0": 599509,
+      "3.0": 4505,
+      "1.0": 1194,
+      "nan": 292
+    },
+    "exdr": {
+      "0.0": 602820,
+      "1.0": 2388,
+      "nan": 292
+    }
+  },
+  "listing_snapshot": {
+    "matched_securities": 931,
+    "listing_date_nulls_in_snapshot": 0,
+    "industry_nulls_in_snapshot": 0,
+    "historical_version": "UNKNOWN_CURRENT_EXPORT_NOT_HISTORICAL_IDENTITY"
+  },
+  "source_quality": {
+    "invalid_input_rows": 10,
+    "quarantined_securities": 2,
+    "quarantined_member_days": 1517,
+    "invalid_rows_within_research_dates": 0,
+    "invalid_rows_outside_research_dates": 10,
+    "by_reason": {
+      "raw_ohlc_invalid": 10,
+      "adj_ohlc_invalid": 10,
+      "volume_negative": 0,
+      "amount_negative": 0,
+      "turnover_negative": 0,
+      "infinite_input": 0
+    },
+    "quarantined_codes": [
+      "600363.SH",
+      "601198.SH"
+    ],
+    "policy": "WHOLE_SECURITY_COMPUTATION_BLOCKED; originals unchanged; coverage is a lower bound"
+  },
+  "factors": {
+    "catalog_snapshot_hash": "df737cd443a259311f91e8615bfddd6f4408dd3ec05e933612e9c7d674b76a15",
+    "computed": 78,
+    "with_any_finite_member_value": 78,
+    "all14_finite_member_days": 598112,
+    "all64_finite_member_days": 598112,
+    "all78_finite_member_days": 598112,
+    "all78_with_label_endpoints": 597723,
+    "all78_structurally_eligible_with_label_endpoints": 597623,
+    "financially_admitted": 0
+  },
+  "label_endpoints": {
+    "holding_days": 5,
+    "entry_offset": 1,
+    "exit_offset": 6,
+    "available": 604299,
+    "missing": 1201,
+    "returns_computed": false,
+    "future_status_execution_and_corporate_actions_certified": false
+  },
+  "structural_flags": {
+    "eligible": 604356,
+    "not_eligible": 1144,
+    "mapping": "suspended==0 -> trade_status=1; st_status!=0 -> is_st; supplier-contract-unverified",
+    "listing_age": "120 vendor sessions; current listing snapshot, not PIT"
+  },
+  "windows": {
+    "rows": 78,
+    "candidates": [
+      "minimum_12_3_3",
+      "expanded_24_3_3"
+    ]
+  },
+  "resources": {
+    "wall_seconds": 125.95215490000555,
+    "process_cpu_seconds": 124.921875,
+    "peak_working_set_bytes": 1310998528,
+    "projected_parquet_physical_rows": 21883716,
+    "parquet_uncompressed_bytes_consumed_once": 1209637452,
+    "parquet_partitions": 225,
+    "factor_symbol_batch": 32,
+    "factor_batch": 16,
+    "large_intermediate_files": 0,
+    "python": "3.13.9",
+    "pandas": "2.3.3",
+    "numpy": "2.3.4"
+  }
+}
