@@ -1,5 +1,5 @@
 """Synthetic hand examples test software contracts, never real-data evidence."""
-from dataclasses import asdict, replace
+from dataclasses import asdict
 import json
 
 import numpy as np
