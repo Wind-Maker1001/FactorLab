@@ -99,6 +99,44 @@ class DividendExecutionLedger:
                     tax_status="UNKNOWN" if self.unknown_tax else "SYNTHETIC_EXPLICIT_OR_NO_ENTITLEMENT")
 
 
+def dividend_return_accounting(nav, payments, recognitions, *, initial_cash):
+    """Derive returns from the RAW target execution ledger, without replaying trades.
+
+    Returns are on initial capital with no external deposits/withdrawals. Price
+    P/L includes execution costs and excludes recognized gross dividends. Gross
+    equity adds back accrued tax on the *same executed path*, not a hypothetical
+    tax-free strategy with different reinvestment. Unknown-tax gross assets are
+    not spendable net wealth. Payment transfers assets and does not earn income.
+    """
+    initial = float(decimal(initial_cash, "initial cash", positive=True))
+    result = nav[["date", "market_value", "available_cash", "restricted_cash",
+                  "receivable_gross", "recognized_receivables", "tax_accrued",
+                  "equity_net", "equity_before_tax_charges", "trade_cash_flow",
+                  "dividend_cash_flow"]].copy()
+    for name, frame, day_column in (("dividend_recognized_gross", recognitions, "effective_date"),
+                                    ("dividend_paid_gross", payments, "observed_on")):
+        flows = (frame.groupby(day_column).gross.sum() if not frame.empty else pd.Series(dtype=float))
+        result[name] = result.date.map(flows).fillna(0).astype(float)
+    result["dividend_income_gross"] = result.dividend_recognized_gross.cumsum()
+    result["dividend_received_gross"] = result.dividend_paid_gross.cumsum()
+    result["dividend_received_available"] = result.dividend_cash_flow.cumsum()
+    result["price_pnl"] = (result.equity_before_tax_charges - initial
+                           - result.dividend_income_gross)
+    result["price_return"] = result.price_pnl / initial
+    result["total_return_gross"] = result.equity_before_tax_charges / initial - 1
+    result["total_return_net"] = result.equity_net / initial - 1
+    result["net_status"] = result.equity_net.map(
+        lambda value: "NOT_COMPUTABLE_TAX_UNKNOWN" if pd.isna(value) else "EXPLICIT_OR_NO_ENTITLEMENT")
+    result["cash_reconciliation"] = (result.available_cash - initial
+        - (result.trade_cash_flow + result.dividend_cash_flow).cumsum())
+    result["dividend_reconciliation"] = (result.dividend_income_gross
+        - result.dividend_received_gross - result.receivable_gross)
+    result["equity_reconciliation"] = (result.equity_before_tax_charges
+        - result.available_cash - result.restricted_cash - result.market_value
+        - result.recognized_receivables - result.tax_accrued)
+    return result
+
+
 def cash_dividend_ledger(positions, events, coverage, *, security_id, initial_cash, tax_rates=None,
                          price_basis="RAW"):
     if price_basis != "RAW":
@@ -160,6 +198,8 @@ def cash_dividend_ledger(positions, events, coverage, *, security_id, initial_ca
                     eligible[key] = shares
                 if row.date == date(event.effective_date):
                     receivable[key] = eligible[key] * terms[key]["cash"]
+                    if _dividend_amounts(receivable[key], tax.get(key)) is None:
+                        net_known = False
                 if row.date == date(event.pay_date):
                     if key in paid:
                         fail("duplicate dividend payment")
@@ -180,12 +220,17 @@ def cash_dividend_ledger(positions, events, coverage, *, security_id, initial_ca
                                       source_sha256=event.source_sha256))
                     paid.add(key)
             outstanding = sum(receivable.values(), Decimal(0))
+            outstanding_net = (sum((_dividend_amounts(amount, tax.get(key))
+                                    for key, amount in receivable.items()), Decimal(0))
+                               if net_known else None)
             value = shares * mark
             if cash < 0:
                 fail("negative cash in dividend ledger")
             rows.append(dict(date=row.date, shares=shares, raw_close=mark, cash_gross=cash,
                              cash_net=net_cash if net_known else None, receivable_gross=outstanding,
                              dividend_gross=gross_paid, dividend_net=net_paid if net_known else None,
+                             receivable_net=outstanding_net,
+                             equity_net=net_cash + value + outstanding_net if net_known else None,
                              market_value=value, equity_gross=cash + value + outstanding,
                              tax_status="KNOWN_EXPLICIT_ASSUMPTION" if net_known else "UNKNOWN"))
     return dict(ledger=pd.DataFrame(rows), payments=pd.DataFrame(audit),

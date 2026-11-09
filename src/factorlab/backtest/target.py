@@ -129,4 +129,7 @@ def run_target_positions(targets, bars, calendar, config=None, fee_schedule=None
                       scope="SOFTWARE_ONLY", financial_admission="FORMAL_ADMISSION_BLOCKED",
                       payment_policy="DATE_ONLY_AFTER_OPEN_ORDERS; AVAILABLE_NEXT_OBSERVED_OPEN",
                       net_status="UNKNOWN" if actions.unknown_tax else "SYNTHETIC_EXPLICIT_OR_NO_ENTITLEMENT")
+        from factorlab.backtest.corporate_actions import dividend_return_accounting
+        result["return_accounting"] = dividend_return_accounting(
+            nav, result["payments"], result["recognitions"], initial_cash=config.initial_cash)
     return result
