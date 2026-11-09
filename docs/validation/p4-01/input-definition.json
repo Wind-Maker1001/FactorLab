@@ -1,0 +1,62 @@
+{
+  "symbols": [
+    "601857.SH",
+    "600000.SH"
+  ],
+  "window": {
+    "start": "2017-01-03",
+    "end": "2018-12-28",
+    "research_start": "2018-01-02",
+    "research_end": "2018-12-20",
+    "warmup_sessions": 244,
+    "holding_days": 5,
+    "execution_tail_sessions": 1
+  },
+  "queries": {
+    "bars": [
+      {
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "601857.SH",
+          "start": "2017-01-03",
+          "end": "2018-12-28",
+          "kind": "daily_bars"
+        },
+        "source_id": "BigQuant",
+        "content_sha256": "4ef6155a8304848ccd5232e1c0dfd88fb28f0780744b8a0f2aa960b41f9e2172",
+        "units": {
+          "prices": "UNKNOWN_VENDOR_CONTRACT",
+          "volume": "UNKNOWN_VENDOR_CONTRACT",
+          "amount": "UNKNOWN_VENDOR_CONTRACT"
+        },
+        "field_origins": {}
+      },
+      {
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:eb816b086d75984f726bd436a9d479a35571922914dcf5d952bb43b172a4c4d6",
+          "symbol": "600000.SH",
+          "start": "2017-01-03",
+          "end": "2018-12-28",
+          "kind": "daily_bars"
+        },
+        "source_id": "BigQuant",
+        "content_sha256": "fd60bca4c63c633127af77accd02654197af5bca7150e58160ce785efeb0b76b",
+        "units": {
+          "prices": "UNKNOWN_VENDOR_CONTRACT",
+          "volume": "UNKNOWN_VENDOR_CONTRACT",
+          "amount": "UNKNOWN_VENDOR_CONTRACT"
+        },
+        "field_origins": {}
+      }
+    ],
+    "benchmark": [],
+    "membership": [],
+    "status": [],
+    "listings": [],
+    "calendar": []
+  },
+  "require_actions": true,
+  "requested_formal": false
+}

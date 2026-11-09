@@ -1,0 +1,971 @@
+{
+  "schema": "P4_01_PIPELINE_PREFLIGHT_V1",
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "data_existence": "OBSERVED",
+  "engineering": "PASS",
+  "formal_admission": "BLOCKED",
+  "requested_formal": false,
+  "formal_request": "NOT_REQUESTED",
+  "historical_pit": "UNKNOWN",
+  "hfq_qualification": "UNKNOWN",
+  "query_completeness": {
+    "bars": true,
+    "benchmark": true,
+    "membership": true,
+    "status": true,
+    "listings": true,
+    "calendar": true
+  },
+  "receipts": [
+    {
+      "group": "bars",
+      "query": {
+        "source": "bars:600000.SH",
+        "version": "v1",
+        "kind": "bars",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "600000.SH"
+      },
+      "expected_source_id": "bars:600000.SH",
+      "expected_content_sha256": "b5292f0f3bd5d2a4e7764548a619252333d1214c38578c583820c40c4f8dc61f",
+      "units": {
+        "raw_open": "fixture_dimension",
+        "raw_high": "fixture_dimension",
+        "raw_low": "fixture_dimension",
+        "raw_close": "fixture_dimension",
+        "adj_open": "fixture_dimension",
+        "adj_high": "fixture_dimension",
+        "adj_low": "fixture_dimension",
+        "adj_close": "fixture_dimension",
+        "volume": "fixture_dimension",
+        "amount": "fixture_dimension",
+        "turnover": "fixture_dimension"
+      },
+      "field_origins": {
+        "date": "synthetic_native:date",
+        "symbol": "synthetic_native:symbol",
+        "raw_open": "synthetic_native:raw_open",
+        "raw_high": "synthetic_native:raw_high",
+        "raw_low": "synthetic_native:raw_low",
+        "raw_close": "synthetic_native:raw_close",
+        "adj_open": "synthetic_native:adj_open",
+        "adj_high": "synthetic_native:adj_high",
+        "adj_low": "synthetic_native:adj_low",
+        "adj_close": "synthetic_native:adj_close",
+        "volume": "synthetic_native:volume",
+        "amount": "synthetic_native:amount",
+        "turnover": "synthetic_native:turnover"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "bars:600000.SH",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "b5292f0f3bd5d2a4e7764548a619252333d1214c38578c583820c40c4f8dc61f",
+      "available_fields": [
+        "date",
+        "symbol",
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close",
+        "volume",
+        "amount",
+        "turnover"
+      ]
+    },
+    {
+      "group": "bars",
+      "query": {
+        "source": "bars:000001.SZ",
+        "version": "v1",
+        "kind": "bars",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "000001.SZ"
+      },
+      "expected_source_id": "bars:000001.SZ",
+      "expected_content_sha256": "ef2cabc4c6161f0e3b32ae535974a63b82405c81de54b1d11e7abd2fa3653a8b",
+      "units": {
+        "raw_open": "fixture_dimension",
+        "raw_high": "fixture_dimension",
+        "raw_low": "fixture_dimension",
+        "raw_close": "fixture_dimension",
+        "adj_open": "fixture_dimension",
+        "adj_high": "fixture_dimension",
+        "adj_low": "fixture_dimension",
+        "adj_close": "fixture_dimension",
+        "volume": "fixture_dimension",
+        "amount": "fixture_dimension",
+        "turnover": "fixture_dimension"
+      },
+      "field_origins": {
+        "date": "synthetic_native:date",
+        "symbol": "synthetic_native:symbol",
+        "raw_open": "synthetic_native:raw_open",
+        "raw_high": "synthetic_native:raw_high",
+        "raw_low": "synthetic_native:raw_low",
+        "raw_close": "synthetic_native:raw_close",
+        "adj_open": "synthetic_native:adj_open",
+        "adj_high": "synthetic_native:adj_high",
+        "adj_low": "synthetic_native:adj_low",
+        "adj_close": "synthetic_native:adj_close",
+        "volume": "synthetic_native:volume",
+        "amount": "synthetic_native:amount",
+        "turnover": "synthetic_native:turnover"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "bars:000001.SZ",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "ef2cabc4c6161f0e3b32ae535974a63b82405c81de54b1d11e7abd2fa3653a8b",
+      "available_fields": [
+        "date",
+        "symbol",
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close",
+        "volume",
+        "amount",
+        "turnover"
+      ]
+    },
+    {
+      "group": "benchmark",
+      "query": {
+        "source": "benchmark:000905.SH",
+        "version": "v1",
+        "kind": "benchmark",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "000905.SH"
+      },
+      "expected_source_id": "benchmark:000905.SH",
+      "expected_content_sha256": "406ef9fe9cf2fe429a407f0510e24bf8db539f30802dca56d211bc85daaa27f9",
+      "units": {
+        "open": "fixture_dimension"
+      },
+      "field_origins": {
+        "date": "synthetic_native:date",
+        "symbol": "synthetic_native:symbol",
+        "open": "synthetic_native:open"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "benchmark:000905.SH",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "406ef9fe9cf2fe429a407f0510e24bf8db539f30802dca56d211bc85daaa27f9",
+      "available_fields": [
+        "date",
+        "symbol",
+        "open"
+      ]
+    },
+    {
+      "group": "membership",
+      "query": {
+        "source": "membership:600000.SH",
+        "version": "v1",
+        "kind": "membership",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "600000.SH"
+      },
+      "expected_source_id": "membership:600000.SH",
+      "expected_content_sha256": "0a7904c7cc90a382a1a9861a1b602f6852da2390a792788abe70523fee44fdff",
+      "units": {},
+      "field_origins": {
+        "date": "synthetic_native:date",
+        "symbol": "synthetic_native:symbol"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "membership:600000.SH",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "0a7904c7cc90a382a1a9861a1b602f6852da2390a792788abe70523fee44fdff",
+      "available_fields": [
+        "date",
+        "symbol"
+      ]
+    },
+    {
+      "group": "membership",
+      "query": {
+        "source": "membership:000001.SZ",
+        "version": "v1",
+        "kind": "membership",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "000001.SZ"
+      },
+      "expected_source_id": "membership:000001.SZ",
+      "expected_content_sha256": "56b8708349b1eefab8e9fd13484832e9de25137e583d85a692f2bd69c651385e",
+      "units": {},
+      "field_origins": {
+        "date": "synthetic_native:date",
+        "symbol": "synthetic_native:symbol"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "membership:000001.SZ",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "56b8708349b1eefab8e9fd13484832e9de25137e583d85a692f2bd69c651385e",
+      "available_fields": [
+        "date",
+        "symbol"
+      ]
+    },
+    {
+      "group": "status",
+      "query": {
+        "source": "status:600000.SH",
+        "version": "v1",
+        "kind": "status",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "600000.SH"
+      },
+      "expected_source_id": "status:600000.SH",
+      "expected_content_sha256": "d8a478e3008358350a3022faf8aa2b955f5a39b7f5b3c9b621f593782779d3f4",
+      "units": {
+        "trade_status": "fixture_dimension",
+        "is_st": "fixture_dimension"
+      },
+      "field_origins": {
+        "date": "synthetic_native:date",
+        "symbol": "synthetic_native:symbol",
+        "trade_status": "synthetic_native:trade_status",
+        "is_st": "synthetic_native:is_st"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "status:600000.SH",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "d8a478e3008358350a3022faf8aa2b955f5a39b7f5b3c9b621f593782779d3f4",
+      "available_fields": [
+        "date",
+        "symbol",
+        "trade_status",
+        "is_st"
+      ]
+    },
+    {
+      "group": "status",
+      "query": {
+        "source": "status:000001.SZ",
+        "version": "v1",
+        "kind": "status",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "000001.SZ"
+      },
+      "expected_source_id": "status:000001.SZ",
+      "expected_content_sha256": "4c3e6d6635d786189e10810200fcd6188f17c527c952867f1f235c8e9800a7bc",
+      "units": {
+        "trade_status": "fixture_dimension",
+        "is_st": "fixture_dimension"
+      },
+      "field_origins": {
+        "date": "synthetic_native:date",
+        "symbol": "synthetic_native:symbol",
+        "trade_status": "synthetic_native:trade_status",
+        "is_st": "synthetic_native:is_st"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "status:000001.SZ",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "4c3e6d6635d786189e10810200fcd6188f17c527c952867f1f235c8e9800a7bc",
+      "available_fields": [
+        "date",
+        "symbol",
+        "trade_status",
+        "is_st"
+      ]
+    },
+    {
+      "group": "listings",
+      "query": {
+        "source": "listings:600000.SH",
+        "version": "v1",
+        "kind": "listings",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "600000.SH"
+      },
+      "expected_source_id": "listings:600000.SH",
+      "expected_content_sha256": "643cf500a6668b24bc3874e685fa307d44eacb598b4b23f0131b04325324cff5",
+      "units": {},
+      "field_origins": {
+        "symbol": "synthetic_native:symbol",
+        "listing_date": "synthetic_native:listing_date",
+        "delist_date": "synthetic_native:delist_date"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "listings:600000.SH",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "643cf500a6668b24bc3874e685fa307d44eacb598b4b23f0131b04325324cff5",
+      "available_fields": [
+        "symbol",
+        "listing_date",
+        "delist_date",
+        "security_id"
+      ]
+    },
+    {
+      "group": "listings",
+      "query": {
+        "source": "listings:000001.SZ",
+        "version": "v1",
+        "kind": "listings",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": "000001.SZ"
+      },
+      "expected_source_id": "listings:000001.SZ",
+      "expected_content_sha256": "9d03930e845352d86cb39ae2dbe1cec5d322a31c7f3980fbbf3e374438f12c40",
+      "units": {},
+      "field_origins": {
+        "symbol": "synthetic_native:symbol",
+        "listing_date": "synthetic_native:listing_date",
+        "delist_date": "synthetic_native:delist_date"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "listings:000001.SZ",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "9d03930e845352d86cb39ae2dbe1cec5d322a31c7f3980fbbf3e374438f12c40",
+      "available_fields": [
+        "symbol",
+        "listing_date",
+        "delist_date",
+        "security_id"
+      ]
+    },
+    {
+      "group": "calendar",
+      "query": {
+        "source": "calendar:calendar",
+        "version": "v1",
+        "kind": "calendar",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "symbol": null
+      },
+      "expected_source_id": "calendar:calendar",
+      "expected_content_sha256": "3d80447ac16e08e387bf04a9922fbfe276d05e66c4274170c4ed1c3b12ca5770",
+      "units": {},
+      "field_origins": {
+        "date": "synthetic_native:date"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "calendar:calendar",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": "2026-11-09T00:00:00Z",
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "observed_content_sha256": "3d80447ac16e08e387bf04a9922fbfe276d05e66c4274170c4ed1c3b12ca5770",
+      "available_fields": [
+        "date"
+      ]
+    }
+  ],
+  "action_receipts": [
+    {
+      "query": {
+        "source": "actions:600000.SH",
+        "version": "v1",
+        "source_id": "actions:600000.SH",
+        "security_id": "stable:600000.SH",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "content_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "actions:600000.SH",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "COMPLETE_QUERY_EVENT_COVERAGE",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "content_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "event_references": []
+    },
+    {
+      "query": {
+        "source": "actions:000001.SZ",
+        "version": "v1",
+        "source_id": "actions:000001.SZ",
+        "security_id": "stable:000001.SZ",
+        "start": "2021-01-04",
+        "end": "2021-01-19",
+        "content_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "actions:000001.SZ",
+        "data_version": "v1",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "COMPLETE_QUERY_EVENT_COVERAGE",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "SYNTHETIC"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      },
+      "content_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "event_references": []
+    }
+  ],
+  "window": {
+    "start": "2021-01-04",
+    "end": "2021-01-19",
+    "research_start": "2021-01-07",
+    "research_end": "2021-01-11",
+    "warmup_sessions": 3,
+    "holding_days": 5,
+    "execution_tail_sessions": 1
+  },
+  "symbols": [
+    "600000.SH",
+    "000001.SZ"
+  ],
+  "layers": {
+    "warmup": {
+      "sessions": 3,
+      "dates": [
+        "2021-01-04",
+        "2021-01-05",
+        "2021-01-06"
+      ]
+    },
+    "research": {
+      "sessions": 3,
+      "dates": [
+        "2021-01-07",
+        "2021-01-08",
+        "2021-01-11"
+      ]
+    },
+    "tail": {
+      "sessions": 6,
+      "dates": [
+        "2021-01-12",
+        "2021-01-13",
+        "2021-01-14",
+        "2021-01-15",
+        "2021-01-18",
+        "2021-01-19"
+      ]
+    }
+  },
+  "coverage_matrix": [
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-04",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-05",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-06",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-07",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-08",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-11",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-12",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-13",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-14",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-15",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-18",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600000.SH",
+      "date": "2021-01-19",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-04",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-05",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-06",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-07",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-08",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-11",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-12",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-13",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-14",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-15",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-18",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "000001.SZ",
+      "date": "2021-01-19",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    }
+  ],
+  "label_endpoints": [
+    {
+      "date": "2021-01-07 00:00:00",
+      "symbol": "600000.SH",
+      "entry_date": "2021-01-08 00:00:00",
+      "exit_date": "2021-01-15 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-01-08 00:00:00",
+      "symbol": "600000.SH",
+      "entry_date": "2021-01-11 00:00:00",
+      "exit_date": "2021-01-18 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-01-11 00:00:00",
+      "symbol": "600000.SH",
+      "entry_date": "2021-01-12 00:00:00",
+      "exit_date": "2021-01-19 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-01-07 00:00:00",
+      "symbol": "000001.SZ",
+      "entry_date": "2021-01-08 00:00:00",
+      "exit_date": "2021-01-15 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-01-08 00:00:00",
+      "symbol": "000001.SZ",
+      "entry_date": "2021-01-11 00:00:00",
+      "exit_date": "2021-01-18 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-01-11 00:00:00",
+      "symbol": "000001.SZ",
+      "entry_date": "2021-01-12 00:00:00",
+      "exit_date": "2021-01-19 00:00:00",
+      "label_endpoints_available": true
+    }
+  ],
+  "unmet_contracts": [],
+  "evidence_gaps": [
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "Independent historical source, unit and security identity certification",
+    "Replayable formal market/execution qualification package"
+  ],
+  "summary_zh": "工程输入预检：PASS；未满足合同 0 项；历史PIT及HFQ资格 UNKNOWN；正式金融准入 BLOCKED。",
+  "observations_origin": "SYNTHETIC_SOFTWARE_FIXTURE",
+  "actual_raw_consumption": "NOT_RUN"
+}
