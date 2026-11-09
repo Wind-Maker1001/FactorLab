@@ -92,5 +92,31 @@ def test_full_retains_real_legacy_failure_and_release_block():
         assert 'continue-on-error' not in job
         for step in job.get('steps', []):
             assert 'continue-on-error' not in step
-    assert any('--suite legacy' in s.get('run', '') for s in full['jobs']['legacy']['steps'])
-    assert any('validation_v2.py' in s.get('run', '') for s in full['jobs']['validation-v2-review']['steps'])
+    assert any('--suite historical' in s.get('run', '') for s in full['jobs']['legacy']['steps'])
+    assert any('--historical-only' in s.get('run', '') for s in full['jobs']['validation-v2-review']['steps'])
+    assert full['jobs']['incremental']['strategy']['matrix'] == {
+        'python': ['3.14', '3.13'], 'shard': ['0', '1', '2']}
+    assert full['jobs']['incremental']['strategy']['fail-fast'] == 'false'
+    assert 'current-coverage' in full['jobs']['release-gate']['needs']
+    assert full['jobs']['current-coverage']['if'] == 'always()'
+    assert full['jobs']['current-coverage']['needs'] == 'incremental'
+    assert any('test "$RESULT" = success' in s.get('run', '')
+               for s in full['jobs']['current-coverage']['steps'])
+
+
+def test_full_release_gate_refuses_every_non_success(monkeypatch):
+    from pathlib import Path
+    import json
+    import yaml
+    full = yaml.load((Path(__file__).resolve().parents[2] /
+        '.github/workflows/factorlab-full.yml').read_text(), Loader=yaml.BaseLoader)
+    gate = full['jobs']['release-gate']
+    results = {job: {'result': 'success'} for job in gate['needs']}
+    for job in results:
+        for status in ('failure', 'skipped', 'cancelled'):
+            attack = dict(results, **{job: {'result': status}})
+            monkeypatch.setenv('RESULTS', json.dumps(attack))
+            with pytest.raises(SystemExit) as exc:
+                exec(compile(gate['steps'][0]['run'], '<full-release-gate>', 'exec'), {})
+            assert exc.value.code
+
