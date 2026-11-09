@@ -1,0 +1,31 @@
+{
+  "url": "https://bigquant.com/data/datasources/cn_stock_adjust_factor",
+  "collected_at": "2026-11-09T14:44:58.036621+00:00",
+  "status": 200,
+  "actual_url": "https://bigquant.com/data/datasources/cn_stock_adjust_factor",
+  "content_type": "text/html; charset=utf-8",
+  "sha256": "ec70d95cb496c1614d03deb46769050a2e22e5a7a460ba166b9f02ba3171715c",
+  "bytes": 48881,
+  "extracts": [
+    "        复权因子数据获取-BigQuant量化交易数据库",
+    "        content=\"BigQuant量化交易数据库提供复权因子的数据获取接口，股票除权除息产生的复权因子，只在除权除息日有数据，每个事件有前复权和后复权两行，按跳空法由前收盘价计算。\" />",
+    "    <meta name=\"keywords\" content=\"复权因子,复权因子数据接口,复权因子数据获取\" />",
+    "                    复权因子",
+    "                    股票除权除息产生的复权因子，只在除权除息日有数据，每个事件有前复权和后复权两行，按跳空法由前收盘价计算。",
+    "本表记录股票每次除权除息产生的复权因子。只有发生除权除息的股票在事件当天有行，不是每天每只股票一行。每个事件有 forward（前复权）和 backward（后复权）两行，二者互为倒数。",
+    "| type | 复权类型，`forward` 为前复权因子，`backward` 为后复权因子 |",
+    "| method | 计算方法，目前表内只有 `price_gap` |",
+    "| adjust_factor | 单次事件的复权因子，不是累计值 |",
+    "| method | `price_gap` 为跳空法，由前一交易日收盘价与当日前收盘价的比值得到 |",
+    "同一事件的 `forward * backward` 等于 1。累计后复权因子是历史上各次事件的 `backward` 连乘，`cn_stock_real_bar1d` 的 `adjust_factor` 在事件日相对前一交易日的变化，与本表 `backward` 的取值一致。",
+    "- 表内只有 `method` 为 `price_gap` 的行，没有 `dividend`、`af_diff` 的行。",
+    "| 2026-07-20 00:00:00 | 000729.SZ    | backward |        1.01704  | price_gap |",
+    "| 2026-07-20 00:00:00 | 000729.SZ    | forward  |        0.98325  | price_gap |",
+    "| 2026-07-20 00:00:00 | 002475.SZ    | backward |        1.00242  | price_gap |",
+    "| 2026-07-20 00:00:00 | 002475.SZ    | forward  |        0.997588 | price_gap |",
+    "| 2026-07-20 00:00:00 | 002545.SZ    | backward |        1.01951  | price_gap |",
+    "| 2026-08-19 00:00:00 | 600746.SH    | forward  |        0.994092 | price_gap |",
+    "| 2026-08-19 00:00:00 | 601696.SH    | backward |        1.00169  | price_gap |",
+    "| 2026-08-19 00:00:00 | 601696.SH    | forward  |        0.998314 | price_gap |"
+  ]
+}
