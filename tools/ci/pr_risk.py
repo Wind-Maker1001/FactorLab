@@ -25,6 +25,7 @@ PROTECTED_RESEARCH_PATHS = (
     'tests/evidence/test_pit_archive_verifiers.py',
     'tools/data/candidate_preflight.py',
 )
+PROTECTED_RESEARCH_ROOTS = ('docs/validation/v2/',)
 
 
 def targeted_path(path):
@@ -40,6 +41,7 @@ def targeted_path(path):
 def research_document(path):
     parts = path.split('/')
     return (len(parts) >= 3 and parts[:2] == ['docs', 'validation'] and
+            not path.startswith(PROTECTED_RESEARCH_ROOTS) and
             all(p not in ('', '.', '..') and not p.startswith('.') for p in parts[2:]) and
             Path(path).suffix.lower() in RESEARCH_DOCUMENT_EXTENSIONS)
 
