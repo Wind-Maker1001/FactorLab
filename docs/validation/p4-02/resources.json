@@ -1,0 +1,7 @@
+{
+  "wall_seconds": 28.404720399994403,
+  "cpu_seconds": 27.96875,
+  "final_rss_bytes": 375586816,
+  "rss_measurement": "final process RSS; not peak or model-exclusive memory",
+  "timing_scope": "configuration, data construction, four-model research and reporting in one process"
+}

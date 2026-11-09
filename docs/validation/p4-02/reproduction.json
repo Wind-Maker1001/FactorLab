@@ -1,0 +1,15 @@
+{
+  "command": [
+    "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+    "-m",
+    "tools.research.run_pipeline",
+    "--config",
+    "D:\\Code\\FactorLab-archives\\p4-02-synthetic-20261109-acceptance\\normalized-config.json",
+    "--output",
+    "<fresh-output>"
+  ],
+  "cwd": "repository root",
+  "environment": "Use the exact Python/package versions in identity.json; set PYTHONPATH=src.",
+  "config_sha256": "6ae5ea2ea6f08c411e5af33c0de4f89924425fd090ef247f52367e4d796bdf44",
+  "dataset_identity": "6c47fd3a7baf1271384c39d9ffbd4331b3d8ad9265bb55c09773ea76c33d80d0"
+}

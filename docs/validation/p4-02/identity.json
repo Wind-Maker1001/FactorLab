@@ -1,0 +1,55 @@
+{
+  "config_sha256": "6ae5ea2ea6f08c411e5af33c0de4f89924425fd090ef247f52367e4d796bdf44",
+  "data": {
+    "daily_bars": "4dd570ca91e809a0e62df8cccb1b43785e9cf207870938ab18ba78bf6d0d6ff8",
+    "index_bars": "d338fd7ecb7eb1f65b04fe85cc77037772c98fad0276b567060c7f229b600574",
+    "membership": "68de47df7a6b2cc4844aa8d0084599527028df73db79649f08d908a83f78e16f",
+    "security_status": "73743317f527da27652d51c1059424ab574301e5f516c6d2026da921ddf972eb",
+    "listings": "1080399f2bab5899c581cf3c9606ef1f8cbc574f1b0ff4011b3feca8717b94ff",
+    "calendar": "3382b1edf3142c7b9c3a781be17b8ba384d17bd9befcbb4eb6d5f575cd50bced"
+  },
+  "factors": [
+    {
+      "factor_id": "MOM20",
+      "version": "1",
+      "definition_hash": "1def5e5113f92df678ecb937ad0aeea959f1d4df130beb36c873875d7c9a2245"
+    },
+    {
+      "factor_id": "REV1",
+      "version": "1",
+      "definition_hash": "95026824ebafe61fd09dfd37c8717fc87629c5a1d99f55b9347b656f47967aaa"
+    }
+  ],
+  "source_files": {
+    "tools\\research\\run_pipeline.py": "427ba447a66a86446fca371240f4926b59178d311325ce8eabd3bcff0a5d509d",
+    "tools\\research\\pipeline_config.py": "58c45a486234bf6cb432d67c56c36acaedce4eff0442896b746f02758865e6bb",
+    "examples\\research\\research_pipeline_synthetic.py": "4af9eb55c633262a8ddd55ccef9e5b1f6442444056ef9b7b522392d05d2c7d04",
+    "src\\factorlab\\exploratory\\factor_discovery\\synthetic.py": "58dec43da86e8895bf80de5510e7e039948058ba67a9e4149217276e05757e48"
+  },
+  "code": {
+    "commit": "e27d2f893a9f432ea67f80a69f4e9300a9796a13",
+    "tree": "28bc4db5b8af2be396b4c29b812c71ff4141aee4",
+    "git_dirty": true,
+    "git_diff_sha256": "3157f866a300010eb550f89e91ae007304cfb756424d70069ba6409e47124e86"
+  },
+  "environment": {
+    "python_version": "3.14.0",
+    "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "package_versions": {
+      "numpy": "2.3.4",
+      "pandas": "2.3.3",
+      "pyarrow": "22.0.0",
+      "scipy": "1.16.3",
+      "scikit-learn": "1.7.2",
+      "matplotlib": "3.10.7",
+      "akshare": "1.18.88",
+      "baostock": "0.8.9",
+      "lightgbm": "4.6.0",
+      "xgboost": "2.1.4",
+      "PyYAML": "6.0.3",
+      "pytest": "8.4.2",
+      "tzdata": "2026.4"
+    }
+  }
+}
