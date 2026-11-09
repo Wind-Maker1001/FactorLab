@@ -4,6 +4,8 @@ from dataclasses import replace
 import numpy as np
 import pandas as pd
 
+from factorlab.evaluation.return_attribution import attribute_execution
+
 
 ORDER_KEYS = ['signal_date', 'execution_date', 'symbol', 'side']
 
@@ -31,11 +33,11 @@ def order_outcomes(result):
     return orders.reset_index()
 
 
-def execution_diagnostics(result, *, initial_cash, calendar, attribution, predictions=None,
-                          decisions=None):
-    """Extend the injected R14 ReturnAttribution, without duplicating its ledger.
+def execution_diagnostics(result, *, initial_cash, calendar, attribution=attribute_execution,
+                          predictions=None, decisions=None):
+    """Extend the formal R14 ReturnAttribution, without duplicating its ledger.
 
-    ``attribution`` is R14's attribute_execution callable. Predictions retain
+    ``attribution`` optionally overrides R14's attribute_execution callable. Predictions retain
     their original scale; optimizer preferences are not expected returns.
     """
     base = attribution(result, initial_cash=initial_cash, calendar=calendar)

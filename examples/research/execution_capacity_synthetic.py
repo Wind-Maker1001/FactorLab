@@ -1,7 +1,6 @@
 """Small reproducible capacity sensitivity experiment; no model fitting."""
 import argparse
 from dataclasses import asdict
-import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -16,17 +15,10 @@ from factorlab.backtest.execution import AShareExecutionBacktester, ExecutionBac
 from factorlab.dataset.identity import file_hash, frame_hash
 from factorlab.evaluation.execution_risk import execution_diagnostics, order_outcomes, paired_constraint_difference
 from factorlab.evaluation.research import EvaluationContext, ResearchEvaluation, reprice_costs
+from factorlab.evaluation import return_attribution
 from factorlab.backtest.fees import FeeSchedule
 from factorlab.metrics.exposures import diagnose_exposures
 from factorlab.portfolio import PortfolioOptimizer, OptimizerConfig
-
-
-def load_attribution(path):
-    spec = importlib.util.spec_from_file_location('factorlab_r14_explicit_dependency', path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module.attribute_execution
 
 
 def fixture():
@@ -60,10 +52,9 @@ def fixture():
     return bars, benchmark, pd.DataFrame(predictions), returns, tuple(liquidity), pd.DataFrame(evidence)
 
 
-def experiment(output, attribution_source, capitals=(10000, 100000, 1000000), participation=(.02, .10)):
+def experiment(output, capitals=(10000, 100000, 1000000), participation=(.02, .10)):
     started = time.perf_counter()
     output.mkdir(parents=True, exist_ok=False)
-    attribution = load_attribution(attribution_source)
     bars, benchmark, predictions, returns, liquidity, evidence = fixture()
     first = predictions.date.min()
     execution_bars, execution_benchmark = bars[bars.date >= first], benchmark[benchmark.date >= first]
@@ -86,7 +77,7 @@ def experiment(output, attribution_source, capitals=(10000, 100000, 1000000), pa
             turnover = decisions[['date', 'estimated_gross_security_turnover']].rename(
                 columns={'date': 'signal_date', 'estimated_gross_security_turnover': 'target_turnover'})
             attributed = execution_diagnostics(result, initial_cash=capital, calendar=calendar,
-                attribution=attribution, predictions=predictions, decisions=turnover)
+                predictions=predictions, decisions=turnover)
             evaluation.portfolio(name, result.nav, trades=result.trades, positions=result.positions)
             risk = diagnose_exposures(result.positions, evidence, calendar=calendar)
             risk['capital'], risk['scenario'] = capital, name
@@ -122,7 +113,8 @@ def experiment(output, attribution_source, capitals=(10000, 100000, 1000000), pa
     protocol = dict(boundary=BOUNDARY, source_kind='SYNTHETIC', capitals=list(capitals),
         participation=list(participation), liquidity=[asdict(x) for x in liquidity],
         predictions_identity=frame_hash(predictions), bars_identity=frame_hash(bars),
-        attribution_source_sha256=file_hash(attribution_source), attribution_dependency_commit='6a02db0',
+        attribution_source_sha256=file_hash(Path(return_attribution.__file__)),
+        attribution_api='factorlab.evaluation.return_attribution.attribute_execution',
         elapsed_seconds=time.perf_counter() - started, python=sys.version,
         accounting='R14 verifies every fill cash flow, daily costs/cash/equity/NAV and cumulative security shares',
         results=summaries)
@@ -134,9 +126,7 @@ def experiment(output, attribution_source, capitals=(10000, 100000, 1000000), pa
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--attribution-source', type=Path, required=True,
-                        help='Explicit source path from the unreleased R14 dependency')
     parser.add_argument('--capitals', type=float, nargs='+', default=[10000, 100000, 1000000])
     parser.add_argument('--participation', type=float, nargs='+', default=[.02, .10])
     args = parser.parse_args()
-    experiment(args.output, args.attribution_source, tuple(args.capitals), tuple(args.participation))
+    experiment(args.output, tuple(args.capitals), tuple(args.participation))

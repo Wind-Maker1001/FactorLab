@@ -4,7 +4,7 @@ NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
 
 ## Protocol and interface
 
-Published baseline: `d2f52c05ddaf86f493ae38c792aaf961ff652bb0`. Attribution dependency #40 is open, not released. The standalone extension accepts its `attribute_execution` callable; no attribution engine is copied. Integration uses source from commit `6a02db0` explicitly.
+Published baseline: `d2f52c05ddaf86f493ae38c792aaf961ff652bb0`. PR #40 is merged in main at `03504c59b487e1f91160378c661809ea605fe509`. R15 defaults to the public `factorlab.evaluation.return_attribution.attribute_execution` API, retaining optional callable injection. No attribution engine is copied and no external source file is required.
 
 The experiment is SYNTHETIC / SOFTWARE_ONLY. Three securities, deterministic daily prices and fixed rotating model scores drive the existing score optimizer and holdings-aware feedback adapter. No fitting or parameter selection occurs. Investment .8, cap .5, trailing risk five sessions and rebalance every three prediction observations are fixed. A 3×2 grid varies CNY 10,000/100,000/1,000,000 and historical-volume participation .02/.10, with base and zero-additional-cost references at each capital. Additional slippage 2bps and impact coefficient 20bps are research assumptions, not observed execution quotes. Outcomes are descriptive, not real strategy capacity certification.
 
@@ -14,7 +14,7 @@ Liquidity inputs are explicit prior-history averages with effective date, known-
 
 Order rates use unique signal-date/execution-date/security/side identities. Partial-refusal records are not additional submitted orders. Share fill rate is filled shares/requested shares; rejection rate is fully rejected orders/all orders. Target desired holdings are not submitted quantities. Unknown-quantity target failures stay separate from quantity-based order rates.
 
-`execution_diagnostics` extends the injected R14 ReturnAttribution. The original five cost columns still reconcile; new subcomponents disclose fixed research slippage and impact. Gross P&L is explicit fees added back on the same observed fills, not a zero-cost rerun. Target turnover comes only from a decision-time actual-holdings snapshot. Different-path daily return comparisons are marked HYPOTHETICAL_REEXECUTION_DIFFERENCE_NOT_ATTRIBUTION; they do not identify an additive execution contribution.
+`execution_diagnostics` extends the formal R14 ReturnAttribution using the public API by default. The original five cost columns still reconcile; new subcomponents disclose fixed research slippage and impact. Gross P&L is explicit fees added back on the same observed fills, not a zero-cost rerun. Target turnover comes only from a decision-time actual-holdings snapshot. Different-path daily return comparisons are marked HYPOTHETICAL_REEXECUTION_DIFFERENCE_NOT_ATTRIBUTION; they do not identify an additive execution contribution.
 
 `diagnose_exposures` reports NAV-weighted security HHI/max, industry weight/HHI and caller-supplied market-cap/momentum/volatility weighted values. Inputs carry source, unit, effective and knowledge time; eligible observations precede the session's 15:00 close. Every nonzero holding must be covered, in common units and provenance type. Missing, invalid or ambiguous selected inputs yield NOT_COMPUTABLE. No future backfill, inferred historical industries or commercial Barra model is provided. Synthetic style units are CNY market capitalization, dimensionless momentum return and daily-return volatility.
 
@@ -36,6 +36,16 @@ Resources: CPU-only synthetic experiment, three securities, 32 sessions, 75 pred
 
 Research boundaries: historical averages are caller-provided liquidity proxies with no order-book, queue, intraday seasonality or real fill calibration. Square-root impact and partial allocation are disclosed research assumptions. The experiment does not establish real strategy capital capacity. Style exposures use supplied units without cross-sectional normalization or factor-return/covariance estimation. Real historical availability remains subject to the unchanged PIT/HFQ/formal gates.
 
+## Formal main integration — 2026-11-09
+
+Integrated main `03504c59b487e1f91160378c661809ea605fe509` into the existing R15 branch. The formal R14 attribution implementation has no source differences from the historical dependency; capacity, execution fees and attribution mathematics are unchanged. The historical 12-account grid is retained and was not rerun.
+
+Removed dynamic source-file loading, the required CLI source argument and environment-dependent test skips. The two previously skipped integration tests now exercise the formal default API. Explicit callable injection produces identical daily/execution receipts and summaries; the return type remains ReturnAttribution. An additional all-rejected account verifies no-fill cash, zero costs/P&L and unit NAV.
+
+Python 3.13: the ten-file R14/R15 regression command below passed **157 tests, zero skips**, in 23.00s before adding the no-fill case. The final integration file separately passed **4 tests, zero skips**, in 2.64s: 158 distinct tests across these runs, not 161 distinct tests. CLI `--help` succeeds with only output/capital/participation arguments. No capacity experiment rerun or model fitting was required. Local receipts remain in `local-r15/formal-api-tests.xml`; historical experiment receipts retain their original provenance.
+
+Trusted remote Fast/Extended and control approval are pending the integration push. The `ci-control-review` environment requires a designated human reviewer; software checks do not replace that approval. No selector, risk downgrade, financial gate or frozen Golden change is part of this integration.
+
 ## Reproduction
 
 Run in Git Bash at the repository root, Python 3.13 with existing project dependencies:
@@ -44,13 +54,10 @@ Run in Git Bash at the repository root, Python 3.13 with existing project depend
 export PYTHONPATH=src
 PY=/d/Environments/factorlab-py313/Scripts/python.exe
 mkdir -p local-r15
-# Explicitly obtain the unreleased dependency from its fixed commit.
-git show 6a02db0:src/factorlab/evaluation/return_attribution.py > local-r15/r14_return_attribution.py
-export FACTORLAB_R14_ATTRIBUTION_SOURCE="$PWD/local-r15/r14_return_attribution.py"
-$PY -m pytest -q tests/research/test_execution_capacity.py tests/research/test_risk_exposures.py tests/research/test_execution_risk_integration.py tests/research/test_capacity_pipeline.py tests/research/test_portfolio_execution.py tests/research/test_execution_feedback.py tests/research/test_pipeline_feedback.py tests/research/test_research_evaluation.py tests/research/test_dual_ma.py
-$PY -m examples.research.execution_capacity_synthetic --output local-r15/new-run --attribution-source "$FACTORLAB_R14_ATTRIBUTION_SOURCE"
+$PY -m pytest -q tests/research/test_execution_capacity.py tests/research/test_risk_exposures.py tests/research/test_execution_risk_integration.py tests/research/test_capacity_pipeline.py tests/research/test_portfolio_execution.py tests/research/test_execution_feedback.py tests/research/test_pipeline_feedback.py tests/research/test_research_evaluation.py tests/research/test_dual_ma.py tests/research/test_return_attribution.py
+$PY -m examples.research.execution_capacity_synthetic --output local-r15/new-run
 ```
 
-On a fresh clone, fetch the public dependency reference first if the object is absent: `git fetch origin codex/p3-r14-return-attribution`. Integration tests require the explicit environment variable; standalone execution/risk tests do not. `--output` must name a new directory. `--capitals` and `--participation` configure a small sensitivity grid without modifying predictions or historical inputs.
+Use a checkout containing merged R14. Integration tests and the CLI directly use the installed public module; no dependency environment variable or historical source extraction is needed. `--output` must name a new directory. `--capitals` and `--participation` configure a small sensitivity grid without modifying predictions or historical inputs.
 
 The output includes the original predictions, target weights, decision-time actual weights and target turnover, actual fills/rejections, holdings, target-vs-actual execution weights, same-path daily attribution, order outcomes and historical exposures. The compact checked-in evidence retains summaries, risk diagnostics and paired differences rather than duplicate full per-scenario tables. Pure-cash dates are retained when the exposure calendar is supplied: concentration is zero, missing style evidence remains unavailable.
