@@ -1,0 +1,23 @@
+{
+  "symbols": ["600363.SH", "601868.SH"],
+  "window": {
+    "start": "2021-09-13",
+    "end": "2021-11-22",
+    "research_start": "2021-09-28",
+    "research_end": "2021-11-12",
+    "warmup_sessions": 9,
+    "holding_days": 5,
+    "execution_tail_sessions": 1
+  },
+  "routes": {
+    "bars": "bigquant",
+    "benchmark": "bigquant",
+    "membership": "joinquant",
+    "status": "bigquant",
+    "listings": "bigquant",
+    "calendar": "bigquant"
+  },
+  "selection_basis": "D06 archive schemas and partition receipts overlap JoinQuant member snapshots from 2021-09-13; D07 already observed these two securities in autumn 2021. Retain listing boundary and insufficient security warmup rather than selecting for PASS. No assertion of CSI500 membership without positive observations.",
+  "price_basis": "Separate native raw and vendor-adjusted tables; adjusted prices are not certified HFQ.",
+  "scope": "RETROSPECTIVE_ENGINEERING_ONLY"
+}
