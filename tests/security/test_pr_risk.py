@@ -108,6 +108,55 @@ def test_plain_file_inventory_is_not_an_executable_consumer(tmp_path):
     assert not any(result[k] for k in FLAGS)
 
 
+@pytest.mark.parametrize('source,high', [
+    ('from pathlib import Path\nPath("README.md").write_text("generated")\n', False),
+    ('from pathlib import Path as P\n(P("output") / "README.md").write_bytes(b"generated")\n', False),
+    ('from pathlib import Path\ndef publish(output): return _write(Path(output))\n'
+     'def _write(output): (output / "README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\nPath("README.md").read_text()\n', True),
+    ('from pathlib import Path\nPath("README.md").write_text(Path("README.md").read_text())\n', True),
+    ('from pathlib import Path\nPath("generated.txt").write_text("README.md")\n', True),
+    ('def publish(output): (output / "README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\ndef publish(output): return _write(output)\n'
+     'def _write(output): (output / "README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\ndef publish(output): return _write(Path(output))\n'
+     'def _write(output): (output / "README.md").write_text("generated")\n'
+     'callback = _write\n', True),
+    ('from pathlib import Path\ndef publish(output): return _write(Path(output))\n'
+     'def _write(output):\n output = custom()\n (output / "README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\ndef publish(Path): Path("README.md").write_text("generated")\n', True),
+    ('from custom import Path\nPath("README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\nPath(mapping["README.md"]).write_text("generated")\n', True),
+    ('from pathlib import Path\nPath(load("README.md")).write_text("generated")\n', True),
+    ('from pathlib import Path\nfrom custom import *\nPath("README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\ntry: pass\nexcept Exception as Path:\n Path("README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\nmatch value:\n case Path:\n  Path("README.md").write_text("generated")\n', True),
+    ('from pathlib import Path\nmutate(Path)\nPath("README.md").write_text("generated")\n', True),
+    ('def check(path):\n if path.name == "README.md": return path.read_text()\n', True),
+])
+def test_only_proven_pathlib_outputs_are_not_inputs(tmp_path, source, high):
+    init_repo(tmp_path)
+    write(tmp_path, 'tools/ci/consumer.py', source)
+    base = commit(tmp_path)
+    changed = 'docs/validation/new/README.md'
+    write(tmp_path, changed, 'research report')
+    result = select(tmp_path, base, commit(tmp_path))
+    assert all(result[key] is high for key in FLAGS)
+    assert ('tools/ci/consumer.py' in result['affected']) is high
+
+
+def test_output_exclusion_does_not_hide_dynamic_execution(tmp_path):
+    init_repo(tmp_path)
+    write(tmp_path, 'src/factorlab/cli.py', 'import importlib\nimportlib.import_module(input())\n')
+    base = commit(tmp_path)
+    write(tmp_path, 'tools/data/audit.py',
+          'from pathlib import Path\nPath("README.md").write_text("generated")\n')
+    write(tmp_path, 'tests/evidence/test_audit.py', 'import audit\ndef test_audit(): pass\n')
+    result = select(tmp_path, base, commit(tmp_path))
+    assert result['current'] and result['locking']
+    assert any(reason['rule'] == 'unresolved-formal-loader' for reason in result['reasons']['current'])
+
+
 def test_modified_factor_selects_actual_test_consumer(tmp_path):
     init_repo(tmp_path)
     write(tmp_path, 'src/factorlab/factors/momentum.py', 'VALUE = 1\n')

@@ -1,0 +1,126 @@
+{
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "source_kind": "SYNTHETIC",
+  "baseline": "d2f52c05ddaf86f493ae38c792aaf961ff652bb0",
+  "executed_tree": "baseline plus uncommitted implementation",
+  "source_identities": {
+    "src/factorlab/backtest/capacity.py": "7348e74b79f72ab1fec83aa4d154fad8ba819b475430392371be6b56f01dabdf",
+    "src/factorlab/backtest/execution.py": "af329b87bf19d6918df732dbf49353fffa5317a0a6a90d5e2b72ede376c2ce3d",
+    "src/factorlab/backtest/session.py": "cc2c8804e8205f961c38fe9b44f83005596db04abf9a591ff6fd68fe87d958db",
+    "src/factorlab/backtest/target.py": "3e40bb2e57282cdda02de3d74cee40edb7f090975927cb6378b16e563dd959ca",
+    "src/factorlab/application/research_pipeline.py": "38a5bd36845da9a24a64c8e4c3a7d3d1799931dc6cadef984ec43be1250e7aa6",
+    "src/factorlab/evaluation/execution_risk.py": "e9897cfa1f32522be7f573193585a16a5e057fdf95585ac6b6fa60dec0ac4fea",
+    "src/factorlab/metrics/exposures.py": "fde89608e9ee47de2d763afaae2dfe00e7e061d388624b3d60f0a2d1a2686bdc",
+    "examples/research/execution_capacity_synthetic.py": "9d4b8bc9fccfb4c712b879d167d9d9007f940edb49097cc020faa1fa7da2f14c"
+  },
+  "tests": [
+    {
+      "run": "targeted-tests",
+      "status": "PASSED",
+      "tests": "97",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "6.205"
+    },
+    {
+      "run": "integration-tests",
+      "status": "PASSED",
+      "tests": "36",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "41.980"
+    },
+    {
+      "run": "final-tests",
+      "status": "FAILED_EMPTY_TRADE_SCHEMA",
+      "tests": "104",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0",
+      "time": "11.265"
+    },
+    {
+      "run": "final-pass-tests",
+      "status": "PASSED",
+      "tests": "153",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "20.730"
+    }
+  ],
+  "initial_test_run": {
+    "tests": 64,
+    "passed": 62,
+    "failed": 2,
+    "seconds": 3.71,
+    "causes": [
+      "empty order-receipt quantity dtype",
+      "test used DataFrame instead of session target mapping"
+    ]
+  },
+  "experiment": {
+    "scenarios": 12,
+    "seconds": 7.44159750000108,
+    "input_kind": "SYNTHETIC",
+    "securities": 3,
+    "sessions": 32,
+    "prediction_rows": 75,
+    "model_fits": 0,
+    "execution_accounts": 12,
+    "accounting_accounts_reconciled": 12,
+    "source_output_bytes": 810064
+  },
+  "retained_files": {
+    "counterfactual-differences.csv": {
+      "bytes": 16886,
+      "sha256": "0ce17cfe355bd31213e001b61e4b2129f706993437e69cff0230fef01aaefe0d"
+    },
+    "exposure-summary.csv": {
+      "bytes": 9635,
+      "sha256": "6decaa57af16f9c95f71d0ea4125e6f5ebaf1d767aa34fb138cd0c680f8f5d29"
+    },
+    "fixed-fills-costs.csv": {
+      "bytes": 5847,
+      "sha256": "60b439849948eed5f4981f8dea6d4878dfcc6fcc5009c193faacd376483655f3"
+    },
+    "predictions.csv": {
+      "bytes": 3297,
+      "sha256": "877645ccf83acda916f19fb448229fbcae86c6ddf4143cf6eb27e42a8af5d937"
+    },
+    "results.json": {
+      "bytes": 43640,
+      "sha256": "6755b1d39a75e6618163c9d961792e825ed7a803320c04d8b795fd2ccc4e1631"
+    },
+    "sample-attribution.csv": {
+      "bytes": 12199,
+      "sha256": "8d84f81c4ee0dc9f9a32ea44511c99abccf3b0ab4c38d57cc843372cef585bb1"
+    },
+    "sample-decisions.csv": {
+      "bytes": 7562,
+      "sha256": "cc4fdac62b66b9db818ee50df7ba387a3d05e6488e179aed13b980e57e9357d4"
+    },
+    "sample-orders.csv": {
+      "bytes": 1704,
+      "sha256": "7512b9371f4432803ed932e89c70c539b86f83b58a28e113607b99403fd647b7"
+    },
+    "sample-rejections.csv": {
+      "bytes": 1693,
+      "sha256": "29b443f2349702dff632b572704f7a17e8d94e2d41822339f0d61532d3a5db91"
+    },
+    "sample-target_comparison.csv": {
+      "bytes": 3659,
+      "sha256": "292c4e5b61ecba6a1d9e2d00d7901dc31e16682fcdaf8b6c18ff4d09e6134674"
+    },
+    "sample-trades.csv": {
+      "bytes": 5135,
+      "sha256": "9b795917a7409f20268dd513e49d0696645b215b4ca8abb4fe2715f1a2cc3954"
+    },
+    "summary.csv": {
+      "bytes": 10128,
+      "sha256": "0f34f8c50c93c0e8bde76eac264eb4220c8029b9d61fc886b71a47daa28f9844"
+    }
+  }
+}
