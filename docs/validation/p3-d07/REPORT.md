@@ -1,6 +1,6 @@
 # P3-D07：多证券真实数据准备与证据边界
 
-2026-11-09；集成主线基线 `03504c59b487e1f91160378c661809ea605fe509`，D06 合并提交 `f3cbdb54d51780eb394b1a30b326914a4965ad89`。
+2026-11-09；集成主线基线 `53913b3188c49671a313891e3192ebcfcf5c0b9b`，D06 合并提交 `f3cbdb54d51780eb394b1a30b326914a4965ad89`。
 
 **PARTIAL — NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
@@ -132,5 +132,9 @@ python -I -B -X utf8 tools/data/audit_p3_d07.py --bigquant-root '<BQ>' --members
 ## GitHub 工程验收
 
 主线 ruleset `26809886` 要求 `FactorLab trusted merge gate`，绑定 integration ID `5670895`；`ci-merge-publisher` 环境中的 `CI_GATE_APP_ID` 同为 `5670895`。工作流从可信 base 选择风险，Fast 必跑，Extended/current/locking/package 和 `ci-control-review` 按风险结果执行。`ci-control-review` 为人工审批环境，不能由软件测试替代。
+
+同步 #49 后，Risk Selection 签发事件 base/head 所对应合并提交的不可变 subject 并封存风险计划摘要；Fast 按该 subject checkout，Targeted Validation 执行前再次核对同一 subject、摘要及事件/运行身份。主线同步无冲突，D06 固定收据及原始真实运行证据不变，未重算五年数据。
+
+Python 3.13 同步回归 **159 passed / 103.82秒**，见 `main-sync-tests.xml`：`test_real_data_readiness`、`test_d06_readiness_integration`、`test_d06_evidence_binding`、`test_candidate_preflight`、`test_qualification_admission_boundaries`、`test_pr_identity`、`test_pr_risk`。首次裸解释器缺少 pytest，未执行测试；上述结果来自已有依赖的 Python 3.13 环境。
 
 当前工程阶段为 **WAITING 新HEAD可信CI／按规则所需审批**，不以旧HEAD成功批准本次集成。PR保持OPEN，不自动合并。金融资格保持阻断。工作树中的既有 `src/factorlab/demo.py` 换行差异保留，不纳入集成提交。
