@@ -216,3 +216,46 @@ def test_targeted_research_paths_are_checked_without_running_diagnostic_scripts(
         encoded = base64.b64encode(json.dumps([malicious]).encode()).decode()
         with pytest.raises(ValueError):
             pr_targeted.decode_paths(encoded)
+
+
+def test_git_risk_selector_records_additions_and_targeted_tests(tmp_path):
+    """Exercise git's actual -z name/status and new-blob-mode handling."""
+    import base64
+    import json
+    from pathlib import Path
+    import subprocess
+    import sys
+
+    repo = tmp_path / 'candidate'
+    repo.mkdir()
+    subprocess.run(['git', 'init', '-q'], cwd=repo, check=True)
+    subprocess.run(['git', 'config', 'user.name', 'CI Test'], cwd=repo, check=True)
+    subprocess.run(['git', 'config', 'user.email', 'ci@example.invalid'], cwd=repo, check=True)
+    (repo / 'src/factorlab').mkdir(parents=True)
+    (repo / 'src/factorlab/__init__.py').write_text('# baseline\n')
+    subprocess.run(['git', 'add', '.'], cwd=repo, check=True)
+    subprocess.run(['git', 'commit', '-qm', 'baseline'], cwd=repo, check=True)
+    baseline = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip()
+    for path, value in {
+        'tools/data/audit_p3_d05.py': 'def audit(): return 1\n',
+        'tests/evidence/test_p3_d05.py': 'def test_audit(): assert True\n',
+        'docs/validation/p3-d05/REPORT.md': '# Report\n',
+    }.items():
+        source = repo / path
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_text(value)
+    subprocess.run(['git', 'add', '.'], cwd=repo, check=True)
+    subprocess.run(['git', 'commit', '-qm', 'research addition'], cwd=repo, check=True)
+    output = tmp_path / 'risk.json'
+    gh_output = tmp_path / 'github-output.txt'
+    selector = Path(__file__).resolve().parents[2] / 'tools/ci/pr_risk.py'
+    subprocess.run([sys.executable, str(selector), '--repository', str(repo),
+                    '--base', baseline, '--head', 'HEAD', '--output', str(output),
+                    '--github-output', str(gh_output)], check=True)
+    result = json.loads(output.read_text())
+    assert not any(result[k] for k in ('current', 'locking', 'package', 'review'))
+    assert result['targeted_paths'] == [
+        'tests/evidence/test_p3_d05.py', 'tools/data/audit_p3_d05.py']
+    encoded = dict(line.split('=', 1) for line in gh_output.read_text().splitlines())
+    assert json.loads(base64.b64decode(encoded['targeted'])) == result['targeted_paths']
+    assert set(encoded) == {'current', 'locking', 'package', 'review', 'targeted'}
