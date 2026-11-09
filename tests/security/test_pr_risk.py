@@ -120,3 +120,99 @@ def test_full_release_gate_refuses_every_non_success(monkeypatch):
                 exec(compile(gate['steps'][0]['run'], '<full-release-gate>', 'exec'), {})
             assert exc.value.code
 
+
+
+@pytest.mark.parametrize('path', [
+    'tools/data/audit_p3_d05.py', 'tools/data/summarize_p3_d05_notices.py',
+    'tests/evidence/test_p3_d05.py', 'docs/validation/p3-d05/REPORT.md',
+    'docs/validation/p3-d05/real.json', 'docs/validation/p3-d05/targeted-tests.xml',
+])
+def test_research_additions_do_not_trigger_full_matrix(path):
+    result = classify([path], changes=[('A', path)])
+    assert (result['current'], result['locking'], result['package'], result['review']) == (
+        False, False, False, False)
+
+
+def test_p3_d05_mixed_additions_are_not_a_ci_control_change():
+    paths = ['tools/data/audit_p3_d05.py', 'tools/data/summarize_p3_d05_notices.py',
+             'tests/evidence/test_p3_d05.py', 'docs/validation/p3-d05/REPORT.md',
+             'docs/validation/p3-d05/real.json']
+    result = classify(paths, changes=[('A', p) for p in paths])
+    assert not any(result[k] for k in ('current', 'locking', 'package', 'review'))
+
+
+@pytest.mark.parametrize('path', [
+    'tools/ci/pr_risk.py', 'tools/ci/pr_targeted.py', 'tools/security/fixed_validator.py',
+    'tests/security/test_pr_risk.py', '.github/workflows/factorlab-pr.yml',
+    'requirements/dev.txt', 'tests/evidence/conftest.py',
+    'tools/data/__init__.py', 'tools/data/subdir/audit.py',
+    'docs/validation/p3-d05/run.py', 'docs/validation/p3-d05/logic.yml',
+])
+def test_disguised_control_or_unclassified_changes_remain_high_risk(path):
+    result = classify([path], changes=[('A', path)])
+    assert result['current'] and result['locking']
+
+
+@pytest.mark.parametrize('change', [
+    ('D', 'tools/data/audit_p3_d05.py'),
+    ('D', 'docs/validation/p3-d05/real.json'),
+    ('T', 'tests/evidence/test_p3_d05.py'),
+    ('A', 'src/factorlab/models/new_model.py'),
+])
+def test_deletions_type_changes_and_application_additions_are_extended(change):
+    result = classify([change[1]], changes=[change])
+    assert result['current'] and result['locking']
+
+
+def test_executable_and_symlink_modes_fail_closed():
+    result = classify(['tools/data/audit_p3_d05.py'],
+                      changes=[('A', 'tools/data/audit_p3_d05.py')], unsafe_modes=True)
+    assert all(result[k] for k in ('current', 'locking', 'package', 'review'))
+
+
+def test_mixed_research_and_sensitive_changes_cannot_downgrade():
+    result = classify(['tests/evidence/test_p3_d05.py', 'src/factorlab/data/admission.py'],
+                      changes=[('A', 'tests/evidence/test_p3_d05.py'),
+                               ('M', 'src/factorlab/data/admission.py')])
+    assert result['current'] and result['locking']
+
+
+def test_fast_research_changes_require_targeted_execution():
+    import yaml
+    from pathlib import Path
+
+    workflow = yaml.load((Path(__file__).resolve().parents[2] /
+        '.github/workflows/factorlab-pr.yml').read_text(), Loader=yaml.BaseLoader)
+    fast = workflow['jobs']['fast']
+    risk = workflow['jobs']['risk']
+    assert 'risk' in fast['needs']
+    assert 'targeted' in risk['outputs']
+    assert any('tools/ci/pr_targeted.py' in step.get('run', '')
+               for step in fast['steps'])
+    assert 'fast' in workflow['jobs']['merge-gate']['needs']
+
+
+def test_targeted_research_paths_are_checked_without_running_diagnostic_scripts(tmp_path, monkeypatch):
+    import base64
+    import json
+    from tools.ci import pr_targeted
+
+    monkeypatch.setattr(pr_targeted, 'ROOT', tmp_path)
+    script = tmp_path / 'tools/data/audit_p3_d05.py'
+    script.parent.mkdir(parents=True)
+    script.write_text('raise RuntimeError("diagnostic code must not execute")\n')
+    test = tmp_path / 'tests/evidence/test_p3_d05.py'
+    test.parent.mkdir(parents=True)
+    test.write_text('def test_example(): assert 1 + 1 == 2\n')
+    paths = ['tests/evidence/test_p3_d05.py', 'tools/data/audit_p3_d05.py']
+    encoded = base64.b64encode(json.dumps(paths).encode()).decode()
+    assert pr_targeted.decode_paths(encoded) == paths
+    # The standalone script is only parsed; its top-level RuntimeError must not execute.
+    assert pr_targeted.run([paths[1]], tmp_path / 'output') == 0
+    receipt = json.loads((tmp_path / 'output/receipt.json').read_text())
+    assert receipt['status'] == 'PASS' and receipt['syntax_checked'] == [paths[1]]
+    for malicious in ('../escape.py', 'tests/evidence/conftest.py',
+                      'tools/data/nested/audit.py'):
+        encoded = base64.b64encode(json.dumps([malicious]).encode()).decode()
+        with pytest.raises(ValueError):
+            pr_targeted.decode_paths(encoded)
