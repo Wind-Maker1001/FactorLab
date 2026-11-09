@@ -30,6 +30,7 @@ class SourceMetadata:
     evidence_status: tuple[str, ...] = (
         "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED",
     )
+    field_semantics: Mapping[str, Mapping[str, Any]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

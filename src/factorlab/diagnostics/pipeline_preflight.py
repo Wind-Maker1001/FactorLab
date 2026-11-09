@@ -66,6 +66,94 @@ def _dates(values):
     return dates
 
 
+def _research_quality(observations, receipts, symbols):
+    """Retrospective observations, never an eligibility mask or price repair."""
+    tables = {group: pd.concat(parts, ignore_index=True) for group, parts in observations.items() if parts}
+    # Overlapping query rows cannot establish a unique observation.
+    indexed = {}
+    for group, frame in tables.items():
+        keys = ['symbol'] if group == 'listings' else [k for k in ('date', 'symbol') if k in frame]
+        indexed[group] = frame.loc[~frame.duplicated(keys, keep=False)].set_index(keys)
+    cells = []
+    calendar = indexed.get('calendar')
+    if calendar is not None:
+        for symbol in symbols:
+            listing = indexed.get('listings')
+            lifetime = listing.loc[symbol] if listing is not None and symbol in listing.index else None
+            bars, status, members = (indexed.get(g) for g in ('bars', 'status', 'membership'))
+            for day in calendar.index.sort_values():
+                key = (day, symbol)
+                flags = []
+                boundary = 'UNKNOWN'
+                if lifetime is not None:
+                    boundary = ('PRE_LISTING' if day < lifetime.listing_date else
+                        'POST_DELISTING' if pd.notna(lifetime.delist_date) and day > lifetime.delist_date else 'WITHIN_OBSERVED_LIFETIME')
+                has_bar = bars is not None and key in bars.index
+                has_status = status is not None and key in status.index
+                suspended = (has_status and pd.notna(status.loc[key, 'trade_status'])
+                             and status.loc[key, 'trade_status'] == 0)
+                if suspended:
+                    flags.append('SUSPENDED_OBSERVATION')
+                if not has_bar:
+                    flags.append(boundary if boundary in {'PRE_LISTING', 'POST_DELISTING'} else
+                        'EXPECTED_BAR_NOT_OBSERVED' if boundary == 'WITHIN_OBSERVED_LIFETIME' else 'BAR_COVERAGE_UNKNOWN')
+                else:
+                    row = bars.loc[key]
+                    values = pd.to_numeric(row[list(NUMERIC['bars'])], errors='coerce')
+                    if row[list(NUMERIC['bars'])].isna().any():
+                        flags.append('RAW_FIELD_MISSING')
+                    if not np.isfinite(values.to_numpy(dtype=float)).all():
+                        flags.append('NONFINITE_OR_NONNUMERIC_FIELD')
+                    for prefix in ('raw_', 'adj_'):
+                        o, h, l, c = (values[prefix + f] for f in OHLC)
+                        if all(pd.notna(v) for v in (o, h, l, c)) and (
+                                l <= 0 or h < l or h < o or h < c or l > o or l > c):
+                            flags.append(prefix.upper() + 'OHLC_RELATIONSHIP_INVALID')
+                    if values[['volume', 'amount', 'turnover']].lt(0).any():
+                        flags.append('NEGATIVE_MARKET_QUANTITY')
+                    if boundary in {'PRE_LISTING', 'POST_DELISTING'}:
+                        flags.append('LIFETIME_CONFLICT')
+                numeric_issues = {'RAW_FIELD_MISSING', 'NONFINITE_OR_NONNUMERIC_FIELD',
+                    'RAW_OHLC_RELATIONSHIP_INVALID', 'ADJ_OHLC_RELATIONSHIP_INVALID', 'NEGATIVE_MARKET_QUANTITY'}
+                calculable = has_bar and not numeric_issues.intersection(flags)
+                member = members is not None and key in members.index
+                if member and 'is_member' in members:
+                    value = members.loc[key, 'is_member']
+                    member = pd.notna(value) and value == True
+                if not member:
+                    flags.append('HISTORICAL_MEMBERSHIP_UNKNOWN')
+                normal_status = (has_status and pd.notna(status.loc[key, 'trade_status'])
+                                 and status.loc[key, 'trade_status'] == 1)
+                if calculable and normal_status and boundary == 'WITHIN_OBSERVED_LIFETIME':
+                    flags.insert(0, 'NORMAL_TRADING_OBSERVATION')
+                if not normal_status and not suspended:
+                    flags.append('STATUS_UNKNOWN')
+                cells.append(dict(symbol=symbol, date=str(day.date()),
+                    numeric_calculable=bool(calculable), observation_flags=flags,
+                    observed_listing_boundary=boundary,
+                    membership_observation='POSITIVE_OBSERVATION' if member else 'UNKNOWN',
+                    historical_identity_and_timing='UNKNOWN', formal_admission='BLOCKED'))
+    contracts = []
+    for receipt in receipts:
+        metadata = receipt.get('metadata', {})
+        semantics = metadata.get('field_semantics', {})
+        for name in NUMERIC.get(receipt['group'], ()):
+            declaration = receipt['units'].get(name, 'UNKNOWN')
+            evidence = semantics.get(name, {})
+            normalized = evidence.get('normalized_unit', 'UNKNOWN')
+            contracts.append(dict(group=receipt['group'], query=receipt['query'], field=name,
+                declared_unit=declaration, semantics=evidence,
+                source_and_unit_explained=(receipt.get('identity_and_structure_checked', False)
+                    and evidence.get('evidence_level') == 'REPLAY_VALIDATED_DICTIONARY_AND_CONVERSION'
+                    and 'UNKNOWN' not in normalized.upper()),
+                historical_unit_contract='UNKNOWN' if 'UNKNOWN' in normalized.upper() else 'SOURCE_SCOPED',
+                historical_pit='UNKNOWN'))
+    return dict(scope='RETROSPECTIVE_QUERY_OBSERVATIONS; NOT_A_SELECTION_MASK',
+        fields=contracts, observations=cells,
+        numeric_calculable_rows=sum(row['numeric_calculable'] for row in cells),
+        historical_identity_and_timing='UNKNOWN', formal_admission='BLOCKED')
+
+
 def pipeline_preflight(hub, bindings: Mapping[str, tuple[InputBinding, ...]], *,
                        symbols: tuple[str, ...], start: str, end: str,
                        research_start: str, research_end: str, warmup_sessions: int,
@@ -88,6 +176,7 @@ def pipeline_preflight(hub, bindings: Mapping[str, tuple[InputBinding, ...]], *,
     if warmup_sessions < 0 or holding_days < 1 or execution_tail_sessions < 1:
         raise ValueError('nonnegative warmup and positive holding/execution horizons required')
     issues, receipts, frames, action_receipts = [], [], {}, []
+    observations = {group: [] for group in GROUPS}
 
     def fail(code, group, **detail):
         issues.append(dict(code=code, group=group, **detail))
@@ -152,6 +241,12 @@ def pipeline_preflight(hub, bindings: Mapping[str, tuple[InputBinding, ...]], *,
                     _dates(frame.loc[present, 'delist_date'])
                     if (frame.loc[present, 'delist_date'] < frame.loc[present, 'listing_date']).any():
                         raise ValueError('delisting precedes listing')
+                keys = ['symbol'] if group == 'listings' else [k for k in ('date', 'symbol') if k in frame]
+                if frame.duplicated(keys).any():
+                    raise ValueError('duplicate observation keys')
+                # Identity/structure-checked observations survive numeric rejection.
+                observations[group].append(frame.copy())
+                receipt['identity_and_structure_checked'] = True
                 numeric = NUMERIC.get(group, ())
                 for name in numeric:
                     unit = pin.units.get(name)
@@ -299,6 +394,7 @@ def pipeline_preflight(hub, bindings: Mapping[str, tuple[InputBinding, ...]], *,
             warmup_sessions=warmup_sessions, holding_days=holding_days,
             execution_tail_sessions=execution_tail_sessions),
         symbols=list(symbols), layers=layers, coverage_matrix=matrix, label_endpoints=endpoints,
+        research_quality=_research_quality(observations, receipts, symbols),
         unmet_contracts=issues, evidence_gaps=['PIT_UNVERIFIED', 'HFQ_UNVERIFIED',
             'Independent historical source, unit and security identity certification',
             'Replayable formal market/execution qualification package'],
