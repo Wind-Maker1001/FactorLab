@@ -1,0 +1,20 @@
+{
+  "status": "P5_R03_REAL_STATISTICAL_EVIDENCE",
+  "HISTORICAL_TRADABILITY": "UNKNOWN",
+  "BORROW_ASSUMPTIONS": "SYNTHETIC",
+  "execution": "BLOCKED_CORPORATE_ACTION_AND_SHORT_LIABILITY_SEMANTICS",
+  "pnl_metrics": null,
+  "validation_selection": "Fixed entry_z; validation diagnostic only; no profit optimization",
+  "calendar": "Union of configured native observed sessions; no exchange-calendar certification",
+  "evidence": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "multiple_testing": "Bonferroni sensitivity: 0.05 / 12 within each fold; nominal engine selection unchanged; no across-fold familywise claim",
+  "not_computable": {
+    "returns_drawdown_sharpe_cost_borrow_sensitivity": "BLOCKED_CORPORATE_ACTION_AND_SHORT_LIABILITY_SEMANTICS",
+    "fills_rejections_margin_borrow_limits": "NOT_RUN_NO_EXECUTION_ACCOUNT"
+  }
+}

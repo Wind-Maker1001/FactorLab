@@ -1,0 +1,70 @@
+{
+  "saved_config_replay": "PASS",
+  "future_perturbation": "PASS",
+  "cutoff": "2017-08-01",
+  "perturbation": "Only Y closes strictly after cutoff multiplied by 1.35",
+  "pairs": [
+    {
+      "pair_id": "601398.SH__601939.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "601288.SH__601988.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "600036.SH__601166.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "601318.SH__601601.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "601336.SH__601628.SH",
+      "past_training_folds": 2,
+      "past_signal_rows": 20
+    },
+    {
+      "pair_id": "600028.SH__601857.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "601088.SH__601898.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "600030.SH__600837.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "600999.SH__601688.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "601186.SH__601390.SH",
+      "past_training_folds": 3,
+      "past_signal_rows": 82
+    },
+    {
+      "pair_id": "000709.SZ__600019.SH",
+      "past_training_folds": 0,
+      "past_signal_rows": 0
+    },
+    {
+      "pair_id": "000401.SZ__600585.SH",
+      "past_training_folds": 0,
+      "past_signal_rows": 0
+    }
+  ],
+  "execution": "BLOCKED_CORPORATE_ACTION_AND_SHORT_LIABILITY_SEMANTICS",
+  "snapshot_sha256": "795d567e6ae3af6d96c7ab454f2dae4ca6f07f3cb481a934327a1b3c10d90611"
+}
