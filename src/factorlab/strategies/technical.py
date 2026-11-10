@@ -185,17 +185,19 @@ def _down(left, right):
     return (left.shift(1) >= right.shift(1)) & (left < right)
 
 
-def technical_signals(bars, calendar, config):
+def technical_signals(bars, calendar, config, *, signal_price_column="adj_close"):
     """One row per research close; NaN holds intent, zero cancels/liquidates.
 
     No warmup intent is carried into research. CTA trailing stops track the
     entry *intent* close, not an assumed fill or an intraday execution price.
+    signal_price_column selects raw_close or the default adj_close explicitly;
+    raw mode uses raw OHLC without consuming or aliasing adjustment fields.
     """
     if type(config) not in {BollingerConfig, RSIConfig, MACDConfig, CTAConfig}:
         raise ConfigurationError("unsupported technical strategy config")
-    frame, research = prepare_inputs(bars, calendar, config)
-    result = frame[["date", "symbol", "adj_close"]].copy()
-    close = frame.adj_close
+    frame, research = prepare_inputs(bars, calendar, config, signal_price_column=signal_price_column)
+    result = frame[["date", "symbol", signal_price_column]].copy()
+    close = frame[signal_price_column]
     if isinstance(config, BollingerConfig):
         middle = close.rolling(config.window).mean()
         std = close.rolling(config.window).std(ddof=0)
@@ -224,9 +226,11 @@ def technical_signals(bars, calendar, config):
             buy &= dif > 0
             sell |= dif < 0
     else:
-        # Scale OHLC to the same units as adjusted signal closes, never execution.
-        ratio = close / frame.raw_close
-        high, low = frame.raw_high * ratio, frame.raw_low * ratio
+        if signal_price_column == "raw_close":
+            high, low = frame.raw_high, frame.raw_low
+        else:
+            ratio = close / frame.raw_close
+            high, low = frame.raw_high * ratio, frame.raw_low * ratio
         previous = close.shift(1)
         tr = pd.concat([high - low, (high - previous).abs(), (low - previous).abs()], axis=1).max(axis=1)
         tr.iloc[0] = np.nan
