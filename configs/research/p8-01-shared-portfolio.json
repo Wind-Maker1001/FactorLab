@@ -1,0 +1,22 @@
+{
+  "task": "P8-01",
+  "manifest_sha256": "800d8413ee7d2b0adc90adde6b38f5b290f12cd08189515afecf49268bde876a",
+  "bars_sha256": "795d567e6ae3af6d96c7ab454f2dae4ca6f07f3cb481a934327a1b3c10d90611",
+  "frozen_sample": "docs/validation/p6-r01/frozen-sample.json",
+  "annual_counts": {"2016": 15, "2017": 20, "2018": 19},
+  "initial_cash": 1000000,
+  "signal_frequency": "FIRST_OBSERVED_SESSION_EACH_MONTH",
+  "momentum_lookback": 20,
+  "momentum_max_holdings": 5,
+  "momentum_weight_cap": 0.2,
+  "execution_reference_symbol": "601857.SH",
+  "execution_reference_kind": "REAL_SINGLE_SECURITY_RAW_PRICE_NOT_MARKET_INDEX",
+  "market_index_status": "UNAVAILABLE",
+  "cash_return": 0,
+  "fees": {"commission_bps": 3, "minimum_commission_cny": 5, "slippage_bps": 5, "stamp_duty_bps": 10, "transfer_fee_bps": 0},
+  "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+  "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+  "total_return": null,
+  "annual_account_policy": "INDEPENDENT_RESET_NO_TERMINAL_LIQUIDATION",
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
