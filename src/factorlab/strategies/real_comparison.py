@@ -34,7 +34,7 @@ RETURN_BASIS = "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS"
 COMPLETED = "P5_R02_EXPLORATORY_REAL_COMPARISON_COMPLETED"
 
 
-def compare(bars, calendar, configuration):
+def compare(bars, calendar, configuration, *, source_kind="REAL_CANDIDATE"):
     """Use one raw input, execution contract and benchmark for all six mandates."""
     if configuration["signal_price_column"] != "raw_close":
         raise SchemaError("real comparison requires explicit raw_close signals")
@@ -75,7 +75,7 @@ def compare(bars, calendar, configuration):
     context = EvaluationContext(dataset_id=configuration["manifest_sha256"],
         universe_id=common["symbol"], label="raw_price_return", label_id="raw_close_no_distributions",
         benchmark_id="buy_hold_same_execution", calendar=tuple(research.strftime("%Y-%m-%d")),
-        holding_days=1, source_kind="REAL_CANDIDATE")
+        holding_days=1, source_kind=source_kind)
     evaluator = ResearchEvaluation(context)
     evaluations, summary = {}, {}
     benchmark = legs["buy_hold"]["nav"]
