@@ -10,7 +10,6 @@ import sys
 
 import numpy as np
 import pandas as pd
-import statsmodels
 
 from factorlab.data.hub import DataHub
 from factorlab.data.hub.contracts import QueryResult, SourceMetadata, UnsupportedQueryError
@@ -67,6 +66,15 @@ def _combine(results, name):
 
 
 def execute(config, *, candidate, output):
+    try:
+        import statsmodels
+    except ModuleNotFoundError as exc:
+        if exc.name != "statsmodels":
+            raise
+        raise ModuleNotFoundError(
+            'install factorlab[pairs] for cointegration research: pip install "factorlab[pairs]"',
+            name="statsmodels",
+        ) from exc
     if config["execution"] != BLOCK or config["price_field"] != "adj_close":
         raise ValueError("this research entry requires comparable-close statistics with execution blocked")
     pairs = config["pairs"]

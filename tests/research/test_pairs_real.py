@@ -123,6 +123,10 @@ def test_config_replay_and_execution_gate(tmp_path, monkeypatch):
         raise AssertionError("PnL called with unverified actions/borrow")
     monkeypatch.setattr("factorlab.strategies.pairs_trading.simulate_pair", forbidden)
     a, meta = execute(config, candidate=root, output=tmp_path / "run-a")
+    import statsmodels
+
+    identity = json.loads((tmp_path / "run-a/identity.json").read_text(encoding="utf-8"))
+    assert identity["statsmodels"] == statsmodels.__version__
     saved = json.loads((tmp_path / "run-a/config.json").read_text(encoding="utf-8"))
     b, _ = execute(saved, candidate=root, output=tmp_path / "run-b")
     for key in ("selections", "signals", "summary"):
