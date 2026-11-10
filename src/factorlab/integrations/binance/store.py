@@ -12,7 +12,7 @@ from factorlab.errors import DataQualityError
 from .market import BOUNDARIES
 
 SCHEMA_VERSION = 1
-TABLES = ('bars', 'funding', 'mark')
+TABLES = ('bars', 'funding', 'mark', 'mark_bars', 'index_bars')
 
 
 def _write_json(path, value):
@@ -58,6 +58,8 @@ class Reader:
     def read(self, kind):
         if kind not in TABLES:
             raise ValueError('unknown read-only table')
+        if kind not in self.manifest['tables']:
+            raise ValueError('historical table not available in this snapshot')
         descriptor = self.manifest['tables'][kind]
         path = _local(self.root, descriptor['path'])
         if sha256(path.read_bytes()) != descriptor['sha256']:
@@ -71,7 +73,8 @@ class Reader:
             calendar_id='BINANCE_PERPETUAL_UTC', calendar_kind='PERPETUAL_UTC_BUCKETS',
             acquired_at=meta['acquired_at'], coverage='REQUESTED_RANGE; SEE_INTEGRITY_REPORT',
             time_fields={'effective': {'bars': 'open_time', 'funding': 'funding_time',
-                                       'mark': 'event_time'}[kind],
+                                       'mark': 'event_time', 'mark_bars': 'open_time',
+                                       'index_bars': 'open_time'}[kind],
                          'acquired': 'manifest.acquired_at', 'historical_available': 'UNKNOWN'},
             provenance={'contract': meta['contract'], 'range': meta['range'],
                         'integrity': meta['integrity'], 'boundaries': list(BOUNDARIES)},

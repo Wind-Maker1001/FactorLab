@@ -137,6 +137,16 @@ def bars(rows, start, end, step, cutoff):
     return deduplicate(frame, ['open_time'])
 
 
+def price_bars(rows, start, end, step, cutoff):
+    """Historical Mark/Index OHLC; native ignored fields are not trade volumes."""
+    for row in rows:
+        if len(row) != 12:
+            raise DataQualityError('expected 12 historical price kline fields')
+    prices = [[r[0], *r[1:5], '0', r[6], '0', 0, '0', '0', r[11]] for r in rows]
+    return bars(prices, start, end, step, cutoff)[
+        ['open_time', 'close_time', 'open', 'high', 'low', 'close']]
+
+
 def funding(rows, symbol, start, end):
     records = []
     for row in rows:
@@ -178,10 +188,11 @@ def mark(row, symbol):
 def paginate(client, endpoint, *, symbol, start, end, archive, interval=None):
     """Inclusive Binance endTime is derived from our exclusive end boundary."""
     cursor, output = start, []
-    key = 0 if endpoint == 'klines' else 'fundingTime'
+    key = 'fundingTime' if endpoint == 'fundingRate' else 0
     limit = 1500 if endpoint == 'klines' else 1000
     while cursor < end:
-        params = dict(symbol=symbol, startTime=cursor, endTime=end - 1, limit=limit)
+        identity_key = 'pair' if endpoint == 'indexPriceKlines' else 'symbol'
+        params = {identity_key: symbol, 'startTime': cursor, 'endTime': end - 1, 'limit': limit}
         if interval is not None:
             params['interval'] = interval
         page = client.get(endpoint, params, archive=archive, cache=True)

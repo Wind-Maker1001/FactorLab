@@ -17,11 +17,14 @@ from factorlab.errors import DataQualityError
 from .store import _write_json
 
 HOST = 'https://fapi.binance.com'
-ENDPOINTS = frozenset({'ping', 'exchangeInfo', 'klines', 'fundingRate', 'premiumIndex'})
+ENDPOINTS = frozenset({'ping', 'exchangeInfo', 'klines', 'fundingRate', 'premiumIndex',
+                       'markPriceKlines', 'indexPriceKlines'})
 PARAMETERS = {
     'ping': set(), 'exchangeInfo': set(), 'premiumIndex': {'symbol'},
     'klines': {'symbol', 'interval', 'startTime', 'endTime', 'limit'},
     'fundingRate': {'symbol', 'startTime', 'endTime', 'limit'},
+    'markPriceKlines': {'symbol', 'interval', 'startTime', 'endTime', 'limit'},
+    'indexPriceKlines': {'pair', 'interval', 'startTime', 'endTime', 'limit'},
 }
 
 
@@ -75,11 +78,26 @@ class PublicClient:
     """No credentials, signing, arbitrary hosts, or non-GET capabilities."""
 
     def __init__(self, *, transport=urllib_transport, timeout=30, retries=3,
-                 backoff=1.0, sleep=time.sleep, clock=time.time):
+                 backoff=1.0, sleep=time.sleep, clock=time.time,
+                 max_requests=None, max_seconds=None, monotonic=time.monotonic):
         if timeout <= 0 or retries < 0 or backoff < 0:
             raise ValueError('invalid timeout/retry policy')
         self.transport, self.timeout, self.retries = transport, timeout, retries
         self.backoff, self.sleep, self.clock = backoff, sleep, clock
+        if (max_requests is not None and max_requests <= 0
+                or max_seconds is not None and max_seconds <= 0):
+            raise ValueError('invalid task budget')
+        self.max_requests, self.max_seconds = max_requests, max_seconds
+        self.monotonic, self.started = monotonic, monotonic()
+        self.attempts, self.cache_hits = 0, 0
+        self.status_counts = {}
+
+    def _budget(self, reserve=0):
+        if self.max_requests is not None and self.attempts >= self.max_requests:
+            raise DataQualityError('task HTTP request budget exhausted')
+        if (self.max_seconds is not None
+                and self.monotonic() - self.started + reserve >= self.max_seconds):
+            raise DataQualityError('task wall-clock budget exhausted')
 
     def get(self, endpoint, params=None, *, archive=None, cache=False):
         params = dict(params or {})
@@ -88,11 +106,11 @@ class PublicClient:
         if cache:
             if endpoint in {'exchangeInfo', 'premiumIndex'}:
                 raise ValueError('current snapshots cannot use historical request cache')
-            if endpoint in {'klines', 'fundingRate'}:
+            if endpoint in {'klines', 'fundingRate', 'markPriceKlines', 'indexPriceKlines'}:
                 end = int(params['endTime']) + 1
                 if end > int(self.clock() * 1000):
                     raise ValueError('cannot cache future or unclosed historical requests')
-                if endpoint == 'klines':
+                if endpoint != 'fundingRate':
                     from .market import INTERVALS
                     step = INTERVALS[params['interval']]
                     if end % step:
@@ -108,15 +126,22 @@ class PublicClient:
             body = (root / receipt['raw_path']).read_bytes()
             if sha256(body) != receipt['sha256']:
                 raise DataQualityError('cached raw response digest mismatch')
+            self.cache_hits += 1
             return json.loads(body)
         for attempt in range(self.retries + 1):
+            # Reserve the subprocess transport's maximum teardown allowance too.
+            self._budget(self.timeout + 15)
+            self.attempts += 1
             response = None
             try:
                 response = self.transport(url, self.timeout)
             except (OSError, URLError, HTTPException, subprocess.TimeoutExpired) as exc:
+                self.status_counts['transport_error'] = self.status_counts.get('transport_error', 0) + 1
                 if attempt == self.retries:
                     raise DataQualityError(f'public GET exhausted retries: {url}') from exc
             if response is not None:
+                status = str(response.status)
+                self.status_counts[status] = self.status_counts.get(status, 0) + 1
                 if root is not None:
                     acquired = utc_now()
                     artifact = archive_bytes(response.body, root / 'raw', 'BINANCE_USDM', url, acquired)
@@ -145,4 +170,5 @@ class PublicClient:
                         delay = max(delay, float(retry_after))
                     except ValueError:
                         delay = max(delay, parsedate_to_datetime(retry_after).timestamp() - self.clock())
+            self._budget(delay + self.timeout + 15)
             self.sleep(delay)
