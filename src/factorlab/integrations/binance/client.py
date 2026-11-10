@@ -126,7 +126,7 @@ class PublicClient:
                                    headers=response.headers)
                     requests = root / 'requests'
                     requests.mkdir(exist_ok=True)
-                    _write_json(requests / (key + '-' + uuid.uuid4().hex + '.json'), receipt)
+                    _write_json(requests / (uuid.uuid4().hex + '.json'), receipt)
                 if response.status == 200:
                     value = json.loads(response.body)
                     if root is not None and cache:

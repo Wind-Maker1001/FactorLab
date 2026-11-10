@@ -48,12 +48,14 @@ python -m factorlab.integrations.binance update \
 
 # 无网络、无客户端构造；重放本仓库已归档的真实示例。
 python -m factorlab.integrations.binance replay \
-  --output docs/validation/p6-b01/nvdausdt --table bars
+  --output docs/validation/p6-b01/nvda --table bars
 python -m factorlab.integrations.binance replay \
-  --output docs/validation/p6-b01/nvdausdt --table funding
+  --output docs/validation/p6-b01/nvda --table funding
 python -m factorlab.integrations.binance replay \
-  --output docs/validation/p6-b01/nvdausdt --table mark
+  --output docs/validation/p6-b01/nvda --table mark
 ```
+
+实采 generation 位于 `nvda/runs/real`。独立请求回执使用完整 UUID 文件名，历史请求缓存索引仍使用完整 URL SHA256；原始响应仍以完整 SHA256 命名。此次仅移动归档并缩短回执名称，manifest 内的相对原始响应路径与全部内容未变，因此数据版本保持不变。
 
 重放已归档数据可复现本次字节版本；重新请求交易所会产生新采集时间与数据版本，不要求实时快照与旧版相同。CLI 不接受交易、撤单、划转、提现操作；无密钥、签名或账户接口。
 
@@ -62,7 +64,7 @@ python -m factorlab.integrations.binance replay \
 ```python
 from factorlab.integrations.binance import Reader
 
-reader = Reader("docs/validation/p6-b01/nvdausdt")
+reader = Reader("docs/validation/p6-b01/nvda")
 bars = reader.read("bars")       # QueryResult：data + SourceMetadata
 funding = reader.read("funding")
 mark = reader.read("mark")
@@ -101,5 +103,23 @@ python -m pytest -q tests/research/test_binance_client.py \
 ```
 
 Python 3.13 定向离线测试 **38 passed**，结果见 [targeted-tests.xml](targeted-tests.xml)。测试通过注入 HTTP fixture、时钟和退避函数执行，无外部网络。覆盖分页/去重冲突、UTC/未闭合 K/范围和缺口、Regular/Special、mark/index、429/Retry-After、超时/截断/断线、恢复与增量、证据绑定与 Parquet 重放、CLI 只读拒绝。真实 smoke 仅通过显式 `--allow-network` 命令运行，不作为默认 CI 依赖。
+
+### Windows 嵌套 Git checkout 回归
+
+```bash
+python -m pytest -q tests/research/test_binance_client.py \
+  tests/research/test_binance_collection.py \
+  tests/research/test_binance_windows_checkout.py \
+  tests/research/test_d07_git_receipt.py
+```
+
+2026-11-10 Windows 本地定向结果：
+
+| Python | 结果 | 耗时 | JUnit |
+| --- | --- | --- | --- |
+| 3.13.9 | 46 passed | 50.30 秒 | [windows-path-tests-py313.xml](windows-path-tests-py313.xml) |
+| 3.14.0 | 46 passed | 53.67 秒 | [windows-path-tests-py314.xml](windows-path-tests-py314.xml) |
+
+每组包括上述 38 项离线测试、1 项实采归档 checkout/重放回归及 7 项 D07 Git 回执测试（含 `test_nonancestor_rejected`）。新增回归在 140 字符长的嵌套仓库根路径中，显式设置 `core.longpaths=false`，fetch 当前提交并通过 sparse checkout 实际检出完整 P6-B01 归档；检出路径均短于 260 字符，原回执布局在同一根路径下会超过此限制。随后校验全部 6 条原始响应回执及请求回执与 manifest 的一致性，离线重放 10 根 K 线、30 条资金费率和 1 条标记/指数快照。D07 测试另外执行完整候选仓库 checkout 和历史提交切换。
 
 既有 A 股 Provider、DataHub 路由、现货日历、研究配置与准入门禁不因本采集器获得放宽。

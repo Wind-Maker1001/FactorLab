@@ -23,7 +23,9 @@ def test_retry_after_backoff_disconnect_and_receipts(tmp_path):
     assert client.get('ping', archive=tmp_path) == {}
     assert delays == [5.0, 2.0, 4.0]
     assert len(urls) == 4
-    receipts = [json.loads(path.read_text()) for path in (tmp_path / 'requests').glob('*.json')]
+    paths = list((tmp_path / 'requests').glob('*.json'))
+    assert all(len(path.stem) == 32 for path in paths)
+    receipts = [json.loads(path.read_text()) for path in paths]
     assert sorted(row['status'] for row in receipts) == [200, 429, 503]
     assert all(row['acquired_at'].endswith('+00:00') for row in receipts)
     assert all(row['url'] == 'https://fapi.binance.com/fapi/v1/ping' for row in receipts)
