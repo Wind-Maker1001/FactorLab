@@ -1,0 +1,3078 @@
+{
+  "schema": "P8_03_DATA_EVIDENCE_V1",
+  "status": "P8_03_DATA_COVERAGE_ASSESSED",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "formal_admission": false,
+  "objects": {
+    "petrochina_2018": {
+      "quality": {
+        "securities": [
+          {
+            "symbol": "601857.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 243,
+            "ready_rows": 243,
+            "missing_keys": 0,
+            "first_observed": "2018-01-02",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2018-01-02",
+                "end": "2018-12-28",
+                "sessions": 243
+              }
+            ]
+          }
+        ],
+        "sessions": 243,
+        "observed_rows": 243,
+        "ready_rows": 243,
+        "rejected_rows": 0,
+        "rejected_reasons": {},
+        "missing_keys": 0,
+        "possible_action_jump_rows": 0,
+        "years": {
+          "2018": 243
+        }
+      },
+      "capabilities": {
+        "601857.SH": {
+          "level": 3,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        }
+      },
+      "calendar": {
+        "observed": 243,
+        "supplier": 243,
+        "shared": 243,
+        "observed_only": 0,
+        "supplier_only": 0,
+        "official_completeness": "UNKNOWN",
+        "limitation": "Supplier export begins 2016-11-07; earlier source absence is not evidence of closed sessions"
+      },
+      "cross_source": {
+        "price_keys": 243,
+        "status_keys": 243
+      },
+      "key_gaps": {
+        "601857.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        }
+      },
+      "status_price_association": {
+        "overlap": 243,
+        "vendor_suspended_code_1": 0,
+        "code_1_and_missing_raw_ohlc": 0,
+        "code_1_and_csmar_nontrading_proxy": 0,
+        "missing_raw_ohlc_and_code_not_1": 0,
+        "meaning": "OBSERVATIONAL_ASSOCIATION_ONLY; HISTORICAL_STATUS_CERTIFICATION_UNKNOWN"
+      },
+      "status_observations": {
+        "601857.SH": {
+          "suspended": {
+            "0": 243
+          },
+          "st_status": {
+            "0": 243
+          },
+          "is_risk_warning": {
+            "0": 243
+          },
+          "price_limit_status": {
+            "2": 243
+          },
+          "exdr": {
+            "0": 241,
+            "1": 2
+          }
+        }
+      }
+    },
+    "fixed24_2015_2018": {
+      "quality": {
+        "securities": [
+          {
+            "symbol": "000401.SZ",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 857,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 118
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2016-04-05",
+                "sessions": 305
+              },
+              {
+                "start": "2016-07-14",
+                "end": "2017-04-12",
+                "sessions": 180
+              },
+              {
+                "start": "2017-04-17",
+                "end": "2017-11-20",
+                "sessions": 148
+              },
+              {
+                "start": "2018-01-15",
+                "end": "2018-04-19",
+                "sessions": 62
+              },
+              {
+                "start": "2018-05-02",
+                "end": "2018-09-06",
+                "sessions": 91
+              },
+              {
+                "start": "2018-09-10",
+                "end": "2018-10-24",
+                "sessions": 27
+              },
+              {
+                "start": "2018-10-30",
+                "end": "2018-12-28",
+                "sessions": 44
+              }
+            ]
+          },
+          {
+            "symbol": "000709.SZ",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 936,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 39
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2015-06-29",
+                "sessions": 118
+              },
+              {
+                "start": "2015-08-24",
+                "end": "2018-12-28",
+                "sessions": 818
+              }
+            ]
+          },
+          {
+            "symbol": "600019.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 883,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 92
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2016-06-24",
+                "sessions": 360
+              },
+              {
+                "start": "2016-10-10",
+                "end": "2016-11-30",
+                "sessions": 38
+              },
+              {
+                "start": "2016-12-08",
+                "end": "2017-01-23",
+                "sessions": 32
+              },
+              {
+                "start": "2017-02-27",
+                "end": "2018-12-28",
+                "sessions": 453
+              }
+            ]
+          },
+          {
+            "symbol": "600028.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "600030.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 971,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 4
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-24",
+                "sessions": 971
+              }
+            ]
+          },
+          {
+            "symbol": "600036.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 970,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 5
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2015-04-02",
+                "sessions": 59
+              },
+              {
+                "start": "2015-04-13",
+                "end": "2018-12-28",
+                "sessions": 911
+              }
+            ]
+          },
+          {
+            "symbol": "600585.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "600837.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 974,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 1
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2015-11-26",
+                "sessions": 219
+              },
+              {
+                "start": "2015-11-30",
+                "end": "2018-12-28",
+                "sessions": 755
+              }
+            ]
+          },
+          {
+            "symbol": "600999.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 969,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 6
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2015-05-07",
+                "sessions": 82
+              },
+              {
+                "start": "2015-05-18",
+                "end": "2018-12-28",
+                "sessions": 887
+              }
+            ]
+          },
+          {
+            "symbol": "601088.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 911,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 64
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2017-06-02",
+                "sessions": 587
+              },
+              {
+                "start": "2017-09-01",
+                "end": "2018-12-28",
+                "sessions": 324
+              }
+            ]
+          },
+          {
+            "symbol": "601166.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 970,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 5
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2016-07-22",
+                "sessions": 380
+              },
+              {
+                "start": "2016-08-01",
+                "end": "2018-12-28",
+                "sessions": 590
+              }
+            ]
+          },
+          {
+            "symbol": "601186.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601288.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601318.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601336.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 950,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 25
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2015-01-16",
+                "sessions": 10
+              },
+              {
+                "start": "2015-03-02",
+                "end": "2018-12-28",
+                "sessions": 940
+              }
+            ]
+          },
+          {
+            "symbol": "601390.SH",
+            "status": "PARTIAL",
+            "observed_rows": 975,
+            "ready_rows": 889,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {
+              "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 86
+            },
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2015-01-30",
+                "sessions": 20
+              },
+              {
+                "start": "2015-02-11",
+                "end": "2015-09-11",
+                "sessions": 143
+              },
+              {
+                "start": "2015-09-21",
+                "end": "2018-05-04",
+                "sessions": 637
+              },
+              {
+                "start": "2018-08-20",
+                "end": "2018-12-28",
+                "sessions": 89
+              }
+            ]
+          },
+          {
+            "symbol": "601398.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601601.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601628.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601688.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601857.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601898.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601939.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          },
+          {
+            "symbol": "601988.SH",
+            "status": "RESEARCH_INPUT_READY",
+            "observed_rows": 975,
+            "ready_rows": 975,
+            "missing_keys": 0,
+            "first_observed": "2015-01-05",
+            "last_observed": "2018-12-28",
+            "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+            "rejected": {},
+            "intervals": [
+              {
+                "start": "2015-01-05",
+                "end": "2018-12-28",
+                "sessions": 975
+              }
+            ]
+          }
+        ],
+        "sessions": 975,
+        "observed_rows": 23400,
+        "ready_rows": 22955,
+        "rejected_rows": 445,
+        "rejected_reasons": {
+          "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 445
+        },
+        "missing_keys": 0,
+        "possible_action_jump_rows": 1,
+        "years": {
+          "2015": 244,
+          "2016": 244,
+          "2017": 244,
+          "2018": 243
+        }
+      },
+      "capabilities": {
+        "000401.SZ": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "000709.SZ": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "600019.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "600028.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "600030.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "600036.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "600585.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "600837.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "600999.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601088.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601166.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601186.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601288.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601318.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601336.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601390.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601398.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601601.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601628.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601688.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601857.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601898.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601939.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        },
+        "601988.SH": {
+          "level": 2,
+          "formal_admission": false,
+          "historical_pit": false,
+          "hfq_verified": false,
+          "level4": "NOT_GRANTED_BY_THIS_TOOL",
+          "safety": [
+            "NO LIVE MONEY",
+            "PIT_UNVERIFIED",
+            "HFQ_UNVERIFIED",
+            "FORMAL_ADMISSION_BLOCKED"
+          ]
+        }
+      },
+      "calendar": {
+        "observed": 975,
+        "supplier": 527,
+        "shared": 527,
+        "observed_only": 448,
+        "supplier_only": 0,
+        "official_completeness": "UNKNOWN",
+        "limitation": "Supplier export begins 2016-11-07; earlier source absence is not evidence of closed sessions"
+      },
+      "cross_source": {
+        "price_keys": 12648,
+        "status_keys": 12648
+      },
+      "key_gaps": {
+        "000401.SZ": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "000709.SZ": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "600019.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "600028.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "600030.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "600036.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "600585.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "600837.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "600999.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601088.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601166.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601186.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601288.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601318.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601336.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601390.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601398.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601601.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601628.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601688.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601857.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601898.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601939.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        "601988.SH": {
+          "csmar_only_vs_bq_price": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_price_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "csmar_only_vs_bq_status": {
+            "count": 448,
+            "date_set": "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b"
+          },
+          "bq_status_only_vs_csmar": {
+            "count": 0,
+            "date_set": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        }
+      },
+      "status_price_association": {
+        "overlap": 12648,
+        "vendor_suspended_code_1": 216,
+        "code_1_and_missing_raw_ohlc": 216,
+        "code_1_and_csmar_nontrading_proxy": 216,
+        "missing_raw_ohlc_and_code_not_1": 0,
+        "meaning": "OBSERVATIONAL_ASSOCIATION_ONLY; HISTORICAL_STATUS_CERTIFICATION_UNKNOWN"
+      },
+      "status_observations": {
+        "000401.SZ": {
+          "suspended": {
+            "0": 477,
+            "1": 50
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 513,
+            "3": 11,
+            "1": 3
+          },
+          "exdr": {
+            "0": 527
+          }
+        },
+        "000709.SZ": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 521,
+            "3": 6
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "600019.SH": {
+          "suspended": {
+            "0": 503,
+            "1": 24
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "600028.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 523,
+            "1": 4
+          }
+        },
+        "600030.SH": {
+          "suspended": {
+            "0": 523,
+            "1": 4
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 526,
+            "3": 1
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "600036.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "600585.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "600837.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 526,
+            "3": 1
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "600999.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 526,
+            "3": 1
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601088.SH": {
+          "suspended": {
+            "0": 463,
+            "1": 64
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 525,
+            "3": 2
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601166.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601186.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 523,
+            "3": 3,
+            "1": 1
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601288.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601318.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 523,
+            "1": 4
+          }
+        },
+        "601336.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 526,
+            "3": 1
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601390.SH": {
+          "suspended": {
+            "0": 453,
+            "1": 74
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601398.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601601.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601628.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601688.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 526,
+            "3": 1
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601857.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 523,
+            "1": 4
+          }
+        },
+        "601898.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601939.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        },
+        "601988.SH": {
+          "suspended": {
+            "0": 527
+          },
+          "st_status": {
+            "0": 527
+          },
+          "is_risk_warning": {
+            "0": 527
+          },
+          "price_limit_status": {
+            "2": 527
+          },
+          "exdr": {
+            "0": 525,
+            "1": 2
+          }
+        }
+      }
+    }
+  },
+  "ancillary": {
+    "tdx": {
+      "availability": "READABLE",
+      "sha256": "2d5d1bf4c004cdc98520388b592084aaa56e7359a0ce980e582734a180dbe52c",
+      "rows_2018": 0,
+      "layout_status": "WARN",
+      "unit": "UNKNOWN",
+      "raw_or_adjusted": "UNKNOWN"
+    },
+    "cnrds": {
+      "availability": "READABLE_DIRECTORY_AND_DICTIONARY",
+      "directory_sha256": "70f92c1e44e8c9e888a9636e0ad3b8dcc51b9e42ae4291b1f87e6c44b54de569",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "dictionary_member": "2018/个股日回报率_字段说明.txt",
+      "dictionary_fields": [
+        "Scode[股票代码]-上市公司股票代码",
+        "Coname[公司简称]-上市公司简称",
+        "Trddt[交易时间]-交易时间(日)",
+        "Dopnprc[日开盘价]-日开盘价，单位：元",
+        "Dhiprc[日最高价]-日最高价，单位：元",
+        "Dloprc[日最低价]-日最低价，单位：元",
+        "Dclsprc[日收盘价]-日收盘价，单位：元",
+        "Dclsprcp[前日收盘价]-前日收盘价，单位：元",
+        "Dret[日涨跌幅(%)]-日涨跌幅",
+        "Adclsprc[复权日收盘价]-复权日收盘价，单位：元",
+        "Adclsprcp[前复权日收盘价]-前复权日收盘价，单位：元",
+        "Adret[复权日涨跌幅(%)]-复权日涨跌幅",
+        "Dtrdvol[日成交量]-日成交量，单位：股",
+        "Dtrdamt[日成交金额]-日成交金额，单位：元",
+        "Dts[日总股本]-日总股本，单位：股",
+        "Dos[日流通股本]-日流通股本，单位：股",
+        "Dmktcap[日总市值]-日总市值，单位：元",
+        "Domktcap[日流通市值]-日流通市值，单位：元",
+        "Dtnor[日换手率(%)]-日换手率"
+      ],
+      "members": [
+        {
+          "member": "2024/个股日回报率-2024_3.xlsx",
+          "bytes": 44115015,
+          "crc": 4146648840
+        },
+        {
+          "member": "2024/个股日回报率-2024_2.xlsx",
+          "bytes": 69608764,
+          "crc": 450210247
+        },
+        {
+          "member": "2024/个股日回报率-2024_1.xlsx",
+          "bytes": 69781281,
+          "crc": 1650680186
+        },
+        {
+          "member": "2024/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2024/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2023/个股日回报率-2023_1.xlsx",
+          "bytes": 68952491,
+          "crc": 930438087
+        },
+        {
+          "member": "2023/个股日回报率-2023_2.xlsx",
+          "bytes": 69108840,
+          "crc": 2539675574
+        },
+        {
+          "member": "2023/个股日回报率-2023_3.xlsx",
+          "bytes": 39020176,
+          "crc": 3812054430
+        },
+        {
+          "member": "2023/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2023/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1990/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1990/个股日回报率-1990.xlsx",
+          "bytes": 8938,
+          "crc": 974190661
+        },
+        {
+          "member": "1990/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1991/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1991/个股日回报率-1991.xlsx",
+          "bytes": 252887,
+          "crc": 136832625
+        },
+        {
+          "member": "1991/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1992/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1992/个股日回报率-1992.xlsx",
+          "bytes": 782210,
+          "crc": 1283721233
+        },
+        {
+          "member": "1992/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1993/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1993/个股日回报率-1993.xlsx",
+          "bytes": 2650257,
+          "crc": 3111996418
+        },
+        {
+          "member": "1993/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1994/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1994/个股日回报率-1994.xlsx",
+          "bytes": 6763168,
+          "crc": 718136378
+        },
+        {
+          "member": "1994/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1995/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1995/个股日回报率-1995.xlsx",
+          "bytes": 7456870,
+          "crc": 784650647
+        },
+        {
+          "member": "1995/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1996/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1996/个股日回报率-1996.xlsx",
+          "bytes": 10085658,
+          "crc": 3917385931
+        },
+        {
+          "member": "1996/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1997/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1997/个股日回报率-1997.xlsx",
+          "bytes": 16422774,
+          "crc": 1839807279
+        },
+        {
+          "member": "1997/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1998/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1998/个股日回报率-1998.xlsx",
+          "bytes": 20112253,
+          "crc": 1522017748
+        },
+        {
+          "member": "1998/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "1999/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "1999/个股日回报率-1999.xlsx",
+          "bytes": 22065415,
+          "crc": 3307098258
+        },
+        {
+          "member": "1999/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2000/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2000/个股日回报率-2000.xlsx",
+          "bytes": 25033450,
+          "crc": 696685282
+        },
+        {
+          "member": "2000/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2001/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2001/个股日回报率-2001.xlsx",
+          "bytes": 28241552,
+          "crc": 3373447394
+        },
+        {
+          "member": "2001/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2002/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2002/个股日回报率-2002.xlsx",
+          "bytes": 28975157,
+          "crc": 3237873766
+        },
+        {
+          "member": "2002/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2003/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2003/个股日回报率-2003.xlsx",
+          "bytes": 30828854,
+          "crc": 155739108
+        },
+        {
+          "member": "2003/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2004/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2004/个股日回报率-2004.xlsx",
+          "bytes": 33329108,
+          "crc": 1489065259
+        },
+        {
+          "member": "2004/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2005/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2005/个股日回报率-2005.xlsx",
+          "bytes": 33442444,
+          "crc": 599213239
+        },
+        {
+          "member": "2005/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2006/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2006/个股日回报率-2006.xlsx",
+          "bytes": 33193792,
+          "crc": 3033520336
+        },
+        {
+          "member": "2006/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2007/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2007/个股日回报率-2007.xlsx",
+          "bytes": 38755708,
+          "crc": 3566352154
+        },
+        {
+          "member": "2007/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2008/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2008/个股日回报率-2008.xlsx",
+          "bytes": 42304235,
+          "crc": 3771216183
+        },
+        {
+          "member": "2008/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2009/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2009/个股日回报率-2009.xlsx",
+          "bytes": 43146707,
+          "crc": 4241396451
+        },
+        {
+          "member": "2009/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2010/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2010/个股日回报率-2010.xlsx",
+          "bytes": 49037385,
+          "crc": 4294199363
+        },
+        {
+          "member": "2010/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2011/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2011/个股日回报率-2011_1.xlsx",
+          "bytes": 54291752,
+          "crc": 1379168284
+        },
+        {
+          "member": "2011/个股日回报率-2011_2.xlsx",
+          "bytes": 3248626,
+          "crc": 2438742031
+        },
+        {
+          "member": "2011/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2012/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2012/个股日回报率-2012_1.xlsx",
+          "bytes": 53554668,
+          "crc": 1321563515
+        },
+        {
+          "member": "2012/个股日回报率-2012_2.xlsx",
+          "bytes": 8611880,
+          "crc": 756952966
+        },
+        {
+          "member": "2012/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2013/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2013/个股日回报率-2013_1.xlsx",
+          "bytes": 53792950,
+          "crc": 2226787308
+        },
+        {
+          "member": "2013/个股日回报率-2013_2.xlsx",
+          "bytes": 9142639,
+          "crc": 1704212216
+        },
+        {
+          "member": "2013/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2014/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2014/个股日回报率-2014_1.xlsx",
+          "bytes": 53400086,
+          "crc": 1669358986
+        },
+        {
+          "member": "2014/个股日回报率-2014_2.xlsx",
+          "bytes": 14896432,
+          "crc": 2197358966
+        },
+        {
+          "member": "2014/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2015/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2015/个股日回报率-2015_1.xlsx",
+          "bytes": 53960703,
+          "crc": 3465545601
+        },
+        {
+          "member": "2015/个股日回报率-2015_2.xlsx",
+          "bytes": 20256947,
+          "crc": 1237358758
+        },
+        {
+          "member": "2015/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2016/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2016/个股日回报率-2016_1.xlsx",
+          "bytes": 54310608,
+          "crc": 1578938509
+        },
+        {
+          "member": "2016/个股日回报率-2016_2.xlsx",
+          "bytes": 24015670,
+          "crc": 561471446
+        },
+        {
+          "member": "2016/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2017/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2017/个股日回报率-2017_1.xlsx",
+          "bytes": 54045550,
+          "crc": 1338595870
+        },
+        {
+          "member": "2017/个股日回报率-2017_2.xlsx",
+          "bytes": 33911155,
+          "crc": 4070108513
+        },
+        {
+          "member": "2017/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2018/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2018/个股日回报率-2018_1.xlsx",
+          "bytes": 54408260,
+          "crc": 3747020157
+        },
+        {
+          "member": "2018/个股日回报率-2018_2.xlsx",
+          "bytes": 40532923,
+          "crc": 2765003989
+        },
+        {
+          "member": "2018/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2019/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2019/个股日回报率-2019_1.xlsx",
+          "bytes": 55432483,
+          "crc": 1327295867
+        },
+        {
+          "member": "2019/个股日回报率-2019_2.xlsx",
+          "bytes": 44354080,
+          "crc": 975026565
+        },
+        {
+          "member": "2019/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2020/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2020/个股日回报率-2020_1.xlsx",
+          "bytes": 56307258,
+          "crc": 404326371
+        },
+        {
+          "member": "2020/个股日回报率-2020_2.xlsx",
+          "bytes": 51258807,
+          "crc": 1927400169
+        },
+        {
+          "member": "2020/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2021/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2021/个股日回报率-2021_1.xlsx",
+          "bytes": 54611901,
+          "crc": 2100864392
+        },
+        {
+          "member": "2021/个股日回报率-2021_2.xlsx",
+          "bytes": 54100933,
+          "crc": 1840266342
+        },
+        {
+          "member": "2021/个股日回报率-2021_3.xlsx",
+          "bytes": 18839370,
+          "crc": 746647295
+        },
+        {
+          "member": "2021/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2022/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2022/个股日回报率-2022_1.xlsx",
+          "bytes": 71785371,
+          "crc": 2316429844
+        },
+        {
+          "member": "2022/个股日回报率-2022_2.xlsx",
+          "bytes": 71075072,
+          "crc": 3908004406
+        },
+        {
+          "member": "2022/个股日回报率-2022_3.xlsx",
+          "bytes": 27631837,
+          "crc": 565022321
+        },
+        {
+          "member": "2022/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "个股日回报率_字段说明.txt",
+          "bytes": 965,
+          "crc": 2871831133
+        },
+        {
+          "member": "版权声明与数据来源说明.pdf",
+          "bytes": 674713,
+          "crc": 4245756749
+        },
+        {
+          "member": "2025/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2025/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2025/个股日回报率-2025_1.xlsx",
+          "bytes": 69775541,
+          "crc": 2949140903
+        },
+        {
+          "member": "2025/个股日回报率-2025_2.xlsx",
+          "bytes": 69545086,
+          "crc": 1460141647
+        },
+        {
+          "member": "2025/个股日回报率-2025_3.xlsx",
+          "bytes": 46890616,
+          "crc": 1319025854
+        },
+        {
+          "member": "2026/",
+          "bytes": 0,
+          "crc": 0
+        },
+        {
+          "member": "2026/个股日回报率_字段说明.txt",
+          "bytes": 943,
+          "crc": 3006665479
+        },
+        {
+          "member": "2026/个股日回报率-2026.xlsx",
+          "bytes": 91446524,
+          "crc": 1462224964
+        }
+      ],
+      "target_rows": null,
+      "limitation": "Directory is not payload SHA256; 2018 dictionary units readable, target rows not scanned"
+    }
+  },
+  "missing_date_sets": {
+    "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945": [],
+    "edfb08742a162ae688b456d560bde9bf0aa0775b148b942dcb50a2d808c70c0b": [
+      "2015-01-05",
+      "2015-01-06",
+      "2015-01-07",
+      "2015-01-08",
+      "2015-01-09",
+      "2015-01-12",
+      "2015-01-13",
+      "2015-01-14",
+      "2015-01-15",
+      "2015-01-16",
+      "2015-01-19",
+      "2015-01-20",
+      "2015-01-21",
+      "2015-01-22",
+      "2015-01-23",
+      "2015-01-26",
+      "2015-01-27",
+      "2015-01-28",
+      "2015-01-29",
+      "2015-01-30",
+      "2015-02-02",
+      "2015-02-03",
+      "2015-02-04",
+      "2015-02-05",
+      "2015-02-06",
+      "2015-02-09",
+      "2015-02-10",
+      "2015-02-11",
+      "2015-02-12",
+      "2015-02-13",
+      "2015-02-16",
+      "2015-02-17",
+      "2015-02-25",
+      "2015-02-26",
+      "2015-02-27",
+      "2015-03-02",
+      "2015-03-03",
+      "2015-03-04",
+      "2015-03-05",
+      "2015-03-06",
+      "2015-03-09",
+      "2015-03-10",
+      "2015-03-11",
+      "2015-03-12",
+      "2015-03-13",
+      "2015-03-16",
+      "2015-03-17",
+      "2015-03-18",
+      "2015-03-19",
+      "2015-03-20",
+      "2015-03-23",
+      "2015-03-24",
+      "2015-03-25",
+      "2015-03-26",
+      "2015-03-27",
+      "2015-03-30",
+      "2015-03-31",
+      "2015-04-01",
+      "2015-04-02",
+      "2015-04-03",
+      "2015-04-07",
+      "2015-04-08",
+      "2015-04-09",
+      "2015-04-10",
+      "2015-04-13",
+      "2015-04-14",
+      "2015-04-15",
+      "2015-04-16",
+      "2015-04-17",
+      "2015-04-20",
+      "2015-04-21",
+      "2015-04-22",
+      "2015-04-23",
+      "2015-04-24",
+      "2015-04-27",
+      "2015-04-28",
+      "2015-04-29",
+      "2015-04-30",
+      "2015-05-04",
+      "2015-05-05",
+      "2015-05-06",
+      "2015-05-07",
+      "2015-05-08",
+      "2015-05-11",
+      "2015-05-12",
+      "2015-05-13",
+      "2015-05-14",
+      "2015-05-15",
+      "2015-05-18",
+      "2015-05-19",
+      "2015-05-20",
+      "2015-05-21",
+      "2015-05-22",
+      "2015-05-25",
+      "2015-05-26",
+      "2015-05-27",
+      "2015-05-28",
+      "2015-05-29",
+      "2015-06-01",
+      "2015-06-02",
+      "2015-06-03",
+      "2015-06-04",
+      "2015-06-05",
+      "2015-06-08",
+      "2015-06-09",
+      "2015-06-10",
+      "2015-06-11",
+      "2015-06-12",
+      "2015-06-15",
+      "2015-06-16",
+      "2015-06-17",
+      "2015-06-18",
+      "2015-06-19",
+      "2015-06-23",
+      "2015-06-24",
+      "2015-06-25",
+      "2015-06-26",
+      "2015-06-29",
+      "2015-06-30",
+      "2015-07-01",
+      "2015-07-02",
+      "2015-07-03",
+      "2015-07-06",
+      "2015-07-07",
+      "2015-07-08",
+      "2015-07-09",
+      "2015-07-10",
+      "2015-07-13",
+      "2015-07-14",
+      "2015-07-15",
+      "2015-07-16",
+      "2015-07-17",
+      "2015-07-20",
+      "2015-07-21",
+      "2015-07-22",
+      "2015-07-23",
+      "2015-07-24",
+      "2015-07-27",
+      "2015-07-28",
+      "2015-07-29",
+      "2015-07-30",
+      "2015-07-31",
+      "2015-08-03",
+      "2015-08-04",
+      "2015-08-05",
+      "2015-08-06",
+      "2015-08-07",
+      "2015-08-10",
+      "2015-08-11",
+      "2015-08-12",
+      "2015-08-13",
+      "2015-08-14",
+      "2015-08-17",
+      "2015-08-18",
+      "2015-08-19",
+      "2015-08-20",
+      "2015-08-21",
+      "2015-08-24",
+      "2015-08-25",
+      "2015-08-26",
+      "2015-08-27",
+      "2015-08-28",
+      "2015-08-31",
+      "2015-09-01",
+      "2015-09-02",
+      "2015-09-07",
+      "2015-09-08",
+      "2015-09-09",
+      "2015-09-10",
+      "2015-09-11",
+      "2015-09-14",
+      "2015-09-15",
+      "2015-09-16",
+      "2015-09-17",
+      "2015-09-18",
+      "2015-09-21",
+      "2015-09-22",
+      "2015-09-23",
+      "2015-09-24",
+      "2015-09-25",
+      "2015-09-28",
+      "2015-09-29",
+      "2015-09-30",
+      "2015-10-08",
+      "2015-10-09",
+      "2015-10-12",
+      "2015-10-13",
+      "2015-10-14",
+      "2015-10-15",
+      "2015-10-16",
+      "2015-10-19",
+      "2015-10-20",
+      "2015-10-21",
+      "2015-10-22",
+      "2015-10-23",
+      "2015-10-26",
+      "2015-10-27",
+      "2015-10-28",
+      "2015-10-29",
+      "2015-10-30",
+      "2015-11-02",
+      "2015-11-03",
+      "2015-11-04",
+      "2015-11-05",
+      "2015-11-06",
+      "2015-11-09",
+      "2015-11-10",
+      "2015-11-11",
+      "2015-11-12",
+      "2015-11-13",
+      "2015-11-16",
+      "2015-11-17",
+      "2015-11-18",
+      "2015-11-19",
+      "2015-11-20",
+      "2015-11-23",
+      "2015-11-24",
+      "2015-11-25",
+      "2015-11-26",
+      "2015-11-27",
+      "2015-11-30",
+      "2015-12-01",
+      "2015-12-02",
+      "2015-12-03",
+      "2015-12-04",
+      "2015-12-07",
+      "2015-12-08",
+      "2015-12-09",
+      "2015-12-10",
+      "2015-12-11",
+      "2015-12-14",
+      "2015-12-15",
+      "2015-12-16",
+      "2015-12-17",
+      "2015-12-18",
+      "2015-12-21",
+      "2015-12-22",
+      "2015-12-23",
+      "2015-12-24",
+      "2015-12-25",
+      "2015-12-28",
+      "2015-12-29",
+      "2015-12-30",
+      "2015-12-31",
+      "2016-01-04",
+      "2016-01-05",
+      "2016-01-06",
+      "2016-01-07",
+      "2016-01-08",
+      "2016-01-11",
+      "2016-01-12",
+      "2016-01-13",
+      "2016-01-14",
+      "2016-01-15",
+      "2016-01-18",
+      "2016-01-19",
+      "2016-01-20",
+      "2016-01-21",
+      "2016-01-22",
+      "2016-01-25",
+      "2016-01-26",
+      "2016-01-27",
+      "2016-01-28",
+      "2016-01-29",
+      "2016-02-01",
+      "2016-02-02",
+      "2016-02-03",
+      "2016-02-04",
+      "2016-02-05",
+      "2016-02-15",
+      "2016-02-16",
+      "2016-02-17",
+      "2016-02-18",
+      "2016-02-19",
+      "2016-02-22",
+      "2016-02-23",
+      "2016-02-24",
+      "2016-02-25",
+      "2016-02-26",
+      "2016-02-29",
+      "2016-03-01",
+      "2016-03-02",
+      "2016-03-03",
+      "2016-03-04",
+      "2016-03-07",
+      "2016-03-08",
+      "2016-03-09",
+      "2016-03-10",
+      "2016-03-11",
+      "2016-03-14",
+      "2016-03-15",
+      "2016-03-16",
+      "2016-03-17",
+      "2016-03-18",
+      "2016-03-21",
+      "2016-03-22",
+      "2016-03-23",
+      "2016-03-24",
+      "2016-03-25",
+      "2016-03-28",
+      "2016-03-29",
+      "2016-03-30",
+      "2016-03-31",
+      "2016-04-01",
+      "2016-04-05",
+      "2016-04-06",
+      "2016-04-07",
+      "2016-04-08",
+      "2016-04-11",
+      "2016-04-12",
+      "2016-04-13",
+      "2016-04-14",
+      "2016-04-15",
+      "2016-04-18",
+      "2016-04-19",
+      "2016-04-20",
+      "2016-04-21",
+      "2016-04-22",
+      "2016-04-25",
+      "2016-04-26",
+      "2016-04-27",
+      "2016-04-28",
+      "2016-04-29",
+      "2016-05-03",
+      "2016-05-04",
+      "2016-05-05",
+      "2016-05-06",
+      "2016-05-09",
+      "2016-05-10",
+      "2016-05-11",
+      "2016-05-12",
+      "2016-05-13",
+      "2016-05-16",
+      "2016-05-17",
+      "2016-05-18",
+      "2016-05-19",
+      "2016-05-20",
+      "2016-05-23",
+      "2016-05-24",
+      "2016-05-25",
+      "2016-05-26",
+      "2016-05-27",
+      "2016-05-30",
+      "2016-05-31",
+      "2016-06-01",
+      "2016-06-02",
+      "2016-06-03",
+      "2016-06-06",
+      "2016-06-07",
+      "2016-06-08",
+      "2016-06-13",
+      "2016-06-14",
+      "2016-06-15",
+      "2016-06-16",
+      "2016-06-17",
+      "2016-06-20",
+      "2016-06-21",
+      "2016-06-22",
+      "2016-06-23",
+      "2016-06-24",
+      "2016-06-27",
+      "2016-06-28",
+      "2016-06-29",
+      "2016-06-30",
+      "2016-07-01",
+      "2016-07-04",
+      "2016-07-05",
+      "2016-07-06",
+      "2016-07-07",
+      "2016-07-08",
+      "2016-07-11",
+      "2016-07-12",
+      "2016-07-13",
+      "2016-07-14",
+      "2016-07-15",
+      "2016-07-18",
+      "2016-07-19",
+      "2016-07-20",
+      "2016-07-21",
+      "2016-07-22",
+      "2016-07-25",
+      "2016-07-26",
+      "2016-07-27",
+      "2016-07-28",
+      "2016-07-29",
+      "2016-08-01",
+      "2016-08-02",
+      "2016-08-03",
+      "2016-08-04",
+      "2016-08-05",
+      "2016-08-08",
+      "2016-08-09",
+      "2016-08-10",
+      "2016-08-11",
+      "2016-08-12",
+      "2016-08-15",
+      "2016-08-16",
+      "2016-08-17",
+      "2016-08-18",
+      "2016-08-19",
+      "2016-08-22",
+      "2016-08-23",
+      "2016-08-24",
+      "2016-08-25",
+      "2016-08-26",
+      "2016-08-29",
+      "2016-08-30",
+      "2016-08-31",
+      "2016-09-01",
+      "2016-09-02",
+      "2016-09-05",
+      "2016-09-06",
+      "2016-09-07",
+      "2016-09-08",
+      "2016-09-09",
+      "2016-09-12",
+      "2016-09-13",
+      "2016-09-14",
+      "2016-09-19",
+      "2016-09-20",
+      "2016-09-21",
+      "2016-09-22",
+      "2016-09-23",
+      "2016-09-26",
+      "2016-09-27",
+      "2016-09-28",
+      "2016-09-29",
+      "2016-09-30",
+      "2016-10-10",
+      "2016-10-11",
+      "2016-10-12",
+      "2016-10-13",
+      "2016-10-14",
+      "2016-10-17",
+      "2016-10-18",
+      "2016-10-19",
+      "2016-10-20",
+      "2016-10-21",
+      "2016-10-24",
+      "2016-10-25",
+      "2016-10-26",
+      "2016-10-27",
+      "2016-10-28",
+      "2016-10-31",
+      "2016-11-01",
+      "2016-11-02",
+      "2016-11-03",
+      "2016-11-04"
+    ]
+  },
+  "inaccessible_inputs": {},
+  "artifacts": {
+    "coverage": "coverage.csv",
+    "comparisons": "comparisons.csv",
+    "returns": "return-status.json",
+    "inputs": "input-identities.json",
+    "capabilities": "capabilities.csv"
+  }
+}
