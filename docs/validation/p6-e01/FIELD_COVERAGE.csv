@@ -1,0 +1,20 @@
+scope,field_or_category,status,evidence_or_gap
+2018-023 and 2018-029,security and cash terms,VERIFIED,issuer implementation notice p1
+2018-023 and 2018-029,record date and ex date,VERIFIED,issuer implementation notice p1-2
+2018-023 and 2018-029,scheduled payment date,VERIFIED,not account-level actual receipt
+2018-023 and 2018-029,document date,VERIFIED,2018-06-12 and 2018-09-13
+2018-023 and 2018-029,historical publication availability,UNKNOWN,document signature and vendor Annodt are distinct
+2018-023 and 2018-029,actual account receipt,UNKNOWN,designated trading and investor category not specified
+2018-023 and 2018-029,tax rate brackets in notice,VERIFIED,individual 20% or 10% or exemption depends on holding period
+2018-023 and 2018-029,applicable account tax and collection lifecycle,UNKNOWN,account category and settlement FIFO rounding collection contract absent
+2018 full window,cash dividend completeness,UNKNOWN,CSMAR and BigQuant matching two events not complete enumeration proof
+2018 full window,bonus shares,UNKNOWN,no positive candidate is not verified absence
+2018 full window,capitalization,UNKNOWN,null bonus or capitalization fields not zero
+2018 full window,rights issue,UNKNOWN,BigQuant empty allotment observation inherited from P3-D03
+2018 full window,split consolidation and other capital changes,UNKNOWN,no complete category source binding
+2018 full window,revision cancellation and unimplemented proposals,UNKNOWN,no bound historical version chain
+2018 full window,EVENT_CANDIDATE,YES,two observed cash events
+2018 full window,EVENT_FIELDS_VERIFIED,PARTIAL,listed cash implementation terms only
+2018 full window,EVENT_COVERAGE_VERIFIED,NO,all-category coverage unknown
+2018 full window,ECONOMIC_ACCOUNTING_READY,NO,payment tax and range contracts not closed
+2018 full window,TOTAL_RETURN_COMPUTABLE,NO,TOTAL_RETURN_UNAVAILABLE with null values
