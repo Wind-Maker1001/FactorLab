@@ -1,0 +1,9 @@
+{
+  "comparison_manifest_sha256": "4c7a0a8974dc1abbcf81d454676b525e8a162b49959a512ca07db16a72046376",
+  "coverage_status": "UNKNOWN",
+  "blockers": ["ALL_CATEGORY_RANGE_COVERAGE_UNKNOWN", "REVISION_CANCELLATION_HISTORY_UNKNOWN", "ACCOUNT_TYPE_AND_HOLDING_PERIOD_TAX_CONTRACT_UNKNOWN", "ACCOUNT_RECEIPT_UNVERIFIED", "HISTORICAL_PUBLICATION_TIME_UNVERIFIED"],
+  "events": [
+    {"event_id": "601857.SH:2018-023", "event_type": "CASH_DIVIDEND", "record_date": "2018-06-20", "ex_date": "2018-06-21", "scheduled_pay_date": "2018-06-21", "cash_per_share": "0.06074", "source_sha256": "9e26fe2216c5264e809b92cfe4cb8c0e47c14961d203a9c2889d4f1285361f51", "source_url": "https://www.petrochina.com.cn/petrochina/gsgg/201806/667ae738ac3142a6a3260b3e55a90ab6/files/a78ca662a1f04a4797210e962a6f6bf8.pdf"},
+    {"event_id": "601857.SH:2018-029", "event_type": "CASH_DIVIDEND", "record_date": "2018-09-20", "ex_date": "2018-09-21", "scheduled_pay_date": "2018-09-21", "cash_per_share": "0.08880", "source_sha256": "79b1e9ee30b0a3e7a71df9e803c33a620169d61646ed2f77b8367e366b0653c6", "source_url": "https://www.petrochina.com.cn/petrochina/gsgg/201809/b3d3e80c3ebe45398e844d3ae80b4368/files/332296d36d624cbf9f72fe4c61bcdba5.pdf"}
+  ]
+}

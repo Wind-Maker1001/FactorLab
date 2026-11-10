@@ -1,0 +1,3 @@
+security,event,type,document_date,vendor_announcement_date,record_date,ex_date,scheduled_pay_date,cash_gross_CNY_per_old_share,share_change,actual_account_receipt,revision_history,state,source_locator
+601857.SH,2018-023,CASH_DIVIDEND,2018-06-12,2018-06-13,2018-06-20,2018-06-21,2018-06-21,0.06074,UNKNOWN,UNKNOWN,UNKNOWN,EVENT_FIELDS_VERIFIED,issuer PDF p1-3; P3_D03_ACTION_EVIDENCE.md section3
+601857.SH,2018-029,CASH_DIVIDEND,2018-09-13,2018-09-14,2018-09-20,2018-09-21,2018-09-21,0.08880,UNKNOWN,UNKNOWN,UNKNOWN,EVENT_FIELDS_VERIFIED,issuer PDF p1-3; P3_D03_ACTION_EVIDENCE.md section3
