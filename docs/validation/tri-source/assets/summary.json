@@ -1,0 +1,410 @@
+{
+  "task_id": "TRI_SOURCE_ASSETS_A",
+  "baseline_sha": "2ce3e5ee6e704819a2c155ca833b30e5bb7c296c",
+  "sources": [
+    "CSMAR",
+    "CNRDS",
+    "BigQuant"
+  ],
+  "scope": {
+    "directory_depth": 3,
+    "all_source_files": "LISTED_WITH_EXPLICIT_NOT_RUN",
+    "new_bigquant_tables": [
+      "cn_stock_basic_info",
+      "cn_stock_name_change"
+    ],
+    "cnrds_sample": {
+      "member": "2018/个股日回报率-2018_1.xlsx",
+      "max_rows": 5000
+    },
+    "member_byte_budget": 67108864,
+    "reused_evidence": [
+      {
+        "artifact": "docs/data/p3-d01-statistics.json",
+        "sha256": "7fcadc522acbd8a4d150919526d996e5601ec83a4e3d01b954125a3520fb066d",
+        "status": "REUSED_BASELINE_EVIDENCE_NOT_CURRENT_RAW_SCAN"
+      },
+      {
+        "artifact": "docs/data/p3-d03-summary.json",
+        "sha256": "16f171dedcd75bbd0e339041d20e4d7d755fbf6a6573e2e9c6e47b5c8be2c383",
+        "status": "REUSED_BASELINE_EVIDENCE_NOT_CURRENT_RAW_SCAN"
+      },
+      {
+        "artifact": "docs/validation/p3-d05/real.json",
+        "sha256": "a8e58277a4d8292a9c4420972fc90552c84e771c900ae6124dedd1b708362df0",
+        "status": "REUSED_BASELINE_EVIDENCE_NOT_CURRENT_RAW_SCAN"
+      },
+      {
+        "artifact": "docs/validation/p3-d06/diagnostics.json",
+        "sha256": "a95a8ca5915abe406e3244d017d828582167778bfa97004c51259d0fd77ab407",
+        "status": "REUSED_BASELINE_EVIDENCE_NOT_CURRENT_RAW_SCAN"
+      },
+      {
+        "artifact": "docs/validation/p3-d06/extension-assets.json",
+        "sha256": "04287c594659f092b09451f468b1dcf4c23fe5ae392b467dcb4c2f29af4d6e2f",
+        "status": "REUSED_BASELINE_EVIDENCE_NOT_CURRENT_RAW_SCAN"
+      },
+      {
+        "artifact": "docs/validation/p3-d06/input-manifest.json",
+        "sha256": "3f4cd2e4d9e29ba79d72876602d25e60ee7b6f93f05f9524cdefd0ba67f7cc21",
+        "status": "REUSED_BASELINE_EVIDENCE_NOT_CURRENT_RAW_SCAN"
+      },
+      {
+        "artifact": "LOCAL_INVENTORY_V2/archive_preview.csv",
+        "sha256": "169e78f1c1d5b9b43ab6ef0710c77976773534dfc121ee5382367d57dc1daf8e",
+        "status": "PRIOR_DIRECTORY_INDEX_NOT_CURRENT_7Z_VERIFICATION"
+      }
+    ],
+    "pr79": {
+      "state_at_start": "OPEN",
+      "head_sha": "32279f8694b4497d837b940e7565267e7ae720b6",
+      "role": "READ_ONLY_REFERENCE_NOT_MAIN"
+    }
+  },
+  "metrics": {
+    "files": 146,
+    "archive_members": 6891,
+    "payload_bytes": 60756044,
+    "reused_7z_member_entries": 233,
+    "new_profile_rows": 29346,
+    "inventory_rows": 865,
+    "field_contract_rows": 2244,
+    "bigquant_partitions": 3201,
+    "new_content_profiles": 3,
+    "finding_items": 29,
+    "wall_seconds": 23.22,
+    "cpu_seconds": 22.812,
+    "peak_working_set_bytes": 467427328,
+    "source_files_by_source": {
+      "CSMAR": 55,
+      "CNRDS": 81,
+      "BigQuant": 10
+    },
+    "logical_table_entries": 410
+  },
+  "findings": [
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "name",
+      "count": 1,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "used_name",
+      "count": 3647,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "instrument_b",
+      "count": 5849,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "name_b",
+      "count": 5849,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "instrument_hk",
+      "count": 5777,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "name_hk",
+      "count": 5778,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "industry",
+      "count": 32,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "office_addr",
+      "count": 358,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "regster_addr",
+      "count": 266,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "nums_employees",
+      "count": 90,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "nums_managers",
+      "count": 2,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "account_firm",
+      "count": 1,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "profile",
+      "count": 31,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "delist_date",
+      "count": 5579,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "online_list",
+      "count": 43,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "ipo_price",
+      "count": 34,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "ipo_nums",
+      "count": 26,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "ipo_pe",
+      "count": 454,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "ipo_parvalue",
+      "count": 44,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "net_amount_funds",
+      "count": 215,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "offline_dtor",
+      "count": 2093,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "dtor",
+      "count": 622,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "f_open",
+      "count": 505,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "f_high",
+      "count": 530,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "f_close",
+      "count": 521,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "BigQuant",
+      "asset": "stock.zip",
+      "table": "stock/cn_stock_basic_info",
+      "check": "nulls",
+      "field": "f_turnover",
+      "count": 497,
+      "classification": "STATISTICAL_NOT_AUTOMATIC_ERROR",
+      "scope": "FULL_TABLE"
+    },
+    {
+      "source": "CNRDS",
+      "asset": "CNSP_个股日回报率_ALL.zip",
+      "table": "CNSP",
+      "check": "Dtrdvol_nonnumeric_nonnull",
+      "count": 368,
+      "classification": "LITERAL_MARKER_OR_TYPE_CONFLICT_REQUIRES_CONTRACT",
+      "scope": "FIRST_5000_PHYSICAL_ROWS_FIRST_SHEET_NOT_TARGET_SECURITY_COVERAGE"
+    },
+    {
+      "source": "CNRDS",
+      "asset": "CNSP_个股日回报率_ALL.zip",
+      "table": "CNSP",
+      "check": "Dtrdamt_nonnumeric_nonnull",
+      "count": 368,
+      "classification": "LITERAL_MARKER_OR_TYPE_CONFLICT_REQUIRES_CONTRACT",
+      "scope": "FIRST_5000_PHYSICAL_ROWS_FIRST_SHEET_NOT_TARGET_SECURITY_COVERAGE"
+    },
+    {
+      "source": "CNRDS",
+      "asset": "CNSP_个股日回报率_ALL.zip",
+      "table": "CNSP",
+      "check": "Dtnor_nonnumeric_nonnull",
+      "count": 368,
+      "classification": "LITERAL_MARKER_OR_TYPE_CONFLICT_REQUIRES_CONTRACT",
+      "scope": "FIRST_5000_PHYSICAL_ROWS_FIRST_SHEET_NOT_TARGET_SECURITY_COVERAGE"
+    }
+  ],
+  "gaps": [
+    "7z members/content NOT_RUN: no installed reader; files explicitly inventoried",
+    "Unselected workbook content and global cross-export key conflicts NOT_RUN",
+    "Actual partition continuity and expected missing partitions UNKNOWN",
+    "Historical stable identity and code-transition validity UNKNOWN",
+    "Vendor first distribution / revision / withdrawal / historical dictionaries UNKNOWN",
+    "BigQuant economic units, currency, precision and adjustment algorithms UNKNOWN",
+    "Full-market / target-security coverage not inferred from schema, receipts or prefix samples",
+    "CNRDS prior FRDT profile remains historical referenced evidence, not revalidated"
+  ],
+  "artifacts": [
+    "coverage.csv",
+    "inventory.csv",
+    "partitions.csv",
+    "provenance.json",
+    "quality.csv",
+    "reused-quality.json",
+    "schema-contracts.csv",
+    "summary.json",
+    "REPORT.md",
+    "tests.json"
+  ],
+  "status": "PARTIAL_READ_ONLY_AUDIT",
+  "guards": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "provenance": {
+    "manifest": "provenance.json",
+    "source_paths": "EXPLICIT_OPERATOR_ARGUMENTS_NOT_PUBLISHED",
+    "originals_modified": false,
+    "payload_hash_policy": "REUSE_EXISTING; HASH_ONLY_NEW_CONSUMED_MEMBERS",
+    "raw_rows_published": false
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "command": "python -I -B -X utf8 -m pytest tests/evidence/test_tri_source_assets.py -q -p no:cacheprovider",
+  "exit_code": 0,
+  "passed": 6,
+  "failed": 0,
+  "pytest_reported_seconds": 0.64,
+  "result": "6 passed in 0.64s",
+  "scope": [
+    "duplicate keys versus conflicting values, invalid dates and Inf",
+    "OHLC order, missing values and negative volume without mutation",
+    "name history candidate key includes interval start",
+    "literal nonnumeric markers are distinct from native nulls",
+    "nested partition query windows",
+    "real evidence guards, private-path exclusion and consumed receipt hash/row bindings"
+  ]
+}
