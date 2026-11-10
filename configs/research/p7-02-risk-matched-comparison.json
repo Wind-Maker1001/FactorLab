@@ -1,0 +1,20 @@
+{
+  "task": "P7-02",
+  "manifest_sha256": "800d8413ee7d2b0adc90adde6b38f5b290f12cd08189515afecf49268bde876a",
+  "frozen_sample": "docs/validation/p6-r01/frozen-sample.json",
+  "parameter_source": "configs/research/p5-r02-601857-2018.json",
+  "budgets": [0.1, 0.25, 0.5],
+  "budget_rule": "MULTIPLY_ORIGINAL_POSITIVE_ENTRY_WEIGHT; ZERO_AND_HOLD_UNCHANGED",
+  "budget_scope": "ENTRY_CASH_CAP; NO_DAILY_REBALANCE; POST_ENTRY_WEIGHT_MAY_DRIFT",
+  "primary_metric": "PAIRED_NET_CUMULATIVE_RETURN_MINUS_SAME_BUDGET_BUY_HOLD",
+  "statistical_unit": "SECURITY_WITH_REPEATED_ANNUAL_ACCOUNTS; DESCRIPTIVE_ONLY",
+  "cost_analysis": "ACTUAL_LEDGER_COST_AND_SAME_FILL_GROSS_CONTRIBUTION; NOT_ZERO_COST_REEXECUTION",
+  "rolling_risk": {
+    "status": "NOT_RUN",
+    "reason": "Existing entry/exit executor does not rebalance held positions; single-period optimizer has no rolling risk-target mandate. No new execution or risk framework.",
+    "target": null,
+    "window": null
+  },
+  "scope": "EXPLORATORY_REAL_DATA",
+  "safety": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED"
+}

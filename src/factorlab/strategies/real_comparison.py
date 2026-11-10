@@ -68,6 +68,14 @@ def compare(bars, calendar, configuration, *, source_kind="REAL_CANDIDATE"):
     mandate["target_weight"] = np.nan
     mandate.loc[0, ["signal", "target_weight"]] = ["predeclared_first_open", common["max_weight"]]
     signals["buy_hold"] = mandate
+    result = execute_signals(signals, frame, research, configuration, source_kind=source_kind)
+    result.update(calendar=dates, parameters={name: asdict(config) for name, config in configs.items()})
+    return result
+
+
+def execute_signals(signals, frame, research, configuration, *, source_kind):
+    """Evaluate supplied entry/exit targets through the shared execution contract."""
+    common = configuration["common"]
     fees = FeeSchedule.a_share_default(**configuration["fees"])
     execution = ExecutionBacktestConfig(initial_cash=common["initial_cash"], board_lot=common["board_lot"])
     legs = {name: run_target_positions(signals[name], frame, research, execution, fees,
@@ -103,8 +111,7 @@ def compare(bars, calendar, configuration, *, source_kind="REAL_CANDIDATE"):
             terminal_close_target=None if pd.isna(signals[name].target_weight.iloc[-1]) else float(signals[name].target_weight.iloc[-1]))
         summary[name] = stats
     return dict(signals=signals, legs=legs, evaluations=evaluations, summary=summary,
-                input_bars=frame, calendar=dates, research=research, fees=fees,
-                parameters={name: asdict(config) for name, config in configs.items()},
+                input_bars=frame, research=research, fees=fees,
                 status=COMPLETED, safety=SAFETY)
 
 
