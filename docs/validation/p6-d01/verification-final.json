@@ -1,0 +1,15 @@
+{
+  "quality_replay": "PASS",
+  "execution_flat_target_rows": 22955,
+  "intervals": 43,
+  "manifest_sha256": "800d8413ee7d2b0adc90adde6b38f5b290f12cd08189515afecf49268bde876a",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "verifier_sha256": "8afbf4acd5af0a8a1a46e19e1c625eda2039a42d4efa43240d8872979730735a",
+  "elapsed_seconds": 1.126016800000798,
+  "peak_working_set_bytes": 153939968
+}

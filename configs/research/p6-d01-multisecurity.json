@@ -1,0 +1,33 @@
+{
+  "experiment": "P6-D01",
+  "start": "2015-01-01",
+  "end": "2018-12-31",
+  "symbols": [
+    "000401.SZ",
+    "000709.SZ",
+    "600019.SH",
+    "600028.SH",
+    "600030.SH",
+    "600036.SH",
+    "600585.SH",
+    "600837.SH",
+    "600999.SH",
+    "601088.SH",
+    "601166.SH",
+    "601186.SH",
+    "601288.SH",
+    "601318.SH",
+    "601336.SH",
+    "601390.SH",
+    "601398.SH",
+    "601601.SH",
+    "601628.SH",
+    "601688.SH",
+    "601857.SH",
+    "601898.SH",
+    "601939.SH",
+    "601988.SH"
+  ],
+  "source_manifest_sha256": "3cb43e38e0fc0585f5a673639436c6b7d47ee6778f4e0b585275285825e6e329",
+  "candidate_policy": "P5-R03 fixed economic peers; no replacements; raw-only execution; qualified intervals only"
+}
