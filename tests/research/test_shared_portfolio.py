@@ -9,7 +9,7 @@ import pytest
 
 from factorlab.backtest.execution import AShareExecutionBacktester, ExecutionBacktestConfig, PositionBook
 from factorlab.backtest.fees import FeeSchedule
-from factorlab.errors import SchemaError
+from factorlab.errors import ConfigurationError, SchemaError
 from factorlab.strategies.real_shared_portfolio import (
     InputBlocked, audit_ledger, evaluate, execute, monthly_targets, validate_panel,
 )
@@ -166,7 +166,7 @@ def test_t_plus_one_book_prevents_same_day_sale():
     book.buy(SYMBOLS[0], day, 100)
     assert book.sellable_shares(SYMBOLS[0], day) == 0
     assert book.sellable_shares(SYMBOLS[0], day + pd.Timedelta(days=1)) == 100
-    with pytest.raises(Exception, match='non-sellable'):
+    with pytest.raises(ConfigurationError, match='non-sellable'):
         book.sell(SYMBOLS[0], day, 100)
 
 
@@ -176,3 +176,35 @@ def test_weight_sum_is_rejected_by_existing_engine():
     targets = pd.DataFrame(dict(date=[dates[0]] * 2, symbol=SYMBOLS, target_weight=[.6, .6]))
     with pytest.raises(SchemaError, match='sum'):
         engine.run_target_weights(targets, history, reference)
+
+
+def test_publication_excludes_private_fields_and_rejects_artifact_drift(tmp_path):
+    import importlib.util
+    from factorlab.dataset.identity import file_hash
+    spec = importlib.util.spec_from_file_location('shared_publisher', ROOT / 'tools/research/publish_shared_portfolio.py')
+    publisher = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(publisher)
+    config, dates, history, reference = fixture()
+    result, targets, decisions, audit = execute(history, dates, SYMBOLS, reference, 'equal_weight', config)
+    nav, _, metrics = evaluate(result, dates, config, 'equal_weight', source_kind='SYNTHETIC')
+    private = tmp_path / 'private'
+    folder = private / '2016' / 'equal_weight'
+    folder.mkdir(parents=True)
+    for name, frame in dict(nav=nav, trades=result.trades, rejections=result.rejections,
+                            decisions=decisions, target_comparison=result.target_comparison).items():
+        frame.to_csv(folder / (name + '.csv'), index=False)
+    summary = dict.fromkeys(publisher.SUMMARY_FIELDS)
+    summary.update(status='SYNTHETIC', years={'2016': dict(status='COMPLETED', schemes={'equal_weight': dict(metrics=metrics)})},
+        artifact_sha256={str(p.relative_to(private)).replace('\\', '/'): file_hash(p) for p in private.rglob('*.csv')},
+        secret_runtime_path='PRIVATE_DO_NOT_PUBLISH')
+    (private / 'summary.json').write_text(json.dumps(summary), encoding='utf-8')
+    output = tmp_path / 'public'
+    published = publisher.publish(private, output)
+    assert 'secret_runtime_path' not in published
+    assert 'PRIVATE_DO_NOT_PUBLISH' not in (output / 'real-summary.json').read_text()
+    public_nav = pd.read_csv(output / 'daily-nav.csv')
+    assert not {'cash', 'symbol', 'shares', 'mark_price', 'raw_close', 'execution_price'} & set(public_nav.columns)
+    assert set(p.name for p in output.iterdir()) == {'annual-metrics.csv', 'daily-nav.csv', 'real-summary.json'}
+    (folder / 'trades.csv').write_text('altered private receipt')
+    with pytest.raises(ValueError, match='identity drift'):
+        publisher.publish(private, tmp_path / 'drifted')
