@@ -40,4 +40,4 @@ addopts = '-ra -m "not network"'
 markers = ["network: external services excluded from offline acceptance", "integration: crosses subsystems", "slow: long running"]
 
 [tool.setuptools.package-data]
-factorlab = ["resources/*.yaml"]
+factorlab = ["resources/*.yaml", "console/static/*.html", "console/static/*.css", "console/static/*.js"]

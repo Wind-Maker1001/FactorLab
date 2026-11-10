@@ -1,0 +1,378 @@
+:root {
+  color-scheme: light;
+  --bg: #f4f6f9;
+  --paper: #fff;
+  --ink: #202b3b;
+  --muted: #596679;
+  --line: #dee4ec;
+  --accent: #35618f;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font:
+    14px/1.65 "Segoe UI",
+    "Microsoft YaHei",
+    sans-serif;
+}
+aside {
+  width: 228px;
+  position: fixed;
+  inset: 0 auto 0 0;
+  background: #192636;
+  color: #fff;
+  padding: 32px 18px;
+  display: flex;
+  flex-direction: column;
+}
+.brand {
+  font-size: 27px;
+  font-weight: 650;
+  padding: 0 14px 30px;
+}
+.brand span {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #bbc9da;
+}
+nav {
+  display: grid;
+  gap: 7px;
+}
+button,
+select,
+input {
+  font: inherit;
+  border: 1px solid #c7d0db;
+  border-radius: 6px;
+  padding: 7px 11px;
+  background: white;
+  color: var(--ink);
+}
+button {
+  cursor: pointer;
+}
+button:hover {
+  background: #eaf0f7;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+nav button {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: #d2deec;
+  padding: 12px 14px;
+}
+nav button[aria-current="page"],
+nav button:hover {
+  background: #304761;
+  color: white;
+}
+.aside-note {
+  margin-top: auto;
+  padding: 14px;
+  font-size: 12px;
+  color: #bbc9da;
+}
+main {
+  margin-left: 228px;
+  padding: 28px 38px;
+  max-width: 1800px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+h1 {
+  font-size: 28px;
+  font-weight: 650;
+  margin: 4px 0 16px;
+}
+h2 {
+  font-size: 19px;
+  margin: 0 0 15px;
+}
+h3 {
+  font-size: 15px;
+  margin: 0 0 12px;
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.8px;
+  color: var(--muted);
+}
+label {
+  display: flex;
+  gap: 6px;
+  flex-direction: column;
+  font-size: 12px;
+  color: var(--muted);
+}
+.safety {
+  padding: 10px 14px;
+  background: #fff5df;
+  border: 1px solid #e6d6ad;
+  border-radius: 6px;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  overflow-wrap: anywhere;
+  margin-bottom: 24px;
+}
+.panel {
+  padding: 23px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  margin-bottom: 20px;
+  min-width: 0;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.stat {
+  padding: 19px 22px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.stat .value {
+  font-size: 30px;
+  font-weight: 650;
+  margin: 4px 0;
+}
+.muted,
+small {
+  color: var(--muted);
+}
+.note {
+  padding: 12px 16px;
+  border-left: 3px solid #879bb2;
+  background: #edf2f8;
+  margin: 12px 0 20px;
+}
+.status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 3px 8px;
+  border: 1px solid #bdcad9;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.status[data-status="BLOCKED"] {
+  background: #fff0ee;
+  border-color: #dbb2ab;
+}
+.status[data-status="PARTIAL"] {
+  background: #fff7e7;
+  border-color: #dbc99b;
+}
+.status[data-status="RESEARCH_COMPLETED"],
+.status[data-status="SOFTWARE_ACCEPTED"] {
+  background: #eaf4ef;
+  border-color: #accaba;
+}
+.filters {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 18px;
+}
+.filters input {
+  max-width: 180px;
+}
+.table-wrap {
+  overflow: auto;
+  max-width: 100%;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+th {
+  background: #f6f8fb;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+th,
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+td {
+  min-width: 90px;
+  white-space: nowrap;
+}
+tr:last-child td {
+  border-bottom: 0;
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #f6f8fb;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px;
+  font:
+    12px/1.7 Consolas,
+    monospace;
+  max-height: 540px;
+  overflow: auto;
+}
+details {
+  margin: 12px 0;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+a {
+  color: #275d93;
+  text-underline-offset: 3px;
+}
+a.report {
+  display: inline-block;
+  margin: 5px 16px 5px 0;
+}
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 15px;
+}
+.chart {
+  min-width: 620px;
+  width: 100%;
+  display: block;
+}
+.chart text {
+  fill: var(--ink);
+  font:
+    12px "Segoe UI",
+    "Microsoft YaHei",
+    sans-serif;
+}
+.chart .axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.chart .zero {
+  stroke: #99a7b6;
+  stroke-width: 1;
+}
+.chart .mark {
+  fill: var(--accent);
+  stroke: white;
+  stroke-width: 2;
+}
+.chart .hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+.chart .hit:focus {
+  outline: 2px solid var(--accent);
+}
+.chart-scroll {
+  overflow: auto;
+}
+.tooltip {
+  min-height: 28px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.empty {
+  padding: 24px;
+  background: #f6f8fb;
+  color: var(--muted);
+  border-radius: 6px;
+}
+#message:not(:empty) {
+  padding: 12px;
+  background: #fff0ee;
+  border: 1px solid #dbb2ab;
+  border-radius: 6px;
+  margin-bottom: 18px;
+}
+footer {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 8px 0 18px;
+}
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #35618f;
+  outline-offset: 3px;
+}
+@media (max-width: 850px) {
+  aside {
+    width: 185px;
+    padding: 22px 10px;
+  }
+  .brand {
+    font-size: 23px;
+  }
+  main {
+    margin-left: 185px;
+    padding: 24px 18px;
+  }
+  header {
+    align-items: start;
+    flex-direction: column;
+    gap: 0;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (forced-colors: active) {
+  .chart .mark {
+    fill: CanvasText;
+    stroke: Canvas;
+  }
+  .chart .axis,
+  .chart .zero {
+    stroke: CanvasText;
+  }
+  .status {
+    border: 1px solid CanvasText;
+  }
+}
+@media print {
+  aside,
+  .filters,
+  .pager {
+    display: none;
+  }
+  main {
+    margin: 0;
+    padding: 0;
+  }
+  .panel {
+    break-inside: avoid;
+  }
+  .chart .mark {
+    fill: #333;
+  }
+}

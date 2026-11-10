@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FactorLab · Research Console</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <aside>
+      <div class="brand">FactorLab<span>RESEARCH CONSOLE</span></div>
+      <nav aria-label="研究导航">
+        <button data-view="overview" aria-current="page">研究总览</button>
+        <button data-view="experiments">实验浏览器</button>
+        <button data-view="strategies">策略结果 · R01</button>
+        <button data-view="quality">数据质量 · D01</button>
+        <button data-view="evidence">公司行为 · E01</button>
+        <button data-view="reports">报告与里程碑</button>
+      </nav>
+      <div class="aside-note">
+        LOCAL / READ ONLY<br />证据浏览，不是交易终端
+      </div>
+    </aside>
+    <main>
+      <header>
+        <div>
+          <span class="eyebrow">FACTORLAB / LOCAL RESEARCH</span>
+          <h1 id="page-title">研究总览</h1>
+        </div>
+        <label
+          >研究项目<select id="project">
+            <option value="">全部项目</option>
+          </select></label
+        >
+      </header>
+      <div class="safety">
+        NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED /
+        FORMAL_ADMISSION_BLOCKED
+      </div>
+      <div id="message" role="status" aria-live="polite"></div>
+      <section id="content" aria-label="研究内容">
+        <p>正在读取本地公开证据…</p>
+      </section>
+      <footer>
+        只读本地快照 · 未保存的字段显示 UNKNOWN · null ≠ 0 · 非历史 PIT
+        或金融准入认证
+      </footer>
+    </main>
+  </body>
+</html>

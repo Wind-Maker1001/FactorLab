@@ -1,0 +1,88 @@
+{
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/158.0.4370.7",
+    "revision": "@543f6af3037a1391b978e5ca702b4bf126edd1b9",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36 Edg/158.0.0.0",
+    "jsVersion": "15.8.13.2"
+  },
+  "viewport": {
+    "width": 1440,
+    "height": 1080
+  },
+  "checks": [
+    {
+      "view": "overview",
+      "result": "PASS"
+    },
+    {
+      "view": "experiments",
+      "result": "PASS"
+    },
+    {
+      "view": "strategies",
+      "result": "PASS"
+    },
+    {
+      "view": "quality",
+      "result": "PASS"
+    },
+    {
+      "view": "evidence",
+      "result": "PASS"
+    },
+    {
+      "view": "reports",
+      "result": "PASS"
+    },
+    {
+      "interaction": "metric switch and SVG exact source value",
+      "result": "PASS"
+    },
+    {
+      "interaction": "annual 2018 filter",
+      "result": "PASS"
+    },
+    {
+      "interaction": "security filter",
+      "result": "PASS"
+    },
+    {
+      "interaction": "identity expansion",
+      "result": "PASS"
+    },
+    {
+      "interaction": "global project filter",
+      "result": "PASS"
+    },
+    {
+      "interaction": "null and zero display",
+      "result": "PASS"
+    },
+    {
+      "interaction": "report opened in browser",
+      "result": "PASS"
+    },
+    {
+      "interaction": "experiment detail and redaction",
+      "result": "PASS",
+      "data": "SYNTHETIC"
+    },
+    {
+      "interaction": "compatible historical comparison",
+      "result": "PASS",
+      "data": "SYNTHETIC"
+    },
+    {
+      "interaction": "incompatible comparison explanation",
+      "result": "PASS",
+      "data": "SYNTHETIC"
+    },
+    {
+      "interaction": "model filter and empty result",
+      "result": "PASS",
+      "data": "SYNTHETIC"
+    }
+  ],
+  "javascript_errors": []
+}
