@@ -1,0 +1,12 @@
+{
+  "python": "3.13.9",
+  "artifact": "factorlab-0.1.0.dev0-py3-none-any.whl",
+  "installed_import": "PASS",
+  "packaged_http_routes": [
+    "/",
+    "/app.js",
+    "/style.css",
+    "/api/evidence?project=p6-d01"
+  ],
+  "result": "PASS"
+}

@@ -1,0 +1,46 @@
+{
+  "projects": [
+    {
+      "id": "p6-r01", "title": "P6-R01 · 多证券策略稳健性",
+      "root": "../../docs/validation/p6-r01",
+      "files": ["REPORT.md", "real-summary.json", "overall.csv", "annual.csv", "industry.csv", "leave_one_security_out.csv", "account-metrics.csv", "exposure-returns.png"]
+    },
+    {
+      "id": "p6-d01", "title": "P6-D01 · 数据质量",
+      "root": "../../docs/validation/p6-d01",
+      "files": ["REPORT.md", "quality.json", "manifest.json", "year-coverage.csv"]
+    },
+    {
+      "id": "p6-e01", "title": "P6-E01 · 公司行为证据",
+      "root": "../../docs/validation/p6-e01",
+      "files": ["REPORT.md", "receipt.json", "EVENT_EVIDENCE.csv", "FIELD_COVERAGE.csv"]
+    }
+  ],
+  "trackers": [],
+  "milestones": [
+    {
+      "project": "p6-r01", "pr": "#71",
+      "title": "P6-R01: 真实历史多证券、多年份策略稳健性研究",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/pull/71",
+      "status": "LOCAL_COMMIT_PRESENT — GitHub/CI: UNKNOWN",
+      "snapshot_at": "2026-11-10", "source": "origin/main @ 2fffbee; commit 06c021e",
+      "report": "p6-r01:REPORT.md", "experiment_identity": "UNKNOWN"
+    },
+    {
+      "project": "p6-d01", "pr": "#70",
+      "title": "P6-D01：多证券真实历史研究输入准备",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/pull/70",
+      "status": "LOCAL_COMMIT_PRESENT — GitHub/CI: UNKNOWN",
+      "snapshot_at": "2026-11-10", "source": "origin/main @ 2fffbee; commit 4b1d917",
+      "report": "p6-d01:REPORT.md", "experiment_identity": "UNKNOWN"
+    },
+    {
+      "project": "p6-e01", "pr": "#69",
+      "title": "research: bound 601857 dividend rights on saved 2018 holdings",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/pull/69",
+      "status": "LOCAL_COMMIT_PRESENT — GitHub/CI: UNKNOWN",
+      "snapshot_at": "2026-11-10", "source": "origin/main @ 2fffbee; commit f875668",
+      "report": "p6-e01:REPORT.md", "experiment_identity": "UNKNOWN"
+    }
+  ]
+}

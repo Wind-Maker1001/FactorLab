@@ -31,6 +31,12 @@ Demo 完全本地生成行情、历史股票池和状态；经14因子和 Datase
 Ridge、LightGBM、XGBoost，输出 Fast/Execution 回测、统计、图表、报告与哈希清单。
 所有输出标记 `SYNTHETIC / SOFTWARE_ONLY / NOT FINANCIAL EVIDENCE`。
 
+## 本地研究控制台
+
+在仓库根目录运行 `python -m factorlab.console --config configs/console/public-research.json`，
+打开 <http://127.0.0.1:8765> 浏览已有研究、策略结果、数据质量和证据状态。
+只读、离线、无前端构建；配置与安全边界见[启动说明](docs/user/research-console.md)。
+
 ## 文档与证据
 
 * [Binance TradFi 永续只读行情、Parquet 重放与 NVDAUSDT 实采报告](docs/validation/p6-b01/REPORT.md)：独立于股票研究与交易执行。
