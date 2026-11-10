@@ -82,6 +82,14 @@ def test_csmar_existing_replay_content_status_and_observed_calendar(tmp_path, mo
     assert bars.metadata.provenance["references"] == tuple(refs)
     assert bars.metadata.evidence_status == GATES
     assert bars.metadata.acquired_at is None
+    semantics = bars.metadata.field_semantics
+    assert semantics['raw_open']['normalized_unit'] == 'CNY/share'
+    assert semantics['volume']['normalized_unit'] == 'shares'
+    assert semantics['amount']['normalized_unit'] == 'CNY'
+    assert semantics['amount']['multiplier'] == '1'
+    assert semantics['adj_close']['native_field'] == 'TRDNEW_Dalyr.Adjprcwd'
+    assert semantics['adj_close']['price_semantics'].endswith('HFQ_UNVERIFIED')
+    assert not status.metadata.field_semantics and not sessions.metadata.field_semantics
     with pytest.raises(UnsupportedQueryError, match="does not support calendar"):
         hub.read("csmar", "calendar", start=query["start"], end=query["end"])
     with pytest.raises(UnsupportedQueryError, match="availability UNKNOWN"):

@@ -333,6 +333,52 @@ def test_evidence_boundaries_are_not_bypassed(tmp_path, failure):
         execute(bars, targets, plan)
 
 
+@pytest.mark.parametrize("rate,net_return", [("0", 0), ("0.1", -0.002), (None, None)])
+def test_return_accounting_manual_tax_and_reconciliation(tmp_path, rate, net_return):
+    dates, bars, targets = inputs()
+    result = execute(bars, targets, plan_for(tmp_path, dates, rate=rate))
+    accounting = result["return_accounting"]
+    assert accounting.dividend_income_gross.tolist() == [0, 0, 200, 200, 200, 200, 200]
+    assert accounting.dividend_received_gross.tolist() == [0, 0, 0, 0, 200, 200, 200]
+    assert accounting.price_pnl.tolist() == [0, 0, -200, -200, -200, -200, -200]
+    assert np.allclose(accounting.total_return_gross, 0)
+    for column in ("cash_reconciliation", "dividend_reconciliation", "equity_reconciliation"):
+        assert np.allclose(accounting[column], 0)
+    if rate is None:
+        assert accounting.total_return_net.iloc[2:].isna().all()
+        assert set(accounting.net_status.iloc[2:]) == {"NOT_COMPUTABLE_TAX_UNKNOWN"}
+    else:
+        assert np.allclose(accounting.total_return_net.iloc[2:], net_return)
+
+
+@pytest.mark.parametrize("rate", ["0.1", None])
+def test_offline_tax_status_and_net_equity_at_ex_date(tmp_path, rate):
+    dates, bars, targets = inputs()
+    plan = plan_for(tmp_path, dates, rate=rate)
+    result = execute(bars, targets, plan)
+    nav = result["nav"]
+    oracle = cash_dividend_ledger(nav.assign(raw_close=nav.mark_price),
+        plan.snapshot.events, plan.snapshot.coverage, security_id=SYMBOL, initial_cash=10000,
+        tax_rates={} if rate is None else {"cash-1": rate})["ledger"]
+    if rate is None:
+        assert oracle.equity_net.iloc[2:].isna().all()
+        assert oracle.tax_status.iloc[2] == "UNKNOWN"
+    else:
+        assert list(map(float, oracle.equity_net)) == nav.equity_net.tolist()
+        assert oracle.receivable_net.iloc[2] == D(180)
+
+
+def test_return_accounting_no_dividend_and_unpaid(tmp_path):
+    dates, bars, targets = inputs()
+    no_event = execute(bars, targets, plan_for(tmp_path / "empty", dates, events=[]))["return_accounting"]
+    assert np.allclose(no_event.price_return, no_event.total_return_gross)
+    assert np.allclose(no_event.total_return_net, no_event.total_return_gross)
+    unpaid = execute(bars, targets, plan_for(tmp_path / "unpaid", dates, pay="2024-02-01"))["return_accounting"]
+    assert unpaid.dividend_received_gross.iloc[-1] == 0
+    assert unpaid.receivable_gross.iloc[-1] == 200
+    assert unpaid.total_return_gross.iloc[-1] == 0
+
+
 def test_retry_after_cash_arrives_never_double_pays(tmp_path):
     dates, bars, targets = inputs()
     bars.loc[:, ["raw_open", "raw_close", "raw_high", "raw_low"]] = 2.0

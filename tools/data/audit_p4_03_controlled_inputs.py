@@ -34,7 +34,8 @@ IMPLEMENTATION = (
     'tools/data/audit_p4_03_controlled_inputs.py',
     'tools/data/audit_p4_01_pipeline_inputs.py', 'tools/data/d06_readiness_adapter.py',
     'tools/data/audit_p3_d06.py', 'src/factorlab/diagnostics/pipeline_preflight.py',
-    'src/factorlab/data/hub/hub.py',
+    'src/factorlab/data/hub/hub.py', 'src/factorlab/data/hub/contracts.py',
+    'src/factorlab/data/units.py',
 )
 
 

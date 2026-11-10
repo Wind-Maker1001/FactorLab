@@ -11,6 +11,37 @@ from factorlab.data.corporate_actions.validation import decimal
 from factorlab.data.evidence import SourceArtifact, date, fail, require_text, timestamp
 
 
+def bigquant_field_semantics(kind):
+    """Current vendor claims do not establish units of a historical archive.
+
+    Evidence: saved 2026-11-09 responses in validation/p4-d02, S08/S11.
+    Neither physical types nor sample magnitudes establish economic units.
+    """
+    if kind not in {'bars', 'benchmark'}:
+        return {}
+    tables = ({'open': ('cn_stock_index_bar1d', 'open')} if kind == 'benchmark' else {
+        **{prefix + name: (table, name)
+           for prefix, table in [('raw_', 'cn_stock_real_bar1d'), ('adj_', 'cn_stock_bar1d')]
+           for name in ('open', 'high', 'low', 'close')},
+        **{name: ('cn_stock_real_bar1d', native)
+           for name, native in [('volume', 'volume'), ('amount', 'amount'), ('turnover', 'turn')]},
+    })
+    claims = {'volume': 'shares', 'amount': 'yuan; currency unspecified', 'turn': 'fraction'}
+    return {name: dict(native_field=table + '.' + native,
+        vendor_documented_unit=claims.get(native, 'UNKNOWN'),
+        normalized_unit='UNKNOWN_VENDOR_CONTRACT', multiplier=None,
+        evidence_level='VENDOR_DOCUMENTED_CURRENT' if native in claims else 'UNKNOWN',
+        historical_applicability='UNKNOWN',
+        evidence=('docs/validation/p4-d02/sources/'
+                  + ('S11' if table == 'cn_stock_bar1d' else 'S08') + '/response.bin'
+                  if kind == 'bars' else None),
+        vendor_price_semantics=('UNADJUSTED' if name.startswith('raw_') else
+            'ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED' if name.startswith('adj_') else None),
+        transformation='rename_only' if name != native else 'identity',
+        minimum_evidence='Version-bound native field dictionary with economic unit, scale and historical applicability')
+        for name, (table, native) in tables.items()}
+
+
 @dataclass(frozen=True)
 class UnitContract:
     symbol: str
