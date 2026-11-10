@@ -30,6 +30,11 @@ def run_technical_backtest(bars, calendar, config, *, fee_schedule=None,
     if not np.allclose(ratio, ratio.iloc[0], rtol=1e-10, atol=1e-12):
         raise SchemaError("variable adjustment ratio requires qualified execution ledger")
     signals = technical_signals(frame, calendar, config)
+    return _evaluate_targets(signals, frame, research, config, fee_schedule, source_kind)
+
+
+def _evaluate_targets(signals, frame, research, config, fee_schedule, source_kind):
+    """Shared target execution and research evaluation; no signal generation."""
     fees = fee_schedule or FeeSchedule.a_share_default()
     execution = ExecutionBacktestConfig(initial_cash=config.initial_cash, board_lot=config.board_lot)
     strategy = run_target_positions(signals, frame, research, execution, fees)
