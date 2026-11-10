@@ -10,6 +10,7 @@ from factorlab.data.corporate_actions.contracts import SourceSnapshot
 from factorlab.data.corporate_actions.validation import select_events, validate_snapshot
 from factorlab.data.csmar.binding import replay
 from factorlab.data.csmar.prepare import market_candidate
+from factorlab.data.csmar.profiles import MAPPINGS, PROFILES
 from factorlab.data.evidence import date, json_bytes, sha256, timestamp
 from factorlab.data.providers.base import MarketDataProvider
 from factorlab.data.providers.local import LocalParquetProvider
@@ -111,6 +112,15 @@ class CsmarAdapter:
             calendar_id=identity + ":observed:" + symbol,
             calendar_kind="OBSERVED_SECURITY_SESSIONS_ONLY",
             coverage="PINNED_SCOPE_ONLY; OFFICIAL_CALENDAR_UNKNOWN; NO_FILL",
+            field_semantics={
+                ('raw_' + name if name in {'open', 'high', 'low', 'close'} else name): dict(
+                    native_field='TRDNEW_Dalyr.' + native, vendor_documented_unit=unit,
+                    normalized_unit=normalized, multiplier=multiplier,
+                    evidence_level='REPLAY_VALIDATED_DICTIONARY_AND_CONVERSION',
+                    historical_applicability='PINNED_NATIVE_SCOPE; NOT_PIT_CERTIFICATION',
+                    dictionary_sha256=PROFILES['TRDNEW_Dalyr'][0])
+                for native, (name, unit, normalized, multiplier) in MAPPINGS['TRDNEW_Dalyr'].items()
+            },
             time_fields={"effective": "date", "announcement": "UNKNOWN",
                          "provider_available": "UNKNOWN", "acquired": "UNKNOWN"},
             provenance={"references": deepcopy(tuple(selected)),
@@ -123,6 +133,11 @@ class CsmarAdapter:
             data = bars[["date", "symbol", "trade_status", "is_st"]].copy()
         else:
             data = bars
+        semantics = dict(metadata.field_semantics)
+        semantics['adj_close'] = dict(semantics['raw_close'], native_field='TRDNEW_Dalyr.Adjprcwd',
+            price_semantics='COMPARABLE_REINVESTMENT_CLOSE; HFQ_UNVERIFIED')
+        metadata = replace(metadata, field_semantics={name: value for name, value in semantics.items()
+            if isinstance(data, pd.DataFrame) and name in data})
         return QueryResult(data, metadata)
 
 

@@ -10,6 +10,7 @@ from audit_p3_d06 import Archive, normalize, OHLC, STATUS
 from candidate_preflight import SelectedTableAdapter
 from factorlab.data.evidence import json_bytes, sha256, table_sha256
 from factorlab.data.hub.contracts import QueryResult, SourceMetadata
+from factorlab.data.units import bigquant_field_semantics
 
 
 def load_research(root, membership_zip, *, symbols, start, end):
@@ -35,6 +36,7 @@ def load_research(root, membership_zip, *, symbols, start, end):
         content = table_sha256(frame)
         version = 'sha256:' + sha256(json_bytes(entries))
         inputs[kind] = QueryResult(frame, SourceMetadata(source, version,
+            field_semantics=bigquant_field_semantics(kind) if source == 'BigQuant' else {},
             provenance=dict(source_kind='REAL_CANDIDATE', research_table_sha256=content,
                 input_members=entries, historical_version='UNKNOWN',
                 mapping='D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED')))

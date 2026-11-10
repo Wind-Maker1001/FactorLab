@@ -1,0 +1,5219 @@
+{
+  "schema": "P4_03_CONTROLLED_INPUTS_V1",
+  "boundary": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "data_existence": "OBSERVED",
+  "engineering": "FAIL",
+  "formal_admission": "BLOCKED",
+  "requested_formal": true,
+  "formal_request": "REJECTED",
+  "historical_pit": "UNKNOWN",
+  "hfq_qualification": "UNKNOWN",
+  "query_completeness": {
+    "bars": true,
+    "benchmark": true,
+    "membership": true,
+    "status": true,
+    "listings": true,
+    "calendar": true
+  },
+  "receipts": [
+    {
+      "group": "bars",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+        "kind": "daily_bars",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "600363.SH"
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "7dd850d98ce3048c1800c2d04e400a3570ef93709c3483d5c2b736c01d3f6291",
+      "units": {
+        "raw_open": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_high": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_low": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_close": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_open": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_high": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_low": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_close": "UNKNOWN_VENDOR_CONTRACT",
+        "volume": "UNKNOWN_VENDOR_CONTRACT",
+        "amount": "UNKNOWN_VENDOR_CONTRACT",
+        "turnover": "UNKNOWN_VENDOR_CONTRACT"
+      },
+      "field_origins": {
+        "raw_open": "stock.zip/stock/cn_stock_real_bar1d/open",
+        "raw_high": "stock.zip/stock/cn_stock_real_bar1d/high",
+        "raw_low": "stock.zip/stock/cn_stock_real_bar1d/low",
+        "raw_close": "stock.zip/stock/cn_stock_real_bar1d/close",
+        "adj_open": "stock.zip/stock/cn_stock_bar1d/open",
+        "adj_high": "stock.zip/stock/cn_stock_bar1d/high",
+        "adj_low": "stock.zip/stock/cn_stock_bar1d/low",
+        "adj_close": "stock.zip/stock/cn_stock_bar1d/close"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "7dd850d98ce3048c1800c2d04e400a3570ef93709c3483d5c2b736c01d3f6291",
+          "input_members": [
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+              "actual_sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+              "receipt_sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:20:17+00:00",
+              "physical_rows": 89492,
+              "uncompressed_bytes": 5223424,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "amount",
+                "turn"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+              "actual_sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+              "receipt_sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:20:18+00:00",
+              "physical_rows": 72115,
+              "uncompressed_bytes": 4134062,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "amount",
+                "turn"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_real_bar1d/2021-11-01_2021-11-30.parquet",
+              "actual_sha256": "18d5c3007261f259b56fe93e17369c873d14c4f12d381f7bf567c2c99d63addc",
+              "receipt_sha256": "18d5c3007261f259b56fe93e17369c873d14c4f12d381f7bf567c2c99d63addc",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:20:18+00:00",
+              "physical_rows": 100895,
+              "uncompressed_bytes": 5830355,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "amount",
+                "turn"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_bar1d/2021-09-01_2021-09-30.parquet",
+              "actual_sha256": "74234e00bbd0596c9b5a4a68604603e99fac53b795fbe4bc772a88942c64b87d",
+              "receipt_sha256": "74234e00bbd0596c9b5a4a68604603e99fac53b795fbe4bc772a88942c64b87d",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:19:02+00:00",
+              "physical_rows": 89492,
+              "uncompressed_bytes": 8991626,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_bar1d/2021-10-01_2021-10-31.parquet",
+              "actual_sha256": "359f06ef3a8d2f4533b0852215886098b71cb72456442168d289d66f0f9ed6dd",
+              "receipt_sha256": "359f06ef3a8d2f4533b0852215886098b71cb72456442168d289d66f0f9ed6dd",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:19:03+00:00",
+              "physical_rows": 72115,
+              "uncompressed_bytes": 7177127,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_bar1d/2021-11-01_2021-11-30.parquet",
+              "actual_sha256": "ac5d60ec92dff29c5fa2ef4e95848edb41dfd5813e1f190a65cce6b1c9bea8d6",
+              "receipt_sha256": "ac5d60ec92dff29c5fa2ef4e95848edb41dfd5813e1f190a65cce6b1c9bea8d6",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:19:03+00:00",
+              "physical_rows": 100895,
+              "uncompressed_bytes": 10041923,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "f6285b75eeadb4bf8817c891e71a9d060fd38fc2079f360699bd16c8cf82111d"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {
+          "raw_open": {
+            "native_field": "cn_stock_real_bar1d.open",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "raw_high": {
+            "native_field": "cn_stock_real_bar1d.high",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "raw_low": {
+            "native_field": "cn_stock_real_bar1d.low",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "raw_close": {
+            "native_field": "cn_stock_real_bar1d.close",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_open": {
+            "native_field": "cn_stock_bar1d.open",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_high": {
+            "native_field": "cn_stock_bar1d.high",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_low": {
+            "native_field": "cn_stock_bar1d.low",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_close": {
+            "native_field": "cn_stock_bar1d.close",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "volume": {
+            "native_field": "cn_stock_real_bar1d.volume",
+            "vendor_documented_unit": "shares",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": null,
+            "transformation": "identity",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "amount": {
+            "native_field": "cn_stock_real_bar1d.amount",
+            "vendor_documented_unit": "yuan; currency unspecified",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": null,
+            "transformation": "identity",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "turnover": {
+            "native_field": "cn_stock_real_bar1d.turn",
+            "vendor_documented_unit": "fraction",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": null,
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          }
+        }
+      },
+      "observed_content_sha256": "7dd850d98ce3048c1800c2d04e400a3570ef93709c3483d5c2b736c01d3f6291",
+      "available_fields": [
+        "date",
+        "symbol",
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "volume",
+        "amount",
+        "turnover",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "bars",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+        "kind": "daily_bars",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "601868.SH"
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "5a728b072e62d41b991eafdafe622775c373848cc2aa1fbbd8a53391cdb15cb3",
+      "units": {
+        "raw_open": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_high": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_low": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_close": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_open": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_high": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_low": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_close": "UNKNOWN_VENDOR_CONTRACT",
+        "volume": "UNKNOWN_VENDOR_CONTRACT",
+        "amount": "UNKNOWN_VENDOR_CONTRACT",
+        "turnover": "UNKNOWN_VENDOR_CONTRACT"
+      },
+      "field_origins": {
+        "raw_open": "stock.zip/stock/cn_stock_real_bar1d/open",
+        "raw_high": "stock.zip/stock/cn_stock_real_bar1d/high",
+        "raw_low": "stock.zip/stock/cn_stock_real_bar1d/low",
+        "raw_close": "stock.zip/stock/cn_stock_real_bar1d/close",
+        "adj_open": "stock.zip/stock/cn_stock_bar1d/open",
+        "adj_high": "stock.zip/stock/cn_stock_bar1d/high",
+        "adj_low": "stock.zip/stock/cn_stock_bar1d/low",
+        "adj_close": "stock.zip/stock/cn_stock_bar1d/close"
+      },
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "5a728b072e62d41b991eafdafe622775c373848cc2aa1fbbd8a53391cdb15cb3",
+          "input_members": [
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+              "actual_sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+              "receipt_sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:20:17+00:00",
+              "physical_rows": 89492,
+              "uncompressed_bytes": 5223424,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "amount",
+                "turn"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+              "actual_sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+              "receipt_sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:20:18+00:00",
+              "physical_rows": 72115,
+              "uncompressed_bytes": 4134062,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "amount",
+                "turn"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_real_bar1d/2021-11-01_2021-11-30.parquet",
+              "actual_sha256": "18d5c3007261f259b56fe93e17369c873d14c4f12d381f7bf567c2c99d63addc",
+              "receipt_sha256": "18d5c3007261f259b56fe93e17369c873d14c4f12d381f7bf567c2c99d63addc",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:20:18+00:00",
+              "physical_rows": 100895,
+              "uncompressed_bytes": 5830355,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "amount",
+                "turn"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_bar1d/2021-09-01_2021-09-30.parquet",
+              "actual_sha256": "74234e00bbd0596c9b5a4a68604603e99fac53b795fbe4bc772a88942c64b87d",
+              "receipt_sha256": "74234e00bbd0596c9b5a4a68604603e99fac53b795fbe4bc772a88942c64b87d",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:19:02+00:00",
+              "physical_rows": 89492,
+              "uncompressed_bytes": 8991626,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_bar1d/2021-10-01_2021-10-31.parquet",
+              "actual_sha256": "359f06ef3a8d2f4533b0852215886098b71cb72456442168d289d66f0f9ed6dd",
+              "receipt_sha256": "359f06ef3a8d2f4533b0852215886098b71cb72456442168d289d66f0f9ed6dd",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:19:03+00:00",
+              "physical_rows": 72115,
+              "uncompressed_bytes": 7177127,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_bar1d/2021-11-01_2021-11-30.parquet",
+              "actual_sha256": "ac5d60ec92dff29c5fa2ef4e95848edb41dfd5813e1f190a65cce6b1c9bea8d6",
+              "receipt_sha256": "ac5d60ec92dff29c5fa2ef4e95848edb41dfd5813e1f190a65cce6b1c9bea8d6",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:19:03+00:00",
+              "physical_rows": 100895,
+              "uncompressed_bytes": 10041923,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "f6285b75eeadb4bf8817c891e71a9d060fd38fc2079f360699bd16c8cf82111d"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {
+          "raw_open": {
+            "native_field": "cn_stock_real_bar1d.open",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "raw_high": {
+            "native_field": "cn_stock_real_bar1d.high",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "raw_low": {
+            "native_field": "cn_stock_real_bar1d.low",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "raw_close": {
+            "native_field": "cn_stock_real_bar1d.close",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": "UNADJUSTED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_open": {
+            "native_field": "cn_stock_bar1d.open",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_high": {
+            "native_field": "cn_stock_bar1d.high",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_low": {
+            "native_field": "cn_stock_bar1d.low",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "adj_close": {
+            "native_field": "cn_stock_bar1d.close",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+            "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "volume": {
+            "native_field": "cn_stock_real_bar1d.volume",
+            "vendor_documented_unit": "shares",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": null,
+            "transformation": "identity",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "amount": {
+            "native_field": "cn_stock_real_bar1d.amount",
+            "vendor_documented_unit": "yuan; currency unspecified",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": null,
+            "transformation": "identity",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          },
+          "turnover": {
+            "native_field": "cn_stock_real_bar1d.turn",
+            "vendor_documented_unit": "fraction",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+            "historical_applicability": "UNKNOWN",
+            "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+            "vendor_price_semantics": null,
+            "transformation": "rename_only",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          }
+        }
+      },
+      "observed_content_sha256": "5a728b072e62d41b991eafdafe622775c373848cc2aa1fbbd8a53391cdb15cb3",
+      "available_fields": [
+        "date",
+        "symbol",
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "volume",
+        "amount",
+        "turnover",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "benchmark",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:036d648f232edb30a6ac2edb95fabda1e8ab82579be799f518a5ea2514f38409",
+        "kind": "index_bars",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "000905.SH"
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "2048366f4d25d7ad7b20d9b6240bb118f8c11711e4278fdd381b3eca9c11b4ab",
+      "units": {
+        "open": "UNKNOWN_VENDOR_CONTRACT"
+      },
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:036d648f232edb30a6ac2edb95fabda1e8ab82579be799f518a5ea2514f38409",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "2048366f4d25d7ad7b20d9b6240bb118f8c11711e4278fdd381b3eca9c11b4ab",
+          "input_members": [
+            {
+              "archive": "index.zip",
+              "member": "index/cn_stock_index_bar1d/2021-01-01_2021-12-31.parquet",
+              "actual_sha256": "fba2750427a0cd96d2662d80604b2e2f34eb061590945560834934754d2136b7",
+              "receipt_sha256": "fba2750427a0cd96d2662d80604b2e2f34eb061590945560834934754d2136b7",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:23:12+00:00",
+              "physical_rows": 27184,
+              "uncompressed_bytes": 2118100,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "open"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "2048366f4d25d7ad7b20d9b6240bb118f8c11711e4278fdd381b3eca9c11b4ab"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {
+          "open": {
+            "native_field": "cn_stock_index_bar1d.open",
+            "vendor_documented_unit": "UNKNOWN",
+            "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+            "multiplier": null,
+            "evidence_level": "UNKNOWN",
+            "historical_applicability": "UNKNOWN",
+            "evidence": null,
+            "vendor_price_semantics": null,
+            "transformation": "identity",
+            "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+          }
+        }
+      },
+      "observed_content_sha256": "2048366f4d25d7ad7b20d9b6240bb118f8c11711e4278fdd381b3eca9c11b4ab",
+      "available_fields": [
+        "date",
+        "symbol",
+        "open"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "membership",
+      "query": {
+        "source": "joinquant",
+        "version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+        "kind": "membership",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "600363.SH"
+      },
+      "expected_source_id": "JoinQuant_OBSERVED_MEMBERSHIP",
+      "expected_content_sha256": "78555788428fe43752bb3b1ec2262f092789fd852589d6adf6a3d98deee9718e",
+      "units": {},
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "JoinQuant_OBSERVED_MEMBERSHIP",
+        "data_version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "78555788428fe43752bb3b1ec2262f092789fd852589d6adf6a3d98deee9718e",
+          "input_members": {
+            "member_sha256": "e52a3f1bfcb9fb83c62b1176441bf20fd44dace977a2af73536d6c99188c8293",
+            "manifest_sha256": "43c8396883cddf78802f770a5392205d31ad4de72fb8a1cd05ef2fffd57db895"
+          },
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "85e8aa0b1d1b4971249684e99c569b0e9fb2f758d2488247c9c77cae9ab6cf17"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {}
+      },
+      "observed_content_sha256": "78555788428fe43752bb3b1ec2262f092789fd852589d6adf6a3d98deee9718e",
+      "available_fields": [
+        "date",
+        "symbol"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "membership",
+      "query": {
+        "source": "joinquant",
+        "version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+        "kind": "membership",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "601868.SH"
+      },
+      "expected_source_id": "JoinQuant_OBSERVED_MEMBERSHIP",
+      "expected_content_sha256": "85e8aa0b1d1b4971249684e99c569b0e9fb2f758d2488247c9c77cae9ab6cf17",
+      "units": {},
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "JoinQuant_OBSERVED_MEMBERSHIP",
+        "data_version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "85e8aa0b1d1b4971249684e99c569b0e9fb2f758d2488247c9c77cae9ab6cf17",
+          "input_members": {
+            "member_sha256": "e52a3f1bfcb9fb83c62b1176441bf20fd44dace977a2af73536d6c99188c8293",
+            "manifest_sha256": "43c8396883cddf78802f770a5392205d31ad4de72fb8a1cd05ef2fffd57db895"
+          },
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "85e8aa0b1d1b4971249684e99c569b0e9fb2f758d2488247c9c77cae9ab6cf17"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {}
+      },
+      "observed_content_sha256": "85e8aa0b1d1b4971249684e99c569b0e9fb2f758d2488247c9c77cae9ab6cf17",
+      "available_fields": [
+        "date",
+        "symbol"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "status",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+        "kind": "security_status",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "600363.SH"
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "1fb5b7540a00dcbbef8f9998de8500884bf66f5b180d33d65839efb48e49e919",
+      "units": {
+        "trade_status": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "is_st": "BOOLEAN_0_1_OBSERVED_MAPPING"
+      },
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "1fb5b7540a00dcbbef8f9998de8500884bf66f5b180d33d65839efb48e49e919",
+          "input_members": [
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_status/2021-09-01_2021-09-30.parquet",
+              "actual_sha256": "bdb053c134df3e7491270e5e19cbfc1d7aab1a334e80f39f2f57ad34143fa93f",
+              "receipt_sha256": "bdb053c134df3e7491270e5e19cbfc1d7aab1a334e80f39f2f57ad34143fa93f",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:47+00:00",
+              "physical_rows": 89492,
+              "uncompressed_bytes": 188978,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "st_status",
+                "is_risk_warning",
+                "suspended",
+                "price_limit_status",
+                "exdr"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_status/2021-10-01_2021-10-31.parquet",
+              "actual_sha256": "b6226cab3ef573fbe388792d9abb72ec0713481cb0ed9ee4094ad08da2e51893",
+              "receipt_sha256": "b6226cab3ef573fbe388792d9abb72ec0713481cb0ed9ee4094ad08da2e51893",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:47+00:00",
+              "physical_rows": 72115,
+              "uncompressed_bytes": 144793,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "st_status",
+                "is_risk_warning",
+                "suspended",
+                "price_limit_status",
+                "exdr"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_status/2021-11-01_2021-11-30.parquet",
+              "actual_sha256": "bdbfc6880ac4cf3215fb369b43b1b9e5e722623908c23a8bffae28a79cb73115",
+              "receipt_sha256": "bdbfc6880ac4cf3215fb369b43b1b9e5e722623908c23a8bffae28a79cb73115",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:48+00:00",
+              "physical_rows": 100895,
+              "uncompressed_bytes": 205352,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "st_status",
+                "is_risk_warning",
+                "suspended",
+                "price_limit_status",
+                "exdr"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "0e4fcadd310ccc01b1621c9934a4da444dd268a557dbb6d257ad790dff228247"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {}
+      },
+      "observed_content_sha256": "1fb5b7540a00dcbbef8f9998de8500884bf66f5b180d33d65839efb48e49e919",
+      "available_fields": [
+        "date",
+        "symbol",
+        "trade_status",
+        "is_st"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "status",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+        "kind": "security_status",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "601868.SH"
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "ddc036140da2a7a8eb474378966cae791f580812b78866842dc57a2fcafd735a",
+      "units": {
+        "trade_status": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "is_st": "BOOLEAN_0_1_OBSERVED_MAPPING"
+      },
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "ddc036140da2a7a8eb474378966cae791f580812b78866842dc57a2fcafd735a",
+          "input_members": [
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_status/2021-09-01_2021-09-30.parquet",
+              "actual_sha256": "bdb053c134df3e7491270e5e19cbfc1d7aab1a334e80f39f2f57ad34143fa93f",
+              "receipt_sha256": "bdb053c134df3e7491270e5e19cbfc1d7aab1a334e80f39f2f57ad34143fa93f",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:47+00:00",
+              "physical_rows": 89492,
+              "uncompressed_bytes": 188978,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "st_status",
+                "is_risk_warning",
+                "suspended",
+                "price_limit_status",
+                "exdr"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_status/2021-10-01_2021-10-31.parquet",
+              "actual_sha256": "b6226cab3ef573fbe388792d9abb72ec0713481cb0ed9ee4094ad08da2e51893",
+              "receipt_sha256": "b6226cab3ef573fbe388792d9abb72ec0713481cb0ed9ee4094ad08da2e51893",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:47+00:00",
+              "physical_rows": 72115,
+              "uncompressed_bytes": 144793,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "st_status",
+                "is_risk_warning",
+                "suspended",
+                "price_limit_status",
+                "exdr"
+              ]
+            },
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_status/2021-11-01_2021-11-30.parquet",
+              "actual_sha256": "bdbfc6880ac4cf3215fb369b43b1b9e5e722623908c23a8bffae28a79cb73115",
+              "receipt_sha256": "bdbfc6880ac4cf3215fb369b43b1b9e5e722623908c23a8bffae28a79cb73115",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:48+00:00",
+              "physical_rows": 100895,
+              "uncompressed_bytes": 205352,
+              "selected_columns": [
+                "date",
+                "instrument",
+                "st_status",
+                "is_risk_warning",
+                "suspended",
+                "price_limit_status",
+                "exdr"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "0e4fcadd310ccc01b1621c9934a4da444dd268a557dbb6d257ad790dff228247"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {}
+      },
+      "observed_content_sha256": "ddc036140da2a7a8eb474378966cae791f580812b78866842dc57a2fcafd735a",
+      "available_fields": [
+        "date",
+        "symbol",
+        "trade_status",
+        "is_st"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "listings",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+        "kind": "listings",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "600363.SH"
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "c7e8e6a16febd82517a8a07d8288082394944c82bc7228da1373c84374dac49f",
+      "units": {},
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "c7e8e6a16febd82517a8a07d8288082394944c82bc7228da1373c84374dac49f",
+          "input_members": [
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_basic_info/unpartitioned_snapshot.parquet",
+              "actual_sha256": "8701bb46e9a551746143d1c152e32003c964d71fd23993012e27907ee634df66",
+              "receipt_sha256": "8701bb46e9a551746143d1c152e32003c964d71fd23993012e27907ee634df66",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:32+00:00",
+              "physical_rows": 5924,
+              "uncompressed_bytes": 6028983,
+              "selected_columns": [
+                "instrument",
+                "list_date",
+                "delist_date"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "8f6ef8acab30fc8e697de697b21b3bc6cbb0e13bc1aca073666d7520710041f0"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {}
+      },
+      "observed_content_sha256": "c7e8e6a16febd82517a8a07d8288082394944c82bc7228da1373c84374dac49f",
+      "available_fields": [
+        "symbol",
+        "listing_date",
+        "delist_date"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "listings",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+        "kind": "listings",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": "601868.SH"
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "32be11cca1873fefcce8414c3159a2676d429508ae701efc8ebde1d72443abd8",
+      "units": {},
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "32be11cca1873fefcce8414c3159a2676d429508ae701efc8ebde1d72443abd8",
+          "input_members": [
+            {
+              "archive": "stock.zip",
+              "member": "stock/cn_stock_basic_info/unpartitioned_snapshot.parquet",
+              "actual_sha256": "8701bb46e9a551746143d1c152e32003c964d71fd23993012e27907ee634df66",
+              "receipt_sha256": "8701bb46e9a551746143d1c152e32003c964d71fd23993012e27907ee634df66",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:21:32+00:00",
+              "physical_rows": 5924,
+              "uncompressed_bytes": 6028983,
+              "selected_columns": [
+                "instrument",
+                "list_date",
+                "delist_date"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "8f6ef8acab30fc8e697de697b21b3bc6cbb0e13bc1aca073666d7520710041f0"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {}
+      },
+      "observed_content_sha256": "32be11cca1873fefcce8414c3159a2676d429508ae701efc8ebde1d72443abd8",
+      "available_fields": [
+        "symbol",
+        "listing_date",
+        "delist_date"
+      ],
+      "identity_and_structure_checked": true
+    },
+    {
+      "group": "calendar",
+      "query": {
+        "source": "bigquant",
+        "version": "sha256:ebe631d5168f0e0a115d8949bd29cbc7e57fc7f684e433b1e9c68f34526926b2",
+        "kind": "calendar",
+        "start": "2021-09-13",
+        "end": "2021-11-22",
+        "symbol": null
+      },
+      "expected_source_id": "BigQuant",
+      "expected_content_sha256": "99a8cea6ce9e1052565c33ee1d00145169bd66bdeebca2d0de2fba25392a4c15",
+      "units": {},
+      "field_origins": {},
+      "status": "PASS",
+      "known_at": "UNKNOWN",
+      "metadata": {
+        "source_id": "BigQuant",
+        "data_version": "sha256:ebe631d5168f0e0a115d8949bd29cbc7e57fc7f684e433b1e9c68f34526926b2",
+        "calendar_id": null,
+        "calendar_kind": "UNKNOWN",
+        "acquired_at": null,
+        "provider_available_at": null,
+        "coverage": "UNKNOWN",
+        "time_fields": {},
+        "provenance": {
+          "source_kind": "REAL_CANDIDATE",
+          "research_table_sha256": "99a8cea6ce9e1052565c33ee1d00145169bd66bdeebca2d0de2fba25392a4c15",
+          "input_members": [
+            {
+              "archive": "common.zip",
+              "member": "common/trading_days/2021-01-01_2021-12-31.parquet",
+              "actual_sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+              "receipt_sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+              "hash_matches_receipt": true,
+              "exported_at_utc": "2026-11-07T12:48:50+00:00",
+              "physical_rows": 1751,
+              "uncompressed_bytes": 4298,
+              "selected_columns": [
+                "date",
+                "market_code"
+              ]
+            }
+          ],
+          "historical_version": "UNKNOWN",
+          "mapping": "D06_OBSERVED_SUPPLIER_CANDIDATE_NOT_CERTIFIED",
+          "parent_research_table_sha256": "99a8cea6ce9e1052565c33ee1d00145169bd66bdeebca2d0de2fba25392a4c15"
+        },
+        "evidence_status": [
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "field_semantics": {}
+      },
+      "observed_content_sha256": "99a8cea6ce9e1052565c33ee1d00145169bd66bdeebca2d0de2fba25392a4c15",
+      "available_fields": [
+        "date"
+      ],
+      "identity_and_structure_checked": true
+    }
+  ],
+  "action_receipts": [],
+  "window": {
+    "start": "2021-09-13",
+    "end": "2021-11-22",
+    "research_start": "2021-09-28",
+    "research_end": "2021-11-12",
+    "warmup_sessions": 9,
+    "holding_days": 5,
+    "execution_tail_sessions": 1
+  },
+  "symbols": [
+    "600363.SH",
+    "601868.SH"
+  ],
+  "layers": {
+    "warmup": {
+      "sessions": 9,
+      "dates": [
+        "2021-09-13",
+        "2021-09-14",
+        "2021-09-15",
+        "2021-09-16",
+        "2021-09-17",
+        "2021-09-22",
+        "2021-09-23",
+        "2021-09-24",
+        "2021-09-27"
+      ]
+    },
+    "research": {
+      "sessions": 29,
+      "dates": [
+        "2021-09-28",
+        "2021-09-29",
+        "2021-09-30",
+        "2021-10-08",
+        "2021-10-11",
+        "2021-10-12",
+        "2021-10-13",
+        "2021-10-14",
+        "2021-10-15",
+        "2021-10-18",
+        "2021-10-19",
+        "2021-10-20",
+        "2021-10-21",
+        "2021-10-22",
+        "2021-10-25",
+        "2021-10-26",
+        "2021-10-27",
+        "2021-10-28",
+        "2021-10-29",
+        "2021-11-01",
+        "2021-11-02",
+        "2021-11-03",
+        "2021-11-04",
+        "2021-11-05",
+        "2021-11-08",
+        "2021-11-09",
+        "2021-11-10",
+        "2021-11-11",
+        "2021-11-12"
+      ]
+    },
+    "tail": {
+      "sessions": 6,
+      "dates": [
+        "2021-11-15",
+        "2021-11-16",
+        "2021-11-17",
+        "2021-11-18",
+        "2021-11-19",
+        "2021-11-22"
+      ]
+    }
+  },
+  "coverage_matrix": [
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-13",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-14",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-15",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-16",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-17",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-22",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-23",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-24",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-27",
+      "phase": "warmup",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-28",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-29",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-09-30",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-08",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-11",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-12",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-13",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-14",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-15",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-18",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-19",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-20",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-21",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-22",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-25",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-26",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-27",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-28",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-10-29",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-01",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-02",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-03",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-04",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-05",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-08",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-09",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-10",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-11",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-12",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-15",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-16",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-17",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-18",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-19",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "600363.SH",
+      "date": "2021-11-22",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "UNKNOWN",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-13",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-14",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-15",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-16",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-17",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-22",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-23",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-24",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-27",
+      "phase": "warmup",
+      "observed_listing_lifetime": false,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "NOT_EXISTING_OBSERVATION",
+      "membership": "NOT_EXISTING_OBSERVATION",
+      "status": "NOT_EXISTING_OBSERVATION",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-28",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-29",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-09-30",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-08",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-11",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-12",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-13",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-14",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-15",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-18",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-19",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-20",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-21",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-22",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-25",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-26",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-27",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-28",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-10-29",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-01",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-02",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-03",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-04",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-05",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-08",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-09",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-10",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-11",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-12",
+      "phase": "research",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-15",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-16",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-17",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-18",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-19",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    },
+    {
+      "symbol": "601868.SH",
+      "date": "2021-11-22",
+      "phase": "tail",
+      "observed_listing_lifetime": true,
+      "historical_eligibility": "UNKNOWN",
+      "bars": "OBSERVED",
+      "membership": "OBSERVED",
+      "status": "OBSERVED",
+      "benchmark": "OBSERVED"
+    }
+  ],
+  "label_endpoints": [
+    {
+      "date": "2021-09-28 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-09-29 00:00:00",
+      "exit_date": "2021-10-13 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-09-29 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-09-30 00:00:00",
+      "exit_date": "2021-10-14 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-09-30 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-08 00:00:00",
+      "exit_date": "2021-10-15 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-08 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-11 00:00:00",
+      "exit_date": "2021-10-18 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-11 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-12 00:00:00",
+      "exit_date": "2021-10-19 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-12 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-13 00:00:00",
+      "exit_date": "2021-10-20 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-13 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-14 00:00:00",
+      "exit_date": "2021-10-21 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-14 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-15 00:00:00",
+      "exit_date": "2021-10-22 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-15 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-18 00:00:00",
+      "exit_date": "2021-10-25 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-18 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-19 00:00:00",
+      "exit_date": "2021-10-26 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-19 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-20 00:00:00",
+      "exit_date": "2021-10-27 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-20 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-21 00:00:00",
+      "exit_date": "2021-10-28 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-21 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-22 00:00:00",
+      "exit_date": "2021-10-29 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-22 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-25 00:00:00",
+      "exit_date": "2021-11-01 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-25 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-26 00:00:00",
+      "exit_date": "2021-11-02 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-26 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-27 00:00:00",
+      "exit_date": "2021-11-03 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-27 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-28 00:00:00",
+      "exit_date": "2021-11-04 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-28 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-10-29 00:00:00",
+      "exit_date": "2021-11-05 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-10-29 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-01 00:00:00",
+      "exit_date": "2021-11-08 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-01 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-02 00:00:00",
+      "exit_date": "2021-11-09 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-02 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-03 00:00:00",
+      "exit_date": "2021-11-10 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-03 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-04 00:00:00",
+      "exit_date": "2021-11-11 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-04 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-05 00:00:00",
+      "exit_date": "2021-11-12 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-05 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-08 00:00:00",
+      "exit_date": "2021-11-15 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-08 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-09 00:00:00",
+      "exit_date": "2021-11-16 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-09 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-10 00:00:00",
+      "exit_date": "2021-11-17 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-10 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-11 00:00:00",
+      "exit_date": "2021-11-18 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-11 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-12 00:00:00",
+      "exit_date": "2021-11-19 00:00:00",
+      "label_endpoints_available": true
+    },
+    {
+      "date": "2021-11-12 00:00:00",
+      "symbol": "601868.SH",
+      "entry_date": "2021-11-15 00:00:00",
+      "exit_date": "2021-11-22 00:00:00",
+      "label_endpoints_available": true
+    }
+  ],
+  "research_quality": {
+    "scope": "RETROSPECTIVE_QUERY_OBSERVATIONS; NOT_A_SELECTION_MASK",
+    "fields": [
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "raw_open",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.open",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "raw_high",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.high",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "raw_low",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.low",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "raw_close",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.close",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "adj_open",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.open",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "adj_high",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.high",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "adj_low",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.low",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "adj_close",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.close",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "volume",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.volume",
+          "vendor_documented_unit": "shares",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": null,
+          "transformation": "identity",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "amount",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.amount",
+          "vendor_documented_unit": "yuan; currency unspecified",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": null,
+          "transformation": "identity",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "turnover",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.turn",
+          "vendor_documented_unit": "fraction",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": null,
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "raw_open",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.open",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "raw_high",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.high",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "raw_low",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.low",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "raw_close",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.close",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": "UNADJUSTED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "adj_open",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.open",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "adj_high",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.high",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "adj_low",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.low",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "adj_close",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_bar1d.close",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S11/response.bin",
+          "vendor_price_semantics": "ADJUSTED_BY_CUMULATIVE_FACTOR; HFQ_UNVERIFIED",
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "volume",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.volume",
+          "vendor_documented_unit": "shares",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": null,
+          "transformation": "identity",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "amount",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.amount",
+          "vendor_documented_unit": "yuan; currency unspecified",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": null,
+          "transformation": "identity",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "bars",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+          "kind": "daily_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "turnover",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_real_bar1d.turn",
+          "vendor_documented_unit": "fraction",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "VENDOR_DOCUMENTED_CURRENT",
+          "historical_applicability": "UNKNOWN",
+          "evidence": "docs/validation/p4-d02/sources/S08/response.bin",
+          "vendor_price_semantics": null,
+          "transformation": "rename_only",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "benchmark",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:036d648f232edb30a6ac2edb95fabda1e8ab82579be799f518a5ea2514f38409",
+          "kind": "index_bars",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "000905.SH"
+        },
+        "field": "open",
+        "declared_unit": "UNKNOWN_VENDOR_CONTRACT",
+        "semantics": {
+          "native_field": "cn_stock_index_bar1d.open",
+          "vendor_documented_unit": "UNKNOWN",
+          "normalized_unit": "UNKNOWN_VENDOR_CONTRACT",
+          "multiplier": null,
+          "evidence_level": "UNKNOWN",
+          "historical_applicability": "UNKNOWN",
+          "evidence": null,
+          "vendor_price_semantics": null,
+          "transformation": "identity",
+          "minimum_evidence": "Version-bound native field dictionary with economic unit, scale and historical applicability"
+        },
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "status",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+          "kind": "security_status",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "trade_status",
+        "declared_unit": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "semantics": {},
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "status",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+          "kind": "security_status",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "600363.SH"
+        },
+        "field": "is_st",
+        "declared_unit": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "semantics": {},
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "status",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+          "kind": "security_status",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "trade_status",
+        "declared_unit": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "semantics": {},
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      },
+      {
+        "group": "status",
+        "query": {
+          "source": "bigquant",
+          "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+          "kind": "security_status",
+          "start": "2021-09-13",
+          "end": "2021-11-22",
+          "symbol": "601868.SH"
+        },
+        "field": "is_st",
+        "declared_unit": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "semantics": {},
+        "source_and_unit_explained": false,
+        "historical_unit_contract": "UNKNOWN",
+        "historical_pit": "UNKNOWN"
+      }
+    ],
+    "observations": [
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-13",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-14",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-15",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-16",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-17",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-22",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-23",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-24",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-27",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-28",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-29",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-09-30",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-08",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-11",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-12",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-13",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-14",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-15",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-18",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-19",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-20",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-21",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-22",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-25",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-26",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-27",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-28",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-10-29",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-01",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-02",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-03",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-04",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-05",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-08",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-09",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-10",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-11",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-12",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-15",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-16",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-17",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-18",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-19",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "600363.SH",
+        "date": "2021-11-22",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-13",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-14",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-15",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-16",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-17",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-22",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-23",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-24",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-27",
+        "numeric_calculable": false,
+        "observation_flags": [
+          "PRE_LISTING",
+          "HISTORICAL_MEMBERSHIP_UNKNOWN",
+          "STATUS_UNKNOWN"
+        ],
+        "observed_listing_boundary": "PRE_LISTING",
+        "membership_observation": "UNKNOWN",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-28",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-29",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-09-30",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-08",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-11",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-12",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-13",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-14",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-15",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-18",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-19",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-20",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-21",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-22",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-25",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-26",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-27",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-28",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-10-29",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-01",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-02",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-03",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-04",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-05",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-08",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-09",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-10",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-11",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-12",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-15",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-16",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-17",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-18",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-19",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      },
+      {
+        "symbol": "601868.SH",
+        "date": "2021-11-22",
+        "numeric_calculable": true,
+        "observation_flags": [
+          "NORMAL_TRADING_OBSERVATION"
+        ],
+        "observed_listing_boundary": "WITHIN_OBSERVED_LIFETIME",
+        "membership_observation": "POSITIVE_OBSERVATION",
+        "historical_identity_and_timing": "UNKNOWN",
+        "formal_admission": "BLOCKED"
+      }
+    ],
+    "numeric_calculable_rows": 79,
+    "historical_identity_and_timing": "UNKNOWN",
+    "formal_admission": "BLOCKED"
+  },
+  "unmet_contracts": [
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "raw_open"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "raw_high"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "raw_low"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "raw_close"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "adj_open"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "adj_high"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "adj_low"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "adj_close"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "volume"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "amount"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "600363.SH",
+      "field": "turnover"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "raw_open"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "raw_high"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "raw_low"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "raw_close"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "adj_open"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "adj_high"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "adj_low"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "adj_close"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "volume"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "amount"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "field": "turnover"
+    },
+    {
+      "code": "UNIT_UNDECLARED",
+      "group": "benchmark",
+      "symbol": "000905.SH",
+      "field": "open"
+    },
+    {
+      "code": "ACTION_SECURITY_MAPPING_MISSING",
+      "group": "corporate_actions"
+    },
+    {
+      "code": "SECURITY_WARMUP_INSUFFICIENT",
+      "group": "bars",
+      "symbol": "601868.SH",
+      "required": 9,
+      "observed": 0
+    },
+    {
+      "code": "SECURITY_MEMBERSHIP_UNKNOWN",
+      "group": "membership",
+      "symbol": "600363.SH"
+    }
+  ],
+  "evidence_gaps": [
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "Independent historical source, unit and security identity certification",
+    "Replayable formal market/execution qualification package"
+  ],
+  "summary_zh": "工程输入预检：FAIL；未满足合同 26 项；历史PIT及HFQ资格 UNKNOWN；正式金融准入 BLOCKED。",
+  "status": "PARTIAL",
+  "actual_raw_consumption": "RUN",
+  "capabilities": {
+    "bigquant": [
+      "calendar",
+      "daily_bars",
+      "index_bars",
+      "listings",
+      "security_status"
+    ],
+    "joinquant": [
+      "membership"
+    ]
+  },
+  "input_matrix": [
+    {
+      "group": "bars",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+      "kind": "daily_bars",
+      "symbol": "600363.SH",
+      "rows": 44,
+      "fields": [
+        "date",
+        "symbol",
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "volume",
+        "amount",
+        "turnover",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "symbol": "object",
+        "raw_open": "float64",
+        "raw_high": "float64",
+        "raw_low": "float64",
+        "raw_close": "float64",
+        "volume": "int64",
+        "amount": "float64",
+        "turnover": "float64",
+        "adj_open": "float64",
+        "adj_high": "float64",
+        "adj_low": "float64",
+        "adj_close": "float64"
+      },
+      "missing_fields": [],
+      "units": {
+        "raw_open": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_high": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_low": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_close": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_open": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_high": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_low": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_close": "UNKNOWN_VENDOR_CONTRACT",
+        "volume": "UNKNOWN_VENDOR_CONTRACT",
+        "amount": "UNKNOWN_VENDOR_CONTRACT",
+        "turnover": "UNKNOWN_VENDOR_CONTRACT"
+      },
+      "undeclared_units": [
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close",
+        "volume",
+        "amount",
+        "turnover"
+      ],
+      "first_date": "2021-09-13",
+      "last_date": "2021-11-22",
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0,
+        "symbol": 0,
+        "raw_open": 0,
+        "raw_high": 0,
+        "raw_low": 0,
+        "raw_close": 0,
+        "volume": 0,
+        "amount": 0,
+        "turnover": 0,
+        "adj_open": 0,
+        "adj_high": 0,
+        "adj_low": 0,
+        "adj_close": 0
+      },
+      "content_sha256": "7dd850d98ce3048c1800c2d04e400a3570ef93709c3483d5c2b736c01d3f6291",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "bars",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+      "kind": "daily_bars",
+      "symbol": "601868.SH",
+      "rows": 35,
+      "fields": [
+        "date",
+        "symbol",
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "volume",
+        "amount",
+        "turnover",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "symbol": "object",
+        "raw_open": "float64",
+        "raw_high": "float64",
+        "raw_low": "float64",
+        "raw_close": "float64",
+        "volume": "int64",
+        "amount": "float64",
+        "turnover": "float64",
+        "adj_open": "float64",
+        "adj_high": "float64",
+        "adj_low": "float64",
+        "adj_close": "float64"
+      },
+      "missing_fields": [],
+      "units": {
+        "raw_open": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_high": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_low": "UNKNOWN_VENDOR_CONTRACT",
+        "raw_close": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_open": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_high": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_low": "UNKNOWN_VENDOR_CONTRACT",
+        "adj_close": "UNKNOWN_VENDOR_CONTRACT",
+        "volume": "UNKNOWN_VENDOR_CONTRACT",
+        "amount": "UNKNOWN_VENDOR_CONTRACT",
+        "turnover": "UNKNOWN_VENDOR_CONTRACT"
+      },
+      "undeclared_units": [
+        "raw_open",
+        "raw_high",
+        "raw_low",
+        "raw_close",
+        "adj_open",
+        "adj_high",
+        "adj_low",
+        "adj_close",
+        "volume",
+        "amount",
+        "turnover"
+      ],
+      "first_date": "2021-09-28",
+      "last_date": "2021-11-22",
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0,
+        "symbol": 0,
+        "raw_open": 0,
+        "raw_high": 0,
+        "raw_low": 0,
+        "raw_close": 0,
+        "volume": 0,
+        "amount": 0,
+        "turnover": 0,
+        "adj_open": 0,
+        "adj_high": 0,
+        "adj_low": 0,
+        "adj_close": 0
+      },
+      "content_sha256": "5a728b072e62d41b991eafdafe622775c373848cc2aa1fbbd8a53391cdb15cb3",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:d735b0e09a8518d1d8a64d127ca9ccc1bf0100276517b69d9d8aa3a0392047ea",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "benchmark",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:036d648f232edb30a6ac2edb95fabda1e8ab82579be799f518a5ea2514f38409",
+      "kind": "index_bars",
+      "symbol": "000905.SH",
+      "rows": 44,
+      "fields": [
+        "date",
+        "symbol",
+        "open"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "symbol": "object",
+        "open": "float64"
+      },
+      "missing_fields": [],
+      "units": {
+        "open": "UNKNOWN_VENDOR_CONTRACT"
+      },
+      "undeclared_units": [
+        "open"
+      ],
+      "first_date": "2021-09-13",
+      "last_date": "2021-11-22",
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0,
+        "symbol": 0,
+        "open": 0
+      },
+      "content_sha256": "2048366f4d25d7ad7b20d9b6240bb118f8c11711e4278fdd381b3eca9c11b4ab",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:036d648f232edb30a6ac2edb95fabda1e8ab82579be799f518a5ea2514f38409",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "membership",
+      "source": "joinquant",
+      "source_id": "JoinQuant_OBSERVED_MEMBERSHIP",
+      "version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+      "kind": "membership",
+      "symbol": "600363.SH",
+      "rows": 0,
+      "fields": [
+        "date",
+        "symbol"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "symbol": "object"
+      },
+      "missing_fields": [],
+      "units": {},
+      "undeclared_units": [],
+      "first_date": null,
+      "last_date": null,
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0,
+        "symbol": 0
+      },
+      "content_sha256": "78555788428fe43752bb3b1ec2262f092789fd852589d6adf6a3d98deee9718e",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "membership",
+      "source": "joinquant",
+      "source_id": "JoinQuant_OBSERVED_MEMBERSHIP",
+      "version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+      "kind": "membership",
+      "symbol": "601868.SH",
+      "rows": 35,
+      "fields": [
+        "date",
+        "symbol"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "symbol": "object"
+      },
+      "missing_fields": [],
+      "units": {},
+      "undeclared_units": [],
+      "first_date": "2021-09-28",
+      "last_date": "2021-11-22",
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0,
+        "symbol": 0
+      },
+      "content_sha256": "85e8aa0b1d1b4971249684e99c569b0e9fb2f758d2488247c9c77cae9ab6cf17",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:3afa53ca5c460af98e98104e4298a8e8852f17f0ac27d8d3b0f4850f804b4efc",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "status",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+      "kind": "security_status",
+      "symbol": "600363.SH",
+      "rows": 44,
+      "fields": [
+        "date",
+        "symbol",
+        "trade_status",
+        "is_st"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "symbol": "object",
+        "trade_status": "float64",
+        "is_st": "bool"
+      },
+      "missing_fields": [],
+      "units": {
+        "trade_status": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "is_st": "BOOLEAN_0_1_OBSERVED_MAPPING"
+      },
+      "undeclared_units": [],
+      "first_date": "2021-09-13",
+      "last_date": "2021-11-22",
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0,
+        "symbol": 0,
+        "trade_status": 0,
+        "is_st": 0
+      },
+      "content_sha256": "1fb5b7540a00dcbbef8f9998de8500884bf66f5b180d33d65839efb48e49e919",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "status",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+      "kind": "security_status",
+      "symbol": "601868.SH",
+      "rows": 35,
+      "fields": [
+        "date",
+        "symbol",
+        "trade_status",
+        "is_st"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "symbol": "object",
+        "trade_status": "float64",
+        "is_st": "bool"
+      },
+      "missing_fields": [],
+      "units": {
+        "trade_status": "BOOLEAN_0_1_OBSERVED_MAPPING",
+        "is_st": "BOOLEAN_0_1_OBSERVED_MAPPING"
+      },
+      "undeclared_units": [],
+      "first_date": "2021-09-28",
+      "last_date": "2021-11-22",
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0,
+        "symbol": 0,
+        "trade_status": 0,
+        "is_st": 0
+      },
+      "content_sha256": "ddc036140da2a7a8eb474378966cae791f580812b78866842dc57a2fcafd735a",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:9f69790bc8e5401c2c7b875f7b28479baa9301e1cbdde77354135682087a71e0",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "listings",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+      "kind": "listings",
+      "symbol": "600363.SH",
+      "rows": 1,
+      "fields": [
+        "symbol",
+        "listing_date",
+        "delist_date"
+      ],
+      "dtypes": {
+        "symbol": "object",
+        "listing_date": "datetime64[ns]",
+        "delist_date": "datetime64[ns]"
+      },
+      "missing_fields": [],
+      "units": {},
+      "undeclared_units": [],
+      "first_date": null,
+      "last_date": null,
+      "unique_keys": true,
+      "null_counts": {
+        "symbol": 0,
+        "listing_date": 0,
+        "delist_date": 1
+      },
+      "content_sha256": "c7e8e6a16febd82517a8a07d8288082394944c82bc7228da1373c84374dac49f",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "listing_date/delist_date",
+      "acquired_at": null,
+      "source_version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "listings",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+      "kind": "listings",
+      "symbol": "601868.SH",
+      "rows": 1,
+      "fields": [
+        "symbol",
+        "listing_date",
+        "delist_date"
+      ],
+      "dtypes": {
+        "symbol": "object",
+        "listing_date": "datetime64[ns]",
+        "delist_date": "datetime64[ns]"
+      },
+      "missing_fields": [],
+      "units": {},
+      "undeclared_units": [],
+      "first_date": null,
+      "last_date": null,
+      "unique_keys": true,
+      "null_counts": {
+        "symbol": 0,
+        "listing_date": 0,
+        "delist_date": 1
+      },
+      "content_sha256": "32be11cca1873fefcce8414c3159a2676d429508ae701efc8ebde1d72443abd8",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "listing_date/delist_date",
+      "acquired_at": null,
+      "source_version": "sha256:2dfb983d485689644826e1cd5ef533593fbda4c605b39826c5770135baaf0ea3",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    },
+    {
+      "group": "calendar",
+      "source": "bigquant",
+      "source_id": "BigQuant",
+      "version": "sha256:ebe631d5168f0e0a115d8949bd29cbc7e57fc7f684e433b1e9c68f34526926b2",
+      "kind": "calendar",
+      "symbol": null,
+      "rows": 44,
+      "fields": [
+        "date"
+      ],
+      "dtypes": {
+        "date": "datetime64[ns]"
+      },
+      "missing_fields": [],
+      "units": {},
+      "undeclared_units": [],
+      "first_date": "2021-09-13",
+      "last_date": "2021-11-22",
+      "unique_keys": true,
+      "null_counts": {
+        "date": 0
+      },
+      "content_sha256": "99a8cea6ce9e1052565c33ee1d00145169bd66bdeebca2d0de2fba25392a4c15",
+      "known_at": "UNKNOWN",
+      "announced_at": "UNKNOWN",
+      "effective_at": "date",
+      "acquired_at": null,
+      "source_version": "sha256:ebe631d5168f0e0a115d8949bd29cbc7e57fc7f684e433b1e9c68f34526926b2",
+      "acquisition_role": "archive export/run completion; NOT historical known_at",
+      "historical_eligibility": "UNKNOWN"
+    }
+  ],
+  "raw_identities": [
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2021-01-01_2021-12-31.parquet",
+      "content_sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+      "receipt_sha256": "4b671bd582d60d0f295f3b1e68ae8e46b6fe0f80a7ed2d1d67c3fa9712594df6",
+      "schema_sha256": "096e74ccdc7a7acfadea62d1c635cbd5ab609592896c0ba108f8fc41fb35a008",
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1751,
+      "uncompressed_bytes": 4298
+    },
+    {
+      "archive": "index.zip",
+      "member": "index/cn_stock_index_bar1d/2021-01-01_2021-12-31.parquet",
+      "content_sha256": "fba2750427a0cd96d2662d80604b2e2f34eb061590945560834934754d2136b7",
+      "receipt_sha256": "fbbee23eb6e3b3a126498d274b7ab4c16268a48e92d1d947fe5401afecea449f",
+      "schema_sha256": "bc6906bcf99485c545afec25c842d5feca85c2a88f097a7221d969765cf7dd6c",
+      "exported_at_utc": "2026-11-07T12:23:12+00:00",
+      "physical_rows": 27184,
+      "uncompressed_bytes": 2118100
+    },
+    {
+      "archive": "csi500_full_history.zip",
+      "member": "members_daily.csv",
+      "content_sha256": "e52a3f1bfcb9fb83c62b1176441bf20fd44dace977a2af73536d6c99188c8293",
+      "manifest_sha256": "43c8396883cddf78802f770a5392205d31ad4de72fb8a1cd05ef2fffd57db895",
+      "acquired_at_claim": "2026-10-23T21:01:58Z",
+      "historical_available_at": null,
+      "requested_start": "2021-09-13",
+      "requested_end": "2026-09-30"
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_bar1d/2021-09-01_2021-09-30.parquet",
+      "content_sha256": "74234e00bbd0596c9b5a4a68604603e99fac53b795fbe4bc772a88942c64b87d",
+      "receipt_sha256": "78bc8b9fb1efc1e3cdf08c322e6d01caae24484f63b6d18d34730b603d289ad7",
+      "schema_sha256": "afe556ec7d20fc1429993c19406528cf81e0948a7e9cc63f3b224fb54b2e4ed7",
+      "exported_at_utc": "2026-11-07T12:19:02+00:00",
+      "physical_rows": 89492,
+      "uncompressed_bytes": 8991626
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_bar1d/2021-10-01_2021-10-31.parquet",
+      "content_sha256": "359f06ef3a8d2f4533b0852215886098b71cb72456442168d289d66f0f9ed6dd",
+      "receipt_sha256": "4513a4ddb1d46f81f28c3ddc1ee000fbfbd08e050dbe81d09de386ffa64da582",
+      "schema_sha256": "afe556ec7d20fc1429993c19406528cf81e0948a7e9cc63f3b224fb54b2e4ed7",
+      "exported_at_utc": "2026-11-07T12:19:03+00:00",
+      "physical_rows": 72115,
+      "uncompressed_bytes": 7177127
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_bar1d/2021-11-01_2021-11-30.parquet",
+      "content_sha256": "ac5d60ec92dff29c5fa2ef4e95848edb41dfd5813e1f190a65cce6b1c9bea8d6",
+      "receipt_sha256": "fb54a97d0e3cdd866eabdf5010e00fbb2949ddcd7a1f2c77233e07fa4cbc6c9c",
+      "schema_sha256": "afe556ec7d20fc1429993c19406528cf81e0948a7e9cc63f3b224fb54b2e4ed7",
+      "exported_at_utc": "2026-11-07T12:19:03+00:00",
+      "physical_rows": 100895,
+      "uncompressed_bytes": 10041923
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_basic_info/unpartitioned_snapshot.parquet",
+      "content_sha256": "8701bb46e9a551746143d1c152e32003c964d71fd23993012e27907ee634df66",
+      "receipt_sha256": "34665191a4eba08d7e5a1b1cac5fe7985932e88504161f5a6cfd04658d2aa681",
+      "schema_sha256": "efcc16dac448c094ba29998b90660ab1646db1c00e883fe2234d9cd635a97cd4",
+      "exported_at_utc": "2026-11-07T12:21:32+00:00",
+      "physical_rows": 5924,
+      "uncompressed_bytes": 6028983
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+      "content_sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+      "receipt_sha256": "5e594e3cfe9c133ff50922748cdb3f73691dec67d9ca7dbf6f74670fc3508bf6",
+      "schema_sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076",
+      "exported_at_utc": "2026-11-07T12:20:17+00:00",
+      "physical_rows": 89492,
+      "uncompressed_bytes": 5223424
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+      "content_sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+      "receipt_sha256": "b49e476a97f1da4fb9a993deba574759a9ac35bf116662149f14d38567b5567f",
+      "schema_sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076",
+      "exported_at_utc": "2026-11-07T12:20:18+00:00",
+      "physical_rows": 72115,
+      "uncompressed_bytes": 4134062
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-11-01_2021-11-30.parquet",
+      "content_sha256": "18d5c3007261f259b56fe93e17369c873d14c4f12d381f7bf567c2c99d63addc",
+      "receipt_sha256": "7bd158cb404b453b4def29dc6292f08353e6441c70bc6adb3f0bfe232760fe14",
+      "schema_sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076",
+      "exported_at_utc": "2026-11-07T12:20:18+00:00",
+      "physical_rows": 100895,
+      "uncompressed_bytes": 5830355
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-09-01_2021-09-30.parquet",
+      "content_sha256": "bdb053c134df3e7491270e5e19cbfc1d7aab1a334e80f39f2f57ad34143fa93f",
+      "receipt_sha256": "0b449cc4acf34bdaa24302764f4eb524bb1781226be5d61c3f59280c9ccea7e6",
+      "schema_sha256": "4122efa267439d9697d5eff2c0ae1ff8ecf5b28292170d83550da580dec20ae2",
+      "exported_at_utc": "2026-11-07T12:21:47+00:00",
+      "physical_rows": 89492,
+      "uncompressed_bytes": 188978
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-10-01_2021-10-31.parquet",
+      "content_sha256": "b6226cab3ef573fbe388792d9abb72ec0713481cb0ed9ee4094ad08da2e51893",
+      "receipt_sha256": "8b3b14c89192db537b8dd3c3184b99542cfc68f3d052aab739f2646d2b475f31",
+      "schema_sha256": "4122efa267439d9697d5eff2c0ae1ff8ecf5b28292170d83550da580dec20ae2",
+      "exported_at_utc": "2026-11-07T12:21:47+00:00",
+      "physical_rows": 72115,
+      "uncompressed_bytes": 144793
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-11-01_2021-11-30.parquet",
+      "content_sha256": "bdbfc6880ac4cf3215fb369b43b1b9e5e722623908c23a8bffae28a79cb73115",
+      "receipt_sha256": "2a17a0701d90b0c92bb03f6b936f962baddc7a49ba44dfa87bd76b84637aeec2",
+      "schema_sha256": "4122efa267439d9697d5eff2c0ae1ff8ecf5b28292170d83550da580dec20ae2",
+      "exported_at_utc": "2026-11-07T12:21:48+00:00",
+      "physical_rows": 100895,
+      "uncompressed_bytes": 205352
+    }
+  ],
+  "corporate_action_binding": {
+    "status": "UNKNOWN",
+    "stable_security_mapping": "MISSING",
+    "coverage": "UNKNOWN; no event query registered; empty is not absence"
+  },
+  "minimum_next_steps": [
+    {
+      "category": "SOURCE_CONTRACT",
+      "request": "Confirm native price, volume, amount and turn economic units; do not infer units from values"
+    },
+    {
+      "category": "IDENTITY_EVIDENCE",
+      "request": "Bind stable security_id and full-window corporate-action source coverage before registering corporate_actions"
+    },
+    {
+      "category": "COVERAGE",
+      "request": "Resolve positive membership observations and listing-boundary warmup from existing evidence; do not request pre-listing prices"
+    },
+    {
+      "category": "HISTORICAL_EVIDENCE",
+      "request": "Obtain historical source vintages, first availability and independent HFQ qualification"
+    }
+  ],
+  "execution": {
+    "input_definition_sha256": "f65fbceff38f2d6a4724631a7e111d811b2c9a6bf7bf1e73422e920fd6eb5d59",
+    "software_revision": "d6d51622afffb49cd5764ab89b41f025f0d62599",
+    "implementation_sha256": {
+      "tools/data/audit_p4_03_controlled_inputs.py": "468ceaa4cba88575ff2b5e2392368d90bc8b82931b0c6e4e95bf24b1f23708be",
+      "tools/data/audit_p4_01_pipeline_inputs.py": "27c9ff4ded3df5016f82ff76bc4320c9ffb9d856f21d95d419331279f8eb3807",
+      "tools/data/d06_readiness_adapter.py": "38d5745b1c949c7259190a92fcae29d12fbb824f2f72fece9857abbfa1498531",
+      "tools/data/audit_p3_d06.py": "4230114780551deb69e91ace766deec4bf1d09032af571bc0a81398a853248c8",
+      "src/factorlab/diagnostics/pipeline_preflight.py": "43152bee3a38ed528b6e12703c40ac7989ff88615438c68f58065eb43741dcef",
+      "src/factorlab/data/hub/hub.py": "a1f4d6e299a1541d49bab5d59bfdbd178586d8fa1ae317efa20b2015cc47b59f",
+      "src/factorlab/data/hub/contracts.py": "319637821a9c46943a50c0ddcff4c4cafdff7142f14ee7f7bfcff149abceea27",
+      "src/factorlab/data/units.py": "797d04e78bc8cfd693805276aed99dc7009e26a2a88f1260d93b96eca6734df1"
+    },
+    "python": "3.13.9",
+    "pandas": "2.3.3",
+    "command": [
+      "python",
+      "-I",
+      "-B",
+      "-X",
+      "utf8",
+      "tools/data/audit_p4_03_controlled_inputs.py",
+      "--manifest",
+      "<MANIFEST>",
+      "--output",
+      "<NEW_JSON>",
+      "--bigquant-root",
+      "<BQ>",
+      "--membership-zip",
+      "<MEMBERSHIP>",
+      "--matrix",
+      "<NEW_CSV>"
+    ]
+  }
+}
