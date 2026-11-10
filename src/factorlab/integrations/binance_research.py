@@ -11,7 +11,7 @@ from factorlab.integrations.binance.market import INTERVALS, utc
 from factorlab.integrations.binance.store import Reader as PerpetualReader
 from factorlab.integrations.binance_equity.store import Reader as EquityReader
 
-SOURCES = {'BINANCE_USDM_PUBLIC_REST': (PerpetualReader, ('bars', 'funding', 'mark')),
+SOURCES = {'BINANCE_USDM_PUBLIC_REST': (PerpetualReader, ('bars', 'funding', 'mark', 'mark_bars', 'index_bars')),
            'BINANCE_EQUITY': (EquityReader, ('symbols', 'quotes', 'prices', 'bars',
                                                'open_bars', 'sessions', 'gaps'))}
 
@@ -37,7 +37,9 @@ def _require(frame, columns):
 
 
 def _numbers(frame, kind):
-    fields = {'bars': ('open', 'high', 'low', 'close', 'volume'),
+    fields = {'mark_bars': ('open', 'high', 'low', 'close'),
+              'index_bars': ('open', 'high', 'low', 'close'),
+              'bars': ('open', 'high', 'low', 'close', 'volume'),
               'open_bars': ('open', 'high', 'low', 'close', 'volume'),
               'quotes': ('bid_price', 'ask_price', 'bid_size', 'ask_size'),
               'prices': ('price',), 'funding': ('funding_rate',),
@@ -64,7 +66,7 @@ def _numbers(frame, kind):
             signed = field in ('funding_rate', 'last_funding_rate', 'interest_rate')
             if not number.is_finite() or (not signed and number < 0):
                 raise DataQualityError('nonfinite or negative numeric field: ' + field)
-    if kind in ('bars', 'open_bars'):
+    if kind in ('bars', 'open_bars', 'mark_bars', 'index_bars'):
         for row in frame.itertuples():
             o, h, l, c = map(Decimal, (row.open, row.high, row.low, row.close))
             if not l <= min(o, c) <= max(o, c) <= h:
@@ -106,12 +108,12 @@ class BinanceResearch:
         if manifest['data_version'] != self.expected_data_version:
             raise DataQualityError('pinned data version differs')
         raw_count = reader.verify_raw()
-        if self.source_id == 'BINANCE_USDM_PUBLIC_REST' and kind in ('bars', 'funding') and time_basis == 'event_time':
+        if self.source_id == 'BINANCE_USDM_PUBLIC_REST' and kind in ('bars', 'funding', 'mark_bars', 'index_bars') and time_basis == 'event_time':
             bounds = manifest['range']
             if (start < pd.Timestamp(bounds['start_ms'], unit='ms', tz='UTC') or
                     end > pd.Timestamp(bounds['end_ms'], unit='ms', tz='UTC')):
                 raise UnsupportedQueryError('requested time range exceeds snapshot coverage')
-            if kind == 'bars':
+            if kind in ('bars', 'mark_bars', 'index_bars'):
                 for gap in manifest['integrity']['missing_ranges']:
                     if _instant(gap['start']) < end and _instant(gap['end_exclusive']) > start:
                         raise UnsupportedQueryError('requested closed bars contain missing coverage')
@@ -183,18 +185,19 @@ class BinanceResearch:
                 raise DataQualityError('missing row raw receipt identity')
         else:
             frame['acquired_at'] = _instant(manifest['acquired_at'])
-            event = {'bars': 'open_time', 'funding': 'funding_time', 'mark': 'event_time'}[kind]
+            event = {'bars': 'open_time', 'funding': 'funding_time', 'mark': 'event_time',
+                     'mark_bars': 'open_time', 'index_bars': 'open_time'}[kind]
             _require(frame, (event,))
             frame['event_time'] = _times(frame[event])
             frame['quote_asset'] = contract['quote_asset']
             frame['margin_asset'] = contract['margin_asset']
-            if kind in ('bars', 'funding'):
+            if kind in ('bars', 'funding', 'mark_bars', 'index_bars'):
                 bounds = manifest['range']
                 events = frame.event_time
                 if not ((events >= pd.Timestamp(bounds['start_ms'], unit='ms', tz='UTC')) &
                         (events < pd.Timestamp(bounds['end_ms'], unit='ms', tz='UTC'))).all():
                     raise DataQualityError('records outside snapshot coverage')
-        if kind in ('bars', 'open_bars'):
+        if kind in ('bars', 'open_bars', 'mark_bars', 'index_bars'):
             _require(frame, ('open_time', 'close_time'))
             if equity:
                 frame['server_event_time'] = frame.event_time
@@ -212,7 +215,7 @@ class BinanceResearch:
                 if ((frame.open_time.astype('int64') % step != 0).any() or
                         (frame.close_time.astype('int64') != frame.open_time.astype('int64') + step - 1_000_000).any()):
                     raise DataQualityError('perpetual UTC candle boundary conflict')
-            if kind == 'bars' and (frame.close_time >= frame.acquired_at).any():
+            if kind in ('bars', 'mark_bars', 'index_bars') and (frame.close_time >= frame.acquired_at).any():
                 raise DataQualityError('closed candle observed before closure')
         frame = frame.loc[frame.acquired_at <= cutoff].copy()
         if frame.empty:
@@ -222,7 +225,7 @@ class BinanceResearch:
         _numbers(frame, kind)
         if kind == 'funding' and not frame.rate_type.dropna().isin(('Regular', 'Special')).all():
             raise DataQualityError('unknown funding rate type')
-        if kind in ('bars', 'open_bars'):
+        if kind in ('bars', 'open_bars', 'mark_bars', 'index_bars'):
             keys = ['open_time', 'interval'] if equity else ['open_time']
             versions = keys + ['acquired_at'] + (['server_event_time'] if equity else [])
             if frame.duplicated(versions).any():
