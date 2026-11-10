@@ -118,3 +118,39 @@ python -m pytest tests/research/test_pairs_statistics.py tests/research/test_pai
 本轮借券上限和费率均为显式软件假设，没有可核实的历史券源、召回、资格或费率证据。
 实际可交易性始终为 `UNKNOWN`。原始行情可读取不代表 PIT/HFQ 已认证；
 软件多空盈亏不授予真实融券、杠杆交易或正式金融研究准入资格。
+
+## 真实历史统计入口
+
+[P5-R03 报告](../validation/p5-r03/REPORT.md) 使用预先固定的
+`configs/research/p5-r03-real-pairs.json`。本入口只研究 CSMAR 可比收盘序列，
+不将调整价交给收益账户。原始数据、原生重放分区和逐日诊断留在私有目录。
+
+```bash
+python -I -X utf8 tools/research/prepare_real_pairs.py \
+  --config configs/research/p5-r03-real-pairs.json \
+  --catalog <PRIVATE_CSMAR_CATALOG> --source-root <PRIVATE_CSMAR_ROOT> \
+  --scratch <EXISTING_EMPTY_SCRATCH> --output <NEW_PRIVATE_CANDIDATE>
+python -I -X utf8 tools/research/run_real_pairs.py \
+  --config configs/research/p5-r03-real-pairs.json \
+  --candidate <PRIVATE_CANDIDATE> --output <NEW_PRIVATE_RESULT>
+python -I -X utf8 tools/research/verify_real_pairs.py \
+  --candidate <PRIVATE_CANDIDATE> --result <PRIVATE_RESULT> \
+  --output <NEW_PRIVATE_REPLAY> --cutoff 2017-08-01
+```
+
+`read_pair_panels(..., close_field="adj_close")` 可显式选择统计信号价；
+默认仍为 `raw_close`。`run_pair_research(..., statistics_only=True)` 返回
+`StatisticalResult`，不调用交易、借券、费用或投资组合评价模块。
+普通软件模拟路径不变。验证期仅报告固定阈值的诊断，不优化收益或选择阈值。
+
+恢复事件是独立阈值下的不重叠价差观察：收盘 Z 超过入场阈值后，未来最多
+10 个观测 session 内首次回到退出带或穿越零为恢复。Z 的归一化只用过去窗口，
+回归参数每折冻结；恢复时间按信号收盘起算，不代表持仓时间或可实现利润。
+缺失滚动窗口和折末不足观察期分别标记删失；删失不计入完整观察恢复比例。
+拒绝对照也保留相同定义的诊断，但永不成为可交易配对。
+
+价格单位和 `Adjprcwd` 的含再投资可比价定义来自现有已审 CSMAR 字典与原生重放；
+这不提供历史复权 vintage、稳定证券身份或公司行为负债账本认证。
+`HISTORICAL_TRADABILITY=UNKNOWN`、`BORROW_ASSUMPTIONS=SYNTHETIC`。
+公司行为及空头负债语义未解决时，收益、回撤、Sharpe、成交、费用和借券敏感性
+均记录为不可计算，不用零值代替。

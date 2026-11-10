@@ -1,0 +1,71 @@
+{
+  "source": "CSMAR_TRDNEW_Dalyr",
+  "snapshot_sha256": "795d567e6ae3af6d96c7ab454f2dae4ca6f07f3cb481a934327a1b3c10d90611",
+  "config_sha256": "4cabafe0147b2554a97e6ff96a704e5dc780e144b818792dbd8fb50ef0bde5a3",
+  "panel_hash": "07ba391f69b28cec7da2e73965eb75b6fb2f89b3a0346f01dcca34c4cb91c3dc",
+  "sources": [
+    {
+      "alias": "CSMAR_DALYR_0",
+      "sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+      "member": "TRDNEW_Dalyr.xlsx",
+      "member_sha256": "7f83d8976809c111e2a987a4f30861a8db15cb9c9495c963f0593f5a06f5d7c5",
+      "dictionary_scope": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+      "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f"
+    },
+    {
+      "alias": "CSMAR_DALYR_1",
+      "sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+      "member": "TRDNEW_Dalyr2.xlsx",
+      "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+      "dictionary_scope": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+      "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f"
+    },
+    {
+      "alias": "CSMAR_DALYR_2",
+      "sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+      "member": "TRDNEW_Dalyr2.xlsx",
+      "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+      "dictionary_scope": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+      "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f"
+    },
+    {
+      "alias": "CSMAR_DALYR_3",
+      "sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+      "member": "TRDNEW_Dalyr2.xlsx",
+      "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+      "dictionary_scope": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+      "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f"
+    },
+    {
+      "alias": "CSMAR_DALYR_4",
+      "sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+      "member": "TRDNEW_Dalyr2.xlsx",
+      "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+      "dictionary_scope": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+      "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f"
+    },
+    {
+      "alias": "CSMAR_DALYR_5",
+      "sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+      "member": "TRDNEW_Dalyr3.xlsx",
+      "member_sha256": "be80532589e2ad4c949cc8ba8b55077614daeae53d21bb393eb58ce1e7414e8c",
+      "dictionary_scope": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+      "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f"
+    }
+  ],
+  "python": "3.13.9",
+  "pandas": "2.3.3",
+  "numpy": "2.3.4",
+  "statsmodels": "0.14.6",
+  "implementation": {
+    "pairs_real_cli.py": "84d3b197d56725da5f20d57edff7b5f74a412a03fb8226076c4dcadc7da01b11",
+    "pairs_research.py": "01e4104b8b8621b41ce0049c8d42dc569ab424800b0eceaad3107efbcb71837b",
+    "pairs_statistics.py": "8b8a4cf68c6e737d37c38ff99fd2f61dd669ab7510e70f672ce82cc25a662432",
+    "pairs_trading.py": "82513b408e18f872dc8a8ece6b4a0e805eb80963d70c25188299c213ddedd626"
+  },
+  "code": {
+    "commit": "60c42536b289addcd87f34a4f0a0627bfa996d6c",
+    "tree": "3fd01a47cdc0a8559df10dc661d2913378c217e4",
+    "dirty": true
+  }
+}

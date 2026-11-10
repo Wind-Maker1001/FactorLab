@@ -1,0 +1,31 @@
+{
+  "experiment": "P5-R03",
+  "start": "2015-01-01",
+  "end": "2018-12-31",
+  "price_field": "adj_close",
+  "candidate_policy": "Fixed economic peers before any price tests or OOS returns; no exhaustive combinations; orientation follows lexically sorted symbols.",
+  "pairs": [
+    {"symbols": ["601398.SH", "601939.SH"], "rationale": "Large state-controlled commercial banks: ICBC / CCB"},
+    {"symbols": ["601288.SH", "601988.SH"], "rationale": "Large state-controlled commercial banks: ABC / BOC"},
+    {"symbols": ["600036.SH", "601166.SH"], "rationale": "Joint-stock commercial banks: CMB / Industrial Bank"},
+    {"symbols": ["601318.SH", "601601.SH"], "rationale": "Diversified insurance groups: Ping An / CPIC"},
+    {"symbols": ["601628.SH", "601336.SH"], "rationale": "Life insurers: China Life / New China Life"},
+    {"symbols": ["601857.SH", "600028.SH"], "rationale": "Integrated petroleum groups: PetroChina / Sinopec"},
+    {"symbols": ["601088.SH", "601898.SH"], "rationale": "Large coal producers: Shenhua / China Coal"},
+    {"symbols": ["600030.SH", "600837.SH"], "rationale": "Large securities firms: CITIC / Haitong"},
+    {"symbols": ["601688.SH", "600999.SH"], "rationale": "Large securities firms: Huatai / China Merchants"},
+    {"symbols": ["601390.SH", "601186.SH"], "rationale": "Railway construction groups: China Railway / CRCC"},
+    {"symbols": ["600019.SH", "000709.SZ"], "rationale": "Large integrated steel producers: Baosteel / HBIS; restructuring remains a semantic limitation"},
+    {"symbols": ["600585.SH", "000401.SZ"], "rationale": "Cement producers: Anhui Conch / Jidong"}
+  ],
+  "selection": {"min_observations": 240, "min_completeness": 0.95, "min_overlap": 0.9, "price_transform": "log", "coint_pvalue": 0.05, "adf_pvalue": 0.05, "max_hedge_ratio_drift": 0.5, "max_candidates": 1, "max_pairs": 1},
+  "splitter": {"initial_train_months": 24, "validation_months": 3, "test_months": 3, "step_months": 3, "purge_days": 12, "embargo_days": 12},
+  "strategy": {"z_window": 30, "entry_z": 2.0, "exit_z": 0.5, "max_holding_sessions": 10},
+  "entry_grid": [1.5, 2.0, 2.5],
+  "correlation_control_threshold": 0.8,
+  "multiple_testing": "Bonferroni sensitivity: 0.05 / 12 within each fold; nominal engine selection unchanged; no across-fold familywise claim",
+  "execution": "BLOCKED_CORPORATE_ACTION_AND_SHORT_LIABILITY_SEMANTICS",
+  "historical_tradability": "UNKNOWN",
+  "borrow_assumptions": "SYNTHETIC",
+  "sensitivity_not_computed": {"commission_bps": [3, 10, 20], "slippage_bps": [0, 5, 10], "annual_borrow_rate": [0.03, 0.08, 0.15], "reason": "No PnL engine calls until raw prices, long entitlements and short liabilities have coherent corporate-action treatment; no synthetic fee is a historical observation."}
+}

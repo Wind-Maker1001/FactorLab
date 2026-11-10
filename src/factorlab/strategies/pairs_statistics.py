@@ -144,8 +144,6 @@ def fit_pair(prices: pd.DataFrame, config: SelectionConfig) -> PairModel:
             raise ValueError("log prices must be positive")
         values = np.log(values)
     intercept, hedge = _ols(values)
-    if hedge <= 0:
-        raise ValueError("nonpositive hedge ratio")
     residual = values[:, 0] - intercept - hedge * values[:, 1]
     spread_std = float(np.std(residual, ddof=1))
     if spread_std <= np.finfo(float).eps * max(1.0, float(np.max(np.abs(values)))):
@@ -153,15 +151,20 @@ def fit_pair(prices: pd.DataFrame, config: SelectionConfig) -> PairModel:
     split = len(values) // 2
     _, first = _ols(values[:split])
     _, second = _ols(values[split:])
-    drift = abs(second - first) / abs(hedge)
-    if first <= 0 or second <= 0 or drift > config.max_hedge_ratio_drift:
-        raise ValueError("unstable hedge ratio")
+    drift = abs(second - first) / abs(hedge) if hedge else float("inf")
     cstat, cpvalue, _ = coint(values[:, 0], values[:, 1], trend="c", autolag="aic")
     astat, apvalue, *_ = adfuller(residual, regression="n", autolag="AIC")
     statistics = dict(coint_statistic=float(cstat), coint_pvalue=float(cpvalue),
                       adf_statistic=float(astat), adf_pvalue=float(apvalue),
                       intercept=intercept, hedge_ratio=hedge, spread_std=spread_std,
-                      spread_mean=float(np.mean(residual)), hedge_ratio_drift=float(drift))
+                      spread_mean=float(np.mean(residual)), hedge_ratio_drift=float(drift),
+                      hedge_ratio_first_half=first, hedge_ratio_second_half=second,
+                      n_observations=len(values), train_start=paired.index[0].isoformat(),
+                      train_end=paired.index[-1].isoformat(), price_transform=config.price_transform)
+    if hedge <= 0:
+        raise _StatisticalRejection("nonpositive hedge ratio", statistics)
+    if first <= 0 or second <= 0 or drift > config.max_hedge_ratio_drift:
+        raise _StatisticalRejection("unstable hedge ratio", statistics)
     # Residual ADF is diagnostic; cointegration uses Engle–Granger critical values.
     if not np.isfinite(cstat) or cpvalue > config.coint_pvalue:
         raise _StatisticalRejection("Engle-Granger rejects cointegration", statistics)
