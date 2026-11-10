@@ -1,0 +1,998 @@
+{
+  "native": [
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2015/个股日回报率-2015_2.xlsx",
+      "sha256": "1ee3951366f5b1ace13880bc64dfcf8f5f82f3a90cde96f98cd379b4aec6ab7e",
+      "dictionary_member": "2015/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 189019,
+      "seconds": 25.708266099973116,
+      "peak_bytes": 375689216,
+      "code_sha256": "a712258c5aaa49458fdb03d3fdb9d0680635d03ccd199a45b5211b153110c886",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    },
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2015/个股日回报率-2015_1.xlsx",
+      "sha256": "4134d9631a907280c249d9a11c4f61021c1941c888b150d310eb3c840d9b745b",
+      "dictionary_member": "2015/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 500000,
+      "seconds": 64.97074080002494,
+      "peak_bytes": 375689216,
+      "code_sha256": "5b0d68e000e5774b980c4e871c51ac1d1c620c674efd50247a3d501fc8e3edf1",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    },
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2016/个股日回报率-2016_2.xlsx",
+      "sha256": "2dcbb4987b85252f169735a33df2477e20d5e7cbf6e957339b525ec86d9a5803",
+      "dictionary_member": "2016/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 226891,
+      "seconds": 31.410367199976463,
+      "peak_bytes": 395644928,
+      "code_sha256": "ef431e8dfb049e29c4d65e7e52fa7d98629a713e7cd3b1954ff10308e5d66764",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    },
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2016/个股日回报率-2016_1.xlsx",
+      "sha256": "da7fb62db68a1ceb23fd51bcda1715cb5ee68f567087d610317687f3517008c8",
+      "dictionary_member": "2016/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 500000,
+      "seconds": 66.46683059999486,
+      "peak_bytes": 395644928,
+      "code_sha256": "1cdf2499b4471417a456ee2c260f3e3cbd1108226f8700e3c1f12e2399785a67",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    },
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2017/个股日回报率-2017_1.xlsx",
+      "sha256": "4c648b9bbd011724628f2b551fc3f86a6f09ba9d27ff5abd550f5d4a60a662fd",
+      "dictionary_member": "2017/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 500000,
+      "seconds": 62.55970199999865,
+      "peak_bytes": 400568320,
+      "code_sha256": "215540891dea279134ebae07c17c282eb574ce3dd3592b69c73a35a50bd4726b",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    },
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2017/个股日回报率-2017_2.xlsx",
+      "sha256": "d146d7ae97c75972b82df0e8eebd533f128f3b2ca01d815581421008a23de531",
+      "dictionary_member": "2017/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 321328,
+      "seconds": 34.32078540005023,
+      "peak_bytes": 400568320,
+      "code_sha256": "6ebb1dd82816072ba4f6e231831ccab6945be7080d8572ad67777ce0492091b7",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    },
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2018/个股日回报率-2018_2.xlsx",
+      "sha256": "812b0210289ac92b3f7de2b30502c81c7946e49665959ea445e4c54a39138284",
+      "dictionary_member": "2018/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 379170,
+      "seconds": 40.636534699995536,
+      "peak_bytes": 420134912,
+      "code_sha256": "6ebb1dd82816072ba4f6e231831ccab6945be7080d8572ad67777ce0492091b7",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    },
+    {
+      "source": "CNRDS",
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2018/个股日回报率-2018_1.xlsx",
+      "sha256": "0baf00f0a8eaf3f9eccbd471ea8803afbd9d66293a8fefed338421f7a3ffe062",
+      "dictionary_member": "2018/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "archive_bytes": 2065629767,
+      "selected_rows": 500000,
+      "seconds": 65.0784805000294,
+      "peak_bytes": 420134912,
+      "code_sha256": "6ebb1dd82816072ba4f6e231831ccab6945be7080d8572ad67777ce0492091b7",
+      "transforms": "native text preserved; explicit field alias only; no imputation"
+    }
+  ],
+  "bigquant_and_membership": [
+    {
+      "source": "membership",
+      "archive": "csi500_full_history.zip",
+      "member": "members_daily.csv",
+      "sha256": "e52a3f1bfcb9fb83c62b1176441bf20fd44dace977a2af73536d6c99188c8293"
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/schema.json",
+      "sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076"
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/schema.json",
+      "sha256": "4122efa267439d9697d5eff2c0ae1ff8ecf5b28292170d83550da580dec20ae2"
+    },
+    {
+      "source": "BigQuant",
+      "archive": "common.zip",
+      "member": "common/trading_days/schema.json",
+      "sha256": "096e74ccdc7a7acfadea62d1c635cbd5ab609592896c0ba108f8fc41fb35a008"
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2016-11-07_2016-11-30.parquet",
+      "sha256": "ec90696b3c03529545f79c7809d76acbc101b06e510d95209d49a41b17419017",
+      "receipt_sha256": "e037c550995adb8a89a9c6ee5894bc928d757a64466a66cfdf5c6013916d99b4",
+      "physical_rows": 53544,
+      "exported_at_utc": "2026-11-07T12:19:45+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2016-11-07_2016-11-30.parquet",
+      "sha256": "34e00228f18d395244f78f12a30b5322cc7206803c5478b5437161092547018c",
+      "receipt_sha256": "062b49428097cba6f2e8800ce1d032d048b0e6d5571542648d81eb8293ae5bed",
+      "physical_rows": 53544,
+      "exported_at_utc": "2026-11-07T12:21:32+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "common.zip",
+      "member": "common/trading_days/2016-11-07_2016-12-31.parquet",
+      "sha256": "b03c0e2f52c2e8dfca620db27b3e101fe98697eb8efc491c1bb6d12918ccff63",
+      "receipt_sha256": "b30d2ff7acf8011789fe65583edb0f935e431e3a490ac77554f3ab160ccd3f9d",
+      "physical_rows": 270,
+      "exported_at_utc": "2026-11-07T12:48:49+00:00",
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2016-12-01_2016-12-31.parquet",
+      "sha256": "c63ee616c438fc650e9f87e7ad674a7c6c1f0b015634227b4e9a358307ea6711",
+      "receipt_sha256": "8b7bb727de0cb7635578620b552f368844a6beff7dada9437a979feca55617d5",
+      "physical_rows": 66234,
+      "exported_at_utc": "2026-11-07T12:19:46+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2016-12-01_2016-12-31.parquet",
+      "sha256": "2b0c211a81bf85c804be44335ae8e29617248d2d978ac0bc59f135b8a8371d71",
+      "receipt_sha256": "6b4ed9089d8bf0fb0cb3208b320704f28d5046b99e88ae89f7930568e889cad2",
+      "physical_rows": 66234,
+      "exported_at_utc": "2026-11-07T12:21:33+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-01-01_2017-01-31.parquet",
+      "sha256": "e7dfecd20e3d722c3f00fa060e22a7651f738b74c1acb0393560ba77e97abae0",
+      "receipt_sha256": "b2cfd20c52e4462ba8363899bf35430b377b2ceb971505b64be026d78cee765e",
+      "physical_rows": 55090,
+      "exported_at_utc": "2026-11-07T12:19:46+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-01-01_2017-01-31.parquet",
+      "sha256": "66819647ff60fc41d619fa76574630b77f309cb33d8d740fb1259b169c7fab7f",
+      "receipt_sha256": "26e9816894135cc7d4c854c86f5910a6656ebaa5cd30e30736f26faaede03744",
+      "physical_rows": 55090,
+      "exported_at_utc": "2026-11-07T12:21:33+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "common.zip",
+      "member": "common/trading_days/2017-01-01_2017-12-31.parquet",
+      "sha256": "275c36f65e9e02113055dc9e5214b187a5458be95c2b27ae0fff82600fbce180",
+      "receipt_sha256": "045df0e0a2ba85a7e2eedf763eb9983bba0df7170ad273e7e21708448d78bafb",
+      "physical_rows": 1746,
+      "exported_at_utc": "2026-11-07T12:48:49+00:00",
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-02-01_2017-02-28.parquet",
+      "sha256": "059de5c031fe2b9a4205d334f66478620b8a2942e2e668a325b378920fb5a952",
+      "receipt_sha256": "03f632daa68dbec2b9457a4c955266847347c785ba67e14db2a9c5f269087e34",
+      "physical_rows": 55932,
+      "exported_at_utc": "2026-11-07T12:19:47+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-02-01_2017-02-28.parquet",
+      "sha256": "378c923235840a72a7ae839ca09597ae5d102e56ba9819623f5a072ee5e99b8c",
+      "receipt_sha256": "90425034b287d55ffec746b0930b2e8f2683102385b5c54351abbbae50dc02e4",
+      "physical_rows": 55932,
+      "exported_at_utc": "2026-11-07T12:21:34+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-03-01_2017-03-31.parquet",
+      "sha256": "0cec9d7555e15e27964351a4d6c973cc7c75c8fd56186347b171664f16398622",
+      "receipt_sha256": "be32ff349f5bfb0c54de0d98e63f6d42db67e7ddeaca7af2795dab3d2c92b869",
+      "physical_rows": 72264,
+      "exported_at_utc": "2026-11-07T12:19:47+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-03-01_2017-03-31.parquet",
+      "sha256": "a85c6e5af16ec82eef46dcd6f0fcb8e42186cd4ff6ca0942973dc2970898755a",
+      "receipt_sha256": "36a8508c6ea9f0a9d56151ea35439821f7d2b40492f880c2a9f964a6d32bb539",
+      "physical_rows": 72264,
+      "exported_at_utc": "2026-11-07T12:21:34+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-04-01_2017-04-30.parquet",
+      "sha256": "c5f1310050d4aeb84d7b0d856a8f23642cfd98b8038d9d1ba5382deecfaa2eaa",
+      "receipt_sha256": "e4b52f20b9da7bca00d4d1eb2449700ac2368660754a07a83e46790f1fd03ffc",
+      "physical_rows": 57377,
+      "exported_at_utc": "2026-11-07T12:19:48+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-04-01_2017-04-30.parquet",
+      "sha256": "007a18a85b8ce684859d08925d1da700907f9ffe947aa089d39b85c351b1d57a",
+      "receipt_sha256": "d3fbe580cbe21b61a1ed0c2103b4e8ffeb786acf91306e99471f1c2abf9b5724",
+      "physical_rows": 57377,
+      "exported_at_utc": "2026-11-07T12:21:35+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-05-01_2017-05-31.parquet",
+      "sha256": "445f8740739ad08e28fdc4df782474318478bf7329c76bc7a00bab23c8f92cba",
+      "receipt_sha256": "9cc0519d53a9a297cf18cded677242343108cf3a6bd6fef55aafc2a4a6bb1bdc",
+      "physical_rows": 64527,
+      "exported_at_utc": "2026-11-07T12:19:48+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-05-01_2017-05-31.parquet",
+      "sha256": "bbc32b335ebcd953f6076f99588928323145504300d02ee693e4ab4663d8d40b",
+      "receipt_sha256": "da742c7849f71d37465794b08e661eab347f12c5bc767c9dce36166da19ba1bf",
+      "physical_rows": 64527,
+      "exported_at_utc": "2026-11-07T12:21:35+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-06-01_2017-06-30.parquet",
+      "sha256": "059f2da3bf34ddf2ca10ff672628b87ef9c5d4cfc50fe5e126c00f7ffe78f787",
+      "receipt_sha256": "79d93600031f220da651caff6725b1acd234b806863e74e998d5a1f58a9d2e16",
+      "physical_rows": 71773,
+      "exported_at_utc": "2026-11-07T12:19:49+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-06-01_2017-06-30.parquet",
+      "sha256": "8e352459f6eb2e1e24a83f4c02452bc7574bd3c955f7ab0ded352480263a4e66",
+      "receipt_sha256": "024c0812e6147b3cf110aca6a05f40d923011d4b2a8281af93135b74c07d4f2d",
+      "physical_rows": 71773,
+      "exported_at_utc": "2026-11-07T12:21:35+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-07-01_2017-07-31.parquet",
+      "sha256": "d8371479450dbc0cbcd0b4800fbdbe7942cdf3386f78f7c63855506ee257d974",
+      "receipt_sha256": "8d9e41bcb230bd3f9477630e5c8f621ecb107918232d08eec4378c71d6bdaa0c",
+      "physical_rows": 69156,
+      "exported_at_utc": "2026-11-07T12:19:49+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-07-01_2017-07-31.parquet",
+      "sha256": "1751aff17d3698f694c43d698249492a761d90386cb936a348311aea8f37969b",
+      "receipt_sha256": "0cfc2a351cbab994fe1cdeea35c4f70b483e4c24ecae026c80cd23dc3bfc7354",
+      "physical_rows": 69156,
+      "exported_at_utc": "2026-11-07T12:21:35+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-08-01_2017-08-31.parquet",
+      "sha256": "bc0be86be97553f2ea64a0c63d3a93e7ea9adf99555a62ea5f0b2fcb0170c97d",
+      "receipt_sha256": "9f2648fb17e571c520ef785122a31b747537934d7d14740532119e7c109dfd19",
+      "physical_rows": 76598,
+      "exported_at_utc": "2026-11-07T12:19:50+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-08-01_2017-08-31.parquet",
+      "sha256": "f7dea1bcd2743a99e1128f331fbcb1a0f0657a3d6e83892e3acf656b23e72ef6",
+      "receipt_sha256": "3c8a7cb00bf43174b01834a56046675d3d37cb771eb739f3b5646b7ecf7ccb8e",
+      "physical_rows": 76598,
+      "exported_at_utc": "2026-11-07T12:21:36+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-09-01_2017-09-30.parquet",
+      "sha256": "0df0a022da5a6ab3ff6f7c2bb29e7e1f4f11dc9960aa4741a37136f07d805e80",
+      "receipt_sha256": "636658330a1ac2016d033a6a2a0675d25d762905149a0a4803be716b68a083ea",
+      "physical_rows": 70613,
+      "exported_at_utc": "2026-11-07T12:19:50+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-09-01_2017-09-30.parquet",
+      "sha256": "c461fc675263bd0aabd14c156f40b26d596ddf15c2df61be5ed9be72bb3e9260",
+      "receipt_sha256": "63c29dd02e90c8fea522209e459d4fd1ee0216c29ca95b1b7b6114873d2abcc9",
+      "physical_rows": 70613,
+      "exported_at_utc": "2026-11-07T12:21:36+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-10-01_2017-10-31.parquet",
+      "sha256": "0cc5c57cfc9c39ecbd1f7b1f0576efd68c4cf6f96bd6b7a2850e3d43f45c1417",
+      "receipt_sha256": "60121a92b384927406aededde3249a01c3f92e59b198c371984545deaae7e5ef",
+      "physical_rows": 57705,
+      "exported_at_utc": "2026-11-07T12:19:51+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-10-01_2017-10-31.parquet",
+      "sha256": "6bf69ceaf93accfbbf6a44cfe56cfac6d45f1a77b8954bf2c362d7261ba3266d",
+      "receipt_sha256": "c40d22751cbea5035bed43f9dcb433b866d77d55193ae18af68f47a5251edcaf",
+      "physical_rows": 57705,
+      "exported_at_utc": "2026-11-07T12:21:36+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-11-01_2017-11-30.parquet",
+      "sha256": "a9b1ca7063fe95b67f61a7bccb9a2520723979df2c0e63347f18b6130f921dbb",
+      "receipt_sha256": "e97546bd7ebc8d122a51f63dad361ee8c5a4908c9bc9c80d5716e959f3805d8d",
+      "physical_rows": 75452,
+      "exported_at_utc": "2026-11-07T12:19:51+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-11-01_2017-11-30.parquet",
+      "sha256": "7dbc887eab4dc766a8176a2b54817ab9d1fa2a1d1fc1e08fe02602df4ffff1e0",
+      "receipt_sha256": "37782d59dbf925cd99ecd358be61961e026d7561122b8bc9f1cbe69c1129b677",
+      "physical_rows": 75452,
+      "exported_at_utc": "2026-11-07T12:21:36+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-12-01_2017-12-31.parquet",
+      "sha256": "f686e486de1dbcf8346f017a49901f374a2951a976477fa499984954d6c70a56",
+      "receipt_sha256": "1269bbca4f8d9ae28b76cd9afd940210bfccc87734cf843fea429f8b42347df8",
+      "physical_rows": 72577,
+      "exported_at_utc": "2026-11-07T12:19:52+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2017-12-01_2017-12-31.parquet",
+      "sha256": "8115d9f914ea767f17b9508c385e4fd403242a5c6e763c4d676a08770c8d083b",
+      "receipt_sha256": "f72bf79a73ceb588d044df0a6dee25849ab9be59e6bfce074c8322bdc20d9797",
+      "physical_rows": 72577,
+      "exported_at_utc": "2026-11-07T12:21:37+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-01-01_2018-01-31.parquet",
+      "sha256": "533a5c7dd788326b09f8f2cd474d9db72c3ed61398a745d397513919202f5796",
+      "receipt_sha256": "c02265488b85884634b7f0c0b6203bce615fc2a30213cf348f845a0398b86432",
+      "physical_rows": 76456,
+      "exported_at_utc": "2026-11-07T12:19:52+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-01-01_2018-01-31.parquet",
+      "sha256": "111b1a7405a9a7134d6a709be304409115a775896e09469612db1f10a767ca0f",
+      "receipt_sha256": "32bd985b82578bf180b496791f931dd5539a72457a4e4b0d900fe76366d77aff",
+      "physical_rows": 76456,
+      "exported_at_utc": "2026-11-07T12:21:37+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "common.zip",
+      "member": "common/trading_days/2018-01-01_2018-12-31.parquet",
+      "sha256": "59560de9d98f19d3c9d6c7e697eb5e075e90e71162d68ac96c17318976763a5f",
+      "receipt_sha256": "6f066ccbf3793b4feb876b9a393ab5889e4695ca8bd742846d6280c889d6487d",
+      "physical_rows": 1742,
+      "exported_at_utc": "2026-11-07T12:48:49+00:00",
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-02-01_2018-02-28.parquet",
+      "sha256": "73177cdebd68cd6d0be6b782a584194eacf37115736da6ed2dd66fb05badeb9d",
+      "receipt_sha256": "1c0c24cc4b547a24b71e0cbed90d4637da8d990086b0c08f2fa3d363ea19891d",
+      "physical_rows": 52348,
+      "exported_at_utc": "2026-11-07T12:19:53+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-02-01_2018-02-28.parquet",
+      "sha256": "c6a62d9898bf30b7c6c1a8ccd0a2362f047c4213c274815decbbb410ac0912e7",
+      "receipt_sha256": "eff53977440fc1eddf2348e6dd7433edb7980e88d7a5cffcb2e1ee87972ad3e4",
+      "physical_rows": 52348,
+      "exported_at_utc": "2026-11-07T12:21:37+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-03-01_2018-03-31.parquet",
+      "sha256": "5efca1a3d1d930e67314acc573e44047685c093a88b9613276735a388dfccc8c",
+      "receipt_sha256": "91e6e061abd6a300c54729786a1c369b5d86f9d75f7d32a2d4c839112b4abd98",
+      "physical_rows": 76992,
+      "exported_at_utc": "2026-11-07T12:19:53+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-03-01_2018-03-31.parquet",
+      "sha256": "f24e0a3733382b509956749a1d357670a68d180f2f82bf843e0fa1cdcd12b1e5",
+      "receipt_sha256": "08f3bfae06a2132fbe36c42f1cab8b169c4ace061d162baa6c2cea498741ed7c",
+      "physical_rows": 76992,
+      "exported_at_utc": "2026-11-07T12:21:37+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-04-01_2018-04-30.parquet",
+      "sha256": "ecfda57bb43d956febe0941fa4478ffbc2152dd77d72002e0391c0c42449cdf9",
+      "receipt_sha256": "48022458e9681028afbf13e035c2fcff007fe6b2b525644ed9416c2c7110e1f5",
+      "physical_rows": 63142,
+      "exported_at_utc": "2026-11-07T12:19:54+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-04-01_2018-04-30.parquet",
+      "sha256": "0e12fa481dd4907a076702f90478f7bae0f3a8d96d4ad12587714ef06e44d72b",
+      "receipt_sha256": "6c8a707e893bc818bc85b0e85282a492997c2bd6cf15861266a96b9520903b38",
+      "physical_rows": 63142,
+      "exported_at_utc": "2026-11-07T12:21:37+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-05-01_2018-05-31.parquet",
+      "sha256": "b16b763e2b9c163af63c00aafa4481d2625a05f06b47b12ebc85d8dc7bef1fd4",
+      "receipt_sha256": "4570e8162b8387eb090a13bc9b00d1acb396c22f801749745c9e194fe42b1c73",
+      "physical_rows": 77378,
+      "exported_at_utc": "2026-11-07T12:19:54+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-05-01_2018-05-31.parquet",
+      "sha256": "d08a27a7c92a4ba87f2fafe8c13d0e29b866a29fe4a2fcf6ec0c066eb64dfd99",
+      "receipt_sha256": "703f60418bdbf011d375fbe175a3047181b7ef201c0de180f6565101519fb8a8",
+      "physical_rows": 77378,
+      "exported_at_utc": "2026-11-07T12:21:38+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-06-01_2018-06-30.parquet",
+      "sha256": "862e8afe03239516098b40a9d819e9288d1112e99bb2da11dbab6af692ab517b",
+      "receipt_sha256": "e39cac0f9e67cea72bb3aaa352389941a40d3715ed7c7313dcb0ef240859c985",
+      "physical_rows": 70510,
+      "exported_at_utc": "2026-11-07T12:19:55+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-06-01_2018-06-30.parquet",
+      "sha256": "e897b4fb664ebb9d553f88fdf5f1934c4d2735a1274eb0e6750afe36b4a05030",
+      "receipt_sha256": "ebcd6acccfd2fdef8c2d4d6db2aef52653d00affe5ef56e126785315ae450621",
+      "physical_rows": 70510,
+      "exported_at_utc": "2026-11-07T12:21:38+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-07-01_2018-07-31.parquet",
+      "sha256": "575098219e278e457e5d125bc7e268df47de631d189baa098da5ba8b2c31f0bb",
+      "receipt_sha256": "0e6662d24a19efc9c967cd9a03a2faf9512050835abe73acb7997a083bbbb8aa",
+      "physical_rows": 77718,
+      "exported_at_utc": "2026-11-07T12:19:56+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-07-01_2018-07-31.parquet",
+      "sha256": "4910ff6dd9dc66e547debb856d7b5fd12821ae869c81b0a909cc1a02e0bdb54c",
+      "receipt_sha256": "3d13ffa4aa7002c35cb2a167bce05cdb53a5e11b87c1c60ceb48722c55ef9e90",
+      "physical_rows": 77718,
+      "exported_at_utc": "2026-11-07T12:21:38+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-08-01_2018-08-31.parquet",
+      "sha256": "6d0e3e21d4442f68874a975fee01dd2d509a712da92f3cbd101da3bf9b47768b",
+      "receipt_sha256": "39eb8186beffd0d26eccd149a4f490671d9a6b87ebc863d25cb3ee43584b65e8",
+      "physical_rows": 81332,
+      "exported_at_utc": "2026-11-07T12:19:56+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-08-01_2018-08-31.parquet",
+      "sha256": "2b76af472b0225aa6c9470d9eefa5cbe472870d76944875aca12c8f5b0247ed9",
+      "receipt_sha256": "4208fe4c4e4ebc9e1a337590efeb6ef3f706acf4fb2d7a7d22e925a1a7b9e8eb",
+      "physical_rows": 81332,
+      "exported_at_utc": "2026-11-07T12:21:38+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-09-01_2018-09-30.parquet",
+      "sha256": "0f111f53def6ca5dfc79a5d95e336659a7fd865391f4dbbd9aa8ddf7686928c9",
+      "receipt_sha256": "6b8bca5be577acd04660fca86b290110ebe2397634d135ebf6b9c3958971eabc",
+      "physical_rows": 67349,
+      "exported_at_utc": "2026-11-07T12:19:57+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-09-01_2018-09-30.parquet",
+      "sha256": "b805382c2c879928283c85ac2223f639fdd051b321664313394e368ff87e164e",
+      "receipt_sha256": "5145a23b14e1e218560345203a733589ccfe2c478e26fca5b947324718bef893",
+      "physical_rows": 67349,
+      "exported_at_utc": "2026-11-07T12:21:39+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-10-01_2018-10-31.parquet",
+      "sha256": "9daa250a4193f37f22c7d61e3424f3dc2e724be6b1f82dbdbba567ebd18ea170",
+      "receipt_sha256": "d0c7ab291a1768f5828155db4d11c90a4929dcc2fe58bdc08dbe61c85b1293b8",
+      "physical_rows": 63963,
+      "exported_at_utc": "2026-11-07T12:19:57+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-10-01_2018-10-31.parquet",
+      "sha256": "0bacd4ab46abcaac08eb5b82affdb0126bad70c8e1ddc45a248675ff5d0f57b0",
+      "receipt_sha256": "c0aef7dfe059a3e768b5b1577181ce695ebce54e83d618d63bf3307020150775",
+      "physical_rows": 63963,
+      "exported_at_utc": "2026-11-07T12:21:39+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-11-01_2018-11-30.parquet",
+      "sha256": "df5d1de635f14b9b7b9ecdab1d4fb5828de0f14750fbbcf47a92bd3e26c9addb",
+      "receipt_sha256": "71aa9381b4301e91c5be4da6669cf126a6fdfa23738c966b238ddeace6ffc780",
+      "physical_rows": 78297,
+      "exported_at_utc": "2026-11-07T12:19:58+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-11-01_2018-11-30.parquet",
+      "sha256": "922dd07825f5a31444b2735589cabf7e14babde8b44f1af320dc8ef719c86723",
+      "receipt_sha256": "2a8c9a3ad3592c55a65f5bb24318bc1401b77ba60e68f179e08d06fa0b840a4f",
+      "physical_rows": 78297,
+      "exported_at_utc": "2026-11-07T12:21:39+00:00",
+      "selected_columns": null
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-12-01_2018-12-31.parquet",
+      "sha256": "f79ae4993e5581b65bca3ae11b4fb2e9b3ba8dbcf6ba69d9223a39996b947b4c",
+      "receipt_sha256": "577e194cc1859b38b6d3b6d10e25cb488af1760e04c3df786e11c7be9fcfaf50",
+      "physical_rows": 71315,
+      "exported_at_utc": "2026-11-07T12:19:58+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "amount",
+        "pre_close",
+        "turn"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2018-12-01_2018-12-31.parquet",
+      "sha256": "4a79a425603f0d33c30f6531a44b3bb64a8a0d5f5ebd69f6613b8e9a785ddc64",
+      "receipt_sha256": "e544c28bd813e8f4cdad673dc05656651ea9eb74f6148083501c3c0e8581610c",
+      "physical_rows": 71315,
+      "exported_at_utc": "2026-11-07T12:21:39+00:00",
+      "selected_columns": null
+    }
+  ],
+  "prepared": {
+    "sha256": "795d567e6ae3af6d96c7ab454f2dae4ca6f07f3cb481a934327a1b3c10d90611",
+    "manifest_sha256": "800d8413ee7d2b0adc90adde6b38f5b290f12cd08189515afecf49268bde876a",
+    "schema": "P5_R03_CSMAR_PRIVATE_V1"
+  },
+  "processing": {
+    "code_sha256": "c665a84d49b4d8dd4dfafcb5802729cbb682127692421809d8e17c479bbb4db3",
+    "numeric": "native Decimal exact; BigQuant binary64 observation only; no tolerance",
+    "identity": "CNRDS bare codes mapped only through unique exact CSMAR/BQ symbols in same month; not stable historical issuer identity",
+    "calendar": "BigQuant independent trading_days CN table, not official exchange certification"
+  }
+}

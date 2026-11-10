@@ -1,0 +1,383 @@
+{
+  "task_id": "B_TRI_SOURCE_MARKET",
+  "baseline_sha": "2ce3e5ee6e704819a2c155ca833b30e5bb7c296c",
+  "sources": [
+    "CSMAR",
+    "CNRDS",
+    "BigQuant"
+  ],
+  "scope": {
+    "stage": "pilot",
+    "start": "2017-01-01",
+    "end": "2018-12-31",
+    "last_completed_month": "2018-12"
+  },
+  "metrics": {
+    "pilot_601857": {
+      "union_or_expected_security_days": 487,
+      "three_source_keys": 487,
+      "CSMAR_keys": 487,
+      "CSMAR_exclusive_keys": 0,
+      "CNRDS_keys": 487,
+      "CNRDS_exclusive_keys": 0,
+      "BigQuant_keys": 487,
+      "BigQuant_exclusive_keys": 0,
+      "CSMAR|CNRDS_keys": 487,
+      "CSMAR|CNRDS_MATCHED": 2922,
+      "CSMAR|CNRDS_MISMATCH": 0,
+      "CSMAR|CNRDS_SOURCE_MISSING": 0,
+      "CSMAR|CNRDS_SEMANTICALLY_INCOMPARABLE": 0,
+      "CSMAR|CNRDS_INSUFFICIENT_EVIDENCE": 1461,
+      "CSMAR|BigQuant_keys": 487,
+      "CSMAR|BigQuant_MATCHED": 0,
+      "CSMAR|BigQuant_MISMATCH": 0,
+      "CSMAR|BigQuant_SOURCE_MISSING": 0,
+      "CSMAR|BigQuant_SEMANTICALLY_INCOMPARABLE": 2922,
+      "CSMAR|BigQuant_INSUFFICIENT_EVIDENCE": 1461,
+      "CNRDS|BigQuant_keys": 487,
+      "CNRDS|BigQuant_MATCHED": 0,
+      "CNRDS|BigQuant_MISMATCH": 0,
+      "CNRDS|BigQuant_SOURCE_MISSING": 0,
+      "CNRDS|BigQuant_SEMANTICALLY_INCOMPARABLE": 3896,
+      "CNRDS|BigQuant_INSUFFICIENT_EVIDENCE": 487,
+      "BQ_suspended_keys": 0,
+      "BQ_suspended_CS_missing_OHLC": 0,
+      "BQ_nonsuspended_CS_missing_OHLC": 0,
+      "BQ_status_keys": 487,
+      "CS_observed_sessions": 487,
+      "BQ_calendar_sessions": 487,
+      "CS_observed_not_BQ_calendar": 0
+    },
+    "fixed24": {
+      "union_or_expected_security_days": 487,
+      "three_source_keys": 487,
+      "CSMAR_keys": 487,
+      "CSMAR_exclusive_keys": 0,
+      "CNRDS_keys": 487,
+      "CNRDS_exclusive_keys": 0,
+      "BigQuant_keys": 487,
+      "BigQuant_exclusive_keys": 0,
+      "CSMAR|CNRDS_keys": 487,
+      "CSMAR|CNRDS_MATCHED": 2922,
+      "CSMAR|CNRDS_MISMATCH": 0,
+      "CSMAR|CNRDS_SOURCE_MISSING": 0,
+      "CSMAR|CNRDS_SEMANTICALLY_INCOMPARABLE": 0,
+      "CSMAR|CNRDS_INSUFFICIENT_EVIDENCE": 1461,
+      "CSMAR|BigQuant_keys": 487,
+      "CSMAR|BigQuant_MATCHED": 0,
+      "CSMAR|BigQuant_MISMATCH": 0,
+      "CSMAR|BigQuant_SOURCE_MISSING": 0,
+      "CSMAR|BigQuant_SEMANTICALLY_INCOMPARABLE": 2922,
+      "CSMAR|BigQuant_INSUFFICIENT_EVIDENCE": 1461,
+      "CNRDS|BigQuant_keys": 487,
+      "CNRDS|BigQuant_MATCHED": 0,
+      "CNRDS|BigQuant_MISMATCH": 0,
+      "CNRDS|BigQuant_SOURCE_MISSING": 0,
+      "CNRDS|BigQuant_SEMANTICALLY_INCOMPARABLE": 3896,
+      "CNRDS|BigQuant_INSUFFICIENT_EVIDENCE": 487,
+      "BQ_suspended_keys": 0,
+      "BQ_suspended_CS_missing_OHLC": 0,
+      "BQ_nonsuspended_CS_missing_OHLC": 0,
+      "BQ_status_keys": 487,
+      "CS_observed_sessions": 487,
+      "BQ_calendar_sessions": 487,
+      "CS_observed_not_BQ_calendar": 0
+    },
+    "csi500": {
+      "extension_invalid_OHLC": 0
+    },
+    "remaining": {
+      "CSMAR_missing_OHLC_security_days": 0,
+      "CSMAR_invalid_volume_amount": 0,
+      "CSMAR_invalid_OHLC": 0,
+      "CSMAR_no_volume": 0,
+      "CNRDS_missing_OHLC_security_days": 0,
+      "CNRDS_invalid_volume_amount": 0,
+      "CNRDS_invalid_OHLC": 0,
+      "CNRDS_no_volume": 0,
+      "BigQuant_missing_OHLC_security_days": 0,
+      "BigQuant_invalid_volume_amount": 0,
+      "BigQuant_invalid_OHLC": 0,
+      "BigQuant_no_volume": 0,
+      "union_or_expected_security_days": 487,
+      "three_source_keys": 487,
+      "CSMAR_keys": 487,
+      "CSMAR_exclusive_keys": 0,
+      "CNRDS_keys": 487,
+      "CNRDS_exclusive_keys": 0,
+      "BigQuant_keys": 487,
+      "BigQuant_exclusive_keys": 0,
+      "CSMAR|CNRDS_keys": 487,
+      "CSMAR|CNRDS_MATCHED": 2922,
+      "CSMAR|CNRDS_MISMATCH": 0,
+      "CSMAR|CNRDS_SOURCE_MISSING": 0,
+      "CSMAR|CNRDS_SEMANTICALLY_INCOMPARABLE": 0,
+      "CSMAR|CNRDS_INSUFFICIENT_EVIDENCE": 1461,
+      "CSMAR|BigQuant_keys": 487,
+      "CSMAR|BigQuant_MATCHED": 0,
+      "CSMAR|BigQuant_MISMATCH": 0,
+      "CSMAR|BigQuant_SOURCE_MISSING": 0,
+      "CSMAR|BigQuant_SEMANTICALLY_INCOMPARABLE": 2922,
+      "CSMAR|BigQuant_INSUFFICIENT_EVIDENCE": 1461,
+      "CNRDS|BigQuant_keys": 487,
+      "CNRDS|BigQuant_MATCHED": 0,
+      "CNRDS|BigQuant_MISMATCH": 0,
+      "CNRDS|BigQuant_SOURCE_MISSING": 0,
+      "CNRDS|BigQuant_SEMANTICALLY_INCOMPARABLE": 3896,
+      "CNRDS|BigQuant_INSUFFICIENT_EVIDENCE": 487
+    }
+  },
+  "findings": {
+    "interpretation": [
+      "Only CSMAR/CNRDS raw OHLC, shares and CNY amount are eligible for exact-decimal certification.",
+      "Three-way agreement is descriptive binary64 equality, not independent correctness."
+    ],
+    "anomaly_groups": [
+      {
+        "scope": "fixed24",
+        "month": "2017-02",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "fixed24",
+        "month": "2017-02",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "fixed24",
+        "month": "2017-05",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "fixed24",
+        "month": "2017-05",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "fixed24",
+        "month": "2018-10",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "fixed24",
+        "month": "2018-10",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "fixed24",
+        "month": "2018-12",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "fixed24",
+        "month": "2018-12",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2017-02",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2017-02",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2017-05",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2017-05",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2018-10",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2018-10",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2018-12",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "pilot_601857",
+        "month": "2018-12",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2017-02",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2017-02",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2017-05",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2017-05",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2018-10",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2018-10",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2018-12",
+        "field": "amount",
+        "sources": "CNRDS|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      },
+      {
+        "scope": "remaining",
+        "month": "2018-12",
+        "field": "amount",
+        "sources": "CSMAR|BigQuant",
+        "classification": "SEMANTICALLY_INCOMPARABLE",
+        "issue": "BINARY64_DIFFERENCE_NO_UNIT_CERTIFICATION",
+        "count": 1
+      }
+    ]
+  },
+  "gaps": [
+    "BigQuant economic units/precision and enum contract unverified",
+    "CNRDS pre_close versus exchange ex-rights reference is not certified equivalent",
+    "Historical stable security identity, IPO/delist/code-change intervals and PIT unverified",
+    "Adjusted prices intentionally excluded from numeric certification; HFQ unverified",
+    "Exchange official calendars unavailable; CNRDS/CSMAR observed dates not exchange calendars"
+  ],
+  "artifacts": [
+    "REPORT.md",
+    "coverage.csv",
+    "comparisons.csv",
+    "anomalies.csv",
+    "status-calendar.csv",
+    "input-manifest.json",
+    "summary.json"
+  ],
+  "status": "PARTIAL_SEMANTIC_AND_HISTORICAL_EVIDENCE_GAPS",
+  "provenance": {
+    "limits": [
+      "NO LIVE MONEY",
+      "PIT_UNVERIFIED",
+      "HFQ_UNVERIFIED",
+      "FORMAL_ADMISSION_BLOCKED"
+    ],
+    "seconds": 12.164750500000082,
+    "peak_bytes": 435417088,
+    "private_checkpoints": "native lexemes, complete native records, sheet/row and member SHA retained locally; not published",
+    "pr79": "OPEN, unmerged at initial inspection; no runtime dependency"
+  }
+}
