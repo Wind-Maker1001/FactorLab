@@ -1,0 +1,86 @@
+[
+  {
+    "model_id": "B_factor_score",
+    "fold": 0,
+    "rows": 20335,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_factor_score",
+    "fold": 1,
+    "rows": 15322,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_factor_score",
+    "fold": 2,
+    "rows": 13341,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_ridge",
+    "fold": 0,
+    "rows": 20335,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_ridge",
+    "fold": 1,
+    "rows": 15322,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_ridge",
+    "fold": 2,
+    "rows": 13341,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_lightgbm",
+    "fold": 0,
+    "rows": 20335,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_lightgbm",
+    "fold": 1,
+    "rows": 15322,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_lightgbm",
+    "fold": 2,
+    "rows": 13341,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_xgboost",
+    "fold": 0,
+    "rows": 20335,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_xgboost",
+    "fold": 1,
+    "rows": 15322,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  },
+  {
+    "model_id": "B_xgboost",
+    "fold": 2,
+    "rows": 13341,
+    "maximum_absolute_difference": 0.0,
+    "matched": true
+  }
+]

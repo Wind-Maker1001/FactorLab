@@ -1,0 +1,48 @@
+[
+  {
+    "model_id": "B_factor_score",
+    "fold": 0,
+    "scope": "OBSERVED_PREFIX_NOT_FULL_TEST",
+    "start": "2023-03-13",
+    "end": "2023-04-25",
+    "cumulative_net_price_return": -0.07332205429999983,
+    "same_fill_gross_price_return": -0.06688499999999983,
+    "average_exposure": 0.995926187669123,
+    "average_holdings": 10.0,
+    "turnover": 3.205240227748747,
+    "trades": 74,
+    "rejection_records": 0,
+    "rejection_reasons": {},
+    "minimum_commission_increment": 93.36610000000006,
+    "target_positive_mean_absolute_deviation": 0.0004212033028805261,
+    "fees": {
+      "commission": 1670.9623,
+      "stamp_duty": 2136.7650000000003,
+      "slippage": 2629.3269999999998,
+      "transaction_cost": 6437.0543
+    }
+  },
+  {
+    "model_id": "B_ridge",
+    "fold": 0,
+    "scope": "OBSERVED_PREFIX_NOT_FULL_TEST",
+    "start": "2023-03-13",
+    "end": "2023-04-25",
+    "cumulative_net_price_return": -0.06245427889999999,
+    "same_fill_gross_price_return": -0.05444099999999999,
+    "average_exposure": 0.9952234293273111,
+    "average_holdings": 10.0,
+    "turnover": 3.806272840435887,
+    "trades": 84,
+    "rejection_records": 0,
+    "rejection_reasons": {},
+    "minimum_commission_increment": 83.12670000000007,
+    "target_positive_mean_absolute_deviation": 0.0005038887336791986,
+    "fees": {
+      "commission": 2026.7859,
+      "stamp_duty": 2747.0609999999997,
+      "slippage": 3239.4320000000002,
+      "transaction_cost": 8013.278900000002
+    }
+  }
+]

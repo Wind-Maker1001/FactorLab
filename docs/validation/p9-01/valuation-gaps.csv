@@ -1,0 +1,9 @@
+date,symbol,model_id,fold
+2023-04-26,002408.SZ,B_factor_score,0
+2023-04-27,002408.SZ,B_factor_score,0
+2023-04-28,002408.SZ,B_factor_score,0
+2023-05-04,002408.SZ,B_factor_score,0
+2023-04-26,002408.SZ,B_ridge,0
+2023-04-27,002408.SZ,B_ridge,0
+2023-04-28,002408.SZ,B_ridge,0
+2023-05-04,002408.SZ,B_ridge,0
