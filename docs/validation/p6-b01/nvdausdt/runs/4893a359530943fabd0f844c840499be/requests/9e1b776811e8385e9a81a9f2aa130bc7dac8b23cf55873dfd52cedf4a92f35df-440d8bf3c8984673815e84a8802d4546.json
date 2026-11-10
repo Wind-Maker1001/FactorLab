@@ -1,0 +1,1 @@
+{"acquired_at":"2026-11-10T09:24:00.361707+00:00","endpoint":"exchangeInfo","headers":{"Retry-After":null},"params":{},"raw_path":"raw/bb6cc37b014e203eefccfdedf8a1258ebe3de52ac878d46c26aa40a58c642d10.bin","sha256":"bb6cc37b014e203eefccfdedf8a1258ebe3de52ac878d46c26aa40a58c642d10","status":200,"url":"https://fapi.binance.com/fapi/v1/exchangeInfo"}
