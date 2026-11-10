@@ -234,7 +234,6 @@ def test_batches_preserve_nullable_integer_epochs(tmp_path):
 
 
 def test_reconnect_duplicate_and_gap_recording(tmp_path):
-    pytest.importorskip('websockets', reason='requires binance-equity optional dependency')
     sink = Sink(tmp_path / 'run')
     calls = []
     class FakeSocket:

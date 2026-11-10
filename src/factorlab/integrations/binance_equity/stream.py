@@ -81,7 +81,14 @@ async def collect(sink, ticker='NVDA', *, kinds=('price', 'quote', 'kline', 'cal
         raise ValueError('network access requires explicit opt-in')
     if seconds <= 0 or reconnects < 0:
         raise ValueError('invalid collection duration or reconnect limit')
-    from websockets.exceptions import ConnectionClosed, InvalidHandshake
+    connection_errors = (OSError, TimeoutError)
+    try:
+        from websockets.exceptions import ConnectionClosed, InvalidHandshake
+    except ModuleNotFoundError as error:
+        if error.name != 'websockets' or connector is connect:
+            raise
+    else:
+        connection_errors += (ConnectionClosed, InvalidHandshake)
 
     streams = subscriptions(ticker, kinds, interval)
     processor = Processor(sink, ticker, kinds)
@@ -115,7 +122,7 @@ async def collect(sink, ticker='NVDA', *, kinds=('price', 'quote', 'kline', 'cal
                     receipt = sink.raw(body, transport='WEBSOCKET', endpoint='/equity/stream',
                                        acquired_at=acquired, streams=streams)
                     processor.feed(body, acquired, receipt)
-        except (OSError, TimeoutError, ConnectionClosed, InvalidHandshake) as error:
+        except connection_errors as error:
             gap_start = last_message_at
             sink.add('gaps', [dict(start=gap_start, end=utc_now(), reason='CONNECTION_FAILURE',
                                    coverage='UNVERIFIED; NO_BACKFILL', error_type=type(error).__name__)])
