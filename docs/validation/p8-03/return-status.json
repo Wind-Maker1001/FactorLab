@@ -1,0 +1,276 @@
+{
+  "definition": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS; NOT_TOTAL_RETURN",
+  "accounting_source": "PINNED_P6_E01_SAVED_RECEIPT",
+  "coverage_status": "UNKNOWN",
+  "known_at_evidence": "UNKNOWN",
+  "revision_evidence": "UNKNOWN",
+  "account_tax_contract": "UNKNOWN",
+  "account_receipt_contract": "UNKNOWN",
+  "blockers": [
+    "ALL_CATEGORY_RANGE_COVERAGE_UNKNOWN",
+    "REVISION_CANCELLATION_HISTORY_UNKNOWN",
+    "ACCOUNT_TYPE_AND_HOLDING_PERIOD_TAX_CONTRACT_UNKNOWN",
+    "ACCOUNT_RECEIPT_UNVERIFIED",
+    "HISTORICAL_PUBLICATION_TIME_UNVERIFIED"
+  ],
+  "strategies": {
+    "dual_ma": {
+      "raw_price_return_net_trading_costs": 0.024876036000000434,
+      "same_execution_path_explicit_costs": 1066.3964,
+      "same_execution_path_price_pnl_before_explicit_costs": 3554.000000000046,
+      "cost_return_effect": -0.010663964000000001,
+      "bounded_gross_dividend_entitlement": "1163.28000",
+      "record_close_holdings": [
+        {
+          "event_id": "601857.SH:2018-023",
+          "record_date": "2018-06-20",
+          "ex_date": "2018-06-21",
+          "scheduled_pay_date": "2018-06-21",
+          "eligible_shares": 0,
+          "cash_per_share": "0.06074",
+          "gross_entitlement": "0.00000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        },
+        {
+          "event_id": "601857.SH:2018-029",
+          "record_date": "2018-09-20",
+          "ex_date": "2018-09-21",
+          "scheduled_pay_date": "2018-09-21",
+          "eligible_shares": 13100,
+          "cash_per_share": "0.08880",
+          "gross_entitlement": "1163.28000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        }
+      ],
+      "actual_received_cash": null,
+      "tax_amount": null,
+      "annual_pretax_total_return": null,
+      "annual_aftertax_total_return": null
+    },
+    "bollinger": {
+      "raw_price_return_net_trading_costs": -0.05630928000000013,
+      "same_execution_path_explicit_costs": 1126.928,
+      "same_execution_path_price_pnl_before_explicit_costs": -4504.000000000015,
+      "cost_return_effect": -0.011269280000000001,
+      "bounded_gross_dividend_entitlement": "0.00000",
+      "record_close_holdings": [
+        {
+          "event_id": "601857.SH:2018-023",
+          "record_date": "2018-06-20",
+          "ex_date": "2018-06-21",
+          "scheduled_pay_date": "2018-06-21",
+          "eligible_shares": 0,
+          "cash_per_share": "0.06074",
+          "gross_entitlement": "0.00000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        },
+        {
+          "event_id": "601857.SH:2018-029",
+          "record_date": "2018-09-20",
+          "ex_date": "2018-09-21",
+          "scheduled_pay_date": "2018-09-21",
+          "eligible_shares": 0,
+          "cash_per_share": "0.08880",
+          "gross_entitlement": "0.00000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        }
+      ],
+      "actual_received_cash": null,
+      "tax_amount": null,
+      "annual_pretax_total_return": null,
+      "annual_aftertax_total_return": null
+    },
+    "rsi": {
+      "raw_price_return_net_trading_costs": 0.1898116700000001,
+      "same_execution_path_explicit_costs": 681.8330000000001,
+      "same_execution_path_price_pnl_before_explicit_costs": 19663.000000000015,
+      "cost_return_effect": -0.006818330000000001,
+      "bounded_gross_dividend_entitlement": "0.00000",
+      "record_close_holdings": [
+        {
+          "event_id": "601857.SH:2018-023",
+          "record_date": "2018-06-20",
+          "ex_date": "2018-06-21",
+          "scheduled_pay_date": "2018-06-21",
+          "eligible_shares": 0,
+          "cash_per_share": "0.06074",
+          "gross_entitlement": "0.00000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        },
+        {
+          "event_id": "601857.SH:2018-029",
+          "record_date": "2018-09-20",
+          "ex_date": "2018-09-21",
+          "scheduled_pay_date": "2018-09-21",
+          "eligible_shares": 0,
+          "cash_per_share": "0.08880",
+          "gross_entitlement": "0.00000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        }
+      ],
+      "actual_received_cash": null,
+      "tax_amount": null,
+      "annual_pretax_total_return": null,
+      "annual_aftertax_total_return": null
+    },
+    "macd": {
+      "raw_price_return_net_trading_costs": -0.050128012000000055,
+      "same_execution_path_explicit_costs": 1495.8011999999999,
+      "same_execution_path_price_pnl_before_explicit_costs": -3517.000000000002,
+      "cost_return_effect": -0.014958011999999998,
+      "bounded_gross_dividend_entitlement": "1003.44000",
+      "record_close_holdings": [
+        {
+          "event_id": "601857.SH:2018-023",
+          "record_date": "2018-06-20",
+          "ex_date": "2018-06-21",
+          "scheduled_pay_date": "2018-06-21",
+          "eligible_shares": 0,
+          "cash_per_share": "0.06074",
+          "gross_entitlement": "0.00000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        },
+        {
+          "event_id": "601857.SH:2018-029",
+          "record_date": "2018-09-20",
+          "ex_date": "2018-09-21",
+          "scheduled_pay_date": "2018-09-21",
+          "eligible_shares": 11300,
+          "cash_per_share": "0.08880",
+          "gross_entitlement": "1003.44000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        }
+      ],
+      "actual_received_cash": null,
+      "tax_amount": null,
+      "annual_pretax_total_return": null,
+      "annual_aftertax_total_return": null
+    },
+    "cta": {
+      "raw_price_return_net_trading_costs": 0.027163328000000098,
+      "same_execution_path_explicit_costs": 155.6672,
+      "same_execution_path_price_pnl_before_explicit_costs": 2872.0000000000036,
+      "cost_return_effect": -0.001556672,
+      "bounded_gross_dividend_entitlement": "168.72000",
+      "record_close_holdings": [
+        {
+          "event_id": "601857.SH:2018-023",
+          "record_date": "2018-06-20",
+          "ex_date": "2018-06-21",
+          "scheduled_pay_date": "2018-06-21",
+          "eligible_shares": 0,
+          "cash_per_share": "0.06074",
+          "gross_entitlement": "0.00000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        },
+        {
+          "event_id": "601857.SH:2018-029",
+          "record_date": "2018-09-20",
+          "ex_date": "2018-09-21",
+          "scheduled_pay_date": "2018-09-21",
+          "eligible_shares": 1900,
+          "cash_per_share": "0.08880",
+          "gross_entitlement": "168.72000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        }
+      ],
+      "actual_received_cash": null,
+      "tax_amount": null,
+      "annual_pretax_total_return": null,
+      "annual_aftertax_total_return": null
+    },
+    "buy_hold": {
+      "raw_price_return_net_trading_costs": -0.10903605599999999,
+      "same_execution_path_explicit_costs": 79.60560000000001,
+      "same_execution_path_price_pnl_before_explicit_costs": -10823.999999999995,
+      "cost_return_effect": -0.0007960560000000001,
+      "bounded_gross_dividend_entitlement": "1839.34200",
+      "record_close_holdings": [
+        {
+          "event_id": "601857.SH:2018-023",
+          "record_date": "2018-06-20",
+          "ex_date": "2018-06-21",
+          "scheduled_pay_date": "2018-06-21",
+          "eligible_shares": 12300,
+          "cash_per_share": "0.06074",
+          "gross_entitlement": "747.10200",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        },
+        {
+          "event_id": "601857.SH:2018-029",
+          "record_date": "2018-09-20",
+          "ex_date": "2018-09-21",
+          "scheduled_pay_date": "2018-09-21",
+          "eligible_shares": 12300,
+          "cash_per_share": "0.08880",
+          "gross_entitlement": "1092.24000",
+          "basis": "BOUNDED_VERIFIED_EVENT_TERMS_ON_SAVED_RECORD_CLOSE_HOLDINGS",
+          "actual_received": null,
+          "tax": null,
+          "share_adjustment": null,
+          "payment_status": "ACCOUNT_RECEIPT_UNVERIFIED",
+          "tax_status": "ACCOUNT_TAX_CONTRACT_UNKNOWN"
+        }
+      ],
+      "actual_received_cash": null,
+      "tax_amount": null,
+      "annual_pretax_total_return": null,
+      "annual_aftertax_total_return": null
+    }
+  }
+}

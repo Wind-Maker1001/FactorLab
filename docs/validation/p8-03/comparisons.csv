@@ -1,0 +1,151 @@
+object,symbol,left,right,field,MATCHED,MISMATCH,SOURCE_MISSING,SEMANTICALLY_INCOMPARABLE,INSUFFICIENT_EVIDENCE,reason
+petrochina_2018,601857.SH,CSMAR,BigQuant,raw_open,0,0,0,243,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+petrochina_2018,601857.SH,CSMAR,BigQuant,raw_high,0,0,0,243,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+petrochina_2018,601857.SH,CSMAR,BigQuant,raw_low,0,0,0,243,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+petrochina_2018,601857.SH,CSMAR,BigQuant,raw_close,0,0,0,243,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+petrochina_2018,601857.SH,CSMAR,BigQuant,volume,0,0,0,243,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+petrochina_2018,601857.SH,CSMAR,BigQuant,status_key_presence,243,0,0,0,0,Only literal symbol/date existence
+fixed24_2015_2018,000401.SZ,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000401.SZ,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000401.SZ,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000401.SZ,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000401.SZ,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000401.SZ,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,000709.SZ,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000709.SZ,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000709.SZ,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000709.SZ,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000709.SZ,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,000709.SZ,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,600019.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600019.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600019.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600019.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600019.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600019.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,600028.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600028.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600028.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600028.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600028.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600028.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,600030.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600030.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600030.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600030.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600030.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600030.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,600036.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600036.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600036.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600036.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600036.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600036.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,600585.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600585.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600585.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600585.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600585.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600585.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,600837.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600837.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600837.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600837.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600837.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600837.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,600999.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600999.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600999.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600999.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600999.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,600999.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601088.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601088.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601088.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601088.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601088.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601088.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601166.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601166.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601166.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601166.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601166.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601166.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601186.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601186.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601186.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601186.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601186.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601186.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601288.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601288.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601288.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601288.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601288.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601288.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601318.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601318.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601318.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601318.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601318.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601318.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601336.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601336.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601336.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601336.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601336.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601336.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601390.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601390.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601390.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601390.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601390.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601390.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601398.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601398.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601398.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601398.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601398.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601398.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601601.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601601.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601601.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601601.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601601.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601601.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601628.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601628.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601628.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601628.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601628.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601628.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601688.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601688.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601688.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601688.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601688.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601688.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601857.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601857.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601857.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601857.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601857.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601857.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601898.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601898.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601898.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601898.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601898.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601898.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601939.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601939.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601939.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601939.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601939.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601939.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
+fixed24_2015_2018,601988.SH,CSMAR,BigQuant,raw_open,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601988.SH,CSMAR,BigQuant,raw_high,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601988.SH,CSMAR,BigQuant,raw_low,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601988.SH,CSMAR,BigQuant,raw_close,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601988.SH,CSMAR,BigQuant,volume,0,0,448,527,0,BigQuant economic unit/precision contract UNKNOWN; no value equality claim
+fixed24_2015_2018,601988.SH,CSMAR,BigQuant,status_key_presence,527,0,448,0,0,Only literal symbol/date existence
