@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task": "custom_daily",
+  "data": {
+    "id": "p6-d01-csmar-raw-candidate",
+    "manifest_sha256": "800d8413ee7d2b0adc90adde6b38f5b290f12cd08189515afecf49268bde876a",
+    "source_kind": "REAL_CANDIDATE"
+  },
+  "research": {
+    "symbol": "601398.SH",
+    "start": "2018-01-01",
+    "end": "2018-12-31",
+    "warmup_start": "2017-01-01",
+    "initial_cash": 100000.0,
+    "max_weight": 1.0,
+    "board_lot": 100,
+    "strategy": {
+      "class": "MyStrategy",
+      "parameters": {"window": 5},
+      "sha256": "8c205eb48da57e52acd331973c2f74c4a73088ea1a1a85fe75b9e20499e2bb8c"
+    }
+  },
+  "fees": {"commission_bps": 3.0, "minimum_commission_cny": 5.0, "slippage_bps": 5.0, "transfer_fee_bps": 0.0},
+  "execution": {
+    "frequency": "daily", "signal_timing": "close", "execution_timing": "next_open", "long_only": true,
+    "financial_admission": "FORMAL_ADMISSION_BLOCKED", "network": "NO_AUTOMATIC_ACCESS"
+  },
+  "boundary": {
+    "state": "RESEARCH_ONLY", "formal_admission": false,
+    "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+  }
+}
