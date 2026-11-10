@@ -36,14 +36,14 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
-          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.sha }}
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
           path: candidate
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.13'
-      - name: Refresh GitHub merge ref to match event
+      - name: Construct immutable event merge
         run: python -I trusted/tools/ci/pr_merge_ref.py --repository candidate
       - name: Bind candidate to event before risk selection
         id: identity
@@ -68,10 +68,14 @@ jobs:
     needs: risk
     runs-on: windows-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: candidate
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
-          ref: ${{ needs.risk.outputs.subject }}
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: candidate
           fetch-depth: 2
           persist-credentials: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
@@ -86,16 +90,21 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.13'
+      - name: Reconstruct pinned event merge before verification
+        env:
+          VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
+        shell: bash
+        run: python -I ../trusted/tools/ci/pr_merge_ref.py --repository . --expected-subject "$VALIDATION_SUBJECT"
       - name: Verify trusted validation identity before candidate execution
         env:
           VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
           RISK_SHA256: ${{ needs.risk.outputs.risk_sha256 }}
-        run: python -I trusted/tools/ci/pr_identity.py verify --repository . --identity trusted-risk/identity.json --risk-plan trusted-risk/risk.json
+        run: python -I ../trusted/tools/ci/pr_identity.py verify --repository . --identity ../trusted-risk/identity.json --risk-plan ../trusted-risk/risk.json
       # Restore only: untrusted PR code must never save caches in the target/main scope.
       - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: ~/AppData/Local/pip/Cache
-          key: factorlab-pip-Windows-3.13-${{ hashFiles('requirements/*.txt', 'pyproject.toml') }}
+          key: factorlab-pip-Windows-3.13-${{ hashFiles('candidate/requirements/*.txt', 'candidate/pyproject.toml') }}
       - name: Install controlled test dependencies
         run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
       - name: Install package and check dependency compatibility
@@ -128,18 +137,18 @@ jobs:
           VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
           RISK_SHA256: ${{ needs.risk.outputs.risk_sha256 }}
         run: |
-          python -I trusted/tools/ci/pr_identity.py verify --repository . --identity trusted-risk/identity.json --risk-plan trusted-risk/risk.json
+          python -I ../trusted/tools/ci/pr_identity.py verify --repository . --identity ../trusted-risk/identity.json --risk-plan ../trusted-risk/risk.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -I trusted/tools/ci/integration_checks.py --repository . --risk-plan trusted-risk/risk.json --suite targeted --output local-ci/pr
+          python -I ../trusted/tools/ci/integration_checks.py --repository . --risk-plan ../trusted-risk/risk.json --suite targeted --output local-ci/pr
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ !cancelled() }}
         with:
           name: fast-pr-receipts
           path: |
-            local-ci/pr/*/receipt.json
-            local-ci/pr/*/tests.xml
-            local-ci/pr/*/tests.log
-            local-ci/pr/*/execution.json
+            candidate/local-ci/pr/*/receipt.json
+            candidate/local-ci/pr/*/tests.xml
+            candidate/local-ci/pr/*/tests.log
+            candidate/local-ci/pr/*/execution.json
           if-no-files-found: error
           retention-days: 14
   control-review:
@@ -164,10 +173,14 @@ jobs:
         shard: [0, 1, 2]
     runs-on: windows-latest
     timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: candidate
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
-          ref: ${{ needs.risk.outputs.subject }}
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: candidate
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
@@ -182,11 +195,16 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: ${{ matrix.python }}
+      - name: Reconstruct pinned event merge before verification
+        env:
+          VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
+        shell: bash
+        run: python -I ../trusted/tools/ci/pr_merge_ref.py --repository . --expected-subject "$VALIDATION_SUBJECT"
       - name: Verify trusted validation identity before candidate execution
         env:
           VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
           RISK_SHA256: ${{ needs.risk.outputs.risk_sha256 }}
-        run: python -I trusted/tools/ci/pr_identity.py verify --repository . --identity trusted-risk/identity.json --risk-plan trusted-risk/risk.json
+        run: python -I ../trusted/tools/ci/pr_identity.py verify --repository . --identity ../trusted-risk/identity.json --risk-plan ../trusted-risk/risk.json
       - name: Install dependencies and package
         run: |
           python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/suppliers.txt -r requirements/cross-market.txt -r requirements/scalable-compute.txt
@@ -200,12 +218,12 @@ jobs:
         with:
           name: extended-${{ matrix.python }}-shard-${{ matrix.shard }}
           path: |
-            local-ci/extended/*/receipt.json
-            local-ci/extended/*/dependencies.txt
-            local-ci/extended/*/selection.json
-            local-ci/extended/*/execution.json
-            local-ci/extended/*/tests.xml
-            local-ci/extended/*/tests.log
+            candidate/local-ci/extended/*/receipt.json
+            candidate/local-ci/extended/*/dependencies.txt
+            candidate/local-ci/extended/*/selection.json
+            candidate/local-ci/extended/*/execution.json
+            candidate/local-ci/extended/*/tests.xml
+            candidate/local-ci/extended/*/tests.log
           if-no-files-found: error
           retention-days: 14
   current-coverage:
@@ -264,10 +282,14 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: candidate
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
-          ref: ${{ needs.risk.outputs.subject }}
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: candidate
           fetch-depth: 2
           persist-credentials: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
@@ -282,11 +304,16 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.13'
+      - name: Reconstruct pinned event merge before verification
+        env:
+          VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
+        shell: bash
+        run: python -I ../trusted/tools/ci/pr_merge_ref.py --repository . --expected-subject "$VALIDATION_SUBJECT"
       - name: Verify trusted validation identity before candidate execution
         env:
           VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
           RISK_SHA256: ${{ needs.risk.outputs.risk_sha256 }}
-        run: python -I trusted/tools/ci/pr_identity.py verify --repository . --identity trusted-risk/identity.json --risk-plan trusted-risk/risk.json
+        run: python -I ../trusted/tools/ci/pr_identity.py verify --repository . --identity ../trusted-risk/identity.json --risk-plan ../trusted-risk/risk.json
       - run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
       - run: python tools/ci/lock_acceptance.py --output local-ci/locks --thread-rounds 100 --process-rounds 12
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -294,9 +321,9 @@ jobs:
         with:
           name: pr-lock-${{ matrix.os }}
           path: |
-            local-ci/locks/LOCK_CONCURRENCY_TEST_RESULTS.json
-            local-ci/locks/faults.xml
-            local-ci/locks/faults.log
+            candidate/local-ci/locks/LOCK_CONCURRENCY_TEST_RESULTS.json
+            candidate/local-ci/locks/faults.xml
+            candidate/local-ci/locks/faults.log
           if-no-files-found: error
           retention-days: 14
   package:
@@ -305,10 +332,14 @@ jobs:
     if: needs.risk.outputs.package == 'true'
     runs-on: windows-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: candidate
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
-          ref: ${{ needs.risk.outputs.subject }}
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: candidate
           fetch-depth: 2
           persist-credentials: false
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
@@ -323,11 +354,16 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.14'
+      - name: Reconstruct pinned event merge before verification
+        env:
+          VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
+        shell: bash
+        run: python -I ../trusted/tools/ci/pr_merge_ref.py --repository . --expected-subject "$VALIDATION_SUBJECT"
       - name: Verify trusted validation identity before candidate execution
         env:
           VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
           RISK_SHA256: ${{ needs.risk.outputs.risk_sha256 }}
-        run: python -I trusted/tools/ci/pr_identity.py verify --repository . --identity trusted-risk/identity.json --risk-plan trusted-risk/risk.json
+        run: python -I ../trusted/tools/ci/pr_identity.py verify --repository . --identity ../trusted-risk/identity.json --risk-plan ../trusted-risk/risk.json
       - run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/cross-market.txt
       - run: python -m build --outdir local-ci/distributions
       - run: python tools/migration/inspect_distributions.py local-ci/distributions
@@ -338,9 +374,9 @@ jobs:
         with:
           name: pr-package
           path: |
-            local-ci/packaging/receipt.json
-            local-ci/packaging/*.log
-            local-ci/archive-attacks/**/*.json
+            candidate/local-ci/packaging/receipt.json
+            candidate/local-ci/packaging/*.log
+            candidate/local-ci/archive-attacks/**/*.json
           if-no-files-found: error
           retention-days: 14
   merge-gate:

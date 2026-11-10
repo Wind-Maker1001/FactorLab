@@ -312,8 +312,8 @@ def test_fast_consumes_trusted_plan_and_runner():
     assert any(step.get('with', {}).get('name') == 'pr-risk' and
                step.get('uses', '').startswith('actions/download-artifact@') for step in fast['steps'])
     targeted = next(step['run'] for step in fast['steps'] if '--suite targeted' in step.get('run', ''))
-    assert 'python -I trusted/tools/ci/integration_checks.py' in targeted
-    assert '--risk-plan trusted-risk/risk.json' in targeted
+    assert 'python -I ../trusted/tools/ci/integration_checks.py' in targeted
+    assert '--risk-plan ../trusted-risk/risk.json' in targeted
     assert any('execution.json' in step.get('with', {}).get('path', '') for step in fast['steps'])
 
 
@@ -352,7 +352,12 @@ def test_pr_shards_and_coverage_use_one_trusted_subject():
                for step in current['steps'])
     for name in ('fast', 'current', 'locking', 'package'):
         checkout = jobs[name]['steps'][0]
-        assert checkout['with']['ref'] == '${{ needs.risk.outputs.subject }}'
+        assert checkout['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
+        assert checkout['with']['path'] == 'candidate'
+        reconstruction = next(step for step in jobs[name]['steps']
+                              if 'pr_merge_ref.py' in step.get('run', ''))
+        assert reconstruction['env']['VALIDATION_SUBJECT'] == '${{ needs.risk.outputs.subject }}'
+        assert '--expected-subject "$VALIDATION_SUBJECT"' in reconstruction['run']
         assert checkout['with']['persist-credentials'] == 'false'
     artifact = current['steps'][-1]['with']
     assert artifact['name'] == 'extended-${{ matrix.python }}-shard-${{ matrix.shard }}'

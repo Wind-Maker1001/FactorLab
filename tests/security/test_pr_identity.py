@@ -162,11 +162,18 @@ def test_workflow_pins_all_candidate_jobs_before_execution():
     assert 1 < refresh < positions['identity'] < positions['select'] < positions['seal']
     for name in ('fast', 'current', 'locking', 'package'):
         steps = jobs[name]['steps']
-        assert steps[0]['with']['ref'] == '${{ needs.risk.outputs.subject }}'
+        assert steps[0]['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
+        assert steps[0]['with']['path'] == 'candidate'
+        assert jobs[name]['defaults']['run']['working-directory'] == 'candidate'
+        reconstruction = next(i for i, step in enumerate(steps)
+                              if 'pr_merge_ref.py' in step.get('run', ''))
+        assert '--expected-subject "$VALIDATION_SUBJECT"' in steps[reconstruction]['run']
+        assert steps[reconstruction]['shell'] == 'bash'
+        assert steps[reconstruction]['env']['VALIDATION_SUBJECT'] == '${{ needs.risk.outputs.subject }}'
         verification = next(i for i, step in enumerate(steps)
                             if 'pr_identity.py verify' in step.get('run', ''))
         installs = [i for i, step in enumerate(steps) if 'pip install' in step.get('run', '')]
-        assert installs and verification < min(installs)
+        assert installs and reconstruction < verification < min(installs)
         assert steps[verification]['env']['VALIDATION_SUBJECT'] == '${{ needs.risk.outputs.subject }}'
         assert steps[verification]['env']['RISK_SHA256'] == '${{ needs.risk.outputs.risk_sha256 }}'
         downloads = [step['with'] for step in steps[:verification]
@@ -197,85 +204,120 @@ refresh_spec.loader.exec_module(merge_ref)
 
 
 @pytest.mark.parametrize('stale', [None, 'base', 'pr_head'])
-def test_refresh_published_merge_and_issue(subject, tmp_path, monkeypatch, stale):
+def test_event_merge_ignores_published_ref_and_rebuilds(subject, tmp_path, stale):
     root, expected, _, _, env = subject
-    correct = git(root, 'rev-parse', 'HEAD')
     remote = tmp_path / 'remote.git'
     git(tmp_path, 'clone', '--bare', str(root), str(remote))
     git(root, 'remote', 'add', 'origin', str(remote))
-    published = correct
     if stale:
-        parents = [expected['base'], expected['pr_head']]
-        parents[0 if stale == 'base' else 1] = correct
-        published = subprocess.check_output(
-            ['git', '-C', str(root), 'commit-tree', 'HEAD^{tree}',
-             '-p', parents[0], '-p', parents[1], '-m', 'stale'], env=env, text=True).strip()
-    git(root, 'push', 'origin', f'{published}:refs/pull/44/merge')
-    git(root, 'checkout', '--detach', expected['pr_head'])
-    sleeps = []
-
-    def update(seconds):
-        sleeps.append(seconds)
-        git(root, 'push', '--force', 'origin', f'{correct}:refs/pull/44/merge')
-
-    monkeypatch.setattr(merge_ref.time, 'sleep', update)
+        git(remote, 'update-ref', 'refs/pull/44/merge', expected[stale])
     event = json.loads(Path(env['GITHUB_EVENT_PATH']).read_text())
-    sha = merge_ref.refresh(root, event)
-    assert sha == correct == git(root, 'rev-parse', 'HEAD')
-    assert len(sleeps) == int(stale is not None)
-    env['GITHUB_OUTPUT'] = str(tmp_path / 'refresh-outputs')
-    receipt = tmp_path / 'refresh-identity.json'
-    result = subprocess.run(
-        [sys.executable, '-I', str(TOOLS / 'pr_identity.py'), 'issue',
-         '--repository', str(root), '--identity', str(receipt)], env=env,
-        capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    assert json.loads(receipt.read_text())['subject'] == sha
-    assert f'subject={sha}' in Path(env['GITHUB_OUTPUT']).read_text()
+    sha = merge_ref.reconstruct(root, event)
+    assert git(root, 'show', '-s', '--format=%P', sha).split() == [expected['base'], expected['pr_head']]
+    assert git(root, 'rev-parse', sha + '^{tree}') == git(root, 'rev-parse', expected['pr_head'] + '^{tree}')
+    consumer = tmp_path / 'consumer'
+    git(tmp_path, 'clone', str(remote), str(consumer))
+    # Simulate concurrent branch and merge-ref movement after the issuer.
+    git(remote, 'update-ref', 'refs/heads/main', expected['pr_head'])
+    git(remote, 'update-ref', 'refs/pull/44/head', expected['base'])
+    git(remote, 'update-ref', 'refs/pull/44/merge', expected['base'])
+    git(consumer, 'config', 'merge.renames', 'false')
+    git(consumer, 'config', 'user.name', 'Different user')
+    assert merge_ref.reconstruct(consumer, event, expected_subject=sha) == sha
+    assert identity.issue(consumer, expected)['subject'] == sha
+    assert not (root.parent / 'executed').exists()
 
 
-def test_refresh_timeout(monkeypatch):
-    now = [0]
-    calls = []
-    monkeypatch.setattr(merge_ref.time, 'monotonic', lambda: now[0])
-    monkeypatch.setattr(merge_ref.time, 'sleep', lambda seconds: now.__setitem__(0, now[0] + seconds))
-
-    def output(command, **kwargs):
-        calls.append((command, kwargs['timeout']))
-        return 'old other' if '--format=%P' in command else 'stale'
-
-    monkeypatch.setattr(merge_ref.subprocess, 'check_output', output)
-    event = dict(number=44, pull_request=dict(base=dict(sha='base'), head=dict(sha='head')))
-    with pytest.raises(TimeoutError, match='timed out'):
-        merge_ref.refresh('.', event)
-    assert now[0] == 45
-    assert all(0 < timeout <= 45 for _, timeout in calls)
-    assert not any('checkout' in command for command, _ in calls)
-
-
-@pytest.mark.parametrize('failure', ['missing', 'fetch', 'parents', 'git_timeout'])
-def test_refresh_git_failures_rejected(subject, tmp_path, monkeypatch, failure):
-    root, _, _, _, env = subject
-    event = json.loads(Path(env['GITHUB_EVENT_PATH']).read_text())
+@pytest.mark.parametrize('failure', ['missing', 'subject', 'sha', 'timeout'])
+def test_reconstruction_rejects_invalid_input(subject, tmp_path, failure):
+    root, expected, _, _, env = subject
+    git(root, 'remote', 'add', 'origin', str(root))
     original = git(root, 'rev-parse', 'HEAD')
+    event = json.loads(Path(env['GITHUB_EVENT_PATH']).read_text())
+    kwargs = {}
     if failure == 'missing':
-        remote = tmp_path / 'empty.git'
-        git(tmp_path, 'init', '--bare', str(remote))
-        git(root, 'remote', 'add', 'origin', str(remote))
-    elif failure == 'parents':
-        git(root, 'remote', 'add', 'origin', str(root))
-        git(root, 'update-ref', 'refs/pull/44/merge', event['pull_request']['head']['sha'])
+        event['pull_request']['head']['sha'] = 'a' * 40
+    elif failure == 'subject':
+        kwargs['expected_subject'] = 'a' * 40
+    elif failure == 'sha':
+        event['pull_request']['head']['sha'] = '--upload-pack=malicious'
     else:
-        def fail(command, **kwargs):
-            if failure == 'git_timeout':
-                raise subprocess.TimeoutExpired(command, kwargs['timeout'])
-            raise subprocess.CalledProcessError(128, command)
-        monkeypatch.setattr(merge_ref.subprocess, 'check_output', fail)
-    error = ValueError if failure == 'parents' else subprocess.TimeoutExpired if failure == 'git_timeout' else subprocess.CalledProcessError
-    with pytest.raises(error):
-        merge_ref.refresh(root, event)
-    monkeypatch.undo()
+        kwargs['timeout'] = 0
+    with pytest.raises((ValueError, TimeoutError, subprocess.CalledProcessError)):
+        merge_ref.reconstruct(root, event, **kwargs)
     assert git(root, 'rev-parse', 'HEAD') == original
+    assert not (root.parent / 'executed').exists()
+
+
+def test_real_merge_conflict_rejected(subject, tmp_path, monkeypatch):
+    root, expected, _, _, env = subject
+    git(root, 'checkout', '--detach', expected['base'])
+    (root / 'base').write_text('left', encoding='utf-8')
+    (root / '.gitattributes').write_text('base merge=hostile\n', encoding='utf-8')
+    base = commit(root, 'left')
+    git(root, 'checkout', '--detach', expected['pr_head'])
+    (root / 'base').write_text('right', encoding='utf-8')
+    head = commit(root, 'right')
+    marker = tmp_path / 'driver-executed'
+    command = f'touch "{marker.as_posix()}"; exit 0'
+    git(root, 'config', 'merge.hostile.driver', command)
+    monkeypatch.setenv('GIT_CONFIG_COUNT', '1')
+    monkeypatch.setenv('GIT_CONFIG_KEY_0', 'merge.hostile.driver')
+    monkeypatch.setenv('GIT_CONFIG_VALUE_0', command)
+    git(root, 'remote', 'add', 'origin', str(root))
+    event = dict(number=44, pull_request=dict(base=dict(sha=base), head=dict(sha=head)))
+    with pytest.raises(subprocess.CalledProcessError):
+        merge_ref.reconstruct(root, event)
+    assert git(root, 'rev-parse', 'HEAD') == head
+    assert not marker.exists()
+    assert not (root.parent / 'executed').exists()
+
+
+def test_divergent_merge_and_untrusted_driver_never_executes(subject, tmp_path, monkeypatch):
+    root, expected, _, _, env = subject
+    git(root, 'checkout', '--detach', expected['base'])
+    (root / 'left').write_text('base addition', encoding='utf-8')
+    (root / '.gitattributes').write_text('base merge=hostile\n', encoding='utf-8')
+    base = commit(root, 'divergent base')
+    git(root, 'checkout', '--detach', expected['pr_head'])
+    (root / 'right').write_text('PR addition', encoding='utf-8')
+    head = commit(root, 'divergent PR')
+    git(root, 'remote', 'add', 'origin', str(root))
+    marker = tmp_path / 'driver-executed'
+    command = f'touch "{marker.as_posix()}"; exit 1'
+    git(root, 'config', 'merge.hostile.driver', command)
+    hooks = tmp_path / 'hooks'
+    hooks.mkdir()
+    hook = hooks / 'post-checkout'
+    hook.write_text('#!/bin/sh\n' + command + '\n', encoding='utf-8')
+    hook.chmod(0o755)
+    git(root, 'config', 'core.hooksPath', str(hooks))
+    monkeypatch.setenv('GIT_CONFIG_COUNT', '1')
+    monkeypatch.setenv('GIT_CONFIG_KEY_0', 'merge.hostile.driver')
+    monkeypatch.setenv('GIT_CONFIG_VALUE_0', command)
+    event = dict(number=44, pull_request=dict(base=dict(sha=base), head=dict(sha=head)))
+    sha = merge_ref.reconstruct(root, event)
+    assert (root / 'left').read_text() == 'base addition'
+    assert (root / 'right').read_text() == 'PR addition'
+    assert not marker.exists()
+    assert git(root, 'show', '-s', '--format=%P', sha).split() == [base, head]
+
+
+def test_rebuilt_subject_is_verified_before_execution(subject, tmp_path):
+    root, expected, risk, signed, env = subject
+    git(root, 'remote', 'add', 'origin', str(root))
+    event = json.loads(Path(env['GITHUB_EVENT_PATH']).read_text())
+    sha = merge_ref.reconstruct(root, event)
+    plan = json.loads(risk.read_text())
+    plan['head'] = sha
+    risk.write_text(json.dumps(plan), encoding='utf-8')
+    receipt = identity.issue(root, expected)
+    receipt['risk_sha256'] = hashlib.sha256(risk.read_bytes()).hexdigest()
+    signed.write_text(json.dumps(receipt), encoding='utf-8')
+    env.update(VALIDATION_SUBJECT=sha, RISK_SHA256=receipt['risk_sha256'])
+    result = run_verified(subject, tmp_path)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert (root.parent / 'executed').exists()
 
 
 def test_refresh_non_pr_preserves_identity(subject, tmp_path):
@@ -298,4 +340,4 @@ def test_refresh_non_pr_does_not_run_git(monkeypatch):
     def forbidden(*args, **kwargs):
         raise AssertionError('non-PR refresh must not run Git')
     monkeypatch.setattr(merge_ref.subprocess, 'check_output', forbidden)
-    assert merge_ref.refresh('unused', {}) is None
+    assert merge_ref.reconstruct('unused', {}) is None

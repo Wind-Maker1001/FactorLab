@@ -75,7 +75,7 @@ main Ruleset `26809886` 已启用：必须通过 `FactorLab trusted merge gate`�
 
 ## PR 验证对象部署边界
 
-身份绑定修复须由部署前 main 的既有可信工作流验收，并取得该 HEAD 对应的 `ci-control-review` 批准与专用 App 门禁；本地身份测试不等同于新工作流已部署。合并后需以新事件验收完整固定对象链路，再重新验证受影响 PR。若 GitHub merge ref 尚未反映事件 HEAD 或 base，正确结果是关闭执行，而不是验证旧对象后批准新 HEAD。
+身份绑定修复须由部署前 main 的既有可信工作流验收，并取得该 HEAD 对应的 `ci-control-review` 批准与专用 App 门禁；本地身份测试不等同于新工作流已部署。合并后需以新事件验收完整固定对象链路，再重新验证受影响 PR。PR 验证仅使用可信事件 Base/Head SHA，通过隔离对象库的 `merge-tree --write-tree` 与固定元数据的双父 `commit-tree` 构造对象；各执行 Job 独立重建并核对 issuer 固定的 subject，再校验身份与风险摘要。动态 GitHub merge ref 不参与对象选择；真实冲突、对象缺失及身份不一致关闭执行。验证后的基线变化仍由既有分支保护与合并策略处理。
 
 该修复不依赖分片聚合 Bootstrap；后续 PR 分片工作流集成必须保留固定对象、事件父提交和 Run/attempt 绑定，不可恢复各 Job 单独解析 merge ref。控制面修复不改变研究结果或金融准入。
 
