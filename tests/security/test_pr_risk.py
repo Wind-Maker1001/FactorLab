@@ -145,6 +145,98 @@ def test_only_proven_pathlib_outputs_are_not_inputs(tmp_path, source, high):
     assert ('tools/ci/consumer.py' in result['affected']) is high
 
 
+@pytest.mark.parametrize('reference,dependency', [
+    ('from pathlib import Path\nROOT = Path(__file__).resolve().parents[2]\n'
+     'files = [ROOT / name for name in ("README.md", "NOTICE")]\n', 'README.md'),
+    ('from pathlib import Path\nROOT = Path(__file__).resolve().parents[2]\n'
+     'source = ROOT / "docs" / "user" / "README.md"\nsource.read_text()\n',
+     'docs/user/README.md'),
+    ('from pathlib import Path\nPath("docs/user/README.md").read_text()\n',
+     'docs/user/README.md'),
+    ('INPUT = "docs/user/*.md"\n', 'docs/user/README.md'),
+])
+def test_resolved_paths_do_not_consume_unrelated_same_named_report(tmp_path, reference, dependency):
+    init_repo(tmp_path)
+    consumer = 'tools/ci/consumer.py'
+    write(tmp_path, consumer, reference)
+    write(tmp_path, dependency, 'original')
+    base = commit(tmp_path)
+    changed = 'docs/validation/new/README.md'
+    write(tmp_path, changed, 'report')
+    result = select(tmp_path, base, commit(tmp_path))
+    assert not any(result[flag] for flag in FLAGS)
+    assert consumer not in result['affected']
+    base = result['head']
+    write(tmp_path, dependency, 'modified')
+    result = select(tmp_path, base, commit(tmp_path))
+    assert all(result[flag] for flag in FLAGS)
+    for flag in FLAGS:
+        assert dict(path=consumer, rule='affected-consumer:' + dependency) in result['reasons'][flag]
+
+
+@pytest.mark.parametrize('reference', [
+    'open("README.md").read()\n',
+    'from pathlib import Path\nPath("README.md").read_text()\n',
+    'def consume(root):\n return (root / "README.md").read_text()\n',
+    'from pathlib import Path\nROOT = Path(__file__).resolve().parents[2]\n'
+    'def consume(ROOT):\n return (ROOT / "README.md").read_text()\n',
+    'from pathlib import Path\nROOT = Path(__file__).resolve().parents[2]\n'
+    'ROOT = custom()\n(ROOT / "README.md").read_text()\n',
+])
+def test_unresolved_basename_inputs_keep_dependency_reasons(tmp_path, reference):
+    init_repo(tmp_path)
+    consumer = 'tools/ci/consumer.py'
+    write(tmp_path, consumer, reference)
+    base = commit(tmp_path)
+    changed = 'docs/validation/new/README.md'
+    write(tmp_path, changed, 'report')
+    result = select(tmp_path, base, commit(tmp_path))
+    for flag in FLAGS:
+        assert result[flag]
+        assert dict(path=consumer, rule='affected-consumer:' + changed) in result['reasons'][flag]
+
+
+@pytest.mark.parametrize('filename', ['identity.json', 'receipt.json', 'contrasts.csv'])
+@pytest.mark.parametrize('reference', [
+    '"{name}"\n',
+    'print("{name}")\n',
+    'import logging\nlogging.info("{name}")\n',
+    'from pathlib import Path\nPath("output/{name}").write_text("generated")\n',
+])
+def test_noninput_mentions_do_not_consume_research_files(tmp_path, filename, reference):
+    init_repo(tmp_path)
+    consumer = 'tools/ci/consumer.py'
+    write(tmp_path, consumer, reference.format(name=filename))
+    base = commit(tmp_path)
+    changed = 'docs/validation/new/' + filename
+    write(tmp_path, changed, '{}')
+    write(tmp_path, 'docs/validation/new/REPORT.md', filename)
+    result = select(tmp_path, base, commit(tmp_path))
+    assert not any(result[flag] for flag in FLAGS)
+    assert consumer not in result['affected']
+    assert all(consumer not in decision['consumers'] for decision in result['decisions'])
+    assert all(not result['reasons'][flag] for flag in FLAGS)
+
+
+@pytest.mark.parametrize('reference', [
+    '"receipt.json"\nopen(__doc__).read()\n',
+    'def print(name): return open(name).read()\nprint("receipt.json")\n',
+    'from pathlib import Path\nmutate(Path)\n'
+    '(Path(__file__).resolve().parents[2] / "receipt.json").read_text()\n',
+    'def consume(obj):\n return (obj.resolve().parent / "receipt.json").read_text()\n',
+])
+def test_unknown_mention_consumers_remain_conservative(tmp_path, reference):
+    init_repo(tmp_path)
+    consumer = 'tools/ci/consumer.py'
+    write(tmp_path, consumer, reference)
+    base = commit(tmp_path)
+    changed = 'docs/validation/new/receipt.json'
+    write(tmp_path, changed, '{}')
+    result = select(tmp_path, base, commit(tmp_path))
+    assert result['review']
+    assert dict(path=consumer, rule='affected-consumer:' + changed) in result['reasons']['review']
+
+
 def test_output_exclusion_does_not_hide_dynamic_execution(tmp_path):
     init_repo(tmp_path)
     write(tmp_path, 'src/factorlab/cli.py', 'import importlib\nimportlib.import_module(input())\n')
@@ -218,7 +310,7 @@ def test_unknown_or_sensitive_changes_require_full_software_and_locks(path):
 
 
 @pytest.mark.parametrize('path', [
-    '.github/workflows/factorlab-pr.yml', 'tools/ci/pr_risk.py',
+    '.github/workflows/factorlab-pr.yml', 'tools/ci/pr_risk.py', '.gitattributes',
     'tests/security/test_independent_controls.py',
     'pyproject.toml', 'pytest.ini', 'conftest.py', 'somewhere/conftest.py',
 ])

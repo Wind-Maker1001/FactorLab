@@ -3,6 +3,7 @@ import argparse
 import ast
 import fnmatch
 import json
+import posixpath
 from pathlib import Path, PurePosixPath
 import subprocess
 
@@ -152,6 +153,156 @@ def output_path_literals(parsed):
     return ignored
 
 
+def path_literals(parsed, path):
+    """Keep unresolved inputs conservative, but resolve statically rooted paths."""
+    outputs = output_path_literals(parsed)
+    parents = {child: node for node in ast.walk(parsed) for child in ast.iter_child_nodes(node)}
+    assignments = {}
+    for node in ast.walk(parsed):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    assignments.setdefault(target.id, []).append(node.value)
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            assignments.setdefault(node.target.id, []).append(node.value)
+        elif isinstance(node, ast.comprehension) and isinstance(node.target, ast.Name):
+            assignments.setdefault(node.target.id, []).append(node.iter)
+    constructors = {alias.asname or alias.name for node in parsed.body
+                    if isinstance(node, ast.ImportFrom) and node.module == 'pathlib'
+                    for alias in node.names if alias.name == 'Path'}
+
+    bindings = {}
+    for node in ast.walk(parsed):
+        bound = []
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            bound = [node.id]
+        elif isinstance(node, ast.arg):
+            bound = [node.arg]
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            bound = [node.name]
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            bound = [alias.asname or alias.name.split('.')[0] for alias in node.names]
+        elif isinstance(node, (ast.ExceptHandler, ast.MatchAs, ast.MatchStar)) and node.name:
+            bound = [node.name]
+        elif isinstance(node, ast.MatchMapping) and node.rest:
+            bound = [node.rest]
+        for name in bound:
+            bindings[name] = bindings.get(name, 0) + 1
+    constructors = {name for name in constructors if bindings.get(name) == 1 and '*' not in bindings
+                    and all(isinstance(parents.get(node), ast.Call) and parents[node].func is node
+                            for node in ast.walk(parsed)
+                            if isinstance(node, ast.Name) and node.id == name)}
+
+    def is_path(node, seen=frozenset()):
+        if isinstance(node, ast.Name):
+            sources = assignments.get(node.id, ())
+            return (len(sources) == 1 and bindings.get(node.id) == 1 and node.id not in seen
+                    and is_path(sources[0], seen | {node.id}))
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name) and node.func.id in constructors:
+                return len(node.args) == 1 and not node.keywords
+            return (isinstance(node.func, ast.Attribute) and node.func.attr in ('resolve', 'absolute')
+                    and not node.args and not node.keywords and is_path(node.func.value, seen))
+        if isinstance(node, ast.Attribute) and node.attr == 'parent':
+            return is_path(node.value, seen)
+        if isinstance(node, ast.Subscript) and isinstance(node.value, ast.Attribute) and node.value.attr == 'parents':
+            return is_path(node.value.value, seen)
+        return isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div) and is_path(node.left, seen)
+
+    def values(node, seen=frozenset()):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return {node.value}
+        if isinstance(node, ast.Name):
+            if node.id == '__file__' and node.id not in bindings:
+                return {'/__factorlab_repository__/' + path}
+            sources = assignments.get(node.id, ())
+            if len(sources) == 1 and bindings.get(node.id) == 1 and node.id not in seen:
+                source = sources[0]
+                if isinstance(source, (ast.Tuple, ast.List, ast.Set)) and any(
+                        isinstance(parent, ast.comprehension) and parent.iter is source
+                        for parent in ast.walk(parsed)):
+                    groups = [values(item, seen | {node.id}) for item in source.elts]
+                    return set().union(*groups) if all(group is not None for group in groups) else None
+                return values(source, seen | {node.id})
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name) and node.func.id in constructors and len(node.args) == 1 and not node.keywords:
+                return values(node.args[0], seen)
+            if (isinstance(node.func, ast.Attribute) and node.func.attr in ('resolve', 'absolute')
+                    and is_path(node) and not node.args and not node.keywords):
+                roots = values(node.func.value, seen)
+                return roots if roots is not None and all(root.startswith('/') for root in roots) else None
+        if isinstance(node, ast.Attribute) and node.attr == 'parent' and is_path(node):
+            roots = values(node.value, seen)
+            return {posixpath.dirname(root) for root in roots} if roots is not None else None
+        if (isinstance(node, ast.Subscript) and isinstance(node.value, ast.Attribute)
+                and node.value.attr == 'parents' and isinstance(node.slice, ast.Constant)
+                and isinstance(node.slice.value, int) and node.slice.value >= 0 and is_path(node)):
+            roots = values(node.value.value, seen)
+            if roots is not None:
+                for _ in range(node.slice.value + 1):
+                    roots = {posixpath.dirname(root) for root in roots}
+                return roots
+        if (isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Div, ast.Add))
+                and (isinstance(node.op, ast.Add) or is_path(node.left))):
+            left, right = values(node.left, seen), values(node.right, seen)
+            if left is not None and right is not None:
+                return {posixpath.normpath(posixpath.join(a, b)) if isinstance(node.op, ast.Div)
+                        else a + b for a in left for b in right}
+        return None
+
+    ignored = set(outputs)
+    logging_modules = {alias.asname or alias.name for node in parsed.body
+                       if isinstance(node, ast.Import) for alias in node.names
+                       if alias.name == 'logging' and bindings.get(alias.asname or alias.name) == 1}
+    docstring_used = any((isinstance(node, ast.Name) and node.id == '__doc__') or
+                         (isinstance(node, ast.Attribute) and node.attr == '__doc__')
+                         for node in ast.walk(parsed))
+    for node in ast.walk(parsed):
+        if not docstring_used and isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
+                ignored.add(node.body[0].value)
+        if isinstance(node, ast.Call):
+            plain_print = (isinstance(node.func, ast.Name) and node.func.id == 'print'
+                           and 'print' not in bindings and '*' not in bindings)
+            plain_log = (isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)
+                         and node.func.value.id in logging_modules
+                         and node.func.attr in ('debug', 'info', 'warning', 'error', 'critical', 'exception'))
+            if plain_print or plain_log:
+                ignored.update(argument for argument in node.args if isinstance(argument, ast.Constant))
+
+    literals = []
+    for node in ast.walk(parsed):
+        if not isinstance(node, ast.Constant) or not isinstance(node.value, str) or node in ignored:
+            continue
+        expression = node
+        while isinstance(parents.get(expression), (ast.BinOp, ast.Tuple, ast.List, ast.Set)):
+            expression = parents[expression]
+        # Resolve uses of a literal binding too (including bounded comprehensions).
+        uses = [expression]
+        parent = parents.get(expression)
+        targets = []
+        if isinstance(parent, ast.Assign):
+            targets = [target.id for target in parent.targets if isinstance(target, ast.Name)]
+        elif isinstance(parent, ast.comprehension) and isinstance(parent.target, ast.Name):
+            targets = [parent.target.id]
+        for use in ast.walk(parsed):
+            if isinstance(use, ast.Name) and isinstance(use.ctx, ast.Load) and use.id in targets:
+                joined = use
+                while isinstance(parents.get(joined), ast.BinOp):
+                    joined = parents[joined]
+                uses.append(joined)
+        resolved = [values(use) for use in uses[1:]]
+        if resolved and all(value is not None and all('/' in item for item in value)
+                            for value in resolved):
+            literals.extend(item for group in resolved for item in group)
+        elif expression is not node and values(expression) is not None:
+            literals.extend(values(expression))
+        else:
+            literals.append(node.value)
+    # TODO: Resolve caller/CLI directory provenance for basename-only input reads.
+    return literals
+
+
 def graph(texts, names):
     modules = {}
     for path in texts:
@@ -168,7 +319,7 @@ def graph(texts, names):
         literals = []
         if path.endswith('.py'):
             parsed = ast.parse(text, filename=path)
-            outputs = output_path_literals(parsed)
+            literals = path_literals(parsed, path)
             package = path.removeprefix('src/').removesuffix('.py').replace('/', '.')
             if not path.endswith('/__init__.py'):
                 package = package.rpartition('.')[0]
@@ -187,8 +338,6 @@ def graph(texts, names):
                     prefix = '.'.join(package.split('.')[:len(package.split('.')) - node.level + 1]) if node.level else ''
                     base = '.'.join(p for p in (prefix, node.module) if p)
                     imports.extend([base, *(base + '.' + a.name for a in node.names)])
-                elif isinstance(node, ast.Constant) and isinstance(node.value, str) and node not in outputs:
-                    literals.append(node.value)
                 elif isinstance(node, ast.Call):
                     name = node.func.id if isinstance(node.func, ast.Name) else node.func.attr if isinstance(node.func, ast.Attribute) else ''
                     name = dynamic_aliases.get(name, name)
@@ -208,13 +357,17 @@ def graph(texts, names):
             # does not change that inventory. Runtime consumers of the evidence
             # itself are still discovered from their own source/configuration.
             literals = [] if path.startswith('docs/') else [text]
-        # TODO: Resolve basename-only input provenance and path-comparison literals;
-        # unknown references still conservatively connect every same-named file.
-        # Computed references are never resolved by executing code.
+        # Unresolved basename references conservatively connect same-named files.
         for dependency in names:
             basename = PurePosixPath(dependency).name
             module = dependency.removeprefix('src/').removesuffix('.py').replace('/', '.')
             for value in literals:
+                if value.startswith('/__factorlab_repository__/'):
+                    target = value.removeprefix('/__factorlab_repository__/')
+                    if dependency == target or fnmatch.fnmatchcase(dependency, target):
+                        edge(dependency, path)
+                        break
+                    continue
                 if (dependency in value or
                     (dependency.endswith('.py') and module in value) or
                     (basename == value and len(basename) > 3) or
