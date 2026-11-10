@@ -1,0 +1,2507 @@
+{
+  "entries": [
+    {
+      "archive": "csi500_full_history.zip",
+      "member": "members_daily.csv",
+      "actual_sha256": "e52a3f1bfcb9fb83c62b1176441bf20fd44dace977a2af73536d6c99188c8293"
+    },
+    {
+      "archive": "csi500_full_history.zip",
+      "member": "manifest.json",
+      "actual_sha256": "43c8396883cddf78802f770a5392205d31ad4de72fb8a1cd05ef2fffd57db895"
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2021-01-01_2021-12-31.parquet",
+      "actual_sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+      "receipt_sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1751,
+      "uncompressed_bytes": 4298,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2022-01-01_2022-12-31.parquet",
+      "actual_sha256": "743bd2c1abf7848d9358404afcb28d14e51b293876648f86ebc748074c8e3024",
+      "receipt_sha256": "743bd2c1abf7848d9358404afcb28d14e51b293876648f86ebc748074c8e3024",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1746,
+      "uncompressed_bytes": 4300,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2023-01-01_2023-12-31.parquet",
+      "actual_sha256": "cbf43d5b461dc379a8edfe7c412ead84198d37831bc94403f6779af1337fa08b",
+      "receipt_sha256": "cbf43d5b461dc379a8edfe7c412ead84198d37831bc94403f6779af1337fa08b",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:50+00:00",
+      "physical_rows": 1741,
+      "uncompressed_bytes": 4165,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2024-01-01_2024-12-31.parquet",
+      "actual_sha256": "f85c955e9a24ca797b93024ac4b017a5a685359252588fee2e7df48ce469a1c5",
+      "receipt_sha256": "f85c955e9a24ca797b93024ac4b017a5a685359252588fee2e7df48ce469a1c5",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:51+00:00",
+      "physical_rows": 1998,
+      "uncompressed_bytes": 4023,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2025-01-01_2025-12-31.parquet",
+      "actual_sha256": "3ea98ec2a4659034616d083f136defe3bc99185feef56042c1e8d3509ccfd24c",
+      "receipt_sha256": "3ea98ec2a4659034616d083f136defe3bc99185feef56042c1e8d3509ccfd24c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:51+00:00",
+      "physical_rows": 1967,
+      "uncompressed_bytes": 4178,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2026-01-01_2026-11-06.parquet",
+      "actual_sha256": "8dd7a3a3717c4f1a6bd71cfc5424ca2d174cf53ef50524b649f5d20be1af659a",
+      "receipt_sha256": "8dd7a3a3717c4f1a6bd71cfc5424ca2d174cf53ef50524b649f5d20be1af659a",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:48:51+00:00",
+      "physical_rows": 1681,
+      "uncompressed_bytes": 2887,
+      "selected_columns": [
+        "date",
+        "market_code"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-05-01_2021-05-31.parquet",
+      "actual_sha256": "6c3640802fbf3ddd0ec27fec890c37c1ef1d98362663c02687827b63ac1427c5",
+      "receipt_sha256": "6c3640802fbf3ddd0ec27fec890c37c1ef1d98362663c02687827b63ac1427c5",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:14+00:00",
+      "physical_rows": 77530,
+      "uncompressed_bytes": 4427321,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-06-01_2021-06-30.parquet",
+      "actual_sha256": "fb0ac022b19b896860e967f70ab4aec6bc8a29c5ab3528f5370b38efdc69673c",
+      "receipt_sha256": "fb0ac022b19b896860e967f70ab4aec6bc8a29c5ab3528f5370b38efdc69673c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:15+00:00",
+      "physical_rows": 91302,
+      "uncompressed_bytes": 5245631,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-07-01_2021-07-31.parquet",
+      "actual_sha256": "3c38c1bd4b1cec809d07dac158467666fa430408815f3d0bf915350eefaacbaa",
+      "receipt_sha256": "3c38c1bd4b1cec809d07dac158467666fa430408815f3d0bf915350eefaacbaa",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:16+00:00",
+      "physical_rows": 96681,
+      "uncompressed_bytes": 5541892,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-08-01_2021-08-31.parquet",
+      "actual_sha256": "93bbf0d9b7cdb8473c0b7daae22b987f79c82e5d5d3e870f5b9f09f44dade3c8",
+      "receipt_sha256": "93bbf0d9b7cdb8473c0b7daae22b987f79c82e5d5d3e870f5b9f09f44dade3c8",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:16+00:00",
+      "physical_rows": 97657,
+      "uncompressed_bytes": 5636134,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-09-01_2021-09-30.parquet",
+      "actual_sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+      "receipt_sha256": "4cf1c2ef83c4c0a0f389e342da143542e16ac30df3b648b1086592b73a3d7f0f",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:17+00:00",
+      "physical_rows": 89492,
+      "uncompressed_bytes": 5223424,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-10-01_2021-10-31.parquet",
+      "actual_sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+      "receipt_sha256": "27bc853dfd6dca0661ff072a8304ba3680771583d265babd5f784f13dcb49412",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:18+00:00",
+      "physical_rows": 72115,
+      "uncompressed_bytes": 4134062,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-11-01_2021-11-30.parquet",
+      "actual_sha256": "18d5c3007261f259b56fe93e17369c873d14c4f12d381f7bf567c2c99d63addc",
+      "receipt_sha256": "18d5c3007261f259b56fe93e17369c873d14c4f12d381f7bf567c2c99d63addc",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:18+00:00",
+      "physical_rows": 100895,
+      "uncompressed_bytes": 5830355,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2021-12-01_2021-12-31.parquet",
+      "actual_sha256": "4abeca29386acb06686ff2aae13315284132ec5c4e263e318b6b90dbc8b26562",
+      "receipt_sha256": "4abeca29386acb06686ff2aae13315284132ec5c4e263e318b6b90dbc8b26562",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:19+00:00",
+      "physical_rows": 107235,
+      "uncompressed_bytes": 6240135,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-01-01_2022-01-31.parquet",
+      "actual_sha256": "29b262170b1f496b6a24083a1650299aa5602db9f84ef04258a8e1c0ece5a62c",
+      "receipt_sha256": "29b262170b1f496b6a24083a1650299aa5602db9f84ef04258a8e1c0ece5a62c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:20+00:00",
+      "physical_rows": 89288,
+      "uncompressed_bytes": 5177582,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-02-01_2022-02-28.parquet",
+      "actual_sha256": "8c3ed54c0c9bd2400e693b7554632cc0b6e3f6b064ba43a7fcdf329f43764767",
+      "receipt_sha256": "8c3ed54c0c9bd2400e693b7554632cc0b6e3f6b064ba43a7fcdf329f43764767",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:20+00:00",
+      "physical_rows": 75574,
+      "uncompressed_bytes": 4339913,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-03-01_2022-03-31.parquet",
+      "actual_sha256": "12fb33a99646f5bf41d996a7cdb7f1cddedf3ab9779b950e7f21f4e9dfe18518",
+      "receipt_sha256": "12fb33a99646f5bf41d996a7cdb7f1cddedf3ab9779b950e7f21f4e9dfe18518",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:21+00:00",
+      "physical_rows": 109239,
+      "uncompressed_bytes": 6317670,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-04-01_2022-04-30.parquet",
+      "actual_sha256": "757f216910a8fd1272aae8c9790b813e7b4a9e8036e1cc5447ec81140f12dd05",
+      "receipt_sha256": "757f216910a8fd1272aae8c9790b813e7b4a9e8036e1cc5447ec81140f12dd05",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:21+00:00",
+      "physical_rows": 90945,
+      "uncompressed_bytes": 5213028,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-05-01_2022-05-31.parquet",
+      "actual_sha256": "dc1dbf27bc49a731b4471e57e937107d274e65d298f143d128cf78aae1a569fd",
+      "receipt_sha256": "dc1dbf27bc49a731b4471e57e937107d274e65d298f143d128cf78aae1a569fd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:22+00:00",
+      "physical_rows": 91383,
+      "uncompressed_bytes": 5215313,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-06-01_2022-06-30.parquet",
+      "actual_sha256": "8dbd1ad9948541bce29036871018b1cafdbf47fc3e21311ed48c4ec76c0e7fab",
+      "receipt_sha256": "8dbd1ad9948541bce29036871018b1cafdbf47fc3e21311ed48c4ec76c0e7fab",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:23+00:00",
+      "physical_rows": 101334,
+      "uncompressed_bytes": 5874766,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-07-01_2022-07-31.parquet",
+      "actual_sha256": "f41011a15a94ba81a8c26203de85cd12b16e45c040b0522d10bc2ab138810b7f",
+      "receipt_sha256": "f41011a15a94ba81a8c26203de85cd12b16e45c040b0522d10bc2ab138810b7f",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:23+00:00",
+      "physical_rows": 101464,
+      "uncompressed_bytes": 5879251,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-08-01_2022-08-31.parquet",
+      "actual_sha256": "4251385523153aebf666dc3a89699c370bb6e2b7bb87a68984f95e7be7ba229b",
+      "receipt_sha256": "4251385523153aebf666dc3a89699c370bb6e2b7bb87a68984f95e7be7ba229b",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:24+00:00",
+      "physical_rows": 111976,
+      "uncompressed_bytes": 6557996,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-09-01_2022-09-30.parquet",
+      "actual_sha256": "37d7500795a3a6a53ada0fc1abaa5eff9369ee0780140dae4ebdd74bc4db2895",
+      "receipt_sha256": "37d7500795a3a6a53ada0fc1abaa5eff9369ee0780140dae4ebdd74bc4db2895",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:25+00:00",
+      "physical_rows": 103254,
+      "uncompressed_bytes": 5934427,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-10-01_2022-10-31.parquet",
+      "actual_sha256": "1e793dfec3a0c8541da565047e9ae2f933c73b36ab2055f350108dd42a057c48",
+      "receipt_sha256": "1e793dfec3a0c8541da565047e9ae2f933c73b36ab2055f350108dd42a057c48",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:25+00:00",
+      "physical_rows": 79337,
+      "uncompressed_bytes": 4563177,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-11-01_2022-11-30.parquet",
+      "actual_sha256": "3197f85c8f46cc71ca9ede0b45018819f57415d18377bb0466fee188a9d9af58",
+      "receipt_sha256": "3197f85c8f46cc71ca9ede0b45018819f57415d18377bb0466fee188a9d9af58",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:26+00:00",
+      "physical_rows": 109792,
+      "uncompressed_bytes": 6346656,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-12-01_2022-12-31.parquet",
+      "actual_sha256": "6f34b382f16a6ca79670b70689a8e62d3491ccab4571e8d0cd305ebe73e7a75c",
+      "receipt_sha256": "6f34b382f16a6ca79670b70689a8e62d3491ccab4571e8d0cd305ebe73e7a75c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:27+00:00",
+      "physical_rows": 110760,
+      "uncompressed_bytes": 6384069,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-01-01_2023-01-31.parquet",
+      "actual_sha256": "d1de428bd84d2c08bb374b688f1c53deea87ddf786546f0cd86c5156c73838c0",
+      "receipt_sha256": "d1de428bd84d2c08bb374b688f1c53deea87ddf786546f0cd86c5156c73838c0",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:27+00:00",
+      "physical_rows": 81122,
+      "uncompressed_bytes": 4723842,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-02-01_2023-02-28.parquet",
+      "actual_sha256": "760999d5df9cf956f21e312259801c8e66fd0294a1af4d53349a5ad887b73878",
+      "receipt_sha256": "760999d5df9cf956f21e312259801c8e66fd0294a1af4d53349a5ad887b73878",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:28+00:00",
+      "physical_rows": 101770,
+      "uncompressed_bytes": 5890492,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-03-01_2023-03-31.parquet",
+      "actual_sha256": "fa1bdffb7158a0a26db56f2f9b827f5775367bafaa94e3d37e2f73e1301928a0",
+      "receipt_sha256": "fa1bdffb7158a0a26db56f2f9b827f5775367bafaa94e3d37e2f73e1301928a0",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:29+00:00",
+      "physical_rows": 117714,
+      "uncompressed_bytes": 6809712,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "actual_sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b",
+      "receipt_sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:29+00:00",
+      "physical_rows": 97883,
+      "uncompressed_bytes": 5612330,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "actual_sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf",
+      "receipt_sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:30+00:00",
+      "physical_rows": 103588,
+      "uncompressed_bytes": 6015449,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-06-01_2023-06-30.parquet",
+      "actual_sha256": "2ba93cac8af6a70ab80607cfd87427d47a7a57c24db746b72818b78db9d788f8",
+      "receipt_sha256": "2ba93cac8af6a70ab80607cfd87427d47a7a57c24db746b72818b78db9d788f8",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:31+00:00",
+      "physical_rows": 104168,
+      "uncompressed_bytes": 6055363,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-07-01_2023-07-31.parquet",
+      "actual_sha256": "d43b10e29c11ae8aa1368bc88dcce7c9f713e4ebd602c0d885ed374cec6f02f4",
+      "receipt_sha256": "d43b10e29c11ae8aa1368bc88dcce7c9f713e4ebd602c0d885ed374cec6f02f4",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:31+00:00",
+      "physical_rows": 109821,
+      "uncompressed_bytes": 6410384,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-08-01_2023-08-31.parquet",
+      "actual_sha256": "c0faf9317efd7a3ab51efa02dd3c483085c301478ee05758d038c83ff59fceee",
+      "receipt_sha256": "c0faf9317efd7a3ab51efa02dd3c483085c301478ee05758d038c83ff59fceee",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:32+00:00",
+      "physical_rows": 120857,
+      "uncompressed_bytes": 6924086,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-09-01_2023-09-30.parquet",
+      "actual_sha256": "7d9200f3e9868fc1ab789892e7c9879468e46f45bda426ba6e89fdc6b0358cd8",
+      "receipt_sha256": "7d9200f3e9868fc1ab789892e7c9879468e46f45bda426ba6e89fdc6b0358cd8",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:33+00:00",
+      "physical_rows": 105528,
+      "uncompressed_bytes": 6079141,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-10-01_2023-10-31.parquet",
+      "actual_sha256": "980593d395b381ada1635a330f60d7f08e4edb954f0de70f24474331b7215cdc",
+      "receipt_sha256": "980593d395b381ada1635a330f60d7f08e4edb954f0de70f24474331b7215cdc",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:33+00:00",
+      "physical_rows": 89969,
+      "uncompressed_bytes": 5127344,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-11-01_2023-11-30.parquet",
+      "actual_sha256": "f0e5335470475181c45c51d683c795143c7a6b5a3f515f544fb58a90e35f26a6",
+      "receipt_sha256": "f0e5335470475181c45c51d683c795143c7a6b5a3f515f544fb58a90e35f26a6",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:34+00:00",
+      "physical_rows": 116754,
+      "uncompressed_bytes": 6715385,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-12-01_2023-12-31.parquet",
+      "actual_sha256": "6f6eb3fa6ebacb317803a5260afea1760acdbb8fcc53afdcdfcd53bfbe2667d1",
+      "receipt_sha256": "6f6eb3fa6ebacb317803a5260afea1760acdbb8fcc53afdcdfcd53bfbe2667d1",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:35+00:00",
+      "physical_rows": 111810,
+      "uncompressed_bytes": 6423617,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-01-01_2024-01-31.parquet",
+      "actual_sha256": "72885e003f873280e26bde86fabac7ccd74ff9c4af406ce3db772b56e85cbd40",
+      "receipt_sha256": "72885e003f873280e26bde86fabac7ccd74ff9c4af406ce3db772b56e85cbd40",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:35+00:00",
+      "physical_rows": 117513,
+      "uncompressed_bytes": 6670892,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-02-01_2024-02-29.parquet",
+      "actual_sha256": "fd97388d9bc63c738968e7ea7cd67c550fcc2b26e43bac980fb7bd26925a1cc4",
+      "receipt_sha256": "fd97388d9bc63c738968e7ea7cd67c550fcc2b26e43bac980fb7bd26925a1cc4",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:36+00:00",
+      "physical_rows": 80255,
+      "uncompressed_bytes": 4622120,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-03-01_2024-03-31.parquet",
+      "actual_sha256": "57a725a3067fdd64db754622750890eca267d578ec1a97eaa0a5bc1acb2454ad",
+      "receipt_sha256": "57a725a3067fdd64db754622750890eca267d578ec1a97eaa0a5bc1acb2454ad",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:37+00:00",
+      "physical_rows": 112450,
+      "uncompressed_bytes": 6396986,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-04-01_2024-04-30.parquet",
+      "actual_sha256": "9986f61cc50bc82fe75f9e83e9a63a9b7c91834cc8f12b92b41506b3fcfda57e",
+      "receipt_sha256": "9986f61cc50bc82fe75f9e83e9a63a9b7c91834cc8f12b92b41506b3fcfda57e",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:37+00:00",
+      "physical_rows": 107243,
+      "uncompressed_bytes": 6335661,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-05-01_2024-05-31.parquet",
+      "actual_sha256": "e38f1549af0aa05573ef823335904294c2c9796ff4e0884c6aa84dffec388e94",
+      "receipt_sha256": "e38f1549af0aa05573ef823335904294c2c9796ff4e0884c6aa84dffec388e94",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:38+00:00",
+      "physical_rows": 107254,
+      "uncompressed_bytes": 6375768,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-06-01_2024-06-30.parquet",
+      "actual_sha256": "3faa64a2b2a24115cdc0935af421d8f418bb8a00b2b8d8ef58bee964979536a5",
+      "receipt_sha256": "3faa64a2b2a24115cdc0935af421d8f418bb8a00b2b8d8ef58bee964979536a5",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:39+00:00",
+      "physical_rows": 101922,
+      "uncompressed_bytes": 5987085,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-07-01_2024-07-31.parquet",
+      "actual_sha256": "b5ed375f7c9a6991b0745aa532e984631f93a952b51b22d30afdbbf85598e2cd",
+      "receipt_sha256": "b5ed375f7c9a6991b0745aa532e984631f93a952b51b22d30afdbbf85598e2cd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:39+00:00",
+      "physical_rows": 123248,
+      "uncompressed_bytes": 7158984,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-08-01_2024-08-31.parquet",
+      "actual_sha256": "3aed0d130389ab46e22e90494a5b365314af401b0d74f62f1c38b00648d958ba",
+      "receipt_sha256": "3aed0d130389ab46e22e90494a5b365314af401b0d74f62f1c38b00648d958ba",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:40+00:00",
+      "physical_rows": 117753,
+      "uncompressed_bytes": 6782429,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-09-01_2024-09-30.parquet",
+      "actual_sha256": "0d42bbb7ab6ff6082ca0734779a0984ed222cf5ac0838754d2467768d3cd6b90",
+      "receipt_sha256": "0d42bbb7ab6ff6082ca0734779a0984ed222cf5ac0838754d2467768d3cd6b90",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:41+00:00",
+      "physical_rows": 101671,
+      "uncompressed_bytes": 5865182,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-10-01_2024-10-31.parquet",
+      "actual_sha256": "32726ea7ea4b6c76e94744f6e75ee6ae8201d288eb2ea77b1bd6f144a9029dff",
+      "receipt_sha256": "32726ea7ea4b6c76e94744f6e75ee6ae8201d288eb2ea77b1bd6f144a9029dff",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:41+00:00",
+      "physical_rows": 96424,
+      "uncompressed_bytes": 5803563,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-11-01_2024-11-30.parquet",
+      "actual_sha256": "200adbdc6f6f3356c5c72a2e30ad887f949ca1984f10f3f1ae5a609ce24fb4e5",
+      "receipt_sha256": "200adbdc6f6f3356c5c72a2e30ad887f949ca1984f10f3f1ae5a609ce24fb4e5",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:42+00:00",
+      "physical_rows": 112701,
+      "uncompressed_bytes": 6886412,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-12-01_2024-12-31.parquet",
+      "actual_sha256": "409714b5e11069afe4ee16d141a5a9acdd9bfb7f969b4b3c80d36e16e24bcc44",
+      "receipt_sha256": "409714b5e11069afe4ee16d141a5a9acdd9bfb7f969b4b3c80d36e16e24bcc44",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:43+00:00",
+      "physical_rows": 118309,
+      "uncompressed_bytes": 7188260,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-01-01_2025-01-31.parquet",
+      "actual_sha256": "89abda0c3906c2410da478984ce48b035734a8ad2178af3cb65d210712fbff57",
+      "receipt_sha256": "89abda0c3906c2410da478984ce48b035734a8ad2178af3cb65d210712fbff57",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:44+00:00",
+      "physical_rows": 97001,
+      "uncompressed_bytes": 5801461,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-02-01_2025-02-28.parquet",
+      "actual_sha256": "250d0d5bd8c9bdb6f14112c2e41fee3b280cce6737b3aa76a22205dbe1145e2a",
+      "receipt_sha256": "250d0d5bd8c9bdb6f14112c2e41fee3b280cce6737b3aa76a22205dbe1145e2a",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:44+00:00",
+      "physical_rows": 97112,
+      "uncompressed_bytes": 5893697,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-03-01_2025-03-31.parquet",
+      "actual_sha256": "87ce5f1819d150b9fc6e25cfb655ef9ef8f04406a9dcc1fefdba3edc01cf2c72",
+      "receipt_sha256": "87ce5f1819d150b9fc6e25cfb655ef9ef8f04406a9dcc1fefdba3edc01cf2c72",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:45+00:00",
+      "physical_rows": 113375,
+      "uncompressed_bytes": 6937195,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-04-01_2025-04-30.parquet",
+      "actual_sha256": "5f3baa174ab84c5aef4000612a080e79fb14fd6288b4a82030df03772d6c3311",
+      "receipt_sha256": "5f3baa174ab84c5aef4000612a080e79fb14fd6288b4a82030df03772d6c3311",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:46+00:00",
+      "physical_rows": 113615,
+      "uncompressed_bytes": 6820196,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-05-01_2025-05-31.parquet",
+      "actual_sha256": "fc03fa23ba0cc0310691b50910e90f62c809fec23f3d17b59e8ac262d8ea7afd",
+      "receipt_sha256": "fc03fa23ba0cc0310691b50910e90f62c809fec23f3d17b59e8ac262d8ea7afd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:46+00:00",
+      "physical_rows": 102850,
+      "uncompressed_bytes": 6161528,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-06-01_2025-06-30.parquet",
+      "actual_sha256": "98baaefdef9f6aed899d6fb39b1d6c825b188b4155374d1647c4e8207f7e8f01",
+      "receipt_sha256": "98baaefdef9f6aed899d6fb39b1d6c825b188b4155374d1647c4e8207f7e8f01",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:47+00:00",
+      "physical_rows": 108353,
+      "uncompressed_bytes": 6562231,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-07-01_2025-07-31.parquet",
+      "actual_sha256": "54309ffd7b403c0ca8424c125875b83180e9ccb27be9bfbd91e70c38390a69d2",
+      "receipt_sha256": "54309ffd7b403c0ca8424c125875b83180e9ccb27be9bfbd91e70c38390a69d2",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:48+00:00",
+      "physical_rows": 124619,
+      "uncompressed_bytes": 7485409,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-08-01_2025-08-31.parquet",
+      "actual_sha256": "fb2430ece9fd0c23cc0bf8db58004183b9ccdfa94d3a8e5098453aa4483a6824",
+      "receipt_sha256": "fb2430ece9fd0c23cc0bf8db58004183b9ccdfa94d3a8e5098453aa4483a6824",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:48+00:00",
+      "physical_rows": 113891,
+      "uncompressed_bytes": 6970911,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-09-01_2025-09-30.parquet",
+      "actual_sha256": "9a79794ad8e3b08b3a6c5c3df30c108f97c206ca62b06dcfac4acbb0d56d33ef",
+      "receipt_sha256": "9a79794ad8e3b08b3a6c5c3df30c108f97c206ca62b06dcfac4acbb0d56d33ef",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:49+00:00",
+      "physical_rows": 119456,
+      "uncompressed_bytes": 7400516,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-10-01_2025-10-31.parquet",
+      "actual_sha256": "975ddf695d001ec238dabed219703f140ea150caadf24a4b8932a57c3862dc0f",
+      "receipt_sha256": "975ddf695d001ec238dabed219703f140ea150caadf24a4b8932a57c3862dc0f",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:50+00:00",
+      "physical_rows": 92467,
+      "uncompressed_bytes": 5656740,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-11-01_2025-11-30.parquet",
+      "actual_sha256": "2ab85ee1af13fb416e64b660735380a192a558934d873a248a1c4a24830192dd",
+      "receipt_sha256": "2ab85ee1af13fb416e64b660735380a192a558934d873a248a1c4a24830192dd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:50+00:00",
+      "physical_rows": 108992,
+      "uncompressed_bytes": 6704675,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-12-01_2025-12-31.parquet",
+      "actual_sha256": "2cf2d0ff29c8237e8b41c3d163fec64c3df111e9d7baabcfaf09b2e62c038c50",
+      "receipt_sha256": "2cf2d0ff29c8237e8b41c3d163fec64c3df111e9d7baabcfaf09b2e62c038c50",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:51+00:00",
+      "physical_rows": 125582,
+      "uncompressed_bytes": 7617990,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-01-01_2026-01-31.parquet",
+      "actual_sha256": "cbc9eeb0c935b692bed39ad8873328339ee3391f2bbc94eb2d59575aefe18e46",
+      "receipt_sha256": "cbc9eeb0c935b692bed39ad8873328339ee3391f2bbc94eb2d59575aefe18e46",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:52+00:00",
+      "physical_rows": 109439,
+      "uncompressed_bytes": 6853173,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-02-01_2026-02-28.parquet",
+      "actual_sha256": "6f4fda533bee0b842fd36c73080b386a987f04eb1b6c535b08ae4dfaf371c4c9",
+      "receipt_sha256": "6f4fda533bee0b842fd36c73080b386a987f04eb1b6c535b08ae4dfaf371c4c9",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:52+00:00",
+      "physical_rows": 76741,
+      "uncompressed_bytes": 4763089,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-03-01_2026-03-31.parquet",
+      "actual_sha256": "ca6a29137eb73dae7915655e1585c360ff6e2840f9fc3b24e88cee0da671c796",
+      "receipt_sha256": "ca6a29137eb73dae7915655e1585c360ff6e2840f9fc3b24e88cee0da671c796",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:53+00:00",
+      "physical_rows": 120776,
+      "uncompressed_bytes": 7496959,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-04-01_2026-04-30.parquet",
+      "actual_sha256": "d63293c953eced9d834d3a5b7fd32031a4578b54d90014a0064448e58c4edbdd",
+      "receipt_sha256": "d63293c953eced9d834d3a5b7fd32031a4578b54d90014a0064448e58c4edbdd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:54+00:00",
+      "physical_rows": 115590,
+      "uncompressed_bytes": 7199559,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-05-01_2026-05-31.parquet",
+      "actual_sha256": "f2315d26530556e1fbf0146792768b6053576fa0973d47c0a61b2a6bcfd43253",
+      "receipt_sha256": "f2315d26530556e1fbf0146792768b6053576fa0973d47c0a61b2a6bcfd43253",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:54+00:00",
+      "physical_rows": 99330,
+      "uncompressed_bytes": 6200889,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-06-01_2026-06-30.parquet",
+      "actual_sha256": "330fc3214a5b34ba5daae64f7284152856307b5acd1416fc90c2d2e4b8885814",
+      "receipt_sha256": "330fc3214a5b34ba5daae64f7284152856307b5acd1416fc90c2d2e4b8885814",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:55+00:00",
+      "physical_rows": 116065,
+      "uncompressed_bytes": 7173119,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-07-01_2026-07-31.parquet",
+      "actual_sha256": "02d10401f9db263022bf25cfa457507ddeed4b0d93d7b98e330757fd60fa04f6",
+      "receipt_sha256": "02d10401f9db263022bf25cfa457507ddeed4b0d93d7b98e330757fd60fa04f6",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:56+00:00",
+      "physical_rows": 127186,
+      "uncompressed_bytes": 7765417,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-08-01_2026-08-31.parquet",
+      "actual_sha256": "857d854877a7d8b3027c35d10a24188ded95732937be2caf8152ed3a9b17f035",
+      "receipt_sha256": "857d854877a7d8b3027c35d10a24188ded95732937be2caf8152ed3a9b17f035",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:57+00:00",
+      "physical_rows": 116429,
+      "uncompressed_bytes": 7133912,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-09-01_2026-09-30.parquet",
+      "actual_sha256": "d81e7629a0edd7af4d580f2d2b71445adada4785cdfd119766005fd46ee22791",
+      "receipt_sha256": "d81e7629a0edd7af4d580f2d2b71445adada4785cdfd119766005fd46ee22791",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:20:57+00:00",
+      "physical_rows": 116816,
+      "uncompressed_bytes": 7213232,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-05-01_2021-05-31.parquet",
+      "actual_sha256": "f0794e56f08cc3596bbaccc7f062c537873887a0925706025b0aa6b5caeeaaf3",
+      "receipt_sha256": "f0794e56f08cc3596bbaccc7f062c537873887a0925706025b0aa6b5caeeaaf3",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:46+00:00",
+      "physical_rows": 77530,
+      "uncompressed_bytes": 163544,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-06-01_2021-06-30.parquet",
+      "actual_sha256": "0f2341d20aeeb159c2bede55627823710f123adae5be84b2a086e9e8252db213",
+      "receipt_sha256": "0f2341d20aeeb159c2bede55627823710f123adae5be84b2a086e9e8252db213",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:46+00:00",
+      "physical_rows": 91302,
+      "uncompressed_bytes": 175791,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-07-01_2021-07-31.parquet",
+      "actual_sha256": "9d4386e49f1dc597c8b39fe14480d2a9e9c1c1841efb1b5bf36d437ce5728c1c",
+      "receipt_sha256": "9d4386e49f1dc597c8b39fe14480d2a9e9c1c1841efb1b5bf36d437ce5728c1c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:47+00:00",
+      "physical_rows": 96681,
+      "uncompressed_bytes": 187619,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-08-01_2021-08-31.parquet",
+      "actual_sha256": "7b87560b32dd367bb0d73cc50451d1ab0802565116498c17a45defc7a293ca7a",
+      "receipt_sha256": "7b87560b32dd367bb0d73cc50451d1ab0802565116498c17a45defc7a293ca7a",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:47+00:00",
+      "physical_rows": 97657,
+      "uncompressed_bytes": 197484,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-09-01_2021-09-30.parquet",
+      "actual_sha256": "bdb053c134df3e7491270e5e19cbfc1d7aab1a334e80f39f2f57ad34143fa93f",
+      "receipt_sha256": "bdb053c134df3e7491270e5e19cbfc1d7aab1a334e80f39f2f57ad34143fa93f",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:47+00:00",
+      "physical_rows": 89492,
+      "uncompressed_bytes": 188978,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-10-01_2021-10-31.parquet",
+      "actual_sha256": "b6226cab3ef573fbe388792d9abb72ec0713481cb0ed9ee4094ad08da2e51893",
+      "receipt_sha256": "b6226cab3ef573fbe388792d9abb72ec0713481cb0ed9ee4094ad08da2e51893",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:47+00:00",
+      "physical_rows": 72115,
+      "uncompressed_bytes": 144793,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-11-01_2021-11-30.parquet",
+      "actual_sha256": "bdbfc6880ac4cf3215fb369b43b1b9e5e722623908c23a8bffae28a79cb73115",
+      "receipt_sha256": "bdbfc6880ac4cf3215fb369b43b1b9e5e722623908c23a8bffae28a79cb73115",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:48+00:00",
+      "physical_rows": 100895,
+      "uncompressed_bytes": 205352,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2021-12-01_2021-12-31.parquet",
+      "actual_sha256": "8519e94704cee6c4522ab72535497e6201171e4de9bd18fb1eaf2bd848726589",
+      "receipt_sha256": "8519e94704cee6c4522ab72535497e6201171e4de9bd18fb1eaf2bd848726589",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:48+00:00",
+      "physical_rows": 107235,
+      "uncompressed_bytes": 226392,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-01-01_2022-01-31.parquet",
+      "actual_sha256": "79b356a099f21f213314bf505c32f3ea72b18728ec65f06fce059883b9e60bf4",
+      "receipt_sha256": "79b356a099f21f213314bf505c32f3ea72b18728ec65f06fce059883b9e60bf4",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:48+00:00",
+      "physical_rows": 89288,
+      "uncompressed_bytes": 172664,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-02-01_2022-02-28.parquet",
+      "actual_sha256": "e12cc587ff555f8e2cfc7fefbb5e2836b91dff836cea2c23e55b22278eda4705",
+      "receipt_sha256": "e12cc587ff555f8e2cfc7fefbb5e2836b91dff836cea2c23e55b22278eda4705",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:48+00:00",
+      "physical_rows": 75574,
+      "uncompressed_bytes": 151165,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-03-01_2022-03-31.parquet",
+      "actual_sha256": "693bb642e64b19e03decd72466ccd34e6f29fa2d9d7b5f547be4fafb2fd7910c",
+      "receipt_sha256": "693bb642e64b19e03decd72466ccd34e6f29fa2d9d7b5f547be4fafb2fd7910c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:49+00:00",
+      "physical_rows": 109239,
+      "uncompressed_bytes": 220482,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-04-01_2022-04-30.parquet",
+      "actual_sha256": "2bec0adf8713f214d5a4aa907823e51fb908920058031beb7a1a87109fa66191",
+      "receipt_sha256": "2bec0adf8713f214d5a4aa907823e51fb908920058031beb7a1a87109fa66191",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:49+00:00",
+      "physical_rows": 90945,
+      "uncompressed_bytes": 190628,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-05-01_2022-05-31.parquet",
+      "actual_sha256": "0aa105f1ce6239ea00a83e23b9fcfff702bedcf45448e3abaafe5b424879ae04",
+      "receipt_sha256": "0aa105f1ce6239ea00a83e23b9fcfff702bedcf45448e3abaafe5b424879ae04",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:49+00:00",
+      "physical_rows": 91383,
+      "uncompressed_bytes": 185884,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-06-01_2022-06-30.parquet",
+      "actual_sha256": "4aed84cd7bb155a9ccf87495302c40a332f2230e30ea2c9abb2e26ba536a4e83",
+      "receipt_sha256": "4aed84cd7bb155a9ccf87495302c40a332f2230e30ea2c9abb2e26ba536a4e83",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:49+00:00",
+      "physical_rows": 101334,
+      "uncompressed_bytes": 209275,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-07-01_2022-07-31.parquet",
+      "actual_sha256": "91a6477a2af1f2c249aa5398735ba34f140653c659aa6617b0460439306ac6b0",
+      "receipt_sha256": "91a6477a2af1f2c249aa5398735ba34f140653c659aa6617b0460439306ac6b0",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:50+00:00",
+      "physical_rows": 101464,
+      "uncompressed_bytes": 207094,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-08-01_2022-08-31.parquet",
+      "actual_sha256": "ad94bb21cef05fffead425337c9e501ccf698a937a21fb297a3dff92a0c8227b",
+      "receipt_sha256": "ad94bb21cef05fffead425337c9e501ccf698a937a21fb297a3dff92a0c8227b",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:50+00:00",
+      "physical_rows": 111976,
+      "uncompressed_bytes": 237182,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-09-01_2022-09-30.parquet",
+      "actual_sha256": "c7c4a5271354286a5b4ff587b45950553dc3de42ab53705e7552696f8f44c949",
+      "receipt_sha256": "c7c4a5271354286a5b4ff587b45950553dc3de42ab53705e7552696f8f44c949",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:50+00:00",
+      "physical_rows": 103254,
+      "uncompressed_bytes": 202434,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-10-01_2022-10-31.parquet",
+      "actual_sha256": "e1ec393fd7c1f3a35b3ba759e7de12e073043ec2a2cb06c2b24d936a9e8edac2",
+      "receipt_sha256": "e1ec393fd7c1f3a35b3ba759e7de12e073043ec2a2cb06c2b24d936a9e8edac2",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:50+00:00",
+      "physical_rows": 79337,
+      "uncompressed_bytes": 148823,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-11-01_2022-11-30.parquet",
+      "actual_sha256": "18c998022d2574d75475657260cfd8e770233e430c5fd7e20550843e54232588",
+      "receipt_sha256": "18c998022d2574d75475657260cfd8e770233e430c5fd7e20550843e54232588",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:51+00:00",
+      "physical_rows": 109792,
+      "uncompressed_bytes": 227547,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-12-01_2022-12-31.parquet",
+      "actual_sha256": "1802ee02a83fa8c542df36852fe4d087d14c6f8e2704d5a269999bde0ce432a8",
+      "receipt_sha256": "1802ee02a83fa8c542df36852fe4d087d14c6f8e2704d5a269999bde0ce432a8",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:51+00:00",
+      "physical_rows": 110760,
+      "uncompressed_bytes": 227085,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-01-01_2023-01-31.parquet",
+      "actual_sha256": "aa2215afa8c37caf4d09af944c514c1da182606bddb4e2a0891f6decfd9879e4",
+      "receipt_sha256": "aa2215afa8c37caf4d09af944c514c1da182606bddb4e2a0891f6decfd9879e4",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:51+00:00",
+      "physical_rows": 81122,
+      "uncompressed_bytes": 181224,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-02-01_2023-02-28.parquet",
+      "actual_sha256": "4ce3c844d9812fa07b83ed23c3e4c446c665e525129039b9a0af0f3398f17991",
+      "receipt_sha256": "4ce3c844d9812fa07b83ed23c3e4c446c665e525129039b9a0af0f3398f17991",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:51+00:00",
+      "physical_rows": 101770,
+      "uncompressed_bytes": 218358,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-03-01_2023-03-31.parquet",
+      "actual_sha256": "82ad6cbf848e42c0e75481e134d307bc684e69178e407f8f8d3d841c488e3cef",
+      "receipt_sha256": "82ad6cbf848e42c0e75481e134d307bc684e69178e407f8f8d3d841c488e3cef",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:51+00:00",
+      "physical_rows": 117714,
+      "uncompressed_bytes": 241521,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "actual_sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286",
+      "receipt_sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:52+00:00",
+      "physical_rows": 97883,
+      "uncompressed_bytes": 200198,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "actual_sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d",
+      "receipt_sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:52+00:00",
+      "physical_rows": 103588,
+      "uncompressed_bytes": 221451,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-06-01_2023-06-30.parquet",
+      "actual_sha256": "02356d7bdf764e76cb589cfb0a6094a75cf59087984d67914bf200df042f7486",
+      "receipt_sha256": "02356d7bdf764e76cb589cfb0a6094a75cf59087984d67914bf200df042f7486",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:52+00:00",
+      "physical_rows": 104168,
+      "uncompressed_bytes": 210600,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-07-01_2023-07-31.parquet",
+      "actual_sha256": "46c90d858a0753c35939c2cb8e3f848752364d60d0e708bfa7437f6e98c7895e",
+      "receipt_sha256": "46c90d858a0753c35939c2cb8e3f848752364d60d0e708bfa7437f6e98c7895e",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:52+00:00",
+      "physical_rows": 109821,
+      "uncompressed_bytes": 228098,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-08-01_2023-08-31.parquet",
+      "actual_sha256": "af6acb8f37302a65c3182fceca643b033de1fd2b6c5444ba62fe9e6ae119507c",
+      "receipt_sha256": "af6acb8f37302a65c3182fceca643b033de1fd2b6c5444ba62fe9e6ae119507c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:53+00:00",
+      "physical_rows": 120857,
+      "uncompressed_bytes": 252141,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-09-01_2023-09-30.parquet",
+      "actual_sha256": "8525d598cee89b98345dff93df12530412964a4796797aea34d01e0a344acdfd",
+      "receipt_sha256": "8525d598cee89b98345dff93df12530412964a4796797aea34d01e0a344acdfd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:53+00:00",
+      "physical_rows": 105528,
+      "uncompressed_bytes": 224249,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-10-01_2023-10-31.parquet",
+      "actual_sha256": "42199f857be14bad269e667e343b766922b5b720f76a12846aeae22e53a67fc2",
+      "receipt_sha256": "42199f857be14bad269e667e343b766922b5b720f76a12846aeae22e53a67fc2",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:53+00:00",
+      "physical_rows": 89969,
+      "uncompressed_bytes": 171194,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-11-01_2023-11-30.parquet",
+      "actual_sha256": "9c15e9558289bdf940ab40d39e02f10042e131cb66412370e7d0bd8f80c651cb",
+      "receipt_sha256": "9c15e9558289bdf940ab40d39e02f10042e131cb66412370e7d0bd8f80c651cb",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:53+00:00",
+      "physical_rows": 116754,
+      "uncompressed_bytes": 247078,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-12-01_2023-12-31.parquet",
+      "actual_sha256": "b536c1f4182f2e2b21626381eba0ddfea0acff6f2950d7ec02afd04c5a9c058f",
+      "receipt_sha256": "b536c1f4182f2e2b21626381eba0ddfea0acff6f2950d7ec02afd04c5a9c058f",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:54+00:00",
+      "physical_rows": 111810,
+      "uncompressed_bytes": 238192,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-01-01_2024-01-31.parquet",
+      "actual_sha256": "7124d01f3f21311652a227d536418e540bd51d0b1a95a868cc8ed1683beca868",
+      "receipt_sha256": "7124d01f3f21311652a227d536418e540bd51d0b1a95a868cc8ed1683beca868",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:54+00:00",
+      "physical_rows": 117513,
+      "uncompressed_bytes": 229509,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-02-01_2024-02-29.parquet",
+      "actual_sha256": "36ea918d27f11bd5d13eebcb7b8d2dfea348f1adf808d160a410b9ad3c8056fa",
+      "receipt_sha256": "36ea918d27f11bd5d13eebcb7b8d2dfea348f1adf808d160a410b9ad3c8056fa",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:54+00:00",
+      "physical_rows": 80255,
+      "uncompressed_bytes": 169284,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-03-01_2024-03-31.parquet",
+      "actual_sha256": "b2b1dec37582f2e05705f31f48dbfd6a22aaf528e61b183440bb9f724d895673",
+      "receipt_sha256": "b2b1dec37582f2e05705f31f48dbfd6a22aaf528e61b183440bb9f724d895673",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:55+00:00",
+      "physical_rows": 112450,
+      "uncompressed_bytes": 217707,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-04-01_2024-04-30.parquet",
+      "actual_sha256": "42bc266efaf604a5db7aa5902e5743c7be381e98d38fa81e8240a7a417e85bcd",
+      "receipt_sha256": "42bc266efaf604a5db7aa5902e5743c7be381e98d38fa81e8240a7a417e85bcd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:55+00:00",
+      "physical_rows": 107243,
+      "uncompressed_bytes": 220029,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-05-01_2024-05-31.parquet",
+      "actual_sha256": "6aa5c4922113fbb68b75af1f3c2e41aebfef28537f0c2b783e4c7bef410e7b27",
+      "receipt_sha256": "6aa5c4922113fbb68b75af1f3c2e41aebfef28537f0c2b783e4c7bef410e7b27",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:55+00:00",
+      "physical_rows": 107254,
+      "uncompressed_bytes": 244970,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-06-01_2024-06-30.parquet",
+      "actual_sha256": "bb3e7ab571608ff4a9a15241df21d857f803506f041bec12e19c5809b6e7909a",
+      "receipt_sha256": "bb3e7ab571608ff4a9a15241df21d857f803506f041bec12e19c5809b6e7909a",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:55+00:00",
+      "physical_rows": 101922,
+      "uncompressed_bytes": 212707,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-07-01_2024-07-31.parquet",
+      "actual_sha256": "71b8d255ef0cd246dc7c623c81cd8c36f4c845d0b86e30cfcc17ce559a46d6b8",
+      "receipt_sha256": "71b8d255ef0cd246dc7c623c81cd8c36f4c845d0b86e30cfcc17ce559a46d6b8",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:56+00:00",
+      "physical_rows": 123248,
+      "uncompressed_bytes": 261731,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-08-01_2024-08-31.parquet",
+      "actual_sha256": "78d0672a7f28cafcc90461296ea6b6ad034643d978c5671fa5729987f106fbae",
+      "receipt_sha256": "78d0672a7f28cafcc90461296ea6b6ad034643d978c5671fa5729987f106fbae",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:56+00:00",
+      "physical_rows": 117753,
+      "uncompressed_bytes": 240734,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-09-01_2024-09-30.parquet",
+      "actual_sha256": "cbaee54d28cebf83c463b389150a8bc0e789c09ed5ecdf954d9a09160ff7fcfa",
+      "receipt_sha256": "cbaee54d28cebf83c463b389150a8bc0e789c09ed5ecdf954d9a09160ff7fcfa",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:56+00:00",
+      "physical_rows": 101671,
+      "uncompressed_bytes": 226231,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-10-01_2024-10-31.parquet",
+      "actual_sha256": "83541958486bafd68feb337b935e618156b54be6641fefbca40caee441a9a884",
+      "receipt_sha256": "83541958486bafd68feb337b935e618156b54be6641fefbca40caee441a9a884",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:56+00:00",
+      "physical_rows": 96424,
+      "uncompressed_bytes": 200990,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-11-01_2024-11-30.parquet",
+      "actual_sha256": "ba74f64141131d55b6c140b447b92c514ad90da49c4810811bcfb973ca4a00b2",
+      "receipt_sha256": "ba74f64141131d55b6c140b447b92c514ad90da49c4810811bcfb973ca4a00b2",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:57+00:00",
+      "physical_rows": 112701,
+      "uncompressed_bytes": 247127,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-12-01_2024-12-31.parquet",
+      "actual_sha256": "3ad5771606684fd99471e91e35a849d9ef2251047ff3e2af5ce1463328b4b1ac",
+      "receipt_sha256": "3ad5771606684fd99471e91e35a849d9ef2251047ff3e2af5ce1463328b4b1ac",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:57+00:00",
+      "physical_rows": 118309,
+      "uncompressed_bytes": 253360,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-01-01_2025-01-31.parquet",
+      "actual_sha256": "8974edb7e66931fce4bf395828b5c06ed9b767929ed9f9933870524368a15d20",
+      "receipt_sha256": "8974edb7e66931fce4bf395828b5c06ed9b767929ed9f9933870524368a15d20",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:57+00:00",
+      "physical_rows": 97001,
+      "uncompressed_bytes": 208236,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-02-01_2025-02-28.parquet",
+      "actual_sha256": "b588d885c8c0d9731717f44bfc3dd833292a22cd87f755dde3be7ce0ec6251a5",
+      "receipt_sha256": "b588d885c8c0d9731717f44bfc3dd833292a22cd87f755dde3be7ce0ec6251a5",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:57+00:00",
+      "physical_rows": 97112,
+      "uncompressed_bytes": 207766,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-03-01_2025-03-31.parquet",
+      "actual_sha256": "60f8e04a2390a9a809204015f70ff71d07ace82c022b64566b700f3c69510cab",
+      "receipt_sha256": "60f8e04a2390a9a809204015f70ff71d07ace82c022b64566b700f3c69510cab",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:58+00:00",
+      "physical_rows": 113375,
+      "uncompressed_bytes": 239674,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-04-01_2025-04-30.parquet",
+      "actual_sha256": "02e3d0ce4c4fc7e2365866e94203e3d30d2d2ac18aa4773104d29392abfb4816",
+      "receipt_sha256": "02e3d0ce4c4fc7e2365866e94203e3d30d2d2ac18aa4773104d29392abfb4816",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:58+00:00",
+      "physical_rows": 113615,
+      "uncompressed_bytes": 238836,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-05-01_2025-05-31.parquet",
+      "actual_sha256": "09728fd83e7a2e820f6832e6fc710887018fa36efc20d29be95cea9ffddf3a98",
+      "receipt_sha256": "09728fd83e7a2e820f6832e6fc710887018fa36efc20d29be95cea9ffddf3a98",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:58+00:00",
+      "physical_rows": 102850,
+      "uncompressed_bytes": 202668,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-06-01_2025-06-30.parquet",
+      "actual_sha256": "b9404d135a4360e703b321461d09311666283e1b0c8c4a4561e843fb439d805c",
+      "receipt_sha256": "b9404d135a4360e703b321461d09311666283e1b0c8c4a4561e843fb439d805c",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:58+00:00",
+      "physical_rows": 108353,
+      "uncompressed_bytes": 225260,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-07-01_2025-07-31.parquet",
+      "actual_sha256": "12d3f646f8ef9d3a8f58544a98fa060a324e34de39f9e1a2c07bf1fee0f717ba",
+      "receipt_sha256": "12d3f646f8ef9d3a8f58544a98fa060a324e34de39f9e1a2c07bf1fee0f717ba",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:59+00:00",
+      "physical_rows": 124619,
+      "uncompressed_bytes": 258357,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-08-01_2025-08-31.parquet",
+      "actual_sha256": "93c54e8dbf3865f13e21647c795365e7ebf44ffbd219f79eda74c3b703a7ec64",
+      "receipt_sha256": "93c54e8dbf3865f13e21647c795365e7ebf44ffbd219f79eda74c3b703a7ec64",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:59+00:00",
+      "physical_rows": 113891,
+      "uncompressed_bytes": 232169,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-09-01_2025-09-30.parquet",
+      "actual_sha256": "701f8b327de74d99bc8e5d5afcdd2bd193a9b2726d5fc0fabb6e76f2ab02adcd",
+      "receipt_sha256": "701f8b327de74d99bc8e5d5afcdd2bd193a9b2726d5fc0fabb6e76f2ab02adcd",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:59+00:00",
+      "physical_rows": 119456,
+      "uncompressed_bytes": 262791,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-10-01_2025-10-31.parquet",
+      "actual_sha256": "012920b47bff986147193a31d2873b93986e458f5c22d1b2ee3cb5cd4d22aba3",
+      "receipt_sha256": "012920b47bff986147193a31d2873b93986e458f5c22d1b2ee3cb5cd4d22aba3",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:21:59+00:00",
+      "physical_rows": 92467,
+      "uncompressed_bytes": 185079,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-11-01_2025-11-30.parquet",
+      "actual_sha256": "151730612ee848153f7961081ea9007fc14d63bfd9dc46efad1ec111631e41b4",
+      "receipt_sha256": "151730612ee848153f7961081ea9007fc14d63bfd9dc46efad1ec111631e41b4",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:00+00:00",
+      "physical_rows": 108992,
+      "uncompressed_bytes": 211679,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-12-01_2025-12-31.parquet",
+      "actual_sha256": "46de91fbd6c3b8f174f59e1a58154b96d5c01fabf966871e5034402cba210a44",
+      "receipt_sha256": "46de91fbd6c3b8f174f59e1a58154b96d5c01fabf966871e5034402cba210a44",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:00+00:00",
+      "physical_rows": 125582,
+      "uncompressed_bytes": 239112,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-01-01_2026-01-31.parquet",
+      "actual_sha256": "43ad4218a046ce89ec387dc6f0be7796871439898e55a84f34d3bfd19c6acd65",
+      "receipt_sha256": "43ad4218a046ce89ec387dc6f0be7796871439898e55a84f34d3bfd19c6acd65",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:00+00:00",
+      "physical_rows": 109439,
+      "uncompressed_bytes": 225522,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-02-01_2026-02-28.parquet",
+      "actual_sha256": "8abcdb0990350709aca9f0e299a5c1ca5ae6e5d0ea83c86a9af203d5206a5562",
+      "receipt_sha256": "8abcdb0990350709aca9f0e299a5c1ca5ae6e5d0ea83c86a9af203d5206a5562",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:00+00:00",
+      "physical_rows": 76741,
+      "uncompressed_bytes": 156979,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-03-01_2026-03-31.parquet",
+      "actual_sha256": "98fe55525562d3933b696e90908ca1bb9188b83ff7afd478bbc5e34d88eded95",
+      "receipt_sha256": "98fe55525562d3933b696e90908ca1bb9188b83ff7afd478bbc5e34d88eded95",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:01+00:00",
+      "physical_rows": 120776,
+      "uncompressed_bytes": 252074,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-04-01_2026-04-30.parquet",
+      "actual_sha256": "ad7de607660eeb48395080a660e83975fb3fd005148769956776332be2075698",
+      "receipt_sha256": "ad7de607660eeb48395080a660e83975fb3fd005148769956776332be2075698",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:01+00:00",
+      "physical_rows": 115590,
+      "uncompressed_bytes": 246846,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-05-01_2026-05-31.parquet",
+      "actual_sha256": "5f9cf275b79d611d2005727d7a471afd58dcd45d7151f19b38a3c89996b0ad22",
+      "receipt_sha256": "5f9cf275b79d611d2005727d7a471afd58dcd45d7151f19b38a3c89996b0ad22",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:01+00:00",
+      "physical_rows": 99330,
+      "uncompressed_bytes": 211024,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-06-01_2026-06-30.parquet",
+      "actual_sha256": "5b788579f78d25701407a08029e84127e19d2a11cbc082d2d9a2c1e9b5c1bfab",
+      "receipt_sha256": "5b788579f78d25701407a08029e84127e19d2a11cbc082d2d9a2c1e9b5c1bfab",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:01+00:00",
+      "physical_rows": 116065,
+      "uncompressed_bytes": 222658,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-07-01_2026-07-31.parquet",
+      "actual_sha256": "fb851967bce9de41481449fa07580b0deacc6d04c19195dc5587e21c50f926d0",
+      "receipt_sha256": "fb851967bce9de41481449fa07580b0deacc6d04c19195dc5587e21c50f926d0",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:02+00:00",
+      "physical_rows": 127186,
+      "uncompressed_bytes": 239303,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-08-01_2026-08-31.parquet",
+      "actual_sha256": "b5ec5b7aaaee680183c498557e06fa83f35c4dbf6eca27e84d9bfc5fcbc526e8",
+      "receipt_sha256": "b5ec5b7aaaee680183c498557e06fa83f35c4dbf6eca27e84d9bfc5fcbc526e8",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:02+00:00",
+      "physical_rows": 116429,
+      "uncompressed_bytes": 229942,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-09-01_2026-09-30.parquet",
+      "actual_sha256": "e555c0b9738299bd639e044ad0482c11e7a1ef9af2f3c8a3ab25c184c899e13a",
+      "receipt_sha256": "e555c0b9738299bd639e044ad0482c11e7a1ef9af2f3c8a3ab25c184c899e13a",
+      "hash_matches_receipt": true,
+      "exported_at_utc": "2026-11-07T12:22:02+00:00",
+      "physical_rows": 116816,
+      "uncompressed_bytes": 253930,
+      "selected_columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status"
+      ]
+    }
+  ],
+  "symbols": [
+    "600006.SH",
+    "603786.SH",
+    "601118.SH",
+    "600060.SH",
+    "300223.SZ",
+    "603883.SH",
+    "601615.SH",
+    "600985.SH",
+    "000869.SZ",
+    "600549.SH",
+    "300482.SZ",
+    "600536.SH",
+    "600446.SH",
+    "002468.SZ",
+    "002563.SZ",
+    "600956.SH",
+    "002434.SZ",
+    "002268.SZ",
+    "000540.SZ",
+    "605358.SH",
+    "600376.SH",
+    "000528.SZ",
+    "002985.SZ",
+    "600068.SH",
+    "002028.SZ",
+    "000009.SZ",
+    "601718.SH",
+    "001914.SZ",
+    "600307.SH",
+    "600027.SH",
+    "600398.SH",
+    "002242.SZ",
+    "600167.SH",
+    "000046.SZ",
+    "600895.SH",
+    "600808.SH",
+    "600643.SH",
+    "603198.SH",
+    "000826.SZ",
+    "600350.SH",
+    "300037.SZ",
+    "688088.SH",
+    "000799.SZ",
+    "000623.SZ",
+    "600567.SH",
+    "600258.SH",
+    "603056.SH",
+    "600095.SH",
+    "600131.SH",
+    "601778.SH",
+    "002273.SZ",
+    "603568.SH",
+    "601016.SH",
+    "600648.SH",
+    "002191.SZ",
+    "000027.SZ",
+    "600970.SH",
+    "600529.SH",
+    "600787.SH",
+    "002831.SZ",
+    "601880.SH",
+    "002745.SZ",
+    "603858.SH",
+    "601512.SH",
+    "601717.SH",
+    "601828.SH",
+    "002925.SZ",
+    "600765.SH",
+    "300115.SZ",
+    "300026.SZ",
+    "600517.SH",
+    "600329.SH",
+    "002353.SZ",
+    "002506.SZ",
+    "000681.SZ",
+    "002185.SZ",
+    "601106.SH",
+    "000988.SZ",
+    "603885.SH",
+    "002396.SZ",
+    "600460.SH",
+    "601975.SH",
+    "603290.SH",
+    "600466.SH",
+    "002505.SZ",
+    "000718.SZ",
+    "601233.SH",
+    "603260.SH",
+    "600572.SH",
+    "603638.SH",
+    "002948.SZ",
+    "003035.SZ",
+    "600739.SH",
+    "600415.SH",
+    "300133.SZ",
+    "300418.SZ",
+    "002212.SZ",
+    "002705.SZ",
+    "600022.SH",
+    "002385.SZ",
+    "000547.SZ",
+    "601869.SH",
+    "601801.SH",
+    "601958.SH",
+    "002603.SZ",
+    "600754.SH",
+    "002670.SZ",
+    "603707.SH",
+    "002004.SZ",
+    "603719.SH",
+    "300113.SZ",
+    "002249.SZ",
+    "000961.SZ",
+    "002085.SZ",
+    "600908.SH",
+    "603893.SH",
+    "600064.SH",
+    "000898.SZ",
+    "300024.SZ",
+    "002250.SZ",
+    "002408.SZ",
+    "600580.SH",
+    "601187.SH",
+    "300315.SZ",
+    "601568.SH",
+    "000998.SZ",
+    "688002.SH",
+    "600556.SH"
+  ],
+  "identity": "e9271e8d2ef8468bef68e86a27dce43ee6b6cff73ddb3bae8dc40170184476f4",
+  "source_kind": "REAL_CANDIDATE",
+  "stable_security_identity": "UNVERIFIED_EXCHANGE_QUALIFIED_VENDOR_SYMBOL",
+  "historical_available_at": null
+}

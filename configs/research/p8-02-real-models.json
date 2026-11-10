@@ -1,0 +1,30 @@
+{
+  "schema": "P8_02_REAL_MODELS_V1",
+  "price_basis": "RAW_PRICE_EXPLORATORY",
+  "start": "2021-09-13",
+  "end": "2026-09-11",
+  "warm_start": "2021-05-01",
+  "tail_end": "2026-09-30",
+  "symbol_limit": 128,
+  "symbol_rule": "FIRST_SIGNAL_DAY_MEMBERS_ASCENDING_SHA256_SYMBOL",
+  "label": "RAW_OPEN_T_PLUS_6_OVER_RAW_OPEN_T_PLUS_1_MINUS_1",
+  "holding_days": 5,
+  "minimum_cross_section": 20,
+  "top_k": 10,
+  "seed": 20261110,
+  "threads": 1,
+  "splitter": {"initial_train_months": 15, "validation_months": 3, "test_months": 12, "step_months": 12, "purge_days": 6, "embargo_days": 6},
+  "max_folds": 3,
+  "selection": {"k": 4, "minimum_selected": 1, "shortfall_policy": "error", "minimum_coverage": 0.8, "maximum_missing_ratio": 0.2, "maximum_nonfinite_ratio": 0.0, "minimum_observations": 100, "minimum_cross_section": 20, "minimum_dates": 60, "minimum_abs_rank_ic": 0.0, "minimum_direction_consistency": 0.0, "minimum_pair_coverage": 0.8, "redundancy_threshold": 0.95, "orient_by_train_ic": true},
+  "parameters": {
+    "factor_score": {"normalize_by_absolute_weight": true},
+    "ridge": {"alpha": 1.0, "fit_intercept": true, "max_iter": 10000, "tolerance": 0.0001},
+    "lightgbm": {"n_estimators": 100, "learning_rate": 0.03, "num_leaves": 15, "max_depth": 5, "feature_fraction": 0.8, "bagging_fraction": 0.8, "bagging_freq": 1, "reg_alpha": 0.0, "reg_lambda": 1.0, "min_child_samples": 20},
+    "xgboost": {"n_estimators": 100, "learning_rate": 0.03, "max_depth": 3, "min_child_weight": 1.0, "subsample": 0.8, "colsample_bytree": 0.8, "reg_alpha": 0.0, "reg_lambda": 1.0, "gamma": 0.0}
+  },
+  "missing_policy": "NO_FILL; INVALID_SIGNAL_BAR_MASKED_BEFORE_FEATURES; ALL_61_SIGNAL_HISTORY_SESSIONS_READY; COMPLETE_ALL_FEATURES_AND_ALL_7_LABEL_PATH_SESSIONS; COMMON_SAMPLE",
+  "normalization": "SIGNAL_ELIGIBLE_CURRENT_DATE_CROSS_SECTION_ZSCORE_DDOF0_BEFORE_LABEL_FILTER; RIDGE_TRAIN_ONLY_INTERNAL_SCALER",
+  "industry": "NOT_RUN_WITHOUT_HISTORICAL_CLASSIFICATION_EVIDENCE",
+  "uncertainty": "DAILY_PAIRED_RANKIC_NEWEY_WEST_LAG20_DESCRIPTIVE_NO_PVALUE_SEARCH",
+  "financial_boundary": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

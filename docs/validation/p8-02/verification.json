@@ -1,0 +1,34 @@
+{
+  "saved_predictions_recomputed": true,
+  "prediction_rows": 440982,
+  "test_securities": 107,
+  "cross_section_min": 47,
+  "cross_section_max": 100,
+  "test_start": "2023-03-13",
+  "test_end": "2026-03-12",
+  "tracker_records": {
+    "experiments\\A_factor_score.json": "ba5806bf89f38e3d1675b33b9c320a1e838c7bd9112f71252d2b97d4af1398ac",
+    "experiments\\A_lightgbm.json": "c3c33c98ac3a02316073fd4d30263febbea38aca93b35ab384b02208e82ef749",
+    "experiments\\A_ridge.json": "5de4cab408167968de150c485ab86987f8bc69253e294353976463b9f3612999",
+    "experiments\\A_xgboost.json": "b084078b0bc2622be5d54ab9eef6bda454c6abb86ea9fe7061a3c1d0436bc00d",
+    "experiments\\B_factor_score.json": "f4f593ec46ff07396b3055adb62bf40c766783ee41f556540836bd0610a7976c",
+    "experiments\\B_lightgbm.json": "b7f4fd9de6c397c943fe6de09335f2da57eb592882968adbc4ca3929606c499a",
+    "experiments\\B_ridge.json": "c363ba70a9cf24d728c1d0e06451aa69ed5c1389832b1701c65710b295ef74b1",
+    "experiments\\B_xgboost.json": "d5570d9f983b802f0278c72cfa25aeae42545ad8263619516292956a908dd612",
+    "experiments\\C_factor_score.json": "8fe7a25f0cfeefa96ab858cc35224f24d8effa0f8c4aab127454ea4d12f3453d",
+    "runs\\A_factor_score-run.json": "6adba5405513383b58b432c2a022fe04c934379612f657605ef0033df9d7f92f",
+    "runs\\A_lightgbm-run.json": "0e6406df790286874f094f4a0b31bb254dc5ca7f6277415fc7b4c0e2d295bf14",
+    "runs\\A_ridge-run.json": "2608d4fa7e8697676f0206bce646f7a504cbd0c20be056f43712604a37b76cb7",
+    "runs\\A_xgboost-run.json": "f477c452d0f19e4d8363e5fb81174c8be20ab6534d06e79c86ddd25092834310",
+    "runs\\B_factor_score-run.json": "0177457102403e68c95e8b06caa6828c8031c2f26ffab903be3041f2c15b0655",
+    "runs\\B_lightgbm-run.json": "632e1cba9f0a1936977e09781b194a9e59a5f287075da90c97723bb560d719f1",
+    "runs\\B_ridge-run.json": "8c18cfd71e8f52a86c3317c9ae631566f466f2d2ed544d8d7837f1c42db30c99",
+    "runs\\B_xgboost-run.json": "384a9f74c9eb2b765861197ce333fd26f0b402d8f273434cf460a249e170ebac",
+    "runs\\C_factor_score-run.json": "5cbe95cdf523736beca605c69858e18cecb87b180427f07f2995b0ff0302ec48"
+  },
+  "tests": {
+    "contract_and_selector": 41,
+    "exact_label_points": 1,
+    "total_distinct": 42
+  }
+}
