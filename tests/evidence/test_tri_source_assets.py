@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location('tri_source_assets_audit', ROOT / 'tools/data/tri_source_assets_audit.py')
@@ -65,7 +66,17 @@ def test_nested_query_windows_remain_overlap_not_record_conflicts():
     assert AUDIT.overlaps(receipts) == 2
 
 
+def _assert_no_private_absolute_paths(text, name):
+    assert not re.search(r'(?<![A-Za-z0-9+.-])[A-Za-z]:[\\/]', text), name
+
+
 def test_evidence_preserves_unknowns_and_contains_no_private_absolute_paths():
+    for text in ['https://github.com/Wind-Maker1001/FactorLab', 'http://example.com']:
+        _assert_no_private_absolute_paths(text, 'url')
+    for text in [r'C:\Users\example', 'D:/private/data',
+                 r'Audit source: C:\Users\example', 'Audit source: D:/private/data']:
+        with pytest.raises(AssertionError, match='private-path-regression'):
+            _assert_no_private_absolute_paths(text, 'private-path-regression')
     root = ROOT / 'docs/validation/tri-source/assets'
     summary = json.loads((root / 'summary.json').read_text(encoding='utf-8'))
     assert summary['status'] == 'PARTIAL_READ_ONLY_AUDIT'
@@ -74,7 +85,7 @@ def test_evidence_preserves_unknowns_and_contains_no_private_absolute_paths():
     for path in root.iterdir():
         if path.suffix in ['.csv', '.json', '.md']:
             text = path.read_text(encoding='utf-8')
-            assert not re.search(r'[A-Za-z]:[/\\]', text), path.name
+            _assert_no_private_absolute_paths(text, path.name)
     provenance = json.loads((root / 'provenance.json').read_text(encoding='utf-8'))
     assert all(v['historical_vintage'] == 'PIT_UNVERIFIED' for v in provenance['historical_identity'].values())
     actual = [i for i in provenance['identities'] if 'hash_matches_receipt' in i]
