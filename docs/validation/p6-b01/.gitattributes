@@ -1,0 +1,1 @@
+nvda/** -filter -diff -merge -text
