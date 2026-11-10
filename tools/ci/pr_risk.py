@@ -153,9 +153,9 @@ def output_path_literals(parsed):
     return ignored
 
 
-def path_literals(parsed, path):
-    """Keep unresolved inputs conservative, but resolve statically rooted paths."""
-    outputs = output_path_literals(parsed)
+def path_values(parsed, path, parameters=None):
+    """Resolve literal paths without executing source or assuming caller exclusivity."""
+    parameters = parameters or {}
     parents = {child: node for node in ast.walk(parsed) for child in ast.iter_child_nodes(node)}
     assignments = {}
     for node in ast.walk(parsed):
@@ -193,8 +193,17 @@ def path_literals(parsed, path):
                             for node in ast.walk(parsed)
                             if isinstance(node, ast.Name) and node.id == name)}
 
+    def parameter(node):
+        owner = parents.get(node)
+        while owner is not None and not isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            owner = parents.get(owner)
+        return parameters.get((owner, node.id))
+
     def is_path(node, seen=frozenset()):
         if isinstance(node, ast.Name):
+            proven = parameter(node)
+            if proven is not None:
+                return proven[1]
             sources = assignments.get(node.id, ())
             return (len(sources) == 1 and bindings.get(node.id) == 1 and node.id not in seen
                     and is_path(sources[0], seen | {node.id}))
@@ -213,6 +222,9 @@ def path_literals(parsed, path):
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             return {node.value}
         if isinstance(node, ast.Name):
+            proven = parameter(node)
+            if proven is not None:
+                return proven[0]
             if node.id == '__file__' and node.id not in bindings:
                 return {'/__factorlab_repository__/' + path}
             sources = assignments.get(node.id, ())
@@ -250,7 +262,99 @@ def path_literals(parsed, path):
                         else a + b for a in left for b in right}
         return None
 
-    ignored = set(outputs)
+    return values, is_path, parents, bindings
+
+
+def argument_provenance(parsed_files, modules):
+    """Bound direct calls to unique top-level functions, including one forwarding hop."""
+    functions, references, calls, blocked = {}, {}, {}, set()
+    for path, parsed in parsed_files.items():
+        _, _, parents, bindings = path_values(parsed, path)
+        for node in parsed.body:
+            if (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and bindings.get(node.name) == 1 and not node.decorator_list):
+                functions[path, node.name] = node
+        references[path] = (parents, bindings)
+    for path, parsed in parsed_files.items():
+        parents, bindings = references[path]
+        targets = {name: (path, name) for source, name in functions if source == path}
+        for node in ast.walk(parsed):
+            if isinstance(node, ast.ImportFrom) and not node.level:
+                sources = modules.get(node.module, ())
+                for alias in node.names:
+                    name = alias.asname or alias.name
+                    if len(sources) == 1 and bindings.get(name) == 1 and not alias.asname:
+                        target = (next(iter(sources)), alias.name)
+                        if target in functions:
+                            targets[name] = target
+            elif isinstance(node, ast.ImportFrom) and node.module in modules:
+                blocked.update(key for key in functions if key[0] in modules[node.module])
+        for node in ast.walk(parsed):
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and node.id in targets:
+                target = targets[node.id]
+                parent = parents.get(node)
+                if isinstance(parent, ast.Call) and parent.func is node:
+                    calls.setdefault(target, []).append((path, parent))
+                else:
+                    blocked.add(target)
+    # Unresolved module-qualified access and aliased imports cannot establish an
+    # exhaustive direct-call set for an exported function.
+    for parsed in parsed_files.values():
+        for node in ast.walk(parsed):
+            if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id in DYNAMIC_CALLS | {'getattr', 'globals', 'locals', 'vars'}):
+                blocked.update(functions)
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    blocked.update(key for key in functions if key[0] in modules.get(alias.name, ()))
+            elif isinstance(node, ast.Attribute):
+                blocked.update(key for key in functions if key[1] == node.attr)
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    if alias.asname or alias.name == '*':
+                        blocked.update(key for key in functions
+                                       if alias.name in (key[1], '*'))
+    proven = {path: {} for path in parsed_files}
+    for _ in range(2):
+        updated = {path: dict(items) for path, items in proven.items()}
+        for key, function in functions.items():
+            if key in blocked or not calls.get(key):
+                continue
+            args = function.args
+            if args.vararg or args.kwarg or args.posonlyargs:
+                continue
+            parameters = args.args + args.kwonlyargs
+            for index, parameter in enumerate(parameters):
+                name = parameter.arg
+                _, _, _, bindings = path_values(parsed_files[key[0]], key[0])
+                if bindings.get(name) != 1:
+                    continue
+                groups, path_types = [], []
+                for caller, call in calls[key]:
+                    if any(isinstance(arg, ast.Starred) for arg in call.args) or any(
+                            keyword.arg is None for keyword in call.keywords):
+                        break
+                    supplied = [keyword.value for keyword in call.keywords if keyword.arg == name]
+                    if index < len(args.args) and index < len(call.args):
+                        supplied.append(call.args[index])
+                    if len(supplied) != 1:
+                        break
+                    values, is_path, _, _ = path_values(parsed_files[caller], caller, proven[caller])
+                    value = values(supplied[0])
+                    if value is None:
+                        break
+                    groups.append(value)
+                    path_types.append(is_path(supplied[0]))
+                else:
+                    updated[key[0]][function, name] = (set().union(*groups), all(path_types))
+        proven = updated
+    return proven
+
+
+def path_literals(parsed, path, parameters=None):
+    """Keep unresolved inputs conservative, but resolve statically rooted paths."""
+    values, is_path, parents, bindings = path_values(parsed, path, parameters)
+    ignored = set(output_path_literals(parsed))
     logging_modules = {alias.asname or alias.name for node in parsed.body
                        if isinstance(node, ast.Import) for alias in node.names
                        if alias.name == 'logging' and bindings.get(alias.asname or alias.name) == 1}
@@ -299,7 +403,8 @@ def path_literals(parsed, path):
             literals.extend(values(expression))
         else:
             literals.append(node.value)
-    # TODO: Resolve caller/CLI directory provenance for basename-only input reads.
+    # TODO: Resolve CLI attributes and iterated directory collections; direct
+    # argument provenance alone cannot disambiguate these basename-only reads.
     return literals
 
 
@@ -312,14 +417,17 @@ def graph(texts, names):
             modules.setdefault(module, set()).add(path)
             if path.startswith('tools/data/'):
                 modules.setdefault(PurePosixPath(path).stem, set()).add(path)
+    parsed_files = {path: ast.parse(text, filename=path) for path, text in texts.items()
+                    if path.endswith('.py')}
+    parameters = argument_provenance(parsed_files, modules)
     consumers, uncertain = {}, {}
     def edge(dependency, consumer):
         consumers.setdefault(dependency, set()).add(consumer)
     for path, text in texts.items():
         literals = []
         if path.endswith('.py'):
-            parsed = ast.parse(text, filename=path)
-            literals = path_literals(parsed, path)
+            parsed = parsed_files[path]
+            literals = path_literals(parsed, path, parameters[path])
             package = path.removeprefix('src/').removesuffix('.py').replace('/', '.')
             if not path.endswith('/__init__.py'):
                 package = package.rpartition('.')[0]

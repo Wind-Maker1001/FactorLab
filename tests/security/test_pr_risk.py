@@ -237,6 +237,81 @@ def test_unknown_mention_consumers_remain_conservative(tmp_path, reference):
     assert dict(path=consumer, rule='affected-consumer:' + changed) in result['reasons']['review']
 
 
+@pytest.mark.parametrize('filename', ['receipt.json', 'identity.json', 'contrasts.csv'])
+@pytest.mark.parametrize('imported,forward', [(False, False), (True, False), (False, True)])
+def test_direct_argument_paths_preserve_only_actual_input_reasons(tmp_path, filename, imported, forward):
+    init_repo(tmp_path)
+    consumer = 'tools/ci/consumer.py'
+    helper = 'tools/ci/helper.py' if imported else consumer
+    definition = ('from pathlib import Path\n'
+                  'def consume(folder):\n'
+                  ' source = folder / "' + filename + '"\n'
+                  ' return source.read_text()\n')
+    caller = 'from pathlib import Path\n'
+    if imported:
+        write(tmp_path, helper, definition)
+        caller += 'from tools.ci.helper import consume\n'
+    else:
+        caller = definition
+    if forward:
+        caller += 'def forward(directory):\n return consume(folder=directory)\n'
+        caller += 'forward(Path("local-ci/current"))\n'
+    else:
+        caller += 'consume(folder=Path("local-ci/current"))\n'
+    write(tmp_path, consumer, caller)
+    actual = 'local-ci/current/' + filename
+    write(tmp_path, actual, 'old')
+    base = commit(tmp_path)
+    research = 'docs/validation/new/' + filename
+    write(tmp_path, research, 'report')
+    result = select(tmp_path, base, commit(tmp_path))
+    assert not any(result[flag] for flag in FLAGS)
+    assert helper not in result['affected']
+    assert all(not result['reasons'][flag] for flag in FLAGS)
+    base = result['head']
+    write(tmp_path, actual, 'new')
+    result = select(tmp_path, base, commit(tmp_path))
+    for flag in FLAGS:
+        assert dict(path=helper, rule='affected-consumer:' + actual) in result['reasons'][flag]
+
+
+@pytest.mark.parametrize('extra', [
+    'consume(unknown())\n',
+    'callback = consume\n',
+    'consume = external\n',
+    'consume.__defaults__ = (unknown(),)\n',
+    'getattr(module, "consume")(unknown())\n',
+    'from tools.ci.consumer import consume as callback\n',
+])
+def test_argument_provenance_unknown_callers_and_escapes_keep_reasons(tmp_path, extra):
+    init_repo(tmp_path)
+    consumer = 'tools/ci/consumer.py'
+    write(tmp_path, consumer, 'from pathlib import Path\n'
+          'def consume(folder):\n return (folder / "receipt.json").read_text()\n'
+          'consume(Path("local-ci/current"))\n' + extra)
+    base = commit(tmp_path)
+    changed = 'docs/validation/new/receipt.json'
+    write(tmp_path, changed, '{}')
+    result = select(tmp_path, base, commit(tmp_path))
+    for flag in FLAGS:
+        assert dict(path=consumer, rule='affected-consumer:' + changed) in result['reasons'][flag]
+
+
+def test_argument_parameter_reassignment_keeps_input_reasons(tmp_path):
+    init_repo(tmp_path)
+    consumer = 'tools/ci/consumer.py'
+    write(tmp_path, consumer, 'from pathlib import Path\n'
+          'def consume(folder):\n folder = unknown()\n'
+          ' return (folder / "receipt.json").read_text()\n'
+          'consume(Path("local-ci/current"))\n')
+    base = commit(tmp_path)
+    changed = 'docs/validation/new/receipt.json'
+    write(tmp_path, changed, '{}')
+    result = select(tmp_path, base, commit(tmp_path))
+    for flag in FLAGS:
+        assert dict(path=consumer, rule='affected-consumer:' + changed) in result['reasons'][flag]
+
+
 def test_output_exclusion_does_not_hide_dynamic_execution(tmp_path):
     init_repo(tmp_path)
     write(tmp_path, 'src/factorlab/cli.py', 'import importlib\nimportlib.import_module(input())\n')
