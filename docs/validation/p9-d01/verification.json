@@ -1,0 +1,14 @@
+{
+  "targeted_tests": {
+    "command": "python -I -B -X utf8 -c \"import sys; sys.path.insert(0,'src'); import pytest; sys.exit(pytest.main(['-q','-p','no:cacheprovider','tests/research/test_p9_market_evidence.py']))\"",
+    "passed": 41,
+    "seconds": 1.49
+  },
+  "evidence_tool": {
+    "exit_code": 0,
+    "status": "P9_D01_PARTIAL",
+    "sensitivity_rows": 8,
+    "existing_rule_sell_blocked": true
+  },
+  "vendor_reader_warning": "openpyxl: Workbook contains no default style; target values parsed successfully"
+}

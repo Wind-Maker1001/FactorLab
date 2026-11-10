@@ -1,0 +1,62 @@
+{
+  "documents": [
+    {
+      "id": "suspension",
+      "local_name": "issuer-suspension/document.pdf",
+      "uri": "https://static.cninfo.com.cn/finalpage/2023-04-26/1216579098.PDF",
+      "sha256": "585d0966d402c6c05c2f4a75e76609e410e565df223bee78bb4e2070d280e9c2",
+      "bytes": 135032,
+      "publication_time": "2023-04-26",
+      "verified_at": "2026-11-10T17:34:26.312513+00:00",
+      "source_class": "ISSUER_ANNOUNCEMENT",
+      "excerpt": "自2023年4月26日开市起停牌，并将在要约收购结果公告日开市起复牌。",
+      "known_at_limitation": "Publication date upper bound; current acquisition is not historical vendor delivery evidence"
+    },
+    {
+      "id": "resumption",
+      "local_name": "issuer-resumption/document.pdf",
+      "uri": "https://static.cninfo.com.cn/finalpage/2023-05-05/1216746035.PDF",
+      "sha256": "b0047bf17198a0ad9698d7d6ffbe54286c3f87ecb44159684ab6d222f66e884a",
+      "bytes": 163688,
+      "publication_time": "2023-05-05",
+      "verified_at": "2026-11-10T17:34:26.312513+00:00",
+      "source_class": "ISSUER_ANNOUNCEMENT",
+      "excerpt": "自2023年5月5日星期五上午开市起复牌。",
+      "known_at_limitation": "Publication date upper bound; current acquisition is not historical vendor delivery evidence"
+    },
+    {
+      "id": "risk",
+      "local_name": "issuer-risk/document.pdf",
+      "uri": "https://pdf.dfcfw.com/pdf/H2_AN202304291586106477_1.pdf",
+      "sha256": "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642f90cd54cc2e456",
+      "bytes": 199870,
+      "publication_time": "2023-04-29",
+      "verified_at": "2026-11-10T17:34:26.312513+00:00",
+      "source_class": "ISSUER_ANNOUNCEMENT",
+      "excerpt": "自2023年5月5日起被实施退市风险警示；简称变更为*ST中天；5月4日停牌一天，5月5日开市起复牌；日涨跌幅限制比例为5%。",
+      "known_at_limitation": "Publication date upper bound; current acquisition is not historical vendor delivery evidence"
+    },
+    {
+      "id": "trading",
+      "local_name": "sina-trading/document.html",
+      "uri": "https://finance.sina.com.cn/roll/2023-05-10/doc-imytfksn8482215.shtml",
+      "sha256": "790ce8103d74194158f296a4ccc83d042220e6d6bb41d1b21114634d9c630d7c",
+      "bytes": 100461,
+      "publication_time": "2023-05-10T02:46:00+08:00",
+      "verified_at": "2026-11-10T17:34:26.312513+00:00",
+      "source_class": "ISSUER_ANNOUNCEMENT_NEWS_REPRINT",
+      "excerpt": "2023年5月5日、5月8日、5月9日连续三个交易日收盘价跌幅偏离值累计超过12%。",
+      "known_at_limitation": "Publication date upper bound; current acquisition is not historical vendor delivery evidence"
+    }
+  ],
+  "observation_identity": {
+    "security": "002408.SZ",
+    "date": "2023-04-25",
+    "field": "raw_close",
+    "status": "OBSERVED_RAW_CLOSE",
+    "price": "7.12",
+    "volume": 41442057,
+    "source_sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+  },
+  "verified_at": "2026-11-10T17:34:26.312513+00:00"
+}
