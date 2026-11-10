@@ -1,0 +1,28 @@
+{
+  "observation_cutoff": "2026-11-11T00:00:00Z",
+  "snapshots": [
+    {
+      "source_id": "BINANCE_USDM_PUBLIC_REST",
+      "snapshot": "docs/validation/p6-b01/nvda/runs/real",
+      "data_version": "59f806b0bb04df2e4f12de805779cdab1e029d71629c446b2c43111c729cb49c",
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "queries": [
+        {"kind": "bars", "start": "2026-11-01T00:00:00Z", "end": "2026-11-03T00:00:00Z"},
+        {"kind": "funding", "start": "2026-10-31T00:00:00Z", "end": "2026-11-10T00:00:00Z"},
+        {"kind": "mark", "purpose": "snapshot", "start": "2026-11-10T00:00:00Z", "end": "2026-11-11T00:00:00Z"},
+        {"kind": "mark", "start": "2026-10-31T00:00:00Z", "end": "2026-11-10T00:00:00Z"}
+      ]
+    },
+    {
+      "source_id": "BINANCE_EQUITY",
+      "data_version": "d6873933696da1241cbe58838e0d25166fd3bf550fde5a9462362809c9e8c849",
+      "instrument_id": "BINANCE:EQUITY:NVDA",
+      "queries": [
+        {"kind": "quotes", "time_basis": "acquired_at", "start": "2026-11-10T00:00:00Z", "end": "2026-11-11T00:00:00Z"},
+        {"kind": "prices", "start": "2026-11-10T00:00:00Z", "end": "2026-11-11T00:00:00Z"},
+        {"kind": "open_bars", "start": "2026-11-10T00:00:00Z", "end": "2026-11-11T00:00:00Z"},
+        {"kind": "bars", "start": "2026-11-10T00:00:00Z", "end": "2026-11-11T00:00:00Z"}
+      ]
+    }
+  ]
+}

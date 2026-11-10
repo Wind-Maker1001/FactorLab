@@ -1,0 +1,332 @@
+{
+  "boundaries": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "datasets": [
+    {
+      "source_id": "BINANCE_USDM_PUBLIC_REST",
+      "kind": "bars",
+      "data_version": "59f806b0bb04df2e4f12de805779cdab1e029d71629c446b2c43111c729cb49c",
+      "status": "READ",
+      "rows": 2,
+      "instrument_ids": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "event_start": "2026-11-01T00:00:00+00:00",
+      "event_end": "2026-11-02T00:00:00+00:00",
+      "null_event_times": 0,
+      "acquired_start": "2026-11-10T09:24:03.954728+00:00",
+      "acquired_end": "2026-11-10T09:24:03.954728+00:00",
+      "raw_receipts": 6,
+      "table_evidence": {
+        "bars": {
+          "path": "bars.parquet",
+          "rows": 10,
+          "sha256": "120d2bf5cd523b848a9b1ec493492410caef0053a205ef87349bf9cd10523326"
+        },
+        "funding": {
+          "path": "funding.parquet",
+          "rows": 30,
+          "sha256": "c8938ff2ec62d03dbc11ee15c56b43879ba75c32566a963aefd66ea59a442013"
+        },
+        "mark": {
+          "path": "mark.parquet",
+          "rows": 1,
+          "sha256": "18b2a7b5f98eb98939ba4d1a198d8ca16c81343b3dd31e10dd45c950590426da"
+        }
+      },
+      "evidence_status": [
+        "NO LIVE MONEY",
+        "PIT_UNVERIFIED",
+        "HFQ_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED",
+        "HISTORICAL_AVAILABILITY_UNVERIFIED"
+      ]
+    },
+    {
+      "source_id": "BINANCE_USDM_PUBLIC_REST",
+      "kind": "funding",
+      "data_version": "59f806b0bb04df2e4f12de805779cdab1e029d71629c446b2c43111c729cb49c",
+      "status": "READ",
+      "rows": 30,
+      "instrument_ids": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "event_start": "2026-10-31T00:00:00.001000+00:00",
+      "event_end": "2026-11-09T16:00:00.001000+00:00",
+      "null_event_times": 0,
+      "acquired_start": "2026-11-10T09:24:03.954728+00:00",
+      "acquired_end": "2026-11-10T09:24:03.954728+00:00",
+      "raw_receipts": 6,
+      "table_evidence": {
+        "bars": {
+          "path": "bars.parquet",
+          "rows": 10,
+          "sha256": "120d2bf5cd523b848a9b1ec493492410caef0053a205ef87349bf9cd10523326"
+        },
+        "funding": {
+          "path": "funding.parquet",
+          "rows": 30,
+          "sha256": "c8938ff2ec62d03dbc11ee15c56b43879ba75c32566a963aefd66ea59a442013"
+        },
+        "mark": {
+          "path": "mark.parquet",
+          "rows": 1,
+          "sha256": "18b2a7b5f98eb98939ba4d1a198d8ca16c81343b3dd31e10dd45c950590426da"
+        }
+      },
+      "evidence_status": [
+        "NO LIVE MONEY",
+        "PIT_UNVERIFIED",
+        "HFQ_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED",
+        "HISTORICAL_AVAILABILITY_UNVERIFIED"
+      ]
+    },
+    {
+      "source_id": "BINANCE_USDM_PUBLIC_REST",
+      "kind": "mark",
+      "data_version": "59f806b0bb04df2e4f12de805779cdab1e029d71629c446b2c43111c729cb49c",
+      "status": "READ",
+      "rows": 1,
+      "instrument_ids": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "event_start": "2026-11-10T09:23:59.844000+00:00",
+      "event_end": "2026-11-10T09:23:59.844000+00:00",
+      "null_event_times": 0,
+      "acquired_start": "2026-11-10T09:24:03.954728+00:00",
+      "acquired_end": "2026-11-10T09:24:03.954728+00:00",
+      "raw_receipts": 6,
+      "table_evidence": {
+        "bars": {
+          "path": "bars.parquet",
+          "rows": 10,
+          "sha256": "120d2bf5cd523b848a9b1ec493492410caef0053a205ef87349bf9cd10523326"
+        },
+        "funding": {
+          "path": "funding.parquet",
+          "rows": 30,
+          "sha256": "c8938ff2ec62d03dbc11ee15c56b43879ba75c32566a963aefd66ea59a442013"
+        },
+        "mark": {
+          "path": "mark.parquet",
+          "rows": 1,
+          "sha256": "18b2a7b5f98eb98939ba4d1a198d8ca16c81343b3dd31e10dd45c950590426da"
+        }
+      },
+      "evidence_status": [
+        "NO LIVE MONEY",
+        "PIT_UNVERIFIED",
+        "HFQ_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED",
+        "HISTORICAL_AVAILABILITY_UNVERIFIED"
+      ]
+    },
+    {
+      "source_id": "BINANCE_USDM_PUBLIC_REST",
+      "kind": "mark",
+      "data_version": "59f806b0bb04df2e4f12de805779cdab1e029d71629c446b2c43111c729cb49c",
+      "status": "UNAVAILABLE",
+      "reason": "mark is a snapshot, not historical valuation"
+    },
+    {
+      "source_id": "BINANCE_EQUITY",
+      "kind": "quotes",
+      "data_version": "d6873933696da1241cbe58838e0d25166fd3bf550fde5a9462362809c9e8c849",
+      "status": "READ",
+      "rows": 16,
+      "instrument_ids": [
+        "BINANCE:EQUITY:NVDA"
+      ],
+      "event_start": "2026-11-10T10:16:01+00:00",
+      "event_end": "2026-11-10T10:16:24+00:00",
+      "null_event_times": 1,
+      "acquired_start": "2026-11-10T10:15:59.227253+00:00",
+      "acquired_end": "2026-11-10T10:16:27.335706+00:00",
+      "raw_receipts": 34,
+      "table_evidence": {
+        "bars": [],
+        "gaps": [
+          {
+            "path": "gaps-000000.parquet",
+            "rows": 3,
+            "sha256": "c5522eacc1eed20a0f8bf2fb81852300315f2d49d25276d987cbc825528e1387"
+          }
+        ],
+        "open_bars": [
+          {
+            "path": "open_bars-000000.parquet",
+            "rows": 1,
+            "sha256": "4d5137cbe6291955b09d810b87478256a042c85824147439bee50bfbccada4ac"
+          }
+        ],
+        "prices": [
+          {
+            "path": "prices-000000.parquet",
+            "rows": 3,
+            "sha256": "baded75d0fd349e59e56ffd325da5a7cf479fe83a0821415e352315194a9aa33"
+          }
+        ],
+        "quotes": [
+          {
+            "path": "quotes-000000.parquet",
+            "rows": 16,
+            "sha256": "4817a394521338fbc4d49c419d585749c9e0caf125a0407bfd1a83d7161b9d11"
+          }
+        ],
+        "sessions": [],
+        "symbols": [
+          {
+            "path": "symbols-000000.parquet",
+            "rows": 7957,
+            "sha256": "d56aac216238b48bcc6526f53ed342861bcfb71d832ea41e0932972ce39d07c4"
+          }
+        ]
+      },
+      "evidence_status": [
+        "NO LIVE MONEY",
+        "PIT_UNVERIFIED",
+        "HFQ_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED",
+        "HISTORICAL_AVAILABILITY_UNVERIFIED"
+      ]
+    },
+    {
+      "source_id": "BINANCE_EQUITY",
+      "kind": "prices",
+      "data_version": "d6873933696da1241cbe58838e0d25166fd3bf550fde5a9462362809c9e8c849",
+      "status": "READ",
+      "rows": 3,
+      "instrument_ids": [
+        "BINANCE:EQUITY:NVDA"
+      ],
+      "event_start": "2026-11-10T10:16:04.027000+00:00",
+      "event_end": "2026-11-10T10:16:24.027000+00:00",
+      "null_event_times": 0,
+      "acquired_start": "2026-11-10T10:16:10.289768+00:00",
+      "acquired_end": "2026-11-10T10:16:28.499350+00:00",
+      "raw_receipts": 34,
+      "table_evidence": {
+        "bars": [],
+        "gaps": [
+          {
+            "path": "gaps-000000.parquet",
+            "rows": 3,
+            "sha256": "c5522eacc1eed20a0f8bf2fb81852300315f2d49d25276d987cbc825528e1387"
+          }
+        ],
+        "open_bars": [
+          {
+            "path": "open_bars-000000.parquet",
+            "rows": 1,
+            "sha256": "4d5137cbe6291955b09d810b87478256a042c85824147439bee50bfbccada4ac"
+          }
+        ],
+        "prices": [
+          {
+            "path": "prices-000000.parquet",
+            "rows": 3,
+            "sha256": "baded75d0fd349e59e56ffd325da5a7cf479fe83a0821415e352315194a9aa33"
+          }
+        ],
+        "quotes": [
+          {
+            "path": "quotes-000000.parquet",
+            "rows": 16,
+            "sha256": "4817a394521338fbc4d49c419d585749c9e0caf125a0407bfd1a83d7161b9d11"
+          }
+        ],
+        "sessions": [],
+        "symbols": [
+          {
+            "path": "symbols-000000.parquet",
+            "rows": 7957,
+            "sha256": "d56aac216238b48bcc6526f53ed342861bcfb71d832ea41e0932972ce39d07c4"
+          }
+        ]
+      },
+      "evidence_status": [
+        "NO LIVE MONEY",
+        "PIT_UNVERIFIED",
+        "HFQ_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED",
+        "HISTORICAL_AVAILABILITY_UNVERIFIED"
+      ]
+    },
+    {
+      "source_id": "BINANCE_EQUITY",
+      "kind": "open_bars",
+      "data_version": "d6873933696da1241cbe58838e0d25166fd3bf550fde5a9462362809c9e8c849",
+      "status": "READ",
+      "rows": 1,
+      "instrument_ids": [
+        "BINANCE:EQUITY:NVDA"
+      ],
+      "event_start": "2026-11-10T10:15:00+00:00",
+      "event_end": "2026-11-10T10:15:00+00:00",
+      "null_event_times": 0,
+      "acquired_start": "2026-11-10T10:16:04.144279+00:00",
+      "acquired_end": "2026-11-10T10:16:04.144279+00:00",
+      "raw_receipts": 34,
+      "table_evidence": {
+        "bars": [],
+        "gaps": [
+          {
+            "path": "gaps-000000.parquet",
+            "rows": 3,
+            "sha256": "c5522eacc1eed20a0f8bf2fb81852300315f2d49d25276d987cbc825528e1387"
+          }
+        ],
+        "open_bars": [
+          {
+            "path": "open_bars-000000.parquet",
+            "rows": 1,
+            "sha256": "4d5137cbe6291955b09d810b87478256a042c85824147439bee50bfbccada4ac"
+          }
+        ],
+        "prices": [
+          {
+            "path": "prices-000000.parquet",
+            "rows": 3,
+            "sha256": "baded75d0fd349e59e56ffd325da5a7cf479fe83a0821415e352315194a9aa33"
+          }
+        ],
+        "quotes": [
+          {
+            "path": "quotes-000000.parquet",
+            "rows": 16,
+            "sha256": "4817a394521338fbc4d49c419d585749c9e0caf125a0407bfd1a83d7161b9d11"
+          }
+        ],
+        "sessions": [],
+        "symbols": [
+          {
+            "path": "symbols-000000.parquet",
+            "rows": 7957,
+            "sha256": "d56aac216238b48bcc6526f53ed342861bcfb71d832ea41e0932972ce39d07c4"
+          }
+        ]
+      },
+      "evidence_status": [
+        "NO LIVE MONEY",
+        "PIT_UNVERIFIED",
+        "HFQ_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED",
+        "HISTORICAL_AVAILABILITY_UNVERIFIED"
+      ]
+    },
+    {
+      "source_id": "BINANCE_EQUITY",
+      "kind": "bars",
+      "data_version": "d6873933696da1241cbe58838e0d25166fd3bf550fde5a9462362809c9e8c849",
+      "status": "UNAVAILABLE",
+      "reason": "EQUITY_CLOSED_BAR_RESEARCH_NOT_AVAILABLE"
+    }
+  ],
+  "elapsed_seconds": 0.3085511000244878,
+  "python_peak_allocated_bytes": 4635479
+}
