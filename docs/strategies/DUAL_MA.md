@@ -2,8 +2,9 @@
 
 `NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED`
 
-本功能独立于 ModelFactory、多因子排名及训练流程。当前可交付的是可复用的软件策略、
-执行适配及合成数据验收。中国石油 2018 年真实收益没有完成，见
+本功能独立于 ModelFactory、多因子排名及训练流程。原有CLI维持合成验证与正式门禁。
+独立的 [EXPLORATORY_REAL_DATA 入口](EXPLORATORY_REAL_DATA.md) 支持受限真实历史原价研究；
+中国石油2018年已完成价格收益比较，含分红总收益仍不可用。正式资格缺口见
 [数据阻塞报告](DUAL_MA_2018_DATA_STATUS.md)。
 
 ## 运行

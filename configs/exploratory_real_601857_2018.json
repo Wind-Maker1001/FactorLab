@@ -1,0 +1,19 @@
+{
+  "source": "CSMAR_PREPARED",
+  "manifest_sha256": "d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+  "warmup_start": "2017-01-01",
+  "strategy": {
+    "symbol": "601857.SH",
+    "start": "2018-01-01",
+    "end": "2018-12-31",
+    "short_window": 5,
+    "long_window": 20,
+    "initial_cash": 100000.0
+  },
+  "fees": {
+    "commission_bps": 3.0,
+    "minimum_commission_cny": 5.0,
+    "slippage_bps": 5.0,
+    "transfer_fee_bps": 0.0
+  }
+}
