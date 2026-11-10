@@ -1,0 +1,69 @@
+{
+  "bigquant": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b",
+      "receipt_sha256": "67854b4ca8c65a67791c04cfa1c2a9c3b78acd8bafdc805cc133595417743c3e",
+      "exported_at": "2026-11-07T12:20:29+00:00"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf",
+      "receipt_sha256": "77216d38414ffb00f773d0c74cc68d042579e208b911ee6977ccb79475b40249",
+      "exported_at": "2026-11-07T12:20:30+00:00"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286",
+      "receipt_sha256": "cd9296a408b775cbd4a4dc2a1e4475df57ab496b8515ef50faf94257aca2b555",
+      "exported_at": "2026-11-07T12:21:52+00:00"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d",
+      "receipt_sha256": "a8882314ebc12f754f15d499f7ae65db69a6dc8ac0eb8c982e9daa5dbb808e1a",
+      "exported_at": "2026-11-07T12:21:52+00:00"
+    }
+  ],
+  "CSMAR": {
+    "archive": "日个股回报率文件231200343(仅供广东金融学院使用).zip",
+    "member": "TRDNEW_Dalyr.xlsx",
+    "sha256": "11fff3efe54ae6818e145deeb2c85dbe8fe1cfea873bff7a13d5cc5a34116d45",
+    "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+    "prefix_rows": 905320
+  },
+  "CNRDS": {
+    "source": "CNRDS",
+    "member": "2023/个股日回报率-2023_1.xlsx",
+    "sha256": "1cab5468bf25114dfe084800cf8b43a90011a932b1f9ce7fb969825e75a6f8f4",
+    "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+    "scanned_prefix_rows": 220568
+  },
+  "tdx": {
+    "file": "sz002408.day",
+    "sha256": "42c80b6f826abddf216fc5738c4a3847c09660fd62e6c3ae6235e76d2e4cebb8",
+    "audit_status": "WARN",
+    "target_dates": [
+      "2023-04-25",
+      "2023-05-05"
+    ],
+    "candidate_divisor": 100,
+    "price_scale_status": "UNVERIFIED",
+    "target_000540": "NOT_IN_EXISTING_ASSET_INDEX"
+  },
+  "historical_vendor_delivery": "UNKNOWN",
+  "publication_queries": {
+    "eastmoney_index_sha256": "35fa8a7dd1a2d05f1f3c7d2a5c554c8728a0cdffa3c273fa14a2225c0cd08137",
+    "cninfo_queries": "NO_RECORDS_RETURNED; NOT_NEGATIVE_EVIDENCE"
+  },
+  "preserved_account_artifacts": {
+    "B_factor_score": {
+      "position_sha256": "2d0dda9fafe872a191d6175d5be2c787aa4e72fa86b0e82ef5315585f04860c8",
+      "nav_sha256": "769470c8e4bc77013d98098bdddc394c0b6825d71d437e394e0a19d14bf128c1"
+    },
+    "B_ridge": {
+      "position_sha256": "05f998adcf5fc510610f329d27afe3460eba93d2cb2a9f313332392479e397c1",
+      "nav_sha256": "4189f99a51f9caf12cb571607eda35f379a554b8d3874da510bf721aaadbdbd1"
+    }
+  }
+}

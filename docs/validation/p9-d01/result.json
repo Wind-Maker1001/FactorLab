@@ -1,0 +1,159 @@
+{
+  "ancillary": [
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr.xlsx",
+      "sha256": "11fff3efe54ae6818e145deeb2c85dbe8fe1cfea873bff7a13d5cc5a34116d45",
+      "scanned_prefix_rows": 905317,
+      "target_rows": 11,
+      "suspension_filled_rows": 4,
+      "target_st_status": 3,
+      "may05_st_conflict": "CSMAR_1_VERSUS_ISSUER_EFFECTIVE_STAR_ST"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2023/个股日回报率-2023_1.xlsx",
+      "sha256": "1cab5468bf25114dfe084800cf8b43a90011a932b1f9ce7fb969825e75a6f8f4",
+      "scanned_prefix_rows": 220568,
+      "target_rows": 6,
+      "target_000540_rows": 0,
+      "suspension_volume": "EMPTY_NOT_ZERO; NOT_OBSERVED_TRADES"
+    }
+  ],
+  "schema": "P9_D01_VERIFICATION_V1",
+  "status": "P9_D01_PARTIAL",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "source_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "shards": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d"
+    }
+  ],
+  "suspension_sessions": 4,
+  "sensitivity": [
+    {
+      "model": "B_factor_score",
+      "date": "2023-04-26",
+      "shares": 13300,
+      "valuation_price": "7.12",
+      "book_value": "94696.00",
+      "affected_equity_fraction": 0.10092914246669911,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model": "B_factor_score",
+      "date": "2023-04-27",
+      "shares": 13300,
+      "valuation_price": "7.12",
+      "book_value": "94696.00",
+      "affected_equity_fraction": 0.10021033508681082,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model": "B_factor_score",
+      "date": "2023-04-28",
+      "shares": 13300,
+      "valuation_price": "7.12",
+      "book_value": "94696.00",
+      "affected_equity_fraction": 0.09966936249877073,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model": "B_factor_score",
+      "date": "2023-05-04",
+      "shares": 13300,
+      "valuation_price": "7.12",
+      "book_value": "94696.00",
+      "affected_equity_fraction": 0.0988413682896732,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model": "B_ridge",
+      "date": "2023-04-26",
+      "shares": 13600,
+      "valuation_price": "7.12",
+      "book_value": "96832.00",
+      "affected_equity_fraction": 0.10264644700660357,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model": "B_ridge",
+      "date": "2023-04-27",
+      "shares": 13600,
+      "valuation_price": "7.12",
+      "book_value": "96832.00",
+      "affected_equity_fraction": 0.10206931754932079,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model": "B_ridge",
+      "date": "2023-04-28",
+      "shares": 13600,
+      "valuation_price": "7.12",
+      "book_value": "96832.00",
+      "affected_equity_fraction": 0.10124426348564913,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model": "B_ridge",
+      "date": "2023-05-04",
+      "shares": 13600,
+      "valuation_price": "7.12",
+      "book_value": "96832.00",
+      "affected_equity_fraction": 0.10106831691975895,
+      "old_mark_equal": true,
+      "equity_basis": "SAVED_DIAGNOSTIC_EQUITY_WITH_CARRY_ASSUMPTION",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    }
+  ],
+  "resumption": {
+    "date": "2023-05-05",
+    "status": "OBSERVED_RAW_CLOSE",
+    "close": 6.76
+  },
+  "000540": {
+    "original_st_status": 2,
+    "is_st": "SIGNAL_TIME_STATE_KNOWN",
+    "trading_observed": "EX_POST_TRADING_CONFIRMED",
+    "price": "EXECUTION_PRICE_AVAILABLE",
+    "intraday_interruption": "UNKNOWN",
+    "signal_time_trading_state": "UNKNOWN",
+    "order_executability": "ORDER_EXECUTABLE_UNVERIFIED",
+    "existing_rule_sell_blocked": true,
+    "rule_lower_bound": 0.6,
+    "execution_permit": false
+  },
+  "formal_admission": false
+}
