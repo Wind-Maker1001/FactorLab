@@ -1,0 +1,298 @@
+{
+  "config_hash": "80f0cca5d7b82ac25af24e19e21f4958da7b1b0ad52ec64ec8bae43e2089b82d",
+  "data_identity": "e9271e8d2ef8468bef68e86a27dce43ee6b6cff73ddb3bae8dc40170184476f4",
+  "feature_identity": "f36d04cc603a19cee7daa6281acb277d8eef9b5563400767be74b328dd3346b2",
+  "sample_hash": "123c1b6ab201677b80e99171f44e61fbae920eb34622fd57d731a35e8a796e97",
+  "profile": {
+    "member_days": 95541,
+    "signal_feature_ready": 94300,
+    "complete_feature_label_rows": 94198,
+    "common_rows": 94198,
+    "common_dates": 1211,
+    "missing_raw_open_grid_rows": 5008,
+    "rejected_grid_rows": 5401,
+    "common_possible_action_jump_paths": 168,
+    "suspended_source_rows": 376,
+    "unknown_status_grid_rows": 4633,
+    "nonfinite_ohlcv_grid_rows": 5008,
+    "invalid_ohlc_source_rows": 0,
+    "feature_missing_rate": {
+      "RAW_MOM5": 0.0023550098910415426,
+      "RAW_MOM20": 0.0028469452905035535,
+      "RAW_MOM60": 0.0029620791073989177,
+      "RAW_TREND20": 0.0050868213646497315,
+      "RAW_VOL20": 0.0052856888665599065,
+      "RAW_RANGE20": 0.0050868213646497315,
+      "RAW_VOLUME5_20": 0.0050868213646497315
+    },
+    "feature_coverage": 0.9870108121120775,
+    "label_evaluable_given_features": 0.9989183457051962,
+    "label_evaluable_member_rate": 0.9972158549732576
+  },
+  "definitions": [
+    {
+      "factor_id": "RAW_MOM20",
+      "version": "raw-exploratory-v1",
+      "kind": "expression",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "raw_close"
+      ],
+      "lookback": 20,
+      "price_basis": [
+        "RAW"
+      ],
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+      "frequency": "1d",
+      "availability": "SESSION_CLOSE",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+      "definition_hash": "9b70bd8ed875534636902ff6e9de6ab44dd98c9722de0187a529f967eb1b3df8"
+    },
+    {
+      "factor_id": "RAW_MOM5",
+      "version": "raw-exploratory-v1",
+      "kind": "expression",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "raw_close"
+      ],
+      "lookback": 5,
+      "price_basis": [
+        "RAW"
+      ],
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":5}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+      "frequency": "1d",
+      "availability": "SESSION_CLOSE",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+      "definition_hash": "9631c69dea916b57b6c0a2ee7b2ca47e08ee1b9c5efbb3a93b6575119f656a94"
+    },
+    {
+      "factor_id": "RAW_MOM60",
+      "version": "raw-exploratory-v1",
+      "kind": "expression",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "raw_close"
+      ],
+      "lookback": 60,
+      "price_basis": [
+        "RAW"
+      ],
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":60}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+      "frequency": "1d",
+      "availability": "SESSION_CLOSE",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+      "definition_hash": "9472671290286b9576929d6e7c23ffc739fbbc5de03ea25e697bf775aa30cf9b"
+    },
+    {
+      "factor_id": "RAW_RANGE20",
+      "version": "raw-exploratory-v1",
+      "kind": "expression",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "raw_close",
+        "raw_high",
+        "raw_low"
+      ],
+      "lookback": 19,
+      "price_basis": [
+        "RAW"
+      ],
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_high\"},{\"op\":\"Field\",\"value\":\"raw_low\"}],\"op\":\"Sub\"},{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"SafeDiv\"}],\"op\":\"RollingMean\",\"param\":20}",
+      "frequency": "1d",
+      "availability": "SESSION_CLOSE",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+      "definition_hash": "022a7cca28ae8f50255e5529d4ae208c0bfd86422786a60a862ee1a54dba1a90"
+    },
+    {
+      "factor_id": "RAW_TREND20",
+      "version": "raw-exploratory-v1",
+      "kind": "expression",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "raw_close"
+      ],
+      "lookback": 19,
+      "price_basis": [
+        "RAW"
+      ],
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}",
+      "frequency": "1d",
+      "availability": "SESSION_CLOSE",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+      "definition_hash": "6d53e43b44226827e6c6fba461666f7660e8d9bab3d7f5ca996969c8a63d0e12"
+    },
+    {
+      "factor_id": "RAW_VOL20",
+      "version": "raw-exploratory-v1",
+      "kind": "expression",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "raw_close"
+      ],
+      "lookback": 20,
+      "price_basis": [
+        "RAW"
+      ],
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"},{\"args\":[{\"op\":\"Field\",\"value\":\"raw_close\"}],\"op\":\"Lag\",\"param\":1}],\"op\":\"SafeDiv\"},{\"op\":\"Const\",\"value\":1}],\"op\":\"Sub\"}],\"op\":\"RollingStd\",\"param\":20}",
+      "frequency": "1d",
+      "availability": "SESSION_CLOSE",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+      "definition_hash": "99ec0211699e5be85cd510e2dbbdb1506a166664d1c498c6e79ea81a7d3eea0c"
+    },
+    {
+      "factor_id": "RAW_VOLUME5_20",
+      "version": "raw-exploratory-v1",
+      "kind": "expression",
+      "implementation": "discovery-ast-v1",
+      "input_fields": [
+        "volume"
+      ],
+      "lookback": 19,
+      "price_basis": [],
+      "dependencies": [],
+      "expression_json": "{\"args\":[{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":5},{\"args\":[{\"op\":\"Field\",\"value\":\"volume\"}],\"op\":\"RollingMean\",\"param\":20}],\"op\":\"SafeDiv\"}",
+      "frequency": "1d",
+      "availability": "SESSION_CLOSE",
+      "window_policy": "EXPLICIT_CALENDAR_NO_FILL",
+      "definition_hash": "bb16cb1fd1b849136e74e7afa6943a5d6579ba21cf4e3f01be0af4ff7eb1d7b1"
+    }
+  ],
+  "folds": [
+    {
+      "fold": 0,
+      "train": [
+        "2021-09-13",
+        "2022-12-13"
+      ],
+      "validation": [
+        "2022-12-13",
+        "2023-03-13"
+      ],
+      "test": [
+        "2023-03-13",
+        "2024-03-13"
+      ],
+      "train_rows": 32993,
+      "validation_rows": 5112,
+      "test_rows": 20335,
+      "audit": {
+        "train_overlap_rows_removed": 0,
+        "validation_overlap_rows_removed": 0,
+        "incomplete_label_rows_removed": 0,
+        "train_max_exit_date": "2022-12-12 00:00:00",
+        "validation_max_exit_date": "2023-03-10 00:00:00",
+        "validation_first_date": "2022-12-13 00:00:00",
+        "test_first_date": "2023-03-13 00:00:00"
+      },
+      "purged_dates": [
+        "2022-12-05",
+        "2022-12-06",
+        "2022-12-07",
+        "2022-12-08",
+        "2022-12-09",
+        "2022-12-12"
+      ],
+      "embargoed_dates": [
+        "2023-03-03",
+        "2023-03-06",
+        "2023-03-07",
+        "2023-03-08",
+        "2023-03-09",
+        "2023-03-10"
+      ]
+    },
+    {
+      "fold": 1,
+      "train": [
+        "2021-09-13",
+        "2023-12-13"
+      ],
+      "validation": [
+        "2023-12-13",
+        "2024-03-13"
+      ],
+      "test": [
+        "2024-03-13",
+        "2025-03-13"
+      ],
+      "train_rows": 55116,
+      "validation_rows": 3640,
+      "test_rows": 15322,
+      "audit": {
+        "train_overlap_rows_removed": 0,
+        "validation_overlap_rows_removed": 0,
+        "incomplete_label_rows_removed": 0,
+        "train_max_exit_date": "2023-12-12 00:00:00",
+        "validation_max_exit_date": "2024-03-12 00:00:00",
+        "validation_first_date": "2023-12-13 00:00:00",
+        "test_first_date": "2024-03-13 00:00:00"
+      },
+      "purged_dates": [
+        "2023-12-05",
+        "2023-12-06",
+        "2023-12-07",
+        "2023-12-08",
+        "2023-12-11",
+        "2023-12-12"
+      ],
+      "embargoed_dates": [
+        "2024-03-05",
+        "2024-03-06",
+        "2024-03-07",
+        "2024-03-08",
+        "2024-03-11",
+        "2024-03-12"
+      ]
+    },
+    {
+      "fold": 2,
+      "train": [
+        "2021-09-13",
+        "2024-12-13"
+      ],
+      "validation": [
+        "2024-12-13",
+        "2025-03-13"
+      ],
+      "test": [
+        "2025-03-13",
+        "2026-03-13"
+      ],
+      "train_rows": 71180,
+      "validation_rows": 3062,
+      "test_rows": 13341,
+      "audit": {
+        "train_overlap_rows_removed": 0,
+        "validation_overlap_rows_removed": 0,
+        "incomplete_label_rows_removed": 0,
+        "train_max_exit_date": "2024-12-12 00:00:00",
+        "validation_max_exit_date": "2025-03-12 00:00:00",
+        "validation_first_date": "2024-12-13 00:00:00",
+        "test_first_date": "2025-03-13 00:00:00"
+      },
+      "purged_dates": [
+        "2024-12-05",
+        "2024-12-06",
+        "2024-12-09",
+        "2024-12-10",
+        "2024-12-11",
+        "2024-12-12"
+      ],
+      "embargoed_dates": [
+        "2025-03-05",
+        "2025-03-06",
+        "2025-03-07",
+        "2025-03-10",
+        "2025-03-11",
+        "2025-03-12"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "status": "P8_02_REAL_WALKFORWARD_COMPLETED",
+  "models": {
+    "A_factor_score": "COMPLETED",
+    "A_ridge": "COMPLETED",
+    "A_lightgbm": "COMPLETED",
+    "A_xgboost": "COMPLETED",
+    "B_factor_score": "COMPLETED",
+    "B_ridge": "COMPLETED",
+    "B_lightgbm": "COMPLETED",
+    "B_xgboost": "COMPLETED",
+    "C_factor_score": "COMPLETED"
+  },
+  "common_test_hash": "cee338e4cdf231d7a9567e888ac6d3d633b8112480ffefcde617a620a1317e2e",
+  "test_rows_per_model": 48998,
+  "prediction_sha256": "19b0fab33b8cb247ba7b34bd0721c8119757464f16822ac95f111bae16f5243c",
+  "environment": {
+    "numpy": "2.3.4",
+    "pandas": "2.3.3",
+    "pyarrow": "22.0.0",
+    "scikit-learn": "1.7.2",
+    "lightgbm": "4.6.0",
+    "xgboost": "2.1.4"
+  },
+  "code": {
+    "commit": "f9a3ba96cc9f4d99ebf866129a09b5b4e046fdd5",
+    "tree": "6670de88ec2b09999bb813fab28c19e9c0a9e8b3",
+    "source_hashes": {
+      "tools\\research\\run_real_model_walkforward.py": "c07f519f42bac92e0ca640b9b5da86301106bae9bab88c79a72fad7a028a2cec",
+      "src\\factorlab\\research\\real_model_study.py": "561f728ed5659b48cf0c3ee336b4daa736a014f19cbc1c9a8d9632637a5ff2dd"
+    }
+  },
+  "elapsed_seconds": 201.3795822999673,
+  "financial_boundary": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
