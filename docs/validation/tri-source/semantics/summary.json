@@ -1,0 +1,982 @@
+{
+  "task_id": "TRI_SOURCE_SEMANTICS_C",
+  "baseline_sha": "2ce3e5ee6e704819a2c155ca833b30e5bb7c296c",
+  "sources": [
+    "CSMAR",
+    "CNRDS",
+    "BigQuant"
+  ],
+  "scope": {
+    "corporate_actions": {
+      "security": "601857.SH",
+      "effective_window": [
+        "2017-01-03",
+        "2018-12-28"
+      ]
+    },
+    "other_assets": "Field/version and inherited bounded identity/membership audit; no full-market daily numerical audit"
+  },
+  "metrics": {
+    "csmar_cash_candidates": 4,
+    "bigquant_cash_candidates": 4,
+    "cnrds_implementation_candidates": 2,
+    "cnrds_matched_cash_record_payment_groups": 2,
+    "csmar_only_ex_dates": [],
+    "bigquant_only_ex_dates": [],
+    "cnrds_unobserved_ex_dates": [
+      "2017-09-15",
+      "2018-09-21"
+    ],
+    "cnrds_only_ex_dates": [],
+    "cnrds_unobserved_candidate_groups": 2,
+    "cnrds_accounting_year_proposals_not_event_matches": 1,
+    "inherited_factor_difference_groups": 4,
+    "cnrds_workbooks_read": 4,
+    "cnrds_physical_rows_streamed": 74969,
+    "matrix_rows": {
+      "corporate-actions.csv": 19,
+      "adjustment-contracts.csv": 10,
+      "identity-membership.csv": 7,
+      "pit-evidence.csv": 8,
+      "financial-semantics.csv": 26
+    },
+    "comparison_status_counts": {
+      "MATCHED_TERMS": 15,
+      "EVENT_NOT_OBSERVED": 7,
+      "INSUFFICIENT_EVIDENCE": 15,
+      "SEMANTIC_CONFLICT": 12,
+      "HISTORICAL_VERSION_UNKNOWN": 19,
+      "NOT_APPLICABLE": 2
+    }
+  },
+  "findings": [
+    "CNRDS implemented table overlaps two annual cash events but lacks the two September candidates in this export",
+    "Announcement stages cannot be equated across vendors",
+    "Four inherited price_gap factor disagreements remain algorithm/precision/anchor questions, not vendor error certification",
+    "Current retrospective membership and financial effective dates do not establish historical first availability"
+  ],
+  "gaps": [
+    {
+      "source": "CNRDS",
+      "subject": "CASH_DIVIDEND",
+      "comparison_status": "EVENT_NOT_OBSERVED",
+      "evidence": "corporate-actions.csv:7",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "CASH_DIVIDEND",
+      "comparison_status": "EVENT_NOT_OBSERVED",
+      "evidence": "corporate-actions.csv:13",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "RIGHTS_ISSUE",
+      "comparison_status": "EVENT_NOT_OBSERVED",
+      "evidence": "corporate-actions.csv:14",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "ADDITIONAL_ISSUE",
+      "comparison_status": "EVENT_NOT_OBSERVED",
+      "evidence": "corporate-actions.csv:15",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "RIGHTS_ISSUE",
+      "comparison_status": "EVENT_NOT_OBSERVED",
+      "evidence": "corporate-actions.csv:16",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CSMAR;CNRDS;BigQuant",
+      "subject": "STOCK_DIVIDEND;CAPITALIZATION",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "corporate-actions.csv:17",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CSMAR;CNRDS;BigQuant",
+      "subject": "SPLIT;CONSOLIDATION;MERGER;SUCCESSION",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "corporate-actions.csv:18",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CSMAR;CNRDS;BigQuant",
+      "subject": "CANCELLATION;CORRECTION;RETROSPECTIVE_REVISION",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "corporate-actions.csv:19",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "ANNUAL_PROPOSAL_NOT_AN_IMPLEMENTED_EVENT",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "corporate-actions.csv:20",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Target event implementation/correction index, vendor stage/availability/version contract; do not infer absence from this export"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "RAW versus Adjprcwd",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "adjustment-contracts.csv:2",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "FwardFactor/BwardFactor versus cumulative fields",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "adjustment-contracts.csv:3",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "cn_stock_bar1d.adjust_factor versus cn_stock_adjust_factor",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "adjustment-contracts.csv:4",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "RAW/adjusted/pre_close and forward/backward price_gap",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "adjustment-contracts.csv:5",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "Dclsprc versus adjusted and forward-adjusted close",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "adjustment-contracts.csv:6",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "ALL",
+      "subject": "Historical as-of reconstruction",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "adjustment-contracts.csv:7",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "CSMAR;BigQuant",
+      "subject": "601857.SH/2017-06-22",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "adjustment-contracts.csv:8",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "CSMAR;BigQuant",
+      "subject": "601857.SH/2017-09-15",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "adjustment-contracts.csv:9",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "CSMAR;BigQuant",
+      "subject": "601857.SH/2018-06-21",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "adjustment-contracts.csv:10",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "CSMAR;BigQuant",
+      "subject": "601857.SH/2018-09-21",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "adjustment-contracts.csv:11",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "Versioned algorithm, anchor date/value, pre-window events, precision/order, corrections and historical first delivery"
+    },
+    {
+      "source": "JoinQuant;P3-D06",
+      "subject": "000905.SH / 605500成员日 / 2021-09-13—2026-09-11",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "identity-membership.csv:2",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "研究起点权威完整名单及适用变更/更正链；按版本绑定首次公开和供应商首次分发；稳定证券ID与有效期。"
+    },
+    {
+      "source": "BigQuant;CSMAR;P3-D02/D06",
+      "subject": "300114.SZ / 283成员日 / 2023-12-11—2025-02-14",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "identity-membership.csv:4",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "BQ历史重标记规则及适用版本、名称区间字段定义；两源稳定证券ID映射和目标283键历史分发/修订记录。"
+    },
+    {
+      "source": "JoinQuant;BaoStock;CSI;P3-D04/D06",
+      "subject": "600068.SH / 9成员日 / 2021-09-13—2021-09-27",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "identity-membership.csv:6",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "2021-09-10收盘后至9月28日权威基线/过渡成员版本、实际生效会话及修订链；单日冲突不得外推另外八日。"
+    },
+    {
+      "source": "BigQuant;P4-D01/D02",
+      "subject": "601857.SH / 000905.SH成员 / 2017-01-03—2018-12-28",
+      "comparison_status": "EVENT_NOT_OBSERVED",
+      "evidence": "identity-membership.csv:7",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "覆盖2017-01-03的官方完整起点及截至2018-12-28全部适用定期/临时/条件调整和更正链，或有版本与范围证明的成员/非成员材料。"
+    },
+    {
+      "source": "独立身份与状态证据;P4-D01/D02",
+      "subject": "601857.SH / 487会话身份状态",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "identity-membership.csv:8",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "目标窗独立身份沿革、特殊处理/停复牌、交易所日历；记录适用日期、版本及首次公开/分发时间。"
+    },
+    {
+      "source": "P3-D02/D04/D06;JoinQuant;BigQuant;CSMAR",
+      "subject": "605500成员日历史可知性",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "pit-evidence.csv:2",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "逐版本历史载荷、首次分发时间/渠道/时区、修订撤销父子链；有效成员日和稳定ID映射。"
+    },
+    {
+      "source": "发行人;BigQuant;CSMAR",
+      "subject": "300114/302132 / 三种时间",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "pit-evidence.csv:3",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "公告历史同版与精确公开证据；供应商旧/新代码命名版本、首次分发和修订链；稳定ID历史映射。"
+    },
+    {
+      "source": "CSI;发行人;P3-D04",
+      "subject": "13420 / 600068过渡九日",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "pit-evidence.csv:4",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "起点与九日过渡实际成员载荷、生效会话、官方修订链及当时版本公开/供应商分发记录；保留附件原值。"
+    },
+    {
+      "source": "CSI;P3-D04/D06",
+      "subject": "13888/15044/3006137 / 收盘后与下一会话",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "pit-evidence.csv:5",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "一组定期调整的原始名单版本、实际生效会话、附件首次公开/替换日志和供应商接收记录，再判断合同能否复用。"
+    },
+    {
+      "source": "CSI;P3-D04/D06",
+      "subject": "3006227 / 研究尾部名单",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "pit-evidence.csv:6",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "旧版附件及发布/替换日志；条件实际满足时间和窗口内实际生效成员版本。"
+    },
+    {
+      "source": "CSMAR;BigQuant;P4-D01/D02",
+      "subject": "601857.SH / 2017-01-03—2018-12-28历史版本",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "pit-evidence.csv:7",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "限目标证券/窗口的两源历史原版载荷、version_id、首次分发时间/渠道/时区、修订/撤销链与as-of/回填规则。"
+    },
+    {
+      "source": "CSI;P4-D01/D02",
+      "subject": "601857.SH / 官方成员或非成员完整链",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "pit-evidence.csv:8",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "官方完整起点及2017—2018全部适用变更/更正，或范围明确的逐日成员/非成员证明；附版本公开与供应商分发证据。"
+    },
+    {
+      "source": "P3-D04;P4-D01/D02",
+      "subject": "effective_at / announced_at / provider_available_at / acquired_at",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "pit-evidence.csv:9",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "按字段角色和时间精度绑定原件版本；分别补首次公开及供应商首次分发，不以当前导出/哈希/HTTP Last-Modified代替。"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "FRDT.FrstAppt/FrstChgDt/ScndChgDt/ThirdChgDt",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "financial-semantics.csv:3",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "内容更正公告及各次更正对应版本值"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "FRDT.ActlDt",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:4",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "逐版财务值与原始/修订公告和供应商可得时间"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "财务数据变动说明.Currtamt/Lsttmamt/Changecdn/Changecas",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "financial-semantics.csv:5",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "同一公司报告期科目的原版与更正版及更正公告"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "财务数据变动说明版本链",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:6",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "逐版值及公告时间和版本顺序"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "CNFS.2007年前历史调整",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:7",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "未经事后调整的原始披露值及各次调整版本和时间"
+    },
+    {
+      "source": "CNRDS",
+      "subject": "CNFS.单位及报表范围",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "financial-semantics.csv:8",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "科目定义及准则版本和逐条报表范围映射"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "普通财务.IfCorrect/DeclareDate",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:10",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "每次更正日期对应的前后值/版本ID及首次公告与供应商历史可得时间"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "FS_Combas.Accper",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "financial-semantics.csv:12",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "明确期末日期定义及独立首次公告时间"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "银行财务.Typrep/IfCorrect/DeclareDate",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:13",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "银行科目口径及逐次更正值/版本/首次公告证据"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "银行财务.EndDate",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "financial-semantics.csv:14",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "期初/期末及累计/单季口径和独立公告时间"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "TRDNEW_Co.Indcd/Nindcd/Nnindcd/IndcdZX",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "financial-semantics.csv:15",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "分类体系及版次和层级的显式映射"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "TRDNEW_Co.行业历史生效区间",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:16",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "证券×分类体系×版次×有效区间及历史可得时间"
+    },
+    {
+      "source": "CSMAR",
+      "subject": "八类财务xlsx.catalog版本",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:17",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "供应商历史版本声明及逐版schema/数值与公告的关联证据"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "cn_stock_basic_info.industry",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:19",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "分类字典和历史有效区间及可得时间"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "cn_stock_industry.层级1-4",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:20",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "分类体系/版次及逐版有效区间"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "cn_stock_industry_index_mapper",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:21",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "kind码表及分类版次和历史映射有效期"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "cn_stock_industry_component",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:22",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "date业务定义和分类体系/版次及修订规则与可得时间"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "cn_stock_industry_change.事件语义",
+      "comparison_status": "HISTORICAL_VERSION_UNKNOWN",
+      "evidence": "financial-semantics.csv:23",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "change_flag码表及date定义和分类版次与完整初始状态/事件链"
+    },
+    {
+      "source": "BigQuant",
+      "subject": "cn_stock_industry_change.2016-11-07..2016-12-31",
+      "comparison_status": "EVENT_NOT_OBSERVED",
+      "evidence": "financial-semantics.csv:24",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "来源覆盖完整性与事件定义及已知变更样例"
+    },
+    {
+      "source": "CNRDS+CSMAR+BigQuant",
+      "subject": "行业跨源映射",
+      "comparison_status": "INSUFFICIENT_EVIDENCE",
+      "evidence": "financial-semantics.csv:26",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "三源分类体系/版次/层级和有效期一致的交叉映射"
+    },
+    {
+      "source": "CNRDS+CSMAR+BigQuant",
+      "subject": "会计期/披露日/更正日/导出日",
+      "comparison_status": "SEMANTIC_CONFLICT",
+      "evidence": "financial-semantics.csv:27",
+      "affected_capability": "Historical signals/execution or full total return; not a ban on bounded retrospective arithmetic",
+      "minimum_evidence": "逐值会计期及原始/更正公告与供应商历史可得时间的版本链"
+    }
+  ],
+  "artifacts": [
+    "corporate-actions.csv",
+    "adjustment-contracts.csv",
+    "identity-membership.csv",
+    "pit-evidence.csv",
+    "financial-semantics.csv",
+    "minimum-evidence.csv",
+    "REPORT.md",
+    "summary.json"
+  ],
+  "status": "PARTIAL_SEMANTICS_AUDITED",
+  "restrictions": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "provenance": {
+    "cnrds": [
+      {
+        "archive": "分红实施内容.7z",
+        "member": "分红实施内容.xlsx",
+        "columns": [
+          "SCode",
+          "CoName",
+          "Year",
+          "ImProgress",
+          "IDPR_PreTax",
+          "IDPR_AftTax",
+          "IBnsIssRt",
+          "IEqTnRt",
+          "EqBenmk",
+          "EqBenmkDt",
+          "AnnDt",
+          "RecordDt",
+          "DRDt",
+          "DPRDt",
+          "BnsShrLDt"
+        ],
+        "physical_data_rows_streamed": 42099,
+        "target_security_rows_all_dates": 11,
+        "target_progress_all_dates": {
+          "实施完毕": 11
+        },
+        "hash_policy": "LOCAL_ARCHIVE_READ; NO_INHERITED_PAYLOAD_HASH_AVAILABLE"
+      },
+      {
+        "archive": "分红预案内容.7z",
+        "member": "分红预案内容.xlsx",
+        "columns": [
+          "SCode",
+          "CoName",
+          "Year",
+          "PContent",
+          "PDPR_PreTax",
+          "Unit",
+          "PBnsIssRt",
+          "PEqTnRt"
+        ],
+        "physical_data_rows_streamed": 20039,
+        "target_security_rows_all_dates": 2,
+        "target_progress_all_dates": {
+          "UNKNOWN": 2
+        },
+        "hash_policy": "LOCAL_ARCHIVE_READ; NO_INHERITED_PAYLOAD_HASH_AVAILABLE"
+      },
+      {
+        "archive": "配股资料.7z",
+        "member": "配股资料.xlsx",
+        "columns": [
+          "Scode",
+          "Coname",
+          "Altprog",
+          "Altprc",
+          "Altshrt",
+          "Shrplnb",
+          "Shratunb",
+          "Subrt",
+          "Altexpfr",
+          "Altfrs",
+          "Altfee",
+          "Altautfr",
+          "Uwrtralttp",
+          "Altlduw",
+          "Plntdt",
+          "Stkhdmntdt",
+          "Altntdt",
+          "Rcddt",
+          "Alterdt",
+          "Altlstdt",
+          "Porcadptdt",
+          "SFCdt"
+        ],
+        "physical_data_rows_streamed": 1282,
+        "target_security_rows_all_dates": 0,
+        "target_progress_all_dates": {},
+        "hash_policy": "LOCAL_ARCHIVE_READ; NO_INHERITED_PAYLOAD_HASH_AVAILABLE"
+      },
+      {
+        "archive": "增发资料.7z",
+        "member": "增发资料.xlsx",
+        "columns": [
+          "Scode",
+          "Coname",
+          "Year",
+          "Seoprog",
+          "Seomd",
+          "Issobj",
+          "Prcmd",
+          "Submd",
+          "Plancmtdt",
+          "Shmetntdt",
+          "Seontdt",
+          "Seoltdt",
+          "Porcadptdt",
+          "SFCdt",
+          "Epseopflim",
+          "Seopurp",
+          "Price",
+          "Amount",
+          "Prcdris",
+          "Seoatfris",
+          "Tissct",
+          "Lduw",
+          "FC"
+        ],
+        "physical_data_rows_streamed": 11549,
+        "target_security_rows_all_dates": 0,
+        "target_progress_all_dates": {},
+        "hash_policy": "LOCAL_ARCHIVE_READ; NO_INHERITED_PAYLOAD_HASH_AVAILABLE"
+      }
+    ],
+    "bigquant_receipts": [
+      {
+        "member": "stock/cn_stock_dividend/2017-01-01_2017-12-31.parquet",
+        "receipt": {
+          "table": "cn_stock_dividend",
+          "category": "stock",
+          "date_column": "date",
+          "window_start": "2017-01-01",
+          "window_end": "2017-12-31",
+          "query": "SELECT * FROM cn_stock_dividend WHERE date >= '2017-01-01' AND date < '2018-01-01'",
+          "rows": 2533,
+          "bytes": 32008,
+          "sha256": "4a990e43e40bf31f4b3a882f9dd5bd3a6b40d8f8f76d181c35356daf89f1468b",
+          "exported_at_utc": "2026-11-07T12:22:03+00:00",
+          "origin": "BigQuant DAI / account-authorized Free catalogue",
+          "formal_pit_admitted": false,
+          "formal_hfq_admitted": false
+        }
+      },
+      {
+        "member": "stock/cn_stock_dividend/2018-01-01_2018-12-31.parquet",
+        "receipt": {
+          "table": "cn_stock_dividend",
+          "category": "stock",
+          "date_column": "date",
+          "window_start": "2018-01-01",
+          "window_end": "2018-12-31",
+          "query": "SELECT * FROM cn_stock_dividend WHERE date >= '2018-01-01' AND date < '2019-01-01'",
+          "rows": 2894,
+          "bytes": 35913,
+          "sha256": "7962b9bdc56c91e9eb3ef760a4f36e910b70d09d1b01e1cf33e763605620f149",
+          "exported_at_utc": "2026-11-07T12:22:03+00:00",
+          "origin": "BigQuant DAI / account-authorized Free catalogue",
+          "formal_pit_admitted": false,
+          "formal_hfq_admitted": false
+        }
+      },
+      {
+        "member": "stock/cn_stock_allotment/2017-01-01_2017-12-31.parquet",
+        "receipt": {
+          "table": "cn_stock_allotment",
+          "category": "stock",
+          "date_column": "date",
+          "window_start": "2017-01-01",
+          "window_end": "2017-12-31",
+          "query": "SELECT * FROM cn_stock_allotment WHERE date >= '2017-01-01' AND date < '2018-01-01'",
+          "rows": 10,
+          "bytes": 3827,
+          "sha256": "c72843034170fff624bc99c769aaf6ecd026cbe5de4aa44812dc13e249d95b4f",
+          "exported_at_utc": "2026-11-07T12:22:05+00:00",
+          "origin": "BigQuant DAI / account-authorized Free catalogue",
+          "formal_pit_admitted": false,
+          "formal_hfq_admitted": false
+        }
+      },
+      {
+        "member": "stock/cn_stock_allotment/2018-01-01_2018-12-31.parquet",
+        "receipt": {
+          "table": "cn_stock_allotment",
+          "category": "stock",
+          "date_column": "date",
+          "window_start": "2018-01-01",
+          "window_end": "2018-12-31",
+          "query": "SELECT * FROM cn_stock_allotment WHERE date >= '2018-01-01' AND date < '2019-01-01'",
+          "rows": 12,
+          "bytes": 3868,
+          "sha256": "5f5ad19f62c473a5a4b414f57c40014e221318d266f4488694bd9c4c653dd0ca",
+          "exported_at_utc": "2026-11-07T12:22:06+00:00",
+          "origin": "BigQuant DAI / account-authorized Free catalogue",
+          "formal_pit_admitted": false,
+          "formal_hfq_admitted": false
+        }
+      }
+    ],
+    "bigquant_schemas": {
+      "cn_stock_real_bar1d": {
+        "datasource_id": "cn_stock_real_bar1d",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "cn_stock_bar1d": {
+        "datasource_id": "cn_stock_bar1d",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "pre_close",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "double"
+          },
+          {
+            "name": "close",
+            "type": "double"
+          },
+          {
+            "name": "high",
+            "type": "double"
+          },
+          {
+            "name": "low",
+            "type": "double"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "deal_number",
+            "type": "int32"
+          },
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "change_ratio",
+            "type": "double"
+          },
+          {
+            "name": "turn",
+            "type": "double"
+          },
+          {
+            "name": "upper_limit",
+            "type": "double"
+          },
+          {
+            "name": "lower_limit",
+            "type": "double"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      },
+      "cn_stock_adjust_factor": {
+        "datasource_id": "cn_stock_adjust_factor",
+        "fields": [
+          {
+            "name": "date",
+            "type": "timestamp[ns]"
+          },
+          {
+            "name": "instrument",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "type": "string"
+          },
+          {
+            "name": "adjust_factor",
+            "type": "double"
+          },
+          {
+            "name": "method",
+            "type": "string"
+          }
+        ],
+        "metadata_source": "zero_row_query"
+      }
+    },
+    "inherited_p3_d03": {
+      "schema": "P3D03_BOUNDED_DIAGNOSTIC_V1",
+      "security": "601857.SH",
+      "window": [
+        "2017-01-03",
+        "2018-12-28"
+      ],
+      "status": "P3D03_PARTIAL",
+      "restrictions": [
+        "NO LIVE MONEY",
+        "PIT_UNVERIFIED",
+        "HFQ_UNVERIFIED",
+        "FORMAL_ADMISSION_BLOCKED"
+      ],
+      "counts": {
+        "csmar_cash_candidates": 4,
+        "bigquant_dividend_candidates": 4,
+        "matching_cash_date_pairs_binary64_tolerance_1e_14": 4,
+        "csmar_only_dates": 0,
+        "bigquant_only_dates": 0,
+        "csmar_factor_rows": 4,
+        "bigquant_factor_rows": 8,
+        "bigquant_allotment_rows": 0,
+        "bigquant_null_bonus_rate": 4,
+        "bigquant_null_conversed_rate": 4
+      },
+      "coverage": "UNKNOWN",
+      "vendor_historical_available_at": "UNKNOWN",
+      "revisions": "UNKNOWN",
+      "source_members": {
+        "cn_stock_dividend": [
+          "stock/cn_stock_dividend/2017-01-01_2017-12-31.parquet",
+          "stock/cn_stock_dividend/2018-01-01_2018-12-31.parquet"
+        ],
+        "cn_stock_allotment": [
+          "stock/cn_stock_allotment/2017-01-01_2017-12-31.parquet",
+          "stock/cn_stock_allotment/2018-01-01_2018-12-31.parquet"
+        ],
+        "cn_stock_adjust_factor": [
+          "stock/cn_stock_adjust_factor/2017-01-01_2017-01-31.parquet",
+          "stock/cn_stock_adjust_factor/2017-02-01_2017-02-28.parquet",
+          "stock/cn_stock_adjust_factor/2017-03-01_2017-03-31.parquet",
+          "stock/cn_stock_adjust_factor/2017-04-01_2017-04-30.parquet",
+          "stock/cn_stock_adjust_factor/2017-05-01_2017-05-31.parquet",
+          "stock/cn_stock_adjust_factor/2017-06-01_2017-06-30.parquet",
+          "stock/cn_stock_adjust_factor/2017-07-01_2017-07-31.parquet",
+          "stock/cn_stock_adjust_factor/2017-08-01_2017-08-31.parquet",
+          "stock/cn_stock_adjust_factor/2017-09-01_2017-09-30.parquet",
+          "stock/cn_stock_adjust_factor/2017-10-01_2017-10-31.parquet",
+          "stock/cn_stock_adjust_factor/2017-11-01_2017-11-30.parquet",
+          "stock/cn_stock_adjust_factor/2017-12-01_2017-12-31.parquet",
+          "stock/cn_stock_adjust_factor/2018-01-01_2018-01-31.parquet",
+          "stock/cn_stock_adjust_factor/2018-02-01_2018-02-28.parquet",
+          "stock/cn_stock_adjust_factor/2018-03-01_2018-03-31.parquet",
+          "stock/cn_stock_adjust_factor/2018-04-01_2018-04-30.parquet",
+          "stock/cn_stock_adjust_factor/2018-05-01_2018-05-31.parquet",
+          "stock/cn_stock_adjust_factor/2018-06-01_2018-06-30.parquet",
+          "stock/cn_stock_adjust_factor/2018-07-01_2018-07-31.parquet",
+          "stock/cn_stock_adjust_factor/2018-08-01_2018-08-31.parquet",
+          "stock/cn_stock_adjust_factor/2018-09-01_2018-09-30.parquet",
+          "stock/cn_stock_adjust_factor/2018-10-01_2018-10-31.parquet",
+          "stock/cn_stock_adjust_factor/2018-11-01_2018-11-30.parquet",
+          "stock/cn_stock_adjust_factor/2018-12-01_2018-12-31.parquet"
+        ]
+      },
+      "factor_differences_derived_not_vendor_rows": [
+        {
+          "event_date": "2017-06-22",
+          "candidate_forward_minus_csmar": "4.248704663212435233160621762E-7",
+          "bigquant_minus_csmar_forward": "-0.0002573471502591",
+          "bigquant_minus_csmar_backward": "0.0002603333333333",
+          "bigquant_method": "price_gap"
+        },
+        {
+          "event_date": "2017-09-15",
+          "candidate_forward_minus_csmar": "-1.556662515566625155666251557E-7",
+          "bigquant_minus_csmar_forward": "-0.000092310087173",
+          "bigquant_minus_csmar_backward": "0.000093969849246",
+          "bigquant_method": "price_gap"
+        },
+        {
+          "event_date": "2018-06-21",
+          "candidate_forward_minus_csmar": "1.617250673854447439353099730E-8",
+          "bigquant_minus_csmar_forward": "0.0000997466307278",
+          "bigquant_minus_csmar_backward": "-0.0001018260869565",
+          "bigquant_method": "price_gap"
+        },
+        {
+          "event_date": "2018-09-21",
+          "candidate_forward_minus_csmar": "2.857142857142857142857142857E-7",
+          "bigquant_minus_csmar_forward": "-0.000133642857143",
+          "bigquant_minus_csmar_backward": "0.0001365614430667",
+          "bigquant_method": "price_gap"
+        }
+      ],
+      "notice_text_checks": [
+        {
+          "notice": "201806",
+          "cash_text_match": true,
+          "ex_date_text_match": true,
+          "record_date_text_match": true,
+          "historical_pdf_sha256_reference": "9e26fe2216c5264e809b92cfe4cb8c0e47c14961d203a9c2889d4f1285361f51",
+          "retrieved_at_reference": "2026-11-05T04:41:28.676079+00:00"
+        },
+        {
+          "notice": "201809",
+          "cash_text_match": true,
+          "ex_date_text_match": true,
+          "record_date_text_match": true,
+          "historical_pdf_sha256_reference": "79b1e9ee30b0a3e7a71df9e803c33a620169d61646ed2f77b8367e366b0653c6",
+          "retrieved_at_reference": "2026-11-05T04:41:28.676097+00:00"
+        }
+      ],
+      "hash_policy": "HISTORICAL_RECEIPT_REFERENCES_ONLY; INPUTS_READ_ONLY; NO_REHASH"
+    },
+    "p8_03": {
+      "state": "OPEN_NOT_MERGED",
+      "baseline_artifact": "docs/validation/p8-03/REPORT.md",
+      "inspected_from": "feat/p8-03-evidence-coverage",
+      "inspected_commit": "32279f8694b4497d837b940e7565267e7ae720b6",
+      "report_available": true
+    },
+    "policy": "Read-only originals; no whole-archive rehash; old hashes are receipt references, not freshly verified payloads"
+  }
+}
