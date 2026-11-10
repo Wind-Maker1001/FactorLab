@@ -156,7 +156,10 @@ def test_workflow_pins_all_candidate_jobs_before_execution():
     assert jobs['risk']['outputs']['risk_sha256'] == '${{ steps.seal.outputs.risk_sha256 }}'
     risk_steps = jobs['risk']['steps']
     positions = {step.get('id'): index for index, step in enumerate(risk_steps)}
-    assert positions['identity'] < positions['select'] < positions['seal']
+    refresh = next(i for i, step in enumerate(risk_steps)
+                   if 'pr_merge_ref.py' in step.get('run', ''))
+    assert risk_steps[refresh]['run'] == 'python -I trusted/tools/ci/pr_merge_ref.py --repository candidate'
+    assert 1 < refresh < positions['identity'] < positions['select'] < positions['seal']
     for name in ('fast', 'current', 'locking', 'package'):
         steps = jobs[name]['steps']
         assert steps[0]['with']['ref'] == '${{ needs.risk.outputs.subject }}'
@@ -186,3 +189,113 @@ def test_issue_and_seal_cli(subject, tmp_path):
     assert f"subject={env['VALIDATION_SUBJECT']}" in Path(env['GITHUB_OUTPUT']).read_text()
     assert run_verified(subject, tmp_path).returncode == 0
     assert (root.parent / 'executed').exists()
+
+
+refresh_spec = importlib.util.spec_from_file_location('pr_merge_ref', TOOLS / 'pr_merge_ref.py')
+merge_ref = importlib.util.module_from_spec(refresh_spec)
+refresh_spec.loader.exec_module(merge_ref)
+
+
+@pytest.mark.parametrize('stale', [None, 'base', 'pr_head'])
+def test_refresh_published_merge_and_issue(subject, tmp_path, monkeypatch, stale):
+    root, expected, _, _, env = subject
+    correct = git(root, 'rev-parse', 'HEAD')
+    remote = tmp_path / 'remote.git'
+    git(tmp_path, 'clone', '--bare', str(root), str(remote))
+    git(root, 'remote', 'add', 'origin', str(remote))
+    published = correct
+    if stale:
+        parents = [expected['base'], expected['pr_head']]
+        parents[0 if stale == 'base' else 1] = correct
+        published = subprocess.check_output(
+            ['git', '-C', str(root), 'commit-tree', 'HEAD^{tree}',
+             '-p', parents[0], '-p', parents[1], '-m', 'stale'], env=env, text=True).strip()
+    git(root, 'push', 'origin', f'{published}:refs/pull/44/merge')
+    git(root, 'checkout', '--detach', expected['pr_head'])
+    sleeps = []
+
+    def update(seconds):
+        sleeps.append(seconds)
+        git(root, 'push', '--force', 'origin', f'{correct}:refs/pull/44/merge')
+
+    monkeypatch.setattr(merge_ref.time, 'sleep', update)
+    event = json.loads(Path(env['GITHUB_EVENT_PATH']).read_text())
+    sha = merge_ref.refresh(root, event)
+    assert sha == correct == git(root, 'rev-parse', 'HEAD')
+    assert len(sleeps) == int(stale is not None)
+    env['GITHUB_OUTPUT'] = str(tmp_path / 'refresh-outputs')
+    receipt = tmp_path / 'refresh-identity.json'
+    result = subprocess.run(
+        [sys.executable, '-I', str(TOOLS / 'pr_identity.py'), 'issue',
+         '--repository', str(root), '--identity', str(receipt)], env=env,
+        capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(receipt.read_text())['subject'] == sha
+    assert f'subject={sha}' in Path(env['GITHUB_OUTPUT']).read_text()
+
+
+def test_refresh_timeout(monkeypatch):
+    now = [0]
+    calls = []
+    monkeypatch.setattr(merge_ref.time, 'monotonic', lambda: now[0])
+    monkeypatch.setattr(merge_ref.time, 'sleep', lambda seconds: now.__setitem__(0, now[0] + seconds))
+
+    def output(command, **kwargs):
+        calls.append((command, kwargs['timeout']))
+        return 'old other' if '--format=%P' in command else 'stale'
+
+    monkeypatch.setattr(merge_ref.subprocess, 'check_output', output)
+    event = dict(number=44, pull_request=dict(base=dict(sha='base'), head=dict(sha='head')))
+    with pytest.raises(TimeoutError, match='timed out'):
+        merge_ref.refresh('.', event)
+    assert now[0] == 45
+    assert all(0 < timeout <= 45 for _, timeout in calls)
+    assert not any('checkout' in command for command, _ in calls)
+
+
+@pytest.mark.parametrize('failure', ['missing', 'fetch', 'parents', 'git_timeout'])
+def test_refresh_git_failures_rejected(subject, tmp_path, monkeypatch, failure):
+    root, _, _, _, env = subject
+    event = json.loads(Path(env['GITHUB_EVENT_PATH']).read_text())
+    original = git(root, 'rev-parse', 'HEAD')
+    if failure == 'missing':
+        remote = tmp_path / 'empty.git'
+        git(tmp_path, 'init', '--bare', str(remote))
+        git(root, 'remote', 'add', 'origin', str(remote))
+    elif failure == 'parents':
+        git(root, 'remote', 'add', 'origin', str(root))
+        git(root, 'update-ref', 'refs/pull/44/merge', event['pull_request']['head']['sha'])
+    else:
+        def fail(command, **kwargs):
+            if failure == 'git_timeout':
+                raise subprocess.TimeoutExpired(command, kwargs['timeout'])
+            raise subprocess.CalledProcessError(128, command)
+        monkeypatch.setattr(merge_ref.subprocess, 'check_output', fail)
+    error = ValueError if failure == 'parents' else subprocess.TimeoutExpired if failure == 'git_timeout' else subprocess.CalledProcessError
+    with pytest.raises(error):
+        merge_ref.refresh(root, event)
+    monkeypatch.undo()
+    assert git(root, 'rev-parse', 'HEAD') == original
+
+
+def test_refresh_non_pr_preserves_identity(subject, tmp_path):
+    root, _, _, _, env = subject
+    head = git(root, 'rev-parse', 'HEAD')
+    event_path = tmp_path / 'dispatch.json'
+    event_path.write_text('{}', encoding='utf-8')
+    env.update(GITHUB_EVENT_PATH=str(event_path), GITHUB_EVENT_NAME='workflow_dispatch',
+               GITHUB_SHA=head, GITHUB_OUTPUT=str(tmp_path / 'dispatch-output'))
+    for command in ([str(TOOLS / 'pr_merge_ref.py'), '--repository', str(root)],
+                    [str(TOOLS / 'pr_identity.py'), 'issue', '--repository', str(root),
+                     '--identity', str(tmp_path / 'dispatch-identity.json')]):
+        result = subprocess.run([sys.executable, '-I', *command], env=env,
+                                capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+    assert json.loads((tmp_path / 'dispatch-identity.json').read_text())['subject'] == head
+
+
+def test_refresh_non_pr_does_not_run_git(monkeypatch):
+    def forbidden(*args, **kwargs):
+        raise AssertionError('non-PR refresh must not run Git')
+    monkeypatch.setattr(merge_ref.subprocess, 'check_output', forbidden)
+    assert merge_ref.refresh('unused', {}) is None
