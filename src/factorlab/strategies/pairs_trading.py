@@ -239,13 +239,13 @@ def simulate_pair(opens: pd.DataFrame, closes: pd.DataFrame, dates: pd.DatetimeI
                           pd.DataFrame(signals))
 
 
-def read_pair_panels(hub, source, symbols, *, start, end, knowledge_as_of=None):
+def read_pair_panels(hub, source, symbols, *, start, end, knowledge_as_of=None, close_field="raw_close"):
     """Use DataHub canonical bars without joining future observations into gaps."""
     opens, closes, receipts = {}, {}, []
     for symbol in symbols:
         result = hub.read(source, "daily_bars", symbol=symbol, start=start, end=end, knowledge_as_of=knowledge_as_of)
         frame = result.data.set_index("date")
-        opens[symbol], closes[symbol] = frame["raw_open"], frame["raw_close"]
+        opens[symbol], closes[symbol] = frame["raw_open"], frame[close_field]
         receipts.append(result)
     return pd.DataFrame(opens).sort_index(), pd.DataFrame(closes).sort_index(), receipts
 
@@ -266,7 +266,8 @@ class PairResearchResult:
 
 def run_pair_research(opens, closes, *, selection: SelectionConfig, strategy: PairTradingConfig,
                       splitter: ExpandingWalkForwardSplitter, borrow: dict[str, BorrowTerms],
-                      entry_grid=(1.5, 2.0, 2.5), source_kind="SYNTHETIC", fill_scenarios=None):
+                      entry_grid=(1.5, 2.0, 2.5), source_kind="SYNTHETIC", fill_scenarios=None,
+                      statistics_only=False):
     """Choose one pair by training EG p-value; choose entry threshold on validation.
 
     Validation objective is terminal net equity, ties follow ascending threshold.
@@ -275,6 +276,10 @@ def run_pair_research(opens, closes, *, selection: SelectionConfig, strategy: Pa
     final positions remain marked and stop later folds.
     """
     _validate_panel(opens, closes)
+    if statistics_only:
+        from factorlab.strategies.pairs_research import statistical_research
+        return statistical_research(closes, selection=selection, strategy=strategy,
+                                    splitter=splitter, entry_grid=entry_grid)
     if source_kind not in {"SYNTHETIC", "REAL_CANDIDATE"}:
         raise ValueError("invalid source_kind")
     grid = tuple(sorted(set(entry_grid)))
