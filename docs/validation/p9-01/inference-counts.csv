@@ -1,0 +1,13 @@
+model_id,fold,signal_candidate_rows
+B_factor_score,0,20347
+B_factor_score,1,15326
+B_factor_score,2,13355
+B_lightgbm,0,20347
+B_lightgbm,1,15326
+B_lightgbm,2,13355
+B_ridge,0,20347
+B_ridge,1,15326
+B_ridge,2,13355
+B_xgboost,0,20347
+B_xgboost,1,15326
+B_xgboost,2,13355

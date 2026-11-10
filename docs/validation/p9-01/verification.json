@@ -1,0 +1,29 @@
+{
+  "status": "P9_01_BLOCKED",
+  "baseline": "56f74da",
+  "prerequisite_merged_ancestors": {
+    "77": "77cedb0048279c042817724f04bed8720b123f09",
+    "78": "2ce3e5ee6e704819a2c155ca833b30e5bb7c296c",
+    "79": "8464ef9b258254fac764399e8e81468ef4d1a920"
+  },
+  "tests": [
+    {"scope": "P9 initial 8 plus existing shared portfolio, real model study and walk-forward selection contracts", "passed": 71, "seconds": 52.15},
+    {"scope": "P9 10 including missing-status reproduction and task-adapter no-fake-valuation contract", "passed": 10, "seconds": 3.17},
+    {"scope": "P9 final 11 including publication privacy, prediction identity drift and unavailable-return null contract", "passed": 11, "seconds": 2.55}
+  ],
+  "initial_test_collection": "FAILED_MODULE_IMPORT; fixture made self-contained before successful runs",
+  "original_prediction_sha256_verified": true,
+  "original_nine_common_test_identities_verified": true,
+  "frozen_training_sample_features_config_folds_environment_verified": true,
+  "reconstruction_model_fold_comparisons": 12,
+  "maximum_original_common_test_prediction_absolute_difference": 0.0,
+  "signal_candidates_independent_of_future_label_filter": true,
+  "pilot_ledger": "PASSED",
+  "full_test_ledger": "NOT_VALIDATED_DUE_TO_DATA_BOUNDARIES",
+  "private_artifacts": "Identity-bound in result.json; no model refit or execution rerun during publication",
+  "executed_source_snapshot": "Preserved privately and matched to recorded execution-source digest",
+  "public_absolute_path_and_credential_scan": "NO_MATCHES",
+  "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+  "total_return": null,
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

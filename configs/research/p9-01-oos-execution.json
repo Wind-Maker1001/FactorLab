@@ -1,0 +1,22 @@
+{
+  "task": "P9-01",
+  "baseline": "56f74da",
+  "prediction_sha256": "19b0fab33b8cb247ba7b34bd0721c8119757464f16822ac95f111bae16f5243c",
+  "common_test_hash": "cee338e4cdf231d7a9567e888ac6d3d633b8112480ffefcde617a620a1317e2e",
+  "models": ["B_factor_score", "B_ridge", "B_lightgbm", "B_xgboost"],
+  "benchmarks": ["momentum20", "hash_equal", "cash"],
+  "initial_cash": 1000000,
+  "top_k": 10,
+  "target_weight": 0.1,
+  "rebalance_sessions": 5,
+  "minimum_cross_section": 20,
+  "missing_signal": "ZERO_COMPLETE_SNAPSHOT_NO_REANCHOR",
+  "terminal_policy": "LAST_SCHEDULED_SIGNAL_WITH_T_PLUS_6_INSIDE_TEST; ZERO_TARGET_AT_T_PLUS_5; RETRY_ZERO_ON_REMAINING_SCHEDULE; MARK_RESIDUAL_AT_FINAL_OBSERVED_CLOSE",
+  "valuation_policy": "OBSERVED_POSITIVE_CLOSE_REQUIRED_FOR_EVERY_HELD_SECURITY; OTHERWISE_PARTIAL_NULL_FULL_WINDOW_METRICS",
+  "pilot_sessions": 16,
+  "fees": {"commission_bps": 3, "minimum_commission_cny": 5, "slippage_bps": 5, "stamp_duty_bps": 10, "transfer_fee_bps": 0},
+  "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+  "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+  "total_return": null,
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
