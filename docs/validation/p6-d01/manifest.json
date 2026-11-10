@@ -1,0 +1,302 @@
+{
+  "schema": "P6_D01_RESEARCH_INPUT_V1",
+  "status": "P6_D01_RESEARCH_INPUT_READY",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "formal_admission": false,
+  "historical_pit": false,
+  "hfq_verified": false,
+  "source_manifest_sha256": "3cb43e38e0fc0585f5a673639436c6b7d47ee6778f4e0b585275285825e6e329",
+  "bars_sha256": "795d567e6ae3af6d96c7ab454f2dae4ca6f07f3cb481a934327a1b3c10d90611",
+  "snapshot": "EXTERNAL_IMMUTABLE_P5_R03_BARS; NO_DUPLICATE_PARQUET",
+  "metadata": {
+    "source_id": "CSMAR_TRDNEW_Dalyr_CANDIDATE",
+    "data_version": "sha256:795d567e6ae3af6d96c7ab454f2dae4ca6f07f3cb481a934327a1b3c10d90611",
+    "calendar_id": null,
+    "calendar_kind": "OBSERVED_SECURITY_SESSIONS_ONLY",
+    "acquired_at": null,
+    "provider_available_at": null,
+    "coverage": "FIXED_24_RETROSPECTIVE; NO_FILL",
+    "time_fields": {},
+    "provenance": {
+      "references": [
+        {
+          "schema": "CSMAR_ZIP_REFERENCE_V1",
+          "source_name": "日个股回报率文件000057802(仅供广东金融学院使用).zip",
+          "source_sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+          "source_bytes": 407652983,
+          "family": "TRDNEW_Dalyr",
+          "member": "TRDNEW_Dalyr.xlsx",
+          "member_sha256": "7f83d8976809c111e2a987a4f30861a8db15cb9c9495c963f0593f5a06f5d7c5",
+          "sheet_records": {
+            "sheet1": 1000000
+          },
+          "scope": {
+            "codes": [
+              "000401",
+              "000709"
+            ],
+            "start": "2015-01-01",
+            "end": "2018-12-31"
+          },
+          "synthetic_only": false,
+          "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f",
+          "profile_sha256": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+          "runtime": {
+            "python": "3.13.9",
+            "pandas": "2.3.3",
+            "pyarrow": "22.0.0",
+            "numpy": "2.3.4"
+          },
+          "supplier_version": "UNKNOWN",
+          "supplier_acquired_at": null,
+          "license_scope": "RESTRICTED_LOCAL_AUTHORIZED_USE_ONLY",
+          "local_snapshot_version": "sha256:e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290"
+        },
+        {
+          "schema": "CSMAR_ZIP_REFERENCE_V1",
+          "source_name": "日个股回报率文件000057802(仅供广东金融学院使用).zip",
+          "source_sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+          "source_bytes": 407652983,
+          "family": "TRDNEW_Dalyr",
+          "member": "TRDNEW_Dalyr2.xlsx",
+          "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+          "sheet_records": {
+            "sheet1": 1000000
+          },
+          "scope": {
+            "codes": [
+              "600019",
+              "600028",
+              "600030",
+              "600036",
+              "600585",
+              "600837"
+            ],
+            "start": "2015-01-01",
+            "end": "2018-12-31"
+          },
+          "synthetic_only": false,
+          "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f",
+          "profile_sha256": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+          "runtime": {
+            "python": "3.13.9",
+            "pandas": "2.3.3",
+            "pyarrow": "22.0.0",
+            "numpy": "2.3.4"
+          },
+          "supplier_version": "UNKNOWN",
+          "supplier_acquired_at": null,
+          "license_scope": "RESTRICTED_LOCAL_AUTHORIZED_USE_ONLY",
+          "local_snapshot_version": "sha256:e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290"
+        },
+        {
+          "schema": "CSMAR_ZIP_REFERENCE_V1",
+          "source_name": "日个股回报率文件000057802(仅供广东金融学院使用).zip",
+          "source_sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+          "source_bytes": 407652983,
+          "family": "TRDNEW_Dalyr",
+          "member": "TRDNEW_Dalyr2.xlsx",
+          "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+          "sheet_records": {
+            "sheet1": 1000000
+          },
+          "scope": {
+            "codes": [
+              "600999",
+              "601088",
+              "601166",
+              "601186",
+              "601288",
+              "601318"
+            ],
+            "start": "2015-01-01",
+            "end": "2018-12-31"
+          },
+          "synthetic_only": false,
+          "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f",
+          "profile_sha256": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+          "runtime": {
+            "python": "3.13.9",
+            "pandas": "2.3.3",
+            "pyarrow": "22.0.0",
+            "numpy": "2.3.4"
+          },
+          "supplier_version": "UNKNOWN",
+          "supplier_acquired_at": null,
+          "license_scope": "RESTRICTED_LOCAL_AUTHORIZED_USE_ONLY",
+          "local_snapshot_version": "sha256:e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290"
+        },
+        {
+          "schema": "CSMAR_ZIP_REFERENCE_V1",
+          "source_name": "日个股回报率文件000057802(仅供广东金融学院使用).zip",
+          "source_sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+          "source_bytes": 407652983,
+          "family": "TRDNEW_Dalyr",
+          "member": "TRDNEW_Dalyr2.xlsx",
+          "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+          "sheet_records": {
+            "sheet1": 1000000
+          },
+          "scope": {
+            "codes": [
+              "601336",
+              "601390",
+              "601398",
+              "601601",
+              "601628",
+              "601688"
+            ],
+            "start": "2015-01-01",
+            "end": "2018-12-31"
+          },
+          "synthetic_only": false,
+          "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f",
+          "profile_sha256": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+          "runtime": {
+            "python": "3.13.9",
+            "pandas": "2.3.3",
+            "pyarrow": "22.0.0",
+            "numpy": "2.3.4"
+          },
+          "supplier_version": "UNKNOWN",
+          "supplier_acquired_at": null,
+          "license_scope": "RESTRICTED_LOCAL_AUTHORIZED_USE_ONLY",
+          "local_snapshot_version": "sha256:e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290"
+        },
+        {
+          "schema": "CSMAR_ZIP_REFERENCE_V1",
+          "source_name": "日个股回报率文件000057802(仅供广东金融学院使用).zip",
+          "source_sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+          "source_bytes": 407652983,
+          "family": "TRDNEW_Dalyr",
+          "member": "TRDNEW_Dalyr2.xlsx",
+          "member_sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+          "sheet_records": {
+            "sheet1": 1000000
+          },
+          "scope": {
+            "codes": [
+              "601857",
+              "601898"
+            ],
+            "start": "2015-01-01",
+            "end": "2018-12-31"
+          },
+          "synthetic_only": false,
+          "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f",
+          "profile_sha256": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+          "runtime": {
+            "python": "3.13.9",
+            "pandas": "2.3.3",
+            "pyarrow": "22.0.0",
+            "numpy": "2.3.4"
+          },
+          "supplier_version": "UNKNOWN",
+          "supplier_acquired_at": null,
+          "license_scope": "RESTRICTED_LOCAL_AUTHORIZED_USE_ONLY",
+          "local_snapshot_version": "sha256:e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290"
+        },
+        {
+          "schema": "CSMAR_ZIP_REFERENCE_V1",
+          "source_name": "日个股回报率文件000057802(仅供广东金融学院使用).zip",
+          "source_sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+          "source_bytes": 407652983,
+          "family": "TRDNEW_Dalyr",
+          "member": "TRDNEW_Dalyr3.xlsx",
+          "member_sha256": "be80532589e2ad4c949cc8ba8b55077614daeae53d21bb393eb58ce1e7414e8c",
+          "sheet_records": {
+            "sheet1": 339842
+          },
+          "scope": {
+            "codes": [
+              "601939",
+              "601988"
+            ],
+            "start": "2015-01-01",
+            "end": "2018-12-31"
+          },
+          "synthetic_only": false,
+          "parser_sha256": "cfa702773d4ea3004cf10d67bddd604d3b53a4c87074c01b760b7545185dc92f",
+          "profile_sha256": "cd1db89e6b97c30e1c68ef74ca441c4d1c71b28e05565a4ed8d29d336f04b150",
+          "runtime": {
+            "python": "3.13.9",
+            "pandas": "2.3.3",
+            "pyarrow": "22.0.0",
+            "numpy": "2.3.4"
+          },
+          "supplier_version": "UNKNOWN",
+          "supplier_acquired_at": null,
+          "license_scope": "RESTRICTED_LOCAL_AUTHORIZED_USE_ONLY",
+          "local_snapshot_version": "sha256:e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290"
+        }
+      ],
+      "original_sources_verified": {
+        "日个股回报率文件000057802(仅供广东金融学院使用).zip": {
+          "sha256": "e599361d89553976017539424285aded264d5a6a0e2b75261e0e627e9c51b290",
+          "bytes": 407652983
+        }
+      },
+      "supplier_version": "UNKNOWN",
+      "historical_first_available": "UNKNOWN",
+      "revision_chain": "UNKNOWN",
+      "corporate_actions": "UNKNOWN; PRICE_JUMPS_ARE_CANDIDATES_ONLY",
+      "historical_membership": "UNKNOWN",
+      "adjusted_price": "adj_close=Adjprcwd; COMPARABLE_REINVESTMENT_CLOSE; NOT_CONSUMED"
+    },
+    "evidence_status": [
+      "PIT_UNVERIFIED",
+      "HFQ_UNVERIFIED",
+      "FORMAL_ADMISSION_BLOCKED"
+    ],
+    "field_semantics": {
+      "raw_open": {
+        "unit": "CNY/share",
+        "native_field": "Opnprc"
+      },
+      "raw_high": {
+        "unit": "CNY/share",
+        "native_field": "Hiprc"
+      },
+      "raw_low": {
+        "unit": "CNY/share",
+        "native_field": "Loprc"
+      },
+      "raw_close": {
+        "unit": "CNY/share",
+        "native_field": "Clsprc"
+      },
+      "volume": {
+        "unit": "shares",
+        "native_field": "Dnshrtrd"
+      },
+      "trade_status": {
+        "mapping": "volume>0 AND Filling=0; Filling=2 excluded upstream; 0=nontrading"
+      },
+      "is_st": {
+        "mapping": "Trdsta in {2,3,5,6,8,9,11,12,14,15}"
+      },
+      "precision": {
+        "value": "native reviewed decimal conversion to float64; no new rounding"
+      }
+    }
+  },
+  "quality_sha256": "8aa41c501b879a35d57d5ac8824dc8864300733b8533d159be4cb84de74efce3",
+  "config_sha256": "9574b24df7f9ee13cbf95f4b26f2923e76446e34fe4a54df2fd9cd517bc10cf4",
+  "mapping_version": "CSMAR_MARKET_CANDIDATE_V1_RAW_ONLY",
+  "code_commit": "88652d8a1f2b37a0140586c49497a235950510b7",
+  "implementation_sha256": "2b76a63d09a78a2afa489d74d14b03ee3fe8b8c9304e167eea177caa9e8be30b",
+  "implementation_files": {
+    "src/factorlab/data/research_input.py": "2b76a63d09a78a2afa489d74d14b03ee3fe8b8c9304e167eea177caa9e8be30b",
+    "src/factorlab/data/csmar/prepare.py": "da0f69c75f2e54164a19295419cdc545022938082810159f69eeca9a83523c27",
+    "src/factorlab/data/csmar/profiles.py": "b4b0525dd85dd7cf89ec50e3ac9a2d19da709e576587b08cb749619987386972",
+    "src/factorlab/data/hub/contracts.py": "319637821a9c46943a50c0ddcff4c4cafdff7142f14ee7f7bfcff149abceea27"
+  },
+  "prepared_at": "2026-11-10T12:37:54.447804+00:00",
+  "consumed_bytes": 844219,
+  "elapsed_seconds": 0.44951800000853837
+}

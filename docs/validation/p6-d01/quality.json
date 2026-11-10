@@ -1,0 +1,568 @@
+{
+  "securities": [
+    {
+      "symbol": "000401.SZ",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 857,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 118
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2016-04-05",
+          "sessions": 305
+        },
+        {
+          "start": "2016-07-14",
+          "end": "2017-04-12",
+          "sessions": 180
+        },
+        {
+          "start": "2017-04-17",
+          "end": "2017-11-20",
+          "sessions": 148
+        },
+        {
+          "start": "2018-01-15",
+          "end": "2018-04-19",
+          "sessions": 62
+        },
+        {
+          "start": "2018-05-02",
+          "end": "2018-09-06",
+          "sessions": 91
+        },
+        {
+          "start": "2018-09-10",
+          "end": "2018-10-24",
+          "sessions": 27
+        },
+        {
+          "start": "2018-10-30",
+          "end": "2018-12-28",
+          "sessions": 44
+        }
+      ]
+    },
+    {
+      "symbol": "000709.SZ",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 936,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 39
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2015-06-29",
+          "sessions": 118
+        },
+        {
+          "start": "2015-08-24",
+          "end": "2018-12-28",
+          "sessions": 818
+        }
+      ]
+    },
+    {
+      "symbol": "600019.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 883,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 92
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2016-06-24",
+          "sessions": 360
+        },
+        {
+          "start": "2016-10-10",
+          "end": "2016-11-30",
+          "sessions": 38
+        },
+        {
+          "start": "2016-12-08",
+          "end": "2017-01-23",
+          "sessions": 32
+        },
+        {
+          "start": "2017-02-27",
+          "end": "2018-12-28",
+          "sessions": 453
+        }
+      ]
+    },
+    {
+      "symbol": "600028.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "600030.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 971,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 4
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-24",
+          "sessions": 971
+        }
+      ]
+    },
+    {
+      "symbol": "600036.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 970,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 5
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2015-04-02",
+          "sessions": 59
+        },
+        {
+          "start": "2015-04-13",
+          "end": "2018-12-28",
+          "sessions": 911
+        }
+      ]
+    },
+    {
+      "symbol": "600585.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "600837.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 974,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 1
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2015-11-26",
+          "sessions": 219
+        },
+        {
+          "start": "2015-11-30",
+          "end": "2018-12-28",
+          "sessions": 755
+        }
+      ]
+    },
+    {
+      "symbol": "600999.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 969,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 6
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2015-05-07",
+          "sessions": 82
+        },
+        {
+          "start": "2015-05-18",
+          "end": "2018-12-28",
+          "sessions": 887
+        }
+      ]
+    },
+    {
+      "symbol": "601088.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 911,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 64
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2017-06-02",
+          "sessions": 587
+        },
+        {
+          "start": "2017-09-01",
+          "end": "2018-12-28",
+          "sessions": 324
+        }
+      ]
+    },
+    {
+      "symbol": "601166.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 970,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 5
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2016-07-22",
+          "sessions": 380
+        },
+        {
+          "start": "2016-08-01",
+          "end": "2018-12-28",
+          "sessions": 590
+        }
+      ]
+    },
+    {
+      "symbol": "601186.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601288.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601318.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601336.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 950,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 25
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2015-01-16",
+          "sessions": 10
+        },
+        {
+          "start": "2015-03-02",
+          "end": "2018-12-28",
+          "sessions": 940
+        }
+      ]
+    },
+    {
+      "symbol": "601390.SH",
+      "status": "PARTIAL",
+      "observed_rows": 975,
+      "ready_rows": 889,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {
+        "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 86
+      },
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2015-01-30",
+          "sessions": 20
+        },
+        {
+          "start": "2015-02-11",
+          "end": "2015-09-11",
+          "sessions": 143
+        },
+        {
+          "start": "2015-09-21",
+          "end": "2018-05-04",
+          "sessions": 637
+        },
+        {
+          "start": "2018-08-20",
+          "end": "2018-12-28",
+          "sessions": 89
+        }
+      ]
+    },
+    {
+      "symbol": "601398.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601601.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601628.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601688.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601857.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601898.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601939.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    },
+    {
+      "symbol": "601988.SH",
+      "status": "RESEARCH_INPUT_READY",
+      "observed_rows": 975,
+      "ready_rows": 975,
+      "missing_keys": 0,
+      "first_observed": "2015-01-05",
+      "last_observed": "2018-12-28",
+      "listing_boundary": "OBSERVATION_ONLY; LISTING_AND_DELISTING_UNKNOWN",
+      "rejected": {},
+      "intervals": [
+        {
+          "start": "2015-01-05",
+          "end": "2018-12-28",
+          "sessions": 975
+        }
+      ]
+    }
+  ],
+  "sessions": 975,
+  "observed_rows": 23400,
+  "ready_rows": 22955,
+  "rejected_rows": 445,
+  "rejected_reasons": {
+    "SUSPENDED_OR_VENDOR_FILL_NO_CLOSE_MARK": 445
+  },
+  "missing_keys": 0,
+  "possible_action_jump_rows": 1,
+  "years": {
+    "2015": 244,
+    "2016": 244,
+    "2017": 244,
+    "2018": 243
+  }
+}
