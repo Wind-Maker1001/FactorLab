@@ -1,0 +1,8 @@
+{
+  "synthetic": {"seed": 121, "periods": 800, "relationship": "noncointegrated"},
+  "selection": {"min_observations": 120, "min_completeness": 0.95, "min_overlap": 0.9, "price_transform": "raw", "coint_pvalue": 0.05, "adf_pvalue": 0.05, "max_hedge_ratio_drift": 0.5, "max_candidates": 20, "max_pairs": 1},
+  "strategy": {"z_window": 30, "entry_z": 2.0, "exit_z": 0.5, "max_holding_sessions": 10, "max_loss_fraction": 0.03, "gross_fraction": 0.5, "max_gross_leverage": 1.0, "diagnostic_window": 120, "diagnostic_interval": 20, "failure_pvalue": 0.1, "initial_cash": 100000.0, "margin_rate": 0.5, "commission_bps": 3.0, "minimum_commission": 0.0},
+  "splitter": {"initial_train_months": 12, "validation_months": 3, "test_months": 3, "step_months": 3, "purge_days": 5, "embargo_days": 5},
+  "borrow": {"A": {"max_shares": 10000, "annual_rate": 0.08}, "B": {"max_shares": 10000, "annual_rate": 0.08}},
+  "entry_grid": [1.5, 2.0, 2.5]
+}
