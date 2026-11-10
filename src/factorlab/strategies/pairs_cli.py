@@ -10,7 +10,6 @@ import sys
 
 import numpy as np
 import pandas as pd
-import statsmodels
 
 from factorlab.backtest.pairs import BorrowTerms
 from factorlab.dataset.identity import file_hash, frame_hash
@@ -55,6 +54,8 @@ def execute(config, output):
     borrow = {symbol: BorrowTerms(**terms) for symbol, terms in config["borrow"].items()}
     result = run_pair_research(opens, closes, selection=selection, strategy=strategy, splitter=splitter,
                               borrow=borrow, entry_grid=config["entry_grid"])
+    import statsmodels
+
     (output / "config.json").write_text(json.dumps(config, indent=2, allow_nan=False), encoding="utf-8")
     for key in ("nav", "selections", "trades", "positions", "failures", "signals", "validation"):
         getattr(result, key).to_csv(output / (key + ".csv"), index=False)

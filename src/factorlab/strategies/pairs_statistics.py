@@ -8,7 +8,6 @@ from itertools import combinations, islice
 
 import numpy as np
 import pandas as pd
-from statsmodels.tsa.stattools import adfuller, coint
 
 
 class _StatisticalRejection(ValueError):
@@ -115,6 +114,16 @@ def _ols(values):
 
 def fit_pair(prices: pd.DataFrame, config: SelectionConfig) -> PairModel:
     """Fit and validate one ordered pair; rejected candidates raise ValueError."""
+    try:
+        from statsmodels.tsa.stattools import adfuller, coint
+    except ModuleNotFoundError as exc:
+        if exc.name != "statsmodels":
+            raise
+        raise ModuleNotFoundError(
+            'install factorlab[pairs] for cointegration research: pip install "factorlab[pairs]"',
+            name="statsmodels",
+        ) from exc
+
     if prices.shape[1] != 2:
         raise ValueError("fit_pair requires exactly two price columns")
     train = _training(prices, config)

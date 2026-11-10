@@ -113,7 +113,7 @@ def test_risk_exit_is_decided_before_next_open(monkeypatch, risk):
     opens, closes, model, dates, cfg = setup_case()
     if risk == "cointegration_failure":
         calls = iter([(-5., .001, None), (-1., .9, None)])
-        monkeypatch.setattr("factorlab.strategies.pairs_trading.coint", lambda *a, **k: next(calls, (-1., .9, None)))
+        monkeypatch.setattr("statsmodels.tsa.stattools.coint", lambda *a, **k: next(calls, (-1., .9, None)))
         cfg = replace(cfg, diagnostic_interval=2, failure_pvalue=.05)
     elif risk == "max_loss":
         # Short A loses on the entry day's close; the threshold is on account equity.

@@ -6,7 +6,6 @@ from datetime import date
 
 import numpy as np
 import pandas as pd
-from statsmodels.tsa.stattools import coint
 
 from factorlab.backtest.fees import FeeRule, FeeSchedule
 from factorlab.backtest.pairs import BorrowTerms, PairAccount
@@ -97,6 +96,16 @@ def simulate_pair(opens: pd.DataFrame, closes: pd.DataFrame, dates: pd.DatetimeI
     elasticity. Integer quantities then stay fixed until exit. Window-end exit
     is scheduled at the penultimate close, not retroactively at the last close.
     """
+    try:
+        from statsmodels.tsa.stattools import coint
+    except ModuleNotFoundError as exc:
+        if exc.name != "statsmodels":
+            raise
+        raise ModuleNotFoundError(
+            'install factorlab[pairs] for cointegration research: pip install "factorlab[pairs]"',
+            name="statsmodels",
+        ) from exc
+
     _validate_panel(opens, closes)
     dates = pd.DatetimeIndex(dates)
     if len(dates) < 2 or not dates.is_monotonic_increasing or dates.has_duplicates or not dates.isin(closes.index).all():
