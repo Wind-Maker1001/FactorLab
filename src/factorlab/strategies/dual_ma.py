@@ -71,11 +71,14 @@ class DualMAConfig:
             raise ConfigurationError("invalid research dates")
 
 
-def prepare_inputs(bars, calendar, config):
+def prepare_inputs(bars, calendar, config, *, signal_price_column="adj_close"):
+    """Validate raw execution bars and the explicitly selected signal price only."""
+    if signal_price_column not in {"adj_close", "raw_close"}:
+        raise SchemaError("signal price must explicitly select adj_close or raw_close")
     dates = daily_dates(calendar, "calendar")
     if dates.empty:
         raise SchemaError("calendar is empty")
-    required = {"date", "symbol", "adj_close", "raw_open", "raw_high", "raw_low",
+    required = {"date", "symbol", signal_price_column, "raw_open", "raw_high", "raw_low",
                 "raw_close", "volume", "trade_status", "is_st"}
     if not isinstance(bars, pd.DataFrame) or not required.issubset(bars):
         raise SchemaError("bars missing required columns: " + ", ".join(sorted(required)))
@@ -86,7 +89,7 @@ def prepare_inputs(bars, calendar, config):
     frame["symbol"] = config.symbol
     if not pd.DatetimeIndex(frame.date).equals(dates):
         raise SchemaError("bars must cover every supplied calendar session, including warmup")
-    for column in ("adj_close", "raw_open", "raw_high", "raw_low", "raw_close", "volume"):
+    for column in dict.fromkeys((signal_price_column, "raw_open", "raw_high", "raw_low", "raw_close", "volume")):
         raw = frame[column]
         values = pd.to_numeric(raw, errors="coerce")
         if raw.map(lambda x: isinstance(x, (bool, np.bool_))).any() or not np.isfinite(values).all():
@@ -109,14 +112,14 @@ def prepare_inputs(bars, calendar, config):
     return frame.reset_index(drop=True), research
 
 
-def moving_average_signals(bars, calendar, config=None):
+def moving_average_signals(bars, calendar, config=None, *, signal_price_column="adj_close"):
     config = config or DualMAConfig()
-    frame, research = prepare_inputs(bars, calendar, config)
-    short = frame.adj_close.rolling(config.short_window, min_periods=config.short_window).mean()
-    long = frame.adj_close.rolling(config.long_window, min_periods=config.long_window).mean()
+    frame, research = prepare_inputs(bars, calendar, config, signal_price_column=signal_price_column)
+    short = frame[signal_price_column].rolling(config.short_window, min_periods=config.short_window).mean()
+    long = frame[signal_price_column].rolling(config.long_window, min_periods=config.long_window).mean()
     buy = (short.shift(1) <= long.shift(1)) & (short > long)
     sell = (short.shift(1) >= long.shift(1)) & (short < long)
-    result = frame[["date", "symbol", "adj_close"]].copy()
+    result = frame[["date", "symbol", signal_price_column]].copy()
     result["ma_short"], result["ma_long"] = short, long
     result["signal"] = np.select([buy, sell], ["buy", "sell"], default="hold")
     result["target_weight"] = np.select([buy, sell], [config.max_weight, 0.0], default=np.nan)

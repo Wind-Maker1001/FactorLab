@@ -2,6 +2,8 @@
 
 `NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED`
 
+独立 Python 策略接入及内置双均线适配示例见 [自定义策略接口](CUSTOM.md)。
+
 ## 入口与证据边界
 
 在已有 FactorLab Python 环境、仓库根目录运行（Bash 示例）：

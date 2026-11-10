@@ -1,0 +1,4 @@
+{
+  "strategy": {"file": "ma_strategy.py", "class": "MyStrategy", "parameters": {"window": 20}},
+  "research": {"symbol": "601857.SH", "start": "2018-01-01", "end": "2018-06-30", "initial_cash": 100000.0}
+}
