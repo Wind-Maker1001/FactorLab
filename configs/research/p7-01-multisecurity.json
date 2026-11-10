@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "task": "p6_r01",
+  "data": {
+    "id": "p6-d01-csmar-raw-candidate",
+    "manifest_sha256": "800d8413ee7d2b0adc90adde6b38f5b290f12cd08189515afecf49268bde876a",
+    "source_kind": "REAL_CANDIDATE"
+  },
+  "research": {
+    "windows": [
+      {"symbol": "601398.SH", "industry": "bank", "year": 2018, "start": "2018-01-01", "end": "2018-12-31", "warmup_start": "2017-01-01", "query_start": "2017-01-03", "query_end": "2018-12-28"},
+      {"symbol": "601939.SH", "industry": "bank", "year": 2018, "start": "2018-01-01", "end": "2018-12-31", "warmup_start": "2017-01-01", "query_start": "2017-01-03", "query_end": "2018-12-28"}
+    ],
+    "common": {"initial_cash": 100000.0, "max_weight": 1.0, "board_lot": 100},
+    "signal_price_column": "raw_close",
+    "strategies": {
+      "dual_ma": {"short_window": 5, "long_window": 20},
+      "bollinger": {"window": 20, "deviations": 2.0, "mode": "mean_reversion"},
+      "rsi": {"window": 14, "oversold": 30.0, "overbought": 70.0, "exit_rule": "overbought"},
+      "macd": {"fast": 12, "slow": 26, "signal_window": 9, "zero_filter": false},
+      "cta": {"entry_window": 20, "exit_window": 10, "atr_window": 14, "trend_window": 50, "atr_multiple": 3.0, "risk_fraction": 0.01},
+      "buy_hold": {}
+    }
+  },
+  "fees": {"commission_bps": 3.0, "minimum_commission_cny": 5.0, "slippage_bps": 5.0, "transfer_fee_bps": 0.0},
+  "execution": {
+    "frequency": "daily", "signal_timing": "close", "execution_timing": "next_open", "long_only": true,
+    "financial_admission": "FORMAL_ADMISSION_BLOCKED", "network": "NO_AUTOMATIC_ACCESS"
+  },
+  "boundary": {
+    "state": "RESEARCH_ONLY", "formal_admission": false,
+    "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+  }
+}

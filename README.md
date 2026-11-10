@@ -39,6 +39,7 @@ Ridge、LightGBM、XGBoost，输出 Fast/Execution 回测、统计、图表、�
 
 ## 文档与证据
 
+* [统一离线研究配置、实验检查与本地重放](docs/RESEARCH_WORKFLOW.md)：自定义日线策略和多证券独立账户研究。
 * [Binance TradFi 永续只读行情、Parquet 重放与 NVDAUSDT 实采报告](docs/validation/p6-b01/REPORT.md)：独立于股票研究与交易执行。
 * [独立双均线策略、目标仓位执行与合成回测](docs/strategies/DUAL_MA.md)、
   [中国石油2018年真实数据阻塞报告](docs/strategies/DUAL_MA_2018_DATA_STATUS.md)。
