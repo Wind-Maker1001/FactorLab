@@ -1,0 +1,6 @@
+{
+  "window": 14,
+  "oversold": 30.0,
+  "overbought": 70.0,
+  "exit_rule": "overbought"
+}

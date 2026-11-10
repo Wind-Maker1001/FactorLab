@@ -1,0 +1,6 @@
+{
+  "fast": 12,
+  "slow": 26,
+  "signal_window": 9,
+  "zero_filter": false
+}
