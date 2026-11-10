@@ -1,0 +1,926 @@
+{
+  "windows": [
+    {
+      "symbol": "601398.SH",
+      "industry": "bank",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601398.SH",
+      "industry": "bank",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601398.SH",
+      "industry": "bank",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601939.SH",
+      "industry": "bank",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601939.SH",
+      "industry": "bank",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601939.SH",
+      "industry": "bank",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601288.SH",
+      "industry": "bank",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601288.SH",
+      "industry": "bank",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601288.SH",
+      "industry": "bank",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601988.SH",
+      "industry": "bank",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601988.SH",
+      "industry": "bank",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601988.SH",
+      "industry": "bank",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "600036.SH",
+      "industry": "bank",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "600036.SH",
+      "industry": "bank",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601166.SH",
+      "industry": "bank",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601318.SH",
+      "industry": "insurance",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601318.SH",
+      "industry": "insurance",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601318.SH",
+      "industry": "insurance",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601601.SH",
+      "industry": "insurance",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601601.SH",
+      "industry": "insurance",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601601.SH",
+      "industry": "insurance",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601628.SH",
+      "industry": "insurance",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601628.SH",
+      "industry": "insurance",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601628.SH",
+      "industry": "insurance",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601336.SH",
+      "industry": "insurance",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601336.SH",
+      "industry": "insurance",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601857.SH",
+      "industry": "energy",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601857.SH",
+      "industry": "energy",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601857.SH",
+      "industry": "energy",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "600028.SH",
+      "industry": "energy",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "600028.SH",
+      "industry": "energy",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "600028.SH",
+      "industry": "energy",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601088.SH",
+      "industry": "energy",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601898.SH",
+      "industry": "energy",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601898.SH",
+      "industry": "energy",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601898.SH",
+      "industry": "energy",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "600030.SH",
+      "industry": "securities",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "600030.SH",
+      "industry": "securities",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "600837.SH",
+      "industry": "securities",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "600837.SH",
+      "industry": "securities",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601688.SH",
+      "industry": "securities",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601688.SH",
+      "industry": "securities",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601688.SH",
+      "industry": "securities",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "600999.SH",
+      "industry": "securities",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "600999.SH",
+      "industry": "securities",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "601390.SH",
+      "industry": "industrial",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601186.SH",
+      "industry": "industrial",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "601186.SH",
+      "industry": "industrial",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "601186.SH",
+      "industry": "industrial",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "000709.SZ",
+      "industry": "industrial",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "000709.SZ",
+      "industry": "industrial",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    },
+    {
+      "symbol": "600585.SH",
+      "industry": "industrial",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "query_start": "2015-01-05",
+      "query_end": "2016-12-30"
+    },
+    {
+      "symbol": "600585.SH",
+      "industry": "industrial",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "query_start": "2016-01-04",
+      "query_end": "2017-12-29"
+    },
+    {
+      "symbol": "600585.SH",
+      "industry": "industrial",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "query_start": "2017-01-03",
+      "query_end": "2018-12-28"
+    }
+  ],
+  "exclusions": [
+    {
+      "symbol": "601398.SH",
+      "industry": "bank",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601939.SH",
+      "industry": "bank",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601288.SH",
+      "industry": "bank",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601988.SH",
+      "industry": "bank",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600036.SH",
+      "industry": "bank",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600036.SH",
+      "industry": "bank",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601166.SH",
+      "industry": "bank",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601166.SH",
+      "industry": "bank",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601166.SH",
+      "industry": "bank",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601318.SH",
+      "industry": "insurance",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601601.SH",
+      "industry": "insurance",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601628.SH",
+      "industry": "insurance",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601336.SH",
+      "industry": "insurance",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601336.SH",
+      "industry": "insurance",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601857.SH",
+      "industry": "energy",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600028.SH",
+      "industry": "energy",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601088.SH",
+      "industry": "energy",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601088.SH",
+      "industry": "energy",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601088.SH",
+      "industry": "energy",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601898.SH",
+      "industry": "energy",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600030.SH",
+      "industry": "securities",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600030.SH",
+      "industry": "securities",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "600837.SH",
+      "industry": "securities",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600837.SH",
+      "industry": "securities",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601688.SH",
+      "industry": "securities",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600999.SH",
+      "industry": "securities",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600999.SH",
+      "industry": "securities",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601390.SH",
+      "industry": "industrial",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "601390.SH",
+      "industry": "industrial",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601390.SH",
+      "industry": "industrial",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "601186.SH",
+      "industry": "industrial",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600019.SH",
+      "industry": "industrial",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "600019.SH",
+      "industry": "industrial",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "600019.SH",
+      "industry": "industrial",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "600019.SH",
+      "industry": "industrial",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "000709.SZ",
+      "industry": "industrial",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "000709.SZ",
+      "industry": "industrial",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "600585.SH",
+      "industry": "industrial",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "000401.SZ",
+      "industry": "industrial",
+      "year": 2015,
+      "start": "2015-01-01",
+      "end": "2015-12-31",
+      "warmup_start": "2014-01-01",
+      "reason": "MISSING_PREVIOUS_YEAR_WARMUP"
+    },
+    {
+      "symbol": "000401.SZ",
+      "industry": "industrial",
+      "year": 2016,
+      "start": "2016-01-01",
+      "end": "2016-12-31",
+      "warmup_start": "2015-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "000401.SZ",
+      "industry": "industrial",
+      "year": 2017,
+      "start": "2017-01-01",
+      "end": "2017-12-31",
+      "warmup_start": "2016-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    },
+    {
+      "symbol": "000401.SZ",
+      "industry": "industrial",
+      "year": 2018,
+      "start": "2018-01-01",
+      "end": "2018-12-31",
+      "warmup_start": "2017-01-01",
+      "reason": "REJECTED_SESSION_IN_WARMUP_OR_RESEARCH"
+    }
+  ],
+  "completion_policy": "Predeclared before first real calculation: completed requires >=12 distinct securities, >=3 complete annual research years and >=4 economic categories; otherwise partial. All windows require >=240 research sessions and >=50 previous-calendar-year warmup sessions inside one D01-qualified continuous interval; synthetic results never qualify",
+  "manifest_sha256": "800d8413ee7d2b0adc90adde6b38f5b290f12cd08189515afecf49268bde876a"
+}
