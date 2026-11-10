@@ -5,11 +5,11 @@ import socket
 import pytest
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def prohibit_network():
     def rejected(*args, **kwargs):
         raise AssertionError("model readiness acceptance must remain offline")
-    # Session scope also protects module-scoped producer fixtures.
+    # Cover module-scoped producers without leaking the patch into other modules.
     with pytest.MonkeyPatch.context() as monkeypatch:
         monkeypatch.setattr(socket.socket, "connect", rejected)
         monkeypatch.setattr(socket, "create_connection", rejected)
