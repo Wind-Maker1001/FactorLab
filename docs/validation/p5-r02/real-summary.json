@@ -1,0 +1,687 @@
+{
+  "status": "P5_R02_EXPLORATORY_REAL_COMPARISON_COMPLETED",
+  "scope": "EXPLORATORY_REAL_DATA",
+  "safety": "NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED",
+  "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+  "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+  "total_return": null,
+  "source_manifest_sha256": "d77417709364d664f1041418c51a434e836a72cbebbc53f7b2158556478ccb64",
+  "source_observed_at": "2026-11-05T04:50:10.674852+00:00",
+  "source_coverage": {
+    "action_coverage": "PARTIAL",
+    "calendar": "OBSERVED_SECURITY_SESSIONS_ONLY; OFFICIAL_CALENDAR_UNKNOWN",
+    "comparable_close": "CSMAR_Adjprcwd_CANDIDATE",
+    "corporate_actions": 4,
+    "end": "2018-12-31",
+    "event_factor_association": "UNVERIFIED",
+    "execution": "BLOCKED",
+    "factors": "NATIVE_OBSERVATIONS_ONLY",
+    "first_observed": "2017-01-03",
+    "formal_return_backtest": "BLOCKED / NOT_RUN",
+    "identity": "CURRENT_NATIVE_COMPANY_RECORD; HISTORICAL_IDENTITY_UNVERIFIED",
+    "last_observed": "2018-12-28",
+    "raw_conversion": "PASS",
+    "raw_records": 487,
+    "research_records": 243,
+    "start": "2018-01-01",
+    "symbol": "601857.SH",
+    "warmup_records": 244,
+    "warmup_start": "2017-01-01"
+  },
+  "sample": {
+    "rows": 487,
+    "warmup_rows": 244,
+    "research_rows": 243,
+    "first_observed": "2017-01-03",
+    "first_research": "2018-01-02",
+    "last_observed": "2018-12-28"
+  },
+  "config_sha256": "29812a8474b7152249c87e132b3af4975899e462c57e1e8b9e64167c9bc881ae",
+  "code": {
+    "commit": "ee0040016604d79b5ae8c6d4eb82b568e9e0e22b",
+    "tree": "d0fa19e89266d67e12f0ecfe6a3f5fb1ae81762b",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "packages": {
+      "numpy": "2.3.4",
+      "pandas": "2.3.3",
+      "pyarrow": "22.0.0",
+      "matplotlib": "3.10.7"
+    }
+  },
+  "replay": {
+    "status": "MATCH",
+    "matched_artifacts": 36,
+    "code_and_source_match": true
+  },
+  "ledger_reconciliation": "PASS",
+  "metrics": {
+    "dual_ma": {
+      "cumulative_return": 0.024876035999999324,
+      "annualized_return": 0.025809160921631547,
+      "annualized_volatility": 0.18950053717749699,
+      "sharpe_ratio": 0.2292226596951185,
+      "sortino_ratio": 0.3213837768710155,
+      "maximum_drawdown": -0.16268837586873985,
+      "calmar_ratio": 0.15864170248066697,
+      "benchmark_return": -0.10903605600000077,
+      "excess_return": 0.1339120920000001,
+      "tracking_error": 0.18669711439798004,
+      "information_ratio": 0.6918430841509656,
+      "win_rate": 0.18518518518518517,
+      "portfolio_turnover": 7.933480540884396,
+      "total_transaction_cost": 1066.3964,
+      "number_of_trades": 8.0,
+      "average_holdings": 0.36213991769547327,
+      "status": "SUCCEEDED",
+      "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+      "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+      "total_return": null,
+      "rejection_count": 1,
+      "rejection_reasons": {
+        "cash_constraint": 1
+      },
+      "holding_time_ratio": 0.36213991769547327,
+      "fees_excluding_slippage": 656.9274,
+      "slippage": 409.46900000000005,
+      "final_equity": 102487.60360000003,
+      "relative_buy_hold_return": 0.1503002370654858,
+      "terminal_pending_target": null,
+      "terminal_close_target": null
+    },
+    "bollinger": {
+      "cumulative_return": -0.05630928000000035,
+      "annualized_return": -0.05833278479307191,
+      "annualized_volatility": 0.10213385055478198,
+      "sharpe_ratio": -0.5375120152667595,
+      "sortino_ratio": -0.733250782040411,
+      "maximum_drawdown": -0.1309471399966322,
+      "calmar_ratio": -0.4454681850598047,
+      "benchmark_return": -0.10903605600000077,
+      "excess_return": 0.05272677600000042,
+      "tracking_error": 0.24071999030080973,
+      "information_ratio": 0.12807045399314324,
+      "win_rate": 0.16049382716049382,
+      "portfolio_turnover": 8.972481799015412,
+      "total_transaction_cost": 1126.9280000000003,
+      "number_of_trades": 9.0,
+      "average_holdings": 0.3292181069958848,
+      "status": "SUCCEEDED",
+      "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+      "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+      "total_return": null,
+      "rejection_count": 0,
+      "rejection_reasons": {},
+      "holding_time_ratio": 0.3292181069958848,
+      "fees_excluding_slippage": 674.6030000000001,
+      "slippage": 452.325,
+      "final_equity": 94369.07199999999,
+      "relative_buy_hold_return": 0.05917947225033826,
+      "terminal_pending_target": null,
+      "terminal_close_target": null
+    },
+    "rsi": {
+      "cumulative_return": 0.18981167000000054,
+      "annualized_return": 0.19749501470580055,
+      "annualized_volatility": 0.1587796834809878,
+      "sharpe_ratio": 1.2136436098953616,
+      "sortino_ratio": 2.1201662028762156,
+      "maximum_drawdown": -0.06726184936831137,
+      "calmar_ratio": 2.936211486311661,
+      "benchmark_return": -0.10903605600000077,
+      "excess_return": 0.2988477260000013,
+      "tracking_error": 0.20489221287837733,
+      "information_ratio": 1.358905907687606,
+      "win_rate": 0.24691358024691357,
+      "portfolio_turnover": 4.98229810884103,
+      "total_transaction_cost": 681.8330000000001,
+      "number_of_trades": 5.0,
+      "average_holdings": 0.49794238683127573,
+      "status": "SUCCEEDED",
+      "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+      "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+      "total_return": null,
+      "rejection_count": 1,
+      "rejection_reasons": {
+        "cash_constraint": 1
+      },
+      "holding_time_ratio": 0.49794238683127573,
+      "fees_excluding_slippage": 400.49300000000005,
+      "slippage": 281.34000000000003,
+      "final_equity": 118981.16700000002,
+      "relative_buy_hold_return": 0.3354206733196379,
+      "terminal_pending_target": null,
+      "terminal_close_target": null
+    },
+    "macd": {
+      "cumulative_return": -0.050128011999999944,
+      "annualized_return": -0.05193555174096054,
+      "annualized_volatility": 0.1765617634618245,
+      "sharpe_ratio": -0.21468214926279874,
+      "sortino_ratio": -0.3217334910576833,
+      "maximum_drawdown": -0.12595645200946304,
+      "calmar_ratio": -0.4123294274521058,
+      "benchmark_return": -0.10903605600000077,
+      "excess_return": 0.058908044000000825,
+      "tracking_error": 0.190646296894748,
+      "information_ratio": 0.2508447958498359,
+      "win_rate": 0.21810699588477367,
+      "portfolio_turnover": 11.895415086584379,
+      "total_transaction_cost": 1495.8012,
+      "number_of_trades": 12.0,
+      "average_holdings": 0.4732510288065844,
+      "status": "SUCCEEDED",
+      "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+      "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+      "total_return": null,
+      "rejection_count": 3,
+      "rejection_reasons": {
+        "cash_constraint": 3
+      },
+      "holding_time_ratio": 0.4732510288065844,
+      "fees_excluding_slippage": 919.8166999999997,
+      "slippage": 575.9845000000001,
+      "final_equity": 94987.19880000001,
+      "relative_buy_hold_return": 0.06611720305485247,
+      "terminal_pending_target": null,
+      "terminal_close_target": null
+    },
+    "cta": {
+      "cumulative_return": 0.027163328000000098,
+      "annualized_return": 0.028183425146961927,
+      "annualized_volatility": 0.038359078365489206,
+      "sharpe_ratio": 0.7437172879838669,
+      "sortino_ratio": 1.0623311705531147,
+      "maximum_drawdown": -0.02180074669170906,
+      "calmar_ratio": 1.2927733873299043,
+      "benchmark_return": -0.10903605600000077,
+      "excess_return": 0.13619938400000087,
+      "tracking_error": 0.23455794848529823,
+      "information_ratio": 0.4871103313747147,
+      "win_rate": 0.20164609053497942,
+      "portfolio_turnover": 1.1589219506668258,
+      "total_transaction_cost": 155.6672,
+      "number_of_trades": 6.0,
+      "average_holdings": 0.35802469135802467,
+      "status": "SUCCEEDED",
+      "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+      "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+      "total_return": null,
+      "rejection_count": 0,
+      "rejection_reasons": {},
+      "holding_time_ratio": 0.35802469135802467,
+      "fees_excluding_slippage": 96.6772,
+      "slippage": 58.99000000000001,
+      "final_equity": 102716.3328,
+      "relative_buy_hold_return": 0.15286744757428705,
+      "terminal_pending_target": null,
+      "terminal_close_target": 0.0
+    },
+    "buy_hold": {
+      "cumulative_return": -0.10903605600000077,
+      "annualized_return": -0.11283766178215471,
+      "annualized_volatility": 0.2605312094800235,
+      "sharpe_ratio": -0.3290480647320599,
+      "sortino_ratio": -0.44383965604824827,
+      "maximum_drawdown": -0.22805723590970362,
+      "calmar_ratio": -0.4947778189630929,
+      "benchmark_return": -0.10903605600000077,
+      "excess_return": 0.0,
+      "tracking_error": 0.0,
+      "information_ratio": null,
+      "win_rate": 0.48559670781893005,
+      "portfolio_turnover": 0.99507,
+      "total_transaction_cost": 79.60560000000001,
+      "number_of_trades": 1.0,
+      "average_holdings": 1.0,
+      "status": "SUCCEEDED",
+      "return_basis": "RAW_PRICE_RETURN_NET_OF_TRADING_COSTS",
+      "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+      "total_return": null,
+      "rejection_count": 0,
+      "rejection_reasons": {},
+      "holding_time_ratio": 1.0,
+      "fees_excluding_slippage": 29.852100000000007,
+      "slippage": 49.7535,
+      "final_equity": 89096.3944,
+      "relative_buy_hold_return": 0.0,
+      "terminal_pending_target": null,
+      "terminal_close_target": null
+    }
+  },
+  "derived_execution_receipts": {
+    "dual_ma": {
+      "final_cash": 102487.60360000005,
+      "final_shares": 0,
+      "holding_sessions": 88,
+      "mean_invested_fraction": 0.36118424503219865,
+      "cash_reconciliation_max_absolute_error": 2.9103830456733704e-11,
+      "trades": [
+        {
+          "signal_date": "2018-04-24",
+          "execution_date": "2018-04-25",
+          "side": "buy",
+          "shares": 13000,
+          "transaction_cost": 79.56
+        },
+        {
+          "signal_date": "2018-05-31",
+          "execution_date": "2018-06-01",
+          "side": "sell",
+          "shares": 13000,
+          "transaction_cost": 186.03000000000003
+        },
+        {
+          "signal_date": "2018-07-10",
+          "execution_date": "2018-07-11",
+          "side": "buy",
+          "shares": 13600,
+          "transaction_cost": 82.688
+        },
+        {
+          "signal_date": "2018-07-18",
+          "execution_date": "2018-07-19",
+          "side": "sell",
+          "shares": 13600,
+          "transaction_cost": 178.704
+        },
+        {
+          "signal_date": "2018-07-26",
+          "execution_date": "2018-07-27",
+          "side": "buy",
+          "shares": 13100,
+          "transaction_cost": 79.2288
+        },
+        {
+          "signal_date": "2018-10-18",
+          "execution_date": "2018-10-19",
+          "side": "sell",
+          "shares": 13100,
+          "transaction_cost": 191.94120000000004
+        },
+        {
+          "signal_date": "2018-12-17",
+          "execution_date": "2018-12-18",
+          "side": "buy",
+          "shares": 13800,
+          "transaction_cost": 84.6768
+        },
+        {
+          "signal_date": "2018-12-20",
+          "execution_date": "2018-12-21",
+          "side": "sell",
+          "shares": 13800,
+          "transaction_cost": 183.5676
+        }
+      ],
+      "rejections": [
+        {
+          "signal_date": "2018-12-17",
+          "execution_date": "2018-12-18",
+          "side": "buy",
+          "requested_shares": 13900,
+          "rejected_shares": 100,
+          "reason": "cash_constraint"
+        }
+      ]
+    },
+    "bollinger": {
+      "final_cash": 639.0719999999856,
+      "final_shares": 13000,
+      "holding_sessions": 80,
+      "mean_invested_fraction": 0.3286457311855624,
+      "cash_reconciliation_max_absolute_error": 1.4551915228366852e-11,
+      "trades": [
+        {
+          "signal_date": "2018-02-13",
+          "execution_date": "2018-02-14",
+          "side": "buy",
+          "shares": 12500,
+          "transaction_cost": 79.9
+        },
+        {
+          "signal_date": "2018-03-20",
+          "execution_date": "2018-03-21",
+          "side": "sell",
+          "shares": 12500,
+          "transaction_cost": 182.475
+        },
+        {
+          "signal_date": "2018-03-29",
+          "execution_date": "2018-03-30",
+          "side": "buy",
+          "shares": 13100,
+          "transaction_cost": 80.5912
+        },
+        {
+          "signal_date": "2018-04-19",
+          "execution_date": "2018-04-20",
+          "side": "sell",
+          "shares": 13100,
+          "transaction_cost": 181.8018
+        },
+        {
+          "signal_date": "2018-06-22",
+          "execution_date": "2018-06-25",
+          "side": "buy",
+          "shares": 13600,
+          "transaction_cost": 80.512
+        },
+        {
+          "signal_date": "2018-06-28",
+          "execution_date": "2018-06-29",
+          "side": "sell",
+          "shares": 13600,
+          "transaction_cost": 188.7408
+        },
+        {
+          "signal_date": "2018-10-19",
+          "execution_date": "2018-10-22",
+          "side": "buy",
+          "shares": 12400,
+          "transaction_cost": 84.02240000000003
+        },
+        {
+          "signal_date": "2018-12-13",
+          "execution_date": "2018-12-14",
+          "side": "sell",
+          "shares": 12400,
+          "transaction_cost": 172.7568
+        },
+        {
+          "signal_date": "2018-12-24",
+          "execution_date": "2018-12-25",
+          "side": "buy",
+          "shares": 13000,
+          "transaction_cost": 76.12800000000001
+        }
+      ],
+      "rejections": []
+    },
+    "rsi": {
+      "final_cash": 16.167000000015832,
+      "final_shares": 16500,
+      "holding_sessions": 121,
+      "mean_invested_fraction": 0.4962648738970469,
+      "cash_reconciliation_max_absolute_error": 1.4551915228366852e-11,
+      "trades": [
+        {
+          "signal_date": "2018-03-29",
+          "execution_date": "2018-03-30",
+          "side": "buy",
+          "shares": 12900,
+          "transaction_cost": 79.36080000000001
+        },
+        {
+          "signal_date": "2018-05-23",
+          "execution_date": "2018-05-24",
+          "side": "sell",
+          "shares": 12900,
+          "transaction_cost": 191.7972
+        },
+        {
+          "signal_date": "2018-06-20",
+          "execution_date": "2018-06-21",
+          "side": "buy",
+          "shares": 14500,
+          "transaction_cost": 85.376
+        },
+        {
+          "signal_date": "2018-09-18",
+          "execution_date": "2018-09-19",
+          "side": "sell",
+          "shares": 14500,
+          "transaction_cost": 225.24300000000008
+        },
+        {
+          "signal_date": "2018-11-28",
+          "execution_date": "2018-11-29",
+          "side": "buy",
+          "shares": 16500,
+          "transaction_cost": 100.056
+        }
+      ],
+      "rejections": [
+        {
+          "signal_date": "2018-03-29",
+          "execution_date": "2018-03-30",
+          "side": "buy",
+          "requested_shares": 13000,
+          "rejected_shares": 100,
+          "reason": "cash_constraint"
+        }
+      ]
+    },
+    "macd": {
+      "final_cash": 94987.1988,
+      "final_shares": 0,
+      "holding_sessions": 115,
+      "mean_invested_fraction": 0.4711364937305678,
+      "cash_reconciliation_max_absolute_error": 1.4551915228366852e-11,
+      "trades": [
+        {
+          "signal_date": "2018-03-12",
+          "execution_date": "2018-03-13",
+          "side": "buy",
+          "shares": 12400,
+          "transaction_cost": 79.6576
+        },
+        {
+          "signal_date": "2018-03-28",
+          "execution_date": "2018-03-29",
+          "side": "sell",
+          "shares": 12400,
+          "transaction_cost": 169.632
+        },
+        {
+          "signal_date": "2018-04-11",
+          "execution_date": "2018-04-12",
+          "side": "buy",
+          "shares": 12200,
+          "transaction_cost": 75.2496
+        },
+        {
+          "signal_date": "2018-05-29",
+          "execution_date": "2018-05-30",
+          "side": "sell",
+          "shares": 12200,
+          "transaction_cost": 174.8016
+        },
+        {
+          "signal_date": "2018-06-29",
+          "execution_date": "2018-07-02",
+          "side": "buy",
+          "shares": 12600,
+          "transaction_cost": 77.11199999999998
+        },
+        {
+          "signal_date": "2018-07-18",
+          "execution_date": "2018-07-19",
+          "side": "sell",
+          "shares": 12600,
+          "transaction_cost": 165.56400000000002
+        },
+        {
+          "signal_date": "2018-07-24",
+          "execution_date": "2018-07-25",
+          "side": "buy",
+          "shares": 12100,
+          "transaction_cost": 73.8584
+        },
+        {
+          "signal_date": "2018-08-31",
+          "execution_date": "2018-09-03",
+          "side": "sell",
+          "shares": 12100,
+          "transaction_cost": 174.24
+        },
+        {
+          "signal_date": "2018-09-13",
+          "execution_date": "2018-09-14",
+          "side": "buy",
+          "shares": 11300,
+          "transaction_cost": 76.7496
+        },
+        {
+          "signal_date": "2018-10-12",
+          "execution_date": "2018-10-15",
+          "side": "sell",
+          "shares": 11300,
+          "transaction_cost": 179.39880000000002
+        },
+        {
+          "signal_date": "2018-12-03",
+          "execution_date": "2018-12-04",
+          "side": "buy",
+          "shares": 12900,
+          "transaction_cost": 79.5672
+        },
+        {
+          "signal_date": "2018-12-24",
+          "execution_date": "2018-12-25",
+          "side": "sell",
+          "shares": 12900,
+          "transaction_cost": 169.9704
+        }
+      ],
+      "rejections": [
+        {
+          "signal_date": "2018-06-29",
+          "execution_date": "2018-07-02",
+          "side": "buy",
+          "requested_shares": 12700,
+          "rejected_shares": 100,
+          "reason": "cash_constraint"
+        },
+        {
+          "signal_date": "2018-09-13",
+          "execution_date": "2018-09-14",
+          "side": "buy",
+          "requested_shares": 11400,
+          "rejected_shares": 100,
+          "reason": "cash_constraint"
+        },
+        {
+          "signal_date": "2018-12-03",
+          "execution_date": "2018-12-04",
+          "side": "buy",
+          "requested_shares": 13000,
+          "rejected_shares": 100,
+          "reason": "cash_constraint"
+        }
+      ]
+    },
+    "cta": {
+      "final_cash": 102716.3328,
+      "final_shares": 0,
+      "holding_sessions": 87,
+      "mean_invested_fraction": 0.06760749880545584,
+      "cash_reconciliation_max_absolute_error": 2.1827872842550278e-11,
+      "trades": [
+        {
+          "signal_date": "2018-01-02",
+          "execution_date": "2018-01-03",
+          "side": "buy",
+          "shares": 2800,
+          "transaction_cost": 18.4352
+        },
+        {
+          "signal_date": "2018-02-06",
+          "execution_date": "2018-02-07",
+          "side": "sell",
+          "shares": 2800,
+          "transaction_cost": 45.108
+        },
+        {
+          "signal_date": "2018-05-07",
+          "execution_date": "2018-05-08",
+          "side": "buy",
+          "shares": 2500,
+          "transaction_cost": 15.6
+        },
+        {
+          "signal_date": "2018-05-29",
+          "execution_date": "2018-05-30",
+          "side": "sell",
+          "shares": 2500,
+          "transaction_cost": 35.82000000000001
+        },
+        {
+          "signal_date": "2018-08-07",
+          "execution_date": "2018-08-08",
+          "side": "buy",
+          "shares": 1900,
+          "transaction_cost": 12.505
+        },
+        {
+          "signal_date": "2018-10-18",
+          "execution_date": "2018-10-19",
+          "side": "sell",
+          "shares": 1900,
+          "transaction_cost": 28.199
+        }
+      ],
+      "rejections": []
+    },
+    "buy_hold": {
+      "final_cash": 413.39440000000474,
+      "final_shares": 12300,
+      "holding_sessions": 243,
+      "mean_invested_fraction": 0.9958235586184969,
+      "cash_reconciliation_max_absolute_error": 0.0,
+      "trades": [
+        {
+          "signal_date": null,
+          "execution_date": "2018-01-02",
+          "side": "buy",
+          "shares": 12300,
+          "transaction_cost": 79.60560000000001
+        }
+      ],
+      "rejections": []
+    }
+  },
+  "artifacts_sha256": {
+    "bollinger_evaluation.json": "8281bcdf4d8fe61cfe1b2ca178c511625df782dcc6c57862d2e6d336e85cdae2",
+    "bollinger_nav.csv": "2918004eddd222daaa763125a672a7013cdcad18bf7b89d9754cf14b376b7768",
+    "bollinger_rejections.csv": "3836b1db237bb7acc82f4d574e0709eb21ff7a0d500638575eabe250408c55de",
+    "bollinger_signals.csv": "69d3e367c960dc2bd2e6f561838f588c2a6bb6577803f39a6a382c559ad3b7cb",
+    "bollinger_trades.csv": "7ef3c0aa7712bda023c504236259a3a983acd0d3befe132fbbf4f6b282e32e55",
+    "buy_hold_evaluation.json": "5e6acfe59c95718f62affa9b680a7616ace8a55448de22c6e3eff425f12faa41",
+    "buy_hold_nav.csv": "bf6bf3fe703c3d0975d2a495224a1b0e5da7d7ff43e64c64d9ea8def8ea1fb6d",
+    "buy_hold_rejections.csv": "3836b1db237bb7acc82f4d574e0709eb21ff7a0d500638575eabe250408c55de",
+    "buy_hold_signals.csv": "494f184f0ef1bcbb4ba43988b37cd4bf4afd29510613fddca7f0fb1f9df886c4",
+    "buy_hold_trades.csv": "36ab43a4d020aebb5f7f61f17a48c0c22229b9566b6c59edf50ca23abc795f06",
+    "calendar.csv": "18ba878559d27934b118c67fb725cd30b07c730fcfa4b46723b9bab5d20850bf",
+    "comparison.png": "30dae8fe3632beff379fca1e5688677cd8af7643d45d9ebbea015215cab6c2c1",
+    "config.json": "29812a8474b7152249c87e132b3af4975899e462c57e1e8b9e64167c9bc881ae",
+    "cta_evaluation.json": "99d2f795580a5d7497623eb58bcc314d98e8a9b8648c200b335a5310ffcc8c07",
+    "cta_nav.csv": "d3218b8cc8f6276b9cdc308c1781bca604ebd8d55b14966210b29b2c1183e4ce",
+    "cta_rejections.csv": "3836b1db237bb7acc82f4d574e0709eb21ff7a0d500638575eabe250408c55de",
+    "cta_signals.csv": "e3a5969f7f59e332fbd8c7e5ba1a3f580585cd56dc0d62ccb3a9a9630ed66184",
+    "cta_trades.csv": "ec489bd687b4c0a89e352c90d76798efb5a2aaa7ca8ce9ba9f44212f10e3263e",
+    "dual_ma_evaluation.json": "7ef4d324f7ad1710e24287816d7a8cd80a1014983a4816b0e70e6930d0152904",
+    "dual_ma_nav.csv": "38c6e0b5eca417efcc3e610248cdbf0c94eba6ebad07d86ffcce8396bb576a51",
+    "dual_ma_rejections.csv": "b899fa510783ceed813c84509ed5fd0b6bdbaa28ba4647c3f087df20443ebb3f",
+    "dual_ma_signals.csv": "775c5e9bf791e957d37191a37bd56cb4d0c43b66a451e3c105abadeb71f31f57",
+    "dual_ma_trades.csv": "99ab64924ca00407d1718274a673738814ec1bc374409e4e2393082f22ed4a43",
+    "input_bars.csv": "4cc448b1a4f2ae1a2cb5885b45a2399a4c134465afd870505288b7ad81f73563",
+    "macd_evaluation.json": "9cfc2b76e3a394b29f52a0d781bddd617228ddc1f292591b6e59ece9d33c66fc",
+    "macd_nav.csv": "c5893f56ea90d496331d0b41d333dc1a77a1a86c5e688a353aec17628c1fc959",
+    "macd_rejections.csv": "3450ada6f06a66a2bb8ad288d8e5a71079049927ac7e19285caeec08f4ac78dd",
+    "macd_signals.csv": "994034e0acfbe58bb4652e8021bd759a7c46d844daae6465ebef14a6138b4bd8",
+    "macd_trades.csv": "a03f3fc25d792111e0988a386bb41931894ddc84994830f53518ea01398d3098",
+    "metrics.csv": "e380857746000c598bd452338f0f820d6b58dfd878f83f754c042e3b232244ce",
+    "metrics.json": "83276ae2a1a59736215faeabef400ce68f96363a439f860001e22b9c7744bda1",
+    "rsi_evaluation.json": "b8297206ed9fcee6422e20439b7464c39d8139792ac7b3ce9dcf67466d578c90",
+    "rsi_nav.csv": "664adb0c7f413881943ce15a2f953bab0ecfa303095e5c5590ef088f138397ab",
+    "rsi_rejections.csv": "fbe4706575662caec78d503b85e3bf41de8d60feac69a1f6aab2455c311b4e10",
+    "rsi_signals.csv": "4b9b31c9ec02ca7f52fd15987f57574a94cf335e7ccd0f67f0b73498c0159789",
+    "rsi_trades.csv": "3c0ac837dfaeed6253d3b875dd2536602e6ec4d4a2ceb5a7b45765c43e21acda"
+  },
+  "private_manifest_sha256": "4c7a0a8974dc1abbcf81d454676b525e8a162b49959a512ca07db16a72046376",
+  "replay_manifest_sha256": "3c3411c8c9b896f8181ece76a12a9d615b2b01d0e5c8c759f765bada8c80c317"
+}
