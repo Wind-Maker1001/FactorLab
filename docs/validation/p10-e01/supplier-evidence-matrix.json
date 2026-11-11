@@ -1,0 +1,133 @@
+{
+  "schema": "P10_E01_SUPPLIER_EVIDENCE_V1",
+  "investigation_date": "2026-11-12",
+  "clock_note": "Task date is 2026-11-12; acquisition shell reports 2026-11-11 UTC. Raw command UTC times preserved without inventing conversion.",
+  "sources": [
+    {
+      "id": "BQ_RAW",
+      "url": "https://v6.bigquant.com/data/datasources/cn_stock_real_bar1d",
+      "kind": "OFFICIAL_DATA_DICTIONARY",
+      "method": "curl -L unauthenticated HTTPS",
+      "http_status": 200,
+      "acquisition_command_completed_at_utc": "2026-11-11T18:57:49Z",
+      "html_sha256": "9a6672f33c2a56601442550e010a0cf2616de8f34c1a24981868d5afe5281557",
+      "html_bytes": 329939,
+      "original_response_acquired": true,
+      "original_full_response_retention": "Task temporary acquisition files; selected dictionary excerpts retained in official-source-excerpts.txt",
+      "historical_batch_binding": false
+    },
+    {
+      "id": "BQ_HFQ",
+      "url": "https://bigquant.com/data/datasources/cn_stock_bar1d",
+      "kind": "OFFICIAL_DATA_DICTIONARY",
+      "method": "curl -L unauthenticated HTTPS",
+      "http_status": 200,
+      "acquisition_command_completed_at_utc": "2026-11-11T18:57:49Z",
+      "html_sha256": "fe55af58cb044dc8c853d6893ba942b5d4663bfc6439d6607429f54eaad17aad",
+      "html_bytes": 56834,
+      "original_response_acquired": true,
+      "original_full_response_retention": "Task temporary acquisition files; selected dictionary excerpts retained in official-source-excerpts.txt",
+      "historical_batch_binding": false
+    },
+    {
+      "id": "BQ_WIKI",
+      "url": "https://bigquant.com/wiki/",
+      "kind": "OFFICIAL_HOSTED_COMMUNITY_INDEX",
+      "method": "curl -L unauthenticated HTTPS",
+      "http_status": 200,
+      "acquisition_command_completed_at_utc": "2026-11-11T19:00:28Z",
+      "html_sha256": "a7f42515e54f1b5bafc475e4b40b518baf1d99a3b603cbd8c638e23ba081dd80",
+      "html_bytes": 25377,
+      "original_response_acquired": true,
+      "original_full_response_retention": "Task temporary acquisition files; selected dictionary excerpts retained in official-source-excerpts.txt",
+      "historical_batch_binding": false
+    },
+    {
+      "id": "BQ_DAI_GUESSED",
+      "url": "https://bigquant.com/wiki/doc/dai",
+      "kind": "GUESSED_ENTRYPOINT_NOT_A_DOCUMENT",
+      "method": "curl -L unauthenticated HTTPS",
+      "http_status": 404,
+      "acquisition_command_completed_at_utc": "2026-11-11T19:00:28Z",
+      "html_sha256": "19f52df1c40bd08f14791c433e3f9d32cdd9395d25be69ab0999ffeb6642b2ab",
+      "html_bytes": 669,
+      "original_response_acquired": true,
+      "original_full_response_retention": "Task temporary acquisition files; selected dictionary excerpts retained in official-source-excerpts.txt",
+      "historical_batch_binding": false
+    },
+    {
+      "id": "BQ_MIGRATION",
+      "url": "https://bigquant.com/wiki/doc/invzMsVhXH",
+      "kind": "OFFICIAL_HOSTED_USER_AUTHORED_DOCUMENT",
+      "method": "curl -L unauthenticated HTTPS",
+      "http_status": 200,
+      "acquisition_command_completed_at_utc": "2026-11-11T19:01:21Z",
+      "html_sha256": "2c2ea6da7a3cbd835e8104fdaf2e41c4cf72d69733b6a968f9a8b583b94632b4",
+      "html_bytes": 15601,
+      "original_response_acquired": true,
+      "original_full_response_retention": "Task temporary acquisition files; selected dictionary excerpts retained in official-source-excerpts.txt",
+      "historical_batch_binding": false
+    },
+    {
+      "id": "BQ_MIGRATION_QA",
+      "url": "https://bigquant.com/wiki/doc/tCZKYbtFwU",
+      "kind": "OFFICIAL_HOSTED_USER_AUTHORED_DOCUMENT",
+      "method": "curl -L unauthenticated HTTPS",
+      "http_status": 200,
+      "acquisition_command_completed_at_utc": "2026-11-11T19:01:21Z",
+      "html_sha256": "55be5b5335aa92b9ff350f32ea8730a6d20911d11fb69a33d67a440c6064894c",
+      "html_bytes": 18349,
+      "original_response_acquired": true,
+      "original_full_response_retention": "Task temporary acquisition files; selected dictionary excerpts retained in official-source-excerpts.txt",
+      "historical_batch_binding": false
+    }
+  ],
+  "claims": [
+    {
+      "topic": "A_RAW_OHLC",
+      "current_evidence": "BQ_RAW exact exchange original transaction-price definition; BQ_HFQ explicitly separate cumulative-factor transformation",
+      "batch_applicability": "UNKNOWN"
+    },
+    {
+      "topic": "B_UNITS",
+      "current_evidence": "volume=shares; amount=yuan; OHLC CNY/share and limits currency/per-share unit not explicitly stated in retrieved general text",
+      "batch_applicability": "UNKNOWN",
+      "existing_exception": "G03 CNY/share remains restricted to four dates"
+    },
+    {
+      "topic": "C_NO_TRADE",
+      "current_evidence": "Retain row; null OHLC/amount; zero volume/deal_number/change_ratio/turn; retain pre_close/limits",
+      "batch_applicability": "UNKNOWN",
+      "unknown": "Historical policy changes and non-suspension automatic filling"
+    },
+    {
+      "topic": "D_VERSION",
+      "current_evidence": "Server-rendered source.version=official; created_at and updated_at supplied",
+      "batch_applicability": "UNKNOWN",
+      "reason": "Publication label not identified as immutable semantic revision; no receipt or manifest binding; update timestamp is not an effective interval"
+    },
+    {
+      "topic": "D_RETROACTIVE_REVISIONS",
+      "current_evidence": null,
+      "batch_applicability": "UNKNOWN"
+    },
+    {
+      "topic": "HISTORICAL_FIRST_AVAILABILITY",
+      "current_evidence": null,
+      "batch_applicability": "UNKNOWN",
+      "separate_from": "Retrospective observed-raw research qualification"
+    }
+  ],
+  "search_receipts": {
+    "websearch_queries": [
+      "site.bigquant.com cn_stock_real_bar1d 未复权 单位 停牌",
+      "\"cn_stock_real_bar1d\" \"版本\"",
+      "BigQuant 数据源 历史数据 修订 版本 DAI cn_stock_real_bar1d"
+    ],
+    "results_returned": 0,
+    "interpretation": "No returned results is not evidence of absence",
+    "webfetch": "Domain safety verification failed; no HTTP status available. Successful curl used to obtain full originals."
+  },
+  "inquiry_status": "REQUEST_PREPARED_NOT_SENT",
+  "third_party_assertions_used_for_qualification": false
+}

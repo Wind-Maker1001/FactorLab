@@ -1,0 +1,245 @@
+{
+  "schema": "P10_E01_BATCH_IDENTITY_V1",
+  "dataset": "cn_stock_real_bar1d",
+  "observation_window": {
+    "start": "2023-03-13",
+    "end_exclusive": "2024-03-13"
+  },
+  "export_batch": "2026-11-07",
+  "original_manifest": "../p8-02/input-manifest.json",
+  "original_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "manifest_sha256_basis": "Original bytes independently pinned in G03/G04; public JSON formatting is not a new original-byte identity",
+  "partition_count": 13,
+  "identity_validation": "13 receipt raw-byte hashes matched G04; payload hashes and timestamps matched P8 manifest; no Parquet payload read",
+  "partitions": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-03-01_2023-03-31.parquet",
+      "sha256": "fa1bdffb7158a0a26db56f2f9b827f5775367bafaa94e3d37e2f73e1301928a0",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-03-01_2023-03-31.parquet.receipt.json",
+      "receipt_sha256": "dd4c293149b188c79dca76177be8b495abf98da2c985d970bd961a772642f9e7",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-03-01' AND date < '2023-04-01'",
+      "window_start": "2023-03-01",
+      "window_end": "2023-03-31",
+      "exported_at_utc": "2026-11-07T12:20:29+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet.receipt.json",
+      "receipt_sha256": "67854b4ca8c65a67791c04cfa1c2a9c3b78acd8bafdc805cc133595417743c3e",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-04-01' AND date < '2023-05-01'",
+      "window_start": "2023-04-01",
+      "window_end": "2023-04-30",
+      "exported_at_utc": "2026-11-07T12:20:29+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet.receipt.json",
+      "receipt_sha256": "77216d38414ffb00f773d0c74cc68d042579e208b911ee6977ccb79475b40249",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-05-01' AND date < '2023-06-01'",
+      "window_start": "2023-05-01",
+      "window_end": "2023-05-31",
+      "exported_at_utc": "2026-11-07T12:20:30+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-06-01_2023-06-30.parquet",
+      "sha256": "2ba93cac8af6a70ab80607cfd87427d47a7a57c24db746b72818b78db9d788f8",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-06-01_2023-06-30.parquet.receipt.json",
+      "receipt_sha256": "a52f6274764550cd18c593ff4417aaf236bd0888ddf3c383932eadb6ef7b47f9",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-06-01' AND date < '2023-07-01'",
+      "window_start": "2023-06-01",
+      "window_end": "2023-06-30",
+      "exported_at_utc": "2026-11-07T12:20:31+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-07-01_2023-07-31.parquet",
+      "sha256": "d43b10e29c11ae8aa1368bc88dcce7c9f713e4ebd602c0d885ed374cec6f02f4",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-07-01_2023-07-31.parquet.receipt.json",
+      "receipt_sha256": "a63b3bc5644eab0bce1f111877ff6508fd9eb2a82880c75c03bebf3760b66dbe",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-07-01' AND date < '2023-08-01'",
+      "window_start": "2023-07-01",
+      "window_end": "2023-07-31",
+      "exported_at_utc": "2026-11-07T12:20:31+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-08-01_2023-08-31.parquet",
+      "sha256": "c0faf9317efd7a3ab51efa02dd3c483085c301478ee05758d038c83ff59fceee",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-08-01_2023-08-31.parquet.receipt.json",
+      "receipt_sha256": "ef67def89216cea0662efd7b70b78f10195649110536a519101538fb7e4af3d4",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-08-01' AND date < '2023-09-01'",
+      "window_start": "2023-08-01",
+      "window_end": "2023-08-31",
+      "exported_at_utc": "2026-11-07T12:20:32+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-09-01_2023-09-30.parquet",
+      "sha256": "7d9200f3e9868fc1ab789892e7c9879468e46f45bda426ba6e89fdc6b0358cd8",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-09-01_2023-09-30.parquet.receipt.json",
+      "receipt_sha256": "b2bf23b1cfdd4996bda542f2b519d173bdc6e69208141d3eb5c13a9456b051ab",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-09-01' AND date < '2023-10-01'",
+      "window_start": "2023-09-01",
+      "window_end": "2023-09-30",
+      "exported_at_utc": "2026-11-07T12:20:33+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-10-01_2023-10-31.parquet",
+      "sha256": "980593d395b381ada1635a330f60d7f08e4edb954f0de70f24474331b7215cdc",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-10-01_2023-10-31.parquet.receipt.json",
+      "receipt_sha256": "e768507a07de602d7742fdc7b4ef774d2f57761964278517611a210d9083bf8b",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-10-01' AND date < '2023-11-01'",
+      "window_start": "2023-10-01",
+      "window_end": "2023-10-31",
+      "exported_at_utc": "2026-11-07T12:20:33+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-11-01_2023-11-30.parquet",
+      "sha256": "f0e5335470475181c45c51d683c795143c7a6b5a3f515f544fb58a90e35f26a6",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-11-01_2023-11-30.parquet.receipt.json",
+      "receipt_sha256": "cc1eeb10208883624995e9de091c476eb2f0524ab9c2f1a05e9f901ad96a5c72",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-11-01' AND date < '2023-12-01'",
+      "window_start": "2023-11-01",
+      "window_end": "2023-11-30",
+      "exported_at_utc": "2026-11-07T12:20:34+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-12-01_2023-12-31.parquet",
+      "sha256": "6f6eb3fa6ebacb317803a5260afea1760acdbb8fcc53afdcdfcd53bfbe2667d1",
+      "receipt_member": "stock/cn_stock_real_bar1d/2023-12-01_2023-12-31.parquet.receipt.json",
+      "receipt_sha256": "164c58c1c1725ba39b209b8ad28e30ea63b9ee3a71d3774d7c30bb614dcb65ef",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2023-12-01' AND date < '2024-01-01'",
+      "window_start": "2023-12-01",
+      "window_end": "2023-12-31",
+      "exported_at_utc": "2026-11-07T12:20:35+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-01-01_2024-01-31.parquet",
+      "sha256": "72885e003f873280e26bde86fabac7ccd74ff9c4af406ce3db772b56e85cbd40",
+      "receipt_member": "stock/cn_stock_real_bar1d/2024-01-01_2024-01-31.parquet.receipt.json",
+      "receipt_sha256": "df35dc3f06410909af3ae254c01f417ceeb6e78b8db81c95eb6ba821e2edfcb8",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2024-01-01' AND date < '2024-02-01'",
+      "window_start": "2024-01-01",
+      "window_end": "2024-01-31",
+      "exported_at_utc": "2026-11-07T12:20:35+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-02-01_2024-02-29.parquet",
+      "sha256": "fd97388d9bc63c738968e7ea7cd67c550fcc2b26e43bac980fb7bd26925a1cc4",
+      "receipt_member": "stock/cn_stock_real_bar1d/2024-02-01_2024-02-29.parquet.receipt.json",
+      "receipt_sha256": "d8375b52998d9b4b2471bd5dceb3b4521aafe3425f81c68e45ec1ad3a5ceb6ea",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2024-02-01' AND date < '2024-03-01'",
+      "window_start": "2024-02-01",
+      "window_end": "2024-02-29",
+      "exported_at_utc": "2026-11-07T12:20:36+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-03-01_2024-03-31.parquet",
+      "sha256": "57a725a3067fdd64db754622750890eca267d578ec1a97eaa0a5bc1acb2454ad",
+      "receipt_member": "stock/cn_stock_real_bar1d/2024-03-01_2024-03-31.parquet.receipt.json",
+      "receipt_sha256": "eaaefb2f8e84cd1c1783e01ac310ae64e42390f5b981ca8bca03af84e525a83f",
+      "query": "SELECT * FROM cn_stock_real_bar1d WHERE date >= '2024-03-01' AND date < '2024-04-01'",
+      "window_start": "2024-03-01",
+      "window_end": "2024-03-31",
+      "exported_at_utc": "2026-11-07T12:20:37+00:00",
+      "origin": "BigQuant DAI / account-authorized Free catalogue",
+      "semantic_version": null
+    }
+  ],
+  "native_schema": {
+    "member": "stock/cn_stock_real_bar1d/schema.json",
+    "sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076",
+    "datasource_id": "cn_stock_real_bar1d",
+    "fields": [
+      {
+        "name": "date",
+        "type": "timestamp[ns]"
+      },
+      {
+        "name": "instrument",
+        "type": "string"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "adjust_factor",
+        "type": "double"
+      },
+      {
+        "name": "pre_close",
+        "type": "double"
+      },
+      {
+        "name": "open",
+        "type": "double"
+      },
+      {
+        "name": "close",
+        "type": "double"
+      },
+      {
+        "name": "high",
+        "type": "double"
+      },
+      {
+        "name": "low",
+        "type": "double"
+      },
+      {
+        "name": "volume",
+        "type": "int64"
+      },
+      {
+        "name": "deal_number",
+        "type": "int32"
+      },
+      {
+        "name": "amount",
+        "type": "double"
+      },
+      {
+        "name": "change_ratio",
+        "type": "double"
+      },
+      {
+        "name": "turn",
+        "type": "double"
+      },
+      {
+        "name": "upper_limit",
+        "type": "double"
+      },
+      {
+        "name": "lower_limit",
+        "type": "double"
+      }
+    ],
+    "metadata_source": "zero_row_query"
+  },
+  "disclosure": "Metadata only; no account credentials or commercial price rows"
+}
