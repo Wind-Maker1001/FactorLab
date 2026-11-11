@@ -1,0 +1,31 @@
+relation,case,status,denominator,affected,scope,observation
+membership,ENDPOINT_SURVIVOR_SUBSTITUTION,FUTURE_INFORMATION_RISK,605500,216902,full research window,counterfactual endpoint-only selection drops actual historical member-days; current reader uses exact dates
+membership,HISTORICAL_AVAILABILITY,PIT_UNKNOWN,605500,605500,full research window,frozen manifest historical_available_at unknown; retrieval does not prove contemporaneous knowledge
+industry,CURRENT_TREE_HISTORICAL_BACKFILL,PIT_UNKNOWN,960,960,full available tree snapshot,no historical interval or publication timestamp
+financial,LATEST_VALUE_AS_OF_REPORT_PERIOD,PIT_UNKNOWN,885,885,bank table member-decision tests,report period and correction list cannot certify first published value
+corporate_action,EX_PRICE_JUMP_AS_CASH_RECEIPT,UNRESOLVED,16,16,16 targeted events,zero verified actual payments; no account settlement evidence
+price,FUTURE_ADJUSTMENT_CHAIN_AS_RAW,HFQ_UNVERIFIED,4,4,PR80 four 601857 windows; inherited,observed factor conflicts do not establish historical version of adjustment chain
+price_status,SUSPENSION_FILL_AS_EXECUTION_PRICE,CONFIRMED_NONTRADE_FILL,1,1,000540.SZ 2023-05-04; inherited PR94,CSMAR Filling=1; BigQuant raw missing; valuation mark is not a real trade
+identity,POST_DELIST_NORMAL_TRADABLE_JOIN,UNRESOLVED,605500,9,current lifecycle snapshot vs actual membership,600068 transition: member record does not authorize tradability or a 1:1 successor alias
+financial,FS_BComins:173,PIT_UNKNOWN,1,1,2022-06-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2022-01-01
+financial,FS_BComins:174,PIT_UNKNOWN,1,1,2022-06-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2022-01-01
+financial,FS_BComins:183,PIT_UNKNOWN,1,1,2023-01-03,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2023-01-01
+financial,FS_BComins:184,PIT_UNKNOWN,1,1,2023-01-03,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2023-01-01
+financial,FS_BComins:511,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:512,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:727,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:728,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:799,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:800,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:1736,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:1737,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:1993,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:1994,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:2330,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:2331,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:2737,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:3504,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:3505,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:3531,PIT_UNKNOWN,1,1,2024-01-02,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2023-12-31
+financial,FS_BComins:3966,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01
+financial,FS_BComins:4550,PIT_UNKNOWN,1,1,2021-09-13,later correction-date candidate in selected actual record; first-publication/value versions absent; period=2021-01-01

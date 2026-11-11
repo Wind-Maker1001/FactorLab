@@ -1,0 +1,10 @@
+source,table,check,denominator,affected,status,observation
+BigQuant,cn_stock_industry,snapshot_history,960,960,PIT_UNKNOWN,no date or validity interval; historical tree cannot be inferred
+BigQuant,cn_stock_industry_index_mapper,snapshot_history,31,31,PIT_UNKNOWN,kind is a namespace; mapping has no historical validity
+BigQuant,cn_stock_industry_component:2023-03,date_instrument_industry_multiplicity,349000,0,OBSERVED_KEY_CHECK,industry namespace retained; version and date semantics UNKNOWN
+BigQuant,cn_stock_industry_component:2023-03,unqualified_join_expansion,11500,23000,CLASSIFICATION_NAMESPACE_REQUIRED,extra output rows when industry is omitted; not proof of conflicting same-system membership
+BigQuant,cn_stock_industry_change,change_history,21292,21292,PIT_UNKNOWN,"change_flag dictionary, initial state, effective-vs-publication semantics and vintage UNKNOWN"
+BigQuant,cn_stock_industry_component:2023-03,effective_intervals_overlap_gap,349000,349000,MEMBERSHIP_TIME_UNKNOWN,dated observations lack explicit interval and revision contract; do not manufacture full historical intervals
+BigQuant,cn_stock_industry_component:2023-03,scheme:cs,11500,0,OBSERVED_KEY_GAPS,rows=113572; multiple_same_system_keys=0; version UNKNOWN
+BigQuant,cn_stock_industry_component:2023-03,scheme:sw2014,11500,0,OBSERVED_KEY_GAPS,rows=117714; multiple_same_system_keys=0; version UNKNOWN
+BigQuant,cn_stock_industry_component:2023-03,scheme:sw2021,11500,0,OBSERVED_KEY_GAPS,rows=117714; multiple_same_system_keys=0; version UNKNOWN
