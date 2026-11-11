@@ -1,0 +1,67 @@
+{
+  "policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+  "version": "1",
+  "explicitly_selected": true,
+  "raw_close_patched": false,
+  "positive_existing_holdings_only": true,
+  "nontradable": true,
+  "required_evidence": [
+    "ISSUER_CONFIRMED_SUSPENSION",
+    "OBSERVED_RAW_CLOSE"
+  ],
+  "statuses": [
+    "OBSERVED_MARKET_PRICE",
+    "MODEL_VALUATION_ASSUMPTION",
+    "UNVALUABLE_POSITION"
+  ],
+  "assumption_account_dates": [
+    {
+      "model_id": "B_factor_score",
+      "date": "2023-04-26",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model_id": "B_factor_score",
+      "date": "2023-04-27",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model_id": "B_factor_score",
+      "date": "2023-04-28",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model_id": "B_factor_score",
+      "date": "2023-05-04",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model_id": "B_ridge",
+      "date": "2023-04-26",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model_id": "B_ridge",
+      "date": "2023-04-27",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model_id": "B_ridge",
+      "date": "2023-04-28",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    },
+    {
+      "model_id": "B_ridge",
+      "date": "2023-05-04",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION"
+    }
+  ],
+  "strategy_nav_contains_valuation_assumptions": true,
+  "nav_change_from_saved_marks": 0.0,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

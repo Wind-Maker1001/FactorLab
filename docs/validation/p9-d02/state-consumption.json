@@ -1,0 +1,23 @@
+{
+  "security": "000540.SZ",
+  "date": "2023-05-08",
+  "raw_st_status": 2,
+  "is_st": true,
+  "cutoff": "2023-05-05T15:00:00+08:00",
+  "previous_close": 0.63,
+  "open": 0.6,
+  "lower_limit": 0.6,
+  "sell_blocked": true,
+  "diagnostic_only": true,
+  "execution_permission": "UNKNOWN",
+  "order_executability": "ORDER_EXECUTABLE_UNVERIFIED",
+  "other_unknown_dates": "UNKNOWN",
+  "global_enum_mapping_changed": false,
+  "source_version": "P9_D01_MARKET_EVIDENCE_V1",
+  "valid_security_date_field": [
+    "000540.SZ",
+    "2023-05-08",
+    "is_st"
+  ],
+  "execution_state_evidence_not_authorized": true
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "P9_D02_EVIDENCE_CONSUMPTION_V1",
+  "task": "P9-D02",
+  "baseline_main": "09d1f97c6ab8175ec9f569d58b72aa319bb053b1",
+  "evidence_merge_commit": "6c953aae0c9c81301c2a7f7e9254a1ee8a64fd8c",
+  "original_config": "configs/research/p9-01-oos-execution.json",
+  "original_config_hash": "be3269529c9ed5fceb9271c3164409c9d987e4b65001183e5ea4a918e979a5b8",
+  "candidate_prediction_sha256": "c8f18f07fde5521c340b9ad3c4364469a855481fc5f0c4b12d93a6ab20e6ad3f",
+  "sidecar": "configs/research/p9-d01/candidate.json",
+  "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+  "valuation_policy_version": "1",
+  "valuation_statuses": ["OBSERVED_MARKET_PRICE", "MODEL_VALUATION_ASSUMPTION", "UNVALUABLE_POSITION"],
+  "state_scope": {"security": "000540.SZ", "date": "2023-05-08", "field": "is_st", "cutoff": "2023-05-05T15:00:00+08:00", "execution_permission": "UNKNOWN"},
+  "minimum_window_end": "2023-05-08",
+  "resume_policy": "SAVED_PREDICTIONS_AND_LEDGERS_ONLY_STOP_AT_FIRST_EXECUTION_BLOCKER",
+  "max_workers": 4,
+  "memory_soft_limit_gib": 8,
+  "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
