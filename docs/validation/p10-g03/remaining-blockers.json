@@ -1,0 +1,54 @@
+{
+  "status": "P10_G03_PARTIAL",
+  "unresolved": [
+    {
+      "status": "UNKNOWN",
+      "fields": [
+        "open",
+        "high",
+        "low",
+        "close"
+      ],
+      "scope": "Other security/date keys in the original LightGBM fold 0 input",
+      "required": "Export-version native price basis, unit, dated instrument identity and observed-trade coverage for each additional approved object."
+    },
+    {
+      "status": "UNKNOWN",
+      "fields": [
+        "adjust_factor",
+        "pre_close",
+        "upper_limit",
+        "lower_limit"
+      ],
+      "scope": "Frozen export",
+      "required": "Version-bound adjustment anchor/precision and event coverage, official dated reference/limit definitions and sentinel behavior. Current catalogue semantics support interpretation only."
+    },
+    {
+      "status": "UNKNOWN",
+      "fields": [
+        "volume",
+        "amount"
+      ],
+      "scope": "Frozen export",
+      "required": "Version-bound unit and measurement coverage. Resolve the two volume differences beyond the exchange display precision before a quantity grant."
+    },
+    {
+      "status": "UNKNOWN",
+      "field": "available_at",
+      "scope": "All scoped BigQuant prices",
+      "required": "Version-specific first supplier availability on each historical session. A later export, quote archive or issuer notice has a separate timestamp."
+    },
+    {
+      "status": "BLOCKED",
+      "consumer": "Frozen LightGBM fold 0 execution",
+      "required": "Close price coverage for the existing input request and integrate independent P9-D05 historical status evidence.",
+      "p9_d05": "https://github.com/Wind-Maker1001/FactorLab/pull/109"
+    }
+  ],
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

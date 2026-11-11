@@ -1,0 +1,308 @@
+{
+  "source_id": "BigQuant/cn_stock_real_bar1d",
+  "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "data_version_basis": "SHA256 of the original P8-02 input-manifest.json bytes, independently pinned by the P9-D01 sidecar",
+  "archive": "stock.zip",
+  "table_path": "stock/cn_stock_real_bar1d",
+  "evidence_acquired_on": "2026-11-12",
+  "price_members": {
+    "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b",
+    "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+  },
+  "observations": {
+    "002408.SZ/2023-04-24": {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "row_sha256": "76687d6b61e4ab95e57f13f8cb6140f370972d9e0847a38f12d91b693fa02462",
+      "evidence_id": "szse-2023-04-24"
+    },
+    "002408.SZ/2023-04-25": {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "row_sha256": "53303b1d49da7609835279609acc44327259e4498d1f9fe149f5372ff05b9d2d",
+      "evidence_id": "szse-2023-04-25"
+    },
+    "002408.SZ/2023-05-05": {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "row_sha256": "0717a8f87b33845d8ff2123355ec1b0806db1035f93a6f7d5de0bacaad4e40fd",
+      "evidence_id": "szse-2023-05-05"
+    },
+    "002408.SZ/2023-05-08": {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "row_sha256": "1d68c5c96edde3b32e66f2a76c28355f887f8a5e0f767725d495830dd7dca085",
+      "evidence_id": "szse-2023-05-08"
+    }
+  },
+  "evidence_sources": {
+    "bigquant-raw-dictionary": {
+      "url": "https://v6.bigquant.com/data/datasources/cn_stock_real_bar1d",
+      "sha256": "4be6f278e2d227376defd3aaece6a0088db30372286565e393ac4287a7977703"
+    },
+    "bigquant-hfq-dictionary": {
+      "url": "https://bigquant.com/data/datasources/cn_stock_bar1d",
+      "sha256": "6a56b5e9960652f649e1125ac21b9201c1864c430d2718c9602e954ce7e8e46e"
+    },
+    "bigquant-native-schema": {
+      "member": "stock/cn_stock_real_bar1d/schema.json",
+      "sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076",
+      "method": "zero_row_query"
+    },
+    "bigquant-april-receipt": {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet.receipt.json",
+      "sha256": "67854b4ca8c65a67791c04cfa1c2a9c3b78acd8bafdc805cc133595417743c3e",
+      "exported_at_utc": "2026-11-07T12:20:29+00:00"
+    },
+    "bigquant-may-receipt": {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet.receipt.json",
+      "sha256": "77216d38414ffb00f773d0c74cc68d042579e208b911ee6977ccb79475b40249",
+      "exported_at_utc": "2026-11-07T12:20:30+00:00"
+    },
+    "szse-issuer-2023-047": {
+      "url": "https://disc.static.szse.cn/download/disc/disk03/finalpage/2023-05-04/389dda70-b1bf-4df3-a410-fb32c67d47b7.PDF",
+      "sha256": "b0047bf17198a0ad9698d7d6ffbe54286c3f87ecb44159684ab6d222f66e884a"
+    },
+    "szse-trading-rules-2023": {
+      "url": "http://docs.static.szse.cn/www/lawrules/rule/repeal/rules/W020230217564423808793.pdf",
+      "sha256": "7018114a6e11deb239c2a72e71e49defc6e8841b3e2c093b3bbf809282c67222",
+      "sections": [
+        "3.3.10",
+        "3.3.11",
+        "3.3.14",
+        "4.4.2",
+        "4.4.3"
+      ]
+    },
+    "szse-2023-04-24": {
+      "url": "https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC=002408&txtBeginDate=2023-04-24&txtEndDate=2023-04-28",
+      "sha256": "90dbba0cd246d91fac5ba247cddad84b4d3d37af824c6dcf8cec8a2f0bbc6357"
+    },
+    "szse-2023-04-25": {
+      "url": "https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC=002408&txtBeginDate=2023-04-25&txtEndDate=2023-04-25",
+      "sha256": "7726e61b278385e8ce9026eae9dd46de8129f9bc2c2c563bc4ae9a208003de1c"
+    },
+    "szse-2023-05-05": {
+      "url": "https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC=002408&txtBeginDate=2023-05-05&txtEndDate=2023-05-05",
+      "sha256": "90c8b0dc78acb1d4803d32f31637db5f186349bcdd9b5ef0e76636c8f6995e1e"
+    },
+    "szse-2023-05-08": {
+      "url": "https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=1815_stock&TABKEY=tab1&txtDMorJC=002408&txtBeginDate=2023-05-08&txtEndDate=2023-05-08",
+      "sha256": "fcc3c093b7f6557cf39942901cdca4d9fa224ba1515beb47e0bbc28db145aa29"
+    }
+  },
+  "field_semantics": {
+    "raw_open": {
+      "original_field": "open",
+      "currency": "CNY",
+      "consumption": {
+        "schema": "PRICE_CONSUMPTION_V1",
+        "source_id": "BigQuant/cn_stock_real_bar1d",
+        "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+        "field": "raw_open",
+        "unit": "CNY/share",
+        "basis": "OBSERVED_RAW",
+        "adjustment_policy": "NONE",
+        "adjustment_event_dates": [],
+        "scope": [
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-24",
+            "end": "2023-04-24"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-25",
+            "end": "2023-04-25"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-05",
+            "end": "2023-05-05"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-08",
+            "end": "2023-05-08"
+          }
+        ],
+        "available_at": null,
+        "purposes": [
+          "EXECUTION"
+        ],
+        "qualification": "RESEARCH_QUALIFIED",
+        "reasons": [],
+        "evidence": [
+          "bigquant-raw-dictionary",
+          "bigquant-native-schema",
+          "bigquant-april-receipt",
+          "bigquant-may-receipt",
+          "szse-issuer-2023-047",
+          "szse-trading-rules-2023",
+          "szse-2023-04-24",
+          "szse-2023-04-25",
+          "szse-2023-05-05",
+          "szse-2023-05-08"
+        ]
+      }
+    },
+    "raw_high": {
+      "original_field": "high",
+      "currency": "CNY",
+      "consumption": {
+        "schema": "PRICE_CONSUMPTION_V1",
+        "source_id": "BigQuant/cn_stock_real_bar1d",
+        "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+        "field": "raw_high",
+        "unit": "CNY/share",
+        "basis": "OBSERVED_RAW",
+        "adjustment_policy": "NONE",
+        "adjustment_event_dates": [],
+        "scope": [
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-24",
+            "end": "2023-04-24"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-25",
+            "end": "2023-04-25"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-05",
+            "end": "2023-05-05"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-08",
+            "end": "2023-05-08"
+          }
+        ],
+        "available_at": null,
+        "purposes": [
+          "EXECUTION"
+        ],
+        "qualification": "RESEARCH_QUALIFIED",
+        "reasons": [],
+        "evidence": [
+          "bigquant-raw-dictionary",
+          "bigquant-native-schema",
+          "bigquant-april-receipt",
+          "bigquant-may-receipt",
+          "szse-issuer-2023-047",
+          "szse-trading-rules-2023",
+          "szse-2023-04-24",
+          "szse-2023-04-25",
+          "szse-2023-05-05",
+          "szse-2023-05-08"
+        ]
+      }
+    },
+    "raw_low": {
+      "original_field": "low",
+      "currency": "CNY",
+      "consumption": {
+        "schema": "PRICE_CONSUMPTION_V1",
+        "source_id": "BigQuant/cn_stock_real_bar1d",
+        "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+        "field": "raw_low",
+        "unit": "CNY/share",
+        "basis": "OBSERVED_RAW",
+        "adjustment_policy": "NONE",
+        "adjustment_event_dates": [],
+        "scope": [
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-24",
+            "end": "2023-04-24"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-25",
+            "end": "2023-04-25"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-05",
+            "end": "2023-05-05"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-08",
+            "end": "2023-05-08"
+          }
+        ],
+        "available_at": null,
+        "purposes": [
+          "EXECUTION"
+        ],
+        "qualification": "RESEARCH_QUALIFIED",
+        "reasons": [],
+        "evidence": [
+          "bigquant-raw-dictionary",
+          "bigquant-native-schema",
+          "bigquant-april-receipt",
+          "bigquant-may-receipt",
+          "szse-issuer-2023-047",
+          "szse-trading-rules-2023",
+          "szse-2023-04-24",
+          "szse-2023-04-25",
+          "szse-2023-05-05",
+          "szse-2023-05-08"
+        ]
+      }
+    },
+    "raw_close": {
+      "original_field": "close",
+      "currency": "CNY",
+      "consumption": {
+        "schema": "PRICE_CONSUMPTION_V1",
+        "source_id": "BigQuant/cn_stock_real_bar1d",
+        "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+        "field": "raw_close",
+        "unit": "CNY/share",
+        "basis": "OBSERVED_RAW",
+        "adjustment_policy": "NONE",
+        "adjustment_event_dates": [],
+        "scope": [
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-24",
+            "end": "2023-04-24"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-04-25",
+            "end": "2023-04-25"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-05",
+            "end": "2023-05-05"
+          },
+          {
+            "symbol": "002408.SZ",
+            "start": "2023-05-08",
+            "end": "2023-05-08"
+          }
+        ],
+        "available_at": null,
+        "purposes": [
+          "EXECUTION"
+        ],
+        "qualification": "RESEARCH_QUALIFIED",
+        "reasons": [],
+        "evidence": [
+          "bigquant-raw-dictionary",
+          "bigquant-native-schema",
+          "bigquant-april-receipt",
+          "bigquant-may-receipt",
+          "szse-issuer-2023-047",
+          "szse-trading-rules-2023",
+          "szse-2023-04-24",
+          "szse-2023-04-25",
+          "szse-2023-05-05",
+          "szse-2023-05-08"
+        ]
+      }
+    }
+  }
+}
