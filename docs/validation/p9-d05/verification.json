@@ -1,0 +1,66 @@
+{
+  "schema": "P9_D05_VERIFICATION_V1",
+  "status": "P9_D05_PARTIAL",
+  "baseline": "9af38d53cc35296e8e1e0c99e99d12da90d40bb7",
+  "prerequisites": {
+    "105": "aee72e81fc4b164feb1bcb3976e32cfe007bcdda",
+    "106": "8e59027e34114b500640b0ab79b80b9d03f15b5e",
+    "107": "9af38d53cc35296e8e1e0c99e99d12da90d40bb7"
+  },
+  "frozen_inputs_sha256": {
+    "P8-02/input-manifest.json": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+    "P8-02/predictions.parquet": "19b0fab33b8cb247ba7b34bd0721c8119757464f16822ac95f111bae16f5243c",
+    "P9-01/candidate-predictions.parquet": "c8f18f07fde5521c340b9ad3c4364469a855481fc5f0c4b12d93a6ab20e6ad3f",
+    "P9-01/B_lightgbm-fold-0/targets.parquet": "3c29e4a8df3026cb80893ab96af1a304cd04b8d0f94bcbdfc39125d0a359979a",
+    "P9-01/B_lightgbm-fold-0/decisions.csv": "bff5069d85f5632a52bb80e206620cb30884779ee1d8e9ac2737e48bb5375e00",
+    "P9-01/config.json": "502b0a01a9a7250f285e1f1d9adb8268c2c4de6c38880ac6051bcf2e4a4f3eae",
+    "P9-01/inference-identity.json": "cc316725832e92807dc1477537b5c81f391a0ab1bf69167215e344c6fef8060e",
+    "P9-D03/combined-sidecar.json": "b5380b0e8f0d2bccb6d3ace0d62e85b2501b46ba8ceb3a103c12d0493c6f860d",
+    "P9-D04/replay-result.json": "0388267c4e7b70afc4e14d5c5dcacfde20c019d5dd25ef0a5f370dd6d7254164"
+  },
+  "private_accepted_artifacts_sha256": {
+    "combined-sidecar.json": "d31ecac02ed4a16bbb43e0a101276a8e26be10cbcbdfa8bf9aaf9fb6c040d465",
+    "fold-0-nav.parquet": "7b0a419b0f937aae2406547cdcfd92f904e2921893a9b708e74ee34050c785e7",
+    "fold-0-positions.parquet": "58bb36718edf8cc93451e3749c4dd30fbed19cf017b19d4e13525168b11c67b9",
+    "fold-0-qualifications.parquet": "58f24474b9377fed7b46a3e883c9783efa63a3bf3c41263d72ded9f1882e2d79",
+    "fold-0-rejections.parquet": "e8843d4995312c53ae2a27de4813341022ce417daa3d6446f72eb882918b8de2",
+    "fold-0-target_comparison.parquet": "ad661ecc340e05e9124903deee299325aa0102cfa22564844802720057456fd5",
+    "fold-0-trades.parquet": "55fc5616745fed3ce0c0e7beb1fb5ff55b43ea61c09ef762b6a9d09058024824"
+  },
+  "tests": {
+    "environment": "existing Python 3.14 environment",
+    "passed": 118,
+    "failed": 0,
+    "pytest_seconds": 5.25,
+    "files": [
+      "test_p9_d05.py",
+      "test_p9_d04.py",
+      "test_p9_market_evidence.py",
+      "test_p9_02_recovery.py",
+      "test_p10_consumer_admission.py"
+    ]
+  },
+  "resources": {
+    "peak_replay_working_set_bytes": 244346880,
+    "peak_test_working_set_bytes": 204271616,
+    "replay_seconds": 1.1456501999637112,
+    "replay_invocation_seconds": 3.0712427,
+    "test_invocation_seconds": 6.9588777,
+    "final_private_replay_bytes": 117994,
+    "total_private_task_file_bytes": 2602486,
+    "maximum_concurrent_python_processes": 1,
+    "numerical_threads": 1,
+    "selected_shards": 28,
+    "selected_rows": 61215,
+    "uncompressed_shard_bytes_read": 82722219,
+    "memory_soft_limit_bytes": 4294967296,
+    "temporary_disk_budget_bytes": 536870912
+  },
+  "recovery": "The first load refused the unretained May 2023 price shard referenced by the inherited May 8 audit fact. The final run retained its bytes from the same pinned projection and passed the sidecar loader before replay.",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

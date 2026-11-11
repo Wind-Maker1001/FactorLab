@@ -35,6 +35,16 @@ ALLOWED = ALLOWED | frozenset((security, day, "valuation_mark")
 OBSERVATION_DATES = {"002408.SZ": "2023-04-25", "000540.SZ": "2023-04-28",
                      **{security: window[0] for security, window in SCOPED_SUSPENSIONS.items()}}
 
+# The 2023-36 designation took effect on May 5. This grant covers only
+# the continuation after D04 and ends before the May 19 suspension.
+ST_EXECUTION_SECURITY = "000540.SZ"
+ST_EXECUTION_DATES = ("2023-05-15", "2023-05-16", "2023-05-17", "2023-05-18")
+ST_EXECUTION_NOTICE_SHA256 = "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642f90cd54cc2e456"
+ST_EXECUTION_PUBLICATION_DATE = "2023-04-29"
+ST_EXECUTION_KNOWN = "EXECUTION_TIME_STATE_KNOWN"
+_EXECUTION_ST_KEYS = frozenset((ST_EXECUTION_SECURITY, day, "is_st") for day in ST_EXECUTION_DATES)
+_CANDIDATE_KEYS = ALLOWED | _EXECUTION_ST_KEYS
+
 
 def _same(left, right):
     # JSON identities distinguish null, zero and false.
@@ -94,8 +104,8 @@ class Valuation:
 class MarketEvidence:
     """Validated candidates, separate from immutable source observations.
 
-    No execution authorization API is provided. SIGNAL_STATE consumption only
-    exposes the targeted issuer-designated ST fact, never a trading permission.
+    SIGNAL_STATE and EXECUTION_STATE expose scoped issuer designations without
+    conveying trading permission.
     """
     facts: tuple[CandidateFact, ...]
     source_manifest_sha256: str
@@ -103,7 +113,7 @@ class MarketEvidence:
 
     def fact(self, security, day, field, *, purpose="AUDIT", cutoff=None):
         key = (security, day, field)
-        if key not in ALLOWED:
+        if key not in _CANDIDATE_KEYS:
             fail("candidate outside exact security/date/field scope")
         matches = [f for f in self.facts if (f.security, f.day, f.field) == key]
         if len(matches) != 1:
@@ -111,8 +121,11 @@ class MarketEvidence:
         fact = matches[0]
         if purpose == "AUDIT":
             return fact
-        if (purpose != "SIGNAL_STATE" or field != "is_st"
-                or fact.known_at_status != "SIGNAL_TIME_STATE_KNOWN"
+        expected_purpose, expected_knowledge = (
+            ("EXECUTION_STATE", ST_EXECUTION_KNOWN) if key in _EXECUTION_ST_KEYS
+            else ("SIGNAL_STATE", "SIGNAL_TIME_STATE_KNOWN"))
+        if (purpose != expected_purpose or field != "is_st"
+                or fact.known_at_status != expected_knowledge
                 or cutoff is None or timestamp(fact.publication_time) > timestamp(cutoff)):
             fail("evidence cannot authorize requested consumption")
         return fact
@@ -171,7 +184,7 @@ def load_sidecar(path, *, source_manifest, originals, documents):
     for row in payload["candidates"]:
         key = (row["target_security"], row["target_date"], row["field"])
         date(key[1])
-        if key not in ALLOWED or key in seen:
+        if key not in _CANDIDATE_KEYS or key in seen:
             fail("out-of-scope or conflicting candidate")
         seen.add(key)
         if key not in originals or not _same(originals[key], row["original_value"]):
@@ -238,7 +251,12 @@ def load_sidecar(path, *, source_manifest, originals, documents):
                 "execution_price_available": "EXECUTION_PRICE_AVAILABLE"}[key[2]]):
             fail("unsupported audit claim")
         known = row["known_at_status"]
-        if known not in {"UNKNOWN", "EX_POST_ONLY", "SIGNAL_TIME_STATE_KNOWN"}:
+        if key in _EXECUTION_ST_KEYS:
+            if (known != ST_EXECUTION_KNOWN or document != ST_EXECUTION_NOTICE_SHA256
+                    or timestamp(row["source_publication_time"]) != timestamp(ST_EXECUTION_PUBLICATION_DATE)
+                    or row["original_value"] is not None):
+                fail("exact 000540 issuer notice and unknown original adapter state required")
+        elif known not in {"UNKNOWN", "EX_POST_ONLY", "SIGNAL_TIME_STATE_KNOWN"}:
             fail("invalid knowledge status")
         if known == "SIGNAL_TIME_STATE_KNOWN":
             if key[2] != "is_st" or timestamp(row["source_publication_time"]) > timestamp("2023-05-05T15:00:00+08:00"):

@@ -1,0 +1,62 @@
+{
+  "schema": "P9_D05_EXECUTION_V1",
+  "status": "P9_D05_PARTIAL",
+  "account": "B_lightgbm",
+  "fold": 0,
+  "start": "2023-03-13",
+  "end_exclusive": "2024-03-13",
+  "source_sessions": 243,
+  "prior_qualified_sessions": 41,
+  "new_qualified_sessions": 4,
+  "newly_qualified_dates": [
+    "2023-05-15",
+    "2023-05-16",
+    "2023-05-17",
+    "2023-05-18"
+  ],
+  "accepted_sessions": 45,
+  "account_close_rows": 44,
+  "initial_source_session": "2023-03-13",
+  "last_qualified_session": "2023-05-18",
+  "full_fold": false,
+  "unaccepted_source_sessions": 198,
+  "baseline_comparison": {
+    "all_fields_and_order_exact": [
+      "trades",
+      "positions",
+      "nav",
+      "rejections",
+      "target_comparison",
+      "qualifications"
+    ],
+    "prior_sessions_counted_as_new": false,
+    "persistent_execution_state_available": false
+  },
+  "may15_000540": {
+    "status_qualified": true,
+    "side": "sell",
+    "reject_reason": "sell_price_limit",
+    "price_limit_pct": 5,
+    "new_window_fills": 0
+  },
+  "accepted_ledger": {
+    "status": "PASSED",
+    "cash": true,
+    "shares": true,
+    "equity": true,
+    "fees": true,
+    "fee_schedule_recalculation": true,
+    "qualified_marks": true,
+    "new_assumed_marks": 0,
+    "failed_session_included": false
+  },
+  "first_unaccepted_session": "2023-05-19",
+  "conditional_raw_price_accounting": true,
+  "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
