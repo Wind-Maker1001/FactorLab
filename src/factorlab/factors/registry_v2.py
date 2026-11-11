@@ -166,6 +166,14 @@ class FactorDefinition:
         object.__setattr__(self, "definition_hash", _hash(payload))
 
     @property
+    def consumption_requirements(self):
+        """Field-scoped research semantics; units must be declared by the consumer."""
+        return {name: ("RAW_FACTOR" if name.startswith("raw_") else
+                       "ADJUSTED_FACTOR" if name.startswith("adj_") else "UNIT_FACTOR")
+                for name in self.input_fields
+                if name.startswith(("raw_", "adj_")) or name in ("amount", "volume", "turnover")}
+
+    @property
     def ref(self):
         return FactorRef(self.factor_id, self.version, self.definition_hash)
 

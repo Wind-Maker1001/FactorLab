@@ -1,0 +1,24 @@
+{
+  "raw_labels": {
+    "rows": 487,
+    "evaluable": 481,
+    "maximum_absolute_tolerance": 1e-15
+  },
+  "factor": {
+    "definition_hash": "020604a6aa9dedc400aa83f820a1e8477e6204c89b810dc8ae81702496ede150",
+    "comparison": "EXACT"
+  },
+  "backtest": {
+    "comparison": "EXACT",
+    "sessions": 486,
+    "trades": 1
+  },
+  "qualification": "SCOPED_RETROSPECTIVE_RESEARCH_ONLY",
+  "legacy_dataframe_apis": "UNCHANGED_UNGUARDED",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

@@ -16,6 +16,8 @@ class SourceMetadata:
 
     Time fields describe evidence, not financial certification. None means
     UNKNOWN. Row-specific effective/announcement times remain in the payload.
+    ``field_semantics[field]['consumption']`` can restrict scoped research uses;
+    it is not a financial admission or historical availability certificate.
     """
 
     source_id: str

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Scoped research price consumption contract",
+  "description": "Stored in SourceMetadata.field_semantics[field].consumption. Not a financial qualification or external certificate. The consumer independently pins source_id/data_version; semantic judgments belong to evidence producers, not source-name routing or price similarity.",
+  "type": "object",
+  "required": ["schema", "source_id", "data_version", "field", "unit", "basis", "adjustment_policy", "adjustment_event_dates", "scope", "available_at", "purposes", "qualification", "reasons", "evidence"],
+  "properties": {
+    "schema": {"const": "PRICE_CONSUMPTION_V1"},
+    "source_id": {"type": "string", "minLength": 1},
+    "data_version": {"type": "string", "minLength": 1, "description": "Version-bound artifact or snapshot identity, never the provider name alone."},
+    "field": {"type": "string", "minLength": 1, "description": "Must exactly equal the field_semantics mapping key and consumed column."},
+    "unit": {"type": ["string", "null"], "description": "Exact economic unit. Unknown units cannot authorize a unit-sensitive consumer."},
+    "basis": {"enum": ["OBSERVED_RAW", "ADJUSTED_CANDIDATE", "SUPPLIER_FILLED", "MODEL_VALUATION_ASSUMPTION", "UNKNOWN", "CONFLICT", "NOT_PRICE"]},
+    "adjustment_policy": {"type": "string", "description": "NONE for observed raw; an explicit recipe identity for adjusted research. NOT_APPLICABLE for quantities; UNKNOWN never passes."},
+    "adjustment_event_dates": {"type": "array", "items": {"type": "string", "format": "date"}, "description": "Raw contracts cannot contain adjustment events. An explicit cutoff also rejects later event dates, using the existing conservative date-only timestamp convention."},
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["symbol", "start", "end"],
+        "properties": {"symbol": {"type": "string"}, "start": {"type": "string", "format": "date"}, "end": {"type": "string", "format": "date"}},
+        "additionalProperties": false
+      },
+      "description": "Inclusive observation-date ranges. Exactly one scope must cover each consumed security/date, including rows whose prices are missing. Split mixed bases into distinct scoped objects. Stable historical issuer identity remains subject to existing identity admission."
+    },
+    "available_at": {"type": ["string", "null"], "description": "Evidence-backed information-availability upper bound for the entire scoped object. Null means UNKNOWN, not observation date or acquisition time. An explicit consumer cutoff rejects null or later bounds."},
+    "purposes": {"type": "array", "uniqueItems": true, "items": {"enum": ["RAW_LABEL", "RAW_FACTOR", "ADJUSTED_FACTOR", "UNIT_FACTOR", "EXECUTION", "BOOK_VALUATION"]}},
+    "qualification": {"enum": ["RESEARCH_QUALIFIED", "UNKNOWN", "REJECTED"], "description": "Research use only; never promotes PIT/HFQ/formal/execution financial admission."},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "evidence": {"type": "array", "items": {"type": "string"}, "description": "Version-bound evidence locators or hashes, prepared upstream; no archive reads on consumption."}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,132 @@
+{
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "cases": [
+    {
+      "symbol": "300682",
+      "window": "2018-12",
+      "mode": "TARGETED_NATIVE_CHECKPOINT_RECOMPUTED",
+      "tested_fields": 80,
+      "raw_differences": 80,
+      "matched_cash_formula": 74,
+      "formula_residual": 6,
+      "event_date": "2019-05-13",
+      "raw_label_rejection": [
+        "raw_open/BASIS_NOT_ALLOWED:ADJUSTED_CANDIDATE",
+        "raw_open/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_open/PURPOSE_NOT_QUALIFIED:RAW_LABEL"
+      ],
+      "historical_cutoff_rejection": [
+        "raw_open/BASIS_NOT_ALLOWED:ADJUSTED_CANDIDATE",
+        "raw_open/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_open/PURPOSE_NOT_QUALIFIED:RAW_LABEL",
+        "raw_open/INFORMATION_AVAILABILITY_UNKNOWN",
+        "raw_open/FUTURE_ADJUSTMENT_EVENT"
+      ],
+      "candidate_status": "UNKNOWN",
+      "source_version": "b22640ac8ec4ffffd8adb651813415aa7143f151a6ef17fbfd0ba5398cd4857e"
+    },
+    {
+      "symbol": "600565",
+      "window": "2019-05",
+      "mode": "TARGETED_NATIVE_CHECKPOINT_RECOMPUTED",
+      "tested_fields": 80,
+      "raw_differences": 80,
+      "matched_cash_formula": 80,
+      "formula_residual": 0,
+      "event_date": "2019-06-13",
+      "raw_label_rejection": [
+        "raw_open/BASIS_NOT_ALLOWED:ADJUSTED_CANDIDATE",
+        "raw_open/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_open/PURPOSE_NOT_QUALIFIED:RAW_LABEL"
+      ],
+      "historical_cutoff_rejection": [
+        "raw_open/BASIS_NOT_ALLOWED:ADJUSTED_CANDIDATE",
+        "raw_open/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_open/PURPOSE_NOT_QUALIFIED:RAW_LABEL",
+        "raw_open/INFORMATION_AVAILABILITY_UNKNOWN",
+        "raw_open/FUTURE_ADJUSTMENT_EVENT"
+      ],
+      "candidate_status": "UNKNOWN",
+      "source_version": "2d660a6dc0616192bc5c8889fc4751da818a03a387f16c5ee920e764adb28177"
+    },
+    {
+      "symbol": "600578",
+      "window": "2019-07",
+      "mode": "TARGETED_NATIVE_CHECKPOINT_RECOMPUTED",
+      "tested_fields": 92,
+      "raw_differences": 92,
+      "matched_cash_formula": 92,
+      "formula_residual": 0,
+      "event_date": "2019-08-26",
+      "raw_label_rejection": [
+        "raw_open/BASIS_NOT_ALLOWED:ADJUSTED_CANDIDATE",
+        "raw_open/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_open/PURPOSE_NOT_QUALIFIED:RAW_LABEL"
+      ],
+      "historical_cutoff_rejection": [
+        "raw_open/BASIS_NOT_ALLOWED:ADJUSTED_CANDIDATE",
+        "raw_open/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_open/PURPOSE_NOT_QUALIFIED:RAW_LABEL",
+        "raw_open/INFORMATION_AVAILABILITY_UNKNOWN",
+        "raw_open/FUTURE_ADJUSTMENT_EVENT"
+      ],
+      "candidate_status": "UNKNOWN",
+      "source_version": "2d660a6dc0616192bc5c8889fc4751da818a03a387f16c5ee920e764adb28177"
+    },
+    {
+      "symbol": "688189.SH",
+      "dates": [
+        "2020-10-30",
+        "2020-11-02",
+        "2020-11-03",
+        "2020-11-04",
+        "2020-11-05",
+        "2020-11-06"
+      ],
+      "shape_differences": 18,
+      "mode": "SIX_NATIVE_DAY_PAIRS_RECOMPUTED",
+      "source_version": "ea659899931493214104a2b30d65bc078c3cdb5c84a49f7c39a27d99016bc9d4",
+      "execution_rejection": [
+        "raw_close/BASIS_NOT_ALLOWED:SUPPLIER_FILLED",
+        "raw_close/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_close/PURPOSE_NOT_QUALIFIED:EXECUTION",
+        "raw_close/ADJUSTMENT_POLICY_UNKNOWN_OR_CONFLICT",
+        "raw_open/BASIS_NOT_ALLOWED:SUPPLIER_FILLED",
+        "raw_open/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_open/PURPOSE_NOT_QUALIFIED:EXECUTION",
+        "raw_open/ADJUSTMENT_POLICY_UNKNOWN_OR_CONFLICT",
+        "raw_low/BASIS_NOT_ALLOWED:SUPPLIER_FILLED",
+        "raw_low/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_low/PURPOSE_NOT_QUALIFIED:EXECUTION",
+        "raw_low/ADJUSTMENT_POLICY_UNKNOWN_OR_CONFLICT",
+        "raw_high/BASIS_NOT_ALLOWED:SUPPLIER_FILLED",
+        "raw_high/UNQUALIFIED:['SUPPLIER_PRICE_POLICY_UNCLOSED']",
+        "raw_high/PURPOSE_NOT_QUALIFIED:EXECUTION",
+        "raw_high/ADJUSTMENT_POLICY_UNKNOWN_OR_CONFLICT"
+      ]
+    },
+    {
+      "symbol": "601857.SH",
+      "window": "2017-01-01/2018-12-31",
+      "mode": "NATIVE_CHECKPOINT_RECOMPUTED",
+      "keys": 487,
+      "exact_six_fields": 2922,
+      "labels_compared": 481,
+      "raw_label_compatibility": "SAME_WITH_DECIMAL_ARITHMETIC_FLOAT_OUTPUT",
+      "raw_factor_compatibility": "EXACT",
+      "execution_compatibility": "EXACT",
+      "source_version": "702524c8c91531e5859494df3284d1cc5dc959655c756695d33f1dad3399881a",
+      "drift_rejection": [
+        "SOURCE_VERSION_IDENTITY_MISMATCH_OR_UNKNOWN"
+      ],
+      "unknown_rejection": [
+        "raw_open/CONTRACT_MISSING_OR_UNKNOWN"
+      ]
+    }
+  ]
+}
