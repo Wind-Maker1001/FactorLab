@@ -1,0 +1,173 @@
+{
+  "schema": "P9_D02_EVIDENCE_CONSUMPTION_V1",
+  "source_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "evidence_shards": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d"
+    }
+  ],
+  "source_shards": [
+    {
+      "member": "common/trading_days/2023-01-01_2023-12-31.parquet",
+      "sha256": "cbf43d5b461dc379a8edfe7c412ead84198d37831bc94403f6779af1337fa08b"
+    },
+    {
+      "member": "common/trading_days/2024-01-01_2024-12-31.parquet",
+      "sha256": "f85c955e9a24ca797b93024ac4b017a5a685359252588fee2e7df48ce469a1c5"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-03-01_2023-03-31.parquet",
+      "sha256": "fa1bdffb7158a0a26db56f2f9b827f5775367bafaa94e3d37e2f73e1301928a0"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-06-01_2023-06-30.parquet",
+      "sha256": "2ba93cac8af6a70ab80607cfd87427d47a7a57c24db746b72818b78db9d788f8"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-07-01_2023-07-31.parquet",
+      "sha256": "d43b10e29c11ae8aa1368bc88dcce7c9f713e4ebd602c0d885ed374cec6f02f4"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-08-01_2023-08-31.parquet",
+      "sha256": "c0faf9317efd7a3ab51efa02dd3c483085c301478ee05758d038c83ff59fceee"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-09-01_2023-09-30.parquet",
+      "sha256": "7d9200f3e9868fc1ab789892e7c9879468e46f45bda426ba6e89fdc6b0358cd8"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-10-01_2023-10-31.parquet",
+      "sha256": "980593d395b381ada1635a330f60d7f08e4edb954f0de70f24474331b7215cdc"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-11-01_2023-11-30.parquet",
+      "sha256": "f0e5335470475181c45c51d683c795143c7a6b5a3f515f544fb58a90e35f26a6"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-12-01_2023-12-31.parquet",
+      "sha256": "6f6eb3fa6ebacb317803a5260afea1760acdbb8fcc53afdcdfcd53bfbe2667d1"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-01-01_2024-01-31.parquet",
+      "sha256": "72885e003f873280e26bde86fabac7ccd74ff9c4af406ce3db772b56e85cbd40"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-02-01_2024-02-29.parquet",
+      "sha256": "fd97388d9bc63c738968e7ea7cd67c550fcc2b26e43bac980fb7bd26925a1cc4"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-03-01_2024-03-31.parquet",
+      "sha256": "57a725a3067fdd64db754622750890eca267d578ec1a97eaa0a5bc1acb2454ad"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-03-01_2023-03-31.parquet",
+      "sha256": "82ad6cbf848e42c0e75481e134d307bc684e69178e407f8f8d3d841c488e3cef"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-06-01_2023-06-30.parquet",
+      "sha256": "02356d7bdf764e76cb589cfb0a6094a75cf59087984d67914bf200df042f7486"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-07-01_2023-07-31.parquet",
+      "sha256": "46c90d858a0753c35939c2cb8e3f848752364d60d0e708bfa7437f6e98c7895e"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-08-01_2023-08-31.parquet",
+      "sha256": "af6acb8f37302a65c3182fceca643b033de1fd2b6c5444ba62fe9e6ae119507c"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-09-01_2023-09-30.parquet",
+      "sha256": "8525d598cee89b98345dff93df12530412964a4796797aea34d01e0a344acdfd"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-10-01_2023-10-31.parquet",
+      "sha256": "42199f857be14bad269e667e343b766922b5b720f76a12846aeae22e53a67fc2"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-11-01_2023-11-30.parquet",
+      "sha256": "9c15e9558289bdf940ab40d39e02f10042e131cb66412370e7d0bd8f80c651cb"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-12-01_2023-12-31.parquet",
+      "sha256": "b536c1f4182f2e2b21626381eba0ddfea0acff6f2950d7ec02afd04c5a9c058f"
+    },
+    {
+      "member": "stock/cn_stock_status/2024-01-01_2024-01-31.parquet",
+      "sha256": "7124d01f3f21311652a227d536418e540bd51d0b1a95a868cc8ed1683beca868"
+    },
+    {
+      "member": "stock/cn_stock_status/2024-02-01_2024-02-29.parquet",
+      "sha256": "36ea918d27f11bd5d13eebcb7b8d2dfea348f1adf808d160a410b9ad3c8056fa"
+    },
+    {
+      "member": "stock/cn_stock_status/2024-03-01_2024-03-31.parquet",
+      "sha256": "b2b1dec37582f2e05705f31f48dbfd6a22aaf528e61b183440bb9f724d895673"
+    }
+  ],
+  "candidate_prediction_sha256": "c8f18f07fde5521c340b9ad3c4364469a855481fc5f0c4b12d93a6ab20e6ad3f",
+  "original_predictions_unchanged": true,
+  "target_comparison": [
+    {
+      "model_id": "B_factor_score",
+      "fold": 0,
+      "targets_unchanged": true,
+      "full_target_sha256": "c60979ae060dd11a8cc90b6dab9bfcf421764d9e5566f99a8b1d9e6bfb582214",
+      "suspension_trades": 0,
+      "trades_unchanged": true,
+      "trades": 109,
+      "end": "2023-05-08"
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 0,
+      "targets_unchanged": true,
+      "full_target_sha256": "485c94bf16bd25c94f899f1f6cee82db6d113dcb9d6fb21dd885d4beed8db11a",
+      "suspension_trades": 0,
+      "trades_unchanged": true,
+      "trades": 119,
+      "end": "2023-05-08"
+    }
+  ],
+  "private_artifact_sha256": {
+    "config.json": "937dc24f0e5fe29f9ac268048037c11379f22750714a9ff90511e893b7a7ee10",
+    "result.json": "7b05fb8ba1c9110aa49a734bfa162a0967f478ba54b3bd67a20bd0967975b8ff",
+    "comparison.csv": "f33dd794976e5c0119313e2848c9c403bd3427fc8647443792492e76cc696331",
+    "valuations.csv": "291067581281b2b666d0d96306aabccab767fb8d5bb83d05819181f49e613898",
+    "daily-nav.csv": "e95ec60b375ea0c1c5f59951ef040028996811d77e1e15a47cd001ca5b3c7fb1"
+  },
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

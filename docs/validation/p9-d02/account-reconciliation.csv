@@ -1,0 +1,5 @@
+model_id,fold,scope,status,cash,shares,equity,fees,valuation_policy,policy_marks,observed_positions,assumed_positions,nav_change_from_saved_marks,original_raw_close_unchanged,virtual_suspension_trades
+B_factor_score,0,MINIMUM_REPLAY,PASSED,True,True,True,True,LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION,True,356,4,0.0,True,0
+B_factor_score,0,FULL_SAVED_FOLD0,PASSED,True,True,True,True,LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION,True,2396,4,0.0,True,0
+B_ridge,0,MINIMUM_REPLAY,PASSED,True,True,True,True,LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION,True,356,4,0.0,True,0
+B_ridge,0,FULL_SAVED_FOLD0,PASSED,True,True,True,True,LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION,True,2396,4,0.0,True,0
