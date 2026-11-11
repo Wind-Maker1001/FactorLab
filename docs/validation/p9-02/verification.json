@@ -1,0 +1,23 @@
+{
+  "status": "P9_02_BLOCKED",
+  "test_runs": [
+    {"passed": 77, "failed": 0, "seconds": 6.57, "scope": "initial recovery, market evidence, OOS execution, shared portfolio"},
+    {"passed": 79, "failed": 0, "seconds": 3.83, "scope": "added new suspension-gap refusal and frozen fee receipt recalculation"},
+    {"passed": 80, "failed": 0, "seconds": 3.58, "scope": "final focused suite including Stage A preventing Stage B execution"}
+  ],
+  "real_run": {
+    "stage": "A",
+    "stage_a_002408_qualified_carry_sessions": 4,
+    "stage_a_002408_ledger": "PASSED",
+    "stage_a_000540_sell_on_2023_05_08": "REJECTED_SELL_PRICE_LIMIT",
+    "stage_a_000540_cash_unchanged_on_rejection": true,
+    "blocker": {"date": "2023-05-04", "symbol": "000540.SZ", "reason": "UNQUALIFIED_HELD_CLOSE_OUTSIDE_SIDECAR_SCOPE"},
+    "stage_b": "NOT_RUN",
+    "stage_c": "NOT_RUN",
+    "completed_full_fold_accounts": 0,
+    "model_fits": 0,
+    "prediction_regenerations": 0
+  },
+  "publication": "SAVED_DERIVATIVES_ONLY_NO_ACCOUNT_RERUN",
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

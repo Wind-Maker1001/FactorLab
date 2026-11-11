@@ -1,0 +1,11 @@
+{
+  "task": "P9-02",
+  "baseline": "937ed07",
+  "frozen_execution_config": "configs/research/p9-01-oos-execution.json",
+  "candidate_prediction_sha256": "c8f18f07fde5521c340b9ad3c4364469a855481fc5f0c4b12d93a6ab20e6ad3f",
+  "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+  "trade_status_semantics": "RETROSPECTIVE_VENDOR_DAILY_STATE_NOT_PREOPEN_KNOWLEDGE_OR_FILL_PERMISSION",
+  "st_cutoff": "2023-05-05T15:00:00+08:00",
+  "sidecar": "configs/research/p9-d01/candidate.json",
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

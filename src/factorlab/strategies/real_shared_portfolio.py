@@ -101,15 +101,22 @@ def audit_accounting(result, bars, initial_cash):
     return dict(status='PASSED', cash=True, shares=True, equity=True, fees=True)
 
 
-def audit_ledger(result, bars, initial_cash):
-    """Reconcile execution receipts against cash, cumulative shares and raw marks."""
+def audit_ledger(result, bars, initial_cash, *, valuation_prices=None):
+    """Reconcile accounting and observed or independently qualified valuation marks."""
     audit = audit_accounting(result, bars, initial_cash)
     marked = result.positions.merge(bars[['date', 'symbol', 'raw_close']], on=['date', 'symbol'], how='left', validate='one_to_one')
-    if not np.allclose(marked.mark_price, marked.raw_close, rtol=0, atol=0):
-        raise SchemaError('position uses an unobserved close mark')
-    if not np.allclose(marked.market_value, marked.shares * marked.raw_close, rtol=1e-12):
+    price = marked.raw_close
+    if valuation_prices is not None:
+        marked = marked.merge(valuation_prices[['date', 'symbol', 'valuation_price']],
+            on=['date', 'symbol'], how='left', validate='one_to_one')
+        price = marked.valuation_price
+    if not np.allclose(marked.mark_price, price, rtol=0, atol=0):
+        raise SchemaError('position uses an unobserved close mark' if valuation_prices is None
+            else 'position uses an unqualified close mark')
+    if not np.allclose(marked.market_value, marked.shares * price, rtol=1e-12):
         raise SchemaError('position valuation does not reconcile')
-    return dict(audit, raw_close_marks=True)
+    return dict(audit, raw_close_marks=valuation_prices is None,
+        qualified_marks=valuation_prices is not None)
 
 
 def execute(history, calendar, symbols, reference, scheme, config):

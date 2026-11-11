@@ -31,7 +31,8 @@ from factorlab.validation.factor_selection import TrainFactorSelector, FactorSel
 from factorlab.validation.splitter import ExpandingWalkForwardSplitter
 
 
-def execute(scores, bars, dates, symbols, config, scheme, output, *, dataset_id):
+def execute(scores, bars, dates, symbols, config, scheme, output, *, dataset_id,
+            valuation_qualifier=None):
     output.mkdir()
     targets, decisions = make_targets(scores, dates, symbols, config, scheme)
     targets.to_parquet(output / 'targets.parquet', index=False)
@@ -47,11 +48,16 @@ def execute(scores, bars, dates, symbols, config, scheme, output, *, dataset_id)
         getattr(result, name).to_parquet(output / (name + '.parquet'), index=False)
     gaps = valuation_gaps(result, bars)
     gaps.to_csv(output / 'valuation-gaps.csv', index=False)
-    if len(gaps):
+    qualifications = None
+    if valuation_qualifier is not None:
+        qualifications = valuation_qualifier(result, bars)
+        qualifications.to_parquet(output / 'valuation-qualifications.parquet', index=False)
+    if len(gaps) and qualifications is None:
         return result, dict(status='PARTIAL', reason='UNOBSERVED_HELD_CLOSE',
             first_unreliable_date=str(gaps.date.min().date()), affected_security_days=len(gaps),
             total_return_status='TOTAL_RETURN_UNAVAILABLE', total_return=None), None
-    audit = audit_ledger(result, bars.loc[bars.date.isin(dates)], config['initial_cash'])
+    audit = audit_ledger(result, bars.loc[bars.date.isin(dates)], config['initial_cash'],
+        valuation_prices=qualifications)
     nav = result.nav.set_index('date').reindex(dates)
     if not nav.index[nav.strategy_nav.isna()].equals(dates[:1]):
         raise SchemaError('missing execution sessions other than initial cash day')
@@ -86,6 +92,21 @@ def execute(scores, bars, dates, symbols, config, scheme, output, *, dataset_id)
         terminal_holdings=len(terminal), terminal_market_value=float(terminal.market_value.sum()),
         valuation_status='OBSERVED_RAW_CLOSE', trades_count=len(result.trades),
         target_positive_mean_absolute_deviation=float(result.target_comparison.loc[result.target_comparison.target_weight.gt(0), 'weight_deviation'].abs().mean()))
+    if qualifications is not None:
+        assumed = qualifications.valuation_assumption_used
+        metrics.update(valuation_status=('CONDITIONAL_ON_CONFIRMED_SUSPENSION_CARRY'
+                if assumed.any() else 'OBSERVED_RAW_CLOSE'),
+            valuation_policy=config['valuation_policy'],
+            valuation_assumption_security_days=int(assumed.sum()),
+            valuation_assumption_account_days=int(qualifications.loc[assumed, 'date'].nunique()),
+            valuation_assumption_position_fraction=float(assumed.mean()) if len(assumed) else 0.,
+            valuation_assumption_mean_equity_fraction=float(qualifications.loc[assumed].groupby('date')
+                .affected_portfolio_weight.sum().reindex(dates, fill_value=0).mean()),
+            valuation_assumption_max_equity_fraction=float(qualifications.loc[assumed].groupby('date')
+                .affected_portfolio_weight.sum().max()) if assumed.any() else 0.,
+            suspended_holding_days=int(qualifications.confirmed_suspended.sum()))
+        nav['valuation_status'] = metrics['valuation_status']
+        nav.to_csv(output / 'daily-nav.csv', index=False)
     dump(output / 'metrics.json', metrics)
     return result, metrics, nav
 

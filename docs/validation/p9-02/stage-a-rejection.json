@@ -1,0 +1,18 @@
+{
+  "date": "2023-05-08",
+  "symbol": "000540.SZ",
+  "reason": [
+    "sell_price_limit"
+  ],
+  "fills_on_rejected_session": 0,
+  "cash_before": 899984.0512,
+  "cash_after": 899984.0512,
+  "scope": "STAGE_A_ISOLATED_REPRODUCTION_NOT_COMPLETE_FOLD",
+  "valuation_status": "BLOCKED_BY_UNQUALIFIED_2023_05_04_HELD_CLOSE",
+  "fees": {
+    "commission": 29.980800000000002,
+    "stamp_duty": 0.0,
+    "slippage": 49.968,
+    "transaction_cost": 79.9488
+  }
+}
