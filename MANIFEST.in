@@ -1,5 +1,6 @@
 include LICENSE NOTICE README.md RELEASE_NOTES.md CONTRIBUTING.md SECURITY.md pyproject.toml MANIFEST.in
 recursive-include src/factorlab *.py *.yaml
+recursive-include src/factorlab/integrations/binance_equity_trading *.md
 recursive-include configs/research *.yaml *.json
 recursive-include configs/console *.json
 recursive-include src/factorlab/console/static *.html *.css *.js
