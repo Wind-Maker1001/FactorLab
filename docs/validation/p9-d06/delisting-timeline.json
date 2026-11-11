@@ -1,0 +1,182 @@
+{
+  "schema": "P9_D06_TIMELINE_V1",
+  "documents": [
+    {
+      "id": "suspension",
+      "uri": "https://static.cninfo.com.cn/finalpage/2023-05-19/1216852113.PDF",
+      "sha256": "1f8e3f589eecacbcf6064729e57cc3a6091de160b23996c33c07d56097a197af",
+      "bytes": 170912,
+      "signed_date": "2023-05-18",
+      "public_date": "2023-05-19",
+      "public_time_upper_bound": "2023-05-19T23:59:59.999999+08:00",
+      "time_precision": "DAY",
+      "verified_sections": "特别提示1–2：5月18日收盘0.40元；5月19日开市起停牌；不进入退市整理期。",
+      "source_class": "ISSUER_OR_SPONSOR_PRIMARY_DOCUMENT",
+      "local_retention": "EXISTING_D05_ORIGINAL_NOT_COPIED"
+    },
+    {
+      "id": "decision",
+      "uri": "https://static.cninfo.com.cn/finalpage/2023-06-16/1217074647.PDF",
+      "sha256": "30b17ce1ec2aa4b3c5372bde1a2c90f8137f1f07fb15a4d0d1ed4ba71ea1851c",
+      "bytes": 148757,
+      "signed_date": "2023-06-15",
+      "public_date": "2023-06-16",
+      "public_time_upper_bound": "2023-06-16T23:59:59.999999+08:00",
+      "time_precision": "DAY",
+      "verified_sections": "第二部分：6月15日收到深证上〔2023〕509号决定；复核期间决定不停止执行。",
+      "source_class": "ISSUER_OR_SPONSOR_PRIMARY_DOCUMENT",
+      "local_retention": "EXISTING_D05_ORIGINAL_NOT_COPIED"
+    },
+    {
+      "id": "delisting",
+      "uri": "https://static.cninfo.com.cn/finalpage/2023-06-29/1217155324.PDF",
+      "sha256": "bef7cf4a0496066efb290c93448fc17fb075437ab37636d84e5380309590b173",
+      "bytes": 185282,
+      "signed_date": "2023-06-28",
+      "public_date": "2023-06-29",
+      "public_time_upper_bound": "2023-06-29T23:59:59.999999+08:00",
+      "time_precision": "DAY",
+      "verified_sections": "第一、三部分：6月30日摘牌；6月28日聘请海通；退市登记期间主办券商登记股份并办理确权。",
+      "source_class": "ISSUER_OR_SPONSOR_PRIMARY_DOCUMENT",
+      "local_retention": "EXISTING_D05_ORIGINAL_NOT_COPIED"
+    },
+    {
+      "id": "registration",
+      "uri": "https://static.cninfo.com.cn/finalpage/2023-07-07/1217260200.PDF",
+      "sha256": "129abb920350f3dcfaf13ec4d8ae7575b8f334291f5848d770d7824871886e60",
+      "bytes": 394216,
+      "signed_date": "2023-07-07",
+      "public_date": "2023-07-07",
+      "public_time_upper_bound": "2023-07-07T23:59:59.999999+08:00",
+      "time_precision": "DAY",
+      "verified_sections": "第一、二、四、六部分：6月30日完成退出登记；400174为确权代码；账户及托管条件；待确权股份明细继续维护。",
+      "source_class": "ISSUER_OR_SPONSOR_PRIMARY_DOCUMENT",
+      "local_retention": "EXISTING_D05_ORIGINAL_NOT_COPIED"
+    },
+    {
+      "id": "otc_suspension",
+      "uri": "https://pdf.dfcfw.com/pdf/H2_AN202308281595939419_1.pdf",
+      "sha256": "2115b557f06ba6fbcb75293776edf9050c2a4fe4345a19a8d93171f1d168fcba",
+      "bytes": 136836,
+      "signed_date": "2023-08-28",
+      "public_date": "2023-08-28",
+      "public_time_upper_bound": "2023-08-28T23:59:59.999999+08:00",
+      "time_precision": "DAY",
+      "verified_sections": "第一、二部分：7月11日法院受理重整、7月12日披露；8月30日挂牌当日起暂停转让。",
+      "source_class": "ISSUER_OR_SPONSOR_PRIMARY_DOCUMENT",
+      "local_retention": "EXISTING_D05_ORIGINAL_NOT_COPIED"
+    }
+  ],
+  "events": [
+    {
+      "id": "last_trade",
+      "date": "2023-05-18",
+      "state": "A_SHARE_HELD",
+      "evidence": [
+        "suspension"
+      ],
+      "meaning": "最后实际交易日；原冻结观察及发行人均给出0.40元。"
+    },
+    {
+      "id": "halt",
+      "date": "2023-05-19",
+      "effective_time": "09:30:00+08:00",
+      "state": "SUSPENDED_PRE_DELISTING",
+      "evidence": [
+        "suspension"
+      ],
+      "meaning": "开市起停牌，不进入退市整理期。"
+    },
+    {
+      "id": "decision",
+      "date": "2023-06-15",
+      "state": "DELISTING_DECIDED",
+      "evidence": [
+        "decision"
+      ],
+      "decision_receipt_date": "2023-06-15",
+      "decision_execution_date": "2023-06-15",
+      "meaning": "决定已收到且复核不停止执行；不得与6月30日摘牌混为同一事件。"
+    },
+    {
+      "id": "last_listing_day",
+      "date": "2023-06-29",
+      "evidence": [
+        "delisting"
+      ],
+      "derivation": "6月30日摘牌的前一日；不是最后实际交易日，也不证明该日能够交易。"
+    },
+    {
+      "id": "a_share_exit",
+      "date": "2023-06-30",
+      "state": "DELISTED_RIGHTS_UNRESOLVED",
+      "evidence": [
+        "delisting",
+        "registration"
+      ],
+      "exit_registration_date": "2023-06-30",
+      "meaning": "摘牌并终止上市；退出登记完成事实到7月7日公告才独立明确。"
+    },
+    {
+      "id": "registration_arrangements",
+      "date": "2023-07-07",
+      "state": "OTC_REGISTRATION_PENDING",
+      "evidence": [
+        "registration"
+      ],
+      "meaning": "确权规则公开，不是本账户登记完成日期。"
+    },
+    {
+      "id": "reorganization_accepted",
+      "date": "2023-07-11",
+      "public_date": "2023-07-12",
+      "evidence": [
+        "otc_suspension"
+      ],
+      "evidence_level": "LATER_PRIMARY_NOTICE_QUOTES_COURT_ACTION",
+      "meaning": "（2023）黔01破申13号及（2023）黔01破6号；受理重整并指定管理人，不等于股份注销或清偿。"
+    },
+    {
+      "id": "account_unit_deadline",
+      "date": "2023-07-21",
+      "evidence": [
+        "registration"
+      ],
+      "meaning": "特定账户/托管情形的T+15申报期限；不是所有普通投资者必须临柜的统一期限。"
+    },
+    {
+      "id": "beijing_account_flag",
+      "date": "2023-07-28",
+      "evidence": [
+        "registration"
+      ],
+      "status": "EXPECTED_DEADLINE_NOT_COMPLETION_PROOF",
+      "meaning": "预计T+20前申请添加北京市场标识（如需）。"
+    },
+    {
+      "id": "otc_listing_and_halt",
+      "date": "2023-08-30",
+      "state": "OTC_NONTRADABLE",
+      "evidence": [
+        "otc_suspension"
+      ],
+      "meaning": "400174中天3挂牌当日即暂停转让；不能认作有一笔挂牌成交。"
+    }
+  ],
+  "timing_rule": "公开日期仅支持当日上海日终可得上界；事件生效日不是公开日；不得倒改历史信号。",
+  "vendor_export_time": "INHERITED_FROZEN_MANIFEST_NOT_AN_ISSUER_PUBLICATION_TIME",
+  "actual_account_processing_time": null,
+  "otc_initial_registration_completion_time": null,
+  "subsequent_disposition": "UNKNOWN; no independently verified account settlement or final share cancellation",
+  "bounded_followup": {
+    "end_exclusive": "2024-03-13",
+    "otc_index_query_hits": 0,
+    "interpretation": "空镜像索引不证明没有后续公告；不推定持续停牌至窗口末日。"
+  },
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

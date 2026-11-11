@@ -1,0 +1,23 @@
+{
+  "schema": "P9_D06_BLOCKERS_V1",
+  "first_actual_blocker": {
+    "date": "2023-05-19",
+    "reason": "UNQUALIFIED_HELD_CLOSE: 2023-05-19/000540.SZ: MARKET DATA QUALIFICATION REQUIRED: candidate outside exact security/date/field scope",
+    "prior_000540_shares": 133700
+  },
+  "new_later_blocker_reached": false,
+  "qualified_may19_valuation": false,
+  "required_next_evidence": [
+    "适用于本模拟账户且有历史可得时限的退市停牌估值合同、方法及有效日期。",
+    "若推进至退市登记，核对账户类型、托管券商资格及登记/确权资格。",
+    "若发生重整换股、注销、清偿或出售，仅凭独立条款和账户资格核定股数及现金。"
+  ],
+  "later_rights_are_not_first_actual_execution_blockers": true,
+  "todo": "TODO: obtain an account-applicable historical mark before extending accepted sessions.",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "P9_D06_VALUATION_V1",
+  "account": "B_lightgbm/fold-0",
+  "target": {
+    "security": "000540.SZ",
+    "date": "2023-05-19",
+    "shares": 133700
+  },
+  "last_actual_observation": {
+    "date": "2023-05-18",
+    "shares": 133700,
+    "raw_close": 0.4,
+    "volume": 93467800.0,
+    "suspended": 0,
+    "source_sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+  },
+  "last_observation_book_value_cny": "53480.00",
+  "last_observation_is_future_fair_value": false,
+  "candidates": [
+    {
+      "policy": "LAST_OBSERVED_RAW_CLOSE_CARRY",
+      "price": "0.40",
+      "approved": false,
+      "effective_interval": null,
+      "reason": "普通停牌政策无退市停牌适用依据；既有000540政策仅2023-05-04单日。"
+    },
+    {
+      "policy": "THIRD_PARTY_FUND_VALUATION",
+      "approved": false,
+      "evidence": {
+        "uri": "https://paper.cnstock.com/html/2023-05/20/content_1769923.htm",
+        "sha256": "e29722b1992dd642a9e204ea0cb5c14b015f7602ea15f42b997e52e606e0fdbf",
+        "signed_date": "2023-05-19",
+        "public_date": "2023-05-20",
+        "public_time_upper_bound": "2023-05-20T23:59:59.999999+08:00",
+        "effective_from": "2023-05-18",
+        "effective_to": null,
+        "price_cny_per_share": "0.11",
+        "applicable_accounts": "鹏华旗下基金，ETF基金除外",
+        "method": "依证监会[2017]13号及鹏华自身股票估值政策/程序，与托管行和会计师事务所协调一致；未披露计算模型。",
+        "account_applicable": false,
+        "before_may19_close_available": false,
+        "reasoning": "5月19日落款不是5月19日公开证据；本研究账户非该基金，不能移植其估值。",
+        "sensitivity_only": {
+          "shares": 133700,
+          "hypothetical_mark_cny": "14707.00",
+          "versus_last_observation_cny": "-38773.00",
+          "booked": false,
+          "available_no_earlier_than_public_upper_bound": true
+        }
+      }
+    },
+    {
+      "policy": "DELISTING_IMPAIRMENT_OR_FAIR_VALUE_ADJUSTMENT",
+      "approved": false,
+      "effective_interval": null,
+      "account_applicable_rule": null,
+      "price": null,
+      "status": "UNKNOWN"
+    }
+  ],
+  "fund_rule_reference": {
+    "title": "中国证监会关于证券投资基金估值业务的指导意见",
+    "identifier": "[2017]13号",
+    "evidence_level": "REFERENCED_BY_PENGHUA_NOTICE; standalone text not qualified in this investigation",
+    "factorlab_account_policy": null
+  },
+  "conclusion": {
+    "qualified_may19_book_price": null,
+    "approved_policy": null,
+    "effective_interval": null,
+    "status": "UNQUALIFIED_HELD_CLOSE",
+    "no_future_otc_backfill": true
+  },
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "P9_D06_RIGHTS_V1",
+  "entity": "中天金融集团股份有限公司",
+  "old_security": "000540.SZ",
+  "otc_code": "400174",
+  "otc_name": "中天3",
+  "nature": "同一发行人原股份退出深市登记，转退市板块确权登记；不是普通更名或自动可交易别名。",
+  "legal_security_continuity": "PRIMARY_DOCUMENT_CONFIRMED",
+  "old_class": "人民币普通股/A股",
+  "rights_class_change": "NOT_ESTABLISHED",
+  "conversion_ratio": null,
+  "ratio_reason": "公告是原股份确权，不是披露了换股比例的证券交换事件。",
+  "quantity": {
+    "frozen_last_holding": 133700,
+    "contingent_legal_claim_shares": 133700,
+    "assumption": "在最后已验收持仓后未发生另行核实的过户、扣划、注销或重整股数调整；不得计作实际登记证明。",
+    "actual_otc_registered_shares": null,
+    "initial_register_reconciled": false,
+    "source_basis": "registration第一、二、六部分；原股份明细及待确权机制，无增股或现金转换授权"
+  },
+  "account_conditions": {
+    "original_shenzhen_account": "原则上可直接使用；境外托管、沪市配售及未了结业务有例外。",
+    "ordinary_brokerage_customer": "原托管券商具备全国股转经纪资格时维持托管关系，批量申报，无需单独确认托管关系。",
+    "other_custody_cases": "无资格券商、无托管、自营及特殊机构等按公告申报；逾期可暂托管至海通。",
+    "broker_qualification": null,
+    "account_type": null,
+    "custody_unit": null,
+    "required_action_completed": null,
+    "actual_registration_evidence": null,
+    "pending_shares": "未确认持有人专用账户的股份由海通维护明细；并非价值为零或股份消灭。",
+    "trading": "完成登记后可查询；按需加挂资金账户等；交易结算资格不等于估值或订单成交。"
+  },
+  "representation": {
+    "frozen_ledger_symbol_unchanged": "000540.SZ",
+    "future_state": "OTC_REGISTRATION_PENDING",
+    "legal_state": "OTC_RIGHTS_CONDITIONALLY_RECOGNIZED",
+    "account_state": "REGISTRATION_UNVERIFIED",
+    "share_change_postings": 0,
+    "cash_postings": 0,
+    "actual_disposal_cash": null,
+    "otc_value": null,
+    "account_valuation": null,
+    "normal_a_share_execution_allowed": false,
+    "later_state_not_posted_to_frozen_may18_account": true
+  },
+  "reuse": {
+    "identity": "cross_market.identity.IdentityRegistry: separate listing episodes; no market-changing alias",
+    "corporate_action": "strategies.shared_corporate_actions.saved_path_accounting: EVENT_UNRESOLVED / UNSUPPORTED_SHARE_CHANGE",
+    "implementation": "No new lifecycle engine or cash action. Evidence annotations are not executor holdings."
+  },
+  "sensitivity_or_actual_account_proof": "RESEARCH_LEGAL_CLAIM_CONDITION_ONLY; NOT_BROKER_STATEMENT",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
