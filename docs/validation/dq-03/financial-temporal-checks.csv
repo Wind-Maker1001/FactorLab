@@ -1,0 +1,5 @@
+source,check,denominator,affected,status,observation
+CSMAR:FS_BComins,company_period_join,2673,2205,REPORT_TYPE_MUST_BE_KEY,"A/B are distinct legal report scopes, not duplicate financial facts"
+CSMAR:FS_BComins,company_period_type_join,4878,0,VERSION_UNKNOWN,remaining multiplicity requires explicit original/correction value versions
+CSMAR:FS_BComins,correction_flag,4878,182,PIT_UNKNOWN,correction date is not first publication
+CSMAR:FS_BComins,actual_member_signal_day_read,885,885,PIT_UNKNOWN,22 records contain a later correction-date candidate; no first-publication/value-version linkage

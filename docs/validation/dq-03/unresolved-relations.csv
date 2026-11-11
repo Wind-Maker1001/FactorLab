@@ -1,0 +1,8 @@
+relation,status,denominator,affected,minimum_evidence
+identity,IDENTITY_UNKNOWN,605500,605500,cross-source stable issuer/security IDs and valid code lifecycle; snapshot full-name agreement insufficient
+membership,MEMBERSHIP_TIME_UNKNOWN,605500,605500,original effective adjustment versions plus contemporary membership publication and provider availability
+cnrds_january,IDENTITY_UNKNOWN,84514,5300,independent issuer/version evidence; keep all ambiguous pairs quarantined
+financial,PIT_UNKNOWN,4878,4878,"first disclosures and per-revision values, timestamps and report type"
+industry,MEMBERSHIP_TIME_UNKNOWN,21292,21292,"change_flag/date definitions, initial state, classification version and revision chain"
+corporate_actions,UNRESOLVED,16,16,"settlement receipts, public timestamps, stable identity and correction/cancellation chain"
+proposal_only,EVENT_CANDIDATE,1,1,601857 annual proposal is not a dated implementation event; need actual implementation record
