@@ -40,23 +40,44 @@ regressions ran offline; no Futures online acceptance was repeated.
 
 ## Local online outcome
 
-The process environment did not contain `BINANCE_EQUITY_API_KEY`. Only its
-presence was checked; no credential value was inspected. No official NVDA
-exchangeInfo request and no online Paper window were executed.
+Executed one Stocks-only observation using a locally supplied read-only Key.
+No credential was logged, persisted or committed. Exactly one official NVDA
+exchangeInfo request was made, without retry. Recorded UTC times:
+2026-11-11T20:09:45.005161Z–20:10:36.693598Z; total elapsed 51.688 seconds.
 
 | Observation | Stocks NVDA outcome |
 | --- | --- |
-| Official rules | UNKNOWN / NOT_VERIFIED |
-| Online market data | NOT_VERIFIED in this task |
-| Official current phase | UNKNOWN / NOT_VERIFIED |
-| Online Paper order | NOT_VERIFIED; none submitted |
-| Online simulated fill | NOT_VERIFIED; none booked |
-| Online fee/slippage | NOT_VERIFIED; no online execution |
-| Online account reconciliation | NOT_VERIFIED; no online account created |
+| Official rule acquisition | Response received through official MARKET_DATA GET; provenance VERIFIED |
+| Executable rules | UNKNOWN; required-rule parsing did not produce VALID rules |
+| Online market data | Observed: 456 quotes and 16 phase snapshots, all 472 normalized events accepted |
+| Connection / subscription | 1 handshake, subscription ACK, 473 frames including ACK; no reconnect or connection failure |
+| Official current phase | UNKNOWN at final observation; phase evidence conflict; 16 price snapshots, no Calendar transition observed |
+| Strategy signal | 1 deterministic Paper acceptance signal, not a predictive claim |
+| Online Paper order | 0; rejected with UNKNOWN_RULES |
+| Online simulated fill | 0 / NOT_VERIFIED; NO_TRADE |
+| Synthetic fee / slippage cost | 0 USD / 0 USD |
+| Final synthetic account | Cash 1000 USD; reserved 0; no positions or open orders |
+| Local persistence / restart reconciliation | Runtime matched PaperStore; economic account matched after restart |
+| Restart authorization | Rules, phase and process-local authorizations cleared |
 
-These outcomes do not replace the separately recorded observations from earlier
-tasks. A later authorized run needs a locally supplied read-only Key, one NVDA
-rule fetch, then a Stocks-only official WebSocket Paper window of at most
-60 seconds. Missing rules or phase, no quote-driven order, or no simulated fill
-must retain their individual UNKNOWN/NOT_VERIFIED/NO_TRADE outcomes rather than
-produce a combined PASS.
+The original whole-account equality diagnostic was false because `observed_at`
+is the time of each account query. A separate local-only comparison excluded
+that query timestamp and confirmed identical economic state. It made no network
+requests. This verifies persistence of an unchanged account, not execution or
+exchange-account reconciliation.
+
+The final snapshot was received at 20:10:33.438625Z and carried price time
+1794427829027; transition-detection and actual effective times were unknown.
+The observation was not authorized because its conflict flag was set.
+
+TODO: identify the actual rule-field rejection and first conflicting phase
+inputs before claiming the two online blockers resolved. The restart exercise
+cleared runtime rule/phase receipts; the original result retained summary
+validity but not the target rule row or per-snapshot phase identities needed
+for that diagnosis. A further separately authorized acquisition must retain
+only NVDA rule evidence and bounded NVDA phase observations before restart.
+No second official rule request has been issued. Online rules, phase and
+simulated execution remain UNKNOWN/NOT_VERIFIED rather than a combined PASS.
+
+Local evidence run identifier: `p7-t08-online-20261111T200944979321Z`.
+Futures online acquisition and the full repository matrix were not repeated.
