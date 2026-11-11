@@ -1,0 +1,4 @@
+"""Offline USD-M execution protocol. NO LIVE MONEY.
+
+PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
+"""
