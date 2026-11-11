@@ -1,0 +1,67 @@
+{
+  "schema": "P9_C02_VERIFICATION_V1",
+  "engineering_status": "IMPLEMENTED_AND_TARGETED_TESTS_PASSED",
+  "financial_certification": "BLOCKED_EVIDENCE",
+  "tests": {
+    "passed": 80,
+    "failed": 0,
+    "seconds": 2.45,
+    "suites": [
+      "tests/research/test_shared_corporate_actions.py",
+      "tests/research/test_corporate_action_ledger.py",
+      "tests/research/test_p9_fee_sensitivity.py",
+      "tests/research/test_shared_portfolio.py"
+    ],
+    "history": [
+      {"passed": 79, "failed": 0, "scope": "initial lifecycle and related regression"},
+      {"passed": 79, "failed": 1, "cause": "new discovery fixture serialized empty object instrument column as Arrow null instead of source string schema", "resolution": "fixture now preserves explicit string dtype; no production fallback added"},
+      {"passed": 80, "failed": 0, "scope": "lifecycle and discovery regression"},
+      {"passed": 80, "failed": 0, "scope": "final cross-source duplicate-event protection and related regression"}
+    ]
+  },
+  "real_saved_accounts": {
+    "accounts": ["B_factor_score-fold-0", "B_ridge-fold-0"],
+    "saved_execution_sessions_each": 242,
+    "conditional_valuation_sessions_including_initial_signal_each": 243,
+    "original_artifact_identity": "VERIFIED_AGAINST_FROZEN_P9_01_PUBLIC_RECEIPTS",
+    "original_trades_positions_fees_predictions": "READ_ONLY_UNCHANGED",
+    "cash_shares_fees_equity_audit": "PASSED",
+    "maximum_cash_residual": 5.820766091346741e-10,
+    "maximum_posted_dividend_residual": 0.0,
+    "maximum_bounded_equity_adjustment_residual": 0.0,
+    "valuation_semantics": "INHERITED_P9_D02_CONDITIONAL_QUALIFICATION_NOT_REEXECUTION"
+  },
+  "event_evidence": {
+    "partitions_read": 4,
+    "years": [2023, 2024],
+    "candidate_events": 9,
+    "account_event_intersections": 14,
+    "verified_implementation_and_actual_payment_events": 0,
+    "posted_verified_dividend_cash": 0.0,
+    "actual_dividend_cash_total": null,
+    "dividend_receivable_total": null,
+    "dividend_tax_total": null,
+    "investor_total_return": null,
+    "zero_postings_meaning": "NO_EVIDENCE_QUALIFIED_POSTINGS_NOT_PROOF_OF_ZERO_ECONOMIC_DIVIDENDS",
+    "coverage": "UNKNOWN",
+    "minimal_event_requests": "unresolved-events.csv"
+  },
+  "public_material_check": {
+    "status": "PASSED",
+    "private_path_credential_and_account_detail_pattern_matches": 0,
+    "vendor_native_rows_and_full_account_details": "PRIVATE_ONLY"
+  },
+  "execution_scope": {
+    "research_processes": 1,
+    "arrow_compute_threads": 1,
+    "arrow_io_threads": 1,
+    "blas_omp_threads": 1,
+    "memory_soft_budget_gib": 8,
+    "model_retraining": false,
+    "unrelated_backtests": false,
+    "full_market_event_database_scan": false,
+    "fee_nav_addback": false,
+    "other_models_and_folds": "NOT_RUN"
+  },
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
