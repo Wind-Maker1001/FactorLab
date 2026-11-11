@@ -1,0 +1,5 @@
+symbol,date,fields,method,evidence_id,result,new_check
+002408.SZ,2023-04-24,raw_open|raw_high|raw_low|raw_close,G03 inherited exact decimal exchange archive comparison,szse-2023-04-24,16_TOTAL_EXACT_VALUES,False
+002408.SZ,2023-04-25,raw_open|raw_high|raw_low|raw_close,G03 inherited exact decimal exchange archive comparison,szse-2023-04-25,16_TOTAL_EXACT_VALUES,False
+002408.SZ,2023-05-05,raw_open|raw_high|raw_low|raw_close,G03 inherited exact decimal exchange archive comparison,szse-2023-05-05,16_TOTAL_EXACT_VALUES,False
+002408.SZ,2023-05-08,raw_open|raw_high|raw_low|raw_close,G03 inherited exact decimal exchange archive comparison,szse-2023-05-08,16_TOTAL_EXACT_VALUES,False

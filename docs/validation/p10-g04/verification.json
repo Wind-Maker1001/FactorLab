@@ -1,0 +1,55 @@
+{
+  "status": "P10_G04_BLOCKED",
+  "elapsed_seconds": 0.7378171000164002,
+  "budget": {
+    "planned_price_partitions": 13,
+    "all_input_partitions": 28,
+    "compressed_read_bytes": 81114673,
+    "parquet_payload_bytes": 82722219,
+    "memory_soft_limit_bytes": 4294967296,
+    "temporary_disk_limit_bytes": 536870912,
+    "maximum_python_processes": 1,
+    "stop_conditions": [
+      "Manifest/receipt/member mismatch",
+      "More than 13 price partitions",
+      "Parquet payload above 256 MiB",
+      "Observed process RSS above 4 GiB"
+    ],
+    "full_field_rescan": false,
+    "dq02b_reuse": "Existing full-field statistics; not historical semantic evidence"
+  },
+  "process_memory": {
+    "rss": 241143808,
+    "vms": 202948608,
+    "num_page_faults": 124513,
+    "peak_wset": 241704960,
+    "wset": 241143808,
+    "peak_paged_pool": 579816,
+    "paged_pool": 579816,
+    "peak_nonpaged_pool": 63096,
+    "nonpaged_pool": 62824,
+    "pagefile": 202948608,
+    "peak_pagefile": 202993664,
+    "private": 202948608
+  },
+  "market_data_written_bytes": 0,
+  "temporary_webpage_and_junit_bytes": 343604,
+  "baseline_commit": "5fdbba7a00c3ada34b7e5086a87c593d4305c867",
+  "pr111": "MERGED",
+  "pr109": "MERGED",
+  "original_prices_changed": false,
+  "tests": {
+    "passed": 93,
+    "failed": 0,
+    "warnings": 1,
+    "warning": "pandas future dtype behavior for synthetic all-null suspension row concat",
+    "elapsed_seconds": 16.99,
+    "files": ["test_p10_g04.py", "test_p10_consumer_admission.py", "test_price_consumption.py", "test_evidence_consumption_study.py", "test_datahub.py"]
+  },
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
