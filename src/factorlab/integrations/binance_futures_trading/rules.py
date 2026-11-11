@@ -7,6 +7,7 @@ import re
 from factorlab.integrations.binance.market import _decimal, symbol_name
 from factorlab.trading import Market, OrderType, RiskDecision, Side
 from factorlab.trading.contracts import utc
+from factorlab.integrations.binance_equity_trading.protocol import Unavailable
 
 D = _decimal
 
@@ -19,17 +20,22 @@ class RuleObservation:
     observed_at: datetime
     source_version: str
     notional_coefficient: Decimal | None = None
+    order_types: tuple[str, ...] | None = None
 
     @classmethod
     def from_exchange(cls, symbol_info, bracket_info, observed_at, source_version):
         utc(observed_at)
+        if (any(symbol_info.get(k) is None for k in ('symbol', 'status', 'quoteAsset', 'marginAsset', 'filters'))
+                or bracket_info is None or any(bracket_info.get(k) is None for k in ('symbol', 'brackets'))):
+            raise Unavailable('INCOMPLETE_FUTURES_RULES')
         if not source_version or symbol_info['symbol'] != bracket_info['symbol']:
             raise ValueError('matching source identities and source version required')
         if symbol_info['status'] != 'TRADING' or symbol_info['quoteAsset'] != 'USDT' or symbol_info['marginAsset'] != 'USDT':
             raise ValueError('only currently trading USDT-margined linear contracts supported')
         return cls(symbol_name(symbol_info['symbol']), {f['filterType']: dict(f) for f in symbol_info['filters']},
                    tuple(dict(b) for b in bracket_info['brackets']), observed_at, source_version,
-                   None if 'notionalCoef' not in bracket_info else D(bracket_info['notionalCoef']))
+                   None if 'notionalCoef' not in bracket_info else D(bracket_info['notionalCoef']),
+                   None if 'orderTypes' not in symbol_info else tuple(symbol_info['orderTypes']))
 
     def validate(self, intent, *, mark_price, leverage, available_margin, current_notional,
                  now, max_leverage=1, max_age_seconds=300):
@@ -40,6 +46,10 @@ class RuleObservation:
             return RiskDecision(reason == 'APPROVED', reason, snapshot)
         if not timedelta(0) <= now - self.observed_at <= timedelta(seconds=max_age_seconds):
             return decision('STALE_RULES')
+        if self.order_types is None:
+            return decision('UNKNOWN_ORDER_TYPES')
+        if intent.order_type.value not in self.order_types:
+            return decision('UNSUPPORTED_ORDER_TYPE')
         if self.notional_coefficient not in (None, Decimal('1')):
             return decision('CUSTOM_NOTIONAL_COEFFICIENT_UNVERIFIED')
         if intent.market != Market.BINANCE_USDM or intent.instrument_id != self.symbol:
@@ -55,14 +65,14 @@ class RuleObservation:
         lot = self.filters.get(lot_name)
         # MARKET_LOT_SIZE and LOT_SIZE are both applicable to market quantities.
         for f in (lot, self.filters.get('LOT_SIZE')):
-            if f is None:
+            if f is None or any(f.get(k) is None for k in ('stepSize', 'minQty', 'maxQty')):
                 return decision('UNKNOWN_QUANTITY_RULE')
             step = D(f['stepSize'])
             if intent.quantity < D(f['minQty']) or intent.quantity > D(f['maxQty']) or (step and intent.quantity % step):
                 return decision('QUANTITY_FILTER')
         if intent.limit_price is not None:
             f = self.filters.get('PRICE_FILTER')
-            if f is None:
+            if f is None or any(f.get(k) is None for k in ('tickSize', 'minPrice', 'maxPrice')):
                 return decision('UNKNOWN_PRICE_RULE')
             price, step = intent.limit_price, D(f['tickSize'])
             if ((D(f['minPrice']) and price < D(f['minPrice'])) or
@@ -70,7 +80,7 @@ class RuleObservation:
                 return decision('PRICE_FILTER')
         notional = intent.quantity * (intent.limit_price or mark_price)
         minimum = self.filters.get('MIN_NOTIONAL')
-        if minimum is None:
+        if minimum is None or minimum.get('notional') is None:
             return decision('UNKNOWN_NOTIONAL_RULE')
         if not intent.reduce_only and notional < D(minimum['notional']):
             return decision('MIN_NOTIONAL')

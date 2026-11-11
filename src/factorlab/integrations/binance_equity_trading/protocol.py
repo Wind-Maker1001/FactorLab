@@ -70,6 +70,11 @@ class Rules:
 
     @classmethod
     def from_exchange_info(cls, row):
+        required = {'symbol', 'tradability', 'fractionable', 'fractionableEh', 'extendedSession',
+                    'overnightSupported', 'stepSize', 'minQty', 'maxQty', 'minNotional',
+                    'maxNotional', 'maxNumOrders', 'multiplierDown', 'multiplierUp'}
+        if any(row.get(k) is None for k in required):
+            raise Unavailable('INCOMPLETE_SYMBOL_RULES')
         flags = [row[k] for k in ("fractionable", "fractionableEh", "extendedSession", "overnightSupported")]
         if any(type(f) is not bool for f in flags):
             raise Unavailable("INCOMPLETE_SYMBOL_RULES")
@@ -109,6 +114,7 @@ class StockOrder:
             raise ValueError("unsupported stock order")
         if self.time_in_force not in {"DAY", "GTC"}:
             raise ValueError("unsupported timeInForce")
+        # TODO: resolve SDK-default USDC versus server-allowed payment assets before live admission.
         p = dict(symbol=self.symbol, side=self.side, orderType=self.order_type,
                  clientOrderId=self.client_order_id, quoteAsset="USD", tokenize="false",
                  timeInForce=self.time_in_force)

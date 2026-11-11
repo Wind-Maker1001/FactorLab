@@ -3,8 +3,8 @@
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
 This package does not change financial admission. The realtime service permits
-explicitly enabled public market-data connections only; it has no credentials,
-live switch or real-account execution path. `TradingController(..., live=True)`
+explicitly enabled market-data connections only; Stocks market data requires its
+API key. It has no live switch or real-account execution path. `TradingController(..., live=True)`
 and non-paper execution adapters are rejected.
 
 ## Shared boundary
@@ -168,7 +168,7 @@ records have bid, ask, bid_size, and ask_size. `mark` is risk reference only;
 Stocks exchangeInfo row or a Futures symbol/bracket pair plus source provenance.
 Rules are observations, never retroactively applied historical rules. Rule data
 expires after five minutes, executable observations after five seconds, and Stocks
-calendar events after twelve hours. Missing/unknown calendar or rule information
+calendar observations after five minutes. Missing/unknown calendar or rule information
 blocks orders; no Futures price can substitute for a Stocks quote.
 
 The strategy compares two consecutively accepted executable observations. A rise
@@ -219,13 +219,28 @@ conflict, not adversarial database tampering.
 Public sessions subscribe only to unsigned Futures aggregate trades/marks and the
 existing Stocks quote/calendar streams. They never instantiate signed trading or
 account clients. Offline/public mode and risk/simulation settings are persisted;
-opening an offline account in public mode is rejected. `--observations FILE` may
-bootstrap fresh rules/session records for public mode using the same JSONL schema;
-synthetic rule sources are refused. Refresh expiring observations through
-`RealtimeAccount.event()` when embedding a longer-running service. The CLI does
-not fetch private Futures brackets or invent unavailable rules. Online sessions
-do not import the offline fixture's rules. Without
-fresh verified rules (including Futures brackets) or Stocks calendar events, they
-report NO_TRADE even if prices or strategy signals arrive. Output distinguishes
+opening an offline account in public mode is rejected. `--refresh-rules` performs
+one bounded official exchangeInfo GET per market, without retries. Stocks requires
+`BINANCE_EQUITY_API_KEY` for market data. Embedders may call
+`RealtimeAccount.refresh_rules(network=True)` on demand. The reader records the
+endpoint, protocol version, request/fetch times, raw response, parsed rules and
+five-minute expiry in the existing PaperStore snapshot. Fetch time is explicitly
+local acquisition time, not an invented exchange effective time. A failed refresh
+invalidates the previous rule authorization. Each market refresh fails independently.
+
+`--observations FILE` and `event()` remain unverified inputs: neither a URL in
+`source` nor serialized evidence can authenticate their provenance. Only the
+current process's reader path authorizes an acquired observation. Rules and
+sessions are invalidated on every restart, independently of persisted watermarks.
+Public calendar events retain their original payload and endpoint separately from
+rules and quote watermarks. A quiet calendar stream is not a heartbeat; after
+five minutes it must be re-observed rather than extrapolated from a local clock.
+
+Public Futures exchangeInfo does not prove account-specific leverage brackets;
+public Stocks metadata does not prove account permission or payment/settlement
+eligibility. These remain UNKNOWN and block public-mode orders. Offline injected
+fixtures can exercise the same simulator without being promoted to exchange or
+account evidence. See [rule and read-only evidence](binance-rule-observations.md)
+for verified protocol coverage and the unresolved acceptance conditions. Output distinguishes
 received messages, accepted events, strategy signals, simulated orders/fills and
 paper reconciliation. NO_TRADE is a valid observation, not a fabricated fill.

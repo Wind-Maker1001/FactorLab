@@ -25,7 +25,7 @@ def rules(market):
             maxQty='1000', minNotional='1', maxNotional='100000', fractionable=True,
             fractionableEh=True, extendedSession=True, overnightSupported=True, maxNumOrders=100,
             multiplierDown='0.5', multiplierUp='1.5')
-    return dict(symbol=dict(symbol='NVDAUSDT', status='TRADING', quoteAsset='USDT', marginAsset='USDT', filters=[
+    return dict(symbol=dict(symbol='NVDAUSDT', status='TRADING', quoteAsset='USDT', marginAsset='USDT', orderTypes=['MARKET', 'LIMIT'], filters=[
         dict(filterType='LOT_SIZE', minQty='0.01', maxQty='100', stepSize='0.01'),
         dict(filterType='MARKET_LOT_SIZE', minQty='0.01', maxQty='100', stepSize='0.01'),
         dict(filterType='PRICE_FILTER', minPrice='0.01', maxPrice='10000', tickSize='0.01'),
@@ -438,3 +438,120 @@ def test_public_handshake_without_frames(tmp_path):
     assert diagnostic['handshakes'] == diagnostic['receive_timeouts'] == 1
     assert diagnostic['frames'] == 0 and diagnostic['status'] == 'NO_MARKET_MESSAGES'
     account.close()
+
+
+@pytest.mark.parametrize('market', list(Market))
+def test_restart_invalidates_rules_and_session_even_within_ttl(tmp_path, market):
+    h = Harness(tmp_path / 'a', market)
+    h.quote('100')
+    h.account.close()
+    a = RealtimeAccount(tmp_path / 'a', market, clock=lambda: h.time)
+    assert a.state.runtime['rules'] is None and a.state.runtime['session'] is None
+    a.control('start')
+    intent = OrderIntent(market, a.symbol, Side.BUY, OrderType.MARKET, D('.1'), None,
+                         'manual000000000000000000000000000')
+    with pytest.raises(Unavailable, match='UNKNOWN_RULES'):
+        a.submit(intent)
+    a.close()
+
+
+@pytest.mark.parametrize('market', list(Market))
+def test_source_string_and_serialized_evidence_cannot_authorize_public_orders(tmp_path, market):
+    a = RealtimeAccount(tmp_path / 'a', market, clock=lambda: NOW, data_mode='public')
+    a.event(dict(kind='rules', symbol=a.symbol, time=NOW, received=NOW, payload=rules(market),
+                 source='https://fapi.binance.com/fapi/v1/exchangeInfo', reference='100',
+                 evidence=dict(endpoint='https://fapi.binance.com', verified=True)))
+    with pytest.raises(Unavailable, match='UNVERIFIED_RULE_PROVENANCE'):
+        a._admit(OrderIntent(market, a.symbol, Side.BUY, OrderType.MARKET, D('.1'), None,
+                            'manual000000000000000000000000000'))
+    a.close()
+
+
+def test_bounded_public_refresh_receipt_expiry_failure_and_restart(tmp_path):
+    from factorlab.integrations.binance.client import Response
+    from factorlab.errors import DataQualityError
+    now = [NOW]
+    calls = []
+    raw = dict(serverTime=int(NOW.timestamp() * 1000), symbols=[rules(Market.BINANCE_USDM)['symbol']])
+    def transport(url, timeout):
+        calls.append((url, timeout))
+        return Response(200, {}, json.dumps(raw).encode())
+    a = RealtimeAccount(tmp_path / 'a', Market.BINANCE_USDM, clock=lambda: now[0], data_mode='public')
+    assert a.refresh_rules(network=True, futures_transport=transport)
+    receipt = a.state.runtime['rules']['evidence']
+    assert receipt['raw'] == raw and receipt['timestamp_basis'] == 'LOCAL_FETCH'
+    assert receipt['parsed']['LOT_SIZE']['stepSize'] == D('.01')
+    assert receipt['parsed']['account_limits'] == 'UNKNOWN'
+    assert set(a.state.runtime['watermarks']) == {'rules', 'session'}
+    assert calls == [('https://fapi.binance.com/fapi/v1/exchangeInfo', 10)]
+    a.event(dict(kind='mark', symbol=a.symbol, time=now[0], received=now[0], price='100'))
+    intent = OrderIntent(a.market, a.symbol, Side.BUY, OrderType.MARKET, D('.1'), None, 'public-account-unknown')
+    assert receipt['provenance'] == 'OFFLINE_INJECTED'
+    with pytest.raises(Unavailable, match='UNVERIFIED_RULE_PROVENANCE'):
+        a._admit(intent)
+    now[0] += timedelta(seconds=301)
+    assert a.observation_health()['rules']['validity'] == 'EXPIRED'
+    with pytest.raises(Unavailable, match='UNVERIFIED_RULE_PROVENANCE'):
+        a._admit(intent)
+    assert a.refresh_rules(network=True, futures_transport=transport)
+    def timeout(*_):
+        raise TimeoutError('injected')
+    with pytest.raises(DataQualityError):
+        a.refresh_rules(network=True, futures_transport=timeout)
+    assert a.state.runtime['rules'] is None
+    now[0] += timedelta(seconds=1)
+    assert a.refresh_rules(network=True, futures_transport=transport)
+    a.close()
+    a = RealtimeAccount(tmp_path / 'a', Market.BINANCE_USDM, clock=lambda: now[0], data_mode='public')
+    assert a.observation_health()['rules']['validity'] == 'UNKNOWN'
+    now[0] += timedelta(seconds=1)
+    assert a.refresh_rules(network=True, futures_transport=transport)
+    assert a.observation_health()['rules']['validity'] == 'UNVERIFIED'
+    a.close()
+
+
+def test_official_reader_path_and_stale_account_limits_gate(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    now = [NOW]
+    raw = dict(symbols=[rules(Market.BINANCE_USDM)['symbol']])
+    class Result:
+        status, headers = 200, {}
+        def __enter__(self):
+            return self
+        def __exit__(self, *_):
+            return False
+        def read(self):
+            return json.dumps(raw).encode()
+    def open_read(request, timeout):
+        assert request.get_method() == 'GET'
+        assert request.full_url == 'https://fapi.binance.com/fapi/v1/exchangeInfo'
+        return Result()
+    monkeypatch.setattr('factorlab.integrations.binance.client.build_opener',
+                        lambda *_: SimpleNamespace(open=open_read))
+    a = RealtimeAccount(tmp_path / 'a', Market.BINANCE_USDM, clock=lambda: now[0], data_mode='public')
+    assert a.refresh_rules(network=True)
+    assert a.observation_health()['rules']['validity'] == 'VERIFIED'
+    a.event(dict(kind='mark', symbol=a.symbol, time=now[0], received=now[0], price='100'))
+    intent = OrderIntent(a.market, a.symbol, Side.BUY, OrderType.MARKET, D('.1'), None, 'missing-account')
+    with pytest.raises(Unavailable, match='UNKNOWN_ACCOUNT_RISK_BRACKETS'):
+        a._admit(intent)
+    now[0] += timedelta(seconds=301)
+    with pytest.raises(Unavailable, match='STALE'):
+        a._admit(intent)
+    a.close()
+
+
+def test_updated_offline_rules_change_admission_without_resetting_quotes(tmp_path):
+    h = Harness(tmp_path / 'a')
+    h.quote('100')
+    h.time += timedelta(seconds=1)
+    changed = rules(h.market)
+    changed['symbol']['filters'][0]['stepSize'] = '0.3'
+    h.send('rules', payload=changed, source='SYNTHETIC_OFFLINE_ONLY')
+    intent = OrderIntent(h.market, h.account.symbol, Side.BUY, OrderType.MARKET, D('.1'), None, 'updated-rule')
+    with pytest.raises(Unavailable, match='QUANTITY_FILTER'):
+        h.account.submit(intent)
+    h.time += timedelta(seconds=1)
+    h.send('rules', payload=rules(h.market), source='SYNTHETIC_OFFLINE_ONLY')
+    assert h.account.submit(intent).client_order_id == intent.client_order_id
+    h.account.close()

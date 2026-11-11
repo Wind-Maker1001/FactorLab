@@ -77,7 +77,7 @@ class RealtimeAccount:
             # Only local, atomically committed confirmations may clear restart UNKNOWN.
             if all(k in state.confirmations for k in state.orders):
                 broker.reconcile()
-            state.runtime.update(status='PAUSED', reason='START_REQUIRED')
+            state.runtime.update(status='PAUSED', reason='START_REQUIRED', rules=None, session=None)
             state.runtime['checkpoint'] = checkpoint(state)
         try:
             self.controller = TradingController(broker, self.store, clock=clock, limits=configured_limits,
@@ -86,6 +86,7 @@ class RealtimeAccount:
             self.store.close()
             raise
         self.conflict = False
+        self._verified_observations = {}
         self.expected = dumps(self.controller.broker.state)
 
     @property
@@ -137,14 +138,22 @@ class RealtimeAccount:
         rules = runtime['rules']
         if rules is None:
             raise Unavailable('UNKNOWN_RULES')
-        if self.configuration['data_mode'] == 'public' and 'SYNTHETIC' in rules['source'].upper():
-            raise Unavailable('SYNTHETIC_RULES_FORBIDDEN_IN_PUBLIC_SESSION')
+        if self.configuration['data_mode'] == 'public' and self._verified_observations.get('rules') != identity(rules):
+            raise Unavailable('UNVERIFIED_RULE_PROVENANCE')
         fresh(rules['time'], rules['received'], now, timedelta(seconds=300))
+        if (self.configuration['data_mode'] == 'public'
+                and rules['evidence']['parsed']['validity'] != 'VALID'):
+            raise Unavailable('UNKNOWN_RULES')
         if self.market == Market.BINANCE_EQUITY:
             session = runtime['session']
             if session is None:
                 raise Unavailable('MISSING_SESSION')
-            fresh(session['time'], session['received'], now, timedelta(hours=12))
+            if self.configuration['data_mode'] == 'public':
+                if self._verified_observations.get('session') != identity(session):
+                    raise Unavailable('UNVERIFIED_SESSION_PROVENANCE')
+            fresh(session['time'], session['received'], now, timedelta(seconds=300))
+            if self.configuration['data_mode'] == 'public':
+                raise Unavailable('UNKNOWN_STOCKS_ACCOUNT_PERMISSION')
             observed = Rules.from_exchange_info(rules['payload'])
             price = self.state.quotes[self.symbol].price
             market_buy = intent.order_type == OrderType.MARKET and intent.side == Side.BUY
@@ -158,10 +167,19 @@ class RealtimeAccount:
             admit(order, observed, Session(session['phase']), price=price,
                   reference_price=D(rules['reference']), open_orders=0 if filling else opened, permission=True)
         else:
+            if self.configuration['data_mode'] == 'public':
+                session = runtime['session']
+                if session is None or self._verified_observations.get('session') != identity(session):
+                    raise Unavailable('UNKNOWN_FUTURES_STATUS')
+                fresh(session['time'], session['received'], now, timedelta(seconds=300))
+                if session['phase'] != 'TRADING':
+                    raise Unavailable('FUTURES_NOT_TRADING')
             mark = runtime['mark']
             if mark is None:
                 raise Unavailable('MISSING_MARK')
             fresh(mark['time'], mark['received'], now, timedelta(seconds=5))
+            if rules['payload'].get('bracket') is None:
+                raise Unavailable('UNKNOWN_ACCOUNT_RISK_BRACKETS')
             observation = RuleObservation.from_exchange(rules['payload']['symbol'], rules['payload']['bracket'],
                 rules['received'], rules['source'])
             account = self.controller.account()
@@ -200,6 +218,37 @@ class RealtimeAccount:
     def replay(self, event):
         return self._change(lambda: self.controller.broker.apply(event))
 
+    def refresh_rules(self, *, network=False, **reader_options):
+        """One request, no retries; only this acquisition path authenticates rules."""
+        from .observations import acquire_rules
+        # Invalidate before IO so a failed refresh cannot retain previous approval.
+        self._verified_observations.pop('rules', None)
+        self._change(lambda: self.state.runtime.update(rules=None))
+        value = acquire_rules(self.market, self.symbol, network=network, clock=self.clock, **reader_options)
+        accepted = self.event(value)
+        if accepted:
+            official = value['evidence']['provenance'] == 'OFFICIAL_TRANSPORT'
+            if official:
+                self._verified_observations['rules'] = identity(self.state.runtime['rules'])
+            if self.market == Market.BINANCE_USDM:
+                session = dict(kind='session', symbol=self.symbol, time=value['time'], received=value['received'],
+                    phase=value['evidence']['parsed']['session'], evidence=value['evidence'])
+                session_accepted = self.event(session)
+                if session_accepted and official:
+                    self._verified_observations['session'] = identity(self.state.runtime['session'])
+        return accepted
+
+    def _stream_event(self, value, raw, *, official_transport=False):
+        """Called by the public reader, not by JSON replay/bootstrap."""
+        if value['kind'] == 'session':
+            value = dict(value, evidence=dict(endpoint='wss://nbstream.binance.com/equity/stream',
+                version='stocks-calendar-v1', raw=raw, fetched_at=value['received'],
+                provenance='OFFICIAL_TRANSPORT' if official_transport else 'OFFLINE_INJECTED'))
+        accepted = self.event(value)
+        if accepted and value['kind'] == 'session' and official_transport:
+            self._verified_observations['session'] = identity(self.state.runtime['session'])
+        return accepted
+
     def event(self, value):
         """Consume normalized replay/public data; never accepts broker execution messages."""
         value = deepcopy(value)
@@ -209,7 +258,7 @@ class RealtimeAccount:
         if value['symbol'] != self.symbol:
             raise ValueError('market instrument mismatch')
         source, received = timestamp(value['time']), timestamp(value['received'])
-        age = timedelta(hours=12) if kind == 'session' else timedelta(seconds=300 if kind == 'rules' else 5)
+        age = timedelta(seconds=300) if kind == 'session' else timedelta(seconds=300 if kind == 'rules' else 5)
         try:
             fresh(int(source.timestamp() * 1000), received, self.clock(), age)
         except Unavailable:
@@ -247,10 +296,11 @@ class RealtimeAccount:
             ms = int(source.timestamp() * 1000)
             if kind == 'rules':
                 runtime['rules'] = dict(payload=value['payload'], reference=value.get('reference'),
-                    source=value['source'], time=ms, received=received)
+                    source=value['source'], time=ms, received=received, evidence=value.get('evidence'))
                 return True
             if kind == 'session':
-                runtime['session'] = dict(phase=value['phase'], time=ms, received=received)
+                runtime['session'] = dict(phase=value['phase'], time=ms, received=received,
+                                          evidence=value.get('evidence'))
                 return True
             if kind == 'mark':
                 price = D(value['price'])
@@ -337,6 +387,21 @@ class RealtimeAccount:
             budget -= quantity
             self.state.runtime['fills'] += 1
 
+    def observation_health(self):
+        result = {}
+        for kind, seconds in (('rules', 300), ('session', 300)):
+            value = self.state.runtime[kind]
+            if value is None:
+                result[kind] = dict(validity='UNKNOWN')
+                continue
+            current = timedelta(0) <= self.clock() - value['received'] <= timedelta(seconds=seconds)
+            verified = self._verified_observations.get(kind) == identity(value)
+            evidence = value.get('evidence') or {}
+            result[kind] = dict(validity='EXPIRED' if not current else 'VERIFIED' if verified else 'UNVERIFIED',
+                received=value['received'], source_time=value['time'], endpoint=evidence.get('endpoint'),
+                version=evidence.get('version'), parsed=evidence.get('parsed'))
+        return result
+
     def health(self):
         runtime = self.state.runtime
         stale = runtime['last_valid'] is None or self.clock() - runtime['last_valid'] > timedelta(
@@ -346,6 +411,7 @@ class RealtimeAccount:
             kill_switch=self.state.kill_switch, reconciled=self.state.reconciled,
             last_valid=runtime['last_valid'], signals=runtime['signals'], orders=runtime['orders'],
             fills=runtime['fills'], rejected=runtime['rejected'], settlement='UNKNOWN',
+            observations=self.observation_health(),
             result='TRADED' if runtime['fills'] else 'NO_TRADE', account=asdict(self.controller.account()), labels=SAFETY_LABELS)
 
     def close(self):

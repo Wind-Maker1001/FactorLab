@@ -98,7 +98,7 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                         diagnostics['first_source'] = min(diagnostics['first_source'] or source, source)
                         diagnostics['last_source'] = max(diagnostics['last_source'] or source, source)
                         stage = 'validation'
-                        admitted = int(account.event(event))
+                        admitted = int(account._stream_event(event, value, official_transport=connector is connect))
                         accepted += admitted
                         diagnostics['rejected'] += 1 - admitted
                         if not admitted:
@@ -134,12 +134,13 @@ def main():
     source.add_argument('--replay', type=Path)
     source.add_argument('--public-market-data', action='store_true')
     parser.add_argument('--paper', action='store_true', help='enable strategy and local paper execution')
-    parser.add_argument('--observations', type=Path, help='fresh rule/session observations for public mode')
+    parser.add_argument('--observations', type=Path, help='unverified rule/session inputs; cannot authorize public paper orders')
+    parser.add_argument('--refresh-rules', action='store_true', help='fetch current official rules once per market')
     parser.add_argument('--seconds', type=float, default=30)
     parser.add_argument('--reconnects', type=int, default=3)
     args = parser.parse_args()
-    if args.observations and not args.public_market_data:
-        parser.error('--observations requires --public-market-data')
+    if (args.observations or args.refresh_rules) and not args.public_market_data:
+        parser.error('--observations and --refresh-rules require --public-market-data')
     args.state_dir.mkdir(parents=True, exist_ok=True)
     now = [datetime.now(timezone.utc)]
     clock = (lambda: datetime.now(timezone.utc)) if args.public_market_data else lambda: now[0]
@@ -162,6 +163,12 @@ def main():
                             raise ValueError('public bootstrap accepts only nonsynthetic rules/session observations')
                         account = accounts['futures' if value['symbol'] == 'NVDAUSDT' else 'stocks']
                         account.event(value)
+            if args.refresh_rules:
+                for account in accounts.values():
+                    try:
+                        account.refresh_rules(network=True)
+                    except (DataQualityError, ValueError, OSError, TimeoutError, KeyError):
+                        account.disconnect('RULE_REFRESH_FAILED')
             async def run():
                 values = await asyncio.gather(*(observe(account, seconds=args.seconds, network=True,
                     reconnects=args.reconnects) for account in accounts.values()))

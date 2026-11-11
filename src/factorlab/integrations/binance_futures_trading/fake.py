@@ -14,7 +14,7 @@ MS = int(NOW.timestamp() * 1000)
 
 def synthetic_rules():
     return RuleObservation.from_exchange(
-        {'symbol': 'NVDAUSDT', 'status': 'TRADING', 'quoteAsset': 'USDT', 'marginAsset': 'USDT', 'filters': [
+        {'symbol': 'NVDAUSDT', 'status': 'TRADING', 'quoteAsset': 'USDT', 'marginAsset': 'USDT', 'orderTypes': ['MARKET', 'LIMIT'], 'filters': [
             {'filterType': 'LOT_SIZE', 'minQty': '0.01', 'maxQty': '100', 'stepSize': '0.01'},
             {'filterType': 'MARKET_LOT_SIZE', 'minQty': '0.01', 'maxQty': '100', 'stepSize': '0.01'},
             {'filterType': 'PRICE_FILTER', 'minPrice': '0.01', 'maxPrice': '10000', 'tickSize': '0.01'},
