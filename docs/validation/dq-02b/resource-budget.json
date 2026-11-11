@@ -1,0 +1,27 @@
+{
+  "disk_budget_bytes": 4294967296,
+  "free_space_floor_bytes": 85899345920,
+  "worker_count": 2,
+  "batch_rows": 16384,
+  "compact_key_memory_limit_bytes": 67108864,
+  "initial_free_bytes": {
+    "D": 103703453696,
+    "E": 211221417984,
+    "T": 180852965376
+  },
+  "ending_free_bytes": {
+    "D": 103588597760,
+    "E": 211169824768,
+    "T": 180829863936
+  },
+  "ending_private_bytes": 13680108,
+  "conservative_stage_reservation_bytes": 321583918,
+  "maximum_recorded_worker_peak_bytes": 645558272,
+  "sum_partition_cpu_seconds": 4315.484375,
+  "scan_wall_seconds": 3200.5849551000283,
+  "calibration_wall_seconds": 4.004356799996458,
+  "disk_peak_measurement": "NOT_INSTRUMENTED",
+  "minimum_free_space_measurement": "PER_WRITE_GUARD_NOT_RECORDED",
+  "aggregate_ram_measurement": "NOT_INSTRUMENTED",
+  "source_mode": "READ_ONLY"
+}

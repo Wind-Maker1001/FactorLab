@@ -1,0 +1,62 @@
+table,status,fields,scope_partitions,rows,null_key_rows,duplicate_keys,duplicate_excess,unique_nonnull_keys,reason,reused_content
+stock/cn_stock_static_data,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+fund/cn_fund_real_bar1d,CANDIDATE_KEY_EXACT,"[""date"", ""instrument""]",121,2736337,0,0,0,2736337,No supplier uniqueness certification; exact candidate comparison only,False
+common/cnhk_stock_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+stock/cn_stock_allotment,CANDIDATE_KEY_EXACT,"[""instrument"", ""publish_date"", ""register_date"", ""exright_date"", ""allot_listdate""]",11,71,1,0,0,70,No supplier uniqueness certification; exact candidate comparison only,False
+stock/cn_stock_status,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+common/papertrading_trading_days,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+index/cn_cbond_index_components,CANDIDATE_KEY_EXACT,"[""date"", ""instrument"", ""member_code""]",11,728923,0,0,0,728923,No supplier uniqueness certification; exact candidate comparison only,False
+stock/cn_stock_basic_info,CANDIDATE_KEY_EXACT,"[""instrument""]",1,5924,0,0,0,5924,No supplier uniqueness certification; exact candidate comparison only,False
+common/trading_days,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+future/cn_future_product_info,KEY_CONTRACT_UNKNOWN,[],1,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,True
+index/cn_stock_index_concept_component,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument"", ""member_code""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+industry/cn_stock_industry_index_mapper,KEY_CONTRACT_UNKNOWN,[],1,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,True
+stock/cn_stock_st,KEY_CONTRACT_UNKNOWN,[],1,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+industry/cn_stock_industry_component,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument"", ""industry""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+option/cn_option_static_data,KEY_CONTRACT_UNKNOWN,[],11,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,True
+common/cn_index_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+stock/cn_stock_name_change,CANDIDATE_KEY_EXACT,"[""instrument"", ""start_date"", ""name""]",11,18422,0,0,0,18422,No supplier uniqueness certification; exact candidate comparison only,False
+stock/cn_stock_limit_price,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+future/cn_future_static_data,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+common/cn_fund_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+fund/cn_fund_static_data,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+stock/cn_stock_real_bar1d,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+common/all_trading_days,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+common/cn_stock_revoked_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+option/cn_option_bar1d,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+common/cn_future_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+common/cn_cbond_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+option/cn_option_basic_info,CANDIDATE_KEY_EXACT,"[""instrument""]",1,275866,0,0,0,275866,No supplier uniqueness certification; exact candidate comparison only,False
+factor/cn_stock_factors_hf_fz_drip_stone,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+fund/cn_fund_basic_info,CANDIDATE_KEY_EXACT,"[""instrument""]",1,2989,0,0,0,2989,No supplier uniqueness certification; exact candidate comparison only,False
+factor/cn_stock_factors_industry,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+common/cn_stock_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+industry/cn_stock_industry_sw_bar1d,CANDIDATE_KEY_EXACT,"[""date"", ""instrument""]",121,76541,0,0,0,76541,No supplier uniqueness certification; exact candidate comparison only,False
+common/sgx_stock_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+industry/cn_stock_industry_real_bar1d,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+common/us_stock_instruments,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+index/cn_index_static_data,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+index/cn_stock_index_weight,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument"", ""member_code""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+stock/cn_stock_dividend,CANDIDATE_KEY_EXACT,"[""instrument"", ""report_date"", ""publish_date"", ""register_date"", ""ex_date""]",11,35508,0,0,0,35508,No supplier uniqueness certification; exact candidate comparison only,False
+common/all_instruments,KEY_CONTRACT_UNKNOWN,[],1,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+cbond/cn_cbond_basic_info,CANDIDATE_KEY_EXACT,"[""instrument""]",1,1098,0,0,0,1098,No supplier uniqueness certification; exact candidate comparison only,False
+fund/cn_fund_bar1d,CANDIDATE_KEY_EXACT,"[""date"", ""instrument""]",121,2736337,0,0,0,2736337,No supplier uniqueness certification; exact candidate comparison only,False
+index/cn_stock_index_concept_bar1d,CANDIDATE_KEY_EXACT,"[""date"", ""instrument""]",121,707414,0,0,0,707414,No supplier uniqueness certification; exact candidate comparison only,False
+factor/cn_stock_factors_base,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+stock/cn_stock_adjust_factor,CANDIDATE_KEY_EXACT,"[""date"", ""instrument"", ""type"", ""method""]",121,69310,0,0,0,69310,No supplier uniqueness certification; exact candidate comparison only,False
+factor/cn_stock_factors_ta_macd,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+industry/cn_stock_industry_change,CANDIDATE_KEY_EXACT,"[""date"", ""instrument"", ""industry"", ""industry_level"", ""industry_code"", ""change_flag""]",11,21292,0,0,0,21292,No supplier uniqueness certification; exact candidate comparison only,False
+industry/cn_stock_industry_bar1d,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+future/cn_future_bar1d,CANDIDATE_KEY_EXACT,"[""date"", ""instrument""]",121,1951519,0,0,0,1951519,No supplier uniqueness certification; exact candidate comparison only,False
+industry/cn_stock_industry,KEY_CONTRACT_UNKNOWN,[],1,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+cbond/cn_cbond_bar1d,CANDIDATE_KEY_EXACT,"[""date"", ""instrument""]",121,751664,0,0,0,751664,No supplier uniqueness certification; exact candidate comparison only,False
+stock/cn_stock_bar1d,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+common/holidays,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
+index/cn_stock_index_bar1d,CANDIDATE_KEY_EXACT,"[""date"", ""instrument""]",11,271677,0,0,0,271677,No supplier uniqueness certification; exact candidate comparison only,False
+future/cn_future_basic_info,CANDIDATE_KEY_EXACT,"[""instrument""]",1,11365,0,638,674,10691,No supplier uniqueness certification; exact candidate comparison only,False
+index/cn_stock_index_component,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument"", ""member_code""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+index/cn_stock_index_info,KEY_CONTRACT_UNKNOWN,[],1,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,True
+stock/cn_stock_suspend,CANDIDATE_KEY_EXACT,"[""date"", ""instrument"", ""suspend_period"", ""suspend_reason""]",121,134005,0,0,0,134005,No supplier uniqueness certification; exact candidate comparison only,False
+factor/cn_stock_valuation,KEY_CHECK_BLOCKED_RESOURCE,"[""date"", ""instrument""]",121,,,,,,Compact-key 512 MiB per-table ceiling or checkpoint-only resume,False
+index/cn_stock_index_change,CANDIDATE_KEY_EXACT,"[""date"", ""instrument"", ""member_code"", ""inout_flag""]",11,122112,0,0,0,122112,No supplier uniqueness certification; exact candidate comparison only,False
+cbond/cn_cbond_static_data,KEY_CONTRACT_UNKNOWN,[],11,,,,,,No supplier uniqueness certification; exact candidate comparison only,False
