@@ -1,0 +1,22 @@
+{
+  "limits": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "complete_native_equality_required": true,
+  "raw_price_only_equality_sufficient": false,
+  "exact_duplicate_action": "single equivalence class with every original locator; no preferred row",
+  "conflict_action": "retain all candidates in private lineage; exclude key",
+  "version_priority": null,
+  "forbidden": [
+    "keep_first",
+    "keep_last",
+    "file_order",
+    "future_prices",
+    "cross_vendor_replacement",
+    "raw_deletion"
+  ],
+  "production_mutation": false
+}

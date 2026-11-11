@@ -1,0 +1,63 @@
+{
+  "baseline": "09d1f97c6ab8175ec9f569d58b72aa319bb053b1",
+  "reference_pr": 85,
+  "reference_merge": "f013210be4eca4e3bdff08b023350b8851c8a1ed",
+  "native": [
+    {
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2021/个股日回报率-2021_2.xlsx",
+      "sha256": "004aebaff5b157be2b361db9f94bcaf5f82c89b235048841680ee5c5547abcf1",
+      "dictionary_member": "2021/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4"
+    },
+    {
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2021/个股日回报率-2021_1.xlsx",
+      "sha256": "f04ab90ffadf097827ea2d7b3265400fda66a9a8d62435dd75a5c97548855966",
+      "dictionary_member": "2021/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4"
+    },
+    {
+      "archive": "CNSP_个股日回报率_ALL.zip",
+      "member": "2021/个股日回报率-2021_3.xlsx",
+      "sha256": "7be21a926671305757b5589ad34a3edae38f553497f423bb0acaf9c6c2355f6d",
+      "dictionary_member": "2021/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4"
+    }
+  ],
+  "checkpoint_partitions": [
+    "monthly\\CNRDS-47b990a3aba8de9e739b\\2021-01.parquet",
+    "monthly\\CNRDS-a63128dc37eaeffdf3ba\\2021-01.parquet",
+    "monthly\\CNRDS-c918d504555493906d88\\2021-01.parquet"
+  ],
+  "scope": "2021-01 only; original reads limited to three located archive members",
+  "code_sha256": "39a2aa26b8f9b7c8ee20c7438d2620668e40492a33767b5625d7d2958f26e3b5",
+  "january_member_coverage": [
+    {
+      "member": "2021/个股日回报率-2021_2.xlsx",
+      "january_start": "2021-01-04",
+      "january_end": "2021-01-29",
+      "january_rows": 72573,
+      "physical_row_min": 3,
+      "physical_row_max": 499801
+    },
+    {
+      "member": "2021/个股日回报率-2021_1.xlsx",
+      "january_start": "2021-01-04",
+      "january_end": "2021-01-29",
+      "january_rows": 75635,
+      "physical_row_min": 3,
+      "physical_row_max": 500002
+    },
+    {
+      "member": "2021/个股日回报率-2021_3.xlsx",
+      "january_start": "2021-01-04",
+      "january_end": "2021-01-29",
+      "january_rows": 21240,
+      "physical_row_min": 25,
+      "physical_row_max": 172206
+    }
+  ],
+  "native_reader_sha256": "8cb8d45b09b2cd28a7408285adbd5478e6d1ed5802a99553865ef4dcc59e51b6",
+  "identity_boundary": "Native Scode equality is observed; Coname disagreement is isolated, not proof of different issuers. Stable historical issuer identity remains unverified."
+}
