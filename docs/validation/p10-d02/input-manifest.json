@@ -1,0 +1,524 @@
+{
+  "baseline_main": "09d1f97c6ab8175ec9f569d58b72aa319bb053b1",
+  "prior_pr": 85,
+  "prior_pr_merge": "f013210be4eca4e3bdff08b023350b8851c8a1ed",
+  "native": [
+    {
+      "source": "CNRDS",
+      "member": "2017/个股日回报率-2017_1.xlsx",
+      "sha256": "4c648b9bbd011724628f2b551fc3f86a6f09ba9d27ff5abd550f5d4a60a662fd",
+      "dictionary_member": "2017/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "215540891dea279134ebae07c17c282eb574ce3dd3592b69c73a35a50bd4726b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2020/个股日回报率-2020_2.xlsx",
+      "sha256": "1acb3647af66af36ae415387a60b71da337ba10df22e46eacdd9409029cb0cbe",
+      "dictionary_member": "2020/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2022/个股日回报率-2022_3.xlsx",
+      "sha256": "ab800940988ffcc9cb22d8ca143de92f51dff2195d04662ec1f791ef0fb123c9",
+      "dictionary_member": "2022/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2019/个股日回报率-2019_2.xlsx",
+      "sha256": "348e1a9ece41d478b22cf578406c6eba35c2a4505eb2cdc772f2a32ab3d5d85c",
+      "dictionary_member": "2019/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2019/个股日回报率-2019_1.xlsx",
+      "sha256": "f54f14c9cb016851d4dd1ab2a8d34f5ac63d21fb9f99d9f91800d8ef0b5e624e",
+      "dictionary_member": "2019/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2021/个股日回报率-2021_2.xlsx",
+      "sha256": "004aebaff5b157be2b361db9f94bcaf5f82c89b235048841680ee5c5547abcf1",
+      "dictionary_member": "2021/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2016/个股日回报率-2016_2.xlsx",
+      "sha256": "2dcbb4987b85252f169735a33df2477e20d5e7cbf6e957339b525ec86d9a5803",
+      "dictionary_member": "2016/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "ef431e8dfb049e29c4d65e7e52fa7d98629a713e7cd3b1954ff10308e5d66764"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2024/个股日回报率-2024_2.xlsx",
+      "sha256": "d763eda9909e009453bc96dee9f8018ca1e9b3af472af7073befeabef7ceaa6a",
+      "dictionary_member": "2024/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2023/个股日回报率-2023_2.xlsx",
+      "sha256": "0b7183dea6e94cdc371f9fe6dd08311d98adf2489bb1ed2f24335e8ab558de1a",
+      "dictionary_member": "2023/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2020/个股日回报率-2020_1.xlsx",
+      "sha256": "a5b1c8ccdaae5790725fb205c02838adb25ab169af6b56bc75c5e77721010062",
+      "dictionary_member": "2020/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2018/个股日回报率-2018_2.xlsx",
+      "sha256": "812b0210289ac92b3f7de2b30502c81c7946e49665959ea445e4c54a39138284",
+      "dictionary_member": "2018/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "6ebb1dd82816072ba4f6e231831ccab6945be7080d8572ad67777ce0492091b7"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2016/个股日回报率-2016_1.xlsx",
+      "sha256": "da7fb62db68a1ceb23fd51bcda1715cb5ee68f567087d610317687f3517008c8",
+      "dictionary_member": "2016/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "1cdf2499b4471417a456ee2c260f3e3cbd1108226f8700e3c1f12e2399785a67"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2023/个股日回报率-2023_1.xlsx",
+      "sha256": "1cab5468bf25114dfe084800cf8b43a90011a932b1f9ce7fb969825e75a6f8f4",
+      "dictionary_member": "2023/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2024/个股日回报率-2024_1.xlsx",
+      "sha256": "70196dc4d8d58f2f84f6f890ce2bf698dd4e2878bbb6abf0d60c82effdd2a5f7",
+      "dictionary_member": "2024/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2023/个股日回报率-2023_3.xlsx",
+      "sha256": "6f8aa5116ac65d19a6499c027ac765e6defcf449f319fd71d256279ec01d10d9",
+      "dictionary_member": "2023/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2022/个股日回报率-2022_1.xlsx",
+      "sha256": "396843e33d660dadb06ea58a9adf6c23f796c98d8e26595df2c0347883c05604",
+      "dictionary_member": "2022/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2026/个股日回报率-2026.xlsx",
+      "sha256": "e38f73bb0a5bd8ee52d78376f9edaf1dbab04b3d33a6875d5702134291319d69",
+      "dictionary_member": "2026/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2021/个股日回报率-2021_1.xlsx",
+      "sha256": "f04ab90ffadf097827ea2d7b3265400fda66a9a8d62435dd75a5c97548855966",
+      "dictionary_member": "2021/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2025/个股日回报率-2025_1.xlsx",
+      "sha256": "b076506b24e7a8734675f890928776711ac1c9587ba7c518ec6ee3e11521281c",
+      "dictionary_member": "2025/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2025/个股日回报率-2025_2.xlsx",
+      "sha256": "d85e4021c3e2c3a16c9f5d1711bc534fe402b323b627b5f85016d97f76bb3295",
+      "dictionary_member": "2025/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2024/个股日回报率-2024_3.xlsx",
+      "sha256": "fad245ade04e4c325e0a8df7f3708099499ed839908889b077c5d1dfabb17443",
+      "dictionary_member": "2024/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2025/个股日回报率-2025_3.xlsx",
+      "sha256": "0dcd31bef83647295ce6df6665b5adc5a67bb610e58ad8109145c72557bc2607",
+      "dictionary_member": "2025/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2015/个股日回报率-2015_2.xlsx",
+      "sha256": "1ee3951366f5b1ace13880bc64dfcf8f5f82f3a90cde96f98cd379b4aec6ab7e",
+      "dictionary_member": "2015/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "a712258c5aaa49458fdb03d3fdb9d0680635d03ccd199a45b5211b153110c886"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2021/个股日回报率-2021_3.xlsx",
+      "sha256": "7be21a926671305757b5589ad34a3edae38f553497f423bb0acaf9c6c2355f6d",
+      "dictionary_member": "2021/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2017/个股日回报率-2017_2.xlsx",
+      "sha256": "d146d7ae97c75972b82df0e8eebd533f128f3b2ca01d815581421008a23de531",
+      "dictionary_member": "2017/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "6ebb1dd82816072ba4f6e231831ccab6945be7080d8572ad67777ce0492091b7"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2018/个股日回报率-2018_1.xlsx",
+      "sha256": "0baf00f0a8eaf3f9eccbd471ea8803afbd9d66293a8fefed338421f7a3ffe062",
+      "dictionary_member": "2018/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "6ebb1dd82816072ba4f6e231831ccab6945be7080d8572ad67777ce0492091b7"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2022/个股日回报率-2022_2.xlsx",
+      "sha256": "5f7866bdf175f37ac23d80104a2efda801fa286d3e1be7f9586769d0dbe680a7",
+      "dictionary_member": "2022/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CNRDS",
+      "member": "2015/个股日回报率-2015_1.xlsx",
+      "sha256": "4134d9631a907280c249d9a11c4f61021c1941c888b150d310eb3c840d9b745b",
+      "dictionary_member": "2015/个股日回报率_字段说明.txt",
+      "dictionary_sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "code_sha256": "5b0d68e000e5774b980c4e871c51ac1d1c620c674efd50247a3d501fc8e3edf1"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr.xlsx",
+      "sha256": "11fff3efe54ae6818e145deeb2c85dbe8fe1cfea873bff7a13d5cc5a34116d45",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr4.xlsx",
+      "sha256": "f30b3fe1c75016e6b73ad9d4f13b84136af415bc2965653733f46ddff75b29a1",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr3.xlsx",
+      "sha256": "b460caadfdb19f4162599e76571f097db12110932a042ef73d3b61fb55931ec5",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr3.xlsx",
+      "sha256": "761cf3af5764620d9157863fc8c3d4259f71e3b939962bc9c7ae530dd7ab2a08",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr2.xlsx",
+      "sha256": "ca3ca1ce00836ed8ec859f2922c73a288d7f30b46b0528eeb483925873f7cd01",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr2.xlsx",
+      "sha256": "99de0aff46e20d399d45714416039361082a09ce466aed20f0d0797648591866",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr.xlsx",
+      "sha256": "fb0d535a1c29820bd24f0f7a7a8dc451dfcc5b2e9ec5efc8c60789b770e62b3c",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr5.xlsx",
+      "sha256": "24f56c840330e21548bb760f8c008116fb3f0c57727d84cf74fcebde6a3f0080",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr1.xlsx",
+      "sha256": "bf0f0c571cf4222baba17cafc98364745fbefa71bc91c2050868e3a10a0c3d87",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr1.xlsx",
+      "sha256": "a74fc3729eade17e2497a4c4bdfb010108a8f60de79a0a9ec4cfd9e433ac79b1",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr2.xlsx",
+      "sha256": "3947db283db81bdb7f23e9e8977bd45855bb83f4528575739c95ebac28abaec8",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr4.xlsx",
+      "sha256": "8d3367499de49af4a12bd7cdf8efc859f1066c77b3d05894b994947cf3cf5be7",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "b34f0bceabf2045c83d5dd3890498f4e7e3f3b9dad208b5b1533ac86c328933b"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr3.xlsx",
+      "sha256": "be80532589e2ad4c949cc8ba8b55077614daeae53d21bb393eb58ce1e7414e8c",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr.xlsx",
+      "sha256": "7f83d8976809c111e2a987a4f30861a8db15cb9c9495c963f0593f5a06f5d7c5",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    },
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr1.xlsx",
+      "sha256": "c5a41718e50e01953a7bfd3553d8a54376e0378982e02af51d5ae19f60362d3e",
+      "dictionary_member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "code_sha256": "f9152389858cd1fe5f77b3ceb3ede46129b6dacb1c1ee5c4b9fb3032f5a9f1bc"
+    }
+  ],
+  "difference_index": {
+    "inputs": [
+      {
+        "name": "audit-full-2015-01-01-2015-12-31-anomalies-complete.csv",
+        "bytes": 356596484,
+        "selected_rows": 321477
+      },
+      {
+        "name": "audit-full-2016-01-01-2016-12-31-anomalies-complete.csv",
+        "bytes": 345387039,
+        "selected_rows": 330347
+      },
+      {
+        "name": "audit-full-2017-01-01-2017-12-31-anomalies-complete.csv",
+        "bytes": 163335556,
+        "selected_rows": 225401
+      },
+      {
+        "name": "audit-full-2018-01-01-2018-12-31-anomalies-complete.csv",
+        "bytes": 199273081,
+        "selected_rows": 293165
+      },
+      {
+        "name": "audit-full-2019-01-01-2019-12-31-anomalies-complete.csv",
+        "bytes": 406835646,
+        "selected_rows": 660534
+      },
+      {
+        "name": "audit-full-2020-01-01-2020-12-31-anomalies-complete.csv",
+        "bytes": 474828636,
+        "selected_rows": 650415
+      },
+      {
+        "name": "audit-full-2021-01-01-2021-01-31-anomalies-complete.csv",
+        "bytes": 62677700,
+        "selected_rows": 72
+      },
+      {
+        "name": "audit-full-2021-02-01-2021-02-28-anomalies-complete.csv",
+        "bytes": 37679746,
+        "selected_rows": 54443
+      },
+      {
+        "name": "audit-full-2021-03-01-2021-03-31-anomalies-complete.csv",
+        "bytes": 57136400,
+        "selected_rows": 82554
+      },
+      {
+        "name": "audit-full-2021-04-01-2021-04-30-anomalies-complete.csv",
+        "bytes": 53765134,
+        "selected_rows": 77818
+      },
+      {
+        "name": "audit-full-2021-05-01-2021-05-31-anomalies-complete.csv",
+        "bytes": 46591357,
+        "selected_rows": 67583
+      },
+      {
+        "name": "audit-full-2021-06-01-2021-06-30-anomalies-complete.csv",
+        "bytes": 55297328,
+        "selected_rows": 80390
+      },
+      {
+        "name": "audit-full-2021-07-01-2021-07-31-anomalies-complete.csv",
+        "bytes": 58481794,
+        "selected_rows": 84871
+      },
+      {
+        "name": "audit-full-2021-08-01-2021-08-31-anomalies-complete.csv",
+        "bytes": 60105692,
+        "selected_rows": 87454
+      },
+      {
+        "name": "audit-full-2021-09-01-2021-09-30-anomalies-complete.csv",
+        "bytes": 59808982,
+        "selected_rows": 81490
+      },
+      {
+        "name": "audit-full-2021-10-01-2021-10-31-anomalies-complete.csv",
+        "bytes": 47825631,
+        "selected_rows": 61489
+      },
+      {
+        "name": "audit-full-2021-11-01-2021-11-30-anomalies-complete.csv",
+        "bytes": 68158971,
+        "selected_rows": 87847
+      },
+      {
+        "name": "audit-full-2021-12-01-2021-12-31-anomalies-complete.csv",
+        "bytes": 71748876,
+        "selected_rows": 92615
+      },
+      {
+        "name": "audit-full-2022-01-01-2022-12-31-anomalies-complete.csv",
+        "bytes": 686777979,
+        "selected_rows": 567353
+      },
+      {
+        "name": "audit-full-2023-01-01-2023-12-31-anomalies-complete.csv",
+        "bytes": 706809244,
+        "selected_rows": 454242
+      },
+      {
+        "name": "audit-full-2024-01-01-2024-12-31-anomalies-complete.csv",
+        "bytes": 456250209,
+        "selected_rows": 471490
+      },
+      {
+        "name": "audit-full-2025-01-01-2025-12-31-anomalies-complete.csv",
+        "bytes": 341008016,
+        "selected_rows": 463136
+      },
+      {
+        "name": "audit-full-2026-01-01-2026-10-20-anomalies-complete.csv",
+        "bytes": 352228448,
+        "selected_rows": 225298
+      }
+    ],
+    "counts": {
+      "open": 135080,
+      "high": 135080,
+      "low": 135080,
+      "close": 135074,
+      "amount": 4972487,
+      "volume": 8683
+    }
+  },
+  "selection": "remaining + CSMAR|CNRDS + MISMATCH + six fields; final 2021 monthly indexes only",
+  "checkpoint_policy": "read only existing monthly partitions; no workbook rescans",
+  "public_policy": "no native absolute values or complete raw records",
+  "targeted_additional_inputs": {
+    "dictionary_and_BigQuant": "targeted-evidence.json",
+    "distribution_member": {
+      "archive": "分配文件233507526(仅供广东金融学院使用).zip",
+      "member": "TRDNEW_Cptl.xlsx",
+      "sha256": "4ece5e0ce28382f06d9ee1c9aee8073b3e3380579b16708e1330102b5b8f8b15",
+      "dictionary_sha256": "5b05b41e3a9a5b9ce3a80943c866741e09f98a993d7a9bb166880e663d353020",
+      "selection": "2019 open-difference securities; 2019 distribution records; last difference to ex-date interval [0,10] calendar days",
+      "affected_securities": 2633,
+      "securities_with_boundary_distribution": 2628,
+      "status": "ASSOCIATION_ONLY; NOT_PROOF_OF_ADJUSTMENT_FORMULA_OR_HISTORICAL_ISSUER_IDENTITY",
+      "representative_events": [
+        {
+          "symbol": "300682",
+          "ex_date": "2019-05-13",
+          "type": "CA",
+          "sheet": "sheet1",
+          "row": 34412
+        },
+        {
+          "symbol": "600565",
+          "ex_date": "2019-06-13",
+          "type": "CA",
+          "sheet": "sheet1",
+          "row": 49021
+        },
+        {
+          "symbol": "600578",
+          "ex_date": "2019-08-26",
+          "type": "CA",
+          "sheet": "sheet1",
+          "row": 49266
+        }
+      ]
+    },
+    "pilot_BigQuant": "regression-controls.json"
+  },
+  "private_artifacts": [
+    "monthly selected difference CSVs",
+    "representative-native-rows.json",
+    "amount-residual-complete.csv",
+    "targeted-distribution-native-rows.json"
+  ]
+}

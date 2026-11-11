@@ -1,0 +1,33 @@
+{
+  "archive": "分配文件233507526(仅供广东金融学院使用).zip",
+  "member": "TRDNEW_Cptl.xlsx",
+  "sha256": "4ece5e0ce28382f06d9ee1c9aee8073b3e3380579b16708e1330102b5b8f8b15",
+  "dictionary_sha256": "5b05b41e3a9a5b9ce3a80943c866741e09f98a993d7a9bb166880e663d353020",
+  "selection": "2019 open-difference securities; 2019 distribution records; last difference to ex-date interval [0,10] calendar days",
+  "affected_securities": 2633,
+  "securities_with_boundary_distribution": 2628,
+  "status": "ASSOCIATION_ONLY; NOT_PROOF_OF_ADJUSTMENT_FORMULA_OR_HISTORICAL_ISSUER_IDENTITY",
+  "representative_events": [
+    {
+      "symbol": "300682",
+      "ex_date": "2019-05-13",
+      "type": "CA",
+      "sheet": "sheet1",
+      "row": 34412
+    },
+    {
+      "symbol": "600565",
+      "ex_date": "2019-06-13",
+      "type": "CA",
+      "sheet": "sheet1",
+      "row": 49021
+    },
+    {
+      "symbol": "600578",
+      "ex_date": "2019-08-26",
+      "type": "CA",
+      "sheet": "sheet1",
+      "row": 49266
+    }
+  ]
+}

@@ -66,8 +66,8 @@ def monthly_targets(history, calendar, symbols, scheme, *, lookback=20, maximum=
     return pd.DataFrame(rows, columns=['date', 'symbol', 'target_weight']), pd.DataFrame(decisions)
 
 
-def audit_ledger(result, bars, initial_cash):
-    """Reconcile execution receipts against cash, cumulative shares and raw marks."""
+def audit_accounting(result, bars, initial_cash):
+    """Reconcile shared-account receipts independently of valuation eligibility."""
     nav, trades, positions = result.nav, result.trades, result.positions
     flow = trades.assign(date=trades.execution_date,
         cash_flow=np.where(trades.side.eq('buy'), -trades.trade_notional, trades.trade_notional) - trades.transaction_cost)
@@ -95,15 +95,28 @@ def audit_ledger(result, bars, initial_cash):
     recorded = recorded.reindex(index=pd.DatetimeIndex(nav.date), columns=symbols).fillna(0)
     if not np.array_equal(balances.to_numpy(), recorded.to_numpy()):
         raise SchemaError('position ledger does not reconcile to executions')
-    marked = positions.merge(bars[['date', 'symbol', 'raw_close']], on=['date', 'symbol'], how='left', validate='one_to_one')
-    if not np.allclose(marked.mark_price, marked.raw_close, rtol=0, atol=0):
-        raise SchemaError('position uses an unobserved close mark')
-    if not np.allclose(marked.market_value, marked.shares * marked.raw_close, rtol=1e-12):
-        raise SchemaError('position valuation does not reconcile')
     costs = trades.groupby('execution_date').transaction_cost.sum().reindex(nav.date, fill_value=0)
     if not np.allclose(costs, nav.transaction_cost, rtol=1e-12, atol=1e-7):
         raise SchemaError('daily costs do not reconcile')
-    return dict(status='PASSED', cash=True, shares=True, raw_close_marks=True, equity=True, fees=True)
+    return dict(status='PASSED', cash=True, shares=True, equity=True, fees=True)
+
+
+def audit_ledger(result, bars, initial_cash, *, valuation_prices=None):
+    """Reconcile accounting and observed or independently qualified valuation marks."""
+    audit = audit_accounting(result, bars, initial_cash)
+    marked = result.positions.merge(bars[['date', 'symbol', 'raw_close']], on=['date', 'symbol'], how='left', validate='one_to_one')
+    price = marked.raw_close
+    if valuation_prices is not None:
+        marked = marked.merge(valuation_prices[['date', 'symbol', 'valuation_price']],
+            on=['date', 'symbol'], how='left', validate='one_to_one')
+        price = marked.valuation_price
+    if not np.allclose(marked.mark_price, price, rtol=0, atol=0):
+        raise SchemaError('position uses an unobserved close mark' if valuation_prices is None
+            else 'position uses an unqualified close mark')
+    if not np.allclose(marked.market_value, marked.shares * price, rtol=1e-12):
+        raise SchemaError('position valuation does not reconcile')
+    return dict(audit, raw_close_marks=valuation_prices is None,
+        qualified_marks=valuation_prices is not None)
 
 
 def execute(history, calendar, symbols, reference, scheme, config):

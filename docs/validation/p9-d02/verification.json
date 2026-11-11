@@ -1,0 +1,29 @@
+{
+  "schema": "P9_D02_VERIFICATION_V1",
+  "targeted_tests": {
+    "files": ["tests/research/test_evidence_consumption_study.py", "tests/research/test_p9_market_evidence.py", "tests/research/test_oos_execution.py", "tests/research/test_shared_portfolio.py"],
+    "passed": 89,
+    "seconds": 4.78,
+    "exit_code": 0,
+    "mixed_observed_and_decimal_assumed_equity_regression": true
+  },
+  "execution_attempts": [
+    {"phase": "INPUT_IDENTITY", "exit_code": 1, "error": "SOURCE_MANIFEST_DRIFT", "correction": "Default to frozen original P8 input-manifest.json instead of P3-D06 manifest", "account_executed": false},
+    {"phase": "MINIMUM_WINDOW_VALUATION_AUDIT", "exit_code": 1, "error": "Mixed Decimal and float book values cannot be summed directly", "correction": "Explicit numeric conversion for aggregate equity comparison; preserve Decimal valuation objects"},
+    {"phase": "MINIMUM_WINDOW_AND_SAVED_FOLD0_QUALIFICATION", "exit_code": 0, "status": "P9_D02_BLOCKED", "successful_minimum_replay_accounts": 2, "qualified_saved_fold0_accounts": 2, "expected_execution_blocker": "2023-05-08/000540.SZ", "retrained_models": 0}
+  ],
+  "publication": {
+    "exit_code": 0,
+    "full_original_targets_compared": 3,
+    "minimum_replay_trades_exactly_equal": true,
+    "minimum_replay_positions_exactly_equal": true,
+    "minimum_replay_nav_and_cash_exactly_equal": true,
+    "assumption_account_days": 8,
+    "newly_qualified_full_fold_account_days": 424,
+    "suspension_trades": 0,
+    "price_limit_sell_blocked_diagnostic": true,
+    "specific_order_executability": "ORDER_EXECUTABLE_UNVERIFIED"
+  },
+  "resource_policy": {"execution_processes": 1, "max_workers": 4, "memory_soft_limit_gib": 8, "full_factor_recompute": false, "full_model_training": false, "unrelated_backtests": false},
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

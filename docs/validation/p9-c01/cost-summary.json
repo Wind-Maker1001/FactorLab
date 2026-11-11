@@ -1,0 +1,330 @@
+{
+  "status": "P9_C01_COST_CONTRACT_READY",
+  "comparison": "SAME_FILL_FEE_DIFFERENCE",
+  "source_config_hash": "be3269529c9ed5fceb9271c3164409c9d987e4b65001183e5ea4a918e979a5b8",
+  "contracts": {
+    "LEGACY_FIXED_STAMP_10BPS": {
+      "sha256": "7c5b3d5140e7b73a1b8aebe1e7a955298d11ef1bcbe3f56267d1b1723564c1e8",
+      "rules": [
+        {
+          "effective_from": "1990-01-01",
+          "effective_to": null,
+          "buy_fee_bps": 0.0,
+          "sell_fee_bps": 0.0,
+          "stamp_duty_bps": 10.0,
+          "transfer_fee_bps": 0.0,
+          "commission_bps": 3.0,
+          "minimum_commission_cny": 5.0,
+          "slippage_bps": 5.0
+        }
+      ]
+    },
+    "DATE_EFFECTIVE_STAMP_DUTY": {
+      "sha256": "550f934b3114a946d47213490e4a739a07fc6d60aa2c73c2c528e15f76769c4e",
+      "rules": [
+        {
+          "effective_from": "1900-01-01",
+          "effective_to": "2023-08-27",
+          "buy_fee_bps": 0.0,
+          "sell_fee_bps": 0.0,
+          "stamp_duty_bps": 10.0,
+          "transfer_fee_bps": 0.0,
+          "commission_bps": 3.0,
+          "minimum_commission_cny": 5.0,
+          "slippage_bps": 5.0
+        },
+        {
+          "effective_from": "2023-08-28",
+          "effective_to": null,
+          "buy_fee_bps": 0.0,
+          "sell_fee_bps": 0.0,
+          "stamp_duty_bps": 5.0,
+          "transfer_fee_bps": 0.0,
+          "commission_bps": 3.0,
+          "minimum_commission_cny": 5.0,
+          "slippage_bps": 5.0
+        }
+      ]
+    }
+  },
+  "accounts": [
+    {
+      "status": "SAME_FILL_FEE_DIFFERENCE",
+      "fills": 33,
+      "first_fill": "2023-03-14",
+      "last_fill": "2023-03-28",
+      "sell_fills": 17,
+      "post_cut_sell_fills": 0,
+      "spans_cut": false,
+      "fees": {
+        "LEGACY_FIXED_STAMP_10BPS": {
+          "commission": 895.4007,
+          "stamp_duty": 1455.617,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 1468.5535000000002,
+          "transaction_cost": 3819.5712000000003
+        },
+        "DATE_EFFECTIVE_STAMP_DUTY": {
+          "commission": 895.4007,
+          "stamp_duty": 1455.617,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 1468.5535000000002,
+          "transaction_cost": 3819.5712000000003
+        }
+      },
+      "minimum_commission_increment": 14.268600000000038,
+      "fee_difference": 0.0,
+      "post_cut_fee_difference": null,
+      "post_cut_status": "NOT_COMPUTABLE",
+      "account": "pilot",
+      "scope": "PILOT_ONLY",
+      "window_start": "2023-03-13",
+      "window_end_exclusive": "2023-04-04",
+      "ledger_audit": "PASSED"
+    },
+    {
+      "status": "SAME_FILL_FEE_DIFFERENCE",
+      "fills": 674,
+      "first_fill": "2023-03-14",
+      "last_fill": "2024-03-11",
+      "sell_fills": 305,
+      "post_cut_sell_fills": 160,
+      "spans_cut": true,
+      "fees": {
+        "LEGACY_FIXED_STAMP_10BPS": {
+          "commission": 13516.405141000001,
+          "stamp_duty": 21112.223510000003,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 21201.932235,
+          "transaction_cost": 55830.56088600001
+        },
+        "DATE_EFFECTIVE_STAMP_DUTY": {
+          "commission": 13516.405141000001,
+          "stamp_duty": 15903.543529999999,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 21201.932235,
+          "transaction_cost": 50621.880906000006
+        }
+      },
+      "minimum_commission_increment": 795.2458000000006,
+      "fee_difference": 5208.679980000001,
+      "post_cut_fee_difference": 5208.67998,
+      "post_cut_status": "SAME_FILL_FEE_DIFFERENCE",
+      "account": "B_factor_score-fold-0",
+      "scope": "SAVED_FILLS_ONLY_UNRELIABLE_PORTFOLIO_VALUATION",
+      "original_coverage": {
+        "first_fill": "2023-03-14",
+        "last_fill": "2024-03-11",
+        "fills": 674,
+        "post_cut_sell_fills": 160
+      },
+      "ledger_audit": "PASSED"
+    },
+    {
+      "status": "SAME_FILL_FEE_DIFFERENCE",
+      "fills": 74,
+      "first_fill": "2023-03-14",
+      "last_fill": "2023-04-19",
+      "sell_fills": 30,
+      "post_cut_sell_fills": 0,
+      "spans_cut": false,
+      "fees": {
+        "LEGACY_FIXED_STAMP_10BPS": {
+          "commission": 1670.9623,
+          "stamp_duty": 2136.7650000000003,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 2629.3269999999998,
+          "transaction_cost": 6437.0543
+        },
+        "DATE_EFFECTIVE_STAMP_DUTY": {
+          "commission": 1670.9623,
+          "stamp_duty": 2136.7650000000003,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 2629.3269999999998,
+          "transaction_cost": 6437.0543
+        }
+      },
+      "minimum_commission_increment": 93.36610000000006,
+      "fee_difference": 0.0,
+      "post_cut_fee_difference": null,
+      "post_cut_status": "NOT_COMPUTABLE",
+      "account": "B_factor_score-fold-0",
+      "scope": "OBSERVED_PREFIX_NOT_FULL_TEST",
+      "window_start": "2023-03-13",
+      "window_end_exclusive": "2023-04-26",
+      "ledger_audit": "PASSED"
+    },
+    {
+      "status": "SAME_FILL_FEE_DIFFERENCE",
+      "fills": 698,
+      "first_fill": "2023-03-14",
+      "last_fill": "2024-03-11",
+      "sell_fills": 317,
+      "post_cut_sell_fills": 170,
+      "spans_cut": true,
+      "fees": {
+        "LEGACY_FIXED_STAMP_10BPS": {
+          "commission": 14865.085132,
+          "stamp_duty": 23435.91857,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 23512.161720000004,
+          "transaction_cost": 61813.16542200001
+        },
+        "DATE_EFFECTIVE_STAMP_DUTY": {
+          "commission": 14865.085132,
+          "stamp_duty": 17722.216785,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 23512.161720000004,
+          "transaction_cost": 56099.46363700001
+        }
+      },
+      "minimum_commission_increment": 757.7881000000008,
+      "fee_difference": 5713.701785,
+      "post_cut_fee_difference": 5713.701785,
+      "post_cut_status": "SAME_FILL_FEE_DIFFERENCE",
+      "account": "B_ridge-fold-0",
+      "scope": "SAVED_FILLS_ONLY_UNRELIABLE_PORTFOLIO_VALUATION",
+      "original_coverage": {
+        "first_fill": "2023-03-14",
+        "last_fill": "2024-03-11",
+        "fills": 698,
+        "post_cut_sell_fills": 170
+      },
+      "ledger_audit": "PASSED"
+    },
+    {
+      "status": "SAME_FILL_FEE_DIFFERENCE",
+      "fills": 84,
+      "first_fill": "2023-03-14",
+      "last_fill": "2023-04-19",
+      "sell_fills": 32,
+      "post_cut_sell_fills": 0,
+      "spans_cut": false,
+      "fees": {
+        "LEGACY_FIXED_STAMP_10BPS": {
+          "commission": 2026.7859,
+          "stamp_duty": 2747.0609999999997,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 3239.4320000000002,
+          "transaction_cost": 8013.278900000002
+        },
+        "DATE_EFFECTIVE_STAMP_DUTY": {
+          "commission": 2026.7859,
+          "stamp_duty": 2747.0609999999997,
+          "transfer_fee": 0.0,
+          "side_fee": 0.0,
+          "slippage": 3239.4320000000002,
+          "transaction_cost": 8013.278900000002
+        }
+      },
+      "minimum_commission_increment": 83.12670000000007,
+      "fee_difference": 0.0,
+      "post_cut_fee_difference": null,
+      "post_cut_status": "NOT_COMPUTABLE",
+      "account": "B_ridge-fold-0",
+      "scope": "OBSERVED_PREFIX_NOT_FULL_TEST",
+      "window_start": "2023-03-13",
+      "window_end_exclusive": "2023-04-26",
+      "ledger_audit": "PASSED"
+    }
+  ],
+  "unavailable_accounts": [
+    {
+      "account": "B_lightgbm-fold-0",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_xgboost-fold-0",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "momentum20-fold-0",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "hash_equal-fold-0",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_factor_score-fold-1",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_ridge-fold-1",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_lightgbm-fold-1",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_xgboost-fold-1",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "momentum20-fold-1",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "hash_equal-fold-1",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_factor_score-fold-2",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_ridge-fold-2",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_lightgbm-fold-2",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "B_xgboost-fold-2",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "momentum20-fold-2",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    },
+    {
+      "account": "hash_equal-fold-2",
+      "status": "NOT_COMPUTABLE",
+      "fee_difference": null
+    }
+  ],
+  "post_valuation_gap_portfolio_return": "NOT_COMPUTABLE",
+  "counterfactual_portfolio_return": null,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

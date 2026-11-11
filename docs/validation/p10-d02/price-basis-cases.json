@@ -1,0 +1,53 @@
+[
+  {
+    "symbol": "300682",
+    "window": "2018-12",
+    "event_date": "2019-05-13",
+    "event_type": "CA",
+    "distribution_sheet": "sheet1",
+    "distribution_row": 34412,
+    "pre_event_date": "2019-05-10",
+    "pre_event_price_sha256": "ca3ca1ce00836ed8ec859f2922c73a288d7f30b46b0528eeb483925873f7cd01",
+    "pre_event_price_sheet": "sheet1",
+    "pre_event_price_row": "250810",
+    "tested_fields": 80,
+    "matched_next_cash_distribution_formula": 74,
+    "raw_equal_fields": 0,
+    "tested_formula": "round_half_up(CSMAR_raw_OHLC * (1 - next_cash_dividend / CSMAR_close_before_exdate), 0.01)",
+    "confidence": "EXACT_FORMULA_TEST_ON_FIXED_CASES; NOT_SUPPLIER_PIPELINE_OR_FULL_SCOPE_CERTIFICATION"
+  },
+  {
+    "symbol": "600565",
+    "window": "2019-05",
+    "event_date": "2019-06-13",
+    "event_type": "CA",
+    "distribution_sheet": "sheet1",
+    "distribution_row": 49021,
+    "pre_event_date": "2019-06-12",
+    "pre_event_price_sha256": "b460caadfdb19f4162599e76571f097db12110932a042ef73d3b61fb55931ec5",
+    "pre_event_price_sheet": "sheet1",
+    "pre_event_price_row": "278",
+    "tested_fields": 80,
+    "matched_next_cash_distribution_formula": 80,
+    "raw_equal_fields": 0,
+    "tested_formula": "round_half_up(CSMAR_raw_OHLC * (1 - next_cash_dividend / CSMAR_close_before_exdate), 0.01)",
+    "confidence": "EXACT_FORMULA_TEST_ON_FIXED_CASES; NOT_SUPPLIER_PIPELINE_OR_FULL_SCOPE_CERTIFICATION"
+  },
+  {
+    "symbol": "600578",
+    "window": "2019-07",
+    "event_date": "2019-08-26",
+    "event_type": "CA",
+    "distribution_sheet": "sheet1",
+    "distribution_row": 49266,
+    "pre_event_date": "2019-08-23",
+    "pre_event_price_sha256": "b460caadfdb19f4162599e76571f097db12110932a042ef73d3b61fb55931ec5",
+    "pre_event_price_sheet": "sheet1",
+    "pre_event_price_row": "12858",
+    "tested_fields": 92,
+    "matched_next_cash_distribution_formula": 92,
+    "raw_equal_fields": 0,
+    "tested_formula": "round_half_up(CSMAR_raw_OHLC * (1 - next_cash_dividend / CSMAR_close_before_exdate), 0.01)",
+    "confidence": "EXACT_FORMULA_TEST_ON_FIXED_CASES; NOT_SUPPLIER_PIPELINE_OR_FULL_SCOPE_CERTIFICATION"
+  }
+]

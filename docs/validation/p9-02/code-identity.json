@@ -1,0 +1,8 @@
+{
+  "tools/research/run_oos_recovery.py": "bf44f7c60d4dd5b5ea2c633aa3febd1fa51f0638aa1cb1534e9c499554c19faf",
+  "src/factorlab/research/oos_execution_recovery.py": "1d1c376a172022296e90b1cc56c164559197670ac3799229d6d59d051cd50b0f",
+  "tools/research/run_oos_execution.py": "3b4ab91d19f95f2be59dd4bc6315730d80c3328e995279c951faf61613079c07",
+  "src/factorlab/strategies/real_shared_portfolio.py": "3006baf9ca292d11cf189fa942130d1920d6cb680dd9120dc0ef625dde8aa775",
+  "src/factorlab/backtest/execution.py": "af329b87bf19d6918df732dbf49353fffa5317a0a6a90d5e2b72ede376c2ce3d",
+  "src/factorlab/backtest/fees.py": "fd5bbc0c4ab22c22952cb78a41beb06636f3d73b8cbb991521476293e7f6b08a"
+}
