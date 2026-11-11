@@ -1,0 +1,101 @@
+{
+  "status": "P9_D03_EVIDENCE_ACCEPTED",
+  "valuation": {
+    "security": "000540.SZ",
+    "day": "2023-05-04",
+    "raw_close": null,
+    "valuation_price": "0.66",
+    "shares": 138800,
+    "valuation_source_date": "2023-04-28",
+    "valuation_source_price_sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b",
+    "suspension_document_sha256": "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642f90cd54cc2e456",
+    "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+    "valuation_policy_version": "1",
+    "valuation_status": "MODEL_VALUATION_ASSUMPTION",
+    "nontradable": true
+  },
+  "source_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "shards": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d"
+    }
+  ],
+  "ancillary": [
+    {
+      "vendor": "CSMAR",
+      "member": "TRDNEW_Dalyr.xlsx",
+      "sha256": "11fff3efe54ae6818e145deeb2c85dbe8fe1cfea873bff7a13d5cc5a34116d45",
+      "dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "scanned_prefix_rows": 121859
+    },
+    {
+      "vendor": "CNRDS",
+      "member": "2023/个股日回报率-2023_1.xlsx",
+      "sha256": "1cab5468bf25114dfe084800cf8b43a90011a932b1f9ce7fb969825e75a6f8f4",
+      "dictionary_sha256": null,
+      "scanned_prefix_rows": 30670
+    }
+  ],
+  "tdx": "SOURCE_MISSING_IN_EXISTING_INVENTORY",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "schema": "P9_D03_EVIDENCE_V1",
+  "notice": {
+    "issuer": "中天金融集团股份有限公司",
+    "number": "2023-36",
+    "uri": "https://pdf.dfcfw.com/pdf/H2_AN202304291586106477_1.pdf",
+    "sha256": "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642f90cd54cc2e456",
+    "signed_date": "2023-04-28",
+    "publication_date": "2023-04-29",
+    "publication_time_bound": "2023-04-29T23:59:59.999999999+08:00",
+    "publication_time_precision": "DATE_ONLY_UPPER_BOUND",
+    "excerpt": "自2023年5月5日起被实施退市风险警示；简称变更为*ST中天；5月4日停牌一天，5月5日开市起复牌；日涨跌幅限制比例为5%。"
+  },
+  "suspension": {
+    "start_date": "2023-05-04",
+    "resume_date": "2023-05-05",
+    "sessions": 1
+  },
+  "observations": {
+    "last_true_close_date": "2023-04-28",
+    "last_true_raw_close": "0.66",
+    "last_true_close_source": "BIGQUANT_RAW_AND_CSMAR_FILLING_0_POSITIVE_VOLUME",
+    "may04_bigquant": "OHLC_NULL_VOLUME_0_SUSPENDED_1",
+    "may04_csmar": "FILLING_1_ZERO_VOLUME_REPEATED_0.66_NOT_OBSERVED_CLOSE",
+    "csmar_dictionary_sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+    "cnrds_target_rows": 0,
+    "cnrds_status": "SOURCE_MISSING_IN_TARGET_2023_SHARD",
+    "tdx_status": "SOURCE_MISSING_IN_EXISTING_INVENTORY"
+  },
+  "identity": {
+    "code_unchanged": true,
+    "name_change_effective": "2023-05-05",
+    "corporate_action": "NO_EXDR_FLAG_AND_UNCHANGED_ADJUST_FACTOR_IN_TARGET_WINDOW",
+    "csmar_may05_trdsta": "1_CONFLICTS_WITH_ISSUER_STAR_ST_NOT_CONSUMED",
+    "price_basis": "RAW_UNADJUSTED_NOT_HFQ_CERTIFIED"
+  },
+  "timing": {
+    "april25_signal": "PRECEDES_APRIL29_NOTICE_NO_RETROACTIVE_SIGNAL_USE",
+    "may04_valuation": "EX_POST_RESEARCH_VALUATION_NOT_HISTORICAL_DELIVERY_CERTIFICATION",
+    "may05_exit_signal": "2023-05-05T15:00:00+08:00",
+    "may08_is_st": "EXISTING_SIGNAL_TIME_STATE_KNOWN_ONLY",
+    "vendor_state": "RETROSPECTIVE_VENDOR_DAILY_STATE_NOT_PREOPEN_KNOWLEDGE_OR_FILL_PERMISSION"
+  }
+}

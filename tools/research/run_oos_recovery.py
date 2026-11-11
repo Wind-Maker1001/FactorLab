@@ -23,7 +23,7 @@ from factorlab.research.oos_execution_study import verify_predictions, signal_ca
 from factorlab.research.oos_execution_recovery import recovery_bars, qualify_valuations, audit_frozen_fees
 
 
-def evidence_inputs(args, bars):
+def evidence_inputs(args, bars, *, additional_observations=()):
     sources = json.loads((ROOT / 'docs/validation/p9-d01/public-sources.json').read_bytes())
     observation = sources['observation_identity']
     documents = {}
@@ -53,8 +53,14 @@ def evidence_inputs(args, bars):
             ('date', '==', pd.Timestamp('2023-05-08'))]).iloc[0]
         if (native.suspended, native.st_status, native.is_risk_warning) != (0, 2, 1):
             raise ValueError('ST_SOURCE_VALUES_DRIFT')
-    capsule = json_bytes(observation)
-    documents[sha256(capsule)] = capsule
+    for observed in (observation, *additional_observations):
+        if observed['source_sha256'] != observation['source_sha256']:
+            raise ValueError('CARRY_SOURCE_IDENTITY_DRIFT')
+        row = bars.loc[bars.symbol.eq(observed['security']) & bars.date.eq(observed['date'])].iloc[0]
+        if row.raw_close != float(observed['price']) or row.volume != observed['volume']:
+            raise ValueError('CARRY_OBSERVATION_DRIFT')
+        capsule = json_bytes(observed)
+        documents[sha256(capsule)] = capsule
     evidence = load_sidecar(ROOT / args.recovery['sidecar'], source_manifest=manifest,
         originals={key: None for key in ALLOWED}, documents=documents)
     return evidence, observation
@@ -115,11 +121,14 @@ def verify_saved(args, bars, members, calendar, entries, config):
     return predicted, candidates, identity, receipts
 
 
-def stage_a(bars, evidence, observation, config, output):
+def stage_a(bars, evidence, observation, config, output, *, observations=None):
     from factorlab.backtest.execution import AShareExecutionBacktester, ExecutionBacktestConfig
     from factorlab.backtest.fees import FeeSchedule, FeeRule
     from factorlab.strategies.real_shared_portfolio import audit_ledger
     from datetime import date
+    from factorlab.data.market_evidence_sidecar import POLICY
+    if observations is not None and config.get('valuation_policy') != POLICY:
+        raise SchemaError('EXPLICIT_CARRY_POLICY_REQUIRED')
     output.mkdir()
     engine = AShareExecutionBacktester(ExecutionBacktestConfig(initial_cash=config['initial_cash'],
         benchmark_open_price_column='raw_open', benchmark_close_price_column='raw_close'),
@@ -138,7 +147,7 @@ def stage_a(bars, evidence, observation, config, output):
         for name in ('trades', 'positions', 'nav', 'rejections', 'target_comparison'):
             getattr(result, name).to_parquet(output / f'{symbol}-{name}.parquet', index=False)
         try:
-            qualified = qualify_valuations(result, bars, evidence, observation)
+            qualified = qualify_valuations(result, bars, evidence, observation, observations=observations)
         except SchemaError as error:
             if not str(error).startswith('UNQUALIFIED_HELD_CLOSE: '):
                 raise

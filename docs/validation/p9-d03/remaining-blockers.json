@@ -1,0 +1,28 @@
+{
+  "schema": "P9_D03_REMAINING_BLOCKERS_V1",
+  "evidence_status": "P9_D03_EVIDENCE_ACCEPTED",
+  "targeted_evidence_blockers": [],
+  "stage_a": "PASSED",
+  "stage_b_prefix": "COMPLETED",
+  "observed_new_blockers_in_executed_range": [],
+  "further_execution": {
+    "stage_b_full_fold": "NOT_RUN_SCOPE_BOUNDARY",
+    "stage_b_other_accounts": "NOT_RUN_SCOPE_BOUNDARY",
+    "stage_c": "NOT_RUN",
+    "full_three_folds": "NOT_RUN"
+  },
+  "unresolved_contracts": [
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED",
+    "TOTAL_RETURN_UNAVAILABLE",
+    "ORDER_EXECUTABLE_UNVERIFIED"
+  ],
+  "carry_expansion_allowed": false,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

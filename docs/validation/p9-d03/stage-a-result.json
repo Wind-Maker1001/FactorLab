@@ -1,0 +1,96 @@
+{
+  "status": "PASSED",
+  "accounts": [
+    {
+      "symbol": "002408.SZ",
+      "ledger": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": true
+      },
+      "fills": 1,
+      "rejections": {
+        "suspended": 1
+      },
+      "assumption_days": 4
+    },
+    {
+      "symbol": "000540.SZ",
+      "ledger": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": true
+      },
+      "fills": 1,
+      "rejections": {
+        "sell_price_limit": 1
+      },
+      "assumption_days": 1
+    }
+  ],
+  "blocked": null,
+  "schema": "P9_D03_STAGE_A_V1",
+  "evidence_status": "P9_D03_EVIDENCE_ACCEPTED",
+  "scope": "EXISTING_P9_02_TWO_ISOLATED_PATHS_NOT_FULL_PORTFOLIO",
+  "targeted_receipt": {
+    "shares": 138800,
+    "valuation_date": "2023-05-04",
+    "valuation_price": "0.66",
+    "valuation_book_value": "91608.00",
+    "raw_close": null,
+    "nontradable": true,
+    "valuation_status": "MODEL_VALUATION_ASSUMPTION",
+    "buy_execution_date": "2023-04-26",
+    "may08_rejection": "sell_price_limit",
+    "may08_fills": 0,
+    "may09_fills": 0,
+    "may09_shares": 138800,
+    "cash_unchanged_after_rejection": true,
+    "cash_after_rejection": 899984.0512,
+    "fees": {
+      "commission": 29.980800000000002,
+      "stamp_duty": 0.0,
+      "slippage": 49.968,
+      "transaction_cost": 79.9488
+    },
+    "duplicate_fee_charges": false,
+    "suspension_fills": 0
+  },
+  "stage_b": {
+    "status": "COMPLETED",
+    "ledger": {
+      "status": "PASSED",
+      "cash": true,
+      "shares": true,
+      "equity": true,
+      "fees": true,
+      "raw_close_marks": false,
+      "qualified_marks": true
+    },
+    "valuation_status": "CONDITIONAL_ON_CONFIRMED_SUSPENSION_CARRY",
+    "assumption_security_days": 1,
+    "scheme": "B_lightgbm",
+    "fold": 0,
+    "start": "2023-03-13",
+    "end": "2023-05-09",
+    "sessions": 38,
+    "targets_unchanged": true,
+    "candidate_prediction_sha256": "c8f18f07fde5521c340b9ad3c4364469a855481fc5f0c4b12d93a6ab20e6ad3f",
+    "full_fold": false,
+    "full_three_folds": false
+  },
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

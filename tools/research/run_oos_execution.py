@@ -32,9 +32,10 @@ from factorlab.validation.splitter import ExpandingWalkForwardSplitter
 
 
 def execute(scores, bars, dates, symbols, config, scheme, output, *, dataset_id,
-            valuation_qualifier=None):
+            valuation_qualifier=None, target_plan=None):
     output.mkdir()
-    targets, decisions = make_targets(scores, dates, symbols, config, scheme)
+    targets, decisions = (make_targets(scores, dates, symbols, config, scheme)
+        if target_plan is None else target_plan)
     targets.to_parquet(output / 'targets.parquet', index=False)
     decisions.to_csv(output / 'decisions.csv', index=False)
     engine = AShareExecutionBacktester(ExecutionBacktestConfig(initial_cash=config['initial_cash'],

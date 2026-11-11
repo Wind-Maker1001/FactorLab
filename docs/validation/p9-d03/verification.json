@@ -1,0 +1,79 @@
+{
+  "schema": "P9_D03_VERIFICATION_V1",
+  "baseline_origin_main": "0cf5404510b497cf2ad0d974d21a04119219a0df",
+  "prerequisite_prs": [
+    84,
+    88,
+    91,
+    92
+  ],
+  "tests": {
+    "tests": 103,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 5.368,
+    "files": [
+      "tests/research/test_p9_market_evidence.py",
+      "tests/research/test_p9_02_recovery.py",
+      "tests/research/test_oos_execution.py",
+      "tests/research/test_shared_portfolio.py"
+    ]
+  },
+  "candidate_prediction_sha256": "c8f18f07fde5521c340b9ad3c4364469a855481fc5f0c4b12d93a6ab20e6ad3f",
+  "frozen_targets_and_decisions": "PINNED_TO_P9_01_PRIVATE_ARTIFACT_IDENTITIES_THEN_SLICED_WITHOUT_REGENERATION",
+  "raw_data_modified": false,
+  "models_retrained": false,
+  "factors_recomputed": false,
+  "full_market_scanned": false,
+  "full_three_folds_run": false,
+  "resources": {
+    "research_processes": 1,
+    "native_archives": "SERIAL_ONE_TARGET_SHARD_PER_VENDOR",
+    "numerical_threads": 1,
+    "budget_processes": 4,
+    "budget_memory_gib": 6,
+    "peak_memory_gib": null
+  },
+  "code_sha256": {
+    "src/factorlab/data/market_evidence_sidecar.py": "f2c9352283b2c34272db5eb206ff8e6f08dab3321c76ad5339041e9c1de1d19e",
+    "src/factorlab/research/oos_execution_recovery.py": "2c47ab7641d531167ad4e5e6ac39a122dd8674d394d9c26d6945d2f22fa40ba1",
+    "tools/research/run_oos_recovery.py": "336cce93a8fc45075d3d27573ffbf51b0ea1c13061bd52692444b6208f502c25",
+    "tools/research/run_oos_execution.py": "5ea6b2fa3626219bb420d59c0c0675cec74e6770432da8cecb7fd2f622fe404c",
+    "tools/research/run_real_model_walkforward.py": "b39ac62cc9ac8be4a4459dd3baa81a7226f5641c990a7ebd34e2bd56c002a3c2",
+    "tools/research/run_targeted_valuation.py": "2be09554729a2eb4d5bf5a60738ae4f01b5ee66175476ec4f1134215387a2a1c"
+  },
+  "private_artifact_sha256": {
+    "evidence-result.json": "d73d507bd1d26b8c998e77277023257cddca9a63a68dc77697b58599fa4b8c4d",
+    "native-evidence.json": "1f3bb49238ce78551f08afce6683f2232007579968650d015e0975958835bc88",
+    "combined-sidecar.json": "b5380b0e8f0d2bccb6d3ace0d62e85b2501b46ba8ceb3a103c12d0493c6f860d",
+    "stage-a/result.json": "fa37e68cc552cd3ba827a493726701d64c5ed488f820bce2612777c8fe49bafe",
+    "stage-b-result.json": "09f0b9128452ef2b6e539d3af2591898e765b6c707e33e12ccaea6fb3232d7a9",
+    "stage-b-lightgbm-fold-0-prefix/targets.parquet": "01de03fcb33dbaddb739331a866ec4ffeb087db5665daa395ecbed9c6939e437",
+    "stage-b-lightgbm-fold-0-prefix/decisions.csv": "fcbde458a706b0f5c5e961c7fb28f4493ef605816c0321e63db39962a94ef990",
+    "stage-b-lightgbm-fold-0-prefix/valuation-qualifications.parquet": "40bcc73122f270456239448641ea75b4ccaea4a7d2c64b32a6a1048ed38d5c5e"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "outcome": "FAILED_UNSORTED_TARGET_DATE_SLICE_BEFORE_STAGE_A"
+    },
+    {
+      "attempt": 2,
+      "outcome": "STAGE_A_PASSED_STAGE_B_INPUT_WINDOW_MEMBERSHIP_ERROR"
+    },
+    {
+      "attempt": 3,
+      "outcome": "STAGE_A_PASSED_STAGE_B_PREEXECUTION_TARGET_IDENTITY_GATE_REJECTED_REGENERATED_TERMINAL_TARGETS"
+    },
+    {
+      "attempt": 4,
+      "outcome": "EVIDENCE_ACCEPTED_STAGE_A_PASSED_FROZEN_STAGE_B_PREFIX_COMPLETED"
+    }
+  ],
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

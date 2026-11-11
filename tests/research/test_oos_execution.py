@@ -46,6 +46,32 @@ def config():
     return json.loads((ROOT / 'configs/research/p9-01-oos-execution.json').read_text())
 
 
+def test_prefix_executes_frozen_targets_without_terminal_rewrite(tmp_path, monkeypatch):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('p9_prefix_executor', ROOT / 'tools/research/run_oos_execution.py')
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+    dates = pd.bdate_range('2023-03-13', periods=20)
+    scores = pd.DataFrame(dict(date=dates, symbol='000540.SZ', score=1.))
+    cfg = dict(config(), top_k=1, minimum_cross_section=1)
+    targets, decisions = make_targets(scores, dates, ['000540.SZ'], cfg, 'B_lightgbm')
+    prefix = dates[:9]
+    frozen = targets.loc[targets.date.isin(prefix)].reset_index(drop=True)
+    plan = (frozen, decisions.loc[decisions.date.isin(prefix)])
+    rebuilt, _ = make_targets(scores, prefix, ['000540.SZ'], cfg, 'B_lightgbm')
+    assert frozen.iloc[-1].target_weight == .1 and rebuilt.iloc[-1].target_weight == 0
+    def forbidden(*_, **__):
+        pytest.fail('Frozen prefix must not regenerate terminal targets')
+    monkeypatch.setattr(runner, 'make_targets', forbidden)
+    bars = pd.DataFrame(dict(date=prefix, symbol='000540.SZ', raw_open=10., raw_close=10.,
+        volume=1000000, suspended=0, trade_status=1, is_st=0))
+    result, metrics, _ = runner.execute(scores, bars, prefix, ['000540.SZ'], cfg,
+        'B_lightgbm', tmp_path / 'prefix', dataset_id='synthetic', target_plan=plan)
+    assert metrics['ledger']['status'] == 'PASSED'
+    assert result.positions.loc[result.positions.date.eq(prefix[-1]), 'shares'].sum() > 0
+    pd.testing.assert_frame_equal(pd.read_parquet(tmp_path / 'prefix/targets.parquet'), frozen)
+
+
 def test_prediction_byte_drift_rejected_before_read(tmp_path):
     path = tmp_path / 'predictions.parquet'
     path.write_bytes(b'not original')
