@@ -1,0 +1,392 @@
+{
+  "task": "DQ-C01",
+  "main_commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+  "bigquant_commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+  "bigquant_state": "MAIN_ACCEPTED",
+  "evidence": [
+    {
+      "path": "docs/validation/dq-01/logical-tables.csv",
+      "audit": "dq-01",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "4ca723a27cbb8e1e8506612331f5ca714a1ef90e",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "registered source-isolated logical tables; workbook sheet discovery boundary retained"
+    },
+    {
+      "path": "docs/validation/dq-01/verification.json",
+      "audit": "dq-01",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "c2cfea234c263071042ca6e0e72f8de651f4f898",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "asset/table/partition registration, not new content scans"
+    },
+    {
+      "path": "docs/validation/dq-02/table-quality.csv",
+      "audit": "dq-02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "41a81690a961a4ed3345e3f092f328c6977426dc",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "actual all-field native reads versus limited inherited market members"
+    },
+    {
+      "path": "docs/validation/dq-02/primary-key-quality.csv",
+      "audit": "dq-02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "90dba28889ab28e42c81d724c92f5e74db1461b3",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "within-source candidate keys, not supplier business contracts"
+    },
+    {
+      "path": "docs/validation/dq-02/verification.json",
+      "audit": "dq-02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "0567a528ae68c65dea5dd930941bdd2c8c3d425e",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "349 members, 149459419 actual rows"
+    },
+    {
+      "path": "docs/validation/dq-02b/table-quality.csv",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "2af3e12a5541fd78ef95b8b2f749a1cc21cf3d13",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "all 3201 Parquet partitions actual content reads"
+    },
+    {
+      "path": "docs/validation/dq-02b/key-quality.csv",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "2bf741323a63642d327a48fb7554f938e2b42f25",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "exact candidate grouping versus resource/recovery/contract gaps"
+    },
+    {
+      "path": "docs/validation/dq-02b/asset-coverage.csv",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "f36f2b89ed83b2c22c5efea65cbab7ab572f2efd",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "10 ZIP assets, 9 containing Parquet"
+    },
+    {
+      "path": "docs/validation/dq-02b/verification.json",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "23df66b92bf3833f68b8e4264317dd04338ca5f4",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "content and candidate-key conservation"
+    },
+    {
+      "path": "docs/validation/dq-02b/resource-budget.json",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "ce438d7c799471b0c6a3f8a72ddd7ea7def7234e",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "recorded limits and measured resource fields; not DQC01 budget"
+    },
+    {
+      "path": "docs/validation/dq-02b/field-quality.csv",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "aabe6011e7ada7c8340828f624c370ba92ca01b9",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "field-partition aggregate statistics; not financial-semantic certification"
+    },
+    {
+      "path": "docs/validation/dq-01/REPORT.md",
+      "audit": "dq-01",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "57c3cc1d5ce935d96db3ac542b510fe9cb202116",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/dq-02/REPORT.md",
+      "audit": "dq-02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "c4d1243783ff03fda6b52e7d5ca0c6c98cd73e92",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/dq-03/REPORT.md",
+      "audit": "dq-03",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "7802cba0ec7a18f0884a37e409060106d8d96156",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/dq-02b/REPORT.md",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "29e32aca054c18a57a0114fd0a4725d32e8aed0c",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/p9-d02-preflight/REPORT.md",
+      "audit": "p9-d02-preflight",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "f84109446255e57fb9cbf4f474a013bfaaf51d40",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/p9-c02/REPORT.md",
+      "audit": "p9-c02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "931b14f356e8e1b49fec87d41d8bfcd06b85a194",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/p10-g01/REPORT.md",
+      "audit": "p10-g01",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "ce3a48cd9638d012a2cf0bf1b1bdd699b9d1443f",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/p10-d02/REPORT.md",
+      "audit": "p10-d02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "181e97eb9ebae16dfff2861f4a2ff707ccdbe367",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "report interpretation and scope restrictions"
+    },
+    {
+      "path": "docs/validation/p9-d03/REPORT.md",
+      "audit": "p9-d03",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "a9c4d99fcf5c17b6b9412f3e016412fae20b2cd1",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "targeted valuation policy, not execution permission"
+    },
+    {
+      "path": "tools/data/dq02b_columnar.py",
+      "audit": "dq-02b",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "8266abeef6b4ad75b4f3a559ed187ed11cff9509",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "resource bound code/text only; not executed"
+    },
+    {
+      "path": "docs/validation/dq-03/join-coverage.csv",
+      "audit": "dq-03",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "95570cd108d00f73d11b7a689bf6a77a3dfbc3fa",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "CSI500 2021-09-13..2026-09-11, mutually exclusive price statuses"
+    },
+    {
+      "path": "docs/validation/dq-03/verification.json",
+      "audit": "dq-03",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "7823e2c3748419c6c738f7e21fa8bcea45df9f16",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "bounded identity, financial, industry, holdings and event checks"
+    },
+    {
+      "path": "docs/validation/dq-03/financial-temporal-checks.csv",
+      "audit": "dq-03",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "628853202ffc49f3da224b20f7fdb07bcdfbdfdd",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "FS_BComins report-type and historical version diagnostics"
+    },
+    {
+      "path": "docs/validation/dq-03/industry-history-checks.csv",
+      "audit": "dq-03",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "70ec6f9b5bef3845705bace77a168b7a5874a1de",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "2023-03 representative industry join"
+    },
+    {
+      "path": "docs/validation/dq-03/corporate-action-links.csv",
+      "audit": "dq-03",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "c568433f52f401c52f1e21e25a6b5dc6d82a5779",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "16 event identities and stage evidence"
+    },
+    {
+      "path": "docs/validation/p9-c02/results.json",
+      "audit": "p9-c02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "8117b2c4126618469fceb632e31385d73ca3a22a",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "two frozen first-fold accounts; nine unresolved events"
+    },
+    {
+      "path": "docs/validation/p9-d02-preflight/summary.json",
+      "audit": "p9-d02-preflight",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "b677bd2b225795a218ca343214b3f78647e2a8af",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "128 fixed securities, 92928 test security-days"
+    },
+    {
+      "path": "docs/validation/p10-g01/price-contract.json",
+      "audit": "p10-g01",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "0c848e61cf1a58f2abb3979efa638f51034af71d",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "version-bound field consumption requirements"
+    },
+    {
+      "path": "docs/validation/p10-g01/validation-cases.json",
+      "audit": "p10-g01",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "de8015ca23717eeefb3b17b3e4a47fcbb8da5c01",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "qualified control object versus rejected candidate/fill objects"
+    },
+    {
+      "path": "docs/validation/p10-d02/summary.json",
+      "audit": "p10-d02",
+      "commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+      "blob": "553bf6593853cb37e2632c9a03eca7ba2c684162",
+      "version_time": "2026-11-11T23:54:00+08:00",
+      "integration_state": "MAIN_ACCEPTED",
+      "verification_status": "COMMITTED_OBJECT_READ",
+      "evidence_scope": "price source discrepancies; not global equivalence"
+    }
+  ],
+  "enums": {
+    "content": [
+      "FULL_CONTENT_SCANNED",
+      "METADATA_ONLY",
+      "NOT_VERIFIED",
+      "PARTIAL_CONTENT_SCANNED"
+    ],
+    "key": [
+      "CANDIDATE_KEY_EXACT",
+      "KEY_CHECK_BLOCKED_RESOURCE",
+      "KEY_CONFLICT_OBSERVED",
+      "KEY_CONTRACT_UNKNOWN",
+      "KEY_EXACT_VERIFIED",
+      "NOT_ASSESSED"
+    ],
+    "admission": [
+      "BLOCKED",
+      "CONDITIONALLY_USABLE",
+      "NOT_ASSESSED",
+      "READY_SCOPED"
+    ],
+    "semantic": {
+      "NOT_ASSESSED": "No table-wide financial semantic contract",
+      "SCOPED_EVIDENCE_ONLY": "Only exact evidence_scope, not table-wide approval"
+    },
+    "confidence": {
+      "HIGH": "Direct committed counts or explicit scoped restriction, not probability of economic correctness"
+    },
+    "record_scope": {
+      "TABLE": "Unique coverage denominator",
+      "USE_CASE": "Reuses table evidence; never add rows or partitions"
+    },
+    "pit": {
+      "PIT_UNVERIFIED": "First-public/vendor historical availability not certified"
+    },
+    "hfq": {
+      "HFQ_UNVERIFIED": "Adjustment/event chain not certified"
+    }
+  },
+  "admission_definitions": {
+    "READY_SCOPED": "Only specified use, object, version, fields and preconditions",
+    "CONDITIONALLY_USABLE": "Finite retrospective exploration subject to conditions; not preapproved numeric model input",
+    "BLOCKED": "Known evidence gap directly blocks stated use",
+    "NOT_ASSESSED": "Insufficient evidence for stated use"
+  },
+  "key_definitions": {
+    "KEY_EXACT_VERIFIED": "Confirmed business uniqueness contract plus complete exact check",
+    "CANDIDATE_KEY_EXACT": "Exact candidate comparison only; duplicates may remain",
+    "KEY_CHECK_BLOCKED_RESOURCE": "Resource ceiling or checkpoint-only recovery prevents exact check",
+    "KEY_CONTRACT_UNKNOWN": "No explicit candidate/business key contract",
+    "KEY_CONFLICT_OBSERVED": "Candidate key maps to different full native content; not certified business error",
+    "NOT_ASSESSED": "Scope incomplete or no applicable full-scope check"
+  },
+  "null_contract": "Empty CSV cell / JSON null means unknown or not separately established; zero is an observed count only",
+  "resource_discrepancy": {
+    "recorded_limit_bytes": 67108864,
+    "reason_text_mib": 512,
+    "resolution": "UNRESOLVED_DOCUMENTATION_NO_LIMIT_INCREASE"
+  },
+  "gates": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "integration_transition": {
+    "initial_main": "1aee55cbed5f1bf6a285a6c6532937c446837a9c",
+    "initial_pr_head": "86c684ed4b4647e9a05a7e56cb7ca4a3b734310e",
+    "initial_state": "UNMERGED_EVIDENCE",
+    "merged_at": "2026-11-11T15:54:00Z",
+    "accepted_commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+    "consumed_bigquant_blobs_compared": 8,
+    "all_identical": true
+  }
+}
