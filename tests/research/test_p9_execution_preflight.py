@@ -3,6 +3,7 @@ from copy import deepcopy
 import importlib.util
 import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 
 import numpy as np
@@ -139,26 +140,27 @@ def test_future_anomalies_cannot_mutate_signal_inputs(market):
     assert 'run_target_weights' not in source and 'make_runner' not in source
 
 
-def test_public_export_removes_commercial_prices_and_rows(market, tmp_path):
+def test_public_export_removes_commercial_prices_and_rows(market):
     market[0].loc[2, 'raw_close'] = np.nan
     local, risk, gaps, enums, coverage, intervals = diagnostic(market)
     summary = p.public_summary(local, risk, gaps, enums, coverage, {}, [], intervals, market[3], ['002408.SZ'])
-    private = tmp_path / 'private'
-    private.mkdir()
-    p.dump(private / 'summary.json', summary)
-    p.dump(private / 'data-coverage.json', summary['securities'])
-    p.dump(private / 'valuation-intervals.json', intervals)
-    for name, frame in [('execution-risk', risk), ('valuation-gaps', gaps), ('status-enums', enums), ('sidecar-coverage', coverage)]:
-        if frame.empty and name == 'sidecar-coverage':
-            frame = pd.DataFrame(columns=['date', 'symbol', 'field'])
-        frame.to_csv(private / (name + '.csv'), index=False)
-    output = tmp_path / 'public'
-    p.publish(private, output)
-    published = pd.read_csv(output / 'execution-risk.csv')
-    assert published.raw_value.eq('REDACTED_COMMERCIAL_OBSERVATION').all()
-    assert not {'last_real_close', 'next_real_close'} & set(pd.read_csv(output / 'valuation-gaps.csv').columns)
-    assert 'private_artifact_sha256' in json.loads((output / 'summary.json').read_bytes())
-    assert all('raw_open' not in row for row in json.loads((output / 'data-coverage.json').read_bytes()))
+    with TemporaryDirectory() as directory:
+        private = Path(directory) / 'private'
+        private.mkdir()
+        p.dump(private / 'summary.json', summary)
+        p.dump(private / 'data-coverage.json', summary['securities'])
+        p.dump(private / 'valuation-intervals.json', intervals)
+        for name, frame in [('execution-risk', risk), ('valuation-gaps', gaps), ('status-enums', enums), ('sidecar-coverage', coverage)]:
+            if frame.empty and name == 'sidecar-coverage':
+                frame = pd.DataFrame(columns=['date', 'symbol', 'field'])
+            frame.to_csv(private / (name + '.csv'), index=False)
+        output = Path(directory) / 'public'
+        p.publish(private, output)
+        published = pd.read_csv(output / 'execution-risk.csv')
+        assert published.raw_value.eq('REDACTED_COMMERCIAL_OBSERVATION').all()
+        assert not {'last_real_close', 'next_real_close'} & set(pd.read_csv(output / 'valuation-gaps.csv').columns)
+        assert 'private_artifact_sha256' in json.loads((output / 'summary.json').read_bytes())
+        assert all('raw_open' not in row for row in json.loads((output / 'data-coverage.json').read_bytes()))
 
 
 def test_private_rows_cannot_be_written_inside_repository():
