@@ -1,0 +1,95 @@
+{
+  "schema": "P9_D04_EXECUTION_V1",
+  "status": "W02_PARTIAL",
+  "targeted_qualifications": [
+    {
+      "security": "002185.SZ",
+      "scope": "ISOLATED_REAL_DATA_CONTRACT_PATH_NOT_FROZEN_ACCOUNT",
+      "assumption_days": 10,
+      "suspension_fills": 0,
+      "rejected_exit": "suspended",
+      "ledger": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": true
+      },
+      "resumed_valuation": "OBSERVED_RAW_CLOSE"
+    },
+    {
+      "security": "600095.SH",
+      "scope": "ISOLATED_REAL_DATA_CONTRACT_PATH_NOT_FROZEN_ACCOUNT",
+      "assumption_days": 10,
+      "suspension_fills": 0,
+      "rejected_exit": "suspended",
+      "ledger": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": true
+      },
+      "resumed_valuation": "OBSERVED_RAW_CLOSE"
+    },
+    {
+      "security": "601615.SH",
+      "scope": "ISOLATED_REAL_DATA_CONTRACT_PATH_NOT_FROZEN_ACCOUNT",
+      "assumption_days": 8,
+      "suspension_fills": 0,
+      "rejected_exit": "suspended",
+      "ledger": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": true
+      },
+      "resumed_valuation": "OBSERVED_RAW_CLOSE"
+    }
+  ],
+  "frozen_replay": {
+    "start": "2023-03-13",
+    "end_exclusive": "2024-03-13",
+    "source_sessions": 243,
+    "full_fold": false,
+    "frozen_targets": true,
+    "retrained": false,
+    "factors_recomputed": false,
+    "prior_prefix_target_identity": true,
+    "prior_prefix_ledger_identity": "MATCHED",
+    "status": "BLOCKED",
+    "reason": "execution status is missing for 2023-05-15/000540.SZ",
+    "last_completed_session": "2023-05-12",
+    "ledger": {
+      "status": "PASSED",
+      "cash": true,
+      "shares": true,
+      "equity": true,
+      "fees": true,
+      "raw_close_marks": false,
+      "qualified_marks": true
+    },
+    "new_accepted_execution_sessions": 3
+  },
+  "newly_completed_dates": [
+    "2023-05-10",
+    "2023-05-11",
+    "2023-05-12"
+  ],
+  "prior_prefix": "IDENTITY_COMPARISON_ONLY_NOT_NEW_ACCEPTANCE",
+  "partial_failed_open_excluded": true,
+  "full_fold_performance_published": false,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

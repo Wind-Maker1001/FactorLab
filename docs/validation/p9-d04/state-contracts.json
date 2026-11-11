@@ -1,0 +1,266 @@
+{
+  "schema": "P9_D04_STATE_CONTRACTS_V1",
+  "status": "W02_PARTIAL",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "current_dictionary": {
+    "name": "dictionary",
+    "url": "https://bigquant.com/data/datasources/cn_stock_status",
+    "status": 200,
+    "sha256": "8d266c00c7c01492d76e4c1cd83554eab09f80418d3d2d169f0b6e9f140d3f42",
+    "bytes": 50732,
+    "acquired_on": "2026-11-12",
+    "exact_statement": "st_status: 0 为正常，1 为 ST，2 为 *ST",
+    "scope": "CURRENT_PUBLIC_PAGE_ONLY",
+    "historical_effective_version": "UNKNOWN",
+    "is_risk_warning": "Before 2014-04-21 matches st_status > 0; thereafter not interchangeable"
+  },
+  "exported_schema": {
+    "sha256": "4122efa267439d9697d5eff2c0ae1ff8ecf5b28292170d83550da580dec20ae2",
+    "metadata_source": "zero_row_query",
+    "st_status_type": "int8",
+    "enum_contract_present": false
+  },
+  "export_version": {
+    "exported_at_utc": "2026-11-07T12:21:52+00:00",
+    "source_table": "cn_stock_status",
+    "historical_dictionary_binding": "UNKNOWN"
+  },
+  "st_status_2": {
+    "meaning_in_current_page": "*ST",
+    "historical_contract": "UNKNOWN",
+    "global_mapping_changed": false,
+    "original_enum_preserved": true,
+    "new_security_date_exceptions": [],
+    "inherited_preflight_counts": {
+      "000540.SZ": 38,
+      "000046.SZ": 189,
+      "600466.SH": 23
+    },
+    "inherited_member_days": 26,
+    "inherited_count_source": "docs/validation/p9-d02-preflight/REPORT.md",
+    "existing_000540_single_day_grants": "UNCHANGED"
+  },
+  "windows": [
+    {
+      "security": "002185.SZ",
+      "exact_dates": [
+        "2025-09-25",
+        "2025-09-26",
+        "2025-09-29",
+        "2025-09-30",
+        "2025-10-09",
+        "2025-10-10",
+        "2025-10-13",
+        "2025-10-14",
+        "2025-10-15",
+        "2025-10-16"
+      ],
+      "independent_suspension": "DOCUMENT_CONFIRMED",
+      "resume_date": "2025-10-17",
+      "issuer_documents": [
+        {
+          "symbol": "002185",
+          "title": "华天科技:关于披露发行股份及支付现金购买资产并募集配套资金暨关联交易预案的一般风险提示暨公司股票复牌的公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202510161763333821_1.pdf",
+          "sha256": "b1bf35472da7193ecd2298a92062abe8d938c0d93d15e22fbef9e3b076f359ea",
+          "notice_date": "2025-10-17 00:00:00",
+          "display_time": "2025-10-16 20:17:06:541",
+          "eiTime": "2025-10-16 20:18:23:000",
+          "art_code": "AN202510161763333821"
+        },
+        {
+          "symbol": "002185",
+          "title": "华天科技:关于筹划发行股份及支付现金购买资产并募集配套资金暨关联交易事项的停牌进展公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202510091758970180_1.pdf",
+          "sha256": "43948cc3b54e9056ec86bf182ede6beea0d86b496605b3d23f46d16cae4e0e4c",
+          "notice_date": "2025-10-10 00:00:00",
+          "display_time": "2025-10-09 17:53:12:437",
+          "eiTime": "2025-10-09 17:54:18:000",
+          "art_code": "AN202510091758970180"
+        },
+        {
+          "symbol": "002185",
+          "title": "华天科技:关于筹划发行股份及支付现金购买资产并募集配套资金暨关联交易事项的停牌公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202509241749841477_1.pdf",
+          "sha256": "2d27d7fbdf710d5033337d07fbf73603af9f688b389855bde0eebd8b439cedc7",
+          "notice_date": "2025-09-25 00:00:00",
+          "display_time": "2025-09-24 20:17:16:432",
+          "eiTime": "2025-09-24 20:18:20:000",
+          "art_code": "AN202509241749841477"
+        }
+      ],
+      "vendor_raw_status_enums": {
+        "st_status": [
+          0
+        ],
+        "suspended": [
+          1
+        ],
+        "exdr": [
+          0
+        ],
+        "is_risk_warning": [
+          0
+        ]
+      },
+      "member_days": 10,
+      "prior_sidecar_covered_days": 0,
+      "frozen_account_exposure": "NOT_ASSESSED_FOLD_1_OR_2_NOT_REPLAYED",
+      "isolated_positive_holding_exposure": "VALIDATED_CONTRACT_PATH_ONLY",
+      "identity": "ISSUER_CODE_AND_NAME_MATCHED_AT_BOTH_BOUNDARIES",
+      "corporate_actions": "NO_CONFLICT_OBSERVED_EXDR_0_UNCHANGED_FACTOR_AND_REORGANIZATION_NOT_IMPLEMENTED",
+      "corporate_action_completeness": "UNVERIFIED",
+      "historical_supplier_delivery": "UNKNOWN"
+    },
+    {
+      "security": "600095.SH",
+      "exact_dates": [
+        "2025-03-17",
+        "2025-03-18",
+        "2025-03-19",
+        "2025-03-20",
+        "2025-03-21",
+        "2025-03-24",
+        "2025-03-25",
+        "2025-03-26",
+        "2025-03-27",
+        "2025-03-28"
+      ],
+      "independent_suspension": "DOCUMENT_CONFIRMED",
+      "resume_date": "2025-03-31",
+      "issuer_documents": [
+        {
+          "symbol": "600095",
+          "title": "湘财股份:湘财股份关于披露重大资产重组预案的一般风险提示暨公司股票复牌的公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202503281648738377_1.pdf",
+          "sha256": "da3900fc1f092af3e6b6e41c6c01d8fce91b44f2abe87205ed1c0392ab2bc3fc",
+          "notice_date": "2025-03-29 00:00:00",
+          "display_time": "",
+          "eiTime": "2025-03-28 19:33:20:000",
+          "art_code": "AN202503281648738377"
+        },
+        {
+          "symbol": "600095",
+          "title": "湘财股份:湘财股份关于筹划重大资产重组的停牌进展公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202503211645608333_1.pdf",
+          "sha256": "88056b292697aca1be7582269e9d461b45500072cefd54a9f685573a2309288e",
+          "notice_date": "2025-03-22 00:00:00",
+          "display_time": "",
+          "eiTime": "2025-03-21 18:58:34:000",
+          "art_code": "AN202503211645608333"
+        },
+        {
+          "symbol": "600095",
+          "title": "湘财股份:湘财股份关于筹划重大资产重组的停牌公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202503161644424709_1.pdf",
+          "sha256": "d1364d0df464ee98a4f1bf871bde0db4ee0e61cac5619bec3ea338a898b9e61d",
+          "notice_date": "2025-03-17 00:00:00",
+          "display_time": "",
+          "eiTime": "2025-03-16 20:27:00:000",
+          "art_code": "AN202503161644424709"
+        }
+      ],
+      "vendor_raw_status_enums": {
+        "st_status": [
+          0
+        ],
+        "suspended": [
+          1
+        ],
+        "exdr": [
+          0
+        ],
+        "is_risk_warning": [
+          0
+        ]
+      },
+      "member_days": 10,
+      "prior_sidecar_covered_days": 0,
+      "frozen_account_exposure": "NOT_ASSESSED_FOLD_1_OR_2_NOT_REPLAYED",
+      "isolated_positive_holding_exposure": "VALIDATED_CONTRACT_PATH_ONLY",
+      "identity": "ISSUER_CODE_AND_NAME_MATCHED_AT_BOTH_BOUNDARIES",
+      "corporate_actions": "NO_CONFLICT_OBSERVED_EXDR_0_UNCHANGED_FACTOR_AND_REORGANIZATION_NOT_IMPLEMENTED",
+      "corporate_action_completeness": "UNVERIFIED",
+      "historical_supplier_delivery": "UNKNOWN"
+    },
+    {
+      "security": "601615.SH",
+      "exact_dates": [
+        "2026-01-13",
+        "2026-01-14",
+        "2026-01-15",
+        "2026-01-16",
+        "2026-01-19",
+        "2026-01-20",
+        "2026-01-21",
+        "2026-01-22"
+      ],
+      "independent_suspension": "DOCUMENT_CONFIRMED",
+      "resume_date": "2026-01-23",
+      "issuer_documents": [
+        {
+          "symbol": "601615",
+          "title": "明阳智能:关于披露重组预案的一般风险提示暨公司股票复牌的公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202601221818287212_1.pdf",
+          "sha256": "1c5c36ee416da4d4757fa5954f8d6ad874acbc48c77c9ab63852ccd5174df162",
+          "notice_date": "2026-01-23 00:00:00",
+          "display_time": "2026-01-22 22:28:25:716",
+          "eiTime": "2026-01-22 22:29:23:000",
+          "art_code": "AN202601221818287212"
+        },
+        {
+          "symbol": "601615",
+          "title": "明阳智能:关于筹划发行股份及支付现金购买资产并募集配套资金暨关联交易事项的停牌进展公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202601191818114481_1.pdf",
+          "sha256": "7f156e65614133100b16294c5a27b4ca2a9c91dd4699d196c73adb945820b17d",
+          "notice_date": "2026-01-20 00:00:00",
+          "display_time": "2026-01-19 18:16:34:376",
+          "eiTime": "2026-01-19 18:17:24:000",
+          "art_code": "AN202601191818114481"
+        },
+        {
+          "symbol": "601615",
+          "title": "明阳智能:关于筹划发行股份及支付现金购买资产并募集配套资金暨关联交易事项的停牌公告",
+          "url": "https://pdf.dfcfw.com/pdf/H2_AN202601121816954404_1.pdf",
+          "sha256": "e2e0bf92378ea6fbdc53fdda5432d4e1fc0142c9213e8c1ed8705875774c7c26",
+          "notice_date": "2026-01-13 00:00:00",
+          "display_time": "2026-01-12 22:18:36:418",
+          "eiTime": "2026-01-12 22:19:37:000",
+          "art_code": "AN202601121816954404"
+        }
+      ],
+      "vendor_raw_status_enums": {
+        "st_status": [
+          0
+        ],
+        "suspended": [
+          1
+        ],
+        "exdr": [
+          0
+        ],
+        "is_risk_warning": [
+          0
+        ]
+      },
+      "member_days": 8,
+      "prior_sidecar_covered_days": 0,
+      "frozen_account_exposure": "NOT_ASSESSED_FOLD_1_OR_2_NOT_REPLAYED",
+      "isolated_positive_holding_exposure": "VALIDATED_CONTRACT_PATH_ONLY",
+      "identity": "ISSUER_CODE_AND_NAME_MATCHED_AT_BOTH_BOUNDARIES",
+      "corporate_actions": "NO_CONFLICT_OBSERVED_EXDR_0_UNCHANGED_FACTOR_AND_REORGANIZATION_NOT_IMPLEMENTED",
+      "corporate_action_completeness": "UNVERIFIED",
+      "historical_supplier_delivery": "UNKNOWN"
+    }
+  ],
+  "timing": {
+    "issuer_notice_date": "RECORDED_SEPARATELY_FROM_MIRROR_DISPLAY_AND_INGEST_TIME",
+    "policy_publication_bound": "MIRROR_PREVIOUS_DATE_END_OF_DAY_NOT_EXCHANGE_TIMESTAMP_OR_SUPPLIER_DELIVERY",
+    "usage": "EX_POST_RESEARCH_VALUATION_ONLY_NOT_SIGNAL_SELECTION"
+  }
+}
