@@ -1,0 +1,1889 @@
+[
+  {
+    "symbol": "000009.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "000027.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "000046.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 224,
+    "state_keys": 224,
+    "observed_real_closes": 195,
+    "missing_real_closes": 531,
+    "supplier_suspended": 29,
+    "unsupported_status_sessions": 189,
+    "issues": {
+      "MISSING_PRICE": 2182,
+      "MISSING_STATE": 1695,
+      "VALUATION_POLICY_REQUIRED": 531,
+      "UNSUPPORTED_STATUS_ENUM": 189,
+      "KNOWN_NONTRADABLE": 29
+    }
+  },
+  {
+    "symbol": "000528.SZ",
+    "test_sessions": 726,
+    "member_sessions": 180,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "000540.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 73,
+    "state_keys": 73,
+    "observed_real_closes": 44,
+    "missing_real_closes": 682,
+    "supplier_suspended": 29,
+    "unsupported_status_sessions": 38,
+    "issues": {
+      "MISSING_PRICE": 2786,
+      "MISSING_STATE": 1997,
+      "VALUATION_POLICY_REQUIRED": 682,
+      "UNSUPPORTED_STATUS_ENUM": 38,
+      "KNOWN_NONTRADABLE": 29,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "000547.SZ",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 2,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "000623.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10
+    }
+  },
+  {
+    "symbol": "000681.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "000718.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 9
+    }
+  },
+  {
+    "symbol": "000799.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "000826.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {}
+  },
+  {
+    "symbol": "000869.SZ",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "000898.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 2
+    }
+  },
+  {
+    "symbol": "000961.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 323,
+    "state_keys": 323,
+    "observed_real_closes": 278,
+    "missing_real_closes": 448,
+    "supplier_suspended": 45,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 1882,
+      "MISSING_STATE": 1261,
+      "VALUATION_POLICY_REQUIRED": 448,
+      "KNOWN_NONTRADABLE": 45,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "000988.SZ",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "000998.SZ",
+    "test_sessions": 726,
+    "member_sessions": 546,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "001914.SZ",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002004.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "002028.SZ",
+    "test_sessions": 726,
+    "member_sessions": 428,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002085.SZ",
+    "test_sessions": 726,
+    "member_sessions": 298,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "002185.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 716,
+    "missing_real_closes": 10,
+    "supplier_suspended": 10,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 60,
+      "KNOWN_NONTRADABLE": 10,
+      "VALUATION_POLICY_REQUIRED": 10,
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "002191.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002212.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002242.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002249.SZ",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 12,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002250.SZ",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002268.SZ",
+    "test_sessions": 726,
+    "member_sessions": 546,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002273.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10
+    }
+  },
+  {
+    "symbol": "002353.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10
+    }
+  },
+  {
+    "symbol": "002385.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "002396.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002408.SZ",
+    "test_sessions": 726,
+    "member_sessions": 546,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 722,
+    "missing_real_closes": 4,
+    "supplier_suspended": 4,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 24,
+      "CORPORATE_ACTION_CANDIDATE": 7,
+      "KNOWN_NONTRADABLE": 4,
+      "VALUATION_POLICY_REQUIRED": 4,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002434.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002468.SZ",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002505.SZ",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 359,
+    "state_keys": 359,
+    "observed_real_closes": 317,
+    "missing_real_closes": 409,
+    "supplier_suspended": 42,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 1720,
+      "MISSING_STATE": 1101,
+      "VALUATION_POLICY_REQUIRED": 409,
+      "KNOWN_NONTRADABLE": 42,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002506.SZ",
+    "test_sessions": 726,
+    "member_sessions": 428,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002563.SZ",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002603.SZ",
+    "test_sessions": 726,
+    "member_sessions": 359,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002670.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {}
+  },
+  {
+    "symbol": "002705.SZ",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002745.SZ",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002831.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 12
+    }
+  },
+  {
+    "symbol": "002925.SZ",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002948.SZ",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "002985.SZ",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "003035.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 7
+    }
+  },
+  {
+    "symbol": "300024.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 1
+    }
+  },
+  {
+    "symbol": "300026.SZ",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "300037.SZ",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "300113.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "300115.SZ",
+    "test_sessions": 726,
+    "member_sessions": 363,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 3,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "300133.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 9
+    }
+  },
+  {
+    "symbol": "300223.SZ",
+    "test_sessions": 726,
+    "member_sessions": 298,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "300315.SZ",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 1
+    }
+  },
+  {
+    "symbol": "300418.SZ",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 7,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "300482.SZ",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600006.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 3,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600022.SH",
+    "test_sessions": 726,
+    "member_sessions": 428,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 2,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600027.SH",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 716,
+    "missing_real_closes": 10,
+    "supplier_suspended": 10,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 60,
+      "CORPORATE_ACTION_CANDIDATE": 15,
+      "KNOWN_NONTRADABLE": 10,
+      "VALUATION_POLICY_REQUIRED": 10,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600060.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "600064.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600068.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 0,
+    "state_keys": 0,
+    "observed_real_closes": 0,
+    "missing_real_closes": 726,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 3630,
+      "MISSING_STATE": 2178,
+      "VALUATION_POLICY_REQUIRED": 726
+    }
+  },
+  {
+    "symbol": "600095.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 716,
+    "missing_real_closes": 10,
+    "supplier_suspended": 10,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 60,
+      "KNOWN_NONTRADABLE": 10,
+      "VALUATION_POLICY_REQUIRED": 10,
+      "CORPORATE_ACTION_CANDIDATE": 4
+    }
+  },
+  {
+    "symbol": "600131.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 7
+    }
+  },
+  {
+    "symbol": "600167.SH",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600258.SH",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600307.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600329.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "600350.SH",
+    "test_sessions": 726,
+    "member_sessions": 546,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600376.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 2,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600398.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "600415.SH",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600446.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 711,
+    "missing_real_closes": 15,
+    "supplier_suspended": 15,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 90,
+      "KNOWN_NONTRADABLE": 15,
+      "VALUATION_POLICY_REQUIRED": 15,
+      "CORPORATE_ACTION_CANDIDATE": 4
+    }
+  },
+  {
+    "symbol": "600460.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4
+    }
+  },
+  {
+    "symbol": "600466.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 57,
+    "state_keys": 57,
+    "observed_real_closes": 37,
+    "missing_real_closes": 689,
+    "supplier_suspended": 20,
+    "unsupported_status_sessions": 23,
+    "issues": {
+      "MISSING_PRICE": 2796,
+      "MISSING_STATE": 2030,
+      "VALUATION_POLICY_REQUIRED": 689,
+      "UNSUPPORTED_STATUS_ENUM": 23,
+      "KNOWN_NONTRADABLE": 20
+    }
+  },
+  {
+    "symbol": "600517.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10
+    }
+  },
+  {
+    "symbol": "600529.SH",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 9,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600536.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 3
+    }
+  },
+  {
+    "symbol": "600549.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "600556.SH",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600567.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 2,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600572.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "600580.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "600643.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4
+    }
+  },
+  {
+    "symbol": "600648.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600739.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "600754.SH",
+    "test_sessions": 726,
+    "member_sessions": 421,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "600765.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "600787.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600808.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 1
+    }
+  },
+  {
+    "symbol": "600895.SH",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 9,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600908.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "600956.SH",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "600970.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "600985.SH",
+    "test_sessions": 726,
+    "member_sessions": 608,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "601016.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8
+    }
+  },
+  {
+    "symbol": "601106.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {}
+  },
+  {
+    "symbol": "601118.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4
+    }
+  },
+  {
+    "symbol": "601187.SH",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "601233.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4
+    }
+  },
+  {
+    "symbol": "601512.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "601568.SH",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 8,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "601615.SH",
+    "test_sessions": 726,
+    "member_sessions": 421,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 718,
+    "missing_real_closes": 8,
+    "supplier_suspended": 8,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 48,
+      "KNOWN_NONTRADABLE": 8,
+      "VALUATION_POLICY_REQUIRED": 8,
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "601717.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "601718.SH",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 3,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "601778.SH",
+    "test_sessions": 726,
+    "member_sessions": 305,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "601801.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10
+    }
+  },
+  {
+    "symbol": "601828.SH",
+    "test_sessions": 726,
+    "member_sessions": 428,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 1,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "601869.SH",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "601880.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "601958.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "601975.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {}
+  },
+  {
+    "symbol": "603056.SH",
+    "test_sessions": 726,
+    "member_sessions": 546,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 692,
+    "missing_real_closes": 34,
+    "supplier_suspended": 34,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 198,
+      "KNOWN_NONTRADABLE": 34,
+      "VALUATION_POLICY_REQUIRED": 34,
+      "CORPORATE_ACTION_CANDIDATE": 7,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "603198.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "603260.SH",
+    "test_sessions": 726,
+    "member_sessions": 0,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "603290.SH",
+    "test_sessions": 726,
+    "member_sessions": 421,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 7
+    }
+  },
+  {
+    "symbol": "603568.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "603638.SH",
+    "test_sessions": 726,
+    "member_sessions": 183,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "603707.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "603719.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 721,
+    "missing_real_closes": 5,
+    "supplier_suspended": 5,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "MISSING_PRICE": 30,
+      "CORPORATE_ACTION_CANDIDATE": 8,
+      "KNOWN_NONTRADABLE": 5,
+      "VALUATION_POLICY_REQUIRED": 5,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "603786.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "603858.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 5
+    }
+  },
+  {
+    "symbol": "603883.SH",
+    "test_sessions": 726,
+    "member_sessions": 546,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "603885.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 6
+    }
+  },
+  {
+    "symbol": "603893.SH",
+    "test_sessions": 726,
+    "member_sessions": 670,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 10,
+      "PIT_UNVERIFIED": 1
+    }
+  },
+  {
+    "symbol": "605358.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 4
+    }
+  },
+  {
+    "symbol": "688002.SH",
+    "test_sessions": 726,
+    "member_sessions": 726,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 11
+    }
+  },
+  {
+    "symbol": "688088.SH",
+    "test_sessions": 726,
+    "member_sessions": 61,
+    "price_keys": 726,
+    "state_keys": 726,
+    "observed_real_closes": 726,
+    "missing_real_closes": 0,
+    "supplier_suspended": 0,
+    "unsupported_status_sessions": 0,
+    "issues": {
+      "CORPORATE_ACTION_CANDIDATE": 12,
+      "PIT_UNVERIFIED": 1
+    }
+  }
+]

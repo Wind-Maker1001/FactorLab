@@ -1,0 +1,36 @@
+{
+  "schema": "P9_D02_READ_ONLY_PREFLIGHT_V1",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "selection_filter_permitted": false,
+  "inputs": {
+    "manifest": {
+      "path": "docs/validation/p8-02/input-manifest.json",
+      "lf_sha256": "e0ff5302cd71db97f5ca1a35b963aa7ce114bc416619853c7176fc10e30af5b3"
+    },
+    "freeze": {
+      "path": "docs/validation/p8-02/frozen-study.json",
+      "lf_sha256": "b473d50de8af6fa32c2c4e7d8223f830ea3324bc3b29eed52a00098345d763ba"
+    },
+    "study": {
+      "path": "configs/research/p8-02-real-models.json",
+      "lf_sha256": "784571dfbe669205dd83bcdb626f12eff71b18e5d78e5cafff9e2b3018fc7dd0"
+    },
+    "sidecar": {
+      "path": "configs/research/p9-d01/candidate.json",
+      "lf_sha256": "3ea0e91026371d01428e09b6b6ff939f1e0744902533d0962fc0de0bba7c4b89"
+    },
+    "sources": {
+      "path": "docs/validation/p9-d01/public-sources.json",
+      "lf_sha256": "235e6cbd18eaa6c4965eff9f2cb311306c1d8ee59070733bf5deac6dfe255feb"
+    },
+    "p9_result": {
+      "path": "docs/validation/p9-01/result.json",
+      "lf_sha256": "f898af36ba27e9926073c76cd65d25c52454bd9d1e6d3bb3fdfab5b81b42b74b"
+    }
+  }
+}
