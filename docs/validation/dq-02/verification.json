@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "physical_members": 349,
+  "checked_rows": 149459419,
+  "coverage_contract": "FULL_CONTENT_SCANNED means all physical data rows/columns visited; does not certify every economic rule",
+  "tests": {
+    "command": [
+      "-I",
+      "-m",
+      "pytest",
+      "tests/evidence/test_dq02_native.py",
+      "tests/evidence/test_dq02_parquet.py",
+      "tests/evidence/test_dq02_finalize.py",
+      "-q"
+    ],
+    "returncode": 0,
+    "stdout": "........                                                                 [100%]\n8 passed in 1.22s\n",
+    "stderr": ""
+  },
+  "scope": {
+    "active_sources": [
+      "CSMAR",
+      "CNRDS"
+    ],
+    "BigQuant": "DEFERRED_GENERATED_INTERMEDIATES_DELETED"
+  },
+  "limits": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
