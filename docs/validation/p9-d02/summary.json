@@ -1,0 +1,3572 @@
+{
+  "schema": "P9_D02_EXECUTION_PREFLIGHT_V1",
+  "status": "P9_D02_PREFLIGHT_COMPLETED",
+  "execution_input_classes": {
+    "EXECUTION_INPUT_READY": 89172,
+    "KNOWN_NONTRADABLE": 261
+  },
+  "execution_input_ready_meaning": "PRICE_AND_CURRENT_ADAPTER_FIELDS_ONLY; NOT_PIT_OR_ORDER_PERMISSION",
+  "missing_real_closes_in_members": 49,
+  "missing_bar_in_members": 0,
+  "unsupported_status_in_members": 26,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "formal_admission": false,
+  "live_money": false,
+  "execution_ready_certification": false,
+  "knowledge_class": "EX_POST_DATA_DIAGNOSTIC",
+  "consumption": [
+    "BLOCKING_WARNING",
+    "VALUATION_EVIDENCE_INDEX"
+  ],
+  "selection_filter_permitted": false,
+  "signal_time_information": "ONLY_SEPARATELY_VERIFIED_HISTORICAL_CONTRACTS",
+  "test": {
+    "first": "2023-03-13",
+    "last": "2026-03-12",
+    "sessions": 726,
+    "securities": 128,
+    "grid_rows": 92928,
+    "folds": {
+      "0": 243,
+      "1": 241,
+      "2": 242
+    }
+  },
+  "issues": {
+    "MISSING_PRICE": 15566,
+    "MISSING_STATE": 10262,
+    "VALUATION_POLICY_REQUIRED": 3581,
+    "CORPORATE_ACTION_CANDIDATE": 716,
+    "KNOWN_NONTRADABLE": 261,
+    "UNSUPPORTED_STATUS_ENUM": 250,
+    "PIT_UNVERIFIED": 61
+  },
+  "observation_classes": {
+    "PRICE_LIMIT_INPUT_UNAVAILABLE": 9960,
+    "SOURCE_STATE_MISSING": 6640,
+    "NO_VERIFIED_REAL_CLOSE": 3581,
+    "MISSING_BAR": 3320,
+    "SOURCE_OPTIONAL_STATE_MISSING": 3320,
+    "NONFINITE_VALUE": 1040,
+    "NO_PREVIOUS_REAL_CLOSE_WITHIN_BOUNDED_SCAN": 726,
+    "PRE_CLOSE_DIFFERS_FROM_LAST_REAL_CLOSE": 366,
+    "SUPPLIER_EXDR_CANDIDATE_SEMANTICS_UNVERIFIED": 331,
+    "SOURCE_PRESENT_ADAPTER_NOT_CONSUMED": 302,
+    "SUPPLIER_SUSPENSION_NOT_EXECUTION_PRICE": 261,
+    "MISSING_OPEN": 260,
+    "MISSING_CLOSE": 260,
+    "SOURCE_PRESENT_ADAPTER_DISCARDS_SEMANTICS_UNVERIFIED": 250,
+    "HISTORICAL_MEMBER_EXIT_NOT_DELISTING_PROOF": 61,
+    "ABS_RAW_CLOSE_JUMP_GT_20_PERCENT": 19
+  },
+  "observed_valid_sessions": 89347,
+  "missing_real_close_sessions": 3581,
+  "valuation_gap_runs": 20,
+  "sidecar_candidates": 11,
+  "holdings": {
+    "status": "SAVED_LEDGER_PARTIAL_ACCOUNT_COVERAGE",
+    "accounts": [
+      {
+        "account": "B_factor_score-fold-0",
+        "sha256": "2d0dda9fafe872a191d6175d5be2c787aa4e72fa86b0e82ef5315585f04860c8",
+        "nav_sha256": "769470c8e4bc77013d98098bdddc394c0b6825d71d437e394e0a19d14bf128c1",
+        "first_date": "2023-03-14",
+        "last_date": "2024-03-12",
+        "affected_held_security_days": 4
+      },
+      {
+        "account": "B_ridge-fold-0",
+        "sha256": "05f998adcf5fc510610f329d27afe3460eba93d2cb2a9f313332392479e397c1",
+        "nav_sha256": "4189f99a51f9caf12cb571607eda35f379a554b8d3874da510bf721aaadbdbd1",
+        "first_date": "2023-03-14",
+        "last_date": "2024-03-12",
+        "affected_held_security_days": 4
+      }
+    ],
+    "affected_held_security_days": [
+      {
+        "account": "B_factor_score-fold-0",
+        "date": "2023-04-26",
+        "symbol": "002408.SZ"
+      },
+      {
+        "account": "B_factor_score-fold-0",
+        "date": "2023-04-27",
+        "symbol": "002408.SZ"
+      },
+      {
+        "account": "B_factor_score-fold-0",
+        "date": "2023-04-28",
+        "symbol": "002408.SZ"
+      },
+      {
+        "account": "B_factor_score-fold-0",
+        "date": "2023-05-04",
+        "symbol": "002408.SZ"
+      },
+      {
+        "account": "B_ridge-fold-0",
+        "date": "2023-04-26",
+        "symbol": "002408.SZ"
+      },
+      {
+        "account": "B_ridge-fold-0",
+        "date": "2023-04-27",
+        "symbol": "002408.SZ"
+      },
+      {
+        "account": "B_ridge-fold-0",
+        "date": "2023-04-28",
+        "symbol": "002408.SZ"
+      },
+      {
+        "account": "B_ridge-fold-0",
+        "date": "2023-05-04",
+        "symbol": "002408.SZ"
+      }
+    ],
+    "interrupted_account": {
+      "account": "B_lightgbm-fold-0",
+      "reason": "execution status is missing for 2023-05-08/000540.SZ",
+      "exposure": "NO_RETURNED_LEDGER; DO_NOT_INFER_HOLDINGS"
+    },
+    "other_accounts": "HOLDING_EXPOSURE_NOT_ASSESSED"
+  },
+  "securities": [
+    {
+      "symbol": "000009.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "000027.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "000046.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 224,
+      "state_keys": 224,
+      "observed_real_closes": 195,
+      "missing_real_closes": 531,
+      "supplier_suspended": 29,
+      "unsupported_status_sessions": 189,
+      "issues": {
+        "MISSING_PRICE": 2182,
+        "MISSING_STATE": 1695,
+        "VALUATION_POLICY_REQUIRED": 531,
+        "UNSUPPORTED_STATUS_ENUM": 189,
+        "KNOWN_NONTRADABLE": 29
+      }
+    },
+    {
+      "symbol": "000528.SZ",
+      "test_sessions": 726,
+      "member_sessions": 180,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "000540.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 73,
+      "state_keys": 73,
+      "observed_real_closes": 44,
+      "missing_real_closes": 682,
+      "supplier_suspended": 29,
+      "unsupported_status_sessions": 38,
+      "issues": {
+        "MISSING_PRICE": 2786,
+        "MISSING_STATE": 1997,
+        "VALUATION_POLICY_REQUIRED": 682,
+        "UNSUPPORTED_STATUS_ENUM": 38,
+        "KNOWN_NONTRADABLE": 29,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "000547.SZ",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 2,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "000623.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10
+      }
+    },
+    {
+      "symbol": "000681.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "000718.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 9
+      }
+    },
+    {
+      "symbol": "000799.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "000826.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {}
+    },
+    {
+      "symbol": "000869.SZ",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "000898.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 2
+      }
+    },
+    {
+      "symbol": "000961.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 323,
+      "state_keys": 323,
+      "observed_real_closes": 278,
+      "missing_real_closes": 448,
+      "supplier_suspended": 45,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 1882,
+        "MISSING_STATE": 1261,
+        "VALUATION_POLICY_REQUIRED": 448,
+        "KNOWN_NONTRADABLE": 45,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "000988.SZ",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "000998.SZ",
+      "test_sessions": 726,
+      "member_sessions": 546,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "001914.SZ",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002004.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "002028.SZ",
+      "test_sessions": 726,
+      "member_sessions": 428,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002085.SZ",
+      "test_sessions": 726,
+      "member_sessions": 298,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "002185.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 716,
+      "missing_real_closes": 10,
+      "supplier_suspended": 10,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 60,
+        "KNOWN_NONTRADABLE": 10,
+        "VALUATION_POLICY_REQUIRED": 10,
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "002191.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002212.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002242.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002249.SZ",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 12,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002250.SZ",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002268.SZ",
+      "test_sessions": 726,
+      "member_sessions": 546,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002273.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10
+      }
+    },
+    {
+      "symbol": "002353.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10
+      }
+    },
+    {
+      "symbol": "002385.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "002396.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002408.SZ",
+      "test_sessions": 726,
+      "member_sessions": 546,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 722,
+      "missing_real_closes": 4,
+      "supplier_suspended": 4,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 24,
+        "CORPORATE_ACTION_CANDIDATE": 7,
+        "KNOWN_NONTRADABLE": 4,
+        "VALUATION_POLICY_REQUIRED": 4,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002434.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002468.SZ",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002505.SZ",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 359,
+      "state_keys": 359,
+      "observed_real_closes": 317,
+      "missing_real_closes": 409,
+      "supplier_suspended": 42,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 1720,
+        "MISSING_STATE": 1101,
+        "VALUATION_POLICY_REQUIRED": 409,
+        "KNOWN_NONTRADABLE": 42,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002506.SZ",
+      "test_sessions": 726,
+      "member_sessions": 428,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002563.SZ",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002603.SZ",
+      "test_sessions": 726,
+      "member_sessions": 359,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002670.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {}
+    },
+    {
+      "symbol": "002705.SZ",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002745.SZ",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002831.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 12
+      }
+    },
+    {
+      "symbol": "002925.SZ",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002948.SZ",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "002985.SZ",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "003035.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 7
+      }
+    },
+    {
+      "symbol": "300024.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 1
+      }
+    },
+    {
+      "symbol": "300026.SZ",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "300037.SZ",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "300113.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "300115.SZ",
+      "test_sessions": 726,
+      "member_sessions": 363,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 3,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "300133.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 9
+      }
+    },
+    {
+      "symbol": "300223.SZ",
+      "test_sessions": 726,
+      "member_sessions": 298,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "300315.SZ",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 1
+      }
+    },
+    {
+      "symbol": "300418.SZ",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 7,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "300482.SZ",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600006.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 3,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600022.SH",
+      "test_sessions": 726,
+      "member_sessions": 428,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 2,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600027.SH",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 716,
+      "missing_real_closes": 10,
+      "supplier_suspended": 10,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 60,
+        "CORPORATE_ACTION_CANDIDATE": 15,
+        "KNOWN_NONTRADABLE": 10,
+        "VALUATION_POLICY_REQUIRED": 10,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600060.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "600064.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600068.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 0,
+      "state_keys": 0,
+      "observed_real_closes": 0,
+      "missing_real_closes": 726,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 3630,
+        "MISSING_STATE": 2178,
+        "VALUATION_POLICY_REQUIRED": 726
+      }
+    },
+    {
+      "symbol": "600095.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 716,
+      "missing_real_closes": 10,
+      "supplier_suspended": 10,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 60,
+        "KNOWN_NONTRADABLE": 10,
+        "VALUATION_POLICY_REQUIRED": 10,
+        "CORPORATE_ACTION_CANDIDATE": 4
+      }
+    },
+    {
+      "symbol": "600131.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 7
+      }
+    },
+    {
+      "symbol": "600167.SH",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600258.SH",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600307.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600329.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "600350.SH",
+      "test_sessions": 726,
+      "member_sessions": 546,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600376.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 2,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600398.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "600415.SH",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600446.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 711,
+      "missing_real_closes": 15,
+      "supplier_suspended": 15,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 90,
+        "KNOWN_NONTRADABLE": 15,
+        "VALUATION_POLICY_REQUIRED": 15,
+        "CORPORATE_ACTION_CANDIDATE": 4
+      }
+    },
+    {
+      "symbol": "600460.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4
+      }
+    },
+    {
+      "symbol": "600466.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 57,
+      "state_keys": 57,
+      "observed_real_closes": 37,
+      "missing_real_closes": 689,
+      "supplier_suspended": 20,
+      "unsupported_status_sessions": 23,
+      "issues": {
+        "MISSING_PRICE": 2796,
+        "MISSING_STATE": 2030,
+        "VALUATION_POLICY_REQUIRED": 689,
+        "UNSUPPORTED_STATUS_ENUM": 23,
+        "KNOWN_NONTRADABLE": 20
+      }
+    },
+    {
+      "symbol": "600517.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10
+      }
+    },
+    {
+      "symbol": "600529.SH",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 9,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600536.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 3
+      }
+    },
+    {
+      "symbol": "600549.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "600556.SH",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600567.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 2,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600572.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "600580.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "600643.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4
+      }
+    },
+    {
+      "symbol": "600648.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600739.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "600754.SH",
+      "test_sessions": 726,
+      "member_sessions": 421,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "600765.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "600787.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600808.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 1
+      }
+    },
+    {
+      "symbol": "600895.SH",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 9,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600908.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "600956.SH",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "600970.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "600985.SH",
+      "test_sessions": 726,
+      "member_sessions": 608,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "601016.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8
+      }
+    },
+    {
+      "symbol": "601106.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {}
+    },
+    {
+      "symbol": "601118.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4
+      }
+    },
+    {
+      "symbol": "601187.SH",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "601233.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4
+      }
+    },
+    {
+      "symbol": "601512.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "601568.SH",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 8,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "601615.SH",
+      "test_sessions": 726,
+      "member_sessions": 421,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 718,
+      "missing_real_closes": 8,
+      "supplier_suspended": 8,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 48,
+        "KNOWN_NONTRADABLE": 8,
+        "VALUATION_POLICY_REQUIRED": 8,
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "601717.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "601718.SH",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 3,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "601778.SH",
+      "test_sessions": 726,
+      "member_sessions": 305,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "601801.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10
+      }
+    },
+    {
+      "symbol": "601828.SH",
+      "test_sessions": 726,
+      "member_sessions": 428,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 1,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "601869.SH",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "601880.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "601958.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "601975.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {}
+    },
+    {
+      "symbol": "603056.SH",
+      "test_sessions": 726,
+      "member_sessions": 546,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 692,
+      "missing_real_closes": 34,
+      "supplier_suspended": 34,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 198,
+        "KNOWN_NONTRADABLE": 34,
+        "VALUATION_POLICY_REQUIRED": 34,
+        "CORPORATE_ACTION_CANDIDATE": 7,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "603198.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "603260.SH",
+      "test_sessions": 726,
+      "member_sessions": 0,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "603290.SH",
+      "test_sessions": 726,
+      "member_sessions": 421,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 7
+      }
+    },
+    {
+      "symbol": "603568.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "603638.SH",
+      "test_sessions": 726,
+      "member_sessions": 183,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "603707.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "603719.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 721,
+      "missing_real_closes": 5,
+      "supplier_suspended": 5,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "MISSING_PRICE": 30,
+        "CORPORATE_ACTION_CANDIDATE": 8,
+        "KNOWN_NONTRADABLE": 5,
+        "VALUATION_POLICY_REQUIRED": 5,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "603786.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "603858.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 5
+      }
+    },
+    {
+      "symbol": "603883.SH",
+      "test_sessions": 726,
+      "member_sessions": 546,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "603885.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 6
+      }
+    },
+    {
+      "symbol": "603893.SH",
+      "test_sessions": 726,
+      "member_sessions": 670,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 10,
+        "PIT_UNVERIFIED": 1
+      }
+    },
+    {
+      "symbol": "605358.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 4
+      }
+    },
+    {
+      "symbol": "688002.SH",
+      "test_sessions": 726,
+      "member_sessions": 726,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 11
+      }
+    },
+    {
+      "symbol": "688088.SH",
+      "test_sessions": 726,
+      "member_sessions": 61,
+      "price_keys": 726,
+      "state_keys": 726,
+      "observed_real_closes": 726,
+      "missing_real_closes": 0,
+      "supplier_suspended": 0,
+      "unsupported_status_sessions": 0,
+      "issues": {
+        "CORPORATE_ACTION_CANDIDATE": 12,
+        "PIT_UNVERIFIED": 1
+      }
+    }
+  ],
+  "source_shards": [
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2021-01-01_2021-12-31.parquet",
+      "sha256": "1ebbb0074c784f88c624d7f5efb4d28790f3e67d5d928ac3e5bd482281f9253d",
+      "selected_rows": 164,
+      "columns": [
+        "date",
+        "market_code"
+      ],
+      "uncompressed_bytes": 4298
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2022-01-01_2022-12-31.parquet",
+      "sha256": "743bd2c1abf7848d9358404afcb28d14e51b293876648f86ebc748074c8e3024",
+      "selected_rows": 242,
+      "columns": [
+        "date",
+        "market_code"
+      ],
+      "uncompressed_bytes": 4300
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2023-01-01_2023-12-31.parquet",
+      "sha256": "cbf43d5b461dc379a8edfe7c412ead84198d37831bc94403f6779af1337fa08b",
+      "selected_rows": 242,
+      "columns": [
+        "date",
+        "market_code"
+      ],
+      "uncompressed_bytes": 4165
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2024-01-01_2024-12-31.parquet",
+      "sha256": "f85c955e9a24ca797b93024ac4b017a5a685359252588fee2e7df48ce469a1c5",
+      "selected_rows": 242,
+      "columns": [
+        "date",
+        "market_code"
+      ],
+      "uncompressed_bytes": 4023
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2025-01-01_2025-12-31.parquet",
+      "sha256": "3ea98ec2a4659034616d083f136defe3bc99185feef56042c1e8d3509ccfd24c",
+      "selected_rows": 243,
+      "columns": [
+        "date",
+        "market_code"
+      ],
+      "uncompressed_bytes": 4178
+    },
+    {
+      "archive": "common.zip",
+      "member": "common/trading_days/2026-01-01_2026-11-06.parquet",
+      "sha256": "8dd7a3a3717c4f1a6bd71cfc5424ca2d174cf53ef50524b649f5d20be1af659a",
+      "selected_rows": 181,
+      "columns": [
+        "date",
+        "market_code"
+      ],
+      "uncompressed_bytes": 2887
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2022-12-01_2022-12-31.parquet",
+      "sha256": "6f34b382f16a6ca79670b70689a8e62d3491ccab4571e8d0cd305ebe73e7a75c",
+      "selected_rows": 2286,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6384069
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-01-01_2023-01-31.parquet",
+      "sha256": "d1de428bd84d2c08bb374b688f1c53deea87ddf786546f0cd86c5156c73838c0",
+      "selected_rows": 2032,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 4723842
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-02-01_2023-02-28.parquet",
+      "sha256": "760999d5df9cf956f21e312259801c8e66fd0294a1af4d53349a5ad887b73878",
+      "selected_rows": 2540,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5890492
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-03-01_2023-03-31.parquet",
+      "sha256": "fa1bdffb7158a0a26db56f2f9b827f5775367bafaa94e3d37e2f73e1301928a0",
+      "selected_rows": 2921,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6809712
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b",
+      "selected_rows": 2413,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5612330
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf",
+      "selected_rows": 2540,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6015449
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-06-01_2023-06-30.parquet",
+      "sha256": "2ba93cac8af6a70ab80607cfd87427d47a7a57c24db746b72818b78db9d788f8",
+      "selected_rows": 2522,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6055363
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-07-01_2023-07-31.parquet",
+      "sha256": "d43b10e29c11ae8aa1368bc88dcce7c9f713e4ebd602c0d885ed374cec6f02f4",
+      "selected_rows": 2625,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6410384
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-08-01_2023-08-31.parquet",
+      "sha256": "c0faf9317efd7a3ab51efa02dd3c483085c301478ee05758d038c83ff59fceee",
+      "selected_rows": 2875,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6924086
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-09-01_2023-09-30.parquet",
+      "sha256": "7d9200f3e9868fc1ab789892e7c9879468e46f45bda426ba6e89fdc6b0358cd8",
+      "selected_rows": 2500,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6079141
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-10-01_2023-10-31.parquet",
+      "sha256": "980593d395b381ada1635a330f60d7f08e4edb954f0de70f24474331b7215cdc",
+      "selected_rows": 2125,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5127344
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-11-01_2023-11-30.parquet",
+      "sha256": "f0e5335470475181c45c51d683c795143c7a6b5a3f515f544fb58a90e35f26a6",
+      "selected_rows": 2750,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6715385
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2023-12-01_2023-12-31.parquet",
+      "sha256": "6f6eb3fa6ebacb317803a5260afea1760acdbb8fcc53afdcdfcd53bfbe2667d1",
+      "selected_rows": 2625,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6423617
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-01-01_2024-01-31.parquet",
+      "sha256": "72885e003f873280e26bde86fabac7ccd74ff9c4af406ce3db772b56e85cbd40",
+      "selected_rows": 2750,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6670892
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-02-01_2024-02-29.parquet",
+      "sha256": "fd97388d9bc63c738968e7ea7cd67c550fcc2b26e43bac980fb7bd26925a1cc4",
+      "selected_rows": 1864,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 4622120
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-03-01_2024-03-31.parquet",
+      "sha256": "57a725a3067fdd64db754622750890eca267d578ec1a97eaa0a5bc1acb2454ad",
+      "selected_rows": 2604,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6396986
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-04-01_2024-04-30.parquet",
+      "sha256": "9986f61cc50bc82fe75f9e83e9a63a9b7c91834cc8f12b92b41506b3fcfda57e",
+      "selected_rows": 2480,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6335661
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-05-01_2024-05-31.parquet",
+      "sha256": "e38f1549af0aa05573ef823335904294c2c9796ff4e0884c6aa84dffec388e94",
+      "selected_rows": 2480,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6375768
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-06-01_2024-06-30.parquet",
+      "sha256": "3faa64a2b2a24115cdc0935af421d8f418bb8a00b2b8d8ef58bee964979536a5",
+      "selected_rows": 2356,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5987085
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-07-01_2024-07-31.parquet",
+      "sha256": "b5ed375f7c9a6991b0745aa532e984631f93a952b51b22d30afdbbf85598e2cd",
+      "selected_rows": 2837,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 7158984
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-08-01_2024-08-31.parquet",
+      "sha256": "3aed0d130389ab46e22e90494a5b365314af401b0d74f62f1c38b00648d958ba",
+      "selected_rows": 2705,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6782429
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-09-01_2024-09-30.parquet",
+      "sha256": "0d42bbb7ab6ff6082ca0734779a0984ed222cf5ac0838754d2467768d3cd6b90",
+      "selected_rows": 2318,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5865182
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-10-01_2024-10-31.parquet",
+      "sha256": "32726ea7ea4b6c76e94744f6e75ee6ae8201d288eb2ea77b1bd6f144a9029dff",
+      "selected_rows": 2196,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5803563
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-11-01_2024-11-30.parquet",
+      "sha256": "200adbdc6f6f3356c5c72a2e30ad887f949ca1984f10f3f1ae5a609ce24fb4e5",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6886412
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2024-12-01_2024-12-31.parquet",
+      "sha256": "409714b5e11069afe4ee16d141a5a9acdd9bfb7f969b4b3c80d36e16e24bcc44",
+      "selected_rows": 2684,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 7188260
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-01-01_2025-01-31.parquet",
+      "sha256": "89abda0c3906c2410da478984ce48b035734a8ad2178af3cb65d210712fbff57",
+      "selected_rows": 2196,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5801461
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-02-01_2025-02-28.parquet",
+      "sha256": "250d0d5bd8c9bdb6f14112c2e41fee3b280cce6737b3aa76a22205dbe1145e2a",
+      "selected_rows": 2196,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5893697
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-03-01_2025-03-31.parquet",
+      "sha256": "87ce5f1819d150b9fc6e25cfb655ef9ef8f04406a9dcc1fefdba3edc01cf2c72",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6937195
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-04-01_2025-04-30.parquet",
+      "sha256": "5f3baa174ab84c5aef4000612a080e79fb14fd6288b4a82030df03772d6c3311",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6820196
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-05-01_2025-05-31.parquet",
+      "sha256": "fc03fa23ba0cc0310691b50910e90f62c809fec23f3d17b59e8ac262d8ea7afd",
+      "selected_rows": 2318,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6161528
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-06-01_2025-06-30.parquet",
+      "sha256": "98baaefdef9f6aed899d6fb39b1d6c825b188b4155374d1647c4e8207f7e8f01",
+      "selected_rows": 2440,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6562231
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-07-01_2025-07-31.parquet",
+      "sha256": "54309ffd7b403c0ca8424c125875b83180e9ccb27be9bfbd91e70c38390a69d2",
+      "selected_rows": 2806,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 7485409
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-08-01_2025-08-31.parquet",
+      "sha256": "fb2430ece9fd0c23cc0bf8db58004183b9ccdfa94d3a8e5098453aa4483a6824",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6970911
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-09-01_2025-09-30.parquet",
+      "sha256": "9a79794ad8e3b08b3a6c5c3df30c108f97c206ca62b06dcfac4acbb0d56d33ef",
+      "selected_rows": 2684,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 7400516
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-10-01_2025-10-31.parquet",
+      "sha256": "975ddf695d001ec238dabed219703f140ea150caadf24a4b8932a57c3862dc0f",
+      "selected_rows": 2074,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 5656740
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-11-01_2025-11-30.parquet",
+      "sha256": "2ab85ee1af13fb416e64b660735380a192a558934d873a248a1c4a24830192dd",
+      "selected_rows": 2440,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6704675
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2025-12-01_2025-12-31.parquet",
+      "sha256": "2cf2d0ff29c8237e8b41c3d163fec64c3df111e9d7baabcfaf09b2e62c038c50",
+      "selected_rows": 2806,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 7617990
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-01-01_2026-01-31.parquet",
+      "sha256": "cbc9eeb0c935b692bed39ad8873328339ee3391f2bbc94eb2d59575aefe18e46",
+      "selected_rows": 2440,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 6853173
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-02-01_2026-02-28.parquet",
+      "sha256": "6f4fda533bee0b842fd36c73080b386a987f04eb1b6c535b08ae4dfaf371c4c9",
+      "selected_rows": 1708,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 4763089
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2026-03-01_2026-03-31.parquet",
+      "sha256": "ca6a29137eb73dae7915655e1585c360ff6e2840f9fc3b24e88cee0da671c796",
+      "selected_rows": 1830,
+      "columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "uncompressed_bytes": 7496959
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2022-12-01_2022-12-31.parquet",
+      "sha256": "1802ee02a83fa8c542df36852fe4d087d14c6f8e2704d5a269999bde0ce432a8",
+      "selected_rows": 2286,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 227085
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-01-01_2023-01-31.parquet",
+      "sha256": "aa2215afa8c37caf4d09af944c514c1da182606bddb4e2a0891f6decfd9879e4",
+      "selected_rows": 2032,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 181224
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-02-01_2023-02-28.parquet",
+      "sha256": "4ce3c844d9812fa07b83ed23c3e4c446c665e525129039b9a0af0f3398f17991",
+      "selected_rows": 2540,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 218358
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-03-01_2023-03-31.parquet",
+      "sha256": "82ad6cbf848e42c0e75481e134d307bc684e69178e407f8f8d3d841c488e3cef",
+      "selected_rows": 2921,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 241521
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286",
+      "selected_rows": 2413,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 200198
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d",
+      "selected_rows": 2540,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 221451
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-06-01_2023-06-30.parquet",
+      "sha256": "02356d7bdf764e76cb589cfb0a6094a75cf59087984d67914bf200df042f7486",
+      "selected_rows": 2522,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 210600
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-07-01_2023-07-31.parquet",
+      "sha256": "46c90d858a0753c35939c2cb8e3f848752364d60d0e708bfa7437f6e98c7895e",
+      "selected_rows": 2625,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 228098
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-08-01_2023-08-31.parquet",
+      "sha256": "af6acb8f37302a65c3182fceca643b033de1fd2b6c5444ba62fe9e6ae119507c",
+      "selected_rows": 2875,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 252141
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-09-01_2023-09-30.parquet",
+      "sha256": "8525d598cee89b98345dff93df12530412964a4796797aea34d01e0a344acdfd",
+      "selected_rows": 2500,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 224249
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-10-01_2023-10-31.parquet",
+      "sha256": "42199f857be14bad269e667e343b766922b5b720f76a12846aeae22e53a67fc2",
+      "selected_rows": 2125,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 171194
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-11-01_2023-11-30.parquet",
+      "sha256": "9c15e9558289bdf940ab40d39e02f10042e131cb66412370e7d0bd8f80c651cb",
+      "selected_rows": 2750,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 247078
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2023-12-01_2023-12-31.parquet",
+      "sha256": "b536c1f4182f2e2b21626381eba0ddfea0acff6f2950d7ec02afd04c5a9c058f",
+      "selected_rows": 2625,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 238192
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-01-01_2024-01-31.parquet",
+      "sha256": "7124d01f3f21311652a227d536418e540bd51d0b1a95a868cc8ed1683beca868",
+      "selected_rows": 2750,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 229509
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-02-01_2024-02-29.parquet",
+      "sha256": "36ea918d27f11bd5d13eebcb7b8d2dfea348f1adf808d160a410b9ad3c8056fa",
+      "selected_rows": 1864,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 169284
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-03-01_2024-03-31.parquet",
+      "sha256": "b2b1dec37582f2e05705f31f48dbfd6a22aaf528e61b183440bb9f724d895673",
+      "selected_rows": 2604,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 217707
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-04-01_2024-04-30.parquet",
+      "sha256": "42bc266efaf604a5db7aa5902e5743c7be381e98d38fa81e8240a7a417e85bcd",
+      "selected_rows": 2480,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 220029
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-05-01_2024-05-31.parquet",
+      "sha256": "6aa5c4922113fbb68b75af1f3c2e41aebfef28537f0c2b783e4c7bef410e7b27",
+      "selected_rows": 2480,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 244970
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-06-01_2024-06-30.parquet",
+      "sha256": "bb3e7ab571608ff4a9a15241df21d857f803506f041bec12e19c5809b6e7909a",
+      "selected_rows": 2356,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 212707
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-07-01_2024-07-31.parquet",
+      "sha256": "71b8d255ef0cd246dc7c623c81cd8c36f4c845d0b86e30cfcc17ce559a46d6b8",
+      "selected_rows": 2837,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 261731
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-08-01_2024-08-31.parquet",
+      "sha256": "78d0672a7f28cafcc90461296ea6b6ad034643d978c5671fa5729987f106fbae",
+      "selected_rows": 2705,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 240734
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-09-01_2024-09-30.parquet",
+      "sha256": "cbaee54d28cebf83c463b389150a8bc0e789c09ed5ecdf954d9a09160ff7fcfa",
+      "selected_rows": 2318,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 226231
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-10-01_2024-10-31.parquet",
+      "sha256": "83541958486bafd68feb337b935e618156b54be6641fefbca40caee441a9a884",
+      "selected_rows": 2196,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 200990
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-11-01_2024-11-30.parquet",
+      "sha256": "ba74f64141131d55b6c140b447b92c514ad90da49c4810811bcfb973ca4a00b2",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 247127
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2024-12-01_2024-12-31.parquet",
+      "sha256": "3ad5771606684fd99471e91e35a849d9ef2251047ff3e2af5ce1463328b4b1ac",
+      "selected_rows": 2684,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 253360
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-01-01_2025-01-31.parquet",
+      "sha256": "8974edb7e66931fce4bf395828b5c06ed9b767929ed9f9933870524368a15d20",
+      "selected_rows": 2196,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 208236
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-02-01_2025-02-28.parquet",
+      "sha256": "b588d885c8c0d9731717f44bfc3dd833292a22cd87f755dde3be7ce0ec6251a5",
+      "selected_rows": 2196,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 207766
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-03-01_2025-03-31.parquet",
+      "sha256": "60f8e04a2390a9a809204015f70ff71d07ace82c022b64566b700f3c69510cab",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 239674
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-04-01_2025-04-30.parquet",
+      "sha256": "02e3d0ce4c4fc7e2365866e94203e3d30d2d2ac18aa4773104d29392abfb4816",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 238836
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-05-01_2025-05-31.parquet",
+      "sha256": "09728fd83e7a2e820f6832e6fc710887018fa36efc20d29be95cea9ffddf3a98",
+      "selected_rows": 2318,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 202668
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-06-01_2025-06-30.parquet",
+      "sha256": "b9404d135a4360e703b321461d09311666283e1b0c8c4a4561e843fb439d805c",
+      "selected_rows": 2440,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 225260
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-07-01_2025-07-31.parquet",
+      "sha256": "12d3f646f8ef9d3a8f58544a98fa060a324e34de39f9e1a2c07bf1fee0f717ba",
+      "selected_rows": 2806,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 258357
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-08-01_2025-08-31.parquet",
+      "sha256": "93c54e8dbf3865f13e21647c795365e7ebf44ffbd219f79eda74c3b703a7ec64",
+      "selected_rows": 2562,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 232169
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-09-01_2025-09-30.parquet",
+      "sha256": "701f8b327de74d99bc8e5d5afcdd2bd193a9b2726d5fc0fabb6e76f2ab02adcd",
+      "selected_rows": 2684,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 262791
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-10-01_2025-10-31.parquet",
+      "sha256": "012920b47bff986147193a31d2873b93986e458f5c22d1b2ee3cb5cd4d22aba3",
+      "selected_rows": 2074,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 185079
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-11-01_2025-11-30.parquet",
+      "sha256": "151730612ee848153f7961081ea9007fc14d63bfd9dc46efad1ec111631e41b4",
+      "selected_rows": 2440,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 211679
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2025-12-01_2025-12-31.parquet",
+      "sha256": "46de91fbd6c3b8f174f59e1a58154b96d5c01fabf966871e5034402cba210a44",
+      "selected_rows": 2806,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 239112
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-01-01_2026-01-31.parquet",
+      "sha256": "43ad4218a046ce89ec387dc6f0be7796871439898e55a84f34d3bfd19c6acd65",
+      "selected_rows": 2440,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 225522
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-02-01_2026-02-28.parquet",
+      "sha256": "8abcdb0990350709aca9f0e299a5c1ca5ae6e5d0ea83c86a9af203d5206a5562",
+      "selected_rows": 1708,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 156979
+    },
+    {
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_status/2026-03-01_2026-03-31.parquet",
+      "sha256": "98fe55525562d3933b696e90908ca1bb9188b83ff7afd478bbc5e34d88eded95",
+      "selected_rows": 1830,
+      "columns": [
+        "date",
+        "instrument",
+        "suspended",
+        "st_status",
+        "is_risk_warning",
+        "price_limit_status",
+        "exdr"
+      ],
+      "uncompressed_bytes": 252074
+    }
+  ],
+  "source_identity": "FROZEN_SHARD_BYTES_AND_RECEIPTS_VERIFIED",
+  "stable_entity_identity": "UNKNOWN",
+  "code_changes": "UNKNOWN",
+  "delisting_confirmation": "UNKNOWN",
+  "calendar": "BIGQUANT_CN_SOURCE_CALENDAR_NOT_INDEPENDENT_EXCHANGE_CERTIFICATION",
+  "pit": "UNVERIFIED_CURRENT_EXPORT_NOT_HISTORICAL_DELIVERY",
+  "hfq": "UNVERIFIED_RAW_ONLY",
+  "ancillary": "P9_D01_VALIDATED_EXACT_EVIDENCE_ONLY; NO_BROAD_CSMAR_CNRDS_SCAN",
+  "interval_count": 160,
+  "elapsed_seconds": 3.4716373000410385,
+  "scan": {
+    "first": "2022-12-07",
+    "last": "2026-03-20",
+    "sessions": 794,
+    "warmup_sessions": 62,
+    "tail_sessions": 6
+  },
+  "auxiliary_coverage": {
+    "sessions": 68,
+    "missing_real_closes": 110,
+    "duplicate_source_keys": 0,
+    "invalid_ohlc_rows": 0,
+    "price_source_identity_missing": 0,
+    "state_source_identity_missing": 0
+  },
+  "tool_sha256": "54f6f717199884df48b8377dade7f0f997ce918f0cf4d6c4abb5952ec5a5c5e6",
+  "private_artifact_sha256": {
+    "execution-risk.csv": "f5e262a9cb22f9b9e4f0de38fbe2eadb4c8fc3cad219db610226e4ec827f2d28",
+    "valuation-gaps.csv": "9042809ac1441f6d1039805cc4ec97ff1e8ee5ffcb26baa48ceba5aa2239f727",
+    "status-enums.csv": "1bbf81a26b2ed1590cbf6896199631c6f97e4fb27b3ea0c11fec6fd14d858262",
+    "sidecar-coverage.csv": "ac317deff7b179e9ff9514e65579ab462252bc249f5daa5469dde8bb10468aa1",
+    "valuation-intervals.json": "2f5ed1b162cf139f1b89573a09df379bf2d0711ad2d773873dd119d58c2fb370",
+    "data-coverage.json": "baf8cf36aa8ba593b3ed0d4a40b24d7188a2c2012eb5a850961110018d7341f1",
+    "summary.json": "6e2b5f34762999adf3a8bcbd288abb83f5bd85b7b4fa23f55eb14c482ca2e74f"
+  }
+}

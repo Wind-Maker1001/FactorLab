@@ -1,0 +1,1122 @@
+[
+  {
+    "symbol": "000009.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000027.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000046.SZ",
+    "start": "2023-03-13",
+    "end": "2023-04-28",
+    "sessions": 34,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000046.SZ",
+    "start": "2023-05-04",
+    "end": "2023-05-04",
+    "sessions": 1,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "000046.SZ",
+    "start": "2023-05-05",
+    "end": "2023-12-27",
+    "sessions": 161,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000046.SZ",
+    "start": "2023-12-28",
+    "end": "2026-03-12",
+    "sessions": 530,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "000528.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000540.SZ",
+    "start": "2023-03-13",
+    "end": "2023-04-28",
+    "sessions": 34,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000540.SZ",
+    "start": "2023-05-04",
+    "end": "2023-05-04",
+    "sessions": 1,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "000540.SZ",
+    "start": "2023-05-05",
+    "end": "2023-05-18",
+    "sessions": 10,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000540.SZ",
+    "start": "2023-05-19",
+    "end": "2026-03-12",
+    "sessions": 681,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "000547.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000623.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000681.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000718.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000799.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000826.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000869.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000898.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000961.SZ",
+    "start": "2023-03-13",
+    "end": "2024-04-22",
+    "sessions": 270,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000961.SZ",
+    "start": "2024-04-23",
+    "end": "2024-04-23",
+    "sessions": 1,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "000961.SZ",
+    "start": "2024-04-24",
+    "end": "2024-05-08",
+    "sessions": 8,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000961.SZ",
+    "start": "2024-05-09",
+    "end": "2026-03-12",
+    "sessions": 447,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "000988.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "000998.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "001914.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002004.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002028.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002085.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002185.SZ",
+    "start": "2023-03-13",
+    "end": "2025-09-24",
+    "sessions": 619,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002185.SZ",
+    "start": "2025-09-25",
+    "end": "2025-10-16",
+    "sessions": 10,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "002185.SZ",
+    "start": "2025-10-17",
+    "end": "2026-03-12",
+    "sessions": 97,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002191.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002212.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002242.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002249.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002250.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002268.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002273.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002353.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002385.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002396.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002408.SZ",
+    "start": "2023-03-13",
+    "end": "2023-04-25",
+    "sessions": 31,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002408.SZ",
+    "start": "2023-04-26",
+    "end": "2023-05-04",
+    "sessions": 4,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "002408.SZ",
+    "start": "2023-05-05",
+    "end": "2026-03-12",
+    "sessions": 691,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002434.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002468.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002505.SZ",
+    "start": "2023-03-13",
+    "end": "2024-07-02",
+    "sessions": 317,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002505.SZ",
+    "start": "2024-07-03",
+    "end": "2026-03-12",
+    "sessions": 409,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "002506.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002563.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002603.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002670.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002705.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002745.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002831.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002925.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002948.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "002985.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "003035.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300024.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300026.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300037.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300113.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300115.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300133.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300223.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300315.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300418.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "300482.SZ",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600006.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600022.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600027.SH",
+    "start": "2023-03-13",
+    "end": "2024-07-18",
+    "sessions": 329,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600027.SH",
+    "start": "2024-07-19",
+    "end": "2024-08-01",
+    "sessions": 10,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "600027.SH",
+    "start": "2024-08-02",
+    "end": "2026-03-12",
+    "sessions": 387,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600060.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600064.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600068.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "600095.SH",
+    "start": "2023-03-13",
+    "end": "2025-03-14",
+    "sessions": 486,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600095.SH",
+    "start": "2025-03-17",
+    "end": "2025-03-28",
+    "sessions": 10,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "600095.SH",
+    "start": "2025-03-31",
+    "end": "2026-03-12",
+    "sessions": 230,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600131.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600167.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600258.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600307.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600329.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600350.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600376.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600398.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600415.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600446.SH",
+    "start": "2023-03-13",
+    "end": "2023-05-09",
+    "sessions": 38,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600446.SH",
+    "start": "2023-05-10",
+    "end": "2023-05-23",
+    "sessions": 10,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "600446.SH",
+    "start": "2023-05-24",
+    "end": "2025-01-15",
+    "sessions": 402,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600446.SH",
+    "start": "2025-01-16",
+    "end": "2025-01-22",
+    "sessions": 5,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "600446.SH",
+    "start": "2025-01-23",
+    "end": "2026-03-12",
+    "sessions": 271,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600460.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600466.SH",
+    "start": "2023-03-13",
+    "end": "2023-04-27",
+    "sessions": 33,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600466.SH",
+    "start": "2023-04-28",
+    "end": "2023-04-28",
+    "sessions": 1,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "600466.SH",
+    "start": "2023-05-04",
+    "end": "2023-05-09",
+    "sessions": 4,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600466.SH",
+    "start": "2023-05-10",
+    "end": "2026-03-12",
+    "sessions": 688,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "600517.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600529.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600536.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600549.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600556.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600567.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600572.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600580.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600643.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600648.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600739.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600754.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600765.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600787.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600808.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600895.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600908.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600956.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600970.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "600985.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601016.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601106.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601118.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601187.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601233.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601512.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601568.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601615.SH",
+    "start": "2023-03-13",
+    "end": "2026-01-12",
+    "sessions": 689,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601615.SH",
+    "start": "2026-01-13",
+    "end": "2026-01-22",
+    "sessions": 8,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "601615.SH",
+    "start": "2026-01-23",
+    "end": "2026-03-12",
+    "sessions": 29,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601717.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601718.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601778.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601801.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601828.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601869.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601880.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601958.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "601975.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603056.SH",
+    "start": "2023-03-13",
+    "end": "2026-01-08",
+    "sessions": 687,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603056.SH",
+    "start": "2026-01-09",
+    "end": "2026-01-13",
+    "sessions": 3,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "603056.SH",
+    "start": "2026-01-14",
+    "end": "2026-01-20",
+    "sessions": 5,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603056.SH",
+    "start": "2026-01-21",
+    "end": "2026-03-12",
+    "sessions": 31,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "603198.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603260.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603290.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603568.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603638.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603707.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603719.SH",
+    "start": "2023-03-13",
+    "end": "2025-07-10",
+    "sessions": 565,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603719.SH",
+    "start": "2025-07-11",
+    "end": "2025-07-17",
+    "sessions": 5,
+    "status": "NO_VERIFIED_REAL_CLOSE"
+  },
+  {
+    "symbol": "603719.SH",
+    "start": "2025-07-18",
+    "end": "2026-03-12",
+    "sessions": 156,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603786.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603858.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603883.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603885.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "603893.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "605358.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "688002.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  },
+  {
+    "symbol": "688088.SH",
+    "start": "2023-03-13",
+    "end": "2026-03-12",
+    "sessions": 726,
+    "status": "OBSERVED_RAW_CLOSE"
+  }
+]
