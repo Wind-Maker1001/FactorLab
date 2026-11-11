@@ -1,0 +1,35 @@
+{
+  "status": "P10_G04_BLOCKED",
+  "blockers": [
+    {
+      "id": "HISTORICAL_SEMANTIC_VERSION_UNBOUND",
+      "scope": "13 frozen price partitions",
+      "needed": "Supplier versioned field definition or explicit export-batch attestation covering OHLC currency/unit, raw/fill policy, observation dates and these receipt hashes"
+    },
+    {
+      "id": "NONPRICE_STATE_CONTRACT_INCOMPLETE",
+      "needed": "Validated state scope before any non-price dispatch; supplier suspended alone cannot grant this"
+    },
+    {
+      "id": "VOLUME_DISCREPANCY_UNRESOLVED",
+      "qualification": "UNKNOWN",
+      "needed": "Explain two G03 archive discrepancies beyond displayed rounding, with unit and revision/aggregation lineage"
+    },
+    {
+      "id": "LIMIT_REFERENCE_AND_UNIT_UNVERIFIED",
+      "fields": [
+        "amount",
+        "pre_close",
+        "upper_limit",
+        "lower_limit",
+        "adjust_factor"
+      ],
+      "qualification": "UNKNOWN"
+    },
+    {
+      "id": "PIT_UNKNOWN",
+      "needed": "Historical first supplier availability; export time is insufficient"
+    }
+  ],
+  "p9_d05": "Merged #109: 45/243 sessions on its conditional path, then 000540 2023-05-19 valuation blocked; not a P10 price qualification"
+}

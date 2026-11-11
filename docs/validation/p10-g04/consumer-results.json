@@ -1,0 +1,23 @@
+{
+  "full_fold_price_entry": {
+    "status": "REJECTED",
+    "gaps": [
+      "raw_open/OBSERVATION_SCOPE_MISSING_OR_AMBIGUOUS",
+      "raw_high/OBSERVATION_SCOPE_MISSING_OR_AMBIGUOUS",
+      "raw_low/OBSERVATION_SCOPE_MISSING_OR_AMBIGUOUS",
+      "raw_close/OBSERVATION_SCOPE_MISSING_OR_AMBIGUOUS"
+    ],
+    "rows_preserved": 30486
+  },
+  "g03": {
+    "status": "ACCEPTED",
+    "rows": 4,
+    "fields": 4,
+    "values_exactly_unchanged": true,
+    "original_observation_digests_checked": true
+  },
+  "frozen_members_and_dates_changed": false,
+  "suspended_rows_removed": false,
+  "new_execution_sessions": 0,
+  "account_replay": "NOT_STARTED_PRICE_GATE_REJECTED"
+}

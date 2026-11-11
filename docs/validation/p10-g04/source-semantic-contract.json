@@ -1,0 +1,61 @@
+{
+  "source_id": "BigQuant/cn_stock_real_bar1d",
+  "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "qualification": "UNKNOWN",
+  "purposes": [],
+  "available_at": null,
+  "source_semantic_version": null,
+  "semantic_effective_interval": null,
+  "export_batch_semantic_binding": null,
+  "evidence_states": {
+    "SOURCE_IDENTITY_VERIFIED": "Direct DAI query in receipts, original Manifest, and exact partition hashes",
+    "FIELD_SEMANTICS_DOCUMENTED": "Current official dictionary only; not an export-batch historical attestation",
+    "SCHEMA_VERIFIED": "Inherited DQ02B physical schema evidence; native G03 schema and footer evidence for two partitions",
+    "PARTITION_PROVENANCE_VERIFIED": "13 frozen price members rehashed against original Manifest and supplier receipt",
+    "NUMERIC_CROSSCHECK_PASSED": "G03 four exact dates only, 16 OHLC values; no expansion",
+    "SCOPED_RESEARCH_QUALIFIED": "Existing G03 one security, four days only; no source-level qualification granted",
+    "PIT_UNKNOWN": "Supplier first historical availability remains unknown"
+  },
+  "documented_current_semantics": {
+    "raw_dictionary_url": "https://v6.bigquant.com/data/datasources/cn_stock_real_bar1d",
+    "current_dictionary_acquired_on": "2026-11-12",
+    "current_dictionary_sha256": "49b77baa64200abc270b50d355eb42e7126f02f7be0fe79d35e0d8e5acf22c49",
+    "hfq_dictionary_url": "https://bigquant.com/data/datasources/cn_stock_bar1d",
+    "raw_ohlc_quote": "未复权价格是交易所公布的原始成交价格。",
+    "relationship": "cn_stock_bar1d OHLC = cn_stock_real_bar1d OHLC * cumulative adjust_factor",
+    "date": "Trading observation date, not first supplier availability",
+    "instrument": "Exchange-suffixed code, not a certified stable legal-security identity",
+    "volume": "Shares, daily cumulative; UNKNOWN qualification because G03 discrepancies remain unresolved",
+    "amount": "Yuan, daily cumulative; UNKNOWN qualification",
+    "nontrading": "Current dictionary retains row, null OHLC/amount, zero volume/deal_number/change_ratio/turn; historical batch binding absent",
+    "limits": "Unadjusted limits, same-day cn_stock_limit_price; reference, no-limit placeholders and historical ST policy not certified",
+    "currency_unit": "G03 CNY/share exact scope preserved; current general description alone is not a historical all-securities currency/unit certificate"
+  },
+  "required_before_batch_inheritance": [
+    "Explicit supplier semantic version or equivalent authoritative batch attestation",
+    "Formal OHLC unit/currency, raw-versus-filled policy and no-trade handling",
+    "Version effective dates covering observations and export revisions",
+    "Binding to original query, receipt hashes, Manifest and all proposed partition hashes",
+    "Explicit securities/date/field/purpose scope with known counterexamples excluded by evidence, not deletion",
+    "Independent risk-driven checks reported separately from operational source qualification"
+  ],
+  "known_counterevidence_or_unresolved": [
+    "Two G03 volume differences exceed exchange display rounding explanation",
+    "Export receipts carry table/query/window/hash/export time but no semantic version",
+    "Current dictionary update timestamp is not a historical effective interval"
+  ],
+  "existing_exact_contract": "../p10-g03/source-price-contract.json",
+  "sampling": {
+    "new_samples": 0,
+    "inherited_exact_samples": 4,
+    "inherited_numeric_values": 16,
+    "sampling_method": "G03 targeted suspension/resumption boundary for 002408.SZ; not a random sample",
+    "inherited_sample_error_rate": 0,
+    "error_rate_denominator_values": 16,
+    "population_error_rate": null,
+    "population_error_rate_reason": "Targeted four-day check cannot estimate error rate across 30394 observed price candidates",
+    "uncovered_price_candidate_security_days": 30390
+  },
+  "TODO": "Obtain authoritative historical version/batch semantic binding before extending any PRICE_CONSUMPTION_V1 scope. Do not convert this evidence assessment into a consumption contract.",
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

@@ -1,0 +1,66 @@
+{
+  "status": "P10_G04_BLOCKED",
+  "source_id": "BigQuant/cn_stock_real_bar1d",
+  "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "frozen_scope": {
+    "start": "2023-03-13",
+    "end_exclusive": "2024-03-13",
+    "sessions": 243,
+    "symbols": 128,
+    "maximum_symbol_session_keys": 31104
+  },
+  "observed_input_demand": {
+    "rows": 30486,
+    "symbols": 127,
+    "sessions": 243,
+    "complete_finite_ohlc": 30394,
+    "positive_volume_complete_ohlc_not_suspended_candidates": 30394,
+    "suspended_rows": 92,
+    "missing_ohlc_rows": 92,
+    "zero_or_missing_volume_rows": 92,
+    "unknown_suspension_rows": 0,
+    "meaning": "Observed input classes only; neither volume nor supplier state is certified here"
+  },
+  "saved_lightgbm_target_rows": 6272,
+  "saved_lightgbm_target_unique_keys": 6272,
+  "target_keys_without_source_bar": 124,
+  "target_input_demand": {
+    "rows": 6272,
+    "symbols": 128,
+    "sessions": 49,
+    "complete_finite_ohlc": 6131,
+    "positive_volume_complete_ohlc_not_suspended_candidates": 6131,
+    "suspended_rows": 17,
+    "missing_ohlc_rows": 141,
+    "zero_or_missing_volume_rows": 141,
+    "unknown_suspension_rows": 124,
+    "meaning": "Observed input classes only; neither volume nor supplier state is certified here"
+  },
+  "frozen_lightgbm_prediction_rows": 20347,
+  "qualified_symbols": 1,
+  "qualified_security_days": 4,
+  "qualified_field_objects": 16,
+  "fields": [
+    "raw_open",
+    "raw_high",
+    "raw_low",
+    "raw_close"
+  ],
+  "purpose": "EXECUTION",
+  "unit": "CNY/share",
+  "qualified_price_partitions": 2,
+  "inspected_price_partitions": 13,
+  "independently_checked_security_days": 4,
+  "independent_numeric_checks": "INHERITED_G03_EXACT_16",
+  "new_qualified_security_days": 0,
+  "new_qualified_execution_sessions": 0,
+  "consumer_input_rows_outside_existing_price_scope": 30482,
+  "actual_execution_price_required_unqualified_keys": null,
+  "actual_execution_price_required_unqualified_keys_reason": "Orders/holdings and validated non-price state are needed; loaded rows and target observations are not executed orders",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
