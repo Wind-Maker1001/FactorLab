@@ -18,6 +18,8 @@ from factorlab.backtest.fees import FeeRule, FeeSchedule
 from factorlab.backtest.rules import PriceLimitSchedule
 from factorlab.data.evidence import json_bytes, sha256
 from factorlab.data.market_evidence_sidecar import ALLOWED, POLICY, SAFETY, load_sidecar
+from factorlab.data.hub.contracts import QueryResult, SourceMetadata
+from factorlab.data.hub.price_consumption import PriceConsumptionError, require_fields
 from factorlab.dataset.identity import file_hash, json_hash
 from factorlab.errors import SchemaError
 from factorlab.research.oos_execution_study import make_targets, verify_predictions
@@ -109,6 +111,42 @@ def load_source(args, entries, symbols, start, end):
     return bars, calendar, identities
 
 
+PRICE_FIELDS = {name: 'raw_' + name for name in ('open', 'high', 'low', 'close')}
+SOURCE_ID = 'BigQuant/cn_stock_real_bar1d'
+
+
+def qualified_replay_prices(result, *, identity, cutoff=None):
+    """Consume unchanged keys only; code continuity never supplies price evidence."""
+    frame = result.data
+    days = pd.to_datetime(frame.date)
+    invalid = (
+        (frame.symbol.eq('300114.SZ') & days.ge('2025-02-17'))
+        | (frame.symbol.eq('302132.SZ') & days.lt('2025-02-17'))
+        | (frame.symbol.eq('600068.SH') & days.ge('2021-09-13'))
+        | (frame.symbol.eq('601868.SH') & days.lt('2021-09-28'))
+    )
+    if invalid.any():
+        raise PriceConsumptionError(['DATED_SECURITY_IDENTITY_INVALID_OR_EQUITY_SETTLEMENT_UNPROVEN'])
+    for original, field in PRICE_FIELDS.items():
+        semantic = result.metadata.field_semantics.get(field, {})
+        if semantic.get('original_field') != original:
+            raise PriceConsumptionError([field + '/ORIGINAL_FIELD_IDENTITY_UNKNOWN'])
+    return require_fields(result, {field: ('EXECUTION', 'CNY/share')
+                                  for field in PRICE_FIELDS.values()},
+                          identity=identity, cutoff=cutoff)
+
+
+def replay_source_result(bars, manifest_bytes):
+    """Bind byte provenance without promoting it to economic qualification."""
+    version = sha256(manifest_bytes)
+    # TODO: obtain version-bound native-field units, raw/fill policy, scope,
+    # evidence and availability contracts before qualifying this frozen source.
+    return QueryResult(bars, SourceMetadata(SOURCE_ID, version,
+        provenance={'source_manifest_sha256': version},
+        field_semantics={field: {'original_field': original}
+                         for original, field in PRICE_FIELDS.items()}))
+
+
 def same_frame(actual, expected, keys):
     pd.testing.assert_frame_equal(actual.sort_values(keys).reset_index(drop=True),
         expected.loc[:, actual.columns].sort_values(keys).reset_index(drop=True), check_dtype=False,
@@ -138,6 +176,9 @@ def run(args):
     start, end = pd.Timestamp(test_start), pd.Timestamp(test_end) - pd.Timedelta(days=1)
     # Calendar must cover the entire frozen Test window before target generation.
     bars, calendar, source_identities = load_source(args, entries, symbols, start, end)
+    source = replay_source_result(bars, args.manifest.read_bytes())
+    # Independent pin was verified against the sidecar before source loading.
+    qualified_replay_prices(source, identity=(SOURCE_ID, evidence.source_manifest_sha256))
     require(len(calendar) > 0 and calendar[0] == start, 'FOLD_CALENDAR_DRIFT')
     observation = observations['002408.SZ']
     old = bars.loc[bars.symbol.eq('002408.SZ') & bars.date.eq(pd.Timestamp(observation['date']))]

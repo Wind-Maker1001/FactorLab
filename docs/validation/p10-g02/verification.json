@@ -1,0 +1,29 @@
+{
+  "status": "P10_G02_PARTIAL",
+  "tests": {
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest tests/research/test_p10_consumer_admission.py tests/research/test_price_consumption.py tests/research/test_evidence_consumption_study.py -q -p no:cacheprovider",
+    "passed": 60,
+    "elapsed_seconds": 3.08,
+    "exit_code": 0,
+    "initial_collection_error": "Fixture import path corrected before successful run"
+  },
+  "real_input_qualification": "CONTRACT_MISSING_OR_UNKNOWN_BY_CONSTRUCTION",
+  "real_checkpoint_replay": "NOT_RUN",
+  "real_frozen_compatibility": "BLOCKED_NO_QUALIFIED_SOURCE_CONTRACT",
+  "new_real_field_qualifications": [],
+  "resource_observations": {
+    "test_processes": 1,
+    "source_scans": 0,
+    "training_runs": 0,
+    "copied_market_data_bytes": 0,
+    "peak_memory_bytes": null,
+    "temporary_disk_bytes": null
+  },
+  "remaining": [
+    "Version-bound native-field economic qualification and availability certification",
+    "Supplier stable security IDs and dated native price identity",
+    "Equity registration, share quantities, fractional shares, cash election and settlement",
+    "Real qualified frozen replay full-output compatibility"
+  ],
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
