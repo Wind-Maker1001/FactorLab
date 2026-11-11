@@ -49,6 +49,7 @@ class PaperState:
     reconciled: bool = True
     kill_switch: bool = False
     sequence: int = 0
+    runtime: dict = field(default_factory=dict)
 
 
 class PaperBroker:

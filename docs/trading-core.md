@@ -2,9 +2,10 @@
 
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
-This package does not change financial admission. It contains no exchange
-transport, credentials, live switch or real-account execution implementation.
-`TradingController(..., live=True)` and non-paper execution adapters are rejected.
+This package does not change financial admission. The realtime service permits
+explicitly enabled public market-data connections only; it has no credentials,
+live switch or real-account execution path. `TradingController(..., live=True)`
+and non-paper execution adapters are rejected.
 
 ## Shared boundary
 
@@ -143,3 +144,88 @@ python -m pytest tests/trading/test_paper_control.py tests/research/test_executi
 ```
 
 Simulation success conveys no live-money qualification.
+
+## Realtime paper service
+
+```console
+python -m factorlab.trading.realtime_service --state-dir ./paper-state --replay examples/realtime_paper_replay.jsonl --paper
+python -m factorlab.trading.realtime_service --state-dir ./paper-observation --public-market-data --seconds 30 --reconnects 2 --paper
+```
+
+Without `--paper`, observations do not run the strategy. Without
+`--public-market-data`, no network is opened. Install the `binance-equity` extra
+for WebSocket support. A public observation is bounded to at most 86,400 seconds
+and ten reconnects per market; another invocation resumes the same account.
+Ctrl-C closes both stores after saving STOPPED. Separate state directories create
+separate simulations, not copies of an existing account.
+
+The offline fixture is explicitly synthetic and contains 19 events, not historical
+market evidence. Replay time is each event's UTC receipt time. JSONL records use
+`symbol`, `kind`, source `time`, and `received`; exact prices/quantities are decimal
+strings. `trade` records have price, size, and aggregate-trade sequence. `quote`
+records have bid, ask, bid_size, and ask_size. `mark` is risk reference only;
+`session` contains the normalized Stocks phase. `rules` records carry an existing
+Stocks exchangeInfo row or a Futures symbol/bracket pair plus source provenance.
+Rules are observations, never retroactively applied historical rules. Rule data
+expires after five minutes, executable observations after five seconds, and Stocks
+calendar events after twelve hours. Missing/unknown calendar or rule information
+blocks orders; no Futures price can substitute for a Stocks quote.
+
+The strategy compares two consecutively accepted executable observations. A rise
+of at least 0.1% while flat requests 0.1 shares/contracts; a fall of at least 0.1%
+while holding requests a close. Only one order may be active. Stocks uses GTC
+EXTENDED limit orders rounded to cents; Futures uses market orders. Source time
+must not exceed receipt time, and receipt time must not exceed the runner clock.
+Klines are not strategy inputs. Duplicate/older source watermarks do not rerun the
+strategy. Stocks source time and server emission time form an ordering watermark,
+not a unique quote sequence: up to 128 content identities at that watermark are
+retained for deduplication, including across restart. Exceeding this bound pauses
+that account instead of growing a quote cache. Trade sequence gaps and connection loss pause only that market; explicit
+`control('start')` is required to resume. Disconnect clears the previous strategy
+price, preventing a signal spanning an unobserved interval.
+
+A later executable source event, strictly newer than the order's last confirmation,
+provides a hypothetical FIFO liquidity budget of 10% of its trade size (Futures) or
+minimum bid/ask displayed size (Stocks). The budget is shared across pending orders.
+Market fills use adverse 1 bp slippage; limit fills occur only when that slipped
+price satisfies the limit. Fees are the PaperBroker synthetic 0.1% rate. Fractional
+stock fills respect the observed quantity step. Stocks market buys retain the
+existing fixed admitted-price/notional convention, rather than claiming unknown
+share quantities from a notional exchange order. Quotes are never exchanged for
+real execution confirmations: only the local simulator creates paper events.
+The model does not infer intrabar ordering, queue position, leverage liquidation,
+funding, or real stock settlement (UNKNOWN).
+
+`RealtimeAccount.control()` exposes start/pause/stop and kill/unkill;
+`health()` is read-only, including signal/order/fill/rejection counters and the
+account projection. `tick()` detects silent stale feeds. `cancel()` and `replay()`
+use the existing broker/state machine. All mutations, strategy counters and source
+watermarks commit in the same PaperStore transaction as account and order changes.
+No raw feed history is saved. WebSocket queues are limited to eight messages and
+64 KiB per message; existing order/event/storage lifetime caps remain in force.
+
+The **PaperStore snapshot and confirmed-event journal** are the sole paper
+execution authority. Restart verifies the snapshot checkpoint and each last
+confirmation against its journal entry, then reconciles only locally confirmed
+orders. An order without a confirmation stays UNKNOWN and cannot be resubmitted.
+Cash, positions, fees, kill switch, source watermarks and strategy state survive a
+complete process exit. Runtime configuration changes are rejected for an existing
+account. Concurrent/stale writers stop on a projection conflict instead of
+replacing another writer's state. A checkpoint or confirmation conflict rejects
+startup with PAUSED and preserves the conflicting store for inspection; it does
+not invent an empty replacement account. A checkpoint detects accidental state
+conflict, not adversarial database tampering.
+
+Public sessions subscribe only to unsigned Futures aggregate trades/marks and the
+existing Stocks quote/calendar streams. They never instantiate signed trading or
+account clients. Offline/public mode and risk/simulation settings are persisted;
+opening an offline account in public mode is rejected. `--observations FILE` may
+bootstrap fresh rules/session records for public mode using the same JSONL schema;
+synthetic rule sources are refused. Refresh expiring observations through
+`RealtimeAccount.event()` when embedding a longer-running service. The CLI does
+not fetch private Futures brackets or invent unavailable rules. Online sessions
+do not import the offline fixture's rules. Without
+fresh verified rules (including Futures brackets) or Stocks calendar events, they
+report NO_TRADE even if prices or strategy signals arrive. Output distinguishes
+received messages, accepted events, strategy signals, simulated orders/fills and
+paper reconciliation. NO_TRADE is a valid observation, not a fabricated fill.
