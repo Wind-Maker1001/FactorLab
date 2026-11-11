@@ -115,7 +115,7 @@ def test_corrupt_metadata_payload_does_not_get_verified(tmp_path):
 
 
 def test_actual_7z_directory_only(tmp_path):
-    py7zr = pytest.importorskip('py7zr')
+    import py7zr
     path = tmp_path / 'actual.7z'
     with py7zr.SevenZipFile(path, 'w') as archive:
         archive.writestr(b'payload', 'table.csv')
