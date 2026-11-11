@@ -165,7 +165,7 @@ def test_public_export_removes_commercial_prices_and_rows(market):
 
 def test_private_rows_cannot_be_written_inside_repository():
     with pytest.raises(ValueError, match='PRIVATE_OUTPUT_MUST_BE_OUTSIDE_REPOSITORY'):
-        p.require_private_output(ROOT / 'docs/validation/p9-d02/raw')
+        p.require_private_output(ROOT / 'docs/validation/p9-d02-preflight/raw')
 
 
 def test_frozen_input_pin_drift():
