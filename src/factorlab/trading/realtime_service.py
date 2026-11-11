@@ -38,8 +38,21 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
         event_kinds={}, rejection_reasons={}, errors={}, started=datetime.now(timezone.utc).isoformat(),
         first_source=None, last_source=None)
     stage = 'connection'
+    latency = {}
+
+    def sample(name, seconds):
+        bucket = latency.setdefault(name, dict(count=0, total_seconds=0., min_seconds=seconds,
+                                               max_seconds=seconds, buckets=[0] * 6))
+        bucket['count'] += 1
+        bucket['total_seconds'] += seconds
+        bucket['min_seconds'] = min(bucket['min_seconds'], seconds)
+        bucket['max_seconds'] = max(bucket['max_seconds'], seconds)
+        bucket['buckets'][sum(seconds > bound for bound in (.001, .01, .1, 1, 5))] += 1
 
     def result(error=None):
+        diagnostics['latency'] = latency
+        diagnostics['latency_bucket_upper_seconds'] = [.001, .01, .1, 1, 5, None]
+        diagnostics['receive_timestamp_basis'] = 'APPLICATION_RECV_RETURN_NOT_WIRE_ARRIVAL'
         diagnostics['ended'] = datetime.now(timezone.utc).isoformat()
         diagnostics['status'] = ('CONNECTION_FAILED' if not diagnostics['handshakes'] else
             'NO_MARKET_MESSAGES' if not messages else 'VALID_MARKET_DATA' if accepted else 'NO_ACCEPTED_EVENTS')
@@ -72,9 +85,10 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                         diagnostics['receive_timeouts'] += 1
                         account.tick()
                         continue
+                    received = datetime.now(timezone.utc)
+                    received_monotonic = time.perf_counter()
                     diagnostics['frames'] += 1
                     stage = 'parse'
-                    received = datetime.now(timezone.utc)
                     value = json.loads(message)
                     if not isinstance(value, dict):
                         raise ValueError('public market message must be an object')
@@ -89,6 +103,8 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                         diagnostics['subscription'] = 'ACKNOWLEDGED'
                         continue
                     messages += 1
+                    processing_start = time.perf_counter()
+                    sample('processing_start_minus_received', processing_start - received_monotonic)
                     events = [parse(value, received)] if futures else list(equity_events(value, received))
                     for event in events:
                         diagnostics['parsed'] += 1
@@ -98,10 +114,26 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                         diagnostics['first_source'] = min(diagnostics['first_source'] or source, source)
                         diagnostics['last_source'] = max(diagnostics['last_source'] or source, source)
                         stage = 'validation'
+                        source_age = (received - event['time']).total_seconds()
+                        sample('received_minus_source', source_age)
+                        if futures:
+                            sample('emitted_minus_source', (event['emitted'] - event['time']).total_seconds())
+                            sample('received_minus_emitted', (received - event['emitted']).total_seconds())
+                        transaction_count = account.store.transaction_count
+                        event_start = time.perf_counter()
                         admitted = int(account._stream_event(event, value, official_transport=connector is connect))
+                        sample('event_processing', time.perf_counter() - event_start)
+                        if account.store.transaction_count != transaction_count:
+                            sample('transaction_duration', account.store.last_transaction)
+                            start, end = account.store.last_transaction_times
+                            diagnostics['last_transaction'] = dict(started=start.isoformat(), completed=end.isoformat())
                         accepted += admitted
                         diagnostics['rejected'] += 1 - admitted
                         if not admitted:
+                            sample('rejected_received_minus_source', source_age)
+                            if futures:
+                                sample('rejected_emitted_minus_source', (event['emitted'] - event['time']).total_seconds())
+                                sample('rejected_received_minus_emitted', (received - event['emitted']).total_seconds())
                             reason = account.state.runtime['reason']
                             reason = reason if reason in {'STALE_OR_FUTURE_OBSERVATION', 'QUOTE_IDENTITY_CAP'} else 'DUPLICATE_OR_OLDER_WATERMARK'
                             diagnostics['rejection_reasons'][reason] = diagnostics['rejection_reasons'].get(reason, 0) + 1
