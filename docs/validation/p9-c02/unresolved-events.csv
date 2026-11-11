@@ -1,0 +1,11 @@
+event_id,symbol,record_date,ex_date,status,minimum_evidence
+BQ:cn_stock_dividend:2023:4,300482.SZ,2023-05-17,2023-05-18,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:6,002385.SZ,2023-05-25,2023-05-26,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:23,600022.SH,2023-06-13,2023-06-14,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:30,600956.SH,2023-06-16,2023-06-19,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:33,601568.SH,2023-06-21,2023-06-26,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:40,601880.SH,2023-07-04,2023-07-05,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:47,002268.SZ,2023-07-11,2023-07-12,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:50,600808.SH,2023-07-13,2023-07-14,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+BQ:cn_stock_dividend:2023:65,603858.SH,2023-08-09,2023-08-10,EVENT_UNRESOLVED,issuer implementation notice; public timestamp; terms/unit confirmation; actual payment/account settlement; account tax; revision chain
+COVERAGE,HELD_SECURITY_WINDOWS,,,UNKNOWN,"complete held-window all-action index including cancellations, delisting and succession; opening/trailing entitlements"

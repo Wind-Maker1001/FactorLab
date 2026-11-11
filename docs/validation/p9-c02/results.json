@@ -1,0 +1,130 @@
+{
+  "schema": "P9_C02_SAVED_PATH_V1",
+  "engineering_status": "IMPLEMENTED",
+  "valuation_qualification": "P9_D02_CONDITIONAL_VALUATION_NOT_REEXECUTION",
+  "valuation_evidence": "docs/validation/p9-d02/evidence-consumption.json",
+  "financial_certification": "BLOCKED_EVIDENCE",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "accounts": [
+    {
+      "account": "B_factor_score-fold-0",
+      "event_status": "BLOCKED_EVIDENCE",
+      "original_price_result": "PRESERVED_CONDITIONAL_RAW_PRICE_NET_TRADING_COSTS",
+      "corporate_action_sensitive_return": null,
+      "investor_total_return": null
+    },
+    {
+      "account": "B_ridge-fold-0",
+      "event_status": "BLOCKED_EVIDENCE",
+      "original_price_result": "PRESERVED_CONDITIONAL_RAW_PRICE_NET_TRADING_COSTS",
+      "corporate_action_sensitive_return": null,
+      "investor_total_return": null
+    }
+  ],
+  "candidate_events": 9,
+  "affected_symbols": [
+    "002268.SZ",
+    "002385.SZ",
+    "300482.SZ",
+    "600022.SH",
+    "600808.SH",
+    "600956.SH",
+    "601568.SH",
+    "601880.SH",
+    "603858.SH"
+  ],
+  "complete_implementation_and_payment_events": 0,
+  "total_return": null,
+  "other_models_and_folds": "NOT_RUN",
+  "original_source_receipts": {
+    "B_factor_score-fold-0/trades.parquet": "42d75fba4d1f9b954e4f6dbfb40fbdecb69a659696dfae3f556bb93dd0dd4f31",
+    "B_factor_score-fold-0/positions.parquet": "2d0dda9fafe872a191d6175d5be2c787aa4e72fa86b0e82ef5315585f04860c8",
+    "B_factor_score-fold-0/nav.parquet": "769470c8e4bc77013d98098bdddc394c0b6825d71d437e394e0a19d14bf128c1",
+    "B_ridge-fold-0/trades.parquet": "84e5d98562c5326138462d88a1b6d09116b1bcb37693040fca66717ff62b4db6",
+    "B_ridge-fold-0/positions.parquet": "05f998adcf5fc510610f329d27afe3460eba93d2cb2a9f313332392479e397c1",
+    "B_ridge-fold-0/nav.parquet": "4189f99a51f9caf12cb571607eda35f379a554b8d3874da510bf721aaadbdbd1"
+  },
+  "event_shards": [
+    {
+      "member": "stock/cn_stock_dividend/2023-01-01_2023-12-31.parquet",
+      "sha256": "9b2493decb1cbe2bb636696e732fd5d531cba60a7e250cd800df3d614c1a407b",
+      "selected_security_rows": 74
+    },
+    {
+      "member": "stock/cn_stock_dividend/2024-01-01_2024-12-31.parquet",
+      "sha256": "c306485103116d01ef4b333d66f32a8fe2a81e742555fccefa8c0c741b732c05",
+      "selected_security_rows": 0
+    },
+    {
+      "member": "stock/cn_stock_allotment/2023-01-01_2023-12-31.parquet",
+      "sha256": "2909d4843dcafe71174e51fc59699ca376b608395a1f7e4f10490b104596d807",
+      "selected_security_rows": 0
+    },
+    {
+      "member": "stock/cn_stock_allotment/2024-01-01_2024-12-31.parquet",
+      "sha256": "6605b0e745ae8368fdc8c7fc7d4630455df81c49cbbc20cb7c5dcc58f070a733",
+      "selected_security_rows": 0
+    }
+  ],
+  "fee_contracts": {
+    "LEGACY_FIXED_STAMP_10BPS": {
+      "sha256": "7c5b3d5140e7b73a1b8aebe1e7a955298d11ef1bcbe3f56267d1b1723564c1e8",
+      "rules": [
+        {
+          "effective_from": "1990-01-01",
+          "effective_to": null,
+          "buy_fee_bps": 0.0,
+          "sell_fee_bps": 0.0,
+          "stamp_duty_bps": 10.0,
+          "transfer_fee_bps": 0.0,
+          "commission_bps": 3.0,
+          "minimum_commission_cny": 5.0,
+          "slippage_bps": 5.0
+        }
+      ]
+    },
+    "DATE_EFFECTIVE_STAMP_DUTY": {
+      "sha256": "550f934b3114a946d47213490e4a739a07fc6d60aa2c73c2c528e15f76769c4e",
+      "rules": [
+        {
+          "effective_from": "1900-01-01",
+          "effective_to": "2023-08-27",
+          "buy_fee_bps": 0.0,
+          "sell_fee_bps": 0.0,
+          "stamp_duty_bps": 10.0,
+          "transfer_fee_bps": 0.0,
+          "commission_bps": 3.0,
+          "minimum_commission_cny": 5.0,
+          "slippage_bps": 5.0
+        },
+        {
+          "effective_from": "2023-08-28",
+          "effective_to": null,
+          "buy_fee_bps": 0.0,
+          "sell_fee_bps": 0.0,
+          "stamp_duty_bps": 5.0,
+          "transfer_fee_bps": 0.0,
+          "commission_bps": 3.0,
+          "minimum_commission_cny": 5.0,
+          "slippage_bps": 5.0
+        }
+      ]
+    }
+  },
+  "evidence_scope": {
+    "BigQuant": "FOUR_OVERLAPPING_ANNUAL_PARTITIONS_HELD_RECORD_CLOSE_INTERSECTION",
+    "CSMAR": "EXISTING_601857_2017_2018_EXTRACT_NOT_APPLICABLE_NO_FULL_ARCHIVE_SCAN",
+    "CNRDS": "PR80_EXISTING_TARGET_EVIDENCE_NOT_APPLICABLE_NO_UNBOUNDED_WORKBOOK_SCAN",
+    "issuer_notices": "NO_IMPLEMENTATION_OR_ACCOUNT_PAYMENT_EVIDENCE_BOUND_FOR_THESE_CANDIDATES"
+  },
+  "limits": {
+    "processes": 1,
+    "memory_soft_limit_gib": 8
+  },
+  "return_basis": "BOUNDED_POSTED_SUBLEDGER_NOT_INVESTOR_TOTAL_RETURN"
+}
