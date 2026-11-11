@@ -59,6 +59,75 @@ def case(tmp_path):
     return payload, obs, load, originals, documents
 
 
+@pytest.fixture
+def targeted_000540(case):
+    payload, _, load, _, documents = case
+    source = b'synthetic 000540 observed April 28 shard'
+    observation = dict(security='000540.SZ', date='2023-04-28', field='raw_close',
+        status='OBSERVED_RAW_CLOSE', price='0.66', volume=361474595, source_sha256=sha256(source))
+    capsule = json_bytes(observation)
+    documents[sha256(source)] = source
+    documents[sha256(capsule)] = capsule
+    row = deepcopy(payload['candidates'][1])
+    row.update(target_security='000540.SZ', target_date='2023-05-04', candidate_value='0.66',
+        source_document_sha256=sha256(capsule), valuation_source_date='2023-04-28',
+        valuation_source_price='0.66', valuation_source_price_identity=sha256(source),
+        suspension_evidence=dict(security='000540.SZ', start_date='2023-05-04',
+            resume_date='2023-05-05', document_sha256=sha256(documents[payload['candidates'][0]['source_document_sha256']]),
+            publication_time='2023-04-29', evidence_class='ISSUER_CONFIRMED_SUSPENSION',
+            verification_status='DOCUMENT_CONFIRMED'))
+    payload['candidates'].append(row)
+    return observation, row, load, documents
+
+
+def test_000540_exact_separated_carry(targeted_000540):
+    obs, _, load, _ = targeted_000540
+    value = load().carry('000540.SZ', '2023-05-04', shares=138800, raw_close=None,
+        previous_observation=obs)
+    assert value.book_value == Decimal('91608.00')
+    assert value.raw_close is None and value.nontradable
+    assert value.valuation_status == 'MODEL_VALUATION_ASSUMPTION'
+    assert value.valuation_source_date == '2023-04-28'
+    with pytest.raises(DataQualityError):
+        load().fact('000540.SZ', '2023-05-04', 'suspension_confirmed')
+    with pytest.raises(DataQualityError):
+        load().fact('000540.SZ', '2023-05-04', 'valuation_mark', purpose='SIGNAL_STATE', cutoff='2023-05-04')
+
+
+@pytest.mark.parametrize('field,value', [('security','002408.SZ'), ('start_date','2023-04-28'),
+    ('resume_date','2023-05-08'), ('publication_time','2023-05-05'),
+    ('verification_status','UNKNOWN'), ('evidence_class','VENDOR_FILL'), ('document_sha256','0'*64)])
+def test_000540_independent_suspension_binding(targeted_000540, field, value):
+    _, row, load, _ = targeted_000540
+    row['suspension_evidence'][field] = value
+    with pytest.raises(DataQualityError):
+        load()
+
+
+@pytest.mark.parametrize('day', ['2023-04-28', '2023-05-05', '2023-05-08'])
+def test_000540_no_adjacent_carry(targeted_000540, day):
+    obs, _, load, _ = targeted_000540
+    with pytest.raises(DataQualityError):
+        load().carry('000540.SZ', day, shares=138800, raw_close=None, previous_observation=obs)
+
+
+@pytest.mark.parametrize('shares,raw_close', [(0,None), (-1,None), (True,None), (138800,.66)])
+def test_000540_no_new_holding_or_observed_close_carry(targeted_000540, shares, raw_close):
+    obs, _, load, _ = targeted_000540
+    with pytest.raises(DataQualityError):
+        load().carry('000540.SZ', '2023-05-04', shares=shares, raw_close=raw_close, previous_observation=obs)
+
+
+def test_000540_wrong_last_observation_refused(targeted_000540):
+    obs, row, load, documents = targeted_000540
+    wrong = dict(obs, date='2023-04-25')
+    capsule = json_bytes(wrong)
+    documents[sha256(capsule)] = capsule
+    row.update(source_document_sha256=sha256(capsule), valuation_source_date='2023-04-25')
+    with pytest.raises(DataQualityError):
+        load()
+
+
 @pytest.mark.parametrize("day", SUSPENSION_DATES)
 def test_exact_suspension_and_existing_holdings(case, day):
     _, obs, load, _, _ = case

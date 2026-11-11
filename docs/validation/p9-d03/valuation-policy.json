@@ -1,0 +1,31 @@
+{
+  "schema": "P9_D03_VALUATION_POLICY_V1",
+  "enabled": true,
+  "policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+  "version": "1",
+  "scope": [{"security": "000540.SZ", "date": "2023-05-04", "field": "valuation_mark"}],
+  "raw_close": null,
+  "nontradable": true,
+  "valuation_status": "MODEL_VALUATION_ASSUMPTION",
+  "observation": {
+    "security": "000540.SZ",
+    "date": "2023-04-28",
+    "field": "raw_close",
+    "status": "OBSERVED_RAW_CLOSE",
+    "price": "0.66",
+    "volume": 361474595,
+    "source_sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+  },
+  "suspension_evidence": {
+    "security": "000540.SZ",
+    "start_date": "2023-05-04",
+    "resume_date": "2023-05-05",
+    "document_sha256": "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642f90cd54cc2e456",
+    "publication_time": "2023-04-29",
+    "evidence_class": "ISSUER_CONFIRMED_SUSPENSION",
+    "verification_status": "DOCUMENT_CONFIRMED"
+  },
+  "consumption": "EX_POST_RESEARCH_VALUATION_ONLY; POSITIVE_EXISTING_UNCHANGED_HOLDING; NO_SIGNAL_OR_EXECUTION_PERMISSION",
+  "stage_b": {"scheme": "B_lightgbm", "fold": 0, "end_inclusive": "2023-05-09", "scope": "FROZEN_FOLD_START_PREFIX_ONLY"},
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

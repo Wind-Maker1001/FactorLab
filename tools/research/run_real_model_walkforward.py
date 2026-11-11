@@ -32,7 +32,7 @@ def dump(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False, default=str) + '\n', encoding='utf-8')
 
 
-def load_inputs(args, config):
+def load_inputs(args, config, *, window=None):
     entries = []
     with zipfile.ZipFile(args.membership_zip) as z:
         payload = z.read('members_daily.csv')
@@ -48,7 +48,9 @@ def load_inputs(args, config):
     members = members.loc[members.symbol.isin(symbols)].sort_values(KEYS).reset_index(drop=True)
     if len(symbols) != config['symbol_limit']:
         raise ValueError('first signal day has insufficient members')
-    lo, hi = pd.Timestamp(config['warm_start']), pd.Timestamp(config['tail_end'])
+    lo, hi = map(pd.Timestamp, window or (config['warm_start'], config['tail_end']))
+    if window is not None:
+        members = members.loc[members.date.between(lo, hi)].reset_index(drop=True)
     common = Archive(Path(args.bigquant_root), 'common', entries)
     stock = Archive(Path(args.bigquant_root), 'stock', entries)
     try:

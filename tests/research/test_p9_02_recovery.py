@@ -14,6 +14,7 @@ spec = importlib.util.spec_from_file_location('p9_evidence_fixtures', Path(__fil
 fixtures = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fixtures)
 case = fixtures.case
+targeted_000540 = fixtures.targeted_000540
 
 
 def suspended_account():
@@ -151,6 +152,84 @@ def test_stage_a_block_prevents_all_research_accounts(tmp_path, monkeypatch):
     assert result['completed_accounts'] == 0
     assert result['stage'] == 'A'
     assert json.loads((output / 'fold-metrics.json').read_bytes()) == []
+
+
+def test_bounded_input_window_keeps_original_universe(tmp_path, monkeypatch):
+    import zipfile
+    from types import SimpleNamespace
+    runner_path = Path(__file__).resolve().parents[2] / 'tools/research/run_real_model_walkforward.py'
+    spec = importlib.util.spec_from_file_location('p9_bounded_inputs', runner_path)
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+    membership = tmp_path / 'members.zip'
+    with zipfile.ZipFile(membership, 'w') as archive:
+        archive.writestr('members_daily.csv', 'date,stock_code\n2021-09-13,000540.XSHE\n2023-05-04,002408.XSHE\n')
+        archive.writestr('manifest.json', '{}')
+    calls = []
+    class Archive:
+        def __init__(self, *args):
+            self.zip = SimpleNamespace(close=lambda: None)
+        def read(self, table, columns, lo, hi, symbols=None):
+            calls.append((table, lo, hi, symbols))
+            if table == 'trading_days':
+                return pd.DataFrame(dict(date=pd.to_datetime(['2023-05-04']), market_code='CN'))
+            if table == 'cn_stock_status':
+                return pd.DataFrame(dict(date=pd.to_datetime(['2023-05-04']), symbol='000540.SZ', suspended=1, st_status=0))
+            return pd.DataFrame(dict(date=pd.to_datetime(['2023-05-04']), symbol='000540.SZ',
+                open=[None], high=[None], low=[None], close=[None], volume=0))
+    monkeypatch.setattr(runner, 'Archive', Archive)
+    monkeypatch.setattr(runner, 'check_source_identity', lambda *_: None)
+    bars, members, calendar, _, symbols = runner.load_inputs(
+        SimpleNamespace(membership_zip=membership, bigquant_root=tmp_path),
+        dict(start='2021-09-13', end='2026-09-11', warm_start='2021-05-01', tail_end='2026-09-30', symbol_limit=1),
+        window=('2023-05-04', '2023-05-04'))
+    assert symbols == ['000540.SZ']
+    assert members.empty
+    assert len(bars) == len(calendar) == 1
+    assert all(lo == hi == pd.Timestamp('2023-05-04') for _, lo, hi, _ in calls)
+    assert calls[-1][3] == {'000540.SZ'}
+
+
+def test_targeted_stage_a_requires_explicit_policy(tmp_path):
+    runner_path = Path(__file__).resolve().parents[2] / 'tools/research/run_oos_recovery.py'
+    spec = importlib.util.spec_from_file_location('p9_stage_policy', runner_path)
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+    with pytest.raises(SchemaError, match='EXPLICIT_CARRY_POLICY_REQUIRED'):
+        runner.stage_a(None, None, None, {}, tmp_path / 'stage-a', observations={})
+
+
+def test_targeted_valuation_recovery_keeps_real_execution(targeted_000540):
+    observation, _, load, _ = targeted_000540
+    dates = pd.to_datetime(['2023-04-25', '2023-04-26', '2023-04-27', '2023-04-28',
+        '2023-05-04', '2023-05-05', '2023-05-08', '2023-05-09'])
+    bars = pd.DataFrame(dict(date=dates, symbol='000540.SZ',
+        raw_open=[.70,.72,.73,.56,None,.63,.60,.57],
+        raw_close=[.74,.67,.60,.66,None,.63,.60,.57],
+        volume=[1000000]*4+[0]+[1000000]*3,
+        suspended=[0]*4+[1]+[0]*3, st_status=[0]*5+[2]*3))
+    data = recovery_bars(bars, load(), cutoff='2023-05-05T15:00:00+08:00')
+    targets = pd.DataFrame(dict(date=dates[[0,5]], symbol='000540.SZ', target_weight=[.1,0.]))
+    result = AShareExecutionBacktester().run_target_weights(targets, data,
+        pd.DataFrame(dict(date=dates, adj_open=1., adj_close=1.)))
+    qualified = qualify_valuations(result, data, load(), None, observations={'000540.SZ': observation})
+    assumed = qualified.loc[qualified.valuation_assumption_used]
+    assert assumed.date.tolist() == [pd.Timestamp('2023-05-04')]
+    assert assumed.valuation_price.item() == .66
+    assert assumed.observed_raw_close.isna().all()
+    assert qualified.loc[qualified.date.eq('2023-05-05'), 'valuation_price'].item() == .63
+    assert result.rejections.loc[result.rejections.execution_date.eq('2023-05-08'), 'reason'].item() == 'sell_price_limit'
+    assert len(result.trades) == 1
+    assert not result.trades.execution_date.isin(pd.to_datetime(['2023-05-04','2023-05-08','2023-05-09'])).any()
+    nav = result.nav.set_index('date')
+    assert nav.loc['2023-05-05','cash'] == nav.loc['2023-05-09','cash']
+    assert audit_ledger(result, data, 1000000, valuation_prices=qualified)['status'] == 'PASSED'
+    audit_frozen_fees(result, dict(fees=dict(commission_bps=3, minimum_commission_cny=5,
+        slippage_bps=5, stamp_duty_bps=10, transfer_fee_bps=0)))
+    with pytest.raises(SchemaError, match='2023-05-04/000540.SZ'):
+        qualify_valuations(result, data, load(), None, observations={})
+    with pytest.raises(SchemaError, match='2023-05-04/000540.SZ'):
+        qualify_valuations(result, data, load(), dict(observation, date='2023-04-25'))
 
 
 def test_no_global_enum_mapping(case):

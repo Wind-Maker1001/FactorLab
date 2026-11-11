@@ -16,7 +16,9 @@ ALLOWED = frozenset(
      for f in ("suspension_confirmed", "valuation_mark")]
     + [("000540.SZ", "2023-05-08", f)
        for f in ("is_st", "trading_observed", "execution_price_available")]
+    + [("000540.SZ", "2023-05-04", "valuation_mark")]
 )
+OBSERVATION_DATES = {"002408.SZ": "2023-04-25", "000540.SZ": "2023-04-28"}
 
 
 def _same(left, right):
@@ -50,6 +52,7 @@ class CandidateFact:
     verification_status: str
     consumption_scope: str
     limitation: str
+    suspension_document_sha256: str | None = None
 
 
 @dataclass(frozen=True)
@@ -101,19 +104,26 @@ class MarketEvidence:
 
     def carry(self, security, day, *, shares, raw_close, previous_observation):
         """Value existing shares only; raw fields and execution inputs are untouched."""
-        suspension = self.fact(security, day, "suspension_confirmed")
         mark = self.fact(security, day, "valuation_mark")
-        if (raw_close is not None or suspension.candidate_value is not True
-                or suspension.evidence_class != "ISSUER_CONFIRMED_SUSPENSION"
-                or suspension.verification_status != "DOCUMENT_CONFIRMED"
-                or mark.evidence_class != "MODEL_VALUATION_ASSUMPTION"):
+        if security == "000540.SZ":
+            suspension_identity = mark.suspension_document_sha256
+            if suspension_identity is None:
+                fail("independent confirmed suspension required")
+        else:
+            suspension = self.fact(security, day, "suspension_confirmed")
+            if (suspension.candidate_value is not True
+                    or suspension.evidence_class != "ISSUER_CONFIRMED_SUSPENSION"
+                    or suspension.verification_status != "DOCUMENT_CONFIRMED"):
+                fail("independent confirmed suspension required")
+            suspension_identity = suspension.document_sha256
+        if raw_close is not None or mark.evidence_class != "MODEL_VALUATION_ASSUMPTION":
             fail("independent confirmed suspension and missing raw close required")
         if isinstance(shares, bool) or not isinstance(shares, int) or shares <= 0:
             fail("positive existing holding quantity required")
         p = previous_observation
         if p is None:
             fail("verified pre-suspension raw close observation required")
-        if (p["security"] != security or p["date"] != "2023-04-25"
+        if (p["security"] != security or p["date"] != OBSERVATION_DATES[security]
                 or date(p["date"]) >= date(day) or p["status"] != "OBSERVED_RAW_CLOSE"
                 or p["field"] != "raw_close" or p["volume"] <= 0):
             fail("verified pre-suspension raw close observation required")
@@ -125,7 +135,7 @@ class MarketEvidence:
         if price != _positive(mark.candidate_value):
             fail("carry price differs from observed source")
         return Valuation(security, day, None, price, shares, p["date"],
-                         p["source_sha256"], suspension.document_sha256)
+                         p["source_sha256"], suspension_identity)
 
 
 def load_sidecar(path, *, source_manifest, originals, documents):
@@ -160,11 +170,24 @@ def load_sidecar(path, *, source_manifest, originals, documents):
         if row["consumption_scope"] != "RESEARCH_CANDIDATE_ONLY" or not row["source_uri"] or not row["limitation"]:
             fail("explicit candidate-only scope and provenance required")
         value, evidence = row["candidate_value"], row["evidence_class"]
+        suspension_identity = None
+        if key == ("000540.SZ", "2023-05-04", "valuation_mark"):
+            suspension = row["suspension_evidence"]
+            suspension_identity = require_hash(suspension["document_sha256"])
+            if (suspension_identity not in documents
+                    or sha256(documents[suspension_identity]) != suspension_identity
+                    or suspension["security"] != key[0]
+                    or suspension["start_date"] != key[1]
+                    or suspension["resume_date"] != "2023-05-05"
+                    or suspension["evidence_class"] != "ISSUER_CONFIRMED_SUSPENSION"
+                    or suspension["verification_status"] != "DOCUMENT_CONFIRMED"
+                    or timestamp(suspension["publication_time"]) > timestamp(key[1])):
+                fail("independent exact suspension document required")
         if key[2] == "valuation_mark":
             if (evidence != "MODEL_VALUATION_ASSUMPTION" or row["valuation_policy"] != POLICY
                     or row["valuation_policy_version"] != "1" or row["valuation_status"] != evidence
                     or row["nontradable"] is not True or row["original_value"] is not None
-                    or row["valuation_source_date"] != "2023-04-25"
+                    or row["valuation_source_date"] != OBSERVATION_DATES[key[0]]
                     or _positive(row["valuation_source_price"]) != _positive(value)):
                 fail("invalid separated carry valuation policy")
             observation = json.loads(documents[document])
@@ -198,5 +221,5 @@ def load_sidecar(path, *, source_manifest, originals, documents):
                 fail("ex-post evidence cannot masquerade as signal-time knowledge")
         facts.append(CandidateFact(*key, row["original_value"], value, evidence, document,
                                    row["source_publication_time"], known, row["verification_status"],
-                                   row["consumption_scope"], row["limitation"]))
+                                   row["consumption_scope"], row["limitation"], suspension_identity))
     return MarketEvidence(tuple(facts), digest)

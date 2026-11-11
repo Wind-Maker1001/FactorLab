@@ -36,7 +36,7 @@ def audit_frozen_fees(result, config):
                 raise SchemaError(f'FROZEN_FEE_RECEIPT_MISMATCH: {trade.execution_date}/{trade.symbol}/{field}')
 
 
-def qualify_valuations(result, bars, evidence, observation):
+def qualify_valuations(result, bars, evidence, observation, *, observations=None):
     """Check engine marks against observed closes or independently approved carry."""
     rows = result.positions.merge(bars[['date', 'symbol', 'raw_close', 'suspended']],
         on=['date', 'symbol'], how='left', validate='one_to_one')
@@ -51,7 +51,8 @@ def qualify_valuations(result, bars, evidence, observation):
                 raise SchemaError(f'UNQUALIFIED_HELD_CLOSE: {day}/{row.symbol}')
             try:
                 value = evidence.carry(row.symbol, day, shares=int(row.shares),
-                    raw_close=None, previous_observation=observation)
+                    raw_close=None, previous_observation=(observation if observations is None
+                        else observations.get(row.symbol)))
             except DataQualityError as exc:
                 raise SchemaError(f'UNQUALIFIED_HELD_CLOSE: {day}/{row.symbol}: {exc}') from exc
             price = float(value.valuation_price)
