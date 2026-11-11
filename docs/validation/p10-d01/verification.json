@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "root_cause_investigation_status": "PARTIAL",
+  "tests": {
+    "command": "python -I -m pytest tests/evidence/test_cnrds_duplicates.py tests/evidence/test_tri_source_market.py -q",
+    "passed": 20,
+    "failed": 0,
+    "seconds": 0.55
+  },
+  "verified_physical_rows": 169448,
+  "original_members_verified": 3,
+  "complete_native_records_equal_to_checkpoints": true,
+  "duplicate_population_reproduced": true,
+  "workers": 3,
+  "seconds": 343.63052309997147,
+  "process_peak_bytes": 1166684160,
+  "memory_soft_limit_bytes": 12884901888,
+  "full_database_rescan": false,
+  "raw_source_mutations": false
+}
