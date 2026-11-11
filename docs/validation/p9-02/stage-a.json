@@ -1,0 +1,39 @@
+{
+  "status": "BLOCKED",
+  "accounts": [
+    {
+      "symbol": "002408.SZ",
+      "ledger": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "raw_close_marks": false,
+        "qualified_marks": true,
+        "equity": true,
+        "fees": true
+      },
+      "fills": 1,
+      "rejections": {
+        "suspended": 1
+      },
+      "assumption_days": 4
+    },
+    {
+      "symbol": "000540.SZ",
+      "ledger": {
+        "status": "BLOCKED",
+        "reason": "UNQUALIFIED_HELD_CLOSE: 2023-05-04/000540.SZ: MARKET DATA QUALIFICATION REQUIRED: candidate outside exact security/date/field scope",
+        "frozen_fees": true
+      },
+      "fills": 1,
+      "rejections": {
+        "sell_price_limit": 1
+      },
+      "assumption_days": null
+    }
+  ],
+  "blocked": {
+    "account": "stage-a/000540.SZ",
+    "reason": "UNQUALIFIED_HELD_CLOSE: 2023-05-04/000540.SZ: MARKET DATA QUALIFICATION REQUIRED: candidate outside exact security/date/field scope"
+  }
+}

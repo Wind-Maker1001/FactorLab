@@ -1,0 +1,16 @@
+{
+  "source_result_sha256": "d10bbcc7863e89af4baf5e48835a13edaadd3e8671bce1be21789280b8a63f50",
+  "files": {
+    "account-status.csv": "4f0a53f6ba7177e6337375817b834d66bc1613c9f124ce5d8c37fedd3802258d",
+    "code-identity.json": "0843f0b96f91eabfbbf4a55e7680a077ba795b41475c53ec7a53b8eaa46bdc32",
+    "config.json": "c3a85acef04b6894fc3faa596526aefadaba4cb21ec159818c5113b1953b5394",
+    "fold-metrics.csv": "17e5e19a0e6f65c64a36bc6d58114aea448abcc9a517ca64a10591d4e6b071f0",
+    "fold-metrics.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "inference-verification.json": "2a9051fcb52f0123fbbad5662abf595641d2bad7914edb35530b0d98b9891d7e",
+    "result.json": "d10bbcc7863e89af4baf5e48835a13edaadd3e8671bce1be21789280b8a63f50",
+    "stage-a-rejection.json": "f5122ceee10d822f1b68441832bb85fbf273e58d1dfec6c410c5f4b0659043ae",
+    "stage-a-valuation-assumptions.csv": "fce568963a8507f7b98e9d834cad60aee08a7405598ef34362fcd9b077f65d93",
+    "stage-a.json": "4ef059a77a71c2605e9f6a2359ed9eda96f1c04e9bde0ad5c808f6f70986a438",
+    "valuation-gaps.csv": "3aa37dc5098715ccc0b5f77885e596d10df08f55b1ce9dca4530fa08f2e2927a"
+  }
+}
