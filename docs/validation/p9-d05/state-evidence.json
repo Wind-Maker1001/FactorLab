@@ -1,0 +1,89 @@
+{
+  "schema": "P9_D05_STATE_EVIDENCE_V1",
+  "security": "000540.SZ",
+  "issuer": "中天金融集团股份有限公司",
+  "designation": {
+    "issuer_short_name": "*ST中天",
+    "effective_at": "2023-05-05T09:30:00+08:00",
+    "price_limit_pct": 5,
+    "field": "is_st",
+    "value": true
+  },
+  "execution_scope": {
+    "start_inclusive": "2023-05-15",
+    "end_exclusive": "2023-05-19",
+    "exact_sessions": [
+      "2023-05-15",
+      "2023-05-16",
+      "2023-05-17",
+      "2023-05-18"
+    ],
+    "purpose": "EXECUTION_STATE",
+    "consumer_cutoff_local": "09:30:00+08:00",
+    "publication_time_precision": "DATE_ONLY_SHANGHAI_END_OF_DAY_UPPER_BOUND",
+    "signal_selection_permission": false,
+    "order_fill_permission": false,
+    "valuation_permission": false
+  },
+  "original_state_2023_05_15": {
+    "st_status": 2,
+    "suspended": 0,
+    "is_risk_warning": 1,
+    "adapter_is_st": null,
+    "source_shard_sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d"
+  },
+  "vendor": {
+    "historical_dictionary_version": "UNKNOWN",
+    "historical_delivery": "UNKNOWN",
+    "preserve_original_enum": true,
+    "global_mapping_of_2": false,
+    "risk_warning_substitutes_for_st": false
+  },
+  "documents": [
+    {
+      "notice": "2023-36",
+      "publication_date": "2023-04-29",
+      "publication_upper_bound": "2023-04-29T23:59:59.999999999+08:00",
+      "role": "DESIGNATION",
+      "url": "https://pdf.dfcfw.com/pdf/H2_AN202304291586106477_1.pdf",
+      "filing_url": "https://static.cninfo.com.cn/finalpage/2023-04-29/1216703562.PDF",
+      "sha256": "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642f90cd54cc2e456",
+      "reused_from": "P9-D03"
+    },
+    {
+      "publication_date": "2023-05-04",
+      "role": "EXCHANGE_RISK_WARNING_EFFECTIVE_DATE",
+      "url": "https://www.szse.cn/disclosure/margin/business/t20230504_600265.html"
+    },
+    {
+      "notice": "2023-47",
+      "publication_date": "2023-05-13",
+      "publication_upper_bound": "2023-05-13T23:59:59.999999999+08:00",
+      "role": "CONTINUITY_BEFORE_MAY15_OPEN",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-05-13/1216809911.PDF",
+      "sha256": "60595d42f4277025bf8899025dfd002b7105983107bdf23e61fa281800ba4c8b"
+    },
+    {
+      "notice": "2023-49",
+      "publication_date": "2023-05-15",
+      "publication_upper_bound": "2023-05-15T23:59:59.999999999+08:00",
+      "role": "CONTINUITY_CORROBORATION_ONLY",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-05-15/1216810622.PDF",
+      "sha256": "e914d069385308f4bbbad4e616f07a57f04cfa9b18155e12b5a3ebd1fc2e20e4"
+    },
+    {
+      "notice": "2023-51",
+      "publication_date": "2023-05-17",
+      "publication_upper_bound": "2023-05-17T23:59:59.999999999+08:00",
+      "role": "CONTINUITY_CORROBORATION",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-05-17/1216831409.PDF",
+      "sha256": "46d1eb05e84448cd3b8952cbea38c75e4b21776fdabd524267d155c416441091"
+    }
+  ],
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from factorlab.data.market_evidence_sidecar import POLICY
+from factorlab.data.market_evidence_sidecar import POLICY, ST_EXECUTION_KNOWN
 from factorlab.errors import DataQualityError, SchemaError
 from factorlab.research.oos_execution_study import execution_bars
 
@@ -24,6 +24,22 @@ def recovery_bars(bars, evidence, *, cutoff):
     return data
 
 
+def apply_issuer_execution_st(bars, evidence):
+    """Apply the execution-only issuer facts to otherwise unknown adapter states."""
+    data = bars.copy()
+    for fact in evidence.facts:
+        if fact.known_at_status != ST_EXECUTION_KNOWN:
+            continue
+        grant = evidence.fact(fact.security, fact.day, 'is_st', purpose='EXECUTION_STATE',
+                              cutoff=f'{fact.day}T09:30:00+08:00')
+        target = data.symbol.eq(grant.security) & data.date.eq(grant.day)
+        if (target.sum() != 1 or not data.loc[target, 'st_status'].eq(2).all()
+                or not data.loc[target, 'is_st'].isna().all()):
+            raise SchemaError(f'TARGETED_ST_SOURCE_DRIFT: {grant.day}/{grant.security}')
+        data.loc[target, 'is_st'] = int(grant.candidate_value)
+    return data
+
+
 def audit_frozen_fees(result, config):
     """Recalculate each receipt through the same frozen fee schedule."""
     from datetime import date
@@ -36,9 +52,12 @@ def audit_frozen_fees(result, config):
                 raise SchemaError(f'FROZEN_FEE_RECEIPT_MISMATCH: {trade.execution_date}/{trade.symbol}/{field}')
 
 
-def qualify_valuations(result, bars, evidence, observation, *, observations=None):
+def qualify_valuations(result, bars, evidence, observation, *, observations=None, session_date=None):
     """Check engine marks against observed closes or independently approved carry."""
-    rows = result.positions.merge(bars[['date', 'symbol', 'raw_close', 'suspended']],
+    positions = result.positions
+    if session_date is not None:
+        positions = positions.loc[positions.date.eq(session_date)]
+    rows = positions.merge(bars[['date', 'symbol', 'raw_close', 'suspended']],
         on=['date', 'symbol'], how='left', validate='one_to_one')
     output = []
     nav = result.nav.set_index('date').portfolio_value

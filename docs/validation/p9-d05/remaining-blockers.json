@@ -1,0 +1,76 @@
+{
+  "schema": "P9_D05_BLOCKERS_V1",
+  "status": "P9_D05_PARTIAL",
+  "first_actual_blocker": {
+    "date": "2023-05-19",
+    "security": "000540.SZ",
+    "reason": "UNQUALIFIED_HELD_CLOSE",
+    "detail": "MARKET DATA QUALIFICATION REQUIRED: candidate outside exact security/date/field scope",
+    "previous_accepted_close": "2023-05-18T15:00:00+08:00",
+    "shares": 133700,
+    "prior_observed_close_cny": 0.4,
+    "vendor_raw_close": null,
+    "vendor_suspended": 1,
+    "last_szse_trading_date": "2023-05-18",
+    "suspension_start": "2023-05-19",
+    "has_delisting_consolidation_period": false,
+    "szse_termination_decision_date": "2023-06-15",
+    "delisting_date": "2023-06-30",
+    "otc_registration_code": "400174",
+    "otc_listing_date": "2023-08-30",
+    "otc_suspension_at_listing": true,
+    "required": [
+      "Date-bounded valuation contract for the frozen holding from 2023-05-19 with its publication and consumption scope",
+      "Account-level rights and valuation or settlement receipts across exit registration and the OTC transition"
+    ],
+    "accepted": false
+  },
+  "documents": [
+    {
+      "notice": "2023-56",
+      "publication_date": "2023-05-19",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-05-19/1216852113.PDF",
+      "sha256": "1f8e3f589eecacbcf6064729e57cc3a6091de160b23996c33c07d56097a197af"
+    },
+    {
+      "notice": "2023-63",
+      "publication_date": "2023-06-16",
+      "exchange_decision": "深证上〔2023〕509号",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-06-16/1217074647.PDF",
+      "sha256": "30b17ce1ec2aa4b3c5372bde1a2c90f8137f1f07fb15a4d0d1ed4ba71ea1851c"
+    },
+    {
+      "notice": "2023-69",
+      "publication_date": "2023-06-29",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-06-29/1217155324.PDF",
+      "sha256": "bef7cf4a0496066efb290c93448fc17fb075437ab37636d84e5380309590b173"
+    },
+    {
+      "notice": "股份确权公告",
+      "publication_date": "2023-07-07",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-07-07/1217260200.PDF",
+      "sha256": "129abb920350f3dcfaf13ec4d8ae7575b8f334291f5848d770d7824871886e60"
+    },
+    {
+      "notice": "2023-011",
+      "publication_date": "2023-08-28",
+      "url": "https://pdf.dfcfw.com/pdf/H2_AN202308281595939419_1.pdf",
+      "sha256": "2115b557f06ba6fbcb75293776edf9050c2a4fe4345a19a8d93171f1d168fcba"
+    }
+  ],
+  "third_party_valuation_context": {
+    "publisher": "鹏华基金管理有限公司",
+    "publication_date": "2023-05-20",
+    "fund_effective_date": "2023-05-18",
+    "cny_per_share": 0.11,
+    "scope": "PENGHUA_NON_ETF_FUNDS",
+    "eligible_for_frozen_account": false,
+    "url": "https://paper.cnstock.com/html/2023-05/20/content_1769923.htm"
+  },
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
