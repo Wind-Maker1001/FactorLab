@@ -1,0 +1,75 @@
+{
+  "schema": "P9_S01_LEDGER_AUDIT_V1",
+  "scenarios": [
+    {
+      "research_id": "LAST_CLOSE_CARRY_SENSITIVITY",
+      "baseline_six_tables_exact": true,
+      "strict_accepted_sessions": 45,
+      "audit": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": false,
+        "scenario_marks_reconciled": true,
+        "financial_certification": false
+      },
+      "failed_day_excluded": true
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_HINDSIGHT",
+      "baseline_six_tables_exact": true,
+      "strict_accepted_sessions": 45,
+      "audit": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": false,
+        "scenario_marks_reconciled": true,
+        "financial_certification": false
+      },
+      "failed_day_excluded": true
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_PUBLICATION_BOUNDED",
+      "baseline_six_tables_exact": true,
+      "strict_accepted_sessions": 45,
+      "audit": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": false,
+        "scenario_marks_reconciled": true,
+        "financial_certification": false
+      },
+      "failed_day_excluded": true
+    },
+    {
+      "research_id": "ZERO_MARK_STRESS",
+      "baseline_six_tables_exact": true,
+      "strict_accepted_sessions": 45,
+      "audit": {
+        "status": "PASSED",
+        "cash": true,
+        "shares": true,
+        "equity": true,
+        "fees": true,
+        "raw_close_marks": false,
+        "qualified_marks": false,
+        "scenario_marks_reconciled": true,
+        "financial_certification": false
+      },
+      "failed_day_excluded": true
+    }
+  ],
+  "strict_original_receipt_sha256": "b6f3669f26dbb2391eba3698dda72abbddee9ceaf1495bfd854683192661befb",
+  "strict_receipt_unchanged": true
+}

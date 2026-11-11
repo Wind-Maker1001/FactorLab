@@ -1,0 +1,53 @@
+{
+  "schema": "P9_S01_COMPARISON_V1",
+  "metric_status": "SCENARIO_CONDITIONAL_NOT_CERTIFIED",
+  "comparisons": [
+    {
+      "research_id": "LAST_CLOSE_CARRY_SENSITIVITY",
+      "common_end": "2023-05-19",
+      "end_nav_difference_vs_A": 0.0,
+      "return_difference_vs_A": 0.0
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_HINDSIGHT",
+      "common_end": "2023-05-19",
+      "end_nav_difference_vs_A": -38773.0,
+      "return_difference_vs_A": -0.04173581520874925
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_PUBLICATION_BOUNDED",
+      "common_end": "2023-05-19",
+      "end_nav_difference_vs_A": 0.0,
+      "return_difference_vs_A": 0.0
+    },
+    {
+      "research_id": "ZERO_MARK_STRESS",
+      "common_end": "2023-05-19",
+      "end_nav_difference_vs_A": -53480.0,
+      "return_difference_vs_A": -0.05756664166724024
+    }
+  ],
+  "direct_holding_sensitivity": [
+    {
+      "mark": 0.4,
+      "shares": 133700,
+      "book_value": 53480,
+      "difference_vs_last_close": 0,
+      "is_portfolio_nav": false
+    },
+    {
+      "mark": 0.11,
+      "shares": 133700,
+      "book_value": 14707,
+      "difference_vs_last_close": -38773,
+      "is_portfolio_nav": false
+    },
+    {
+      "mark": 0.0,
+      "shares": 133700,
+      "book_value": 0,
+      "difference_vs_last_close": -53480,
+      "is_portfolio_nav": false
+    }
+  ]
+}

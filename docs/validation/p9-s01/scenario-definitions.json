@@ -1,0 +1,109 @@
+{
+  "schema": "P9_S01_SCENARIOS_V1",
+  "labels": [
+    "SCENARIO_ONLY",
+    "NOT_HISTORICAL_VALUATION_CERTIFIED",
+    "NOT_EXECUTION_PRICE",
+    "RIGHTS_UNSETTLED",
+    "NO_LIVE_MONEY",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "scenarios": [
+    {
+      "research_id": "LAST_CLOSE_CARRY_SENSITIVITY",
+      "symbol": "000540.SZ",
+      "start": "2023-05-19",
+      "end_exclusive": "2023-06-15",
+      "mark": 0.4,
+      "source": "Human-defined sensitivity to last observed 2023-05-18 close; not fair value",
+      "hindsight": false,
+      "public_after": null,
+      "before_public_mark": null,
+      "version": "v1",
+      "source_document_sha256": null,
+      "sha256": "8cda6302b6e4a3916d8cd2302da3b6b9d2b237a341987a44888c0439ba9095a4",
+      "labels": [
+        "SCENARIO_ONLY",
+        "NOT_HISTORICAL_VALUATION_CERTIFIED",
+        "NOT_EXECUTION_PRICE",
+        "RIGHTS_UNSETTLED",
+        "NO_LIVE_MONEY"
+      ]
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_HINDSIGHT",
+      "symbol": "000540.SZ",
+      "start": "2023-05-19",
+      "end_exclusive": "2023-06-15",
+      "mark": 0.11,
+      "source": "Penghua non-ETF fund notice published 2023-05-20; counterfactual May 19 close",
+      "hindsight": true,
+      "public_after": null,
+      "before_public_mark": null,
+      "version": "v1",
+      "source_document_sha256": "e29722b1992dd642a9e204ea0cb5c14b015f7602ea15f42b997e52e606e0fdbf",
+      "sha256": "fa7d93974e8d51d43a8361b92c708e0be313d3cb481f4f4a35e664ef0f68666e",
+      "labels": [
+        "SCENARIO_ONLY",
+        "NOT_HISTORICAL_VALUATION_CERTIFIED",
+        "NOT_EXECUTION_PRICE",
+        "RIGHTS_UNSETTLED",
+        "NO_LIVE_MONEY"
+      ]
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_PUBLICATION_BOUNDED",
+      "symbol": "000540.SZ",
+      "start": "2023-05-19",
+      "end_exclusive": "2023-06-15",
+      "mark": 0.11,
+      "source": "Penghua notice date precision: usable after May 20 end-of-day; prior .40 is a separate assumption",
+      "hindsight": false,
+      "public_after": "2023-05-20",
+      "before_public_mark": 0.4,
+      "version": "v1",
+      "source_document_sha256": "e29722b1992dd642a9e204ea0cb5c14b015f7602ea15f42b997e52e606e0fdbf",
+      "sha256": "667bdcc527e95a9c8cfa429ec7931d2335716f64472652fad9ce7b3fd25aae68",
+      "labels": [
+        "SCENARIO_ONLY",
+        "NOT_HISTORICAL_VALUATION_CERTIFIED",
+        "NOT_EXECUTION_PRICE",
+        "RIGHTS_UNSETTLED",
+        "NO_LIVE_MONEY"
+      ]
+    },
+    {
+      "research_id": "ZERO_MARK_STRESS",
+      "symbol": "000540.SZ",
+      "start": "2023-05-19",
+      "end_exclusive": "2023-06-15",
+      "mark": 0.0,
+      "source": "Human-defined book-value stress, not cancellation, sale or settlement",
+      "hindsight": false,
+      "public_after": null,
+      "before_public_mark": null,
+      "version": "v1",
+      "source_document_sha256": null,
+      "sha256": "9e066a93b3705918120ed849e26bbde832206a7aa97cf7a2e7646ebccfd01e58",
+      "labels": [
+        "SCENARIO_ONLY",
+        "NOT_HISTORICAL_VALUATION_CERTIFIED",
+        "NOT_EXECUTION_PRICE",
+        "RIGHTS_UNSETTLED",
+        "NO_LIVE_MONEY"
+      ]
+    }
+  ],
+  "valuation_phase": "Close only; first scenario open uses prior accepted close; subsequent opens use prior conditional close",
+  "stop_conditions": [
+    "2023-06-15 termination decision: reassess before session",
+    "2023-06-30 delisting: no ordinary A-share identity",
+    "2023-07-07 rights notice: no proven account registration",
+    "2023-08-30 OTC listing suspended: no ordinary A-share execution",
+    "Any changed suspension/source state or unverified share event: stop"
+  ],
+  "extension_authorized": false
+}
