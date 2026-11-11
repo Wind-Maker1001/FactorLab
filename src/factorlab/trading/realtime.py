@@ -292,8 +292,10 @@ class RealtimeAccount:
                 time_in_force='GTC')
             try:
                 self._submit(intent)
-            except (Unavailable, RiskRejected):
+            except (Unavailable, RiskRejected) as error:
                 runtime['rejected'] += 1
+                runtime['last_rejection'] = (str(error) if isinstance(error, Unavailable)
+                    else error.decision.reason)
             return True
         return self._change(operation)
 

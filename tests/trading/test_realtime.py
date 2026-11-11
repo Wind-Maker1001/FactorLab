@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D
+import asyncio
 import json
 import subprocess
 import sys
@@ -219,7 +220,11 @@ def test_public_opt_in_and_disconnect_budget(tmp_path):
         raise OSError('offline')
     result = asyncio.run(observe(h.account, seconds=1, network=True, reconnects=2, connector=broken))
     assert len(calls) == 3 and result['failures'] == 3
-    assert all('wss://fstream.binance.com/' in call[0] for call in calls)
+    assert all(call[0] == 'wss://fstream.binance.com/market/stream?streams=nvdausdt@aggTrade/nvdausdt@markPrice@1s' for call in calls)
+    assert result['diagnostics']['connection_attempts'] == 3
+    assert result['diagnostics']['handshakes'] == 0
+    assert result['diagnostics']['errors'] == {'connection:OSError': 3}
+    assert result['diagnostics']['status'] == 'CONNECTION_FAILED'
     assert h.account.health()['status'] == 'PAUSED'
     h.account.close()
 
@@ -351,7 +356,85 @@ def test_malformed_public_feed_does_not_cancel_other_market(tmp_path):
             connector=connector) for a in (f, s)))
     results = asyncio.run(run())
     assert results[0]['error'] == 'JSONDecodeError'
+    assert results[0]['diagnostics']['handshakes'] == 1
+    assert results[0]['diagnostics']['errors'] == {'parse:JSONDecodeError': 1}
+    assert results[1]['diagnostics']['event_kinds'] == {'quote': 1}
     assert results[1]['accepted'] == 1 and s.state.runtime['last_valid'] is not None
     assert f.state.runtime['last_valid'] is None
     assert not s.conflict
     f.close(); s.close()
+
+
+@pytest.mark.parametrize('body,subscription,errors', [
+    ('{"id":1,"code":2,"msg":"rejected"}', 'REJECTED', {'subscription:ValueError': 1}),
+    ('{"code":2,"msg":"rejected"}', 'REJECTED', {'subscription:ValueError': 1}),
+    ('{"id":1,"result":null}', 'ACKNOWLEDGED', {'receive:OSError': 1}),
+])
+def test_public_subscription_diagnostics(tmp_path, body, subscription, errors):
+    account = RealtimeAccount(tmp_path / 's', Market.BINANCE_EQUITY)
+    class Socket:
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *_):
+            return False
+        async def send(self, message):
+            assert json.loads(message)['method'] == 'SUBSCRIBE'
+        async def recv(self):
+            nonlocal body
+            if body is None:
+                raise OSError('ended')
+            value, body = body, None
+            return value
+    result = asyncio.run(observe(account, seconds=1, network=True, reconnects=0,
+        connector=lambda *_, **__: Socket()))
+    diagnostic = result['diagnostics']
+    assert diagnostic['handshakes'] == 1 and diagnostic['frames'] == 1
+    assert diagnostic['subscription'] == subscription and diagnostic['errors'] == errors
+    assert diagnostic['status'] == 'NO_MARKET_MESSAGES'
+    assert result['messages'] == result['accepted'] == 0
+    account.close()
+
+
+@pytest.mark.parametrize('stale', [False, True])
+def test_public_mark_diagnostics_and_time_rejection(tmp_path, stale):
+    account = RealtimeAccount(tmp_path / 'f', Market.BINANCE_USDM)
+    class Socket:
+        sent = False
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *_):
+            return False
+        async def recv(self):
+            if self.sent:
+                raise OSError('ended')
+            self.sent = True
+            ms = int((datetime.now(timezone.utc) - timedelta(seconds=30 if stale else 0)).timestamp() * 1000)
+            return json.dumps(dict(data=dict(e='markPriceUpdate', s='NVDAUSDT', E=ms, p='100')))
+    result = asyncio.run(observe(account, seconds=1, network=True, reconnects=0,
+        connector=lambda *_, **__: Socket()))
+    diagnostic = result['diagnostics']
+    assert result['messages'] == diagnostic['parsed'] == 1
+    assert diagnostic['event_kinds'] == {'mark': 1}
+    assert result['accepted'] == int(not stale) and diagnostic['rejected'] == int(stale)
+    assert diagnostic['rejection_reasons'] == ({'STALE_OR_FUTURE_OBSERVATION': 1} if stale else {})
+    assert diagnostic['strategy_enabled'] is False
+    assert account.state.runtime['signals'] == account.state.runtime['orders'] == 0
+    assert account.state.quotes == {}
+    account.close()
+
+
+def test_public_handshake_without_frames(tmp_path):
+    account = RealtimeAccount(tmp_path / 'f', Market.BINANCE_USDM)
+    class Socket:
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *_):
+            return False
+        async def recv(self):
+            await asyncio.Future()
+    result = asyncio.run(observe(account, seconds=.01, network=True, reconnects=0,
+        connector=lambda *_, **__: Socket()))
+    diagnostic = result['diagnostics']
+    assert diagnostic['handshakes'] == diagnostic['receive_timeouts'] == 1
+    assert diagnostic['frames'] == 0 and diagnostic['status'] == 'NO_MARKET_MESSAGES'
+    account.close()

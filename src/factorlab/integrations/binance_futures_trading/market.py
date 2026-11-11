@@ -28,4 +28,4 @@ def parse(value, received):
     return result
 
 
-URL = 'wss://fstream.binance.com/stream?streams=nvdausdt@aggTrade/nvdausdt@markPrice@1s'
+URL = 'wss://fstream.binance.com/market/stream?streams=nvdausdt@aggTrade/nvdausdt@markPrice@1s'
