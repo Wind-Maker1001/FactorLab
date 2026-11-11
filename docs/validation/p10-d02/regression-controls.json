@@ -1,0 +1,121 @@
+{
+  "controls": [
+    {
+      "name": "601857_2017_2018",
+      "mode": "NATIVE_CHECKPOINT_RECOMPUTED",
+      "keys": 487,
+      "matched": 2922,
+      "mismatched": 0,
+      "passed": true
+    },
+    {
+      "name": "BigQuant_four_known_amount_days",
+      "mode": "FOUR_ARCHIVE_MEMBERS_RECHECKED",
+      "cases": [
+        {
+          "date": "2017-02-27",
+          "binary64_CSMAR_minus_BigQuant": 2.9802322387695312e-08,
+          "CSMAR_CNRDS_exact_equal": true
+        },
+        {
+          "date": "2017-05-03",
+          "binary64_CSMAR_minus_BigQuant": 2.9802322387695312e-08,
+          "CSMAR_CNRDS_exact_equal": true
+        },
+        {
+          "date": "2018-10-12",
+          "binary64_CSMAR_minus_BigQuant": -5.960464477539063e-08,
+          "CSMAR_CNRDS_exact_equal": true
+        },
+        {
+          "date": "2018-12-13",
+          "binary64_CSMAR_minus_BigQuant": -2.9802322387695312e-08,
+          "CSMAR_CNRDS_exact_equal": true
+        }
+      ],
+      "passed": true,
+      "note": "Only the four known dates rechecked; absence of additional days inherited from prior full pilot evidence. Binary64 description only; no semantic certification."
+    },
+    {
+      "name": "fixed24_native_filled_prepared_missing",
+      "mode": "FROZEN_EVIDENCE_CONSISTENCY_REVIEW",
+      "native_filled": 216,
+      "prepared_missing": 216,
+      "native_missing": 0,
+      "passed": true
+    },
+    {
+      "name": "CSI500_missing_keys_prices",
+      "mode": "FROZEN_EVIDENCE_CONSISTENCY_REVIEW",
+      "missing_keys": 292,
+      "missing_OHLC": 564,
+      "passed": true
+    }
+  ],
+  "prior_summary_sha256": "0e4d4902c26edb50c8b1c81d47261fcff451a77194e9ecb1b3a6501e90aa6f1b",
+  "BigQuant_inputs": [
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/schema.json",
+      "sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076"
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-02-01_2017-02-28.parquet",
+      "sha256": "059de5c031fe2b9a4205d334f66478620b8a2942e2e668a325b378920fb5a952",
+      "receipt_sha256": "03f632daa68dbec2b9457a4c955266847347c785ba67e14db2a9c5f269087e34",
+      "physical_rows": 55932,
+      "exported_at_utc": "2026-11-07T12:19:47+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "amount"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2017-05-01_2017-05-31.parquet",
+      "sha256": "445f8740739ad08e28fdc4df782474318478bf7329c76bc7a00bab23c8f92cba",
+      "receipt_sha256": "9cc0519d53a9a297cf18cded677242343108cf3a6bd6fef55aafc2a4a6bb1bdc",
+      "physical_rows": 64527,
+      "exported_at_utc": "2026-11-07T12:19:48+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "amount"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-10-01_2018-10-31.parquet",
+      "sha256": "9daa250a4193f37f22c7d61e3424f3dc2e724be6b1f82dbdbba567ebd18ea170",
+      "receipt_sha256": "d0c7ab291a1768f5828155db4d11c90a4929dcc2fe58bdc08dbe61c85b1293b8",
+      "physical_rows": 63963,
+      "exported_at_utc": "2026-11-07T12:19:57+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "amount"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-12-01_2018-12-31.parquet",
+      "sha256": "f79ae4993e5581b65bca3ae11b4fb2e9b3ba8dbcf6ba69d9223a39996b947b4c",
+      "receipt_sha256": "577e194cc1859b38b6d3b6d10e25cb488af1760e04c3df786e11c7be9fcfaf50",
+      "physical_rows": 71315,
+      "exported_at_utc": "2026-11-07T12:19:58+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "amount"
+      ]
+    }
+  ],
+  "seconds": 0.7763722999952734
+}

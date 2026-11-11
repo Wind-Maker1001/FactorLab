@@ -1,0 +1,579 @@
+{
+  "schema": "P9_D02_EVIDENCE_CONSUMPTION_V1",
+  "status": "P9_D02_BLOCKED",
+  "mode": "SAVED_PREDICTIONS_ONLY",
+  "accounts": [
+    {
+      "model_id": "B_factor_score",
+      "fold": 0,
+      "status": "REPLAYED",
+      "audits": {
+        "MINIMUM_REPLAY/OBSERVED_ONLY": {
+          "status": "BLOCKED",
+          "reason": "UNVALUABLE_POSITION"
+        },
+        "MINIMUM_REPLAY/LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION": {
+          "status": "PASSED",
+          "cash": true,
+          "shares": true,
+          "equity": true,
+          "fees": true,
+          "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+          "policy_marks": true,
+          "observed_positions": 356,
+          "assumed_positions": 4
+        },
+        "FULL_SAVED_FOLD0/OBSERVED_ONLY": {
+          "status": "BLOCKED",
+          "reason": "UNVALUABLE_POSITION"
+        },
+        "FULL_SAVED_FOLD0/LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION": {
+          "status": "PASSED",
+          "cash": true,
+          "shares": true,
+          "equity": true,
+          "fees": true,
+          "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+          "policy_marks": true,
+          "observed_positions": 2396,
+          "assumed_positions": 4
+        }
+      },
+      "total_return": null
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 0,
+      "status": "REPLAYED",
+      "audits": {
+        "MINIMUM_REPLAY/OBSERVED_ONLY": {
+          "status": "BLOCKED",
+          "reason": "UNVALUABLE_POSITION"
+        },
+        "MINIMUM_REPLAY/LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION": {
+          "status": "PASSED",
+          "cash": true,
+          "shares": true,
+          "equity": true,
+          "fees": true,
+          "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+          "policy_marks": true,
+          "observed_positions": 356,
+          "assumed_positions": 4
+        },
+        "FULL_SAVED_FOLD0/OBSERVED_ONLY": {
+          "status": "BLOCKED",
+          "reason": "UNVALUABLE_POSITION"
+        },
+        "FULL_SAVED_FOLD0/LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION": {
+          "status": "PASSED",
+          "cash": true,
+          "shares": true,
+          "equity": true,
+          "fees": true,
+          "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+          "policy_marks": true,
+          "observed_positions": 2396,
+          "assumed_positions": 4
+        }
+      },
+      "total_return": null
+    },
+    {
+      "model_id": "B_lightgbm",
+      "fold": 0,
+      "status": "BLOCKED",
+      "reason": "execution status is missing for 2023-05-08/000540.SZ",
+      "execution_permit": false,
+      "signal_time_trading_state": "UNKNOWN",
+      "total_return": null
+    }
+  ],
+  "remaining_accounts": [
+    {
+      "model_id": "B_xgboost",
+      "fold": 0,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_factor_score",
+      "fold": 1,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 1,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_lightgbm",
+      "fold": 1,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_xgboost",
+      "fold": 1,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_factor_score",
+      "fold": 2,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 2,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_lightgbm",
+      "fold": 2,
+      "status": "NOT_RUN",
+      "total_return": null
+    },
+    {
+      "model_id": "B_xgboost",
+      "fold": 2,
+      "status": "NOT_RUN",
+      "total_return": null
+    }
+  ],
+  "state_consumption": {
+    "security": "000540.SZ",
+    "date": "2023-05-08",
+    "raw_st_status": 2,
+    "is_st": true,
+    "cutoff": "2023-05-05T15:00:00+08:00",
+    "previous_close": 0.63,
+    "open": 0.6,
+    "lower_limit": 0.6,
+    "sell_blocked": true,
+    "diagnostic_only": true,
+    "execution_permission": "UNKNOWN",
+    "order_executability": "ORDER_EXECUTABLE_UNVERIFIED"
+  },
+  "first_date": "2023-03-13",
+  "last_date": "2023-05-08",
+  "source_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+  "evidence_shards": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d"
+    }
+  ],
+  "source_shards": [
+    {
+      "member": "common/trading_days/2023-01-01_2023-12-31.parquet",
+      "sha256": "cbf43d5b461dc379a8edfe7c412ead84198d37831bc94403f6779af1337fa08b"
+    },
+    {
+      "member": "common/trading_days/2024-01-01_2024-12-31.parquet",
+      "sha256": "f85c955e9a24ca797b93024ac4b017a5a685359252588fee2e7df48ce469a1c5"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-03-01_2023-03-31.parquet",
+      "sha256": "fa1bdffb7158a0a26db56f2f9b827f5775367bafaa94e3d37e2f73e1301928a0"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-04-01_2023-04-30.parquet",
+      "sha256": "2647251d91fd447e6df1bc551f6d430f94a196d61bfb7c541917b3cafd34ff4b"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-05-01_2023-05-31.parquet",
+      "sha256": "93819a6b35239e2abf080d4078dd59704badcccf24f549c6df6000d7f82eacbf"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-06-01_2023-06-30.parquet",
+      "sha256": "2ba93cac8af6a70ab80607cfd87427d47a7a57c24db746b72818b78db9d788f8"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-07-01_2023-07-31.parquet",
+      "sha256": "d43b10e29c11ae8aa1368bc88dcce7c9f713e4ebd602c0d885ed374cec6f02f4"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-08-01_2023-08-31.parquet",
+      "sha256": "c0faf9317efd7a3ab51efa02dd3c483085c301478ee05758d038c83ff59fceee"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-09-01_2023-09-30.parquet",
+      "sha256": "7d9200f3e9868fc1ab789892e7c9879468e46f45bda426ba6e89fdc6b0358cd8"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-10-01_2023-10-31.parquet",
+      "sha256": "980593d395b381ada1635a330f60d7f08e4edb954f0de70f24474331b7215cdc"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-11-01_2023-11-30.parquet",
+      "sha256": "f0e5335470475181c45c51d683c795143c7a6b5a3f515f544fb58a90e35f26a6"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2023-12-01_2023-12-31.parquet",
+      "sha256": "6f6eb3fa6ebacb317803a5260afea1760acdbb8fcc53afdcdfcd53bfbe2667d1"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-01-01_2024-01-31.parquet",
+      "sha256": "72885e003f873280e26bde86fabac7ccd74ff9c4af406ce3db772b56e85cbd40"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-02-01_2024-02-29.parquet",
+      "sha256": "fd97388d9bc63c738968e7ea7cd67c550fcc2b26e43bac980fb7bd26925a1cc4"
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2024-03-01_2024-03-31.parquet",
+      "sha256": "57a725a3067fdd64db754622750890eca267d578ec1a97eaa0a5bc1acb2454ad"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-03-01_2023-03-31.parquet",
+      "sha256": "82ad6cbf848e42c0e75481e134d307bc684e69178e407f8f8d3d841c488e3cef"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-04-01_2023-04-30.parquet",
+      "sha256": "53ff789fc6caa3ff5769ad10c7163643422792d6d30cb22bbd84044a89e91286"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-05-01_2023-05-31.parquet",
+      "sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-06-01_2023-06-30.parquet",
+      "sha256": "02356d7bdf764e76cb589cfb0a6094a75cf59087984d67914bf200df042f7486"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-07-01_2023-07-31.parquet",
+      "sha256": "46c90d858a0753c35939c2cb8e3f848752364d60d0e708bfa7437f6e98c7895e"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-08-01_2023-08-31.parquet",
+      "sha256": "af6acb8f37302a65c3182fceca643b033de1fd2b6c5444ba62fe9e6ae119507c"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-09-01_2023-09-30.parquet",
+      "sha256": "8525d598cee89b98345dff93df12530412964a4796797aea34d01e0a344acdfd"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-10-01_2023-10-31.parquet",
+      "sha256": "42199f857be14bad269e667e343b766922b5b720f76a12846aeae22e53a67fc2"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-11-01_2023-11-30.parquet",
+      "sha256": "9c15e9558289bdf940ab40d39e02f10042e131cb66412370e7d0bd8f80c651cb"
+    },
+    {
+      "member": "stock/cn_stock_status/2023-12-01_2023-12-31.parquet",
+      "sha256": "b536c1f4182f2e2b21626381eba0ddfea0acff6f2950d7ec02afd04c5a9c058f"
+    },
+    {
+      "member": "stock/cn_stock_status/2024-01-01_2024-01-31.parquet",
+      "sha256": "7124d01f3f21311652a227d536418e540bd51d0b1a95a868cc8ed1683beca868"
+    },
+    {
+      "member": "stock/cn_stock_status/2024-02-01_2024-02-29.parquet",
+      "sha256": "36ea918d27f11bd5d13eebcb7b8d2dfea348f1adf808d160a410b9ad3c8056fa"
+    },
+    {
+      "member": "stock/cn_stock_status/2024-03-01_2024-03-31.parquet",
+      "sha256": "b2b1dec37582f2e05705f31f48dbfd6a22aaf528e61b183440bb9f724d895673"
+    }
+  ],
+  "candidate_prediction_sha256": "c8f18f07fde5521c340b9ad3c4364469a855481fc5f0c4b12d93a6ab20e6ad3f",
+  "total_return": null,
+  "three_fold_metrics": null,
+  "total_return_status": "TOTAL_RETURN_UNAVAILABLE",
+  "execution_permit": false,
+  "formal_admission": false,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "restored_scope": [
+    {
+      "model_id": "B_factor_score",
+      "fold": 0,
+      "scope": "MINIMUM_REPLAY",
+      "status": "CONDITIONAL_VALUATION_RESEARCH",
+      "start": "2023-03-13",
+      "end": "2023-05-08",
+      "sessions": 37,
+      "newly_qualified_sessions": 6,
+      "assumption_account_days": 4,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_factor_score",
+      "fold": 0,
+      "scope": "FULL_SAVED_FOLD0",
+      "status": "CONDITIONAL_VALUATION_RESEARCH",
+      "start": "2023-03-13",
+      "end": "2024-03-12",
+      "sessions": 243,
+      "newly_qualified_sessions": 212,
+      "assumption_account_days": 4,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 0,
+      "scope": "MINIMUM_REPLAY",
+      "status": "CONDITIONAL_VALUATION_RESEARCH",
+      "start": "2023-03-13",
+      "end": "2023-05-08",
+      "sessions": 37,
+      "newly_qualified_sessions": 6,
+      "assumption_account_days": 4,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 0,
+      "scope": "FULL_SAVED_FOLD0",
+      "status": "CONDITIONAL_VALUATION_RESEARCH",
+      "start": "2023-03-13",
+      "end": "2024-03-12",
+      "sessions": 243,
+      "newly_qualified_sessions": 212,
+      "assumption_account_days": 4,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_lightgbm",
+      "fold": 0,
+      "scope": "MINIMUM_REPLAY",
+      "status": "BLOCKED",
+      "start": "2023-03-13",
+      "end": "2023-05-08",
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_xgboost",
+      "fold": 0,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_factor_score",
+      "fold": 1,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 1,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_lightgbm",
+      "fold": 1,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_xgboost",
+      "fold": 1,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_factor_score",
+      "fold": 2,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 2,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_lightgbm",
+      "fold": 2,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    },
+    {
+      "model_id": "B_xgboost",
+      "fold": 2,
+      "scope": "FULL_FOLD",
+      "status": "NOT_RUN",
+      "start": null,
+      "end": null,
+      "sessions": 0,
+      "newly_qualified_sessions": 0,
+      "assumption_account_days": 0,
+      "net_return": null,
+      "sharpe": null
+    }
+  ],
+  "account_reconciliation": [
+    {
+      "model_id": "B_factor_score",
+      "fold": 0,
+      "scope": "MINIMUM_REPLAY",
+      "status": "PASSED",
+      "cash": true,
+      "shares": true,
+      "equity": true,
+      "fees": true,
+      "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+      "policy_marks": true,
+      "observed_positions": 356,
+      "assumed_positions": 4,
+      "nav_change_from_saved_marks": 0.0,
+      "original_raw_close_unchanged": true,
+      "virtual_suspension_trades": 0
+    },
+    {
+      "model_id": "B_factor_score",
+      "fold": 0,
+      "scope": "FULL_SAVED_FOLD0",
+      "status": "PASSED",
+      "cash": true,
+      "shares": true,
+      "equity": true,
+      "fees": true,
+      "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+      "policy_marks": true,
+      "observed_positions": 2396,
+      "assumed_positions": 4,
+      "nav_change_from_saved_marks": 0.0,
+      "original_raw_close_unchanged": true,
+      "virtual_suspension_trades": 0
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 0,
+      "scope": "MINIMUM_REPLAY",
+      "status": "PASSED",
+      "cash": true,
+      "shares": true,
+      "equity": true,
+      "fees": true,
+      "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+      "policy_marks": true,
+      "observed_positions": 356,
+      "assumed_positions": 4,
+      "nav_change_from_saved_marks": 0.0,
+      "original_raw_close_unchanged": true,
+      "virtual_suspension_trades": 0
+    },
+    {
+      "model_id": "B_ridge",
+      "fold": 0,
+      "scope": "FULL_SAVED_FOLD0",
+      "status": "PASSED",
+      "cash": true,
+      "shares": true,
+      "equity": true,
+      "fees": true,
+      "valuation_policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+      "policy_marks": true,
+      "observed_positions": 2396,
+      "assumed_positions": 4,
+      "nav_change_from_saved_marks": 0.0,
+      "original_raw_close_unchanged": true,
+      "virtual_suspension_trades": 0
+    }
+  ],
+  "remaining_blockers": [
+    {
+      "model_id": "B_lightgbm",
+      "fold": 0,
+      "date": "2023-05-08",
+      "security": "000540.SZ",
+      "field": "trade_status",
+      "status": "UNKNOWN",
+      "reason": "NO_SIGNAL_TIME_EXECUTION_PERMISSION",
+      "order_executability": "ORDER_EXECUTABLE_UNVERIFIED"
+    }
+  ],
+  "full_three_fold_net_return": null,
+  "full_three_fold_sharpe": null,
+  "raw_price_conditional_research_only": true,
+  "virtual_suspension_trades": 0
+}

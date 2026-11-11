@@ -1,0 +1,143 @@
+{
+  "receipt_identities_match_merged_manifest": 43,
+  "dictionary_checks": [
+    {
+      "source": "CSMAR",
+      "member": "TRDNEW_Dalyr[DES][xlsx].txt",
+      "sha256": "12b4277c15ae5fa2f6b329480ff9e5df5cfe4903208bc84871751e5c29ad6a98",
+      "field_definitions": [
+        "Filling [填充标识] - 0=不填充，正常交易数据。1=非节假日填充，2=节假日填充。",
+        "Opnprc [日开盘价] - A股以人民币元计，上海B以美元计，深圳B以港币计",
+        "Hiprc [日最高价] - A股以人民币元计，上海B以美元计，深圳B以港币计",
+        "Loprc [日最低价] - A股以人民币元计，上海B以美元计，深圳B以港币计",
+        "Clsprc [日收盘价] - A股以人民币元计，上海B以美元计，深圳B以港币计",
+        "Dnvaltrd [日个股交易金额] - A股以人民币元计，上海B以美元计，深圳B以港币计，0=没有交易量"
+      ]
+    },
+    {
+      "source": "CNRDS",
+      "member": "2019/个股日回报率_字段说明.txt",
+      "sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "field_definitions": [
+        "Dopnprc[日开盘价]-日开盘价，单位：元",
+        "Dhiprc[日最高价]-日最高价，单位：元",
+        "Dloprc[日最低价]-日最低价，单位：元",
+        "Dclsprc[日收盘价]-日收盘价，单位：元",
+        "Adclsprc[复权日收盘价]-复权日收盘价，单位：元",
+        "Dtrdamt[日成交金额]-日成交金额，单位：元"
+      ]
+    },
+    {
+      "source": "CNRDS",
+      "member": "2018/个股日回报率_字段说明.txt",
+      "sha256": "a24482785ea9412167138c9a42a2535fd947ee0bd572d515ce62bf836ed166f4",
+      "field_definitions": [
+        "Dopnprc[日开盘价]-日开盘价，单位：元",
+        "Dhiprc[日最高价]-日最高价，单位：元",
+        "Dloprc[日最低价]-日最低价，单位：元",
+        "Dclsprc[日收盘价]-日收盘价，单位：元",
+        "Adclsprc[复权日收盘价]-复权日收盘价，单位：元",
+        "Dtrdamt[日成交金额]-日成交金额，单位：元"
+      ]
+    }
+  ],
+  "third_source_diagnostics": [
+    {
+      "month": "2018-12",
+      "field": "amount",
+      "counts": {
+        "compared": 18368,
+        "CSMAR_binary64_equals_BigQuant": 0,
+        "CNRDS_binary64_equals_BigQuant": 18044,
+        "CSMAR_rounds_BigQuant_to_integer": 0,
+        "CNRDS_truncates_BigQuant_to_integer": 18212,
+        "joint_round_truncate_relation": 0,
+        "BigQuant_absent": 24
+      },
+      "status": "DESCRIPTIVE_NUMERIC_RELATION_ONLY; BIGQUANT_UNIT_AND_PRECISION_CONTRACT_OPEN"
+    },
+    {
+      "month": "2018-12",
+      "field": "open",
+      "counts": {
+        "compared": 5058,
+        "CSMAR_binary64_equals_BigQuant": 5058,
+        "CNRDS_binary64_equals_BigQuant": 0,
+        "BigQuant_null": 87
+      },
+      "status": "DESCRIPTIVE_NUMERIC_RELATION_ONLY; BIGQUANT_UNIT_AND_PRECISION_CONTRACT_OPEN"
+    },
+    {
+      "month": "2019-05",
+      "field": "amount",
+      "counts": {
+        "compared": 19357,
+        "CSMAR_binary64_equals_BigQuant": 0,
+        "CNRDS_binary64_equals_BigQuant": 19033,
+        "CSMAR_rounds_BigQuant_to_integer": 0,
+        "CNRDS_truncates_BigQuant_to_integer": 19210,
+        "joint_round_truncate_relation": 0,
+        "BigQuant_absent": 8
+      },
+      "status": "DESCRIPTIVE_NUMERIC_RELATION_ONLY; BIGQUANT_UNIT_AND_PRECISION_CONTRACT_OPEN"
+    },
+    {
+      "month": "2019-05",
+      "field": "open",
+      "counts": {
+        "compared": 44370,
+        "CSMAR_binary64_equals_BigQuant": 44370,
+        "CNRDS_binary64_equals_BigQuant": 0,
+        "BigQuant_null": 162,
+        "BigQuant_absent": 14
+      },
+      "status": "DESCRIPTIVE_NUMERIC_RELATION_ONLY; BIGQUANT_UNIT_AND_PRECISION_CONTRACT_OPEN"
+    }
+  ],
+  "BigQuant_inputs": [
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/schema.json",
+      "sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076"
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2018-12-01_2018-12-31.parquet",
+      "sha256": "f79ae4993e5581b65bca3ae11b4fb2e9b3ba8dbcf6ba69d9223a39996b947b4c",
+      "receipt_sha256": "577e194cc1859b38b6d3b6d10e25cb488af1760e04c3df786e11c7be9fcfaf50",
+      "physical_rows": 71315,
+      "exported_at_utc": "2026-11-07T12:19:58+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "amount",
+        "volume"
+      ]
+    },
+    {
+      "source": "BigQuant",
+      "archive": "stock.zip",
+      "member": "stock/cn_stock_real_bar1d/2019-05-01_2019-05-31.parquet",
+      "sha256": "5e29ae31dd5c82d0e07dd937f07497116fe47ab7e52060e731a5d6fb26cce448",
+      "receipt_sha256": "e5d4d2e5a67bb25aeacf67361186e0d22ee95c48c4edb6a55c2617b256e81d3f",
+      "physical_rows": 72332,
+      "exported_at_utc": "2026-11-07T12:20:01+00:00",
+      "selected_columns": [
+        "date",
+        "instrument",
+        "open",
+        "high",
+        "low",
+        "close",
+        "amount",
+        "volume"
+      ]
+    }
+  ]
+}

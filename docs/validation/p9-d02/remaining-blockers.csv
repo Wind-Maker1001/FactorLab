@@ -1,0 +1,2 @@
+model_id,fold,date,security,field,status,reason,order_executability
+B_lightgbm,0,2023-05-08,000540.SZ,trade_status,UNKNOWN,NO_SIGNAL_TIME_EXECUTION_PERMISSION,ORDER_EXECUTABLE_UNVERIFIED

@@ -1,0 +1,20 @@
+{
+  "baseline": "937ed07cb7801ae5b8f6f63bbb23894d3640954c",
+  "targeted_tests": {
+    "files": ["tests/research/test_p9_fee_sensitivity.py", "tests/research/test_execution_backtest_phase3.py"],
+    "passed": 32,
+    "initial_seconds": 3.09,
+    "final_seconds": 0.95
+  },
+  "real_receipt_checks": {
+    "research_identity": "PASSED",
+    "original_artifact_hashes": "PASSED",
+    "per_fill_notional_and_fee_components": "PASSED",
+    "daily_cash_notional_and_fee_reconciliation": "PASSED",
+    "complete_saved_fill_ledgers": 2,
+    "scopes_including_overlapping_pilot_and_prefixes": 5
+  },
+  "official_source": "https://m.mof.gov.cn/czxw/202308/t20230827_3904226.htm",
+  "official_announcement": "财政部 税务总局公告2023年第39号",
+  "official_text": "自2023年8月28日起，证券交易印花税实施减半征收。"
+}

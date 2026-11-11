@@ -46,6 +46,21 @@ def test_carry_qualification_and_full_ledger(case):
         audit_ledger(result, bars, 1000000)
 
 
+@pytest.mark.parametrize('invalid', ['missing_row', 'nan', 'wrong_price'])
+def test_ledger_rejects_invalid_qualified_marks(case, invalid):
+    bars, result = suspended_account()
+    untouched = bars.copy(deep=True)
+    qualified = qualify_valuations(result, bars, case[2](), case[1])
+    index = qualified.index[qualified.valuation_assumption_used][0]
+    if invalid == 'missing_row':
+        qualified = qualified.drop(index)
+    else:
+        qualified.loc[index, 'valuation_price'] = float('nan') if invalid == 'nan' else 7.14
+    with pytest.raises(SchemaError, match='unqualified close mark'):
+        audit_ledger(result, bars, 1000000, valuation_prices=qualified)
+    pd.testing.assert_frame_equal(bars, untouched)
+
+
 def test_missing_sidecar_and_wrong_mark_block(case):
     payload, observation, load, _, _ = case
     valid = load()
