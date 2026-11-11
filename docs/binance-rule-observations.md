@@ -40,10 +40,10 @@ account-specific payment assets remain UNKNOWN.
 
 USD notional units do **not** establish USD payment eligibility. The documented
 USDC default likewise does not prove the account's accepted asset set, available
-USDC or permission to spend it. The existing offline USD paper ledger is not
-converted into USDC, and neither is combined with Futures USDT. Public-mode
-Stocks admission remains blocked instead of treating the offline `quoteAsset=USD`
-request fixture as live evidence.
+USDC or permission to spend it. The USD paper ledger is not converted into USDC,
+and neither is combined with Futures USDT. Without explicit Paper Simulation
+Policy, public-mode Stocks admission remains blocked. Simulation eligibility
+never makes the `quoteAsset=USD` request fixture live payment evidence.
 
 ## Acquisition and restart contract
 
@@ -54,8 +54,10 @@ python -m factorlab.trading.realtime_service --state-dir ./paper-observation --p
 This opts into market-data connections, not private-account access. Rule refresh
 performs one GET per market, with ten-second HTTP timeout and no retry. Stocks
 uses the existing market-data key requirement. Current rules, parsed values and
-raw response receipts use the existing PaperStore snapshot, not a new market
-database. Each receipt identifies endpoint, pinned protocol version, request time,
+symbol-scoped response receipts use the existing PaperStore snapshot, not a new
+market database. Receipts retain only the requested symbol and explicitly record
+the returned versus retained symbol counts; unrelated instruments are not copied
+through every market-event transaction. Each receipt identifies endpoint, pinned protocol version, request time,
 fetch time, original server time when present and local five-minute expiry.
 Local fetch time is not a historical rule effective date.
 
@@ -84,10 +86,44 @@ contract validation is not real-account integration approval. A future authorize
 check must have an explicit request/time budget and publish only capability
 outcomes, never credentials, signatures or private account payloads.
 
-## Further paper acceptance
+## Explicit Paper Simulation Policy
 
-The runner is ready for directed acquisition/failure/restart acceptance using
-public observations and offline account fixtures. Public-data-driven trade/fill
-acceptance remains blocked by unverified Futures account limits and Stocks
-permission/payment/settlement evidence. A successful quote feed or strategy
-signal cannot replace that evidence.
+```console
+python -m factorlab.trading.realtime_service --state-dir ./new-paper-simulation --public-market-data --refresh-rules --paper --paper-simulation --acceptance-signal --seconds 60 --reconnects 2
+```
+
+`--paper-simulation` permits hypothetical account eligibility only in the local
+paper runner. It does not authorize an exchange request. Every reported account,
+fill, fee, slippage and risk outcome is simulated. The accounts start separately
+with 1,000 USDT for NVDAUSDT and 1,000 USD for NVDA. Fees default to a synthetic
+0.001 of fill notional and adverse slippage to 0.0001 of the executable quote;
+quote participation is hypothetical liquidity, not a reported exchange execution.
+
+Futures use full entry-notional collateral and a synthetic 1,000-USDT capital
+ceiling, not an exchange risk bracket. Real account brackets remain UNKNOWN.
+There is no leveraged liquidation or funding model. Mark price remains separate
+from the executable trade price. Stocks assume paper permission and, if the
+public response has no reference price, use the current quote as an explicitly
+synthetic price-band reference. Payment eligibility and settlement remain UNKNOWN;
+no custody or real settlement mechanism is simulated.
+
+Official current public rules, valid public session evidence, freshness, symbol
+filters and shared controller risk limits are still required in public mode.
+An unavailable Stocks market-data key can therefore yield NO_TRADE even though
+paper permission is assumed. Synthetic sessions belong only in offline scenarios.
+Restart requires the same explicit simulation configuration, clears public
+rule/session approval and preserves order identities; UNKNOWN orders remain
+query-only. A serialized policy or source label cannot restore public provenance
+or enable live execution.
+
+`--acceptance-signal` is an opt-in test trigger, not a predictive investment
+strategy. A valid executable quote at least 30 source-time seconds after the
+first quote can generate one BUY signal if no natural strategy signal occurred.
+It cannot fill on its trigger event. Subsequent liquidity, price, rule and risk
+conditions still determine whether any simulated fill occurs. Without this flag,
+the existing price-change strategy is unchanged. The simulation CLI bounds each
+market to at most 60 seconds and two reconnects.
+
+Report offline deterministic closure, online data, online orders, online fills
+and account reconciliation separately. A missing observation is NOT_VERIFIED,
+not evidence of a successful online trade.

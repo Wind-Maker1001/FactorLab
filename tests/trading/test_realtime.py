@@ -34,9 +34,9 @@ def rules(market):
 
 
 class Harness:
-    def __init__(self, tmp, market=Market.BINANCE_USDM):
+    def __init__(self, tmp, market=Market.BINANCE_USDM, **options):
         self.time = NOW
-        self.account = RealtimeAccount(tmp, market, clock=lambda: self.time)
+        self.account = RealtimeAccount(tmp, market, clock=lambda: self.time, **options)
         self.market = market
         self.sequence = 0
         self.send('rules', payload=rules(market), reference='100', source='SYNTHETIC_OFFLINE_ONLY')

@@ -134,11 +134,20 @@ def main():
     source.add_argument('--replay', type=Path)
     source.add_argument('--public-market-data', action='store_true')
     parser.add_argument('--paper', action='store_true', help='enable strategy and local paper execution')
+    parser.add_argument('--paper-simulation', action='store_true', help='explicit synthetic account eligibility; never live authority')
+    parser.add_argument('--acceptance-signal', action='store_true', help='paper-only test signal after 30 seconds without natural signals')
     parser.add_argument('--observations', type=Path, help='unverified rule/session inputs; cannot authorize public paper orders')
     parser.add_argument('--refresh-rules', action='store_true', help='fetch current official rules once per market')
     parser.add_argument('--seconds', type=float, default=30)
-    parser.add_argument('--reconnects', type=int, default=3)
+    parser.add_argument('--reconnects', type=int, default=2)
     args = parser.parse_args()
+    if args.paper_simulation and not args.paper:
+        parser.error('--paper-simulation requires --paper')
+    if args.acceptance_signal and not args.paper_simulation:
+        parser.error('--acceptance-signal requires --paper-simulation')
+    if args.paper_simulation and (not 0 < args.seconds <= 60 or not 0 <= args.reconnects <= 2):
+        parser.error('paper simulation requires seconds <= 60 and reconnects <= 2')
+    from .simulation import PAPER_SIMULATION
     if (args.observations or args.refresh_rules) and not args.public_market_data:
         parser.error('--observations and --refresh-rules require --public-market-data')
     args.state_dir.mkdir(parents=True, exist_ok=True)
@@ -148,10 +157,13 @@ def main():
     try:
         for market, name in ((Market.BINANCE_USDM, 'futures'), (Market.BINANCE_EQUITY, 'stocks')):
             accounts[name] = RealtimeAccount(args.state_dir / (name + '.sqlite'), market, clock=clock,
-                data_mode='public' if args.public_market_data else 'offline')
+                data_mode='public' if args.public_market_data else 'offline',
+                simulation_policy=PAPER_SIMULATION if args.paper_simulation else None,
+                acceptance_signal=args.acceptance_signal)
             if args.paper:
                 accounts[name].control('start')
         network_results = {}
+        rule_results = {}
         if args.public_market_data:
             if args.observations:
                 with args.observations.open(encoding='utf-8') as source:
@@ -164,10 +176,12 @@ def main():
                         account = accounts['futures' if value['symbol'] == 'NVDAUSDT' else 'stocks']
                         account.event(value)
             if args.refresh_rules:
-                for account in accounts.values():
+                for name, account in accounts.items():
                     try:
-                        account.refresh_rules(network=True)
-                    except (DataQualityError, ValueError, OSError, TimeoutError, KeyError):
+                        accepted = account.refresh_rules(network=True)
+                        rule_results[name] = dict(accepted=accepted)
+                    except (DataQualityError, ValueError, OSError, TimeoutError, KeyError) as error:
+                        rule_results[name] = dict(accepted=False, error=type(error).__name__)
                         account.disconnect('RULE_REFRESH_FAILED')
             async def run():
                 values = await asyncio.gather(*(observe(account, seconds=args.seconds, network=True,
@@ -187,7 +201,7 @@ def main():
                     else:
                         account.event(value)
         print(json.dumps(dict(accounts={key: account.health() for key, account in accounts.items()},
-                              public_observation=network_results), default=str, indent=2))
+                              public_observation=network_results, rule_refresh=rule_results), default=str, indent=2))
     finally:
         for account in accounts.values():
             account.close()
