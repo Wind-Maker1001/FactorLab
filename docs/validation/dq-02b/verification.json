@@ -1,0 +1,23 @@
+{
+  "status": "DQ02B_PARTIAL_RESOURCE_BOUND",
+  "archives": 10,
+  "data_archives": 9,
+  "tables": 61,
+  "partitions": 3201,
+  "full_content_partitions": 3201,
+  "rows": 450958087,
+  "metadata_only_partitions": 0,
+  "unresolved_partitions": 0,
+  "candidate_key_exact_tables": 20,
+  "resource_blocked_key_tables": 16,
+  "unknown_key_contract_tables": 25,
+  "schema_variant_tables": 0,
+  "nonfinite_field_partitions": 181,
+  "gates": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "row_conservation": true
+}
