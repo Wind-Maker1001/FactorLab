@@ -133,9 +133,8 @@ def continue_fold(session, dates, targets, bars, evidence, observations, accepte
     return accepted, qualified, blocker
 
 
-def run(args, *, continuation=None):
-    import psutil
-
+def prepare_replay(args, *, continuation=None, session_factory=None):
+    """Verify frozen sources and rebuild the exactly matched accepted account."""
     started = time.perf_counter()
     p9 = json.loads((VALIDATION / 'p9-01/result.json').read_bytes())
     pins = p9['private_artifact_sha256']
@@ -194,7 +193,8 @@ def run(args, *, continuation=None):
         benchmark_open_price_column='raw_open', benchmark_close_price_column='raw_close'),
         FeeSchedule([FeeRule(effective_from=date(1990, 1, 1), **config['fees'])]))
     benchmark = pd.DataFrame(dict(date=dates, raw_open=1., raw_close=1.))
-    session = engine.start_session(bars, benchmark, signal_date=start)
+    session = (engine.start_session(bars, benchmark, signal_date=start) if session_factory is None
+               else session_factory(engine, bars, benchmark, signal_date=start))
     plan = {day: group.set_index('symbol').target_weight.to_dict() for day, group in targets.groupby('date')}
     for _ in dates[(dates > start) & (dates <= baseline_day)]:
         advance(session, plan)
@@ -206,6 +206,21 @@ def run(args, *, continuation=None):
         expected = pd.read_parquet(reference_directory / f'fold-0-{name}.parquet')
         pd.testing.assert_frame_equal(actual, expected, check_exact=True, obj=f'{reference_label} {name}')
 
+    return dict(started=started, session=session, dates=dates, plan=plan, bars=bars,
+        evidence=evidence, observations=observations, prior=prior, prior_marks=prior_marks,
+        baseline_day=baseline_day, config=config, reference_frames=reference_frames,
+        frozen_hashes=frozen_hashes, original_prediction_hash=original_prediction_hash, entries=entries)
+
+
+def run(args, *, continuation=None):
+    import psutil
+
+    state = prepare_replay(args, continuation=continuation)
+    (started, session, dates, plan, bars, evidence, observations, prior, prior_marks,
+     baseline_day, config, reference_frames, frozen_hashes, original_prediction_hash,
+     entries) = (state[key] for key in ('started', 'session', 'dates', 'plan', 'bars',
+        'evidence', 'observations', 'prior', 'prior_marks', 'baseline_day', 'config',
+        'reference_frames', 'frozen_hashes', 'original_prediction_hash', 'entries'))
     accepted, new_marks, blocker = continue_fold(session, dates[dates > baseline_day], plan,
                                                   bars, evidence, observations, prior)
     qualified = pd.concat([prior_marks, *new_marks], ignore_index=True)

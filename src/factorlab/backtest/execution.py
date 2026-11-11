@@ -562,6 +562,7 @@ class AShareExecutionBacktester:
         position_rows: List[dict] = []
         comparison_rows = []
 
+        scenario = getattr(session, 'scenario_valuation', None)
         for day in calendar[start_position:]:
             day_bars = prepared_bars.loc[
                 prepared_bars["date"] == day
@@ -578,7 +579,9 @@ class AShareExecutionBacktester:
                     if pd.isna(raw_open)
                     else float(raw_open)
                 )
-                if not math.isfinite(mark) or mark <= 0.0:
+                scenario_zero = (scenario is not None and symbol == scenario.symbol
+                                 and scenario.active(day) and symbol in last_marks and mark == 0.0)
+                if not math.isfinite(mark) or (mark <= 0.0 and not scenario_zero):
                     raise SchemaError(
                         "held position %s has no usable mark on %s"
                         % (symbol, day.date())
@@ -737,7 +740,11 @@ class AShareExecutionBacktester:
                     if pd.isna(raw_close)
                     else float(raw_close)
                 )
-                if not math.isfinite(mark) or mark <= 0.0:
+                conditional = (None if scenario is None else scenario.close_mark(day, symbol, row))
+                if conditional is not None:
+                    mark = conditional
+                    mark_times[symbol] = day + pd.Timedelta(hours=15)
+                if not math.isfinite(mark) or (mark <= 0.0 and conditional != 0.0):
                     raise SchemaError(
                         "held position %s has no usable close mark on %s"
                         % (symbol, day.date())

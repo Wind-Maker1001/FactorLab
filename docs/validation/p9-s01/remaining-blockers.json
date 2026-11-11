@@ -1,0 +1,87 @@
+{
+  "schema": "P9_S01_BLOCKERS_V1",
+  "labels": [
+    "SCENARIO_ONLY",
+    "NOT_HISTORICAL_VALUATION_CERTIFIED",
+    "NOT_EXECUTION_PRICE",
+    "RIGHTS_UNSETTLED",
+    "NO_LIVE_MONEY",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "strict": "UNQUALIFIED_HELD_CLOSE: 2023-05-19/000540.SZ",
+  "scenarios": [
+    {
+      "research_id": "LAST_CLOSE_CARRY_SENSITIVITY",
+      "blocker": {
+        "date": "2023-05-22",
+        "reason": "execution status is missing for 2023-05-22/000540.SZ",
+        "source_state": [
+          {
+            "suspended": 1,
+            "st_status": 2,
+            "is_st": null,
+            "raw_close": null
+          }
+        ],
+        "failed_day_not_accepted": true
+      }
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_HINDSIGHT",
+      "blocker": {
+        "date": "2023-05-22",
+        "reason": "execution status is missing for 2023-05-22/000540.SZ",
+        "source_state": [
+          {
+            "suspended": 1,
+            "st_status": 2,
+            "is_st": null,
+            "raw_close": null
+          }
+        ],
+        "failed_day_not_accepted": true
+      }
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_PUBLICATION_BOUNDED",
+      "blocker": {
+        "date": "2023-05-22",
+        "reason": "execution status is missing for 2023-05-22/000540.SZ",
+        "source_state": [
+          {
+            "suspended": 1,
+            "st_status": 2,
+            "is_st": null,
+            "raw_close": null
+          }
+        ],
+        "failed_day_not_accepted": true
+      }
+    },
+    {
+      "research_id": "ZERO_MARK_STRESS",
+      "blocker": {
+        "date": "2023-05-22",
+        "reason": "execution status is missing for 2023-05-22/000540.SZ",
+        "source_state": [
+          {
+            "suspended": 1,
+            "st_status": 2,
+            "is_st": null,
+            "raw_close": null
+          }
+        ],
+        "failed_day_not_accepted": true
+      }
+    }
+  ],
+  "unresolved": [
+    "June 15 decision requires independent reassessment; no indefinite carry authorized",
+    "Account-specific 400174 registration quantity, custody and eligibility UNKNOWN",
+    "Later share changes, disposal, restructuring and settlement cash unverified"
+  ],
+  "completed_243_sessions": false
+}
