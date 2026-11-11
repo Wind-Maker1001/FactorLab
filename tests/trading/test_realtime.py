@@ -418,8 +418,46 @@ def test_public_mark_diagnostics_and_time_rejection(tmp_path, stale):
     assert result['accepted'] == int(not stale) and diagnostic['rejected'] == int(stale)
     assert diagnostic['rejection_reasons'] == ({'STALE_OR_FUTURE_OBSERVATION': 1} if stale else {})
     assert diagnostic['strategy_enabled'] is False
+    latency = diagnostic['latency']
+    assert latency['emitted_minus_source']['max_seconds'] == 0
+    assert latency['received_minus_emitted']['count'] == 1
+    assert latency['processing_start_minus_received']['count'] == 1
+    assert latency['event_processing']['count'] == latency['transaction_duration']['count'] == 1
+    assert sum(latency['received_minus_source']['buckets']) == 1
+    if stale:
+        assert latency['rejected_received_minus_source']['min_seconds'] >= 30
+        assert latency['rejected_received_minus_emitted']['buckets'][-1] == 1
+    else:
+        assert 'rejected_received_minus_source' not in latency
     assert account.state.runtime['signals'] == account.state.runtime['orders'] == 0
     assert account.state.quotes == {}
+    account.close()
+
+
+@pytest.mark.parametrize('emission_age', [1, 7])
+def test_stale_trade_latency_separates_emission_and_receive_delay(tmp_path, emission_age):
+    account = RealtimeAccount(tmp_path / 'f', Market.BINANCE_USDM)
+    class Socket:
+        sent = False
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *_):
+            return False
+        async def recv(self):
+            if self.sent:
+                raise OSError('ended')
+            self.sent = True
+            now = int(datetime.now(timezone.utc).timestamp() * 1000)
+            return json.dumps(dict(e='aggTrade', s='NVDAUSDT', T=now - 8000,
+                                   E=now - emission_age * 1000, p='100', q='1', a=1))
+    result = asyncio.run(observe(account, seconds=1, network=True, reconnects=0,
+                                connector=lambda *_, **__: Socket()))
+    assert result['accepted'] == 0
+    latency = result['diagnostics']['latency']
+    assert latency['rejected_emitted_minus_source']['min_seconds'] == 8 - emission_age
+    assert emission_age <= latency['rejected_received_minus_emitted']['min_seconds'] < emission_age + 1
+    assert latency['rejected_received_minus_source']['min_seconds'] >= 8
+    assert account.state.runtime['orders'] == 0
     account.close()
 
 

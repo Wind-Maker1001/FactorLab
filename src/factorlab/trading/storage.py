@@ -1,11 +1,12 @@
 """Bounded SQLite paper metadata, one atomic account snapshot and event journal."""
 from contextlib import contextmanager
 from dataclasses import fields, is_dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 import json
 import sqlite3
+import time
 
 from . import contracts
 from .paper import Instrument, PaperState, Quote
@@ -66,6 +67,9 @@ class PaperStore:
         if not 1 <= max_orders <= 1000 or not 1 <= max_events <= 10000:
             raise ValueError("storage limits exceed paper metadata budget")
         self.max_orders, self.max_events = max_orders, max_events
+        self.transaction_count = 0
+        self.last_transaction = None
+        self.last_transaction_times = None
         self.db = sqlite3.connect(path, isolation_level=None)
         self.db.execute("PRAGMA synchronous=FULL")
         self.db.execute("CREATE TABLE IF NOT EXISTS snapshot (id INTEGER PRIMARY KEY CHECK(id=1), version INTEGER NOT NULL, payload TEXT NOT NULL)")
@@ -73,6 +77,8 @@ class PaperStore:
 
     @contextmanager
     def transaction(self):
+        started_at = datetime.now(timezone.utc)
+        started = time.perf_counter()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             yield
@@ -80,6 +86,10 @@ class PaperStore:
         except BaseException:
             self.db.execute("ROLLBACK")
             raise
+        finally:
+            self.transaction_count += 1
+            self.last_transaction = time.perf_counter() - started
+            self.last_transaction_times = (started_at, datetime.now(timezone.utc))
 
     def load(self):
         row = self.db.execute("SELECT version,payload FROM snapshot WHERE id=1").fetchone()
