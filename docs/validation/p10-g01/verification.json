@@ -1,0 +1,22 @@
+{
+  "schema": "P10_G01_VERIFICATION_V1",
+  "base_commit": "0cf5404510b497cf2ad0d974d21a04119219a0df",
+  "native_validation": "PASS",
+  "seconds": 1.609114299993962,
+  "processes": 1,
+  "arrow_threads": 1,
+  "peak_working_set_bytes": 198594560,
+  "targeted_regressions": {
+    "tests": 133,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "scope": "five securities; fixed months plus 601857 2017-2018; no full-market scan",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
