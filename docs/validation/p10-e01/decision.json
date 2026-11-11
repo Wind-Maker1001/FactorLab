@@ -1,0 +1,28 @@
+{
+  "task": "P10-E01",
+  "status": "P10_E01_EXTERNAL_CONFIRMATION_PENDING",
+  "evidence_state": "EXTERNAL_EVIDENCE_PENDING",
+  "preferred_path": "C_WAIT_FOR_BIGQUANT_BATCH_ATTESTATION",
+  "preferred_next_source_if_confirmed": "BigQuant/cn_stock_real_bar1d",
+  "bigquant_source_level_qualified": false,
+  "missing_primary_evidence": "Vendor attestation that current raw OHLC semantics, CNY/share units, no-fill/suspension and revision policies apply to the 2026-11-07 batch identified by 13 receipt hashes and original Manifest",
+  "inquiry_status": "REQUEST_PREPARED_NOT_SENT",
+  "alternative_ready": false,
+  "alternative_fallback": "CSMAR only after entitlement, native Filling semantics, batch price-basis and exact frozen-scope coverage verified",
+  "cost_rationale": "BigQuant already has exact frozen artifact identity and consumer; one bounded vendor confirmation is lower incremental engineering than replacing inputs. This is an engineering estimate, not a supplier response or guaranteed turnaround.",
+  "next_action": "Send prepared inquiry through authorized supplier support channel; wait for attributable response before any qualification development",
+  "development_now": "STOP_PRICE_CERTIFICATION_EXPANSION",
+  "conditional_development": "After adequate evidence: map attested scope into existing PRICE_CONSUMPTION_V1, keep status/non-price fields separate, validate existing consumer; no new gate framework",
+  "price_admission_modified": false,
+  "existing_qualified_security_days": 4,
+  "existing_qualified_ohlc_values": 16,
+  "pit_status": "PIT_UNVERIFIED",
+  "hfq_status": "HFQ_UNVERIFIED",
+  "formal_status": "FORMAL_ADMISSION_BLOCKED",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

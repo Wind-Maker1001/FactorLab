@@ -1,0 +1,75 @@
+BigQuant cn_stock_real_bar1d
+https://v6.bigquant.com/data/datasources/cn_stock_real_bar1d
+Full HTTP200 HTML retrieved; selected exact rendered text follows.
+一、数据简介
+本表提供 A 股的未复权日行情，每只股票每个交易日一行，包含开盘价、最高价、最低价、收盘价、成交量、成交额、成交笔数、涨跌幅、换手率、涨跌停价和累计后复权因子。未复权价格是交易所公布的原始成交价格。需要后复权价格时使用 cn_stock_bar1d 。
+数据起始时间：2005-01-04
+数据结束时间：2026-11-11
+数据更新频率：每个交易日
+二、主键说明
+关键字 释意
+date 交易日，不含时分秒
+instrument 股票代码，格式为 代码.交易所后缀 ，如 000001.SZ 、 600000.SH 、 920000.BJ
+三、字段口径
+字段 口径
+name 证券简称
+adjust_factor 累计后复权因子，与未复权价格相乘得到后复权价格
+pre_close / open / high / low / close 未复权的前收盘价、开盘价、最高价、最低价、收盘价
+volume 成交量，单位为股，是当日累计值
+deal_number 成交笔数
+amount 成交额，单位为元，是当日累计值
+change_ratio 涨跌幅，以小数表示，0.01 表示 1%，等于 close / pre_close - 1
+turn 换手率，以小数表示，0.05 表示 5%，按流通 A 股股本计算
+upper_limit / lower_limit 未复权的涨停价和跌停价，与 cn_stock_limit_price 同一天的取值一致
+后复权价格按下式计算：
+text
+复制
+后复权价格 = 未复权价格 * adjust_factor
+停牌或当日没有成交的股票仍保留一行： open 、 high 、 low 、 close 、 amount 为空， volume 、 deal_number 、 change_ratio 、 turn 为 0， pre_close 、 upper_limit 、 lower_limit 保留。
+四、使用注意与已知限制
+包含沪深北三个交易所的股票。2026-10-22 共 5577 行，其中上交所 2318 行、深交所 2907 行、北交所 352 行。
+当日没有涨跌停限制时， upper_limit 为 999999.99， lower_limit 为 0.01，例如新股上市首日。这两个值是占位值，不是真实价格，做涨跌停判断时需要排除。2005 年至 2018 年每年有 1.4 万至 9.5 万行取占位值，2019 年起每年 300 至 4800 行。
+新股上市首日的 change_ratio 不受涨跌停幅度约束，例如 301718.SZ 在 2026-10-22 为 1.715402。
+close 为空的行：2005 年至 2018 年每年有 1.4 万至 9.5 万行，2019 年起每年 2000 至 6100 行，2026-10-22 有 5 行。
+2021 年起有成交量大于 0 但成交笔数为 0 的记录，2021 年 2743 行，2025 年 65764 行，2021 年以前没有。使用 deal_number 前需要先过滤。
+
+BigQuant cn_stock_bar1d
+https://bigquant.com/data/datasources/cn_stock_bar1d
+## 一、数据简介
+本表是 [cn_stock_real_bar1d](https:&#47;&#47;bigquant.com&#47;data&#47;datasources&#47;cn_stock_real_bar1d) 的后复权版本，每只股票每个交易日一行，字段相同。区别是价格类字段为后复权口径，成交量、成交额、成交笔数、换手率和 `adjust_factor` 与未复权表一致。
+- 数据起始时间：2005-01-04
+- 数据结束时间：2026-11-11
+- 数据更新频率：每个交易日
+## 二、主键说明
+| 关键字 | 释意 |
+| --- | --- |
+| date | 交易日，不含时分秒 |
+| instrument | 股票代码，格式为 `代码.交易所后缀`，如 `000001.SZ`、`600000.SH`、`920000.BJ` |
+## 三、后复权口径
+后复权价格由未复权价格乘以累计后复权因子得到：
+```text
+后复权价格 = 未复权价格 * adjust_factor
+```
+以 2026-10-22 的 `000001.SZ` 为例，未复权收盘价 11.3，`adjust_factor` 为 142.070212，本表 `close` 为二者之积。
+## 四、字段口径
+| 字段 | 口径 |
+| --- | --- |
+| name | 证券简称 |
+| adjust_factor | 累计后复权因子，与 `cn_stock_real_bar1d` 同一天的取值一致 |
+| pre_close &#47; open &#47; high &#47; low &#47; close | 后复权的前收盘价、开盘价、最高价、最低价、收盘价 |
+| volume | 成交量，单位为股，未做复权 |
+| deal_number | 成交笔数 |
+| amount | 成交额，单位为元，未做复权 |
+| change_ratio | 涨跌幅，以小数表示，0.01 表示 1%，与未复权口径的取值相同 |
+| turn | 换手率，以小数表示，0.05 表示 5%，与未复权口径的取值相同 |
+| upper_limit &#47; lower_limit | 后复权的涨停价和跌停价，等于未复权涨跌停价乘以 `adjust_factor` |
+停牌或当日没有成交的股票仍保留一行：`open`、`high`、`low`、`close`、`amount` 为空，`volume`、`deal_number`、`change_ratio`、`turn` 为 0。
+## 五、使用注意与已知限制
+- 包含沪深北三个交易所的股票。2026-10-22 共 5577 行，其中上交所 2318 行、深交所 2907 行、北交所 352 行。
+- 当日没有涨跌停限制时，`upper_limit` 取 999999.99，`lower_limit` 取 0.01，例如新股上市首日。这两个占位值不乘以 `adjust_factor`，做涨跌停判断时需要排除。
+
+Public datasource metadata in original server-rendered source:
+version: "official"
+created_at: "2023-07-01T10:20:28.716784+08:00"
+updated_at: "2026-11-11T20:35:11.528220+08:00"
+No effective interval, revision ID or export-batch reference accompanies this label.

@@ -1,0 +1,61 @@
+{
+  "task": "P10-E01",
+  "status": "P10_E01_EXTERNAL_CONFIRMATION_PENDING",
+  "baseline_commit": "e904167",
+  "prerequisite_prs": {
+    "109": {"state": "MERGED", "head": "e181c7c21a6fb68ca5f9acf59c182e18d60dec13", "merged_at": "2026-11-11T18:11:22Z"},
+    "111": {"state": "MERGED", "head": "387485050498055f391efd11ec1a5b7313fb5b7c", "merged_at": "2026-11-11T18:17:16Z"},
+    "112": {"state": "MERGED", "head": "926836b70f0e9ec3d4fb3d1bdbf585a289f9a822", "merged_at": "2026-11-11T18:51:05Z"},
+    "114": {"state": "OPEN", "head": "3877b45a3b4f5830651d30043dad128ae34bf664", "merged_at": null}
+  },
+  "fetch": "Initial shared-ref old-value conflict; subsequent fetch succeeded before worktree creation",
+  "bigquant_native_reads": {
+    "original_receipts_read": 13,
+    "receipt_byte_hashes_matched_g04": 13,
+    "partition_hashes_and_export_times_matched_p8_manifest": 13,
+    "schema_members_read": 1,
+    "schema_sha256": "f75305799cd6790c7314f17a5850998ee9b89339549096d75a06acab7a387076",
+    "parquet_payloads_read": 0,
+    "commercial_price_rows_written": 0,
+    "original_manifest_identity": "Inherited original-byte pin from G03/G04; no claim public pretty-printed JSON preserves original serialization"
+  },
+  "external_retrieval": {
+    "bigquant_full_http_responses": 6,
+    "bigquant_http_200": 5,
+    "bigquant_http_404": 1,
+    "response_identity_and_times": "supplier-evidence-matrix.json",
+    "alternative_full_pages": [
+      {"url": "https://www.cnrds.com/", "http_status": 200, "bytes": 352316},
+      {"url": "https://data.csmar.com/", "http_status": 200, "bytes": 2243},
+      {"url": "https://www.szse.cn/market/trend/index.html", "http_status": 200, "bytes": 31539},
+      {"url": "https://www.sse.com.cn/market/price/trends/", "http_status": 200, "bytes": 27095},
+      {"url": "https://www.sse.com.cn/home/legal/", "http_status": null, "bytes": null, "result": "Full response read; exact HTTP status and byte count not retained"}
+    ],
+    "alternative_response_retention": "Full returned text read during investigation; full response not saved or hashed; exact acquisition UTC not captured",
+    "qualification_based_on_alternative_webpages": false
+  },
+  "inquiry": "REQUEST_PREPARED_NOT_SENT",
+  "supplier_reply_received": false,
+  "production_gate_modified": false,
+  "existing_qualified_security_days": 4,
+  "existing_qualified_ohlc_values": 16,
+  "new_qualified_security_days": 0,
+  "resources": {
+    "python_processes_started": 0,
+    "model_training_runs": 0,
+    "backtest_runs": 0,
+    "full_market_archive_extractions": 0,
+    "new_market_indexes": 0,
+    "memory_soft_budget_bytes": 4294967296,
+    "temporary_disk_budget_bytes": 268435456,
+    "peak_memory_measurement": null,
+    "method": "Small HTML responses, JSON receipts and source documents only; no market payload loading"
+  },
+  "checks": {
+    "native_receipt_identity": "PASSED",
+    "source_semantic_batch_binding": "EXTERNAL_EVIDENCE_PENDING",
+    "alternative_frozen_coverage": "UNKNOWN",
+    "production_tests": "NOT_RUN_DOCUMENTATION_AND_METADATA_ONLY"
+  },
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
