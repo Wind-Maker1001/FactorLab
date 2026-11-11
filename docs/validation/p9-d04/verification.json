@@ -1,0 +1,121 @@
+{
+  "schema": "P9_D04_VERIFICATION_V1",
+  "status": "W02_PARTIAL",
+  "baseline": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+  "prerequisite_prs": [
+    88,
+    92,
+    94
+  ],
+  "dq_c01": {
+    "pr": 104,
+    "state": "UNMERGED_EVIDENCE",
+    "exact_head": "bb35dfad42a5a7187f3c50780e7d7fb1649d5de5",
+    "consumed": "docs/validation/dq-c01/REPORT.md"
+  },
+  "tests": {
+    "count": 136,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 7.734
+  },
+  "resources": {
+    "elapsed_seconds": 3.2460788000025786,
+    "peak_working_set_bytes": 321511424,
+    "processes": 1,
+    "numerical_threads": 1,
+    "output_bytes": 285003,
+    "total_task_private_bytes": 2838002,
+    "memory_soft_limit_bytes": 4294967296,
+    "temporary_disk_limit_bytes": 536870912,
+    "maximum_concurrent_python_processes": 2,
+    "database_index_created": false,
+    "conflict_evidence_copied": false
+  },
+  "source_shards": [
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-09-01_2025-09-30.parquet",
+      "sha256": "9a79794ad8e3b08b3a6c5c3df30c108f97c206ca62b06dcfac4acbb0d56d33ef",
+      "bytes": 7400516
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-10-01_2025-10-31.parquet",
+      "sha256": "975ddf695d001ec238dabed219703f140ea150caadf24a4b8932a57c3862dc0f",
+      "bytes": 5656740
+    },
+    {
+      "member": "stock/cn_stock_status/2025-09-01_2025-09-30.parquet",
+      "sha256": "701f8b327de74d99bc8e5d5afcdd2bd193a9b2726d5fc0fabb6e76f2ab02adcd",
+      "bytes": 262791
+    },
+    {
+      "member": "stock/cn_stock_status/2025-10-01_2025-10-31.parquet",
+      "sha256": "012920b47bff986147193a31d2873b93986e458f5c22d1b2ee3cb5cd4d22aba3",
+      "bytes": 185079
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2025-03-01_2025-03-31.parquet",
+      "sha256": "87ce5f1819d150b9fc6e25cfb655ef9ef8f04406a9dcc1fefdba3edc01cf2c72",
+      "bytes": 6937195
+    },
+    {
+      "member": "stock/cn_stock_status/2025-03-01_2025-03-31.parquet",
+      "sha256": "60f8e04a2390a9a809204015f70ff71d07ace82c022b64566b700f3c69510cab",
+      "bytes": 239674
+    },
+    {
+      "member": "stock/cn_stock_real_bar1d/2026-01-01_2026-01-31.parquet",
+      "sha256": "cbc9eeb0c935b692bed39ad8873328339ee3391f2bbc94eb2d59575aefe18e46",
+      "bytes": 6853173
+    },
+    {
+      "member": "stock/cn_stock_status/2026-01-01_2026-01-31.parquet",
+      "sha256": "43ad4218a046ce89ec387dc6f0be7796871439898e55a84f34d3bfd19c6acd65",
+      "bytes": 225522
+    }
+  ],
+  "code_sha256": {
+    "src/factorlab/data/market_evidence_sidecar.py": "83e1bf8561969cb1985ba249d2c46c00386db46ded6dbf166bdb19f344da54e6",
+    "tools/research/run_p9_d04.py": "f4dbbc3ec104395978e561181226360583df038224534e317f9b91f38874d426",
+    "tools/research/inspect_p9_d04_sources.py": "a970c810c7f3f4556dc63e25dbc7e50b4f0ea21a3bc3f17370502a00d4250c97",
+    "tools/research/investigate_p9_d04.py": "8c9314467c45198bce0be3d10104a2d183a79574b7e81ad7926e963d1ba0ded4",
+    "tools/research/publish_p9_d04.py": "de2a8f7abf5fc4380ae53846f800af1c00d3007da6c879da6da9b80796dbc072",
+    "tests/research/test_p9_d04.py": "1f104151250aab05ba3a6e15b9a7cf1eae435868fdfceb29b5cdc8f151622e07"
+  },
+  "private_receipts": {
+    "combined-sidecar.json": "4dc3a89777367ed8abecd857c5b3d2b40bb76de323a4f925920c274b476c4349",
+    "policies-private.json": "c3329facab901f25ef00b9de107e77fdf74b850c5fd75112e03a9e01bd7e76c3",
+    "qualification-results.json": "7974aa63314541f476b2e8b1cabb7641ade22edcddf26c3497494724aa9fe511",
+    "replay-result.json": "0388267c4e7b70afc4e14d5c5dcacfde20c019d5dd25ef0a5f370dd6d7254164",
+    "resources.json": "9ed8001d22c5172d399af22498546141ac787e556bcb2e701eb552c82489aa0a"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "result": "FIRST_BLOCKER_MAY15_IDENTIFIED_BATCH_ENGINE_RETURNS_NO_PARTIAL_LEDGER"
+    },
+    {
+      "attempt": 2,
+      "result": "SESSION_REPLAY_PREFIX_COMPARISON_REJECTED_EXTRA_DERIVED_NAV_COLUMN"
+    },
+    {
+      "attempt": 3,
+      "result": "SESSION_REPLAY_PREFIX_ORIGINAL_FIELDS_MATCHED_NEW_THREE_SESSIONS_AUDITED"
+    },
+    {
+      "attempt": 4,
+      "result": "SOURCE_ROWS_REPROJECTED_FROM_PINNED_SHARDS_AND_PRIOR_SIDECAR_PINNED_SAME_RESULT"
+    }
+  ],
+  "frozen_predictions": "HASH_PINNED_NOT_RETRAINED",
+  "targets": "ORIGINAL_FULL_PLAN_NO_REGENERATION",
+  "execution_and_fees": "UNCHANGED_SHARED_ENGINE",
+  "formal_admission": false,
+  "live_money": false,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

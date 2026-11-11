@@ -1,0 +1,191 @@
+{
+  "schema": "P9_D04_VALUATION_POLICIES_V1",
+  "status": "W02_EVIDENCE_ACCEPTED",
+  "policies": [
+    {
+      "security": "002185.SZ",
+      "dates": [
+        "2025-09-25",
+        "2025-09-26",
+        "2025-09-29",
+        "2025-09-30",
+        "2025-10-09",
+        "2025-10-10",
+        "2025-10-13",
+        "2025-10-14",
+        "2025-10-15",
+        "2025-10-16"
+      ],
+      "observation": {
+        "security": "002185.SZ",
+        "date": "2025-09-24",
+        "field": "raw_close",
+        "status": "OBSERVED_RAW_CLOSE",
+        "price": "11.78",
+        "volume": 217027122,
+        "source_sha256": "9a79794ad8e3b08b3a6c5c3df30c108f97c206ca62b06dcfac4acbb0d56d33ef"
+      },
+      "suspension_evidence": {
+        "security": "002185.SZ",
+        "start_date": "2025-09-25",
+        "resume_date": "2025-10-17",
+        "document_sha256": "2d27d7fbdf710d5033337d07fbf73603af9f688b389855bde0eebd8b439cedc7",
+        "publication_time": "2025-09-24T23:59:59+08:00",
+        "evidence_class": "ISSUER_CONFIRMED_SUSPENSION",
+        "verification_status": "DOCUMENT_CONFIRMED"
+      },
+      "resumption_evidence": {
+        "security": "002185.SZ",
+        "resume_date": "2025-10-17",
+        "document_sha256": "b1bf35472da7193ecd2298a92062abe8d938c0d93d15e22fbef9e3b076f359ea",
+        "verification_status": "DOCUMENT_CONFIRMED"
+      },
+      "policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+      "version": "1",
+      "enabled": true,
+      "allowed_uses": [
+        "EX_POST_RESEARCH_BOOK_VALUATION"
+      ],
+      "raw_close": null,
+      "nontradable": true,
+      "source_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+      "status": "W02_EVIDENCE_ACCEPTED",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION",
+      "raw_price_status": "MISSING_NOT_BACKFILLED",
+      "tradability": "NONTRADABLE",
+      "source_version": {
+        "manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+        "price_shard_sha256": "9a79794ad8e3b08b3a6c5c3df30c108f97c206ca62b06dcfac4acbb0d56d33ef"
+      },
+      "corporate_action_completeness": "UNVERIFIED",
+      "financial_admission": false
+    },
+    {
+      "security": "600095.SH",
+      "dates": [
+        "2025-03-17",
+        "2025-03-18",
+        "2025-03-19",
+        "2025-03-20",
+        "2025-03-21",
+        "2025-03-24",
+        "2025-03-25",
+        "2025-03-26",
+        "2025-03-27",
+        "2025-03-28"
+      ],
+      "observation": {
+        "security": "600095.SH",
+        "date": "2025-03-14",
+        "field": "raw_close",
+        "status": "OBSERVED_RAW_CLOSE",
+        "price": "6.89",
+        "volume": 41260560,
+        "source_sha256": "87ce5f1819d150b9fc6e25cfb655ef9ef8f04406a9dcc1fefdba3edc01cf2c72"
+      },
+      "suspension_evidence": {
+        "security": "600095.SH",
+        "start_date": "2025-03-17",
+        "resume_date": "2025-03-31",
+        "document_sha256": "d1364d0df464ee98a4f1bf871bde0db4ee0e61cac5619bec3ea338a898b9e61d",
+        "publication_time": "2025-03-16T23:59:59+08:00",
+        "evidence_class": "ISSUER_CONFIRMED_SUSPENSION",
+        "verification_status": "DOCUMENT_CONFIRMED"
+      },
+      "resumption_evidence": {
+        "security": "600095.SH",
+        "resume_date": "2025-03-31",
+        "document_sha256": "da3900fc1f092af3e6b6e41c6c01d8fce91b44f2abe87205ed1c0392ab2bc3fc",
+        "verification_status": "DOCUMENT_CONFIRMED"
+      },
+      "policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+      "version": "1",
+      "enabled": true,
+      "allowed_uses": [
+        "EX_POST_RESEARCH_BOOK_VALUATION"
+      ],
+      "raw_close": null,
+      "nontradable": true,
+      "source_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+      "status": "W02_EVIDENCE_ACCEPTED",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION",
+      "raw_price_status": "MISSING_NOT_BACKFILLED",
+      "tradability": "NONTRADABLE",
+      "source_version": {
+        "manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+        "price_shard_sha256": "87ce5f1819d150b9fc6e25cfb655ef9ef8f04406a9dcc1fefdba3edc01cf2c72"
+      },
+      "corporate_action_completeness": "UNVERIFIED",
+      "financial_admission": false
+    },
+    {
+      "security": "601615.SH",
+      "dates": [
+        "2026-01-13",
+        "2026-01-14",
+        "2026-01-15",
+        "2026-01-16",
+        "2026-01-19",
+        "2026-01-20",
+        "2026-01-21",
+        "2026-01-22"
+      ],
+      "observation": {
+        "security": "601615.SH",
+        "date": "2026-01-12",
+        "field": "raw_close",
+        "status": "OBSERVED_RAW_CLOSE",
+        "price": "19.68",
+        "volume": 112504032,
+        "source_sha256": "cbc9eeb0c935b692bed39ad8873328339ee3391f2bbc94eb2d59575aefe18e46"
+      },
+      "suspension_evidence": {
+        "security": "601615.SH",
+        "start_date": "2026-01-13",
+        "resume_date": "2026-01-23",
+        "document_sha256": "e2e0bf92378ea6fbdc53fdda5432d4e1fc0142c9213e8c1ed8705875774c7c26",
+        "publication_time": "2026-01-12T23:59:59+08:00",
+        "evidence_class": "ISSUER_CONFIRMED_SUSPENSION",
+        "verification_status": "DOCUMENT_CONFIRMED"
+      },
+      "resumption_evidence": {
+        "security": "601615.SH",
+        "resume_date": "2026-01-23",
+        "document_sha256": "1c5c36ee416da4d4757fa5954f8d6ad874acbc48c77c9ab63852ccd5174df162",
+        "verification_status": "DOCUMENT_CONFIRMED"
+      },
+      "policy": "LAST_OBSERVED_RAW_CLOSE_CARRY_ON_CONFIRMED_SUSPENSION",
+      "version": "1",
+      "enabled": true,
+      "allowed_uses": [
+        "EX_POST_RESEARCH_BOOK_VALUATION"
+      ],
+      "raw_close": null,
+      "nontradable": true,
+      "source_manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+      "status": "W02_EVIDENCE_ACCEPTED",
+      "valuation_status": "MODEL_VALUATION_ASSUMPTION",
+      "raw_price_status": "MISSING_NOT_BACKFILLED",
+      "tradability": "NONTRADABLE",
+      "source_version": {
+        "manifest_sha256": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+        "price_shard_sha256": "cbc9eeb0c935b692bed39ad8873328339ee3391f2bbc94eb2d59575aefe18e46"
+      },
+      "corporate_action_completeness": "UNVERIFIED",
+      "financial_admission": false
+    }
+  ],
+  "new_policy_security_days": 28,
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "distinction": [
+    "OBSERVED_RAW_CLOSE",
+    "MODEL_VALUATION_ASSUMPTION",
+    "UNVERIFIED_VALUATION",
+    "NONTRADABLE"
+  ]
+}

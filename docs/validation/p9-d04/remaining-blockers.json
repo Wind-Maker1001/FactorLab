@@ -1,0 +1,48 @@
+{
+  "schema": "P9_D04_BLOCKERS_V1",
+  "status": "W02_PARTIAL",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "first_actual_execution_blocker": {
+    "date": "2023-05-15",
+    "security": "000540.SZ",
+    "reason": "execution status is missing for 2023-05-15/000540.SZ",
+    "native_state": [
+      {
+        "date": "2023-05-15T00:00:00.000",
+        "instrument": "000540.SZ",
+        "st_status": 2,
+        "suspended": 0,
+        "is_risk_warning": 1
+      }
+    ],
+    "native_shard_sha256": "a76eb36a06897f9fad53506944e706e3b9cbc0f206471694e86eb7a32effb37d",
+    "adapter_is_st": null,
+    "consequence": "FAIL_CLOSED_NO_FILL_PERMISSION_NO_ENUM_INFERENCE",
+    "required": "Historical vendor enum/version contract or independently verified exact-date issuer policy"
+  },
+  "full_fold": {
+    "start": "2023-03-13",
+    "end_exclusive": "2024-03-13",
+    "last_qualified_session": "2023-05-12",
+    "unresolved_after_first_blocker": "NOT_EXECUTED_OR_CLAIMED_COMPLETE",
+    "later_000540_missing_price": "FROM_2023-05-19_EXISTING_PREFLIGHT_NOT_NEW_ACCOUNT_EXPOSURE_PROOF"
+  },
+  "three_windows": "VALUATION_CONTRACTS_QUALIFIED_NOT_IN_FIRST_FOLD",
+  "unresolved_contracts": [
+    "HISTORICAL_ST_STATUS_2_VERSION_BINDING",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED",
+    "TOTAL_RETURN_UNAVAILABLE",
+    "ORDER_EXECUTABLE_UNVERIFIED"
+  ],
+  "todos": [
+    "TODO: obtain historical vendor status dictionary or exact issuer state for the first blocker.",
+    "TODO: qualify any actually held later missing closes before further replay; no future-based universe filter."
+  ]
+}

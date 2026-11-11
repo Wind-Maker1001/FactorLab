@@ -18,7 +18,22 @@ ALLOWED = frozenset(
        for f in ("is_st", "trading_observed", "execution_price_available")]
     + [("000540.SZ", "2023-05-04", "valuation_mark")]
 )
-OBSERVATION_DATES = {"002408.SZ": "2023-04-25", "000540.SZ": "2023-04-28"}
+# Exact source sessions, not a calendar range or a vendor-wide status mapping.
+SCOPED_SUSPENSIONS = {
+    "002185.SZ": ("2025-09-24", "2025-09-25", "2025-10-17", (
+        "2025-09-25", "2025-09-26", "2025-09-29", "2025-09-30", "2025-10-09",
+        "2025-10-10", "2025-10-13", "2025-10-14", "2025-10-15", "2025-10-16")),
+    "600095.SH": ("2025-03-14", "2025-03-17", "2025-03-31", (
+        "2025-03-17", "2025-03-18", "2025-03-19", "2025-03-20", "2025-03-21",
+        "2025-03-24", "2025-03-25", "2025-03-26", "2025-03-27", "2025-03-28")),
+    "601615.SH": ("2026-01-12", "2026-01-13", "2026-01-23", (
+        "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16",
+        "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22")),
+}
+ALLOWED = ALLOWED | frozenset((security, day, "valuation_mark")
+    for security, (_, _, _, days) in SCOPED_SUSPENSIONS.items() for day in days)
+OBSERVATION_DATES = {"002408.SZ": "2023-04-25", "000540.SZ": "2023-04-28",
+                     **{security: window[0] for security, window in SCOPED_SUSPENSIONS.items()}}
 
 
 def _same(left, right):
@@ -105,7 +120,7 @@ class MarketEvidence:
     def carry(self, security, day, *, shares, raw_close, previous_observation):
         """Value existing shares only; raw fields and execution inputs are untouched."""
         mark = self.fact(security, day, "valuation_mark")
-        if security == "000540.SZ":
+        if security == "000540.SZ" or security in SCOPED_SUSPENSIONS:
             suspension_identity = mark.suspension_document_sha256
             if suspension_identity is None:
                 fail("independent confirmed suspension required")
@@ -171,18 +186,27 @@ def load_sidecar(path, *, source_manifest, originals, documents):
             fail("explicit candidate-only scope and provenance required")
         value, evidence = row["candidate_value"], row["evidence_class"]
         suspension_identity = None
-        if key == ("000540.SZ", "2023-05-04", "valuation_mark"):
+        if key == ("000540.SZ", "2023-05-04", "valuation_mark") or key[0] in SCOPED_SUSPENSIONS:
+            start, resume = (("2023-05-04", "2023-05-05") if key[0] == "000540.SZ"
+                             else SCOPED_SUSPENSIONS[key[0]][1:3])
             suspension = row["suspension_evidence"]
             suspension_identity = require_hash(suspension["document_sha256"])
             if (suspension_identity not in documents
                     or sha256(documents[suspension_identity]) != suspension_identity
                     or suspension["security"] != key[0]
-                    or suspension["start_date"] != key[1]
-                    or suspension["resume_date"] != "2023-05-05"
+                    or suspension["start_date"] != start
+                    or suspension["resume_date"] != resume
                     or suspension["evidence_class"] != "ISSUER_CONFIRMED_SUSPENSION"
                     or suspension["verification_status"] != "DOCUMENT_CONFIRMED"
                     or timestamp(suspension["publication_time"]) > timestamp(key[1])):
                 fail("independent exact suspension document required")
+            if key[0] in SCOPED_SUSPENSIONS:
+                resumption = row["resumption_evidence"]
+                resume_identity = require_hash(resumption["document_sha256"])
+                if (resume_identity not in documents or sha256(documents[resume_identity]) != resume_identity
+                        or resumption["security"] != key[0] or resumption["resume_date"] != resume
+                        or resumption["verification_status"] != "DOCUMENT_CONFIRMED"):
+                    fail("independent exact resumption document required")
         if key[2] == "valuation_mark":
             if (evidence != "MODEL_VALUATION_ASSUMPTION" or row["valuation_policy"] != POLICY
                     or row["valuation_policy_version"] != "1" or row["valuation_status"] != evidence
