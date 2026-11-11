@@ -1,0 +1,357 @@
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal as D
+import json
+import subprocess
+import sys
+
+import pytest
+
+from factorlab.trading import Market, OrderIntent, OrderType, Side, OrderStatus
+from factorlab.trading.realtime import RealtimeAccount, PersistenceConflict, equity_events
+from factorlab.trading.control import RiskRejected
+from factorlab.trading.realtime_service import observe
+from factorlab.trading.storage import PaperStore
+from factorlab.integrations.binance_futures_trading.market import parse
+from factorlab.integrations.binance_futures_trading.protocol import FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked
+from factorlab.integrations.binance_equity_trading.protocol import Unavailable
+
+NOW = datetime(2026, 11, 12, 12, tzinfo=timezone.utc)
+
+
+def rules(market):
+    if market == Market.BINANCE_EQUITY:
+        return dict(symbol='NVDA', tradability='BUY_SELL', stepSize='0.001', minQty='0.001',
+            maxQty='1000', minNotional='1', maxNotional='100000', fractionable=True,
+            fractionableEh=True, extendedSession=True, overnightSupported=True, maxNumOrders=100,
+            multiplierDown='0.5', multiplierUp='1.5')
+    return dict(symbol=dict(symbol='NVDAUSDT', status='TRADING', quoteAsset='USDT', marginAsset='USDT', filters=[
+        dict(filterType='LOT_SIZE', minQty='0.01', maxQty='100', stepSize='0.01'),
+        dict(filterType='MARKET_LOT_SIZE', minQty='0.01', maxQty='100', stepSize='0.01'),
+        dict(filterType='PRICE_FILTER', minPrice='0.01', maxPrice='10000', tickSize='0.01'),
+        dict(filterType='MIN_NOTIONAL', notional='5')]), bracket=dict(symbol='NVDAUSDT', brackets=[
+        dict(notionalFloor='0', notionalCap='10000', initialLeverage=1)]))
+
+
+class Harness:
+    def __init__(self, tmp, market=Market.BINANCE_USDM):
+        self.time = NOW
+        self.account = RealtimeAccount(tmp, market, clock=lambda: self.time)
+        self.market = market
+        self.sequence = 0
+        self.send('rules', payload=rules(market), reference='100', source='SYNTHETIC_OFFLINE_ONLY')
+        if market == Market.BINANCE_EQUITY:
+            self.send('session', phase='REGULAR')
+        else:
+            self.send('mark', price='100')
+        self.account.control('start')
+
+    def send(self, kind, **fields):
+        value = dict(kind=kind, symbol=self.account.symbol, time=self.time, received=self.time, **fields)
+        return self.account.event(value)
+
+    def quote(self, price, size='1'):
+        self.time += timedelta(seconds=1)
+        self.sequence += 1
+        if self.market == Market.BINANCE_USDM:
+            self.send('mark', price=price)
+            value = dict(kind='trade', symbol='NVDAUSDT', time=self.time, received=self.time,
+                         price=price, size=size, sequence=self.sequence)
+        else:
+            value = dict(kind='quote', symbol='NVDA', time=self.time, received=self.time,
+                         bid=str(D(price) - D('.01')), ask=price, bid_size=size, ask_size=size)
+        self.account.event(value)
+        return value
+
+
+@pytest.mark.parametrize('market', list(Market))
+def test_strategy_partial_cancel_duplicate_and_restart(tmp_path, market):
+    path = tmp_path / 'paper.sqlite'
+    h = Harness(path, market)
+    h.quote('100')
+    h.quote('101')
+    a = h.account
+    assert a.health()['signals'] == a.health()['orders'] == 1
+    assert not a.state.positions  # signal quote does not confirm a fill
+    value = h.quote('100', '.4')
+    assert a.health()['fills'] == 1
+    assert a.state.positions[a.symbol].quantity == D('.04')
+    assert not a.event(value)
+    order_id = next(iter(a.state.orders))
+    confirmation = a.state.confirmations[order_id]
+    before = a.controller.account()
+    assert not a.replay(confirmation)
+    assert before == a.controller.account()
+    a.control('kill')
+    expected_cash = a.state.cash.copy()
+    a.close()
+    restored = RealtimeAccount(path, market, clock=lambda: h.time)
+    assert restored.state.cash == expected_cash
+    assert restored.state.positions[restored.symbol].quantity == D('.04')
+    assert restored.state.kill_switch and restored.state.reconciled
+    assert restored.state.runtime['signals'] == 1
+    assert restored.state.runtime['last_valid'] == h.time
+    assert not restored.event(value)
+    restored.cancel(order_id)
+    assert restored.state.orders[order_id].snapshot.status == OrderStatus.CANCELED
+    restored.close()
+
+
+@pytest.mark.parametrize('missing', ['rules', 'session'])
+def test_stock_unknown_gate(tmp_path, missing):
+    h = Harness(tmp_path / 's.sqlite', Market.BINANCE_EQUITY)
+    h.account._change(lambda: h.account.state.runtime.update({missing: None}))
+    h.quote('100'); h.quote('101')
+    assert h.account.health()['orders'] == 0
+    assert h.account.health()['rejected'] == 1
+    h.account.close()
+
+
+def test_stale_stream_isolation_and_future_timestamp(tmp_path):
+    f, s = Harness(tmp_path / 'f'), Harness(tmp_path / 's', Market.BINANCE_EQUITY)
+    f.quote('100'); s.quote('100')
+    f.time += timedelta(seconds=6)
+    f.account.tick()
+    assert f.account.health()['reason'] == 'STALE_QUOTE'
+    s.quote('101'); s.quote('100')
+    assert s.account.health()['fills'] == 1
+    assert f.account.health()['orders'] == 0
+    assert not s.account.event(dict(kind='quote', symbol='NVDA', time=s.time + timedelta(seconds=1),
+        received=s.time, ask='100', bid='99', bid_size='1', ask_size='1'))
+    assert s.account.health()['status'] == 'PAUSED'
+    f.account.close(); s.account.close()
+
+
+def test_persistence_conflict_and_corruption(tmp_path):
+    h = Harness(tmp_path / 'f')
+    h.quote('100')
+    other = PaperStore(tmp_path / 'f')
+    with other.transaction():
+        state = other.load()
+        state.cash['USDT'] += 1
+        other.save(state)
+    with pytest.raises(PersistenceConflict):
+        h.quote('101')
+    assert h.account.health()['reason'] == 'PERSISTENCE_CONFLICT'
+    h.account.close(); other.close()
+    with pytest.raises(PersistenceConflict, match='checkpoint'):
+        RealtimeAccount(tmp_path / 'f', Market.BINANCE_USDM, clock=lambda: h.time)
+
+
+def test_unknown_without_confirmation_stays_frozen(tmp_path):
+    h = Harness(tmp_path / 'f')
+    h.quote('100'); h.quote('101')
+    key = next(iter(h.account.state.orders))
+    def uncertain():
+        h.account.controller.broker.mark_unknown(key)
+        h.account.state.confirmations.pop(key)
+    h.account._change(uncertain)
+    h.account.close()
+    a = RealtimeAccount(tmp_path / 'f', Market.BINANCE_USDM, clock=lambda: h.time)
+    assert not a.state.reconciled
+    assert a.state.orders[key].snapshot.reconcile_required
+    a.control('start')
+    with pytest.raises(Unavailable, match='QUERY_ONLY'):
+        a.submit(a.state.orders[key].snapshot.intent)
+    a.close()
+
+
+def test_sequence_gap_and_mark_never_executes(tmp_path):
+    h = Harness(tmp_path / 'f')
+    h.quote('100'); h.quote('101')
+    h.time += timedelta(seconds=1)
+    h.send('mark', price='90')
+    assert h.account.health()['fills'] == 0
+    h.sequence += 1
+    h.quote('100')
+    assert h.account.health()['reason'] == 'TRADE_SEQUENCE_GAP'
+    assert h.account.health()['fills'] == 0
+    h.account.close()
+
+
+def test_public_parser_and_equity_identity():
+    ms = int(NOW.timestamp() * 1000)
+    trade = parse(dict(e='aggTrade', s='NVDAUSDT', E=ms, T=ms, p='100', q='.1', a=2), NOW)
+    assert trade['kind'] == 'trade' and trade['sequence'] == 2
+    assert parse(dict(e='markPriceUpdate', s='NVDAUSDT', E=ms, p='99'), NOW)['kind'] == 'mark'
+    with pytest.raises(ValueError):
+        parse(dict(e='aggTrade', s='NVDA', E=ms, T=ms, p='100', q='.1', a=2), NOW)
+    with pytest.raises(ValueError):
+        parse(dict(e='aggTrade', s='NVDAUSDT', E=ms+1, T=ms+1, p='100', q='.1', a=2), NOW)
+    rows = list(equity_events(dict(e='quote', s='NVDA', E=ms, T=ms, bp='99', ap='100', bs='1', **{'as': '1'}), NOW))
+    assert rows[0]['kind'] == 'quote' and rows[0]['symbol'] == 'NVDA'
+
+
+def test_real_trade_paths_blocked():
+    c = FuturesClient(transport=ReadOnlyNetworkTransport(permit_account_read=True))
+    for method in ['POST', 'DELETE']:
+        with pytest.raises(SafetyBlocked):
+            c.request(method, '/fapi/v1/order')
+
+
+@pytest.mark.parametrize('market', list(Market))
+def test_whole_process_recovery(tmp_path, market):
+    h = Harness(tmp_path / 'f', market)
+    h.quote('100'); h.quote('101'); h.quote('100', '.4')
+    currency = 'USDT' if market == Market.BINANCE_USDM else 'USD'
+    expected = str(h.account.state.cash[currency])
+    h.account.close()
+    code = '''from datetime import datetime, timezone
+from factorlab.trading.realtime import RealtimeAccount
+from factorlab.trading import Market
+import sys, json
+a = RealtimeAccount(sys.argv[1], Market(sys.argv[2]), clock=lambda: datetime(2026,11,12,12,0,3,tzinfo=timezone.utc))
+print(json.dumps([str(next(iter(a.state.cash.values()))), str(a.state.positions[a.symbol].quantity), a.state.reconciled]))
+a.close()
+'''
+    result = subprocess.run([sys.executable, '-c', code, str(tmp_path / 'f'), market.value], capture_output=True, text=True, check=True)
+    cash, quantity, reconciled = json.loads(result.stdout)
+    assert D(cash) == D(expected) and D(quantity) == D('.04') and reconciled
+
+
+def test_public_opt_in_and_disconnect_budget(tmp_path):
+    import asyncio
+    h = Harness(tmp_path / 'f')
+    with pytest.raises(PermissionError):
+        asyncio.run(observe(h.account, seconds=1))
+    calls = []
+    def broken(url, **options):
+        calls.append((url, options))
+        raise OSError('offline')
+    result = asyncio.run(observe(h.account, seconds=1, network=True, reconnects=2, connector=broken))
+    assert len(calls) == 3 and result['failures'] == 3
+    assert all('wss://fstream.binance.com/' in call[0] for call in calls)
+    assert h.account.health()['status'] == 'PAUSED'
+    h.account.close()
+
+
+@pytest.mark.parametrize('server_offset', [0, 1])
+def test_stock_source_time_can_repeat_with_new_server_event(tmp_path, server_offset):
+    h = Harness(tmp_path / 's', Market.BINANCE_EQUITY)
+    ms = int(h.time.timestamp() * 1000)
+    def event(ask, emitted):
+        h.time = NOW + timedelta(milliseconds=emitted)
+        return next(equity_events(dict(e='quote', s='NVDA', E=ms + emitted, T=ms,
+            bp='99', ap=ask, bs='1', **{'as': '1'}), h.time))
+    first, second = event('100', 1), event('101', 1 + server_offset)
+    assert h.account.event(first)
+    assert h.account.event(second)
+    assert not h.account.event(second)
+    assert not h.account.event(first)
+    assert not h.account.conflict
+    assert h.account.health()['signals'] == 1
+    h.account.close()
+
+
+@pytest.mark.parametrize('market', list(Market))
+def test_stale_quote_rejected_at_shared_risk_gate(tmp_path, market):
+    h = Harness(tmp_path / 'a', market)
+    h.quote('100')
+    h.time += timedelta(seconds=6)
+    intent = OrderIntent(market, h.account.symbol, Side.BUY, OrderType.MARKET,
+                         D('.1'), None, 'manual000000000000000000000000000')
+    assert h.account.controller.assess(intent).reason == 'STALE_QUOTE'
+    h.account.close()
+
+
+@pytest.mark.parametrize('market', list(Market))
+def test_limit_slippage_and_market_assumptions(tmp_path, market):
+    h = Harness(tmp_path / 'a', market)
+    h.quote('100')
+    key = 'manual000000000000000000000000000'
+    intent = OrderIntent(market, h.account.symbol, Side.BUY, OrderType.LIMIT,
+                         D('.1'), D('100'), key)
+    h.account.submit(intent)
+    h.quote('100')
+    assert h.account.health()['fills'] == 0  # slipped price breaches the limit
+    h.quote('99')
+    assert h.account.health()['fills'] == 1
+    event = h.account.state.confirmations[key]
+    assert event.fill_price == D('99.0099')
+    assert event.cumulative_fee == D('.1') * D('99.0099') * D('.001')
+    h.account.close()
+
+
+def test_market_stock_fixed_notional_and_cancel(tmp_path):
+    h = Harness(tmp_path / 'a', Market.BINANCE_EQUITY)
+    h.quote('100')
+    key = 'manual000000000000000000000000000'
+    h.account.submit(OrderIntent(h.market, 'NVDA', Side.BUY, OrderType.MARKET, D('.1'), None, key))
+    h.quote('101', '.4')
+    assert h.account.state.confirmations[key].fill_price == D('100')
+    h.account.cancel(key)
+    h.quote('99')
+    assert h.account.state.orders[key].snapshot.status == OrderStatus.CANCELED
+    assert h.account.state.positions['NVDA'].quantity == D('.04')
+    h.account.close()
+
+
+def test_configuration_rejection_preserves_restartable_state(tmp_path):
+    h = Harness(tmp_path / 'a')
+    h.quote('100'); h.quote('101')
+    h.account.close()
+    with pytest.raises(PersistenceConflict, match='configuration'):
+        RealtimeAccount(tmp_path / 'a', h.market, clock=lambda: h.time, data_mode='public')
+    a = RealtimeAccount(tmp_path / 'a', h.market, clock=lambda: h.time)
+    assert a.state.reconciled and len(a.state.orders) == 1
+    a.close()
+
+
+def test_journal_conflict_blocks_restart(tmp_path):
+    h = Harness(tmp_path / 'a')
+    h.quote('100'); h.quote('101')
+    event_id = next(iter(h.account.state.confirmations.values())).event_id
+    h.account.close()
+    store = PaperStore(tmp_path / 'a')
+    store.db.execute('DELETE FROM events WHERE id=?', (event_id,))
+    store.close()
+    with pytest.raises(PersistenceConflict, match='journal'):
+        RealtimeAccount(tmp_path / 'a', h.market, clock=lambda: h.time)
+
+
+def test_store_capacity_failure_rolls_back_signal_and_account(tmp_path):
+    h = Harness(tmp_path / 'a')
+    h.quote('100'); h.quote('101')
+    cash = h.account.state.cash.copy()
+    h.account.store.max_events = 1
+    with pytest.raises(ValueError, match='budget'):
+        h.quote('100')
+    assert h.account.state.cash == cash and not h.account.state.positions
+    assert h.account.conflict
+    h.account.close()
+
+
+def test_malformed_public_feed_does_not_cancel_other_market(tmp_path):
+    import asyncio
+    f = RealtimeAccount(tmp_path / 'f', Market.BINANCE_USDM)
+    s = RealtimeAccount(tmp_path / 's', Market.BINANCE_EQUITY)
+    f.control('start'); s.control('start')
+    class Socket:
+        def __init__(self, body):
+            self.body = body
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *_):
+            return False
+        async def send(self, message):
+            assert 'SUBSCRIBE' in message and 'NVDA@quote' in message
+        async def recv(self):
+            if self.body is None:
+                raise OSError('stream ended')
+            result, self.body = self.body, None
+            return result
+    def connector(url, **options):
+        assert options['max_queue'] == 8 and options['ping_timeout'] == 5
+        if 'fstream.binance.com' in url:
+            return Socket('{malformed')
+        ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+        return Socket(json.dumps(dict(e='quote', s='NVDA', E=ms, T=ms,
+            bp='99', ap='100', bs='1', **{'as': '1'})))
+    async def run():
+        return await asyncio.gather(*(observe(a, network=True, seconds=1, reconnects=0,
+            connector=connector) for a in (f, s)))
+    results = asyncio.run(run())
+    assert results[0]['error'] == 'JSONDecodeError'
+    assert results[1]['accepted'] == 1 and s.state.runtime['last_valid'] is not None
+    assert f.state.runtime['last_valid'] is None
+    assert not s.conflict
+    f.close(); s.close()
