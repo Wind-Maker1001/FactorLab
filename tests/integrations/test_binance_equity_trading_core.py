@@ -1,11 +1,9 @@
-"""Integration with the frozen P7-T01 contract; independently optional until merged."""
+"""Integration with the shared P7-T01 trading contract."""
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D
 
 import pytest
-
-pytest.importorskip("factorlab.trading", reason="P7-T01 frozen v1 must be integrated to run paper tests")
 
 from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side, OrderStatus, AssetBalance
 from factorlab.trading.control import TradingController, RiskLimits, RiskRejected
