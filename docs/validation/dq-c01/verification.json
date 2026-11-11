@@ -1,0 +1,157 @@
+{
+  "task": "DQ-C01",
+  "status": "DQC01_EVIDENCE_MATRIX_COMPLETE",
+  "gates": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "checks": {
+    "source_isolation": true,
+    "table_denominator": true,
+    "partition_conservation": true,
+    "row_scopes_not_added": true,
+    "inherited_43_not_promoted": true,
+    "bigquant_20_16_25": true,
+    "conflicts_21_not_certified": true,
+    "unknown_rows_preserved": true,
+    "financial_gates_preserved": true,
+    "admission_has_conditions": true,
+    "membership_price_conservation": true,
+    "evidence_paths_exist_at_exact_commit": true,
+    "bigquant_integration_state_explicit": true,
+    "field_nonfinite_conservation": true
+  },
+  "base_table_count": 156,
+  "use_case_rows": 9,
+  "assets": 146,
+  "partitions_discovered": 3550,
+  "partitions_actual_content_scanned": 3507,
+  "partitions_limited_inherited": 43,
+  "dq01_registration_snapshot": [
+    {
+      "source": "CSMAR",
+      "discovered_files": 55,
+      "registered_files": 55,
+      "baseline_files": 55,
+      "baseline_found": 55,
+      "inspected_files": 55,
+      "readable_archives": 55,
+      "enumerated_archives": 55,
+      "discovered_members": 265,
+      "directory_checked_members": 265,
+      "current_content_members": 55,
+      "current_data_content_members": 0,
+      "inherited_content_members": 38,
+      "logical_tables": 28,
+      "data_partitions": 155,
+      "full_table_row_scans": 8,
+      "tables_with_inherited_content": 8,
+      "tables_without_content": 20,
+      "tables_missing_full_scan": 20
+    },
+    {
+      "source": "CNRDS",
+      "discovered_files": 81,
+      "registered_files": 81,
+      "baseline_files": 81,
+      "baseline_found": 81,
+      "inspected_files": 81,
+      "readable_archives": 67,
+      "enumerated_archives": 67,
+      "discovered_members": 393,
+      "directory_checked_members": 393,
+      "current_content_members": 132,
+      "current_data_content_members": 0,
+      "inherited_content_members": 28,
+      "logical_tables": 67,
+      "data_partitions": 194,
+      "full_table_row_scans": 0,
+      "tables_with_inherited_content": 1,
+      "tables_without_content": 66,
+      "tables_missing_full_scan": 67
+    },
+    {
+      "source": "BigQuant",
+      "discovered_files": 10,
+      "registered_files": 10,
+      "baseline_files": 10,
+      "baseline_found": 10,
+      "inspected_files": 10,
+      "readable_archives": 10,
+      "enumerated_archives": 10,
+      "discovered_members": 6466,
+      "directory_checked_members": 6466,
+      "current_content_members": 3262,
+      "current_data_content_members": 0,
+      "inherited_content_members": 263,
+      "logical_tables": 61,
+      "data_partitions": 3201,
+      "full_table_row_scans": 3,
+      "tables_with_inherited_content": 5,
+      "tables_without_content": 56,
+      "tables_missing_full_scan": 58
+    }
+  ],
+  "actual_scan_rows_by_audit": {
+    "DQ02_CSMAR": 105936113,
+    "DQ02_CNRDS": 43523306,
+    "DQ02B_BigQuant": 450958087
+  },
+  "row_total_policy": "Never add DQ01/DQ03/P9/P10 inherited or diagnostic rows; actual audit counts are scoped reads, not certified absolute local row total",
+  "unscanned_historical_rows": null,
+  "declared_rows_total": null,
+  "unique_local_rows_total": null,
+  "price_join_counts": {
+    "CSMAR": {
+      "NO_PRICE_KEY": 19,
+      "MISSING_OHLC": 0,
+      "DUPLICATE_PRICE_KEY": 0,
+      "MATCHED": 605481
+    },
+    "CNRDS": {
+      "NO_PRICE_KEY": 26641,
+      "MISSING_OHLC": 0,
+      "DUPLICATE_PRICE_KEY": 0,
+      "MATCHED": 578859
+    },
+    "BigQuant": {
+      "NO_PRICE_KEY": 292,
+      "MISSING_OHLC": 564,
+      "DUPLICATE_PRICE_KEY": 0,
+      "MATCHED": 604644
+    }
+  },
+  "bigquant_state": "MAIN_ACCEPTED",
+  "main_commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+  "bigquant_commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+  "resources": {
+    "worker_processes": 1,
+    "raw_vendor_files_opened": 0,
+    "database_bytes": 0,
+    "raw_row_index_bytes": 0,
+    "integration_seconds": 3.7082629000069574,
+    "memory_soft_limit_bytes": 2147483648,
+    "temp_disk_budget_bytes": 268435456,
+    "temporary_materialized_evidence_bytes": 0,
+    "branch_work_elapsed_seconds": 474.74201488494873,
+    "delivery_bytes_before_final_receipt": 283775
+  },
+  "tests": {
+    "command": "python -I -B -X utf8 tests/evidence/test_dqc01_evidence_matrix.py",
+    "returncode": 0,
+    "elapsed_seconds": 1.284657399985008,
+    "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 1.181s\n\nOK\n",
+    "status": "PASS"
+  },
+  "integration_transition": {
+    "initial_main": "1aee55cbed5f1bf6a285a6c6532937c446837a9c",
+    "initial_pr_head": "86c684ed4b4647e9a05a7e56cb7ca4a3b734310e",
+    "initial_state": "UNMERGED_EVIDENCE",
+    "merged_at": "2026-11-11T15:54:00Z",
+    "accepted_commit": "92c2516e408ddbd76cd94cdf1c3b8178d81c3d1f",
+    "consumed_bigquant_blobs_compared": 8,
+    "all_identical": true
+  }
+}
