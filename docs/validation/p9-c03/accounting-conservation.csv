@@ -1,0 +1,3 @@
+account,expected_gross_income,recognized_income,receivable_only,actual_posted_cash,simulated_gross_cash,simulated_unpaid_receivable,actual_account_cash_received,tax,after_tax_cash,max_cash_residual,max_equity_residual,max_income_transfer_residual,max_position_quantity_residual,independent_income_residual,independent_transfer_residual,original_trade_count,original_trade_cost
+B_factor_score-fold-0,12754.2200,12754.220000000001,12754.220000000001,0.0,12754.220000000001,0.0,,,,5.820766091346741e-10,8.822098607197404e-11,0.0,0,-1.8189894035458565e-12,-1.8189894035458565e-12,674,55830.56088600001
+B_ridge-fold-0,14052.500,14052.5,14052.5,0.0,14052.5,0.0,,,,4.656612873077393e-10,0.0,0.0,0,0.0,0.0,698,61813.16542200001

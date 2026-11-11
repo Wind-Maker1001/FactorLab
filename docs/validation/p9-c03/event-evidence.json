@@ -1,0 +1,2089 @@
+[
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:4",
+    "symbol": "300482.SZ",
+    "issuer_legal_name": "广州万孚生物技术股份有限公司",
+    "disclosure_org_id": "9900024914",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1216791085",
+    "announcement_title": "2022年年度权益分派实施公告",
+    "public_date": "2023-05-11",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-05-17",
+    "ex_date": "2023-05-18",
+    "payment_date": "2023-05-18",
+    "cash_per_share": "0.50",
+    "currency": "CNY",
+    "terms_sections": "一至四；五：除息折算不等于每股权益",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-05-11/1216791085.PDF",
+    "sha256": "cba5d71e6193367ffbf80a84e38938548e4c2c8a40cc385cc922a93d1f0aa695",
+    "original": "originals/1216791085.pdf",
+    "retrieved_at_utc": "2026-11-11T16:17:19.362701+00:00",
+    "notice_bytes": 105780,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "31f4c68cac4354a8036ab0ba4bf31265b04219c698902365d4cde7ec8fc3c986",
+        "rows": 28
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "关于持股5%以上股东减持计划期限届满的公告",
+        "announcement_id": "1216745221",
+        "sec_code": "300482",
+        "date": "2023-05-04"
+      },
+      {
+        "title": "关于万孚转债暂停转股的提示性公告",
+        "announcement_id": "1216781475",
+        "sec_code": "300482",
+        "date": "2023-05-10"
+      },
+      {
+        "title": "关于调整可转换公司债券转股价格的公告",
+        "announcement_id": "1216791086",
+        "sec_code": "300482",
+        "date": "2023-05-11"
+      },
+      {
+        "title": "2022年年度权益分派实施公告",
+        "announcement_id": "1216791085",
+        "sec_code": "300482",
+        "date": "2023-05-11"
+      },
+      {
+        "title": "关于申请向特定对象发行股票获得深圳证券交易所上市审核中心审核通过的公告",
+        "announcement_id": "1216801009",
+        "sec_code": "300482",
+        "date": "2023-05-11"
+      },
+      {
+        "title": "华泰联合证券有限责任公司关于广州万孚生物技术股份有限公司2022年度创业板向特定对象发行股票上市保荐书",
+        "announcement_id": "1216830080",
+        "sec_code": "300482",
+        "date": "2023-05-16"
+      },
+      {
+        "title": "广州万孚生物技术股份有限公司2022年度创业板向特定对象发行股票募集说明书（注册稿）",
+        "announcement_id": "1216830079",
+        "sec_code": "300482",
+        "date": "2023-05-16"
+      },
+      {
+        "title": "华泰联合证券有限责任公司关于广州万孚生物技术股份有限公司2022年度创业板向特定对象发行股票发行保荐书",
+        "announcement_id": "1216830078",
+        "sec_code": "300482",
+        "date": "2023-05-16"
+      },
+      {
+        "title": "关于万孚转债恢复转股的提示性公告",
+        "announcement_id": "1216844163",
+        "sec_code": "300482",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "2020年广州万孚生物技术股份有限公司向不特定对象发行可转换公司债券2023年跟踪评级报告",
+        "announcement_id": "1216942882",
+        "sec_code": "300482",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "关于2020年限制性股票激励计划首次授予部分第二类限制性股票第二个归属期归属结果暨股份上市的公告",
+        "announcement_id": "1216958805",
+        "sec_code": "300482",
+        "date": "2023-05-31"
+      },
+      {
+        "title": "关于2020年限制性股票激励计划首次授予部分第一类限制性股票第二个解锁期股份上市流通的提示性公告",
+        "announcement_id": "1216978559",
+        "sec_code": "300482",
+        "date": "2023-06-05"
+      },
+      {
+        "title": "关于向特定对象发行股票申请获得中国证监会注册批复的公告",
+        "announcement_id": "1217167757",
+        "sec_code": "300482",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "广州万孚生物技术股份有限公司2022年度创业板向特定对象发行股票募集说明书（注册稿）",
+        "announcement_id": "1217167758",
+        "sec_code": "300482",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "关于2023年第二季度可转换公司债券转股情况的公告",
+        "announcement_id": "1217207187",
+        "sec_code": "300482",
+        "date": "2023-07-04"
+      },
+      {
+        "title": "第四届董事会第二十一次会议决议公告",
+        "announcement_id": "1217217699",
+        "sec_code": "300482",
+        "date": "2023-07-05"
+      },
+      {
+        "title": "独立董事关于第四届董事会第二十一次会议相关事项的独立意见",
+        "announcement_id": "1217217703",
+        "sec_code": "300482",
+        "date": "2023-07-05"
+      },
+      {
+        "title": "关于回购公司股份方案的公告",
+        "announcement_id": "1217217701",
+        "sec_code": "300482",
+        "date": "2023-07-05"
+      },
+      {
+        "title": "关于回购股份事项前十名股东及前十名无限售条件股东持股情况的公告",
+        "announcement_id": "1217227822",
+        "sec_code": "300482",
+        "date": "2023-07-06"
+      },
+      {
+        "title": "关于回购公司股份的回购报告书",
+        "announcement_id": "1217227821",
+        "sec_code": "300482",
+        "date": "2023-07-06"
+      },
+      {
+        "title": "关于首次回购公司股份的公告",
+        "announcement_id": "1217263260",
+        "sec_code": "300482",
+        "date": "2023-07-10"
+      },
+      {
+        "title": "关于回购公司股份实施结果暨股份变动公告",
+        "announcement_id": "1217282442",
+        "sec_code": "300482",
+        "date": "2023-07-12"
+      },
+      {
+        "title": "独立董事关于第四届董事会第二十二次会议的独立意见",
+        "announcement_id": "1217358775",
+        "sec_code": "300482",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "员工购房购车借款管理制度",
+        "announcement_id": "1217358772",
+        "sec_code": "300482",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "独立董事关于第四届董事会第二十二次会议相关事项的事前认可意见",
+        "announcement_id": "1217358777",
+        "sec_code": "300482",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "第四届监事会第十六次会议决议公告",
+        "announcement_id": "1217358776",
+        "sec_code": "300482",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "关于公司放弃优先购买权暨关联交易的公告",
+        "announcement_id": "1217358773",
+        "sec_code": "300482",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "第四届董事会第二十二次会议决议公告",
+        "announcement_id": "1217358774",
+        "sec_code": "300482",
+        "date": "2023-07-21"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:6",
+    "symbol": "002385.SZ",
+    "issuer_legal_name": "北京大北农科技集团股份有限公司",
+    "disclosure_org_id": "9900011648",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1216861421",
+    "announcement_title": "2022年年度分红派息实施公告",
+    "public_date": "2023-05-20",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-05-25",
+    "ex_date": "2023-05-26",
+    "payment_date": "2023-05-26",
+    "cash_per_share": "0.05",
+    "currency": "CNY",
+    "terms_sections": "一至五；六：除息计算",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-05-20/1216861421.PDF",
+    "sha256": "cce3e2d6427deb2baa0fcde3461c7bd31c42123821bd827f13f582a8912c088b",
+    "original": "originals/1216861421.pdf",
+    "retrieved_at_utc": "2026-11-11T16:17:17.108107+00:00",
+    "notice_bytes": 305480,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "6159de9426327dd11d4be1864e4b46cc67db9815a6f17de5a0573a976c45fba4",
+        "rows": 30
+      },
+      {
+        "page": "issuer-index-2",
+        "sha256": "5b5e5b47fe52d1d360f0e8d247e4db80f895862214e2aedb8828af415d6ddc6d",
+        "rows": 21
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "关于控股子公司大豆产品获得农业转基因生物安全证书的公告",
+        "announcement_id": "1216740697",
+        "sec_code": "002385",
+        "date": "2023-05-04"
+      },
+      {
+        "title": "北京大北农科技集团股份有限公司2022年度向特定对象发行股票募集说明书（修订稿）",
+        "announcement_id": "1216760026",
+        "sec_code": "002385",
+        "date": "2023-05-06"
+      },
+      {
+        "title": "2023年4月份生猪销售情况简报",
+        "announcement_id": "1216760027",
+        "sec_code": "002385",
+        "date": "2023-05-06"
+      },
+      {
+        "title": "关于北京大北农科技集团股份有限公司申请向特定对象发行股票的审核问询函之回复（修订稿）",
+        "announcement_id": "1216760025",
+        "sec_code": "002385",
+        "date": "2023-05-06"
+      },
+      {
+        "title": "关于申请向特定对象发行股票的审核问询函回复（修订稿）的提示性公告",
+        "announcement_id": "1216760028",
+        "sec_code": "002385",
+        "date": "2023-05-06"
+      },
+      {
+        "title": "关于控股子公司山东华佑畜牧股份有限公司股票在全国中小企业股份转让系统终止挂牌的进展公告",
+        "announcement_id": "1216791564",
+        "sec_code": "002385",
+        "date": "2023-05-11"
+      },
+      {
+        "title": "公司及控股子公司担保进展公告",
+        "announcement_id": "1216791570",
+        "sec_code": "002385",
+        "date": "2023-05-11"
+      },
+      {
+        "title": "关于2021年限制性股票激励计划部分限制性股票回购注销完成的公告",
+        "announcement_id": "1216822188",
+        "sec_code": "002385",
+        "date": "2023-05-16"
+      },
+      {
+        "title": "2022年年度股东大会决议公告",
+        "announcement_id": "1216832619",
+        "sec_code": "002385",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "关于完成监事会换届选举并选举公司第六届监事会主席的公告",
+        "announcement_id": "1216832620",
+        "sec_code": "002385",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "第六届董事会第一次（临时）会议决议公告",
+        "announcement_id": "1216832616",
+        "sec_code": "002385",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "关于完成董事会换届选举并聘任高级管理人员、内部审计负责人及证券事务代表的公告",
+        "announcement_id": "1216832617",
+        "sec_code": "002385",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "独立董事关于公司第六届董事会第一次（临时）会议相关事项的独立意见",
+        "announcement_id": "1216832618",
+        "sec_code": "002385",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "第六届监事会第一次（临时）会议决议公告",
+        "announcement_id": "1216832622",
+        "sec_code": "002385",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "北京市天元律师事务所关于北京大北农科技集团股份有限公司2022年年度股东大会的法律意见",
+        "announcement_id": "1216832621",
+        "sec_code": "002385",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "2022年年度报告摘要（英文版）",
+        "announcement_id": "1216861423",
+        "sec_code": "002385",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "2022年年度分红派息实施公告",
+        "announcement_id": "1216861421",
+        "sec_code": "002385",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "关于北京大北农科技集团股份有限公司申请向特定对象发行股票的审核问询函之回复（二次修订稿）",
+        "announcement_id": "1216898704",
+        "sec_code": "002385",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "关于公司调整向特定对象发行股票发行数量上限的公告",
+        "announcement_id": "1216898705",
+        "sec_code": "002385",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "北京大北农科技集团股份有限公司2022年度向特定对象发行股票募集说明书（修订稿）",
+        "announcement_id": "1216898703",
+        "sec_code": "002385",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "中德证券有限责任公司关于北京大北农科技集团股份有限公司2022年度向特定对象发行股票之发行保荐书",
+        "announcement_id": "1216898706",
+        "sec_code": "002385",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "中德证券有限责任公司关于北京大北农科技集团股份有限公司2022年度向特定对象发行股票之上市保荐书",
+        "announcement_id": "1216898701",
+        "sec_code": "002385",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "关于申请向特定对象发行股票的审核问询函回复及募集说明书等相关文件更新的提示性公告",
+        "announcement_id": "1216898702",
+        "sec_code": "002385",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "第六届监事会第二次（临时）会议决议公告",
+        "announcement_id": "1216977134",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "关于修订《公司章程》并办理备案登记的公告",
+        "announcement_id": "1216977135",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "第六届董事会第二次（临时）会议决议公告",
+        "announcement_id": "1216977124",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "关于控股子公司云南大天种业有限公司对外投资的公告",
+        "announcement_id": "1216977125",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "关于召开2023年第三次临时股东大会的通知",
+        "announcement_id": "1216977127",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "独立董事关于公司第六届董事会第二次（临时）会议相关事项的独立意见",
+        "announcement_id": "1216977132",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "关于延长公司向特定对象发行A股股票发行方案决议有效期的公告",
+        "announcement_id": "1216977120",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "董事会战略与ESG委员会议事规则",
+        "announcement_id": "1216977122",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "北京大北农科技集团股份有限公司章程（2023年6月）",
+        "announcement_id": "1216977129",
+        "sec_code": "002385",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "2023年5月份生猪销售情况简报",
+        "announcement_id": "1217002403",
+        "sec_code": "002385",
+        "date": "2023-06-07"
+      },
+      {
+        "title": "关于向特定对象发行股票申请获得深圳证券交易所上市审核中心审核通过的公告",
+        "announcement_id": "1217024476",
+        "sec_code": "002385",
+        "date": "2023-06-09"
+      },
+      {
+        "title": "公司及控股子公司担保进展公告",
+        "announcement_id": "1217086765",
+        "sec_code": "002385",
+        "date": "2023-06-17"
+      },
+      {
+        "title": "北京市天元律师事务所关于北京大北农科技集团股份有限公司2023年第三次临时股东大会的法律意见",
+        "announcement_id": "1217099365",
+        "sec_code": "002385",
+        "date": "2023-06-20"
+      },
+      {
+        "title": "2023年第三次临时股东大会决议公告",
+        "announcement_id": "1217099367",
+        "sec_code": "002385",
+        "date": "2023-06-20"
+      },
+      {
+        "title": "关于为参股公司提供担保暨关联交易的公告",
+        "announcement_id": "1217133259",
+        "sec_code": "002385",
+        "date": "2023-06-26"
+      },
+      {
+        "title": "独立董事关于公司第六届董事会第三次（临时）会议相关事项的事前认可及独立意见",
+        "announcement_id": "1217133261",
+        "sec_code": "002385",
+        "date": "2023-06-26"
+      },
+      {
+        "title": "关于控股子公司购买河北聚顺农业开发有限公司部分股权暨关联交易的公告",
+        "announcement_id": "1217133262",
+        "sec_code": "002385",
+        "date": "2023-06-26"
+      },
+      {
+        "title": "关于召开2023年第四次临时股东大会的通知",
+        "announcement_id": "1217133258",
+        "sec_code": "002385",
+        "date": "2023-06-26"
+      },
+      {
+        "title": "第六届董事会第三次（临时）会议决议公告",
+        "announcement_id": "1217133260",
+        "sec_code": "002385",
+        "date": "2023-06-26"
+      },
+      {
+        "title": "2023年6月份生猪销售情况简报",
+        "announcement_id": "1217226715",
+        "sec_code": "002385",
+        "date": "2023-07-07"
+      },
+      {
+        "title": "公司及控股子公司担保进展公告",
+        "announcement_id": "1217254828",
+        "sec_code": "002385",
+        "date": "2023-07-10"
+      },
+      {
+        "title": "北京市天元律师事务所关于北京大北农科技集团股份有限公司2023年第四次临时股东大会的法律意见",
+        "announcement_id": "1217273553",
+        "sec_code": "002385",
+        "date": "2023-07-12"
+      },
+      {
+        "title": "2023年第四次临时股东大会决议公告",
+        "announcement_id": "1217273552",
+        "sec_code": "002385",
+        "date": "2023-07-12"
+      },
+      {
+        "title": "2023年半年度业绩预告",
+        "announcement_id": "1217301082",
+        "sec_code": "002385",
+        "date": "2023-07-15"
+      },
+      {
+        "title": "关于对外捐赠的公告",
+        "announcement_id": "1217468638",
+        "sec_code": "002385",
+        "date": "2023-08-05"
+      },
+      {
+        "title": "2023年7月份生猪销售情况简报",
+        "announcement_id": "1217478166",
+        "sec_code": "002385",
+        "date": "2023-08-08"
+      },
+      {
+        "title": "关于向特定对象发行股票申请获得中国证券监督管理委员会同意注册批复的公告",
+        "announcement_id": "1217510180",
+        "sec_code": "002385",
+        "date": "2023-08-11"
+      },
+      {
+        "title": "公司及控股子公司担保进展公告",
+        "announcement_id": "1217533915",
+        "sec_code": "002385",
+        "date": "2023-08-15"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:23",
+    "symbol": "600022.SH",
+    "issuer_legal_name": "山东钢铁股份有限公司",
+    "disclosure_org_id": "gssh0600022",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1217002085",
+    "announcement_title": "山东钢铁股份有限公司2022年年度权益分派实施公告",
+    "public_date": "2023-06-07",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-06-13",
+    "ex_date": "2023-06-14",
+    "payment_date": "2023-06-14",
+    "cash_per_share": "0.03",
+    "currency": "CNY",
+    "terms_sections": "二、三、四",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-06-07/1217002085.PDF",
+    "sha256": "462d04b002de78539d96d24173f5fbc57d08b09a62cd6a3f24fe2bad4db86555",
+    "original": "originals/1217002085.pdf",
+    "retrieved_at_utc": "2026-11-11T16:17:24.590555+00:00",
+    "notice_bytes": 737565,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "b3311de475220e9ea6ff1c8bd665a7b2b60d5c68db6f464c55e047d2edfcf8d7",
+        "rows": 20
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "山东钢铁股份有限公司关于董事会秘书辞职的公告",
+        "announcement_id": "1216746157",
+        "sec_code": "600022",
+        "date": "2023-05-05"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于独立董事辞职的公告",
+        "announcement_id": "1216779190",
+        "sec_code": "600022",
+        "date": "2023-05-10"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于副总经理辞职的公告",
+        "announcement_id": "1216797719",
+        "sec_code": "600022",
+        "date": "2023-05-12"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于控股股东增持公司股份计划实施结果的公告",
+        "announcement_id": "1216931539",
+        "sec_code": "600022",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "北京金诚同达（济南）律师事务所关于山东钢铁集团有限公司增持山东钢铁股份有限公司股份专项核查意见",
+        "announcement_id": "1216931540",
+        "sec_code": "600022",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于注销南京销售分公司的公告",
+        "announcement_id": "1216955416",
+        "sec_code": "600022",
+        "date": "2023-06-01"
+      },
+      {
+        "title": "山东钢铁股份有限公司第七届董事会第二十三次会议决议公告",
+        "announcement_id": "1216955419",
+        "sec_code": "600022",
+        "date": "2023-06-01"
+      },
+      {
+        "title": "山东钢铁股份有限公司独立董事关于第七届董事会第二十三次会议有关事项的独立意见",
+        "announcement_id": "1216955417",
+        "sec_code": "600022",
+        "date": "2023-06-01"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于资产减值准备财务核销的公告",
+        "announcement_id": "1216955418",
+        "sec_code": "600022",
+        "date": "2023-06-01"
+      },
+      {
+        "title": "山东钢铁股份有限公司2022年年度权益分派实施公告",
+        "announcement_id": "1217002085",
+        "sec_code": "600022",
+        "date": "2023-06-07"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于独立董事辞职的公告",
+        "announcement_id": "1217281937",
+        "sec_code": "600022",
+        "date": "2023-07-13"
+      },
+      {
+        "title": "山东钢铁股份有限公司2023年半年度业绩预告",
+        "announcement_id": "1217298948",
+        "sec_code": "600022",
+        "date": "2023-07-15"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于董事长代行董事会秘书职责的公告",
+        "announcement_id": "1217415741",
+        "sec_code": "600022",
+        "date": "2023-07-29"
+      },
+      {
+        "title": "山东钢铁股份有限公司2023年第一次临时股东大会通知",
+        "announcement_id": "1217443004",
+        "sec_code": "600022",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "山东钢铁股份有限公司独立董事提名人和候选人声明公告",
+        "announcement_id": "1217442406",
+        "sec_code": "600022",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "山东钢铁股份有限公司关于修订公司章程的公告",
+        "announcement_id": "1217443002",
+        "sec_code": "600022",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "山东钢铁股份有限公司第七届董事会第二十四次会议决议公告",
+        "announcement_id": "1217443003",
+        "sec_code": "600022",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "山东钢铁股份有限公司章程",
+        "announcement_id": "1217443000",
+        "sec_code": "600022",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "山东钢铁股份有限公司独立董事关于第七届董事会第二十四次会议有关事项的独立意见",
+        "announcement_id": "1217443005",
+        "sec_code": "600022",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "山东钢铁股份有限公司2023年第一次临时股东大会材料",
+        "announcement_id": "1217499288",
+        "sec_code": "600022",
+        "date": "2023-08-10"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:30",
+    "symbol": "600956.SH",
+    "issuer_legal_name": "新天绿色能源股份有限公司",
+    "disclosure_org_id": "9900015548",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1217044180",
+    "announcement_title": "新天绿能2022年年度权益分派实施公告",
+    "public_date": "2023-06-13",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-06-16",
+    "ex_date": "2023-06-19",
+    "payment_date": "2023-06-19",
+    "cash_per_share": "0.193",
+    "currency": "CNY",
+    "terms_sections": "二、三、四",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-06-13/1217044180.PDF",
+    "sha256": "982d296a8152f42228589af2c48ac5a2d03d3c28b0829b4fd8c7b9db8b558e08",
+    "original": "originals/1217044180.pdf",
+    "retrieved_at_utc": "2026-11-11T16:17:32.843135+00:00",
+    "notice_bytes": 554823,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "1c2749c7f0ac60f3a937b9d8f7b45d7d83d72a47a1edc5ba82d0f1c517ae955a",
+        "rows": 30
+      },
+      {
+        "page": "issuer-index-2",
+        "sha256": "6b1d46ecd6b26a520ceb5d80cd05f00e34d67d00375f81cf173be966206af9af",
+        "rows": 1
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1216746232",
+        "sec_code": "600956",
+        "date": "2023-05-05"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1216758065",
+        "sec_code": "600956",
+        "date": "2023-05-06"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1216758066",
+        "sec_code": "600956",
+        "date": "2023-05-06"
+      },
+      {
+        "title": "新天绿能2023年4月主要经营数据公告",
+        "announcement_id": "1216765313",
+        "sec_code": "600956",
+        "date": "2023-05-09"
+      },
+      {
+        "title": "新天绿能关于开立理财专用结算账户的公告",
+        "announcement_id": "1216807316",
+        "sec_code": "600956",
+        "date": "2023-05-13"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1216830836",
+        "sec_code": "600956",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1216830837",
+        "sec_code": "600956",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "新天绿能第五届董事会第十四次临时会议决议公告",
+        "announcement_id": "1216830567",
+        "sec_code": "600956",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "新天绿能2022年年度股东大会决议公告",
+        "announcement_id": "1216830568",
+        "sec_code": "600956",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "新天绿能2022年年度股东大会的法律意见书",
+        "announcement_id": "1216830838",
+        "sec_code": "600956",
+        "date": "2023-05-17"
+      },
+      {
+        "title": "新天绿能关于对2022年度非经营性资金占用及其他关联资金往来情况补充说明的公告",
+        "announcement_id": "1216861980",
+        "sec_code": "600956",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "会计师事务所对新天绿能关于对2022年度非经营性资金占用及其他关联资金往来情况公告的说明",
+        "announcement_id": "1216861981",
+        "sec_code": "600956",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "新天绿能关于参加河北辖区上市公司2023年投资者网上集体接待日活动的公告",
+        "announcement_id": "1216906634",
+        "sec_code": "600956",
+        "date": "2023-05-26"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1216989984",
+        "sec_code": "600956",
+        "date": "2023-06-06"
+      },
+      {
+        "title": "新天绿能2023年5月主要经营数据公告",
+        "announcement_id": "1217021892",
+        "sec_code": "600956",
+        "date": "2023-06-09"
+      },
+      {
+        "title": "新天绿能2022年年度权益分派实施公告",
+        "announcement_id": "1217044180",
+        "sec_code": "600956",
+        "date": "2023-06-13"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1217065268",
+        "sec_code": "600956",
+        "date": "2023-06-15"
+      },
+      {
+        "title": "新天绿能第五届董事会第十五次临时会议决议公告",
+        "announcement_id": "1217065269",
+        "sec_code": "600956",
+        "date": "2023-06-15"
+      },
+      {
+        "title": "新天绿能首次公开发行A股限售股上市流通公告",
+        "announcement_id": "1217107343",
+        "sec_code": "600956",
+        "date": "2023-06-21"
+      },
+      {
+        "title": "中德证券关于新天绿色能源股份有限公司首次公开发行A股限售股上市流通事项的核查意见",
+        "announcement_id": "1217106389",
+        "sec_code": "600956",
+        "date": "2023-06-21"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1217182690",
+        "sec_code": "600956",
+        "date": "2023-07-01"
+      },
+      {
+        "title": "新天绿能第五届董事会第五次会议决议公告",
+        "announcement_id": "1217182422",
+        "sec_code": "600956",
+        "date": "2023-07-01"
+      },
+      {
+        "title": " 新天绿能H股公告",
+        "announcement_id": "1217216461",
+        "sec_code": "600956",
+        "date": "2023-07-06"
+      },
+      {
+        "title": "新天绿能2023年第二次临时股东大会会议资料",
+        "announcement_id": "1217315008",
+        "sec_code": "600956",
+        "date": "2023-07-18"
+      },
+      {
+        "title": "新天绿能关于召开2023年第二次临时股东大会的通知",
+        "announcement_id": "1217315009",
+        "sec_code": "600956",
+        "date": "2023-07-18"
+      },
+      {
+        "title": "新天绿能关于开立理财专用结算账户的公告",
+        "announcement_id": "1217393833",
+        "sec_code": "600956",
+        "date": "2023-07-27"
+      },
+      {
+        "title": "新天绿能2023年第二季度主要经营数据公告",
+        "announcement_id": "1217402623",
+        "sec_code": "600956",
+        "date": "2023-07-28"
+      },
+      {
+        "title": "新天绿能H股公告",
+        "announcement_id": "1217458744",
+        "sec_code": "600956",
+        "date": "2023-08-04"
+      },
+      {
+        "title": "新天绿能2023年第二次临时股东大会决议公告",
+        "announcement_id": "1217491014",
+        "sec_code": "600956",
+        "date": "2023-08-09"
+      },
+      {
+        "title": "新天绿能2023年7月主要经营数据公告",
+        "announcement_id": "1217491015",
+        "sec_code": "600956",
+        "date": "2023-08-09"
+      },
+      {
+        "title": "新天绿能2023年第二次临时股东大会法律意见书",
+        "announcement_id": "1217491013",
+        "sec_code": "600956",
+        "date": "2023-08-09"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:33",
+    "symbol": "601568.SH",
+    "issuer_legal_name": "陕西北元化工集团股份有限公司",
+    "disclosure_org_id": "9900039743",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1217073438",
+    "announcement_title": "陕西北元化工集团股份有限公司2022年年度权益分派实施公告",
+    "public_date": "2023-06-16",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-06-21",
+    "ex_date": "2023-06-26",
+    "payment_date": "2023-06-26",
+    "cash_per_share": "0.26",
+    "currency": "CNY",
+    "terms_sections": "二、三、四",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-06-16/1217073438.PDF",
+    "sha256": "0fad6365d035705178d7ddf729e50861c560cbd4825a5a5e2fe351390979ffcc",
+    "original": "originals/1217073438.pdf",
+    "retrieved_at_utc": "2026-11-11T16:17:36.825439+00:00",
+    "notice_bytes": 644368,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "2285d7d521d04b8b7514fedd65919bd662554b79fbba1ca60ca97c320aba77cd",
+        "rows": 13
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "陕西北元化工集团股份有限公司关于参加“2023年陕西辖区上市公司投资者集体接待日暨2022年度业绩说明会”的公告",
+        "announcement_id": "1216764151",
+        "sec_code": "601568",
+        "date": "2023-05-09"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司关于召开2022年度股东大会的通知",
+        "announcement_id": "1216851077",
+        "sec_code": "601568",
+        "date": "2023-05-19"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司关于2022年度股东大会增加临时提案的公告",
+        "announcement_id": "1216932292",
+        "sec_code": "601568",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司关于控股股东申请豁免同业竞争承诺的独立董事意见",
+        "announcement_id": "1216932290",
+        "sec_code": "601568",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司关于控股股东申请豁免同业竞争承诺的公告",
+        "announcement_id": "1216932289",
+        "sec_code": "601568",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司关于控股股东申请豁免同业竞争承诺的监事会意见",
+        "announcement_id": "1216932291",
+        "sec_code": "601568",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司2022年度股东大会会议资料",
+        "announcement_id": "1216976024",
+        "sec_code": "601568",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司关于召开2022年度业绩说明会的预告公告",
+        "announcement_id": "1216989986",
+        "sec_code": "601568",
+        "date": "2023-06-06"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司2022年度股东大会决议公告",
+        "announcement_id": "1217022635",
+        "sec_code": "601568",
+        "date": "2023-06-09"
+      },
+      {
+        "title": "北京市嘉源律师事务所关于陕西北元化工集团股份有限公司2022年度股东大会的法律意见书",
+        "announcement_id": "1217022636",
+        "sec_code": "601568",
+        "date": "2023-06-09"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司2022年年度权益分派实施公告",
+        "announcement_id": "1217073438",
+        "sec_code": "601568",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司2023年半年度业绩预告",
+        "announcement_id": "1217299568",
+        "sec_code": "601568",
+        "date": "2023-07-15"
+      },
+      {
+        "title": "陕西北元化工集团股份有限公司关于使用部分闲置募集资金进行现金管理到期赎回的公告",
+        "announcement_id": "1217489854",
+        "sec_code": "601568",
+        "date": "2023-08-09"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:40",
+    "symbol": "601880.SH",
+    "issuer_legal_name": "辽宁港口股份有限公司",
+    "disclosure_org_id": "gshk0002880",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1217144136",
+    "announcement_title": "辽宁港口股份有限公司2022年年度权益分派实施公告",
+    "public_date": "2023-06-28",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-07-04",
+    "ex_date": "2023-07-05",
+    "payment_date": "2023-07-05",
+    "cash_per_share": "0.0174",
+    "currency": "CNY",
+    "terms_sections": "二、三、四",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-06-28/1217144136.PDF",
+    "sha256": "fbe69bb8c8e0c18ccbb11c5cd1eb55fb83988d6fd05274a27b3ef40d80813bdd",
+    "original": "originals/1217144136.pdf",
+    "retrieved_at_utc": "2026-11-11T16:18:06.366664+00:00",
+    "notice_bytes": 737462,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "a8fee19d2f11e145a37f15a3563200899586744b4471545b6ad11493c5edeff5",
+        "rows": 17
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "证券变动月报表",
+        "announcement_id": "1216746268",
+        "sec_code": "601880",
+        "date": "2023-05-05"
+      },
+      {
+        "title": "辽宁港口股份有限公司关于2022年度业绩说明会召开情况的公告",
+        "announcement_id": "1216799796",
+        "sec_code": "601880",
+        "date": "2023-05-12"
+      },
+      {
+        "title": "辽宁港口股份有限公司监事会决议公告",
+        "announcement_id": "1216817770",
+        "sec_code": "601880",
+        "date": "2023-05-16"
+      },
+      {
+        "title": "辽宁港口股份有限公司关于召开2022年年度股东大会的通知",
+        "announcement_id": "1216895324",
+        "sec_code": "601880",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "辽宁港口股份有限公司2022年年度股东大会会议资料",
+        "announcement_id": "1216895828",
+        "sec_code": "601880",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "证券变动月报表",
+        "announcement_id": "1216989988",
+        "sec_code": "601880",
+        "date": "2023-06-06"
+      },
+      {
+        "title": "辽宁港口股份有限公司独立董事意见",
+        "announcement_id": "1217075946",
+        "sec_code": "601880",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "辽宁港口股份有限公司2022年年度股东大会决议公告",
+        "announcement_id": "1217075944",
+        "sec_code": "601880",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "辽宁港口股份有限公司关于选举职工代表监事的公告",
+        "announcement_id": "1217075948",
+        "sec_code": "601880",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "辽宁港口股份有限公司董事会决议公告",
+        "announcement_id": "1217076028",
+        "sec_code": "601880",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "北京市嘉源律师事务所关于辽宁港口股份有限公司2022年年度股东大会的法律意见书",
+        "announcement_id": "1217075947",
+        "sec_code": "601880",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "辽宁港口股份有限公司监事会决议公告",
+        "announcement_id": "1217075945",
+        "sec_code": "601880",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "辽宁港口股份有限公司2022年年度权益分派实施公告",
+        "announcement_id": "1217144136",
+        "sec_code": "601880",
+        "date": "2023-06-28"
+      },
+      {
+        "title": "证券变动月报表",
+        "announcement_id": "1217199877",
+        "sec_code": "601880",
+        "date": "2023-07-04"
+      },
+      {
+        "title": "证券变动月报表",
+        "announcement_id": "1217451177",
+        "sec_code": "601880",
+        "date": "2023-08-03"
+      },
+      {
+        "title": "辽宁港口股份有限公司董事會會議通告",
+        "announcement_id": "1217519547",
+        "sec_code": "601880",
+        "date": "2023-08-12"
+      },
+      {
+        "title": "辽宁港口股份有限公司关于董事、监事辞职的公告",
+        "announcement_id": "1217519546",
+        "sec_code": "601880",
+        "date": "2023-08-12"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:47",
+    "symbol": "002268.SZ",
+    "issuer_legal_name": "中电科网络安全科技股份有限公司",
+    "disclosure_org_id": "9900005097",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1217209081",
+    "announcement_title": "2022年年度权益分派实施公告",
+    "public_date": "2023-07-05",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-07-11",
+    "ex_date": "2023-07-12",
+    "payment_date": "2023-07-12",
+    "cash_per_share": "0.06",
+    "currency": "CNY",
+    "terms_sections": "一至五",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-07-05/1217209081.PDF",
+    "sha256": "c256e862762ea2f329a637b3785a5542f346105cccd65f76d6a73913d3d81116",
+    "original": "originals/1217209081.pdf",
+    "retrieved_at_utc": "2026-11-11T16:17:14.308365+00:00",
+    "notice_bytes": 191181,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "efdb21438e771ff468fd0d5ceeae56193ee74c1c63ddfcfdef0a98ffdee145e2",
+        "rows": 11
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "北京国枫律师事务所关于中电科网络安全科技股份有限公司2022年年度股东大会的法律意见书",
+        "announcement_id": "1216853175",
+        "sec_code": "002268",
+        "date": "2023-05-19"
+      },
+      {
+        "title": "关于回购注销部分限制性股票减少公司注册资本暨通知债权人公告",
+        "announcement_id": "1216853173",
+        "sec_code": "002268",
+        "date": "2023-05-19"
+      },
+      {
+        "title": "二〇二二年度股东大会决议公告",
+        "announcement_id": "1216853174",
+        "sec_code": "002268",
+        "date": "2023-05-19"
+      },
+      {
+        "title": "中电科网络安全科技股份有限公司与浙江世纪华通集团股份有限公司战略合作进展公告",
+        "announcement_id": "1217027085",
+        "sec_code": "002268",
+        "date": "2023-06-10"
+      },
+      {
+        "title": "2022年年度权益分派实施公告",
+        "announcement_id": "1217209081",
+        "sec_code": "002268",
+        "date": "2023-07-05"
+      },
+      {
+        "title": "关于使用暂时闲置募集资金购买结构性存款的进展公告",
+        "announcement_id": "1217209082",
+        "sec_code": "002268",
+        "date": "2023-07-05"
+      },
+      {
+        "title": "2023年半年度业绩预告",
+        "announcement_id": "1217293744",
+        "sec_code": "002268",
+        "date": "2023-07-14"
+      },
+      {
+        "title": "中电科网络安全科技股份有限公司2022年年度报告（更正后）",
+        "announcement_id": "1217346627",
+        "sec_code": "002268",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "关于2022年年度报告的补充更正公告",
+        "announcement_id": "1217346628",
+        "sec_code": "002268",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "关于更换持续督导保荐代表人的公告",
+        "announcement_id": "1217346629",
+        "sec_code": "002268",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "关于部分不符合激励条件的激励对象已获授但尚未解锁的限制性股票回购注销完成公告",
+        "announcement_id": "1217521711",
+        "sec_code": "002268",
+        "date": "2023-08-12"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:50",
+    "symbol": "600808.SH",
+    "issuer_legal_name": "马鞍山钢铁股份有限公司",
+    "disclosure_org_id": "gssh0600808",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1217227868",
+    "announcement_title": "马鞍山钢铁股份有限公司2022年年度权益分派实施公告",
+    "public_date": "2023-07-07",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-07-13",
+    "ex_date": "2023-07-14",
+    "payment_date": "2023-07-14",
+    "cash_per_share": "0.02",
+    "currency": "CNY",
+    "terms_sections": "二、三、四",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-07-07/1217227868.PDF",
+    "sha256": "d6580bc8ac5d2628b23bac07da7a8ba055549bccf3a3f204630ed79b2590a7df",
+    "original": "originals/1217227868.pdf",
+    "retrieved_at_utc": "2026-11-11T16:17:28.558894+00:00",
+    "notice_bytes": 481324,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "28b81dc1fe6a639fcc19581949c5476c963e16e7b7552cb48079e9c67a9c3693",
+        "rows": 26
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "马钢股份证券变动月报表",
+        "announcement_id": "1216746833",
+        "sec_code": "600808",
+        "date": "2023-05-05"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关于短期融资券获准注册的公告",
+        "announcement_id": "1216810057",
+        "sec_code": "600808",
+        "date": "2023-05-13"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司监事会决议公告",
+        "announcement_id": "1216866469",
+        "sec_code": "600808",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司2022年年度股东大会会议资料",
+        "announcement_id": "1216866472",
+        "sec_code": "600808",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关于变更会计师事务所公告",
+        "announcement_id": "1216866470",
+        "sec_code": "600808",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司董事会决议公告",
+        "announcement_id": "1216866471",
+        "sec_code": "600808",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关于召开2022年年度股东大会的通知",
+        "announcement_id": "1216866473",
+        "sec_code": "600808",
+        "date": "2023-05-20"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关于参加“中国宝武下属上市公司投资者统一见面会”投资者交流活动情况的公告",
+        "announcement_id": "1216919720",
+        "sec_code": "600808",
+        "date": "2023-05-27"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关于2021年A股股权激励计划部分限制性股票回购注销实施公告",
+        "announcement_id": "1216943353",
+        "sec_code": "600808",
+        "date": "2023-05-31"
+      },
+      {
+        "title": "北京市中伦（上海）律师事务所关于马鞍山钢铁股份有限公司股权激励计划回购注销部分限制性股票的法律意见书",
+        "announcement_id": "1216943352",
+        "sec_code": "600808",
+        "date": "2023-05-31"
+      },
+      {
+        "title": "马钢股份证券变动月报表",
+        "announcement_id": "1216991199",
+        "sec_code": "600808",
+        "date": "2023-06-06"
+      },
+      {
+        "title": "北京市中伦(上海)律师事务所关于马鞍山钢铁股份有限公司2022年年度股东大会的法律意见书",
+        "announcement_id": "1217086209",
+        "sec_code": "600808",
+        "date": "2023-06-17"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司2022年年度股东大会决议公告",
+        "announcement_id": "1217086208",
+        "sec_code": "600808",
+        "date": "2023-06-17"
+      },
+      {
+        "title": "马钢股份证券变动月报表",
+        "announcement_id": "1217200546",
+        "sec_code": "600808",
+        "date": "2023-07-04"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司2023年度第一期短期融资券（科创票据）发行结果公告",
+        "announcement_id": "1217200753",
+        "sec_code": "600808",
+        "date": "2023-07-04"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司2022年年度权益分派实施公告",
+        "announcement_id": "1217227868",
+        "sec_code": "600808",
+        "date": "2023-07-07"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司2023年半年度业绩预亏公告",
+        "announcement_id": "1217299768",
+        "sec_code": "600808",
+        "date": "2023-07-15"
+      },
+      {
+        "title": " 马鞍山钢铁股份有限公司监事会决议公告",
+        "announcement_id": "1217418216",
+        "sec_code": "600808",
+        "date": "2023-07-29"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关联交易公告",
+        "announcement_id": "1217418214",
+        "sec_code": "600808",
+        "date": "2023-07-29"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关于回购注销部分限制性股票的公告",
+        "announcement_id": "1217418215",
+        "sec_code": "600808",
+        "date": "2023-07-29"
+      },
+      {
+        "title": "北京市中伦（上海）律师事务所关于马鞍山钢铁股份有限公司股权激励计划回购注销部分限制性股票的法律意见书",
+        "announcement_id": "1217418217",
+        "sec_code": "600808",
+        "date": "2023-07-29"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司董事会决议公告",
+        "announcement_id": "1217418213",
+        "sec_code": "600808",
+        "date": "2023-07-29"
+      },
+      {
+        "title": "马钢股份H股市场公告",
+        "announcement_id": "1217443012",
+        "sec_code": "600808",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "马钢股份证券变动月报表",
+        "announcement_id": "1217443013",
+        "sec_code": "600808",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司2023年第三次临时股东大会、2023年第二次A股类别股东大会会议资料",
+        "announcement_id": "1217467202",
+        "sec_code": "600808",
+        "date": "2023-08-05"
+      },
+      {
+        "title": "马鞍山钢铁股份有限公司关于召开2023年第三次临时股东大会、2023年第二次A股类别股东大会及2023年第二次H股类别股东大会的通知",
+        "announcement_id": "1217467203",
+        "sec_code": "600808",
+        "date": "2023-08-05"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  },
+  {
+    "event_id": "BQ:cn_stock_dividend:2023:65",
+    "symbol": "603858.SH",
+    "issuer_legal_name": "山东步长制药股份有限公司",
+    "disclosure_org_id": "9900028961",
+    "identity_scope": "ISSUER_NOTICE_CODE_AND_LEGAL_NAME_AT_EVENT_NOT_GLOBAL_LIFECYCLE",
+    "announcement_id": "1217451539",
+    "announcement_title": "山东步长制药股份有限公司2022年年度权益分派实施公告",
+    "public_date": "2023-08-03",
+    "public_time_precision": "DAY",
+    "exact_public_timestamp": null,
+    "record_date": "2023-08-09",
+    "ex_date": "2023-08-10",
+    "payment_date": "2023-08-10",
+    "cash_per_share": "0.96",
+    "currency": "CNY",
+    "terms_sections": "二、三、四",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-08-03/1217451539.PDF",
+    "sha256": "d648f8e6968c69e488ec46392c825ae25077857b2642ebdb6ab0797f1e8648fa",
+    "original": "originals/1217451539.pdf",
+    "retrieved_at_utc": "2026-11-11T16:18:13.259925+00:00",
+    "notice_bytes": 740023,
+    "synchronous_distribution": "CASH_ONLY_PER_IMPLEMENTATION_SCHEME",
+    "other_equity_events": "UNKNOWN_OUTSIDE_THIS_DISTRIBUTION",
+    "revision_query_scope": "2023-05-01/2023-08-15; exact issuer; all pages; title review only",
+    "revision_candidates": [],
+    "revision_chain_status": "NO_REVISION_TITLE_OBSERVED_IN_BOUNDED_INDEX_NOT_COMPLETE_CHAIN",
+    "issuer_index_pages": [
+      {
+        "page": "issuer-index-1",
+        "sha256": "6dcd02363ce653c2d93fe061f68e4b7d20a7385ae6dd8065bf7e0d28ad54b5d7",
+        "rows": 30
+      },
+      {
+        "page": "issuer-index-2",
+        "sha256": "5f86fd82cde1e8488ddcfe02b2f9fc20bf48e7cf5074dfacc424059f8ec5d6b1",
+        "rows": 30
+      },
+      {
+        "page": "issuer-index-3",
+        "sha256": "dba9a5d70a56deb3effba5b9346a1a0be1895ae599be975de44222d76efb4155",
+        "rows": 23
+      }
+    ],
+    "issuer_index_titles": [
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司完成工商变更登记的公告",
+        "announcement_id": "1216756218",
+        "sec_code": "603858",
+        "date": "2023-05-06"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司完成医疗器械经营许可证变更登记的公告",
+        "announcement_id": "1216764234",
+        "sec_code": "603858",
+        "date": "2023-05-09"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于提前归还部分用于暂时补充流动资金的募集资金的公告",
+        "announcement_id": "1216818131",
+        "sec_code": "603858",
+        "date": "2023-05-16"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于召开2022年度业绩说明会的公告",
+        "announcement_id": "1216882870",
+        "sec_code": "603858",
+        "date": "2023-05-24"
+      },
+      {
+        "title": "山东步长制药股份有限公司独立董事关于增加部分闲置募集资金暂时补充流动资金的独立意见",
+        "announcement_id": "1216895842",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟放弃优先受让投资基金份额的公告",
+        "announcement_id": "1216895836",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于增加部分闲置募集资金暂时补充流动资金的补充公告",
+        "announcement_id": "1216898260",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司药品生产许可证变更的公告",
+        "announcement_id": "1216895839",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届董事会第三十六次会议决议公告",
+        "announcement_id": "1216895837",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "中信证券股份有限公司关于山东步长制药股份有限公司使用部分闲置募集资金暂时补充流动资金的核查意见",
+        "announcement_id": "1216895840",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届监事会第二十次会议决议公告",
+        "announcement_id": "1216895841",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于增加部分闲置募集资金暂时补充流动资金的公告",
+        "announcement_id": "1216895838",
+        "sec_code": "603858",
+        "date": "2023-05-25"
+      },
+      {
+        "title": "山东步长制药股份有限公司董事会关于前期会计差错更正的专项说明",
+        "announcement_id": "1216934984",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司前期差错更正专项说明",
+        "announcement_id": "1216934983",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于前期会计差错更正的公告",
+        "announcement_id": "1216934985",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于前期会计差错更正后的财务报表和附注",
+        "announcement_id": "1216934987",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届监事会第二十一次会议决议公告",
+        "announcement_id": "1216935076",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司监事会关于会计差错更正的意见",
+        "announcement_id": "1216934982",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司前期差错更正专项说明的审核报告",
+        "announcement_id": "1216934986",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司独立董事关于第四届董事会第三十八次会议有关事项的独立意见",
+        "announcement_id": "1216934981",
+        "sec_code": "603858",
+        "date": "2023-05-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司药品生产许可证变更的公告",
+        "announcement_id": "1216943917",
+        "sec_code": "603858",
+        "date": "2023-05-31"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司签订技术开发合同的公告",
+        "announcement_id": "1216943918",
+        "sec_code": "603858",
+        "date": "2023-05-31"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股股东股份解除质押的公告",
+        "announcement_id": "1216965694",
+        "sec_code": "603858",
+        "date": "2023-06-02"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于召开2022年年度股东大会的通知",
+        "announcement_id": "1216975686",
+        "sec_code": "603858",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届董事会第三十七次会议决议公告",
+        "announcement_id": "1216975685",
+        "sec_code": "603858",
+        "date": "2023-06-03"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于提前归还部分用于暂时补充流动资金的募集资金的公告",
+        "announcement_id": "1217010416",
+        "sec_code": "603858",
+        "date": "2023-06-08"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于收到上海证券交易所对公司2022年年度报告的信息披露监管工作函的公告",
+        "announcement_id": "1217027415",
+        "sec_code": "603858",
+        "date": "2023-06-10"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司药品生产许可证变更的公告",
+        "announcement_id": "1217027416",
+        "sec_code": "603858",
+        "date": "2023-06-10"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股股东股份质押的公告",
+        "announcement_id": "1217027414",
+        "sec_code": "603858",
+        "date": "2023-06-10"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于计提商誉减值准备的公告",
+        "announcement_id": "1217053752",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届董事会第三十九次会议决议公告",
+        "announcement_id": "1217053747",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于2022年年度报告及摘要的更正公告",
+        "announcement_id": "1217053748",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司独立董事关于第四届董事会第三十九次会议有关事项的独立意见",
+        "announcement_id": "1217053991",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届监事会第二十二次会议决议公告",
+        "announcement_id": "1217053753",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司2022年年度报告摘要（2023年6月13日修订）",
+        "announcement_id": "1217053751",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司2022年年度股东大会取消部分议案并增加临时提案的公告",
+        "announcement_id": "1217053749",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司2022年年度报告（2023年6月13日修订）",
+        "announcement_id": "1217053750",
+        "sec_code": "603858",
+        "date": "2023-06-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司2022年年度股东大会会议资料",
+        "announcement_id": "1217072829",
+        "sec_code": "603858",
+        "date": "2023-06-16"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于延期回复2022年年度报告的信息披露监管工作函的公告",
+        "announcement_id": "1217084633",
+        "sec_code": "603858",
+        "date": "2023-06-17"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司获得药物临床试验批准通知书的公告",
+        "announcement_id": "1217099404",
+        "sec_code": "603858",
+        "date": "2023-06-20"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司收到药品GMP符合性检查结果的公告",
+        "announcement_id": "1217117362",
+        "sec_code": "603858",
+        "date": "2023-06-22"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司参与全国中成药采购联盟集中带量采购拟中选的公告",
+        "announcement_id": "1217138512",
+        "sec_code": "603858",
+        "date": "2023-06-27"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司药品临床试验取得进展的公告",
+        "announcement_id": "1217138211",
+        "sec_code": "603858",
+        "date": "2023-06-27"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于提前归还全部用于暂时补充流动资金的募集资金的公告",
+        "announcement_id": "1217138212",
+        "sec_code": "603858",
+        "date": "2023-06-27"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于上海证券交易所对公司2022年年度报告的信息披露监管工作函的回复公告",
+        "announcement_id": "1217146416",
+        "sec_code": "603858",
+        "date": "2023-06-28"
+      },
+      {
+        "title": "关于上海证券交易所对山东步长2022年年度报告的信息披露监管工作函的回复",
+        "announcement_id": "1217146415",
+        "sec_code": "603858",
+        "date": "2023-06-28"
+      },
+      {
+        "title": "信永中和会计师事务所（特殊普通合伙）关于山东步长制药股份有限公司2022年年度报告的信息披露监管工作函的回复意见",
+        "announcement_id": "1217146417",
+        "sec_code": "603858",
+        "date": "2023-06-28"
+      },
+      {
+        "title": "中信证券股份有限公司关于对上海证券交易所《关于山东步长制药股份有限公司2022年年度报告的信息披露监管工作函》的核查意见",
+        "announcement_id": "1217146419",
+        "sec_code": "603858",
+        "date": "2023-06-28"
+      },
+      {
+        "title": "北京市金杜（济南）律师事务所关于山东步长制药股份有限公司2022年年度股东大会的法律意见书",
+        "announcement_id": "1217156242",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届董事会第四十次会议决议公告",
+        "announcement_id": "1217156247",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司2022年年度股东大会决议公告",
+        "announcement_id": "1217156451",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟转让控股子公司股权的公告",
+        "announcement_id": "1217156243",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司独立董事关于第四届董事会第四十次会议有关事项的事前认可意见",
+        "announcement_id": "1217156245",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟放弃优先受让权暨关联交易的公告",
+        "announcement_id": "1217156244",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司独立董事关于第四届董事会第四十次会议有关事项的独立意见",
+        "announcement_id": "1217156246",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟向控股子公司增资暨关联交易的公告",
+        "announcement_id": "1217156452",
+        "sec_code": "603858",
+        "date": "2023-06-29"
+      },
+      {
+        "title": "步长涛医云健康科技（杭州）有限公司2021年度、2022年度、2023年1-4月审计报告",
+        "announcement_id": "1217168378",
+        "sec_code": "603858",
+        "date": "2023-06-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟转让控股子公司股权的补充暨进展公告",
+        "announcement_id": "1217168375",
+        "sec_code": "603858",
+        "date": "2023-06-30"
+      },
+      {
+        "title": "步长涛医云健康科技（杭州）有限公司拟股权转让所涉及的股东全部权益价值资产评估报告",
+        "announcement_id": "1217168376",
+        "sec_code": "603858",
+        "date": "2023-06-30"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司收到药品GMP符合性检查结果的公告",
+        "announcement_id": "1217207679",
+        "sec_code": "603858",
+        "date": "2023-07-05"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司签订技术开发合同书的公告",
+        "announcement_id": "1217235836",
+        "sec_code": "603858",
+        "date": "2023-07-08"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于公司及相关责任人员收到山东证监局警示函的公告",
+        "announcement_id": "1217273097",
+        "sec_code": "603858",
+        "date": "2023-07-12"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟放弃投资基金优先认缴出资权的公告",
+        "announcement_id": "1217283198",
+        "sec_code": "603858",
+        "date": "2023-07-13"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司拟投资建设旧厂房提升改造项目的公告",
+        "announcement_id": "1217283199",
+        "sec_code": "603858",
+        "date": "2023-07-13"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届董事会第四十一次会议决议公告",
+        "announcement_id": "1217283197",
+        "sec_code": "603858",
+        "date": "2023-07-13"
+      },
+      {
+        "title": "浙江天元生物药业有限公司旧厂房提升改造项目可行性研究报告",
+        "announcement_id": "1217292467",
+        "sec_code": "603858",
+        "date": "2023-07-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司药品盐酸二甲双胍缓释片通过仿制药一致性评价的公告",
+        "announcement_id": "1217292468",
+        "sec_code": "603858",
+        "date": "2023-07-14"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于公司及相关责任人员收到山东证监局警示函的补充公告",
+        "announcement_id": "1217299590",
+        "sec_code": "603858",
+        "date": "2023-07-15"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于放弃优先受让权暨关联交易的进展公告",
+        "announcement_id": "1217332316",
+        "sec_code": "603858",
+        "date": "2023-07-20"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司药品临床试验取得进展的公告",
+        "announcement_id": "1217345293",
+        "sec_code": "603858",
+        "date": "2023-07-21"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于变更职工代表监事、监事会主席的公告",
+        "announcement_id": "1217359577",
+        "sec_code": "603858",
+        "date": "2023-07-22"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届监事会第二十三次会议决议公告",
+        "announcement_id": "1217359576",
+        "sec_code": "603858",
+        "date": "2023-07-22"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于控股子公司拟投资建设旧厂房提升改造项目的进展公告",
+        "announcement_id": "1217402395",
+        "sec_code": "603858",
+        "date": "2023-07-28"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于注销部分募集资金专户的公告",
+        "announcement_id": "1217418002",
+        "sec_code": "603858",
+        "date": "2023-07-29"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司药品生产许可证变更的公告",
+        "announcement_id": "1217443302",
+        "sec_code": "603858",
+        "date": "2023-08-02"
+      },
+      {
+        "title": "山东步长制药股份有限公司2022年年度权益分派实施公告",
+        "announcement_id": "1217451539",
+        "sec_code": "603858",
+        "date": "2023-08-03"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟向控股子公司增资暨关联交易的进展公告",
+        "announcement_id": "1217467646",
+        "sec_code": "603858",
+        "date": "2023-08-05"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟放弃控股子公司优先认缴权暨关联交易的公告",
+        "announcement_id": "1217477817",
+        "sec_code": "603858",
+        "date": "2023-08-08"
+      },
+      {
+        "title": "山东步长制药股份有限公司独立董事关于第四届董事会第四十二次会议有关事项的事前认可意见",
+        "announcement_id": "1217477815",
+        "sec_code": "603858",
+        "date": "2023-08-08"
+      },
+      {
+        "title": "山东步长制药股份有限公司第四届董事会第四十二次会议决议公告",
+        "announcement_id": "1217477814",
+        "sec_code": "603858",
+        "date": "2023-08-08"
+      },
+      {
+        "title": "山东步长制药股份有限公司独立董事关于第四届董事会第四十二次会议有关事项的独立意见",
+        "announcement_id": "1217477818",
+        "sec_code": "603858",
+        "date": "2023-08-08"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于拟对外投资设立控股子公司的公告",
+        "announcement_id": "1217477816",
+        "sec_code": "603858",
+        "date": "2023-08-08"
+      },
+      {
+        "title": "山东步长制药股份有限公司关于全资子公司获得药品注册证书的公告",
+        "announcement_id": "1217520188",
+        "sec_code": "603858",
+        "date": "2023-08-12"
+      }
+    ],
+    "issuer_implementation_verified": true,
+    "payment_date_verified": true,
+    "actual_account_payment_verified": false,
+    "tax_status": "TAX_UNVERIFIED",
+    "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+    "settlement_assumptions": "Ordinary unrestricted A shares; not issuer self-distribution holder; designated trading/custody valid; issuer and CSD perform disclosed schedule; gross-only hypothetical settlement, not net spendable cash"
+  }
+]

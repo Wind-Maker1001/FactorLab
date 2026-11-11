@@ -111,6 +111,39 @@ def test_no_double_posting_or_adjusted_price_overlay(account, event):
         run(account, [event], price_basis='HFQ')
 
 
+def test_simulated_payment_is_not_actual_payment(account, event):
+    event = replace(event, payment_evidence_id=None, issuer_payment_evidence_id='notice:payment',
+                    settlement_rule_evidence_id='notice:ordinary-share-clearing')
+    actual = run(account, [event])
+    simulated = run(account, [event], settlement_basis='SIMULATED_BY_RULE')
+    assert actual['ledger'].receivable_gross.iloc[-1] == 30
+    ledger = simulated['ledger']
+    assert ledger.simulated_cash_gross.iloc[-1] == 30
+    assert not ledger.actual_account_payment_verified.any()
+    assert ledger.receivable_gross.iloc[-1] == 0
+    assert ledger.dividend_income_gross.iloc[-1] == 30
+    assert ledger.dividend_tax.iloc[-1] is None or pd.isna(ledger.dividend_tax.iloc[-1])
+    assert pd.isna(ledger.settlement_cash_net.iloc[-1])
+    assert simulated['journal'].state.eq('SIMULATED_SETTLEMENT_BY_RULE').sum() == 1
+    assert not simulated['journal'].state.eq('DIVIDEND_CASH_PAID').any()
+    assert ledger.dividend_residual.abs().max() == 0
+
+
+@pytest.mark.parametrize('field', ['issuer_payment_evidence_id', 'settlement_rule_evidence_id'])
+def test_simulated_settlement_requires_both_evidence_layers(account, event, field):
+    event = replace(event, payment_evidence_id=None,
+        issuer_payment_evidence_id=None if field == 'issuer_payment_evidence_id' else 'issuer',
+        settlement_rule_evidence_id=None if field == 'settlement_rule_evidence_id' else 'rule')
+    result = run(account, [event], settlement_basis='SIMULATED_BY_RULE')
+    assert result['ledger'].simulated_cash_gross.eq(0).all()
+    assert result['ledger'].receivable_gross.iloc[-1] == 30
+
+
+def test_date_only_publication_does_not_invent_record_day_availability(account, event):
+    with pytest.raises(SchemaError, match='chronology'):
+        run(account, [replace(event, public_at='2024-01-04', public_time_precision='DAY')])
+
+
 def test_candidate_intersection_uses_record_close_not_current_holding(tmp_path):
     import importlib.util
     from io import BytesIO

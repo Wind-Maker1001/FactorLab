@@ -1,0 +1,15 @@
+account,event_id,symbol,record_date,ex_date,payment_date,valid_saved_session,record_day_trades_included,record_day_fill_count,cash_per_share,entitlement_verified,simulated_settlement_by_rule,actual_account_payment_verified,actual_cash_received,tax,after_tax_cash,event_completeness
+B_factor_score-fold-0,BQ:cn_stock_dividend:2023:6,002385.SZ,2023-05-25,2023-05-26,2023-05-26,True,True,0,0.05,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_factor_score-fold-0,BQ:cn_stock_dividend:2023:23,600022.SH,2023-06-13,2023-06-14,2023-06-14,True,True,0,0.03,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_factor_score-fold-0,BQ:cn_stock_dividend:2023:33,601568.SH,2023-06-21,2023-06-26,2023-06-26,True,True,0,0.26,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_factor_score-fold-0,BQ:cn_stock_dividend:2023:40,601880.SH,2023-07-04,2023-07-05,2023-07-05,True,True,0,0.0174,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_factor_score-fold-0,BQ:cn_stock_dividend:2023:47,002268.SZ,2023-07-11,2023-07-12,2023-07-12,True,True,0,0.06,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_factor_score-fold-0,BQ:cn_stock_dividend:2023:50,600808.SH,2023-07-13,2023-07-14,2023-07-14,True,True,0,0.02,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_factor_score-fold-0,BQ:cn_stock_dividend:2023:65,603858.SH,2023-08-09,2023-08-10,2023-08-10,True,True,1,0.96,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_ridge-fold-0,BQ:cn_stock_dividend:2023:4,300482.SZ,2023-05-17,2023-05-18,2023-05-18,True,True,0,0.50,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_ridge-fold-0,BQ:cn_stock_dividend:2023:6,002385.SZ,2023-05-25,2023-05-26,2023-05-26,True,True,0,0.05,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_ridge-fold-0,BQ:cn_stock_dividend:2023:30,600956.SH,2023-06-16,2023-06-19,2023-06-19,True,True,0,0.193,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_ridge-fold-0,BQ:cn_stock_dividend:2023:33,601568.SH,2023-06-21,2023-06-26,2023-06-26,True,True,0,0.26,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_ridge-fold-0,BQ:cn_stock_dividend:2023:47,002268.SZ,2023-07-11,2023-07-12,2023-07-12,True,True,0,0.06,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_ridge-fold-0,BQ:cn_stock_dividend:2023:50,600808.SH,2023-07-13,2023-07-14,2023-07-14,True,True,0,0.02,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
+B_ridge-fold-0,BQ:cn_stock_dividend:2023:65,603858.SH,2023-08-09,2023-08-10,2023-08-10,True,True,1,0.96,True,True,False,,,,EVENT_COMPLETENESS_UNKNOWN
