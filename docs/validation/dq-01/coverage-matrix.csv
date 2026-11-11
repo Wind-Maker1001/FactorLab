@@ -1,0 +1,4 @@
+source,discovered_files,registered_files,baseline_files,baseline_found,inspected_files,readable_archives,enumerated_archives,discovered_members,directory_checked_members,current_content_members,current_data_content_members,inherited_content_members,logical_tables,data_partitions,full_table_row_scans,tables_with_inherited_content,tables_without_content,tables_missing_full_scan
+CSMAR,55,55,55,55,55,55,55,265,265,55,0,38,28,155,8,8,20,20
+CNRDS,81,81,81,81,81,67,67,393,393,132,0,28,67,194,0,1,66,67
+BigQuant,10,10,10,10,10,10,10,6466,6466,3262,0,263,61,3201,3,5,56,58
