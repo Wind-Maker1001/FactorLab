@@ -21,7 +21,14 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
         raise PermissionError('public market data requires explicit opt-in')
     if not 0 < seconds <= 86400 or not 0 <= reconnects <= 10:
         raise ValueError('bounded duration and reconnect budget required')
-    from websockets.exceptions import ConnectionClosed, InvalidHandshake
+    connection_errors = (OSError, TimeoutError)
+    try:
+        from websockets.exceptions import ConnectionClosed, InvalidHandshake
+    except ModuleNotFoundError as error:
+        if error.name != 'websockets' or connector is connect:
+            raise
+    else:
+        connection_errors += (ConnectionClosed, InvalidHandshake)
     futures = account.market == Market.BINANCE_USDM
     url = URL if futures else WS_HOST + '/stream'
     deadline, failures, messages, accepted = time.monotonic() + seconds, 0, 0, 0
@@ -99,7 +106,7 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                             reason = reason if reason in {'STALE_OR_FUTURE_OBSERVATION', 'QUOTE_IDENTITY_CAP'} else 'DUPLICATE_OR_OLDER_WATERMARK'
                             diagnostics['rejection_reasons'][reason] = diagnostics['rejection_reasons'].get(reason, 0) + 1
                 break
-        except (OSError, TimeoutError, ConnectionClosed, InvalidHandshake) as error:
+        except connection_errors as error:
             key = stage + ':' + type(error).__name__
             diagnostics['errors'][key] = diagnostics['errors'].get(key, 0) + 1
             if account.conflict:
