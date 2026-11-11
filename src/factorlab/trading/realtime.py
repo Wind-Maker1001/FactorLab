@@ -90,6 +90,9 @@ class RealtimeAccount:
             if all(k in state.confirmations for k in state.orders):
                 broker.reconcile()
             state.runtime.update(status='PAUSED', reason='START_REQUIRED', rules=None, session=None)
+            if self.market == Market.BINANCE_EQUITY:
+                for key in ('session', 'phase_snapshot', 'phase_calendar'):
+                    state.runtime['watermarks'].pop(key, None)
             state.runtime['checkpoint'] = checkpoint(state)
         try:
             self.controller = TradingController(broker, self.store, clock=clock, limits=configured_limits,
@@ -137,7 +140,14 @@ class RealtimeAccount:
         return self._change(operation)
 
     def disconnect(self, reason='DISCONNECTED'):
-        return self._change(lambda: self.state.runtime.update(status='PAUSED', reason=reason, previous=None))
+        def operation():
+            self.state.runtime.update(status='PAUSED', reason=reason, previous=None)
+            if self.market == Market.BINANCE_EQUITY:
+                self.state.runtime['session'] = None
+                for key in ('session', 'phase_snapshot', 'phase_calendar'):
+                    self.state.runtime['watermarks'].pop(key, None)
+                self._verified_observations.pop('session', None)
+        return self._change(operation)
 
     def tick(self):
         last = self.state.runtime['last_valid']
@@ -263,13 +273,54 @@ class RealtimeAccount:
     def _stream_event(self, value, raw, *, official_transport=False):
         """Called by the public reader, not by JSON replay/bootstrap."""
         if value['kind'] == 'session':
+            raw = ({'e': 'price', 'rates': [dict(s='NVDA', mp=value['source_phase'],
+                    t=value['price_time'])] if value['target_count'] == 1 else [],
+                    'scope': dict(symbol='NVDA', returned_symbols=value['returned_symbols'],
+                        matching_symbols=value['target_count'], retained_symbols=int(value['target_count'] == 1))}
+                   if value.get('phase_basis') == 'SNAPSHOT' else
+                   {k: raw[k] for k in ('e', 'from', 'to', 'ts')})
             value = dict(value, evidence=dict(endpoint='wss://nbstream.binance.com/equity/stream',
-                version='stocks-calendar-v1', raw=raw, fetched_at=value['received'],
+                version='stocks-phase-v2', raw=raw, fetched_at=value['received'],
                 provenance='OFFICIAL_TRANSPORT' if official_transport else 'OFFLINE_INJECTED'))
         accepted = self.event(value)
-        if accepted and value['kind'] == 'session' and official_transport:
+        if (accepted and value['kind'] == 'session' and official_transport
+                and self.state.runtime['session']['phase'] != 'UNKNOWN'):
             self._verified_observations['session'] = identity(self.state.runtime['session'])
         return accepted
+
+    def _phase(self, value, source, received):
+        runtime = self.state.runtime
+        old = runtime['session']
+        basis = value['phase_basis']
+        key = 'phase_' + basis.lower()
+        previous = runtime['watermarks'].get(key)
+        digest = identity({k: v for k, v in value.items() if k not in {'received', 'evidence'}})
+        if previous is not None:
+            if source < previous['time']:
+                return False
+            if source == previous['time'] and digest == previous['digest']:
+                return False
+        conflict = previous is not None and source == previous['time']
+        if old is not None:
+            old_time = datetime.fromtimestamp(old['time'] / 1000, timezone.utc)
+            if basis == 'CALENDAR' and source < old_time and old.get('phase_basis') == 'CALENDAR':
+                return False
+            if old['phase'] == 'UNKNOWN' and old.get('conflict'):
+                conflict |= basis != 'CALENDAR' or source <= old_time
+            elif old['phase'] != 'UNKNOWN' and value['phase'] != old['phase']:
+                # A snapshot has no phase-effective timestamp. Opposing observations
+                # cannot be ordered by the last price's timestamp.
+                conflict |= basis == 'SNAPSHOT' or source <= old_time
+                if basis == 'CALENDAR':
+                    conflict |= value['previous_phase'] != old['phase']
+        runtime['watermarks'][key] = dict(time=source, digest=digest)
+        runtime['session'] = dict(phase='UNKNOWN' if conflict else value['phase'],
+            time=int(source.timestamp() * 1000), received=received,
+            phase_basis=basis, price_time=value.get('price_time'),
+            effective_at=None, transition_detected_at=value.get('transition_detected_at'),
+            conflict=conflict, evidence=value.get('evidence'))
+        self._verified_observations.pop('session', None)
+        return True
 
     def event(self, value):
         """Consume normalized replay/public data; never accepts broker execution messages."""
@@ -288,6 +339,8 @@ class RealtimeAccount:
             return False
         def operation():
             runtime = self.state.runtime
+            if kind == 'session' and self.market == Market.BINANCE_EQUITY and 'phase_basis' in value:
+                return self._phase(value, source, received)
             previous = runtime['watermarks'].get(kind)
             digest = identity({k: v for k, v in value.items() if k != 'received'})
             # Source watermark also rejects replay after a process restart without
@@ -426,11 +479,25 @@ class RealtimeAccount:
                 result[kind] = dict(validity='UNKNOWN')
                 continue
             current = timedelta(0) <= self.clock() - value['received'] <= timedelta(seconds=seconds)
+            if kind == 'session' and self.market == Market.BINANCE_EQUITY:
+                source = datetime.fromtimestamp(value['time'] / 1000, timezone.utc)
+                current &= timedelta(0) <= self.clock() - source <= timedelta(seconds=seconds)
             verified = self._verified_observations.get(kind) == identity(value)
             evidence = value.get('evidence') or {}
             result[kind] = dict(validity='EXPIRED' if not current else 'VERIFIED' if verified else 'UNVERIFIED',
                 received=value['received'], source_time=value['time'], endpoint=evidence.get('endpoint'),
                 version=evidence.get('version'), parsed=evidence.get('parsed'))
+            if kind == 'session' and self.market == Market.BINANCE_EQUITY:
+                detected = value.get('transition_detected_at')
+                result[kind].update(phase=value['phase'], phase_basis=value.get('phase_basis'),
+                    observation_time=value['time'],
+                    source_time=None if detected is None else int(detected.timestamp() * 1000),
+                    timestamp_basis='LOCAL_RECEIPT' if detected is None else 'TRANSITION_DETECTED',
+                    price_time=value.get('price_time'), effective_at=value.get('effective_at'),
+                    transition_detected_at=value.get('transition_detected_at'),
+                    conflict=value.get('conflict', False))
+                if value['phase'] == 'UNKNOWN':
+                    result[kind]['validity'] = 'UNKNOWN'
         return result
 
     def health(self):
@@ -464,14 +531,30 @@ class RealtimeAccount:
 
 def equity_events(value, received):
     """Reuse the Equity source normalizer; Futures observations never enter here."""
+    if value['e'] == 'price':
+        targets = [rate for rate in value['rates'] if rate.get('s') == 'NVDA']
+        phase = targets[0].get('mp') if len(targets) == 1 else None
+        from factorlab.integrations.binance_equity import PHASES
+        from factorlab.integrations.binance_equity.market import epoch
+        yield dict(kind='session', symbol='NVDA', time=received, received=received,
+            phase=PHASES.get(phase, 'UNKNOWN'), source_phase=phase,
+            target_count=len(targets), returned_symbols=len(value['rates']),
+            phase_basis='SNAPSHOT', price_time=epoch(targets[0].get('t')) if len(targets) == 1 else None,
+            effective_at=None)
+        return
     table, rows = stream_rows(value, received.isoformat(), 'realtime-memory')
     for row in rows:
-        if row.get('symbol', 'NVDA') != 'NVDA' or row['event_time'] is None:
+        if row.get('symbol', 'NVDA') != 'NVDA':
             continue
-        result = dict(symbol='NVDA', time=datetime.fromtimestamp(row['event_time'] / 1000, timezone.utc), received=received)
+        source = (datetime.fromtimestamp(row['event_time'] / 1000, timezone.utc)
+                  if row['event_time'] is not None else None)
+        result = dict(symbol='NVDA', time=source or received, received=received)
         if table == 'sessions':
-            yield dict(result, kind='session', phase=row['session'])
-        elif table == 'quotes':
+            from factorlab.integrations.binance_equity import CALENDAR_PHASES
+            yield dict(result, kind='session', phase=row['session'] if source is not None else 'UNKNOWN',
+                phase_basis='CALENDAR', previous_phase=CALENDAR_PHASES.get(row['previous_phase'], 'UNKNOWN'),
+                transition_detected_at=source, effective_at=None)
+        elif table == 'quotes' and source is not None:
             emitted = row['server_event_time']
             fresh(emitted, received, received, timedelta(seconds=5))
             if emitted < row['event_time']:

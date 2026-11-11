@@ -8,3 +8,6 @@ WS_HOST = 'wss://nbstream.binance.com/equity'
 INTERVALS = ('5m', '1h', '1d', '1w', '1M')
 PHASES = {'C': 'CLOSED', 'ON': 'OVERNIGHT', 'PRE': 'PRE_MARKET',
           'O': 'REGULAR', 'POST': 'POST_MARKET'}
+CALENDAR_PHASES = {'CLOSED': 'CLOSED', 'OVERNIGHT': 'OVERNIGHT',
+                   'PRE_MARKET': 'PRE_MARKET', 'MARKET_OPEN': 'REGULAR',
+                   'POST_MARKET': 'POST_MARKET'}

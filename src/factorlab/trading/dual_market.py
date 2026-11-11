@@ -38,7 +38,7 @@ class SyntheticAccounts:
         self.stocks.quote(Quote('NVDA', D('150'), NOW))
         _, quotes = stream_rows(dict(e='quote', s='NVDA', E=MS, T=MS,
             bp='149.99', ap='150', bs='10', **{'as': '10'}), NOW.isoformat(), 'synthetic:quote')
-        _, sessions = stream_rows(dict(e='calendar', ts=MS, **{'from': 'PRE', 'to': 'O'}),
+        _, sessions = stream_rows(dict(e='calendar', ts=MS, **{'from': 'PRE_MARKET', 'to': 'MARKET_OPEN'}),
             NOW.isoformat(), 'synthetic:session')
         rules = Rules.from_exchange_info(dict(symbol='NVDA', tradability='BUY_SELL',
             stepSize='0.001', minQty='0.001', maxQty='1000', minNotional='1', maxNotional='100000',

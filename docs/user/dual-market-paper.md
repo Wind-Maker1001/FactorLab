@@ -58,4 +58,38 @@ execution transports, account/permission and product eligibility evidence,
 settlement/custody evidence for stocks, exchange-grade reconciliation and
 operational controls. This exercise provides none of those approvals.
 
+## Stocks public observation policy
+
+Public Paper rules require a locally supplied `BINANCE_EQUITY_API_KEY` with
+MARKET_DATA access. The unsigned GET needs no secret or trading permission.
+Rule acquisition makes one request without retries; diagnostics distinguish
+missing/invalid local authentication, explicit permission denial, explicit
+geographic restriction, other HTTP errors, network failure and an absent target.
+An unclassified HTTP 403 is not evidence of a geographic restriction. Rules
+remain UNKNOWN on failure. Upstream error bodies are not retained.
+
+The initial Stocks phase comes from NVDA's `mp` in the official `price` stream,
+not a guessed opening schedule. Calendar transitions subsequently update it.
+Only NVDA phase evidence is retained from a market-wide price snapshot; those
+prices do not supply executable quotes. Both rules and phase observations have
+a conservative 300-second Paper validity window, not an exchange guarantee.
+Contradictory observations without a reliable temporal ordering revoke phase
+approval until a newer consistent Calendar transition or a new connection's
+initial observation. Disconnect and restart revoke approval; operator start
+alone cannot restore it. Replay and injected transports cannot authenticate
+public Paper observations.
+
+The [pinned official price schema](https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/stocks/src/binance_sdk_stocks/websocket_streams/models/price_stream_response_rates_inner.py)
+defines `t` as nullable **price time**. It is not phase-effective time. Snapshot
+freshness uses the official connection's receipt time; an old price neither
+opens a phase nor makes a newly received `mp` snapshot a historical transition.
+The [Calendar schema](https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/stocks/src/binance_sdk_stocks/websocket_streams/models/calendar_stream_response.py)
+defines `ts` as the time the transition was **detected**. Actual phase-effective
+time remains unknown. Local receipt, price time and transition-detection time
+are kept separately. See the [official Calendar wire fixture](https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/stocks/tests/unit/websocket_streams/test_market_streams_api_ws_streams.py)
+for the long-form phase names, including `PRE_MARKET` and `MARKET_OPEN`.
+
+A fresh phase and valid market rules authorize only the explicitly selected
+synthetic Paper account policy, never real-account eligibility or live orders.
+
 NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED

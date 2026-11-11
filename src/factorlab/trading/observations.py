@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.client import PublicClient, HOST, urllib_transport
-from factorlab.integrations.binance_equity.client import Client, transport as equity_transport
+from factorlab.integrations.binance_equity.client import Client, MarketDataFailure, transport as equity_transport
 from factorlab.integrations.binance_equity import REST_HOST, SOURCE_VERSION
 from factorlab.integrations.binance_equity_trading.protocol import Rules, Unavailable
 from .contracts import Market
@@ -62,7 +62,7 @@ def acquire_rules(market, symbol, *, network=False, clock=lambda: datetime.now(t
         raw, _, _ = client._get('exchangeInfo', symbol, sink)
         row = next((r for r in raw['symbols'] if r['symbol'] == symbol), None)
         if row is None:
-            raise Unavailable('UNKNOWN_SYMBOL_RULES')
+            raise MarketDataFailure('TARGET_SYMBOL_ABSENT')
         payload = row
         try:
             rules = Rules.from_exchange_info(row)

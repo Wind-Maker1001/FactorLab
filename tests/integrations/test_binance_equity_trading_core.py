@@ -154,7 +154,7 @@ def test_rule_and_quote_gates_before_simulation(setup):
 def test_existing_quote_normalizers_and_missing_rest_time(setup):
     _, _, _, _, obs = setup
     _, q = stream_rows(dict(e="quote", s="NVDA", E=MS, T=MS, bp="149.99", ap="150", bs="1", **{"as":"1"}), NOW.isoformat(), "synthetic:q")
-    _, s = stream_rows(dict(e="calendar", ts=MS, **{"from":"PRE", "to":"O"}), NOW.isoformat(), "synthetic:s")
+    _, s = stream_rows(dict(e="calendar", ts=MS, **{"from":"PRE_MARKET", "to":"MARKET_OPEN"}), NOW.isoformat(), "synthetic:s")
     args = dict(rules_time=MS, rules_received_at=NOW, reference_price=D("150"), permission=True)
     result = Observations.from_equity(q[0], s[0], obs.rules, **args)
     result.validate(NOW)

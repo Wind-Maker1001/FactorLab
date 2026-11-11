@@ -20,7 +20,7 @@ def run():
     _, quotes = stream_rows(dict(e="quote", s="NVDA", E=ms, T=ms,
                                   bp="149.99", ap="150.00", bs="10", **{"as": "10"}),
                             now.isoformat(), "synthetic:NVDA")
-    _, sessions = stream_rows(dict(e="calendar", ts=ms, **{"from": "PRE", "to": "O"}),
+    _, sessions = stream_rows(dict(e="calendar", ts=ms, **{"from": "PRE_MARKET", "to": "MARKET_OPEN"}),
                               now.isoformat(), "synthetic:calendar")
     rules = Rules.from_exchange_info(dict(symbol="NVDA", tradability="BUY_SELL",
         stepSize="0.001", minQty="0.001", maxQty="1000", minNotional="1", maxNotional="100000",
