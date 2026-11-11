@@ -97,3 +97,7 @@ python -I -B -X utf8 -c "import sys; sys.path[:0]=['src','.']; import pytest; sy
 ```
 
 TODO：取得本账户适用、具备明确历史公开时限的5月19日退市停牌估值合同后，才能验收下一个会话；推进到登记或处置边界时，再消费相应账户资格和证券权益条款。不得用未来公告、无限carry或未知结算现金消除该阻断。
+
+## 提交与PR
+
+实现、测试及证据提交：[ed9eedd](https://github.com/Wind-Maker1001/FactorLab/commit/ed9eedd)。独立 Draft PR：[#114](https://github.com/Wind-Maker1001/FactorLab/pull/114)，分支`p9-d06-delisting-rights`。创建PR前重新fetch核对，main未偏离启动基线；不自动合并。
