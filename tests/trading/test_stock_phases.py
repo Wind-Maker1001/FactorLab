@@ -99,6 +99,44 @@ def test_calendar_enums_and_detection_time(public_stock, phase, expected):
     assert session['effective_at'] is session['price_time'] is None
 
 
+def test_official_response_missing_min_qty_remains_unknown(public_stock, monkeypatch):
+    from contextlib import contextmanager
+    a, now = public_stock
+    row = rules(Market.BINANCE_EQUITY)
+    del row['minQty']
+    body = json.dumps(dict(symbols=[row])).encode()
+    @contextmanager
+    def opened(request, timeout):
+        assert request.get_method() == 'GET'
+        yield SimpleNamespace(status=200, read=lambda: body)
+    monkeypatch.setattr('factorlab.integrations.binance_equity.client.build_opener',
+        lambda *_: SimpleNamespace(open=opened))
+    now[0] += timedelta(seconds=1)
+    assert a.refresh_rules(network=True)
+    health = a.observation_health()['rules']
+    assert health['provenance'] == 'VERIFIED'
+    assert health['validity'] == 'UNKNOWN'
+    assert health['parsed']['reason'] == 'INCOMPLETE_SYMBOL_RULES:minQty'
+    assert 'minQty' not in a.state.runtime['rules']['payload']
+    feed(a, price(), now[0])
+    with pytest.raises(Unavailable, match='UNKNOWN_RULES'):
+        a._admit(intent())
+
+
+def test_recorded_target_omission_pattern_does_not_create_conflicts(public_stock):
+    a, now = public_stock
+    # Target occurrence pattern from the bounded 2026-11-11T20:16:32Z observation.
+    for included in (True, False, False, False, True, False, False, True,
+                     False, False, False, True, False, False, True, False, False):
+        wire = price() if included else dict(e='price', rates=[dict(s='OTHER', mp='C')])
+        for event in equity_events(wire, now[0]):
+            a._stream_event(event, wire, official_transport=True)
+        assert a.state.runtime['session']['phase'] == 'REGULAR'
+        assert not a.state.runtime['session']['conflict']
+        now[0] += timedelta(seconds=2)
+    assert a.observation_health()['session']['validity'] == 'VERIFIED'
+
+
 def test_calendar_updates_snapshot_duplicates_and_out_of_order(public_stock):
     a, now = public_stock
     assert feed(a, price('PRE'), now[0])
@@ -161,9 +199,28 @@ def test_same_timestamp_calendar_conflict_and_unknown_revoke(public_stock):
 
 
 @pytest.mark.parametrize('wire', [dict(e='price', rates=[]),
-    dict(e='price', rates=[dict(s='OTHER', mp='O')]),
-    dict(e='price', rates=[dict(s='NVDA', mp='O'), dict(s='NVDA', mp='C')])])
-def test_missing_or_ambiguous_target_revokes(public_stock, wire):
+    dict(e='price', rates=[dict(s='OTHER', mp='O')])])
+def test_omitted_target_neither_authorizes_nor_revokes_or_renews(public_stock, wire):
+    a, now = public_stock
+    assert list(equity_events(wire, now[0])) == []
+    assert a.state.runtime['session'] is None
+    with pytest.raises(Unavailable, match='MISSING_SESSION'):
+        a._admit(intent())
+    feed(a, price(), now[0])
+    session = dumps(a.state.runtime['session'])
+    now[0] += timedelta(seconds=1)
+    assert list(equity_events(wire, now[0])) == []
+    assert dumps(a.state.runtime['session']) == session
+    a._admit(intent())
+    now[0] += timedelta(seconds=300)
+    assert list(equity_events(wire, now[0])) == []
+    assert a.refresh_rules(network=True)
+    with pytest.raises(Unavailable, match='STALE_OR_FUTURE'):
+        a._admit(intent())
+
+
+def test_ambiguous_target_revokes(public_stock):
+    wire = dict(e='price', rates=[dict(s='NVDA', mp='O'), dict(s='NVDA', mp='C')])
     a, now = public_stock
     feed(a, price(), now[0])
     now[0] += timedelta(seconds=1)

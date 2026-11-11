@@ -66,8 +66,8 @@ def acquire_rules(market, symbol, *, network=False, clock=lambda: datetime.now(t
         payload = row
         try:
             rules = Rules.from_exchange_info(row)
-        except (KeyError, ValueError, DataQualityError):
-            parsed = dict(validity='UNKNOWN')
+        except (KeyError, ValueError, DataQualityError) as error:
+            parsed = dict(validity='UNKNOWN', reason=str(error))
         else:
             from dataclasses import asdict
             parsed = dict(asdict(rules), validity='VALID' if rules.tradability in {'BUY_SELL', 'BUY', 'SELL'} else 'UNKNOWN')

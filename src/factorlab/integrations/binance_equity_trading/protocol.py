@@ -73,8 +73,9 @@ class Rules:
         required = {'symbol', 'tradability', 'fractionable', 'fractionableEh', 'extendedSession',
                     'overnightSupported', 'stepSize', 'minQty', 'maxQty', 'minNotional',
                     'maxNotional', 'maxNumOrders', 'multiplierDown', 'multiplierUp'}
-        if any(row.get(k) is None for k in required):
-            raise Unavailable('INCOMPLETE_SYMBOL_RULES')
+        missing = sorted(k for k in required if row.get(k) is None)
+        if missing:
+            raise Unavailable('INCOMPLETE_SYMBOL_RULES:' + ','.join(missing))
         flags = [row[k] for k in ("fractionable", "fractionableEh", "extendedSession", "overnightSupported")]
         if any(type(f) is not bool for f in flags):
             raise Unavailable("INCOMPLETE_SYMBOL_RULES")

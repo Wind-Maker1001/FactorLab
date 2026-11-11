@@ -66,13 +66,20 @@ Rule acquisition makes one request without retries; diagnostics distinguish
 missing/invalid local authentication, explicit permission denial, explicit
 geographic restriction, other HTTP errors, network failure and an absent target.
 An unclassified HTTP 403 is not evidence of a geographic restriction. Rules
-remain UNKNOWN on failure. Upstream error bodies are not retained.
+remain UNKNOWN on failure. Upstream error bodies are not retained. A verified
+response source is separate from executable rule completeness: missing `minQty`
+remains UNKNOWN, not zero or `stepSize`. The pinned symbol schema defines a
+minimum quantity independently of the increment; its absence does not certify
+that no minimum applies.
 
 The initial Stocks phase comes from NVDA's `mp` in the official `price` stream,
 not a guessed opening schedule. Calendar transitions subsequently update it.
 Only NVDA phase evidence is retained from a market-wide price snapshot; those
 prices do not supply executable quotes. Both rules and phase observations have
 a conservative 300-second Paper validity window, not an exchange guarantee.
+Price frames may omit NVDA. Such a frame supplies no NVDA observation: it neither
+authorizes an initially unknown phase nor revokes or renews a prior observation.
+An NVDA entry with an absent or unknown `mp` instead revokes phase approval.
 Contradictory observations without a reliable temporal ordering revoke phase
 approval until a newer consistent Calendar transition or a new connection's
 initial observation. Disconnect and restart revoke approval; operator start

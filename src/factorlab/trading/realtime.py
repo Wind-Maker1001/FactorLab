@@ -487,6 +487,11 @@ class RealtimeAccount:
             result[kind] = dict(validity='EXPIRED' if not current else 'VERIFIED' if verified else 'UNVERIFIED',
                 received=value['received'], source_time=value['time'], endpoint=evidence.get('endpoint'),
                 version=evidence.get('version'), parsed=evidence.get('parsed'))
+            if kind == 'rules' and self.market == Market.BINANCE_EQUITY:
+                result[kind]['provenance'] = 'VERIFIED' if verified else 'UNVERIFIED'
+                parsed = evidence.get('parsed')
+                if current and (parsed is None or parsed.get('validity') != 'VALID'):
+                    result[kind]['validity'] = 'UNKNOWN'
             if kind == 'session' and self.market == Market.BINANCE_EQUITY:
                 detected = value.get('transition_detected_at')
                 result[kind].update(phase=value['phase'], phase_basis=value.get('phase_basis'),
@@ -533,6 +538,8 @@ def equity_events(value, received):
     """Reuse the Equity source normalizer; Futures observations never enter here."""
     if value['e'] == 'price':
         targets = [rate for rate in value['rates'] if rate.get('s') == 'NVDA']
+        if not targets:
+            return
         phase = targets[0].get('mp') if len(targets) == 1 else None
         from factorlab.integrations.binance_equity import PHASES
         from factorlab.integrations.binance_equity.market import epoch

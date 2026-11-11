@@ -107,6 +107,8 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                     processing_start = time.perf_counter()
                     sample('processing_start_minus_received', processing_start - received_monotonic)
                     events = [parse(value, received)] if futures else list(equity_events(value, received))
+                    if not futures and value.get('e') == 'price' and not events:
+                        diagnostics['price_frames_without_target'] = diagnostics.get('price_frames_without_target', 0) + 1
                     for event in events:
                         diagnostics['parsed'] += 1
                         kind = event['kind']

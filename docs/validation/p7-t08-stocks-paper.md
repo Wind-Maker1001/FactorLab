@@ -20,13 +20,10 @@ PYTHONPATH=src python -m pytest \
   tests/integrations/test_binance_equity_trading_core.py -q
 ```
 
-Result at execution: **231 passed in 34.26 seconds**. The earlier run had
-228 passed and one failure: an existing test expected raw HTTP error retention.
-That expectation was changed to assert no upstream error-body persistence.
-
-A subsequently added recovery case was executed separately:
-`tests/trading/test_stock_phases.py::test_unknown_initial_snapshot_can_be_replaced_by_valid_observation`
-— **1 passed in 0.78 seconds**. Total distinct passing tests: **232**.
+Latest result: **234 passed in 34.30 seconds**, including the captured target-
+omission pattern and explicit incomplete-rule rejection. An earlier failing
+assertion expected raw HTTP error retention; it now asserts that upstream error
+bodies are not persisted.
 The corrected Calendar fixture also passed the existing synthetic dual-market
 `run()` reconciliation assertions (fees: 0.2 USDT and 0.0375 USD).
 
@@ -70,14 +67,48 @@ The final snapshot was received at 20:10:33.438625Z and carried price time
 1794427829027; transition-detection and actual effective times were unknown.
 The observation was not authorized because its conflict flag was set.
 
-TODO: identify the actual rule-field rejection and first conflicting phase
-inputs before claiming the two online blockers resolved. The restart exercise
-cleared runtime rule/phase receipts; the original result retained summary
-validity but not the target rule row or per-snapshot phase identities needed
-for that diagnosis. A further separately authorized acquisition must retain
-only NVDA rule evidence and bounded NVDA phase observations before restart.
-No second official rule request has been issued. Online rules, phase and
-simulated execution remain UNKNOWN/NOT_VERIFIED rather than a combined PASS.
+The first run's restart cleared runtime receipts before sufficient diagnostic
+evidence had been retained. A separately authorized second acquisition retained
+only the NVDA rule row and bounded target-only phase evidence before restart.
 
-Local evidence run identifier: `p7-t08-online-20261111T200944979321Z`.
+## Second online acquisition and diagnosis
+
+Run identifier: `p7-t08-online-20261111T201632289341Z`. UTC window:
+2026-11-11T20:16:32.304566Z–20:17:23.804889Z; elapsed **51.500 seconds**.
+Exactly one additional official rule request, without retry, and one Stocks
+WebSocket connection were used. No third acquisition was performed.
+
+The official rule row omitted `minQty`. Its `stepSize` was `0.000000001`, but
+quantity increment does not establish minimum allowed quantity. Parsing now
+reports `INCOMPLETE_SYMBOL_RULES:minQty`; rule provenance is VERIFIED while
+executable validity remains UNKNOWN.
+
+The connection received 399 frames including ACK: 381 quotes and 17 price
+frames. Five price frames contained NVDA, all with `mp=O` (REGULAR); twelve
+omitted NVDA. No Calendar transition occurred. The original normalization
+incorrectly turned omissions into UNKNOWN observations and conflicts. The fix
+ignores omitted-target frames without revoking or renewing existing evidence;
+explicit unknown NVDA phases and ambiguous duplicate targets still revoke.
+
+There was one deterministic Paper acceptance signal, zero orders and zero
+fills, with `UNKNOWN_RULES` rejection and NO_TRADE. Cash remained 1000 USD,
+reserved cash zero, and positions/open orders empty. PaperStore matched runtime;
+economic state matched after restart, excluding only the query timestamp.
+Restart cleared rules, phase and process-local authorization.
+
+## Offline replay of retained evidence
+
+Replaying the second capture through the corrected normalization made zero
+network requests: **17 recorded frames, 5 target observations, 12 ignored
+omissions, 0 conflicts**. Final phase was REGULAR with UNVERIFIED provenance,
+and no public authorization was granted. The retained rule row reproduced
+`INCOMPLETE_SYMBOL_RULES:minQty`. This is offline regression evidence, not a
+post-fix online acceptance result.
+
+TODO: obtain authoritative minimum-quantity semantics for the omitted `minQty`
+before enabling complete Stocks rule certification. Do not substitute zero or
+`stepSize`. Online executable rules and simulated fills remain
+UNKNOWN/NOT_VERIFIED; there is no combined online PASS.
+
+First run identifier: `p7-t08-online-20261111T200944979321Z`.
 Futures online acquisition and the full repository matrix were not repeated.
