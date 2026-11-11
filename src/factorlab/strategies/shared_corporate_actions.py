@@ -26,16 +26,23 @@ class CashDividendEvidence:
     payment_evidence_id: str | None = None
     tax_rate: str | None = None
     tax_evidence_id: str | None = None
+    public_time_precision: str = 'SECOND'
+    issuer_payment_evidence_id: str | None = None
+    settlement_rule_evidence_id: str | None = None
 
 
-def saved_path_accounting(nav, trades, positions, events, *, initial_cash, price_basis='RAW'):
+def saved_path_accounting(nav, trades, positions, events, *, initial_cash, price_basis='RAW',
+                          settlement_basis='ACTUAL_ACCOUNT'):
     """Post verified rights and settlements, without reinvesting or certifying coverage.
 
     Record-session close holdings determine eligibility; ex-date recognizes gross
-    receivables. An independently evidenced actual payment transfers receivables
-    to gross settlement cash. Unknown withholding is not spendable net cash.
+    receivables. Actual account payments require account evidence; the explicit
+    simulated basis instead requires issuer payment and clearing-rule evidence.
+    Both transfer receivables once; unknown withholding is not spendable net cash.
     Missing dates/implementation evidence remain unresolved, not zero dividends.
     """
+    if settlement_basis not in ('ACTUAL_ACCOUNT', 'SIMULATED_BY_RULE'):
+        raise SchemaError('unknown settlement basis')
     if price_basis != 'RAW':
         raise SchemaError('adjusted prices would double-count cash dividends')
     audit_accounting(SimpleNamespace(nav=nav, trades=trades, positions=positions),
@@ -70,7 +77,11 @@ def saved_path_accounting(nav, trades, positions, events, *, initial_cash, price
         # Public timestamps must use the exchange's explicit local wall-clock convention.
         if public.tz is not None:
             public = public.tz_convert('Asia/Shanghai').tz_localize(None)
-        if not record < ex or public.normalize() > record:
+        if event.public_time_precision not in ('DAY', 'SECOND'):
+            raise SchemaError('explicit public time precision required')
+        # A date-only notice cannot establish availability before that day's close.
+        if (not record < ex or public.normalize() > record
+                or (event.public_time_precision == 'DAY' and public.normalize() == record)):
             raise SchemaError('invalid implementation chronology')
         if record not in days or ex not in days:
             unresolved.append(dict(event_id=event.event_id, symbol=event.symbol,
@@ -101,15 +112,25 @@ def saved_path_accounting(nav, trades, positions, events, *, initial_cash, price
         if net is None:
             postings.append(dict(event_id=event.event_id, date=ex, state='TAX_UNVERIFIED',
                                  receivable_delta=0., gross_cash_delta=0., tax_delta=None))
-        if not event.payment_date or not event.payment_evidence_id:
+        actual_payment = bool(event.payment_date and event.payment_evidence_id)
+        simulated_payment = bool(event.payment_date and event.issuer_payment_evidence_id
+                                 and event.settlement_rule_evidence_id)
+        if settlement_basis == 'SIMULATED_BY_RULE':
+            payment_verified = simulated_payment
+            payment_state = 'SIMULATED_SETTLEMENT_BY_RULE'
+        else:
+            payment_verified = actual_payment
+            payment_state = 'DIVIDEND_CASH_PAID'
+        if not actual_payment:
             unresolved.append(dict(event_id=event.event_id, symbol=event.symbol,
                                    state='EVENT_UNRESOLVED', reason='ACTUAL_PAYMENT_UNVERIFIED'))
+        if not payment_verified:
             continue
         pay = pd.Timestamp(event.payment_date)
         if pay < ex:
             raise SchemaError('actual payment precedes receivable')
         # Keep the actual date on the journal, including non-session settlement.
-        postings.append(dict(event_id=event.event_id, date=pay, state='DIVIDEND_CASH_PAID',
+        postings.append(dict(event_id=event.event_id, date=pay, state=payment_state,
                              receivable_delta=-float(gross), gross_cash_delta=float(gross),
                              tax_delta=None if net is None else float(gross - net)))
     journal = pd.DataFrame(postings, columns=['event_id', 'date', 'state', 'receivable_delta',
@@ -124,6 +145,10 @@ def saved_path_accounting(nav, trades, positions, events, *, initial_cash, price
         table.raw_price_pnl_net_trading_costs + table.transaction_cost.cumsum())
     for column, delta in (('receivable_gross', 'receivable_delta'), ('paid_cash_gross', 'gross_cash_delta')):
         table[column] = [float(journal.loc[journal.date.le(day), delta].sum()) for day in table.date]
+    table['settlement_basis'] = settlement_basis
+    table['actual_account_payment_verified'] = settlement_basis == 'ACTUAL_ACCOUNT' and all(
+        e.payment_date and e.payment_evidence_id for e in events) and bool(events) and not unresolved
+    table['simulated_cash_gross'] = table.paid_cash_gross if settlement_basis == 'SIMULATED_BY_RULE' else 0.
     table['cash_gross_sensitivity'] = table.cash + table.paid_cash_gross
     table['bounded_equity_gross'] = table.cash_gross_sensitivity + table.market_value + table.receivable_gross
     recognized = journal.loc[journal.state.eq('DIVIDEND_RECEIVABLE')]

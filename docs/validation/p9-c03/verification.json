@@ -1,0 +1,72 @@
+{
+  "schema": "P9_C03_EVIDENCE_V1",
+  "status": "W01_PARTIAL",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "issuer_implementation_verified_events": 9,
+  "payment_date_verified_events": 9,
+  "entitlement_verified_intersections": 14,
+  "actual_account_payment_verified": false,
+  "tax_status": "TAX_UNVERIFIED",
+  "event_completeness": "EVENT_COMPLETENESS_UNKNOWN",
+  "limited_nine_event_gross_scenario_eligible": true,
+  "complete_portfolio_total_return_eligible": false,
+  "investor_total_return": null,
+  "after_tax_return": null,
+  "accounts": [
+    {
+      "account": "B_factor_score-fold-0",
+      "verified_intersections": 7,
+      "gross_verified_receivable": "12754.2200",
+      "gross_simulated_settlement": "12754.2200",
+      "actual_account_payment_verified": false,
+      "actual_cash_received": null,
+      "tax": null,
+      "after_tax_cash": null
+    },
+    {
+      "account": "B_ridge-fold-0",
+      "verified_intersections": 7,
+      "gross_verified_receivable": "14052.500",
+      "gross_simulated_settlement": "14052.500",
+      "actual_account_payment_verified": false,
+      "actual_cash_received": null,
+      "tax": null,
+      "after_tax_cash": null
+    }
+  ],
+  "source_receipts": {
+    "B_factor_score-fold-0/nav.parquet": "769470c8e4bc77013d98098bdddc394c0b6825d71d437e394e0a19d14bf128c1",
+    "B_factor_score-fold-0/positions.parquet": "2d0dda9fafe872a191d6175d5be2c787aa4e72fa86b0e82ef5315585f04860c8",
+    "B_factor_score-fold-0/trades.parquet": "42d75fba4d1f9b954e4f6dbfb40fbdecb69a659696dfae3f556bb93dd0dd4f31",
+    "B_ridge-fold-0/nav.parquet": "4189f99a51f9caf12cb571607eda35f379a554b8d3874da510bf721aaadbdbd1",
+    "B_ridge-fold-0/positions.parquet": "05f998adcf5fc510610f329d27afe3460eba93d2cb2a9f313332392479e397c1",
+    "B_ridge-fold-0/trades.parquet": "84e5d98562c5326138462d88a1b6d09116b1bcb37693040fca66717ff62b4db6"
+  },
+  "elapsed_seconds": 0.5040313000208698,
+  "resources": {
+    "processes": 1,
+    "arrow_cpu_threads": 1,
+    "arrow_io_threads": 1,
+    "memory_soft_limit_bytes": 4294967296,
+    "temporary_disk_budget_bytes": 536870912,
+    "issuer_original_bytes": 4498006,
+    "new_vendor_shards_read": 0,
+    "public_evidence_bytes": 4610387,
+    "private_acquisition_bytes": 5174712,
+    "peak_memory_measured_bytes": null
+  },
+  "regression_status": "PASSED",
+  "regression": {
+    "tests": 84.0,
+    "failures": 0.0,
+    "errors": 0.0,
+    "skipped": 0.0,
+    "time": 3.662,
+    "command": "python -I -B -X utf8 -c \"import sys; sys.path.insert(0,'src'); import pytest; sys.exit(pytest.main(['-q','-p','no:cacheprovider','tests/research/test_shared_corporate_actions.py','tests/research/test_corporate_action_ledger.py','tests/research/test_p9_fee_sensitivity.py','tests/research/test_shared_portfolio.py']))\""
+  }
+}
