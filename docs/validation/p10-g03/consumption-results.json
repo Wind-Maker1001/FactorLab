@@ -1,0 +1,59 @@
+{
+  "stage_a": {
+    "entry_point": "tools/research/run_evidence_consumption.py:qualified_replay_prices",
+    "loader": "tools/research/run_evidence_consumption.py:load_source",
+    "status": "QUALIFIED_SCOPE_PASSED",
+    "actual_source_members": 5,
+    "sampled_security_sessions": 8,
+    "qualified_security_sessions": 4,
+    "exact_matches_to_szse_archive": 16,
+    "preserved_input_prices": 16,
+    "venue_and_vendor_positive_volume_sessions": 4,
+    "volume_difference_beyond_display_precision_sessions": 2,
+    "same_qualified_frame_exact": true,
+    "saved_lightgbm_target_rows_for_symbol": 49,
+    "saved_lightgbm_target_rows_on_qualified_dates": 2,
+    "matched_native_suspension": {
+      "symbol": "002408.SZ",
+      "dates": [
+        "2023-04-26",
+        "2023-04-27",
+        "2023-04-28",
+        "2023-05-04"
+      ],
+      "ohlc": "NULL",
+      "amount": "NULL",
+      "volume": "ZERO_NOT_MISSING",
+      "retained_reference_fields": [
+        "pre_close",
+        "upper_limit",
+        "lower_limit"
+      ],
+      "execution_price_qualification": "UNQUALIFIED"
+    },
+    "rejected_probes": {
+      "mixed_source_with_suspended_rows": "OBSERVATION_SCOPE_MISSING_OR_AMBIGUOUS",
+      "historical_cutoff": "INFORMATION_AVAILABILITY_UNKNOWN",
+      "manifest_drift": "SOURCE_VERSION_IDENTITY_MISMATCH_OR_UNKNOWN",
+      "price_value_replacement": "SOURCE_PRICE_PROJECTION_DRIFT",
+      "execution_does_not_grant_book_valuation": "PURPOSE_NOT_QUALIFIED"
+    }
+  },
+  "stage_b": {
+    "status": "NOT_RUN_PRICE_SCOPE_INCOMPLETE",
+    "new_frozen_execution_sessions": 0,
+    "new_frozen_fills": 0,
+    "full_comparison_of_trades_rejections_fees_slippage_cash_positions_nav_and_valuation": "BLOCKED_NO_FULLY_QUALIFIED_FROZEN_INPUT"
+  },
+  "stage_c": {
+    "p9_d05_pull_request": "https://github.com/Wind-Maker1001/FactorLab/pull/109",
+    "state_at_publication_preparation": "OPEN",
+    "independently_required_for_full_fold": true,
+    "merged_baseline_blocker": {
+      "symbol": "000540.SZ",
+      "date": "2023-05-15",
+      "field": "is_st"
+    },
+    "merged_baseline_reference": "../p9-d04/remaining-blockers.json"
+  }
+}

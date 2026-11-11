@@ -1,0 +1,49 @@
+{
+  "status": "P10_G03_PARTIAL",
+  "frozen_request": {
+    "model": "B_lightgbm",
+    "fold": 0,
+    "start_inclusive": "2023-03-13",
+    "end_exclusive": "2024-03-13",
+    "source_sessions": 243,
+    "frozen_securities": 128,
+    "possible_security_session_keys": 31104,
+    "planned_overlapping_price_members": 13,
+    "coverage_reference": "../p9-d02-preflight/summary.json"
+  },
+  "approved": {
+    "source_id": "BigQuant/cn_stock_real_bar1d",
+    "data_version": "ed00e76b3a7b0ea7da1f79fe96a06bcbfb3ab2781b2b7ab75f58c74aef8f5405",
+    "security_count": 1,
+    "session_count": 4,
+    "field_count": 4,
+    "purpose_count": 1,
+    "price_observations": 16,
+    "symbols": [
+      "002408.SZ"
+    ],
+    "dates": [
+      "2023-04-24",
+      "2023-04-25",
+      "2023-05-05",
+      "2023-05-08"
+    ],
+    "fields": [
+      "raw_open",
+      "raw_high",
+      "raw_low",
+      "raw_close"
+    ],
+    "purposes": [
+      "EXECUTION"
+    ],
+    "unit": "CNY/share",
+    "basis": "OBSERVED_RAW",
+    "qualification": "RESEARCH_QUALIFIED",
+    "available_at": null,
+    "contract": "source-price-contract.json"
+  },
+  "other_security_dates_qualification": "UNKNOWN",
+  "full_frozen_execution": "BLOCKED_PRICE_SCOPE_INCOMPLETE",
+  "execution_admission": false
+}

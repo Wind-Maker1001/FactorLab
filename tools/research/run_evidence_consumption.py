@@ -28,6 +28,11 @@ from factorlab.research.evidence_consumption_study import (
 )
 
 
+PRICE_FIELDS = {name: 'raw_' + name for name in ('open', 'high', 'low', 'close')}
+SOURCE_ID = 'BigQuant/cn_stock_real_bar1d'
+SOURCE_PRICE_CONTRACT = ROOT / 'docs/validation/p10-g03/source-price-contract.json'
+
+
 def dump(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False,
                                default=str) + '\n', encoding='utf-8')
@@ -100,10 +105,10 @@ def load_source(args, entries, symbols, start, end):
     sessions = read(args.bigquant_root / 'common.zip', 'common', 'trading_days', ['date', 'market_code'])
     calendar = pd.DatetimeIndex(pd.to_datetime(sessions.loc[sessions.market_code.eq('CN'), 'date']).drop_duplicates().sort_values())
     bars = read(args.stock, 'stock', 'cn_stock_real_bar1d',
-        ['date', 'instrument', 'open', 'high', 'low', 'close', 'volume'], symbols)
+        ['date', 'instrument', *PRICE_FIELDS, 'volume'], symbols)
     states = read(args.stock, 'stock', 'cn_stock_status',
         ['date', 'instrument', 'suspended', 'st_status'], symbols)
-    bars = bars.rename(columns={'instrument': 'symbol', **{p: 'raw_' + p for p in ('open', 'high', 'low', 'close')}})
+    bars = bars.rename(columns={'instrument': 'symbol', **PRICE_FIELDS})
     states = states.rename(columns={'instrument': 'symbol'})
     bars['date'], states['date'] = pd.to_datetime(bars.date), pd.to_datetime(states.date)
     require(not bars.duplicated(['date', 'symbol']).any(), 'DUPLICATE_RAW_BAR')
@@ -111,8 +116,11 @@ def load_source(args, entries, symbols, start, end):
     return bars, calendar, identities
 
 
-PRICE_FIELDS = {name: 'raw_' + name for name in ('open', 'high', 'low', 'close')}
-SOURCE_ID = 'BigQuant/cn_stock_real_bar1d'
+def price_observation_sha256(day, symbol, prices, volume):
+    """Bind the native binary64 prices and share count to one security session."""
+    price_bits = [float(price).hex() if pd.notna(price) else None for price in prices]
+    share_count = int(volume) if pd.notna(volume) and volume % 1 == 0 else str(volume)
+    return json_hash([day, symbol, *price_bits, share_count])
 
 
 def qualified_replay_prices(result, *, identity, cutoff=None):
@@ -131,20 +139,39 @@ def qualified_replay_prices(result, *, identity, cutoff=None):
         semantic = result.metadata.field_semantics.get(field, {})
         if semantic.get('original_field') != original:
             raise PriceConsumptionError([field + '/ORIGINAL_FIELD_IDENTITY_UNKNOWN'])
-    return require_fields(result, {field: ('EXECUTION', 'CNY/share')
-                                  for field in PRICE_FIELDS.values()},
-                          identity=identity, cutoff=cutoff)
+    admitted = require_fields(result, {field: ('EXECUTION', 'CNY/share')
+                                      for field in PRICE_FIELDS.values()},
+                              identity=identity, cutoff=cutoff)
+    if result.metadata.source_id == SOURCE_ID:
+        observations = result.metadata.provenance.get('price_observations', {})
+        values = admitted[['symbol', *PRICE_FIELDS.values(), 'volume']]
+        for day, (symbol, *prices, volume) in zip(days.dt.strftime('%Y-%m-%d'),
+                                                values.itertuples(index=False, name=None)):
+            if price_observation_sha256(day, symbol, prices, volume) != observations.get(f'{symbol}/{day}'):
+                raise PriceConsumptionError(['SOURCE_PRICE_PROJECTION_DRIFT'])
+    return admitted
 
 
-def replay_source_result(bars, manifest_bytes):
-    """Bind byte provenance without promoting it to economic qualification."""
+def replay_source_result(bars, manifest_bytes, *, source_identities=()):
+    """Attach the reviewed price contracts for members verified by load_source."""
     version = sha256(manifest_bytes)
-    # TODO: obtain version-bound native-field units, raw/fill policy, scope,
-    # evidence and availability contracts before qualifying this frozen source.
-    return QueryResult(bars, SourceMetadata(SOURCE_ID, version,
-        provenance={'source_manifest_sha256': version},
-        field_semantics={field: {'original_field': original}
-                         for original, field in PRICE_FIELDS.items()}))
+    provenance = {'source_manifest_sha256': version}
+    semantics = {field: {'original_field': original} for original, field in PRICE_FIELDS.items()}
+    if source_identities:
+        evidence = json.loads(SOURCE_PRICE_CONTRACT.read_bytes())
+        if (evidence['source_id'], evidence['data_version']) == (SOURCE_ID, version):
+            members = {item['member']: item['sha256'] for item in source_identities}
+            observations = {key: item['row_sha256'] for key, item in evidence['observations'].items()
+                            if members.get(item['member']) == evidence['price_members'][item['member']]}
+            if observations:
+                provenance['price_observations'] = observations
+                for field, semantic in evidence['field_semantics'].items():
+                    contract = semantic['consumption']
+                    scope = [item for item in contract['scope']
+                             if f"{item['symbol']}/{item['start']}" in observations]
+                    semantics[field] = {**semantic, 'consumption': {**contract, 'scope': scope}}
+    return QueryResult(bars, SourceMetadata(SOURCE_ID, version, provenance=provenance,
+                                            field_semantics=semantics))
 
 
 def same_frame(actual, expected, keys):
@@ -176,9 +203,9 @@ def run(args):
     start, end = pd.Timestamp(test_start), pd.Timestamp(test_end) - pd.Timedelta(days=1)
     # Calendar must cover the entire frozen Test window before target generation.
     bars, calendar, source_identities = load_source(args, entries, symbols, start, end)
-    source = replay_source_result(bars, args.manifest.read_bytes())
+    source = replay_source_result(bars, args.manifest.read_bytes(), source_identities=source_identities)
     # Independent pin was verified against the sidecar before source loading.
-    qualified_replay_prices(source, identity=(SOURCE_ID, evidence.source_manifest_sha256))
+    bars = qualified_replay_prices(source, identity=(SOURCE_ID, evidence.source_manifest_sha256))
     require(len(calendar) > 0 and calendar[0] == start, 'FOLD_CALENDAR_DRIFT')
     observation = observations['002408.SZ']
     old = bars.loc[bars.symbol.eq('002408.SZ') & bars.date.eq(pd.Timestamp(observation['date']))]

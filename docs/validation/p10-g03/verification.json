@@ -1,0 +1,58 @@
+{
+  "baseline_main": "9af38d53cc35296e8e1e0c99e99d12da90d40bb7",
+  "prerequisite_prs_merged": [
+    105,
+    106,
+    107
+  ],
+  "python": "3.13 existing factorlab-py313 environment",
+  "published_evidence": {
+    "p10_g01_field_contracts_validated": 4,
+    "source_evidence_sha256_matches": 11,
+    "schema_validator_environment": "Existing Anaconda Python"
+  },
+  "tests": {
+    "command": "python -B -m pytest tests/research/test_p10_consumer_admission.py tests/research/test_price_consumption.py tests/research/test_evidence_consumption_study.py -q -p no:cacheprovider",
+    "passed": 71,
+    "failed": 0,
+    "elapsed_seconds": 2.44,
+    "exit_code": 0,
+    "coverage": [
+      "Native field identity, pinned manifest and shard version",
+      "Retrospective scope grant and missing evidence",
+      "Original field substitution and adjusted, filled or modeled price rejection",
+      "Unknown unit and historical availability",
+      "Security/date scope and original dated identity boundaries",
+      "Exact preservation of qualified input"
+    ]
+  },
+  "frozen_identity": {
+    "verification": "Matched the existing sidecar or frozen-study pins",
+    "matched": [
+      "P8-02 input-manifest.json",
+      "P8-02 predictions.parquet",
+      "P9-01 config.json",
+      "P9-01 inference-identity.json",
+      "P9-01 candidate-predictions.parquet",
+      "B_lightgbm-fold-0/targets.parquet",
+      "B_lightgbm-fold-0/decisions.csv"
+    ],
+    "exact_after_admission": "16/16 OHLC values",
+    "no_new_ledger": true
+  },
+  "resources": {
+    "data_validation_processes": 1,
+    "maximum_concurrent_local_acquisition_and_data_processes": 2,
+    "arrow_and_numerical_workers": 1,
+    "unique_bigquant_parquet_members": 5,
+    "unique_decompressed_parquet_member_bytes": 12053593,
+    "cumulative_decompressed_parquet_member_bytes_across_three_scoped_reads": 36156614,
+    "retained_evidence_payload_bytes": 1195271,
+    "pytest_scratch_payload_bytes": 29997,
+    "real_stage_a_elapsed_seconds_including_frozen_identity": 2.293,
+    "real_stage_a_peak_working_set_bytes": 205398016,
+    "pytest_peak_working_set_bytes": 178688000,
+    "copied_market_data_bytes": 0,
+    "model_training_runs": 0
+  }
+}
