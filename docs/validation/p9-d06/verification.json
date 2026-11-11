@@ -1,0 +1,70 @@
+{
+  "schema": "P9_D06_VERIFICATION_V1",
+  "status": "P9_D06_PARTIAL",
+  "execution_status": "P9_D06_BLOCKED",
+  "classification_reason": "独立原件确立法律权益及确权条件，但未闭合5月19日账户估值。",
+  "baseline": "5fdbba7a00c3ada34b7e5086a87c593d4305c867",
+  "pr109": {
+    "state": "MERGED",
+    "merged_at": "2026-11-11T18:11:22Z",
+    "merge_commit": "5e020c1238c366d03090be8ab353a1ca257629d1"
+  },
+  "private_replay_receipt_sha256": "b6f3669f26dbb2391eba3698dda72abbddee9ceaf1495bfd854683192661befb",
+  "private_artifacts": {
+    "combined-sidecar.json": "d31ecac02ed4a16bbb43e0a101276a8e26be10cbcbdfa8bf9aaf9fb6c040d465",
+    "fold-0-nav.parquet": "7b0a419b0f937aae2406547cdcfd92f904e2921893a9b708e74ee34050c785e7",
+    "fold-0-positions.parquet": "58bb36718edf8cc93451e3749c4dd30fbed19cf017b19d4e13525168b11c67b9",
+    "fold-0-qualifications.parquet": "58f24474b9377fed7b46a3e883c9783efa63a3bf3c41263d72ded9f1882e2d79",
+    "fold-0-rejections.parquet": "e8843d4995312c53ae2a27de4813341022ce417daa3d6446f72eb882918b8de2",
+    "fold-0-target_comparison.parquet": "ad661ecc340e05e9124903deee299325aa0102cfa22564844802720057456fd5",
+    "fold-0-trades.parquet": "55fc5616745fed3ce0c0e7beb1fb5ff55b43ea61c09ef762b6a9d09058024824"
+  },
+  "tests": {
+    "tests": 100,
+    "failures": 0,
+    "errors": 0,
+    "supplemental_held_security_rerun": {
+      "passed": 2,
+      "deselected": 8,
+      "seconds": 1.58,
+      "reason": "Final fixture binds the unresolved event to the actually held security.",
+      "private_receipt": "p9-d06-20261112-held-rights-tests.xml"
+    },
+    "junit_sha256": "67afe8348a07de915f41c1f4930f4454d46997cec11709784cc2f1417ff10a18",
+    "files": [
+      "test_p9_d06.py",
+      "test_p9_d05.py",
+      "test_p9_market_evidence.py",
+      "test_shared_corporate_actions.py"
+    ]
+  },
+  "resources": {
+    "wall_seconds": 1.093468800012488,
+    "peak_working_set_bytes": 243970048,
+    "replay_output_bytes": 118295,
+    "python_processes": 1,
+    "maximum_concurrent_python_processes": 1,
+    "numerical_threads": 1,
+    "test_peak_working_set_bytes": null,
+    "temporary_disk_budget_bytes": 536870912,
+    "memory_soft_limit_bytes": 4294967296,
+    "existing_originals_copied": false,
+    "private_task_bytes_before_supplemental_test": 773212,
+    "private_task_files_before_supplemental_test": 80,
+    "selected_shards": 28,
+    "selected_rows": 61215,
+    "uncompressed_shard_bytes": 82722219
+  },
+  "recovery": "首次D06入口在隔离模式下缺少同目录导入路径，未创建账本；修正后成功。随后补记录原生观察身份并生成最终收据。",
+  "source_gaps": [
+    "独立基金估值规则正文未取得合格引用；不赋予本研究账户权限。",
+    "全国股转公告入口HTTP403；有界400174镜像公告索引返回0条，不作为事件完整性证明。",
+    "7月11日法院事项由8月原件引述，未冒充已读取法院裁定原件。"
+  ],
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

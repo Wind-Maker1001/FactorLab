@@ -133,7 +133,7 @@ def continue_fold(session, dates, targets, bars, evidence, observations, accepte
     return accepted, qualified, blocker
 
 
-def run(args):
+def run(args, *, continuation=None):
     import psutil
 
     started = time.perf_counter()
@@ -162,6 +162,15 @@ def run(args):
     baseline = json.loads(checked((args.d04 / 'replay-result.json').read_bytes(), d04['replay-result.json']))
     start, end = map(pd.Timestamp, identity['folds'][0]['test'])
     baseline_day = pd.Timestamp(baseline['last_completed_session'])
+    reference_directory, reference_label = args.d04, 'D04'
+    if continuation is not None:
+        reference_directory = continuation
+        reference_label = 'D05'
+        verification = json.loads((VALIDATION / 'p9-d05/verification.json').read_bytes())
+        for name, digest in verification['private_accepted_artifacts_sha256'].items():
+            checked((continuation / name).read_bytes(), digest)
+        baseline = json.loads((VALIDATION / 'p9-d05/execution-results.json').read_bytes())
+        baseline_day = pd.Timestamp(baseline['last_qualified_session'])
     sources = json.loads((VALIDATION / 'p9-d01/public-sources.json').read_bytes())
     policy = json.loads((VALIDATION / 'p9-d03/valuation-policy.json').read_bytes())
     observations = {'002408.SZ': sources['observation_identity'], ST_EXECUTION_SECURITY: policy['observation']}
@@ -194,8 +203,8 @@ def run(args):
     reference_frames = {name: getattr(prior, name) for name in LEDGER_FIELDS}
     reference_frames['qualifications'] = prior_marks
     for name, actual in reference_frames.items():
-        expected = pd.read_parquet(args.d04 / f'fold-0-{name}.parquet')
-        pd.testing.assert_frame_equal(actual, expected, check_exact=True, obj=f'D04 {name}')
+        expected = pd.read_parquet(reference_directory / f'fold-0-{name}.parquet')
+        pd.testing.assert_frame_equal(actual, expected, check_exact=True, obj=f'{reference_label} {name}')
 
     accepted, new_marks, blocker = continue_fold(session, dates[dates > baseline_day], plan,
                                                   bars, evidence, observations, prior)
@@ -213,8 +222,9 @@ def run(args):
     first = bars.loc[bars.symbol.eq(ST_EXECUTION_SECURITY) & bars.date.eq(first_day)].iloc[0]
     fills = accepted.trades.loc[accepted.trades.symbol.eq(ST_EXECUTION_SECURITY)]
     rejections = accepted.rejections.loc[accepted.rejections.symbol.eq(ST_EXECUTION_SECURITY)]
-    status = ('P9_D05_FULL_FOLD_ACCEPTED' if blocker is None else
-              'P9_D05_PARTIAL' if len(added) else 'P9_D05_BLOCKED')
+    task = 'P9_D06' if continuation is not None else 'P9_D05'
+    status = (task + '_FULL_FOLD_ACCEPTED' if blocker is None else
+              task + '_PARTIAL' if len(added) else task + '_BLOCKED')
     receipt = dict(status=status, source_sessions=len(dates), prior_qualified_sessions=len(prior.nav) + 1,
         accepted_sessions=len(accepted.nav) + 1, account_close_rows=len(accepted.nav),
         newly_qualified_dates=[str(day.date()) for day in added], last_qualified_session=str(completed_day.date()),
@@ -227,6 +237,21 @@ def run(args):
         frozen_hashes=frozen_hashes, original_prediction_sha256=original_prediction_hash,
         source_manifest_sha256=evidence.source_manifest_sha256, source_shards=entries,
         private_receipt_sha256={path.name: file_hash(path) for path in args.output.iterdir()})
+    if continuation is not None:
+        holding = accepted.positions.loc[accepted.positions.symbol.eq(ST_EXECUTION_SECURITY)
+                                         & accepted.positions.date.eq(completed_day)].iloc[0]
+        observation = bars.loc[bars.symbol.eq(ST_EXECUTION_SECURITY)
+                               & bars.date.eq(completed_day)].iloc[0]
+        receipt['last_000540_observation'] = dict(date=str(completed_day.date()),
+            shares=int(holding.shares), raw_close=float(observation.raw_close),
+            volume=float(observation.volume), suspended=int(observation.suspended),
+            source_sha256=observation.source_sha256)
+        if blocker is not None:
+            failed = bars.loc[bars.symbol.eq(ST_EXECUTION_SECURITY)
+                              & bars.date.eq(pd.Timestamp(blocker['date']))].iloc[0]
+            receipt['blocked_source'] = dict(raw_close=None if pd.isna(failed.raw_close)
+                else float(failed.raw_close), suspended=int(failed.suspended),
+                source_sha256=failed.source_sha256)
     dump(args.output / 'replay-result.json', receipt)
     resources = dict(wall_seconds=time.perf_counter() - started,
         peak_working_set_bytes=psutil.Process().memory_info().peak_wset,
