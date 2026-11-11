@@ -97,4 +97,4 @@ python -I -B -X utf8 -c "import sys; sys.path[:0]=['src','.']; import pytest; sy
 
 ## 基线与交付
 
-#109、#111、#112 均已合并。依赖的 #114 已合并为 `8bd509e1d5686c6dab652eea984371ca07f81065`；独立 S01 分支已以此 main 为基线重新对齐，无冲突，不重复提交 D06 改动。实现提交：[b9a35bd](https://github.com/Wind-Maker1001/FactorLab/commit/b9a35bdee9cdf669c535cb2dfc47b99ae28b0944)。
+#109、#111、#112 均已合并。依赖的 #114 已合并为 `8bd509e1d5686c6dab652eea984371ca07f81065`；独立 S01 分支已以此 main 为基线重新对齐，无冲突，不重复提交 D06 改动。实现提交：[b9a35bd](https://github.com/Wind-Maker1001/FactorLab/commit/b9a35bdee9cdf669c535cb2dfc47b99ae28b0944)。聚合证据提交：[8f58820](https://github.com/Wind-Maker1001/FactorLab/commit/8f58820)。独立 Draft PR：[#117](https://github.com/Wind-Maker1001/FactorLab/pull/117)，分支 `p9-s01-delisting-scenarios`，未自动合并。
