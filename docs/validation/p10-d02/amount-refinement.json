@@ -1,0 +1,1177 @@
+{
+  "counts": {
+    "RESIDUAL_NATIVE_VALUE_DIFFERENCE": 37345,
+    "HALF_EVEN_QUANTIZATION_COMPATIBLE_NOT_PROVEN": 18987
+  },
+  "residual_rows": 37345,
+  "examples": [
+    {
+      "date": "2015-01-05",
+      "symbol": "000029.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:25292",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:6101",
+      "delta": "-0.50",
+      "relative": "3.049191812624821334892633108E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000150.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:65582",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:15464",
+      "delta": "-0.50",
+      "relative": "3.182468073623496472396446260E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000403.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:81210",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:19109",
+      "delta": "-0.50",
+      "relative": "9.305256693973686855667968640E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000553.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:152015",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:35548",
+      "delta": "-0.50",
+      "relative": "1.959858330621444696946929949E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000555.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:154101",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:36036",
+      "delta": "-0.50",
+      "relative": "6.489829457276200145665520134E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000561.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:159316",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:37256",
+      "delta": "-0.50",
+      "relative": "1.374932748601934007902838452E-8",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000608.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:194932",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:45597",
+      "delta": "-0.50",
+      "relative": "1.568954891250919795882608624E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000665.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:233523",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:54625",
+      "delta": "-0.50",
+      "relative": "1.698555517813651949736209232E-8",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000783.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:320626",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:75121",
+      "delta": "-0.50",
+      "relative": "1.453823446700755657156685579E-10",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000878.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:384249",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:90005",
+      "delta": "-0.50",
+      "relative": "4.733592966552643216585331279E-10",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "000905.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:406152",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:95129",
+      "delta": "-0.50",
+      "relative": "1.792354119160096694063408778E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002002.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:487249",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:113919",
+      "delta": "-0.50",
+      "relative": "6.950460164250772435915123927E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002020.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:506023",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:118311",
+      "delta": "-0.50",
+      "relative": "1.111734744892562732467904162E-8",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002039.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:525840",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:122947",
+      "delta": "-0.50",
+      "relative": "3.991642235620781437892836972E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002049.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:536270",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:125387",
+      "delta": "-0.50",
+      "relative": "2.760094024038177753025009229E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002124.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:614495",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:143687",
+      "delta": "-0.50",
+      "relative": "5.886167246801424344168248604E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002155.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:646828",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:151251",
+      "delta": "-0.50",
+      "relative": "5.521923952542628581999868859E-10",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002160.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:652043",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:152471",
+      "delta": "-0.50",
+      "relative": "1.202609981148126457518199277E-8",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002203.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:696892",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:162963",
+      "delta": "-0.50",
+      "relative": "1.897153452148639165188736699E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2015-01-05",
+      "symbol": "002204.SZ",
+      "left_locator": "日个股回报率文件000057802(仅供广东金融学院使用).zip/TRDNEW_Dalyr.xlsx:sheet1:697935",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2015/个股日回报率-2015_1.xlsx:个股日回报率-2015:163207",
+      "delta": "-0.50",
+      "relative": "1.814134879077841860882957950E-9",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2020-10-30",
+      "symbol": "689009.SH",
+      "left_locator": "日个股回报率文件231033555(仅供广东金融学院使用).zip/TRDNEW_Dalyr4.xlsx:sheet1:398351",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2020/个股日回报率-2020_2.xlsx:个股日回报率-2020:455919",
+      "delta": "1515930836.00",
+      "relative": "1.00",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2020-11-09",
+      "symbol": "300901.SZ",
+      "left_locator": "日个股回报率文件231033555(仅供广东金融学院使用).zip/TRDNEW_Dalyr2.xlsx:sheet1:423772",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2020/个股日回报率-2020_2.xlsx:个股日回报率-2020:55078",
+      "delta": "-32563731.53",
+      "relative": "0.05930605387653745892597562905",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2020-11-09",
+      "symbol": "300902.SZ",
+      "left_locator": "日个股回报率文件231033555(仅供广东金融学院使用).zip/TRDNEW_Dalyr2.xlsx:sheet1:424339",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2020/个股日回报率-2020_2.xlsx:个股日回报率-2020:55124",
+      "delta": "-68479819.49",
+      "relative": "0.07612941358284188886213148866",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2020-11-09",
+      "symbol": "300903.SZ",
+      "left_locator": "日个股回报率文件231033555(仅供广东金融学院使用).zip/TRDNEW_Dalyr2.xlsx:sheet1:424901",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2020/个股日回报率-2020_2.xlsx:个股日回报率-2020:55165",
+      "delta": "78916362.32",
+      "relative": "0.04051443121485355152539621646",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2020-11-09",
+      "symbol": "300905.SZ",
+      "left_locator": "日个股回报率文件231033555(仅供广东金融学院使用).zip/TRDNEW_Dalyr2.xlsx:sheet1:425463",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2020/个股日回报率-2020_2.xlsx:个股日回报率-2020:55206",
+      "delta": "-111963213.15",
+      "relative": "0.2062054784442274085815509198",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2020-11-09",
+      "symbol": "300906.SZ",
+      "left_locator": "日个股回报率文件231033555(仅供广东金融学院使用).zip/TRDNEW_Dalyr2.xlsx:sheet1:426025",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2020/个股日回报率-2020_2.xlsx:个股日回报率-2020:55247",
+      "delta": "-42210255.59",
+      "relative": "0.07240589875637969768526364635",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2020-11-09",
+      "symbol": "300999.SZ",
+      "left_locator": "日个股回报率文件231033555(仅供广东金融学院使用).zip/TRDNEW_Dalyr2.xlsx:sheet1:467444",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2020/个股日回报率-2020_2.xlsx:个股日回报率-2020:55574",
+      "delta": "507951144.90",
+      "relative": "0.07508994714675412673018911128",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-01-23",
+      "symbol": "920106.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:188995",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:305450",
+      "delta": "12800000.00",
+      "relative": "0.3461757628659329737495340920",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-01-24",
+      "symbol": "920106.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:188996",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:305451",
+      "delta": "16000000.00",
+      "relative": "0.1983434402481185596208329543",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-04",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175587",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302587",
+      "delta": "56565000.00",
+      "relative": "0.1599340801490204872759768357",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-05",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175588",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302588",
+      "delta": "10656000.00",
+      "relative": "0.03700317617919083340118212591",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-06",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175589",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302589",
+      "delta": "15404000.00",
+      "relative": "0.06266991250091707890744097540",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-10",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175591",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302591",
+      "delta": "29225700.00",
+      "relative": "0.1451851895383826747084650934",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-13",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175594",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302594",
+      "delta": "37173500.00",
+      "relative": "0.1061836290014571448854578950",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-14",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175595",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302595",
+      "delta": "29837600.00",
+      "relative": "0.06986737274608212262104762212",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-17",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175596",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302596",
+      "delta": "66111000.00",
+      "relative": "0.1230013203909036840136186917",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-19",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175598",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302598",
+      "delta": "11196000.00",
+      "relative": "0.03191797097697285490120096739",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-20",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175599",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302599",
+      "delta": "25214000.00",
+      "relative": "0.09464201497072766806383361986",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-21",
+      "symbol": "920016.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:160734",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:299954",
+      "delta": "12720000.00",
+      "relative": "0.1588600021210857597671045228",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-03-25",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175602",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302602",
+      "delta": "10920000.00",
+      "relative": "0.05351575307808378818152874085",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-04-08",
+      "symbol": "920099.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:187967",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:305082",
+      "delta": "10371350.00",
+      "relative": "0.1637300636857780373211027566",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-04-18",
+      "symbol": "920099.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:187975",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:305090",
+      "delta": "32040000.00",
+      "relative": "0.1265236313717970496910672651",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-06-16",
+      "symbol": "920019.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:162513",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:300469",
+      "delta": "32548500.00",
+      "relative": "0.1321435801029042123361711295",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-06-19",
+      "symbol": "920002.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:155125",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:298801",
+      "delta": "37716157.50",
+      "relative": "0.1273588444934192828296637825",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-08",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175677",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302672",
+      "delta": "10464000.00",
+      "relative": "0.05552039996649095548306824375",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-09",
+      "symbol": "920060.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:175678",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:302673",
+      "delta": "10660000.00",
+      "relative": "0.03902749554597819260916944417",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-11",
+      "symbol": "920019.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:162532",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:300488",
+      "delta": "10084000.00",
+      "relative": "0.04757655979698806401990113342",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-11",
+      "symbol": "920106.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:189116",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:305560",
+      "delta": "20046000.00",
+      "relative": "0.1982276727999411873545312302",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-11",
+      "symbol": "920809.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:363471",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:329625",
+      "delta": "25520000.00",
+      "relative": "0.1232837087174173571374756716",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-14",
+      "symbol": "920809.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:363472",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:329626",
+      "delta": "37752000.00",
+      "relative": "0.2385997311381982788743140751",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-15",
+      "symbol": "920809.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:363473",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:329627",
+      "delta": "18249000.00",
+      "relative": "0.1281824063471718795354528972",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-16",
+      "symbol": "920809.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:363474",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:329628",
+      "delta": "12696000.00",
+      "relative": "0.1711001993037141268899365862",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-17",
+      "symbol": "920809.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:363475",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:329629",
+      "delta": "12650000.00",
+      "relative": "0.1272729065724931456627835470",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-18",
+      "symbol": "920809.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:363476",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:329630",
+      "delta": "13725000.00",
+      "relative": "0.1446993485869270408540534123",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-07-22",
+      "symbol": "920496.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:291894",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:319744",
+      "delta": "14815488.00",
+      "relative": "0.06309147189751397315752840399",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-08-05",
+      "symbol": "920098.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:187512",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:304920",
+      "delta": "10572000.00",
+      "relative": "0.1160419859017015232770570567",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-08-05",
+      "symbol": "920599.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:316802",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:323156",
+      "delta": "16486699.00",
+      "relative": "0.1371114778603273876590019636",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-08-06",
+      "symbol": "920146.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:200172",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:307896",
+      "delta": "10010000.00",
+      "relative": "0.1914429412832811693425583384",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-08-29",
+      "symbol": "920118.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:192542",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:306758",
+      "delta": "11184630.00",
+      "relative": "0.3040048916589593033399469563",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-09-02",
+      "symbol": "920118.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:192544",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:306760",
+      "delta": "10044672.50",
+      "relative": "0.1991530294501569914145083695",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-09-08",
+      "symbol": "920556.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:305884",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:321668",
+      "delta": "11183850.00",
+      "relative": "0.08652890159715755040654127644",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-09-17",
+      "symbol": "920575.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:310566",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:322305",
+      "delta": "16180000.00",
+      "relative": "0.3085921067601438059052841642",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-09-18",
+      "symbol": "920575.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:310567",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:322306",
+      "delta": "15940000.00",
+      "relative": "0.2114565750818055909961624773",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-10-14",
+      "symbol": "920163.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:204136",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:308404",
+      "delta": "22840000.00",
+      "relative": "0.6866518749206068164487799362",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-10-29",
+      "symbol": "920018.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:162082",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:300317",
+      "delta": "36863932.00",
+      "relative": "0.2951407115296558708182491745",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-10-30",
+      "symbol": "920080.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:181370",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:303714",
+      "delta": "40251750.00",
+      "relative": "0.1664768182568818253760220891",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-11-11",
+      "symbol": "920599.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:316872",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:323220",
+      "delta": "17916000.00",
+      "relative": "0.1546674279807938539209852931",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-12-17",
+      "symbol": "920027.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:166305",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:301229",
+      "delta": "16023000.00",
+      "relative": "0.5064195011896359194389425154",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-12-24",
+      "symbol": "920522.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:298374",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:320731",
+      "delta": "15000000.00",
+      "relative": "0.06077277204462695772863441812",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2025-12-31",
+      "symbol": "920077.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180926",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2025/个股日回报率-2025_3.xlsx:个股日回报率-2025:303699",
+      "delta": "44033600.00",
+      "relative": "0.09641212920373292357989247844",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-05",
+      "symbol": "920077.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180929",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615532",
+      "delta": "45114000.00",
+      "relative": "0.1137359073248630290939858930",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-06",
+      "symbol": "920077.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180930",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615533",
+      "delta": "44135800.00",
+      "relative": "0.1327074711028158682140208460",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-07",
+      "symbol": "920015.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:160394",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:611692",
+      "delta": "15456000.00",
+      "relative": "0.02649086263957254540532395278",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-07",
+      "symbol": "920077.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180931",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615534",
+      "delta": "46551272.40",
+      "relative": "0.08561277220684056461713409093",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-08",
+      "symbol": "920077.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180932",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615535",
+      "delta": "41707800.00",
+      "relative": "0.08107201949333970177017746713",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-09",
+      "symbol": "920077.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180933",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615536",
+      "delta": "41942700.00",
+      "relative": "0.08962331565819395552213650444",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-09",
+      "symbol": "920522.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:298386",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:631984",
+      "delta": "12456400.00",
+      "relative": "0.04085039955983924693120478757",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-12",
+      "symbol": "920077.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180934",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615537",
+      "delta": "46407742.69",
+      "relative": "0.06462884956391128208599522246",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-12",
+      "symbol": "920522.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:298387",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:631985",
+      "delta": "16159250.00",
+      "relative": "0.03128628793012543778153856834",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-14",
+      "symbol": "920185.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:213201",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:621428",
+      "delta": "23727000.00",
+      "relative": "0.04349439861281008257993994998",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-14",
+      "symbol": "920522.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:298389",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:631987",
+      "delta": "10151276.74",
+      "relative": "0.01918409695365869347729934921",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-19",
+      "symbol": "920015.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:160402",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:611700",
+      "delta": "11032000.00",
+      "relative": "0.03187242367977758663734936012",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-20",
+      "symbol": "920015.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:160403",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:611701",
+      "delta": "11124000.00",
+      "relative": "0.04694504828213812638686345407",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-01-27",
+      "symbol": "920029.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:166895",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613050",
+      "delta": "19462242.00",
+      "relative": "0.1967434947560474469321088636",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-02-04",
+      "symbol": "920475.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:286617",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:630494",
+      "delta": "16170400.00",
+      "relative": "0.5610986112050849963456242611",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-02-06",
+      "symbol": "920982.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:405553",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:645228",
+      "delta": "16335000.00",
+      "relative": "0.08357472536937346777837881981",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-02-09",
+      "symbol": "920116.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:192025",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:617866",
+      "delta": "22256000.00",
+      "relative": "0.06635313314414917585975152500",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-03-02",
+      "symbol": "920547.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:304079",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:632710",
+      "delta": "11029500.00",
+      "relative": "0.3983851113572207271092728902",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-03-05",
+      "symbol": "920599.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:316954",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:634337",
+      "delta": "12354000.00",
+      "relative": "0.1947228684087633045652913627",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-03-16",
+      "symbol": "920344.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:252658",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:626340",
+      "delta": "12284500.00",
+      "relative": "0.5894228794788596823309361478",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-03-19",
+      "symbol": "920368.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:258327",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:627039",
+      "delta": "33000000.00",
+      "relative": "0.1001593781521796224612377175",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-03-24",
+      "symbol": "920368.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:258330",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:627042",
+      "delta": "33000000.00",
+      "relative": "0.05578964356424464310709323034",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-03-27",
+      "symbol": "920029.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:166938",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613087",
+      "delta": "39157500.00",
+      "relative": "0.6069712540002934000534467970",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-02",
+      "symbol": "920020.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:162977",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:612327",
+      "delta": "13500000.00",
+      "relative": "0.5191969956658923166532218297",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-13",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170927",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613870",
+      "delta": "19766660.00",
+      "relative": "0.01795209781895614532321242893",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-13",
+      "symbol": "920599.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:316981",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:634363",
+      "delta": "19425000.00",
+      "relative": "0.2482959354720510957403296734",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-15",
+      "symbol": "920599.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:316983",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:634365",
+      "delta": "10328000.00",
+      "relative": "0.1788918990655302610048863988",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-17",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170931",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613874",
+      "delta": "20176000.00",
+      "relative": "0.01837510918348188303363715302",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-17",
+      "symbol": "920599.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:316985",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:634367",
+      "delta": "11041500.00",
+      "relative": "0.06200705182122544141553824625",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-20",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170932",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613875",
+      "delta": "20835600.00",
+      "relative": "0.02132040148376855566683796779",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-21",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170933",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613876",
+      "delta": "21456800.00",
+      "relative": "0.02681219466111088632930625127",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-22",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170934",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613877",
+      "delta": "24238000.00",
+      "relative": "0.02275554845605309640743775502",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-23",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170935",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613878",
+      "delta": "17169000.00",
+      "relative": "0.01839673560289717370120941928",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-04-30",
+      "symbol": "920020.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:162997",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:612346",
+      "delta": "19040000.00",
+      "relative": "0.4998959878967892930699909379",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-07",
+      "symbol": "920028.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:166559",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:612996",
+      "delta": "12405000.00",
+      "relative": "0.1278412052559580512997080631",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-07",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170945",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613885",
+      "delta": "18015300.00",
+      "relative": "0.01807975316056283632460251447",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-08",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170946",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613886",
+      "delta": "23930800.00",
+      "relative": "0.03533267413854507182053794229",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-11",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170947",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613887",
+      "delta": "23131600.00",
+      "relative": "0.02708341308698480969862461901",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-11",
+      "symbol": "920166.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:204515",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:620183",
+      "delta": "55996277.70",
+      "relative": "0.4923223550018223327628466582",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-12",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170948",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613888",
+      "delta": "22717600.00",
+      "relative": "0.03223380444171509583482427254",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-13",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170949",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613889",
+      "delta": "23184000.00",
+      "relative": "0.03417200883453248327127090687",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-14",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170950",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613890",
+      "delta": "22542800.00",
+      "relative": "0.02693547670721127573439228881",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-20",
+      "symbol": "920076.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180034",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615503",
+      "delta": "14150800.00",
+      "relative": "0.5185776441031773951250017013",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-22",
+      "symbol": "920076.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180036",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615505",
+      "delta": "13797200.00",
+      "relative": "0.4669115378291093768135305281",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-26",
+      "symbol": "920045.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:170958",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613898",
+      "delta": "22705600.00",
+      "relative": "0.02697179696036994073484640102",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-28",
+      "symbol": "920438.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:281156",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:629869",
+      "delta": "13302000.00",
+      "relative": "0.02113562861564987765118466842",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-05-29",
+      "symbol": "920076.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180041",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615510",
+      "delta": "13271176.00",
+      "relative": "0.4768664696051727388291632905",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-08",
+      "symbol": "920175.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:209535",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:620867",
+      "delta": "11960000.00",
+      "relative": "0.05390001439754561002599900319",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-09",
+      "symbol": "920076.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180048",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615517",
+      "delta": "11256000.00",
+      "relative": "0.3220942795315104022420756165",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-11",
+      "symbol": "920175.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:209538",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:620870",
+      "delta": "14970000.00",
+      "relative": "0.1631981470046757963237884674",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-12",
+      "symbol": "920020.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:163028",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:612374",
+      "delta": "19880000.00",
+      "relative": "0.6410571165480685042754006473",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-15",
+      "symbol": "920076.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:180052",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615521",
+      "delta": "10240000.00",
+      "relative": "0.4942044070044795227986956185",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-22",
+      "symbol": "920523.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:299494",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:632205",
+      "delta": "10111088.00",
+      "relative": "0.1892259343458747350177591074",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-26",
+      "symbol": "920028.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:166595",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:613031",
+      "delta": "12166000.00",
+      "relative": "0.2135381441903035259563173050",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-26",
+      "symbol": "920188.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:213754",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:621716",
+      "delta": "10804000.00",
+      "relative": "0.1900714554601508582293754303",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-26",
+      "symbol": "920491.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:290649",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:631049",
+      "delta": "29720000.00",
+      "relative": "0.2366490762424967201441322952",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-29",
+      "symbol": "920069.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:178760",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:615309",
+      "delta": "11480000.00",
+      "relative": "0.3093738487572187991561410028",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-29",
+      "symbol": "920403.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:268697",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:628382",
+      "delta": "13975500.00",
+      "relative": "0.4347774129245550300191894427",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    },
+    {
+      "date": "2026-06-30",
+      "symbol": "920116.BJ",
+      "left_locator": "日个股回报率文件231200343(仅供广东金融学院使用).zip/TRDNEW_Dalyr5.xlsx:sheet1:192126",
+      "right_locator": "CNSP_个股日回报率_ALL.zip/2026/个股日回报率-2026.xlsx:个股日回报率-2026:617956",
+      "delta": "109931232.84",
+      "relative": "0.3178038046169598780297975549",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE"
+    }
+  ],
+  "resource": {
+    "seconds": 85.16003369999817,
+    "cpu_seconds": 81.59375,
+    "peak_process_bytes": 360189952,
+    "workers": 1
+  },
+  "confidence": "EXACT_NUMERIC_SIGNATURES; SUPPLIER_PRECISION_AND_SESSION_CONTRACTS_NOT_PROVEN"
+}

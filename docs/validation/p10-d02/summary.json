@@ -1,0 +1,141 @@
+{
+  "field_counts": {
+    "open": 135080,
+    "high": 135080,
+    "low": 135080,
+    "close": 135074,
+    "amount": 4972487,
+    "volume": 8683
+  },
+  "classes": [
+    {
+      "field": "open",
+      "classification": "UNRESOLVED",
+      "feature": "NATIVE_OHLC_PRICE_BASIS_CONFLICT",
+      "count": 135074
+    },
+    {
+      "field": "high",
+      "classification": "UNRESOLVED",
+      "feature": "NATIVE_OHLC_PRICE_BASIS_CONFLICT",
+      "count": 135074
+    },
+    {
+      "field": "low",
+      "classification": "UNRESOLVED",
+      "feature": "NATIVE_OHLC_PRICE_BASIS_CONFLICT",
+      "count": 135074
+    },
+    {
+      "field": "close",
+      "classification": "UNRESOLVED",
+      "feature": "NATIVE_OHLC_PRICE_BASIS_CONFLICT",
+      "count": 135074
+    },
+    {
+      "field": "amount",
+      "classification": "PRECISION_OR_ROUNDING",
+      "feature": "DECIMAL_QUANTIZATION_COMPATIBLE_NOT_PROVEN",
+      "count": 4196578
+    },
+    {
+      "field": "amount",
+      "classification": "UNRESOLVED",
+      "feature": "RESIDUAL_NATIVE_VALUE_DIFFERENCE",
+      "count": 37345
+    },
+    {
+      "field": "amount",
+      "classification": "PRECISION_OR_ROUNDING",
+      "feature": "INTEGER_QUANTIZATION_COMPATIBLE_NOT_PROVEN",
+      "count": 709967
+    },
+    {
+      "field": "volume",
+      "classification": "UNRESOLVED",
+      "feature": "NATIVE_VOLUME_CONFLICT",
+      "count": 8683
+    },
+    {
+      "field": "amount",
+      "classification": "PRECISION_OR_ROUNDING",
+      "feature": "EXACT_BINARY32_IMAGE_NOT_PIPELINE_PROOF",
+      "count": 9610
+    },
+    {
+      "field": "amount",
+      "classification": "PRECISION_OR_ROUNDING",
+      "feature": "HALF_EVEN_QUANTIZATION_COMPATIBLE_NOT_PROVEN",
+      "count": 18987
+    },
+    {
+      "field": "open",
+      "classification": "FILL_OR_STATUS_DIFFERENCE",
+      "feature": "SUSPENSION_FILL_PRICE_SHAPE_DIFFERENCE_WITH_EQUAL_CLOSE",
+      "count": 6
+    },
+    {
+      "field": "high",
+      "classification": "FILL_OR_STATUS_DIFFERENCE",
+      "feature": "SUSPENSION_FILL_PRICE_SHAPE_DIFFERENCE_WITH_EQUAL_CLOSE",
+      "count": 6
+    },
+    {
+      "field": "low",
+      "classification": "FILL_OR_STATUS_DIFFERENCE",
+      "feature": "SUSPENSION_FILL_PRICE_SHAPE_DIFFERENCE_WITH_EQUAL_CLOSE",
+      "count": 6
+    }
+  ],
+  "resource": {
+    "seconds": 672.4348937000032,
+    "cpu_seconds": 637.359375,
+    "average_cpu_cores": 0.9478380449488518,
+    "throughput_rows_per_second": 8211.180073685064,
+    "peak_process_bytes": 1166503936,
+    "workers": 1,
+    "arrow_threads": 1
+  },
+  "ohlc_security_days": 135080,
+  "normalization_applied": false,
+  "restrictions": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "ohlc_cooccurrence": {
+    "all_four_mismatch_days": 135074,
+    "open_high_low_only_days": 6,
+    "filled_or_zero_volume_days": 14359,
+    "CNRDS_vwap_outside_reported_range_days": 60376,
+    "CSMAR_vwap_outside_reported_range_days": 203
+  },
+  "amount_refinement": {
+    "counts": {
+      "RESIDUAL_NATIVE_VALUE_DIFFERENCE": 37345,
+      "HALF_EVEN_QUANTIZATION_COMPATIBLE_NOT_PROVEN": 18987
+    },
+    "resource": {
+      "seconds": 85.16003369999817,
+      "cpu_seconds": 81.59375,
+      "peak_process_bytes": 360189952,
+      "workers": 1
+    }
+  },
+  "amount_numeric_signatures_explained_count": 4935142,
+  "amount_residual_count": 37345,
+  "supplier_processing_cause_certified": false,
+  "normalization_authorized": false,
+  "targeted_tests": {
+    "passed": 5,
+    "command": "python -m pytest tests/test_p10_d02_market_differences.py -q -p no:cacheprovider"
+  },
+  "evidence_files": [
+    "targeted-evidence.json",
+    "price-basis-cases.json",
+    "corporate-action-evidence.json",
+    "partial-ohlc-cases.json",
+    "regression-controls.json"
+  ]
+}
