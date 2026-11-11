@@ -69,6 +69,23 @@ def test_public_futures_precision_comes_from_filters_not_precision_integers():
     assert futures_public_rules(row)['validity'] == 'UNKNOWN'
 
 
+def test_rule_receipt_retains_only_target_symbol_with_explicit_scope():
+    from factorlab.integrations.binance.client import Response
+    observed = synthetic_rules()
+    target = dict(symbol=observed.symbol, status='TRADING', quoteAsset='USDT', marginAsset='USDT',
+        orderTypes=['MARKET', 'LIMIT'], filters=list(observed.filters.values()))
+    unrelated = dict(target, symbol='OTHERUSDT')
+    raw = dict(serverTime=int(NOW.timestamp() * 1000), symbols=[unrelated, target])
+    value = acquire_rules(Market.BINANCE_USDM, 'NVDAUSDT', network=True, clock=lambda: NOW,
+        futures_transport=lambda *_: Response(200, {}, json.dumps(raw).encode()))
+    receipt = value['evidence']
+    assert receipt['raw'] == dict(raw, symbols=[target])
+    assert receipt['raw_scope'] == dict(symbol='NVDAUSDT', returned_symbols=2, retained_symbols=1)
+    assert receipt['parsed']['validity'] == 'VALID'
+    assert value['payload']['symbol'] == target and value['payload']['bracket'] is None
+    assert receipt['provenance'] == 'OFFLINE_INJECTED'
+
+
 def test_missing_order_types_cannot_authorize_futures():
     from dataclasses import replace
     rules = synthetic_rules()

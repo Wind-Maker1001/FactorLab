@@ -76,9 +76,13 @@ def acquire_rules(market, symbol, *, network=False, clock=lambda: datetime.now(t
         endpoint, version = REST_HOST + '/sapi/v1/equity/market/exchangeInfo', SOURCE_VERSION
         official_transport = stocks_transport is equity_transport
     received = clock()
+    returned_symbols = len(raw['symbols'])
+    # Only the requested instrument belongs in this account's hot-path snapshot.
+    raw = dict(raw, symbols=[row])
     return dict(kind='rules', symbol=symbol, time=received, received=received, source=endpoint,
                 payload=payload, reference=None, evidence=dict(endpoint=endpoint, version=version,
                 requested_at=started, fetched_at=received, expires_at=received + timedelta(seconds=300),
                 source_time=raw.get('serverTime'),
                 provenance='OFFICIAL_TRANSPORT' if official_transport else 'OFFLINE_INJECTED',
-                timestamp_basis='LOCAL_FETCH', raw=raw, parsed=parsed))
+                timestamp_basis='LOCAL_FETCH', raw=raw, parsed=parsed,
+                raw_scope=dict(symbol=symbol, returned_symbols=returned_symbols, retained_symbols=1)))
