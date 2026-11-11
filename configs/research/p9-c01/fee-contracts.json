@@ -1,0 +1,23 @@
+{
+  "task": "P9-C01",
+  "comparison": "SAME_FILL_FEE_DIFFERENCE",
+  "LEGACY_FIXED_STAMP_10BPS": {
+    "effective_from": "1990-01-01",
+    "commission_bps": 3,
+    "minimum_commission_cny": 5,
+    "slippage_bps": 5,
+    "stamp_duty_bps": 10,
+    "transfer_fee_bps": 0,
+    "buy_fee_bps": 0,
+    "sell_fee_bps": 0
+  },
+  "DATE_EFFECTIVE_STAMP_DUTY": {
+    "factory": "FeeSchedule.a_share_default",
+    "commission_bps": 3,
+    "minimum_commission_cny": 5,
+    "slippage_bps": 5,
+    "transfer_fee_bps": 0
+  },
+  "stamp_duty_source": "https://m.mof.gov.cn/czxw/202308/t20230827_3904226.htm",
+  "safety": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
