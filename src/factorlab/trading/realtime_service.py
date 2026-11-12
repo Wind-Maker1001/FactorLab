@@ -10,6 +10,7 @@ import time
 
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance_equity import WS_HOST
+from factorlab.integrations.binance_equity.client import MarketDataFailure
 from factorlab.integrations.binance_equity.stream import connect, subscriptions
 from factorlab.integrations.binance_futures_trading.market import URL, parse
 from .contracts import Market
@@ -70,13 +71,13 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
             diagnostics['connection_attempts'] += 1
             async with connector(url, proxy=proxy, open_timeout=min(10, max(.01, deadline - time.monotonic())),
                                  close_timeout=1, ping_interval=5, ping_timeout=5,
-                                 max_size=65536, max_queue=8) as socket:
+                                 max_size=65536 if futures else 4 * 1024 * 1024, max_queue=8) as socket:
                 diagnostics['handshakes'] += 1
                 stage = 'subscription'
                 if not futures:
                     diagnostics['subscription'] = 'SENT'
                     await socket.send(json.dumps(dict(method='SUBSCRIBE',
-                        params=subscriptions('NVDA', ('quote', 'calendar'), '5m'), id=1)))
+                        params=subscriptions('NVDA', ('quote', 'calendar', 'price'), '5m'), id=1)))
                 while (remaining := deadline - time.monotonic()) > 0:
                     stage = 'receive'
                     try:
@@ -106,6 +107,8 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                     processing_start = time.perf_counter()
                     sample('processing_start_minus_received', processing_start - received_monotonic)
                     events = [parse(value, received)] if futures else list(equity_events(value, received))
+                    if not futures and value.get('e') == 'price' and not events:
+                        diagnostics['price_frames_without_target'] = diagnostics.get('price_frames_without_target', 0) + 1
                     for event in events:
                         diagnostics['parsed'] += 1
                         kind = event['kind']
@@ -128,6 +131,11 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                             start, end = account.store.last_transaction_times
                             diagnostics['last_transaction'] = dict(started=start.isoformat(), completed=end.isoformat())
                         accepted += admitted
+                        if not futures and kind == 'session':
+                            phases = diagnostics.setdefault('phase_observations', {})
+                            basis = event['phase_basis']
+                            phases[basis] = phases.get(basis, 0) + 1
+                            diagnostics['last_phase_observation'] = account.observation_health()['session']
                         diagnostics['rejected'] += 1 - admitted
                         if not admitted:
                             sample('rejected_received_minus_source', source_age)
@@ -214,6 +222,8 @@ def main():
                         rule_results[name] = dict(accepted=accepted)
                     except (DataQualityError, ValueError, OSError, TimeoutError, KeyError) as error:
                         rule_results[name] = dict(accepted=False, error=type(error).__name__)
+                        if isinstance(error, MarketDataFailure):
+                            rule_results[name].update(error.diagnostic())
                         account.disconnect('RULE_REFRESH_FAILED')
             async def run():
                 values = await asyncio.gather(*(observe(account, seconds=args.seconds, network=True,

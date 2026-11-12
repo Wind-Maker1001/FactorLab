@@ -126,13 +126,13 @@ def test_endpoint_and_network_boundaries(tmp_path, credentials):
     assert subscriptions('NVDA', ['quote', 'kline'], '1M') == ['NVDA@quote', 'NVDA@kline_1M']
 
 
-def test_http_errors_keep_raw_receipts(tmp_path, credentials):
+def test_http_errors_do_not_persist_upstream_diagnostics(tmp_path, credentials):
     sink = Sink(tmp_path / 'run')
     client = Client(network=True, request=lambda *a: Response(429, b'{"code":-1003}'))
     with pytest.raises(DataQualityError, match='HTTP 429'):
         client.discover(sink)
     reader = sink.close(state='INTERRUPTED_OR_FAILED')
-    assert reader.verify_raw() == 1
+    assert reader.verify_raw() == 0
     assert reader.manifest['state'] == 'INTERRUPTED_OR_FAILED'
 
 
@@ -146,7 +146,7 @@ def test_events_dedup_closed_bar_isolation_and_sessions(tmp_path):
     feed(processor, candle(True))
     for phase in ('C', 'ON', 'PRE', 'O', 'POST'):
         feed(processor, dict(e='price', rates=[dict(s='NVDA', p='182.530000001', t=T, mp=phase)]))
-    feed(processor, dict(e='calendar', **{'from': 'PRE'}, to='O', ts=T))
+    feed(processor, dict(e='calendar', **{'from': 'PRE_MARKET'}, to='MARKET_OPEN', ts=T))
     reader = sink.close()
     assert reader.verify_raw() == 11
     assert processor.duplicates == 1

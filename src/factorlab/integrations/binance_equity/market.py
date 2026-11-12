@@ -3,7 +3,7 @@ from decimal import Decimal, InvalidOperation
 import json
 
 from factorlab.errors import DataQualityError
-from . import INTERVALS, PHASES
+from . import INTERVALS, PHASES, CALENDAR_PHASES
 from .client import symbol
 
 
@@ -102,5 +102,5 @@ def stream_rows(value, acquired, receipt):
     if event == 'calendar':
         return 'sessions', [dict(event_time=epoch(value['ts']), acquired_at=acquired,
                                  raw_receipt=receipt, previous_phase=value['from'],
-                                 source_phase=value['to'], session=PHASES.get(value['to'], 'UNKNOWN'))]
+                                 source_phase=value['to'], session=CALENDAR_PHASES.get(value['to'], 'UNKNOWN'))]
     raise DataQualityError('unsupported Equity market event')

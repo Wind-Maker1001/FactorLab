@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from factorlab.trading import Market, OrderIntent, OrderType, OrderStatus, Side
-from factorlab.trading.realtime import RealtimeAccount, PersistenceConflict
+from factorlab.trading.realtime import RealtimeAccount, PersistenceConflict, equity_events
 from factorlab.trading.simulation import PAPER_SIMULATION
 from factorlab.integrations.binance_equity_trading.protocol import Unavailable
 from test_realtime import Harness, NOW, rules
@@ -112,8 +112,8 @@ def test_public_simulation_uses_official_reader_and_session_not_forged_state(tmp
     a.refresh_rules(network=True)
     assert a.observation_health()['rules']['validity'] == 'VERIFIED'
     if market == Market.BINANCE_EQUITY:
-        a._stream_event(dict(kind='session', symbol=a.symbol, time=now[0], received=now[0],
-            phase='REGULAR'), dict(source='OFFLINE_TEST_FIXTURE'), official_transport=True)
+        wire = dict(e='price', rates=[dict(s='NVDA', mp='O', t=None)])
+        a._stream_event(next(equity_events(wire, now[0])), wire, official_transport=True)
     else:
         assert a.state.runtime['rules']['payload']['bracket'] is None
         assert a.state.runtime['rules']['evidence']['parsed']['account_limits'] == 'UNKNOWN'
