@@ -406,7 +406,12 @@ class RealtimeAccount:
         # Full-collateral paper equity, including marked unrealized P/L.
         equity = asset.total + sum((p.quantity * (p.mark_price - p.entry_price)
             for p in account.positions), D(0))
+        budget_price = self._execution_price(Side.BUY, price)
         target = max(D(0), equity) * signal['target_weight'] / (price * (1 + self.state.fee_rate))
+        if target > current:
+            target = max(current, min(
+                max(D(0), equity) * signal['target_weight'] / (budget_price * (1 + self.state.fee_rate)),
+                current + asset.available / (budget_price * (1 + self.state.fee_rate))))
         if step:
             target = (target // step) * step
         delta = target - current
@@ -556,6 +561,9 @@ class RealtimeAccount:
         if self.market == Market.BINANCE_USDM and mark is not None and position is not None:
             self.state.positions[self.symbol] = replace(position, mark_price=D(mark['price']))
 
+    def _execution_price(self, side, reference):
+        return reference * (1 + self.configuration['slippage'] * (1 if side == Side.BUY else -1))
+
     def _fills(self, source, ask, bid, size):
         budget = size * self.configuration['participation']
         for record in tuple(self.state.orders.values()):
@@ -568,8 +576,7 @@ class RealtimeAccount:
             except Unavailable as error:
                 self.state.runtime['last_fill_rejection'] = str(error)
                 continue
-            price = (ask if intent.side == Side.BUY else bid) * (
-                1 + self.configuration['slippage'] * (1 if intent.side == Side.BUY else -1))
+            price = self._execution_price(intent.side, ask if intent.side == Side.BUY else bid)
             if self.market == Market.BINANCE_EQUITY and intent.order_type == OrderType.MARKET and intent.side == Side.BUY:
                 price = record.reservation_price
             if intent.order_type == OrderType.LIMIT and (

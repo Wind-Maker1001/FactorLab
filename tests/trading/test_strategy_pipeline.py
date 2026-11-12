@@ -23,12 +23,14 @@ RULES = dict(symbol=dict(symbol='NVDAUSDT', status='TRADING', quoteAsset='USDT',
 
 
 class Runner:
-    def __init__(self, path, *, limits=None, weight=D('.05')):
+    def __init__(self, path, *, limits=None, weight=D('.05'), slippage=D(0), fee_rate=D('.001')):
         self.now = START
         self.path = path
         self.strategy = DualMAStrategy(max_weight=weight)
+        from factorlab.trading.simulation import PAPER_SIMULATION
         self.account = RealtimeAccount(path, Market.BINANCE_USDM, clock=lambda: self.now,
-            strategy=self.strategy, limits=limits, participation=D(1), slippage=D(0))
+            strategy=self.strategy, limits=limits, participation=D(1), slippage=slippage,
+            fee_rate=fee_rate, simulation_policy=PAPER_SIMULATION if fee_rate != D('.001') else None)
         self.account.control('start')
 
     def send(self, kind, **fields):
@@ -88,6 +90,91 @@ def test_dual_ma_real_broker_fills_restarts_and_no_duplicate_economics(tmp_path)
     assert not a.closed_bar(bar)
     assert len(a.state.orders) == 1
     assert a.store.db.execute("SELECT count(*) FROM events WHERE id LIKE 'signal:%'").fetchone()[0] == 21
+    a.close()
+
+
+@pytest.mark.parametrize('weight', ['0', '.5', '.99', '1'])
+@pytest.mark.parametrize('slippage', ['0', '.0001'])
+@pytest.mark.parametrize('fee_rate', ['0', '.001'])
+@pytest.mark.parametrize('price', ['100', '100.00000000000000000001'])
+def test_target_execution_budget(tmp_path, weight, slippage, fee_rate, price):
+    h = Runner(tmp_path / 'budget', weight=D(weight) or D(1), slippage=D(slippage), fee_rate=D(fee_rate),
+        limits=RiskLimits(D('2000'), D('2000'), D('2000'), 10))
+    a = h.account
+    cash = D('999') if not D(fee_rate) else D('1000')
+    if cash != D('1000'):
+        a._change(lambda: a.state.cash.update(USDT=cash))
+    h.cross()
+    if not D(weight):
+        a._change(lambda: a.state.runtime['pending_strategy_signal'].update(target_weight=D(0)))
+    h.trade(price=price)
+    quantity = (cash * D(weight) / (D(price) * (1 + D(slippage)) * (1 + D(fee_rate))) // D('.01')) * D('.01')
+    assert a.state.runtime['target_position']['quantity'] == quantity
+    h.trade(price=price, size='100')
+    assert not a.conflict
+    assert a.state.runtime['status'] == 'RUNNING'
+    if quantity:
+        fill_price = D(price) * (1 + D(slippage))
+        fee = quantity * fill_price * D(fee_rate)
+        asset = a.controller.account().assets[0]
+        assert asset.available == cash - fee - quantity * fill_price
+        assert asset.available >= 0
+        assert a.state.cash['USDT'] == cash - fee
+        position = a.state.positions['NVDAUSDT']
+        assert position.quantity == quantity
+        assert position.entry_price == fill_price
+    else:
+        assert not a.state.orders
+    a.close()
+
+
+@pytest.mark.parametrize('weight', ['.00001', '.001'])
+def test_target_below_minimum_is_rejected_without_conflict(tmp_path, weight):
+    h = Runner(tmp_path / 'minimum', weight=D(weight), slippage=D('.0001'))
+    h.cross(); h.trade(price='100')
+    assert not h.account.state.orders
+    assert not h.account.conflict
+    assert h.account.state.runtime['status'] == 'RUNNING'
+    assert h.account.state.runtime.get('last_rejection') == 'TARGET_ORDER_FILTER' or h.account.state.runtime.get('last_signal') == 'TARGET_ALREADY_MET'
+    h.account.close()
+
+
+def test_small_cash_target_respects_minimum_quantity(tmp_path):
+    h = Runner(tmp_path / 'small-cash', weight=D(1), slippage=D('.0001'))
+    a = h.account
+    a._change(lambda: a.state.cash.update(USDT=D('.5')))
+    h.cross(); h.trade(price='100')
+    assert not a.state.orders
+    assert not a.conflict
+    assert a.state.cash['USDT'] == D('.5')
+    assert a.state.runtime['status'] == 'RUNNING'
+    a.close()
+
+
+def test_full_weight_partial_fill_restart_and_duplicate(tmp_path):
+    limits = RiskLimits(D('2000'), D('2000'), D('2000'), 10)
+    h = Runner(tmp_path / 'full', weight=D(1), slippage=D('.0001'), limits=limits)
+    h.cross(); h.trade(price='100'); h.trade(price='100', size='3.333')
+    a = h.account
+    assert a.state.positions['NVDAUSDT'].quantity == D('3.33')
+    a.close()
+    h.account = RealtimeAccount(h.path, Market.BINANCE_USDM, clock=lambda: h.now,
+        strategy=h.strategy, limits=limits, participation=D(1), slippage=D('.0001'))
+    a = h.account
+    a.control('start')
+    h.trade(price='100')
+    assert a.state.positions['NVDAUSDT'].quantity == D('9.98')
+    before = a.controller.account()
+    assert not a.replay(next(iter(a.state.confirmations.values())))
+    assert a.controller.account() == before
+    assert len(a.state.orders) == 1
+    assert a.state.runtime['status'] == 'RUNNING'
+    a._change(lambda: a.state.runtime.update(pending_strategy_signal=dict(
+        signal_id='retarget-full', target_weight=D(1), input_watermark=h.now,
+        generated_at=h.now)))
+    h.trade(price='100'); h.trade(price='100')
+    assert a.controller.account().assets[0].available >= 0
+    assert a.state.runtime['status'] == 'RUNNING'
     a.close()
 
 
