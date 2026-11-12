@@ -1,0 +1,280 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "table": {
+    "schema": {
+      "fields": [
+        {
+          "name": "index",
+          "type": "integer"
+        },
+        {
+          "name": "signal_date",
+          "type": "datetime"
+        },
+        {
+          "name": "execution_date",
+          "type": "datetime"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "side",
+          "type": "string"
+        },
+        {
+          "name": "score",
+          "type": "number"
+        },
+        {
+          "name": "rank",
+          "type": "integer"
+        },
+        {
+          "name": "requested_shares",
+          "type": "integer"
+        },
+        {
+          "name": "executed_shares",
+          "type": "integer"
+        },
+        {
+          "name": "execution_price",
+          "type": "number"
+        },
+        {
+          "name": "trade_notional",
+          "type": "number"
+        },
+        {
+          "name": "commission",
+          "type": "number"
+        },
+        {
+          "name": "stamp_duty",
+          "type": "number"
+        },
+        {
+          "name": "transfer_fee",
+          "type": "number"
+        },
+        {
+          "name": "side_fee",
+          "type": "number"
+        },
+        {
+          "name": "slippage",
+          "type": "number"
+        },
+        {
+          "name": "research_fixed_slippage",
+          "type": "number"
+        },
+        {
+          "name": "market_impact",
+          "type": "number"
+        },
+        {
+          "name": "transaction_cost",
+          "type": "number"
+        },
+        {
+          "name": "cash_after",
+          "type": "number"
+        }
+      ],
+      "primaryKey": [
+        "index"
+      ],
+      "pandas_version": "1.4.0"
+    },
+    "data": [
+      {
+        "index": 0,
+        "signal_date": "2024-01-02T00:00:00.000",
+        "execution_date": "2024-01-03T00:00:00.000",
+        "symbol": "990001.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 1,
+        "requested_shares": 500,
+        "executed_shares": 500,
+        "execution_price": 100.0,
+        "trade_notional": 50000.0,
+        "commission": 15.0,
+        "stamp_duty": 0.0,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 25.0,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 40.0,
+        "cash_after": 49960.0
+      },
+      {
+        "index": 1,
+        "signal_date": "2024-01-02T00:00:00.000",
+        "execution_date": "2024-01-03T00:00:00.000",
+        "symbol": "990002.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 2,
+        "requested_shares": 400,
+        "executed_shares": 400,
+        "execution_price": 100.0,
+        "trade_notional": 40000.0,
+        "commission": 12.0,
+        "stamp_duty": 0.0,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 20.0,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 32.0,
+        "cash_after": 9928.0
+      },
+      {
+        "index": 2,
+        "signal_date": "2024-01-10T00:00:00.000",
+        "execution_date": "2024-01-11T00:00:00.000",
+        "symbol": "990001.SH",
+        "side": "sell",
+        "score": null,
+        "rank": 1,
+        "requested_shares": 500,
+        "executed_shares": 500,
+        "execution_price": 90.0,
+        "trade_notional": 45000.0,
+        "commission": 13.5,
+        "stamp_duty": 22.5,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 22.5,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 58.5,
+        "cash_after": 54869.5
+      },
+      {
+        "index": 3,
+        "signal_date": "2024-01-10T00:00:00.000",
+        "execution_date": "2024-01-11T00:00:00.000",
+        "symbol": "990002.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 2,
+        "requested_shares": 700,
+        "executed_shares": 600,
+        "execution_price": 88.0,
+        "trade_notional": 52800.0,
+        "commission": 15.840000000000002,
+        "stamp_duty": 0.0,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 26.400000000000002,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 42.24,
+        "cash_after": 2027.260000000002
+      },
+      {
+        "index": 4,
+        "signal_date": "2024-01-16T00:00:00.000",
+        "execution_date": "2024-01-17T00:00:00.000",
+        "symbol": "990002.SH",
+        "side": "sell",
+        "score": null,
+        "rank": 2,
+        "requested_shares": 500,
+        "executed_shares": 500,
+        "execution_price": 88.0,
+        "trade_notional": 44000.0,
+        "commission": 13.200000000000001,
+        "stamp_duty": 22.0,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 22.0,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 57.2,
+        "cash_after": 55770.060000000005
+      },
+      {
+        "index": 5,
+        "signal_date": "2024-01-16T00:00:00.000",
+        "execution_date": "2024-01-17T00:00:00.000",
+        "symbol": "990003.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 3,
+        "requested_shares": 400,
+        "executed_shares": 400,
+        "execution_price": 100.0,
+        "trade_notional": 40000.0,
+        "commission": 12.0,
+        "stamp_duty": 0.0,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 20.0,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 32.0,
+        "cash_after": 15738.060000000005
+      },
+      {
+        "index": 6,
+        "signal_date": "2024-01-17T00:00:00.000",
+        "execution_date": "2024-01-18T00:00:00.000",
+        "symbol": "990003.SH",
+        "side": "sell",
+        "score": null,
+        "rank": 3,
+        "requested_shares": 100,
+        "executed_shares": 100,
+        "execution_price": 100.0,
+        "trade_notional": 10000.0,
+        "commission": 5.0,
+        "stamp_duty": 5.0,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 5.0,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 15.0,
+        "cash_after": 25723.060000000005
+      },
+      {
+        "index": 7,
+        "signal_date": "2024-01-17T00:00:00.000",
+        "execution_date": "2024-01-18T00:00:00.000",
+        "symbol": "990002.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 2,
+        "requested_shares": 100,
+        "executed_shares": 100,
+        "execution_price": 88.0,
+        "trade_notional": 8800.0,
+        "commission": 5.0,
+        "stamp_duty": 0.0,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 4.4,
+        "research_fixed_slippage": 0.0,
+        "market_impact": 0.0,
+        "transaction_cost": 9.4,
+        "cash_after": 16913.660000000003
+      }
+    ]
+  },
+  "sha256": "8c07439625e0466dad48fc09d2632719de8ca42612732314575db560fd325c63"
+}

@@ -1,0 +1,280 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "table": {
+    "schema": {
+      "fields": [
+        {
+          "name": "index",
+          "type": "integer"
+        },
+        {
+          "name": "signal_date",
+          "type": "datetime"
+        },
+        {
+          "name": "execution_date",
+          "type": "datetime"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "target_weight",
+          "type": "number"
+        },
+        {
+          "name": "target_shares",
+          "type": "integer"
+        },
+        {
+          "name": "actual_shares",
+          "type": "integer"
+        },
+        {
+          "name": "actual_weight",
+          "type": "number"
+        },
+        {
+          "name": "weight_deviation",
+          "type": "number"
+        },
+        {
+          "name": "valuation",
+          "type": "string"
+        }
+      ],
+      "primaryKey": [
+        "index"
+      ],
+      "pandas_version": "1.4.0"
+    },
+    "data": [
+      {
+        "index": 0,
+        "signal_date": "2024-01-02T00:00:00.000",
+        "execution_date": "2024-01-03T00:00:00.000",
+        "symbol": "990001.SH",
+        "target_weight": 0.5,
+        "target_shares": 500,
+        "actual_shares": 500,
+        "actual_weight": 0.500360259386758,
+        "weight_deviation": 0.000360259386758,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 1,
+        "signal_date": "2024-01-02T00:00:00.000",
+        "execution_date": "2024-01-03T00:00:00.000",
+        "symbol": "990002.SH",
+        "target_weight": 0.49,
+        "target_shares": 400,
+        "actual_shares": 400,
+        "actual_weight": 0.400288207509407,
+        "weight_deviation": -0.089711792490593,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 2,
+        "signal_date": "2024-01-02T00:00:00.000",
+        "execution_date": "2024-01-03T00:00:00.000",
+        "symbol": "990003.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 3,
+        "signal_date": "2024-01-05T00:00:00.000",
+        "execution_date": "2024-01-08T00:00:00.000",
+        "symbol": "990001.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 500,
+        "actual_weight": 0.474043485589078,
+        "weight_deviation": 0.474043485589078,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 4,
+        "signal_date": "2024-01-05T00:00:00.000",
+        "execution_date": "2024-01-08T00:00:00.000",
+        "symbol": "990002.SH",
+        "target_weight": 1.0,
+        "target_shares": 900,
+        "actual_shares": 400,
+        "actual_weight": 0.421371987190292,
+        "weight_deviation": -0.578628012809708,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 5,
+        "signal_date": "2024-01-05T00:00:00.000",
+        "execution_date": "2024-01-08T00:00:00.000",
+        "symbol": "990003.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 6,
+        "signal_date": "2024-01-10T00:00:00.000",
+        "execution_date": "2024-01-11T00:00:00.000",
+        "symbol": "990001.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 7,
+        "signal_date": "2024-01-10T00:00:00.000",
+        "execution_date": "2024-01-11T00:00:00.000",
+        "symbol": "990002.SH",
+        "target_weight": 1.0,
+        "target_shares": 1100,
+        "actual_shares": 1000,
+        "actual_weight": 0.888644197567417,
+        "weight_deviation": -0.111355802432583,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 8,
+        "signal_date": "2024-01-10T00:00:00.000",
+        "execution_date": "2024-01-11T00:00:00.000",
+        "symbol": "990003.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 9,
+        "signal_date": "2024-01-12T00:00:00.000",
+        "execution_date": "2024-01-15T00:00:00.000",
+        "symbol": "990001.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 10,
+        "signal_date": "2024-01-12T00:00:00.000",
+        "execution_date": "2024-01-15T00:00:00.000",
+        "symbol": "990002.SH",
+        "target_weight": 1.0,
+        "target_shares": 1100,
+        "actual_shares": 1000,
+        "actual_weight": 0.881522742385196,
+        "weight_deviation": -0.118477257614804,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 11,
+        "signal_date": "2024-01-12T00:00:00.000",
+        "execution_date": "2024-01-15T00:00:00.000",
+        "symbol": "990003.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 12,
+        "signal_date": "2024-01-16T00:00:00.000",
+        "execution_date": "2024-01-17T00:00:00.000",
+        "symbol": "990001.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 13,
+        "signal_date": "2024-01-16T00:00:00.000",
+        "execution_date": "2024-01-17T00:00:00.000",
+        "symbol": "990002.SH",
+        "target_weight": 0.5,
+        "target_shares": 500,
+        "actual_shares": 500,
+        "actual_weight": 0.441155562881412,
+        "weight_deviation": -0.058844437118588,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 14,
+        "signal_date": "2024-01-16T00:00:00.000",
+        "execution_date": "2024-01-17T00:00:00.000",
+        "symbol": "990003.SH",
+        "target_weight": 0.49,
+        "target_shares": 400,
+        "actual_shares": 400,
+        "actual_weight": 0.401050511710374,
+        "weight_deviation": -0.088949488289626,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 15,
+        "signal_date": "2024-01-17T00:00:00.000",
+        "execution_date": "2024-01-18T00:00:00.000",
+        "symbol": "990001.SH",
+        "target_weight": 0.0,
+        "target_shares": 0,
+        "actual_shares": 0,
+        "actual_weight": 0.0,
+        "weight_deviation": 0.0,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 16,
+        "signal_date": "2024-01-17T00:00:00.000",
+        "execution_date": "2024-01-18T00:00:00.000",
+        "symbol": "990002.SH",
+        "target_weight": 0.6,
+        "target_shares": 600,
+        "actual_shares": 600,
+        "actual_weight": 0.529516216734999,
+        "weight_deviation": -0.070483783265001,
+        "valuation": "posttrade_open_or_previous_mark"
+      },
+      {
+        "index": 17,
+        "signal_date": "2024-01-17T00:00:00.000",
+        "execution_date": "2024-01-18T00:00:00.000",
+        "symbol": "990003.SH",
+        "target_weight": 0.4,
+        "target_shares": 300,
+        "actual_shares": 300,
+        "actual_weight": 0.300861486781249,
+        "weight_deviation": -0.099138513218751,
+        "valuation": "posttrade_open_or_previous_mark"
+      }
+    ]
+  },
+  "sha256": "ad171cee7735cbe892296aebac5e6cf444a3913a3c05447fcedbb30ff2e364ab"
+}

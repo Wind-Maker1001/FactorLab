@@ -1,0 +1,45 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "status": "P8_E02_ENGINEERING_ACCEPTED",
+  "tests": {
+    "new": {"passed": 14, "failed": 0, "seconds": 3.40},
+    "reused": {"passed": 93, "failed": 0},
+    "distinct_passed": 107,
+    "initial_combined_run": {"passed": 104, "failed": 1},
+    "fixture_corrections": ["Removed duplicate date/security targets", "Used same-day payments sufficient for a next-open board lot"],
+    "suites": ["test_portfolio_dividend_execution.py", "test_portfolio_execution.py", "test_execution_backtest_phase3.py", "test_dividend_execution.py", "test_experiment_tracker.py"]
+  },
+  "execution_code": {"commit": "1aeba4c6552d7a3d6852cdc76ca0d019e56a917a", "tree": "c5f55163260c479fbdb54073d2c2fb2590d3cff6", "git_dirty": false},
+  "publication": {"branch": "engineering/p8-e02", "draft_pr": "https://github.com/Wind-Maker1001/FactorLab/pull/126", "draft": true, "auto_merge": false},
+  "repeated_run_exact": true,
+  "no_dividend_regression_exact": true,
+  "evaluation_tracker_connected": true,
+  "starting_git": {
+    "head": "fc0fa9412af6f3fa33765b10476213ad7a784941",
+    "tree": "64be64d6afe212a71903a56e020aa2fd46a54c6e",
+    "status": "CLEAN"
+  },
+  "configuration_sha256": "a11c71444517733143d943c00b178ae78a8830dbed98942efc48979a98e7d2f3",
+  "result_hashes": {
+    "nav": "1108ca68a72d58066371f259cabd363b91d4fcc44b97932043abc01bb11b18ea",
+    "positions": "3dffc3281f1af29705e3ae4d0bac0465e85ba039cd0c045ecee74cd9659ead48",
+    "trades": "8c07439625e0466dad48fc09d2632719de8ca42612732314575db560fd325c63",
+    "rejections": "1a127e01ca4207a346d4c0d0a4d01422bd33fa346353224887e324ded025e690",
+    "signals": "153f58d6e24a4f401d6f32bb750bb6ad8b13bd56fadd4cb6de0f324421f50486",
+    "target_comparison": "ad171cee7735cbe892296aebac5e6cf444a3913a3c05447fcedbb30ff2e364ab",
+    "entitlements": "510ef479c154659355bf011da85b989cc2b3905cb4275b8afed513ed8957c2a9",
+    "recognitions": "84a24c1e296d97e2de2a3adc302697d7eedb21b8681ffbe4ed3cac76f434602a",
+    "payments": "9d37470b28fa5565967bbf7b768769049eb6710d0a56f83580bc2cd2cdcf3698",
+    "return_accounting": "3738439b6fe9a3aa0fbd51a95997f9938f359c4542ac16584dac5c1918f1f44a"
+  },
+  "network": "DENIED_BY_RUNNER",
+  "persistent_restart": "OUT_OF_SCOPE"
+}

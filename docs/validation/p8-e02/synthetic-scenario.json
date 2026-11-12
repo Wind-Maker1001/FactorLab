@@ -1,0 +1,1584 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "configuration_sha256": "a11c71444517733143d943c00b178ae78a8830dbed98942efc48979a98e7d2f3",
+  "manifest": {
+    "seed": 0,
+    "random_generation": false,
+    "symbols": [
+      "990001.SH",
+      "990002.SH",
+      "990003.SH"
+    ],
+    "security_identity": "RESERVED FICTIONAL FIXTURE IDENTIFIERS; NOT LISTING EVIDENCE",
+    "initial_cash": 100000,
+    "initial_positions": [],
+    "calendar": [
+      "2024-01-03",
+      "2024-01-04",
+      "2024-01-05",
+      "2024-01-08",
+      "2024-01-09",
+      "2024-01-10",
+      "2024-01-11",
+      "2024-01-12",
+      "2024-01-15",
+      "2024-01-16",
+      "2024-01-17",
+      "2024-01-18"
+    ],
+    "bars": {
+      "schema": {
+        "fields": [
+          {
+            "name": "index",
+            "type": "integer"
+          },
+          {
+            "name": "date",
+            "type": "datetime"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "raw_open",
+            "type": "number"
+          },
+          {
+            "name": "raw_close",
+            "type": "number"
+          },
+          {
+            "name": "raw_high",
+            "type": "number"
+          },
+          {
+            "name": "raw_low",
+            "type": "number"
+          },
+          {
+            "name": "volume",
+            "type": "integer"
+          },
+          {
+            "name": "trade_status",
+            "type": "integer"
+          },
+          {
+            "name": "is_st",
+            "type": "integer"
+          },
+          {
+            "name": "limit_up",
+            "type": "number"
+          },
+          {
+            "name": "limit_down",
+            "type": "number"
+          }
+        ],
+        "primaryKey": [
+          "index"
+        ],
+        "pandas_version": "1.4.0"
+      },
+      "data": [
+        {
+          "index": 0,
+          "date": "2024-01-02T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 1,
+          "date": "2024-01-03T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 2,
+          "date": "2024-01-04T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 3,
+          "date": "2024-01-05T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 4,
+          "date": "2024-01-08T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 5,
+          "date": "2024-01-09T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 6,
+          "date": "2024-01-10T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 7,
+          "date": "2024-01-11T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 8,
+          "date": "2024-01-12T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 9,
+          "date": "2024-01-15T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 10,
+          "date": "2024-01-16T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 11,
+          "date": "2024-01-17T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 12,
+          "date": "2024-01-18T00:00:00.000",
+          "symbol": "990001.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 13,
+          "date": "2024-01-02T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 14,
+          "date": "2024-01-03T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 15,
+          "date": "2024-01-04T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 16,
+          "date": "2024-01-05T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 17,
+          "date": "2024-01-08T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 18,
+          "date": "2024-01-09T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 19,
+          "date": "2024-01-10T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 90.0,
+          "raw_close": 90.0,
+          "raw_high": 91.0,
+          "raw_low": 89.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 99.00000000000001,
+          "limit_down": 81.0
+        },
+        {
+          "index": 20,
+          "date": "2024-01-11T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 88.0,
+          "raw_close": 88.0,
+          "raw_high": 89.0,
+          "raw_low": 87.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 96.80000000000001,
+          "limit_down": 79.2
+        },
+        {
+          "index": 21,
+          "date": "2024-01-12T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 88.0,
+          "raw_close": 88.0,
+          "raw_high": 89.0,
+          "raw_low": 87.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 96.80000000000001,
+          "limit_down": 79.2
+        },
+        {
+          "index": 22,
+          "date": "2024-01-15T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 88.0,
+          "raw_close": 88.0,
+          "raw_high": 89.0,
+          "raw_low": 87.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 96.80000000000001,
+          "limit_down": 79.2
+        },
+        {
+          "index": 23,
+          "date": "2024-01-16T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 88.0,
+          "raw_close": 88.0,
+          "raw_high": 89.0,
+          "raw_low": 87.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 96.80000000000001,
+          "limit_down": 79.2
+        },
+        {
+          "index": 24,
+          "date": "2024-01-17T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 88.0,
+          "raw_close": 88.0,
+          "raw_high": 89.0,
+          "raw_low": 87.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 96.80000000000001,
+          "limit_down": 79.2
+        },
+        {
+          "index": 25,
+          "date": "2024-01-18T00:00:00.000",
+          "symbol": "990002.SH",
+          "raw_open": 88.0,
+          "raw_close": 88.0,
+          "raw_high": 89.0,
+          "raw_low": 87.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 96.80000000000001,
+          "limit_down": 79.2
+        },
+        {
+          "index": 26,
+          "date": "2024-01-02T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 27,
+          "date": "2024-01-03T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 28,
+          "date": "2024-01-04T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 29,
+          "date": "2024-01-05T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 30,
+          "date": "2024-01-08T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 31,
+          "date": "2024-01-09T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 32,
+          "date": "2024-01-10T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 33,
+          "date": "2024-01-11T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 34,
+          "date": "2024-01-12T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 35,
+          "date": "2024-01-15T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 36,
+          "date": "2024-01-16T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 37,
+          "date": "2024-01-17T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        },
+        {
+          "index": 38,
+          "date": "2024-01-18T00:00:00.000",
+          "symbol": "990003.SH",
+          "raw_open": 100.0,
+          "raw_close": 100.0,
+          "raw_high": 101.0,
+          "raw_low": 99.0,
+          "volume": 100000,
+          "trade_status": 1,
+          "is_st": 0,
+          "limit_up": 110.00000000000001,
+          "limit_down": 90.0
+        }
+      ]
+    },
+    "targets": {
+      "schema": {
+        "fields": [
+          {
+            "name": "index",
+            "type": "integer"
+          },
+          {
+            "name": "date",
+            "type": "datetime"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "target_weight",
+            "type": "number"
+          }
+        ],
+        "primaryKey": [
+          "index"
+        ],
+        "pandas_version": "1.4.0"
+      },
+      "data": [
+        {
+          "index": 0,
+          "date": "2024-01-02T00:00:00.000",
+          "symbol": "990001.SH",
+          "target_weight": 0.5
+        },
+        {
+          "index": 1,
+          "date": "2024-01-02T00:00:00.000",
+          "symbol": "990002.SH",
+          "target_weight": 0.49
+        },
+        {
+          "index": 2,
+          "date": "2024-01-02T00:00:00.000",
+          "symbol": "990003.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 3,
+          "date": "2024-01-05T00:00:00.000",
+          "symbol": "990001.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 4,
+          "date": "2024-01-05T00:00:00.000",
+          "symbol": "990002.SH",
+          "target_weight": 1.0
+        },
+        {
+          "index": 5,
+          "date": "2024-01-05T00:00:00.000",
+          "symbol": "990003.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 6,
+          "date": "2024-01-10T00:00:00.000",
+          "symbol": "990001.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 7,
+          "date": "2024-01-10T00:00:00.000",
+          "symbol": "990002.SH",
+          "target_weight": 1.0
+        },
+        {
+          "index": 8,
+          "date": "2024-01-10T00:00:00.000",
+          "symbol": "990003.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 9,
+          "date": "2024-01-12T00:00:00.000",
+          "symbol": "990001.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 10,
+          "date": "2024-01-12T00:00:00.000",
+          "symbol": "990002.SH",
+          "target_weight": 1.0
+        },
+        {
+          "index": 11,
+          "date": "2024-01-12T00:00:00.000",
+          "symbol": "990003.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 12,
+          "date": "2024-01-16T00:00:00.000",
+          "symbol": "990001.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 13,
+          "date": "2024-01-16T00:00:00.000",
+          "symbol": "990002.SH",
+          "target_weight": 0.5
+        },
+        {
+          "index": 14,
+          "date": "2024-01-16T00:00:00.000",
+          "symbol": "990003.SH",
+          "target_weight": 0.49
+        },
+        {
+          "index": 15,
+          "date": "2024-01-17T00:00:00.000",
+          "symbol": "990001.SH",
+          "target_weight": 0.0
+        },
+        {
+          "index": 16,
+          "date": "2024-01-17T00:00:00.000",
+          "symbol": "990002.SH",
+          "target_weight": 0.6
+        },
+        {
+          "index": 17,
+          "date": "2024-01-17T00:00:00.000",
+          "symbol": "990003.SH",
+          "target_weight": 0.4
+        }
+      ]
+    },
+    "benchmark": {
+      "schema": {
+        "fields": [
+          {
+            "name": "index",
+            "type": "integer"
+          },
+          {
+            "name": "date",
+            "type": "datetime"
+          },
+          {
+            "name": "adj_open",
+            "type": "number"
+          },
+          {
+            "name": "adj_close",
+            "type": "number"
+          }
+        ],
+        "primaryKey": [
+          "index"
+        ],
+        "pandas_version": "1.4.0"
+      },
+      "data": [
+        {
+          "index": 0,
+          "date": "2024-01-02T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 1,
+          "date": "2024-01-03T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 2,
+          "date": "2024-01-04T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 3,
+          "date": "2024-01-05T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 4,
+          "date": "2024-01-08T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 5,
+          "date": "2024-01-09T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 6,
+          "date": "2024-01-10T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 7,
+          "date": "2024-01-11T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 8,
+          "date": "2024-01-12T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 9,
+          "date": "2024-01-15T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 10,
+          "date": "2024-01-16T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 11,
+          "date": "2024-01-17T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        },
+        {
+          "index": 12,
+          "date": "2024-01-18T00:00:00.000",
+          "adj_open": 100.0,
+          "adj_close": 100.0
+        }
+      ]
+    },
+    "config": {
+      "top_k": 20,
+      "rebalance_days": 5,
+      "minimum_cross_section": 20,
+      "initial_cash": 100000,
+      "board_lot": 100,
+      "target_order_sizes": {
+        "main": {
+          "minimum": 100,
+          "increment": 100
+        },
+        "chinext": {
+          "minimum": 100,
+          "increment": 100
+        },
+        "star": {
+          "minimum": 200,
+          "increment": 1
+        }
+      },
+      "t_plus_one": true,
+      "reject_suspended": true,
+      "price_limit_tolerance_bps": 5.0,
+      "open_price_column": "raw_open",
+      "close_price_column": "raw_close",
+      "benchmark_open_price_column": "adj_open",
+      "benchmark_close_price_column": "adj_close"
+    },
+    "fees": [
+      {
+        "effective_from": "1900-01-01",
+        "effective_to": "2023-08-27",
+        "buy_fee_bps": 0.0,
+        "sell_fee_bps": 0.0,
+        "stamp_duty_bps": 10.0,
+        "transfer_fee_bps": 0.0,
+        "commission_bps": 3.0,
+        "minimum_commission_cny": 5.0,
+        "slippage_bps": 5.0
+      },
+      {
+        "effective_from": "2023-08-28",
+        "effective_to": null,
+        "buy_fee_bps": 0.0,
+        "sell_fee_bps": 0.0,
+        "stamp_duty_bps": 5.0,
+        "transfer_fee_bps": 0.0,
+        "commission_bps": 3.0,
+        "minimum_commission_cny": 5.0,
+        "slippage_bps": 5.0
+      }
+    ],
+    "events": [
+      {
+        "security_id": "990001.SH",
+        "event_id": "fixture-a",
+        "revision": 2,
+        "event_type": "CASH_DIVIDEND",
+        "effective_date": "2024-01-08",
+        "announced_at": "2023-12-01",
+        "available_at": "2023-12-02T00:00:00+08:00",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "status": "IMPLEMENTED",
+        "basis": "PER_OLD_SHARE",
+        "sequence": null,
+        "currency": "CNY",
+        "cash": "10",
+        "bonus": "0",
+        "capitalization": "0",
+        "rights": "0",
+        "rights_price": null,
+        "split_ratio": null,
+        "reference_close": "100",
+        "reference_price": null,
+        "record_date": "2024-01-04",
+        "pay_date": "2024-01-12",
+        "credit_date": "2024-01-08",
+        "tradable_date": "2024-01-08",
+        "subscription_start": null,
+        "subscription_end": null,
+        "eligibility": null,
+        "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+        "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+        "synthetic_only": true
+      },
+      {
+        "security_id": "990002.SH",
+        "event_id": "fixture-b",
+        "revision": 2,
+        "event_type": "CASH_DIVIDEND",
+        "effective_date": "2024-01-10",
+        "announced_at": "2023-12-01",
+        "available_at": "2023-12-02T00:00:00+08:00",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "status": "IMPLEMENTED",
+        "basis": "PER_OLD_SHARE",
+        "sequence": null,
+        "currency": "CNY",
+        "cash": "10",
+        "bonus": "0",
+        "capitalization": "0",
+        "rights": "0",
+        "rights_price": null,
+        "split_ratio": null,
+        "reference_close": "100",
+        "reference_price": null,
+        "record_date": "2024-01-08",
+        "pay_date": "2024-01-16",
+        "credit_date": "2024-01-10",
+        "tradable_date": "2024-01-10",
+        "subscription_start": null,
+        "subscription_end": null,
+        "eligibility": null,
+        "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+        "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+        "synthetic_only": true
+      },
+      {
+        "security_id": "990002.SH",
+        "event_id": "fixture-b2",
+        "revision": 2,
+        "event_type": "CASH_DIVIDEND",
+        "effective_date": "2024-01-11",
+        "announced_at": "2023-12-01",
+        "available_at": "2023-12-02T00:00:00+08:00",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "status": "IMPLEMENTED",
+        "basis": "PER_OLD_SHARE",
+        "sequence": null,
+        "currency": "CNY",
+        "cash": "2",
+        "bonus": "0",
+        "capitalization": "0",
+        "rights": "0",
+        "rights_price": null,
+        "split_ratio": null,
+        "reference_close": "100",
+        "reference_price": null,
+        "record_date": "2024-01-09",
+        "pay_date": "2024-01-12",
+        "credit_date": "2024-01-11",
+        "tradable_date": "2024-01-11",
+        "subscription_start": null,
+        "subscription_end": null,
+        "eligibility": null,
+        "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+        "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+        "synthetic_only": true
+      },
+      {
+        "security_id": "990003.SH",
+        "event_id": "fixture-no-position",
+        "revision": 2,
+        "event_type": "CASH_DIVIDEND",
+        "effective_date": "2024-01-05",
+        "announced_at": "2023-12-01",
+        "available_at": "2023-12-02T00:00:00+08:00",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "status": "IMPLEMENTED",
+        "basis": "PER_OLD_SHARE",
+        "sequence": null,
+        "currency": "CNY",
+        "cash": "3",
+        "bonus": "0",
+        "capitalization": "0",
+        "rights": "0",
+        "rights_price": null,
+        "split_ratio": null,
+        "reference_close": "100",
+        "reference_price": null,
+        "record_date": "2024-01-04",
+        "pay_date": "2024-01-12",
+        "credit_date": "2024-01-05",
+        "tradable_date": "2024-01-05",
+        "subscription_start": null,
+        "subscription_end": null,
+        "eligibility": null,
+        "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+        "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+        "synthetic_only": true
+      }
+    ],
+    "taxes": [
+      {
+        "event_id": "fixture-a",
+        "status": "SYNTHETIC_EXPLICIT",
+        "rate": "0",
+        "rule_id": "SYNTHETIC_FLAT_RATE_V1"
+      },
+      {
+        "event_id": "fixture-b",
+        "status": "SYNTHETIC_EXPLICIT",
+        "rate": "0",
+        "rule_id": "SYNTHETIC_FLAT_RATE_V1"
+      },
+      {
+        "event_id": "fixture-b2",
+        "status": "SYNTHETIC_EXPLICIT",
+        "rate": "0",
+        "rule_id": "SYNTHETIC_FLAT_RATE_V1"
+      },
+      {
+        "event_id": "fixture-no-position",
+        "status": "SYNTHETIC_EXPLICIT",
+        "rate": "0",
+        "rule_id": "SYNTHETIC_FLAT_RATE_V1"
+      }
+    ],
+    "dividend_plans": {
+      "990001.SH": {
+        "scope": "SOFTWARE_ONLY",
+        "snapshot": {
+          "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+          "source_version": "synthetic-v1",
+          "acquired_at": "2024-12-31T00:00:00+08:00",
+          "events": [
+            {
+              "security_id": "990001.SH",
+              "event_id": "fixture-a",
+              "revision": 2,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-08",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-02T00:00:00+08:00",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "IMPLEMENTED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "10",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": "2024-01-04",
+              "pay_date": "2024-01-12",
+              "credit_date": "2024-01-08",
+              "tradable_date": "2024-01-08",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            }
+          ],
+          "coverage": [
+            {
+              "security_id": "990001.SH",
+              "start": "2024-01-03",
+              "end": "2024-01-18",
+              "available_at": "2023-12-02T00:00:00+08:00",
+              "source_sha256": "892d78994d75e937e7ccab325ef187e899acfbc2f905ad48f653d172a51e62d4",
+              "status": "COMPLETE"
+            }
+          ],
+          "artifacts": [
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\source.json",
+              "sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "bytes": 27,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\source.json"
+            },
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\link-0.json",
+              "sha256": "8241db8ae96eb98fab45d4d3c99c3c2cbd2051cd4a4fcda71ef585f6e647fff8",
+              "bytes": 3017,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\link-0.json"
+            },
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\coverage.json",
+              "sha256": "892d78994d75e937e7ccab325ef187e899acfbc2f905ad48f653d172a51e62d4",
+              "bytes": 186,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\coverage.json"
+            }
+          ],
+          "issues": [],
+          "synthetic_only": true,
+          "history_kind": "HISTORICALLY_RECONSTRUCTED"
+        },
+        "supplements": [
+          {
+            "original": {
+              "security_id": "990001.SH",
+              "event_id": "fixture-a",
+              "revision": 1,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-08",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-01",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "PROPOSED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "10",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": null,
+              "pay_date": "2024-01-12",
+              "credit_date": "2024-01-08",
+              "tradable_date": "2024-01-08",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            },
+            "source_version": "synthetic-v1",
+            "association": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\link-0.json",
+              "sha256": "8241db8ae96eb98fab45d4d3c99c3c2cbd2051cd4a4fcda71ef585f6e647fff8",
+              "bytes": 3017,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990001.SH\\link-0.json"
+            }
+          }
+        ]
+      },
+      "990002.SH": {
+        "scope": "SOFTWARE_ONLY",
+        "snapshot": {
+          "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+          "source_version": "synthetic-v1",
+          "acquired_at": "2024-12-31T00:00:00+08:00",
+          "events": [
+            {
+              "security_id": "990002.SH",
+              "event_id": "fixture-b",
+              "revision": 2,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-10",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-02T00:00:00+08:00",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "IMPLEMENTED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "10",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": "2024-01-08",
+              "pay_date": "2024-01-16",
+              "credit_date": "2024-01-10",
+              "tradable_date": "2024-01-10",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            },
+            {
+              "security_id": "990002.SH",
+              "event_id": "fixture-b2",
+              "revision": 2,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-11",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-02T00:00:00+08:00",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "IMPLEMENTED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "2",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": "2024-01-09",
+              "pay_date": "2024-01-12",
+              "credit_date": "2024-01-11",
+              "tradable_date": "2024-01-11",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            }
+          ],
+          "coverage": [
+            {
+              "security_id": "990002.SH",
+              "start": "2024-01-03",
+              "end": "2024-01-18",
+              "available_at": "2023-12-02T00:00:00+08:00",
+              "source_sha256": "dc2ba0301dcbe066ba1223383d4cdc29520ff053024e7303a539d5ae5c5c16f6",
+              "status": "COMPLETE"
+            }
+          ],
+          "artifacts": [
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\source.json",
+              "sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "bytes": 27,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\source.json"
+            },
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-0.json",
+              "sha256": "885936051944235ef7193620b1508dfd98a2b4fa2d4e0aacb402ebb95cd1bfb9",
+              "bytes": 3017,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-0.json"
+            },
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-1.json",
+              "sha256": "1d24352cd26ed485e85eb7ede6204fa49c7b5f8bd1c9a89c10c81538bbacbf38",
+              "bytes": 3016,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-1.json"
+            },
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\coverage.json",
+              "sha256": "dc2ba0301dcbe066ba1223383d4cdc29520ff053024e7303a539d5ae5c5c16f6",
+              "bytes": 203,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\coverage.json"
+            }
+          ],
+          "issues": [],
+          "synthetic_only": true,
+          "history_kind": "HISTORICALLY_RECONSTRUCTED"
+        },
+        "supplements": [
+          {
+            "original": {
+              "security_id": "990002.SH",
+              "event_id": "fixture-b",
+              "revision": 1,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-10",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-01",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "PROPOSED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "10",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": null,
+              "pay_date": "2024-01-16",
+              "credit_date": "2024-01-10",
+              "tradable_date": "2024-01-10",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            },
+            "source_version": "synthetic-v1",
+            "association": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-0.json",
+              "sha256": "885936051944235ef7193620b1508dfd98a2b4fa2d4e0aacb402ebb95cd1bfb9",
+              "bytes": 3017,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-0.json"
+            }
+          },
+          {
+            "original": {
+              "security_id": "990002.SH",
+              "event_id": "fixture-b2",
+              "revision": 1,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-11",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-01",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "PROPOSED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "2",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": null,
+              "pay_date": "2024-01-12",
+              "credit_date": "2024-01-11",
+              "tradable_date": "2024-01-11",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            },
+            "source_version": "synthetic-v1",
+            "association": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-1.json",
+              "sha256": "1d24352cd26ed485e85eb7ede6204fa49c7b5f8bd1c9a89c10c81538bbacbf38",
+              "bytes": 3016,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990002.SH\\link-1.json"
+            }
+          }
+        ]
+      },
+      "990003.SH": {
+        "scope": "SOFTWARE_ONLY",
+        "snapshot": {
+          "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+          "source_version": "synthetic-v1",
+          "acquired_at": "2024-12-31T00:00:00+08:00",
+          "events": [
+            {
+              "security_id": "990003.SH",
+              "event_id": "fixture-no-position",
+              "revision": 2,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-05",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-02T00:00:00+08:00",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "IMPLEMENTED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "3",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": "2024-01-04",
+              "pay_date": "2024-01-12",
+              "credit_date": "2024-01-05",
+              "tradable_date": "2024-01-05",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            }
+          ],
+          "coverage": [
+            {
+              "security_id": "990003.SH",
+              "start": "2024-01-03",
+              "end": "2024-01-18",
+              "available_at": "2023-12-02T00:00:00+08:00",
+              "source_sha256": "70fde99b6f10586a63a103c7d071570b38e8e8e7164da62bac6d440c2d4bf9e3",
+              "status": "COMPLETE"
+            }
+          ],
+          "artifacts": [
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\source.json",
+              "sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "bytes": 27,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\source.json"
+            },
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\link-0.json",
+              "sha256": "eb0959c2b7e27bcf8ab221ce364fb31ad9b0621a7284237fe59ad2ad1602c714",
+              "bytes": 3016,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\link-0.json"
+            },
+            {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\coverage.json",
+              "sha256": "70fde99b6f10586a63a103c7d071570b38e8e8e7164da62bac6d440c2d4bf9e3",
+              "bytes": 196,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\coverage.json"
+            }
+          ],
+          "issues": [],
+          "synthetic_only": true,
+          "history_kind": "HISTORICALLY_RECONSTRUCTED"
+        },
+        "supplements": [
+          {
+            "original": {
+              "security_id": "990003.SH",
+              "event_id": "fixture-no-position",
+              "revision": 1,
+              "event_type": "CASH_DIVIDEND",
+              "effective_date": "2024-01-05",
+              "announced_at": "2023-12-01",
+              "available_at": "2023-12-01",
+              "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+              "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+              "status": "PROPOSED",
+              "basis": "PER_OLD_SHARE",
+              "sequence": null,
+              "currency": "CNY",
+              "cash": "3",
+              "bonus": "0",
+              "capitalization": "0",
+              "rights": "0",
+              "rights_price": null,
+              "split_ratio": null,
+              "reference_close": "100",
+              "reference_price": null,
+              "record_date": null,
+              "pay_date": "2024-01-12",
+              "credit_date": "2024-01-05",
+              "tradable_date": "2024-01-05",
+              "subscription_start": null,
+              "subscription_end": null,
+              "eligibility": null,
+              "rule_id": "STANDARD_CNY_PER_OLD_SHARE_V1",
+              "original_terms": "SYNTHETIC ONLY explicit per-old-share terms",
+              "synthetic_only": true
+            },
+            "source_version": "synthetic-v1",
+            "association": {
+              "path": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\link-0.json",
+              "sha256": "eb0959c2b7e27bcf8ab221ce364fb31ad9b0621a7284237fe59ad2ad1602c714",
+              "bytes": 3016,
+              "source_id": "SYNTHETIC_EXECUTION_EVIDENCE",
+              "acquired_at": "2024-12-31T00:00:00+08:00",
+              "locator": "D:\\Code\\FactorLab-worktrees\\p8-e02\\docs\\validation\\p8-e02\\synthetic-evidence\\990003.SH\\link-0.json"
+            }
+          }
+        ]
+      }
+    },
+    "payment_policy": "DATE_ONLY_AFTER_OPEN_ORDERS; AVAILABLE_NEXT_OBSERVED_OPEN",
+    "executor": "AShareExecutionBacktester.run_target_weights -> _iterate_selected -> _execute_order",
+    "code": {
+      "starting_commit": "fc0fa9412af6f3fa33765b10476213ad7a784941",
+      "starting_tree": "64be64d6afe212a71903a56e020aa2fd46a54c6e"
+    },
+    "labels": [
+      "SYNTHETIC",
+      "ENGINEERING_ONLY",
+      "NOT_FINANCIAL_EVIDENCE",
+      "NO LIVE MONEY",
+      "PIT_UNVERIFIED",
+      "HFQ_UNVERIFIED",
+      "FORMAL_ADMISSION_BLOCKED"
+    ]
+  }
+}

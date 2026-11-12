@@ -1,0 +1,29 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "currency": "CNY",
+  "absolute_tolerance": 1e-08,
+  "residuals": {
+    "cash_max_abs": 1.4551915228366852e-11,
+    "position_max_abs": 0,
+    "equity_max_abs": 0.0,
+    "receivables_reconciled": true,
+    "payment_amounts_reconciled": true,
+    "fees_reconciled": true
+  },
+  "sessions": 12,
+  "securities": 3,
+  "events": 4,
+  "total_paid_gross": "9800",
+  "final_cash": 16913.660000000003,
+  "final_nav": 0.9971366,
+  "duplicate_entitlements": false,
+  "duplicate_payments": false
+}
