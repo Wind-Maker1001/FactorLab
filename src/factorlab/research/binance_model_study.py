@@ -117,20 +117,20 @@ def ledger_summary(path, replay):
     rejections = Counter(e['reason'] for e in events if isinstance(e, dict) and e.get('kind') == 'TARGET_REJECTED')
     fills = replay['fill_confirmations']
     orders = {r['snapshot']['intent']['client_order_id']: r['snapshot']['intent'] for r in replay['order_records']}
-    previous, quantity, notional, cursor, weights = {}, 0., 0., 0, []
+    previous, quantity, notional, cursor, weights = {}, Decimal(0), Decimal(0), 0, []
     for point in replay['equity_curve']:
         while cursor < len(fills) and pd.Timestamp(fills[cursor]['event_time']) <= pd.Timestamp(point['time']):
             event = fills[cursor]
             key = event['client_order_id']
-            cumulative = float(event['cumulative_filled_quantity'])
-            delta = cumulative - previous.get(key, 0.)
+            cumulative = Decimal(event['cumulative_filled_quantity'])
+            delta = cumulative - previous.get(key, Decimal(0))
             previous[key] = cumulative
             quantity += delta * (1 if orders[key]['side'] == 'BUY' else -1)
-            notional += delta * float(event['fill_price'])
+            notional += delta * Decimal(event['fill_price'])
             cursor += 1
         weights.append(quantity != 0)
-    return dict(rejection_reasons=dict(rejections), traded_notional=notional,
-                turnover_initial_equity=notional/1000, time_in_market=float(np.mean(weights)),
+    return dict(rejection_reasons=dict(rejections), traded_notional=float(notional),
+                turnover_initial_equity=float(notional/Decimal(1000)), time_in_market=float(np.mean(weights)),
                 final_positions=replay['account']['positions'],
                 fill_time_first=fills[0]['event_time'] if fills else None)
 

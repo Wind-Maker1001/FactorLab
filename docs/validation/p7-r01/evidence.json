@@ -4337,9 +4337,9 @@
       "rejection_reasons": {
         "TARGET_ORDER_FILTER": 27
       },
-      "traded_notional": 2584.3837858800002,
+      "traded_notional": 2584.38378588,
       "turnover_initial_equity": 2.58438378588,
-      "time_in_market": 0.7916666666666666,
+      "time_in_market": 0.7794117647058824,
       "final_positions": [
         {
           "instrument_id": "NVDAUSDT",
@@ -8168,9 +8168,9 @@
       "rejection_reasons": {
         "TARGET_ORDER_FILTER": 17
       },
-      "traded_notional": 2877.346748200001,
-      "turnover_initial_equity": 2.877346748200001,
-      "time_in_market": 0.8063725490196079,
+      "traded_notional": 2877.3467482,
+      "turnover_initial_equity": 2.8773467482,
+      "time_in_market": 0.7230392156862745,
       "final_positions": [
         {
           "instrument_id": "NVDAUSDT",
@@ -20510,9 +20510,9 @@
       "sharpe_status": "SHORT_SAMPLE_DESCRIPTIVE_NOT_SIGNIFICANCE",
       "turnover_definition": "sum(abs(fill_quantity * fill_price)) / initial_equity",
       "rejection_reasons": {},
-      "traded_notional": 8965.597850339998,
-      "turnover_initial_equity": 8.965597850339998,
-      "time_in_market": 0.7450980392156863,
+      "traded_notional": 8965.59785034,
+      "turnover_initial_equity": 8.96559785034,
+      "time_in_market": 0.4852941176470588,
       "final_positions": [],
       "fill_time_first": "2026-10-24 00:00:00.002000+00:00",
       "net_return_minus_no_trade": -0.01436555759034,
@@ -24817,8 +24817,8 @@
       "sharpe_status": "SHORT_SAMPLE_DESCRIPTIVE_NOT_SIGNIFICANCE",
       "turnover_definition": "sum(abs(fill_quantity * fill_price)) / initial_equity",
       "rejection_reasons": {},
-      "traded_notional": 1317.0433023699998,
-      "turnover_initial_equity": 1.3170433023699997,
+      "traded_notional": 1317.04330237,
+      "turnover_initial_equity": 1.31704330237,
       "time_in_market": 0.41911764705882354,
       "final_positions": [
         {

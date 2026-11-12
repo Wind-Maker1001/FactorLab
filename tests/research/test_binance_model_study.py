@@ -78,3 +78,34 @@ def test_turnover_uses_incremental_partial_fills(tmp_path):
     result = ledger_summary(path, replay)
     assert result['traded_notional'] == 201
     assert result['time_in_market'] == 1
+
+
+def test_decimal_partial_fills_duplicates_and_multiple_orders_flatten_exactly(tmp_path):
+    import sqlite3
+    path = tmp_path/'paper.sqlite'
+    with sqlite3.connect(path) as db:
+        db.execute('CREATE TABLE events(payload TEXT)')
+    confirmations = [
+        ('buy-a', '0.1', '100'),
+        ('buy-a', '0.3', '101'),
+        ('buy-a', '0.3', '101'),  # repeated cumulative confirmation adds nothing
+        ('buy-b', '0.1', '102'),
+        ('sell-a', '0.1', '103'),
+        ('sell-a', '0.3', '104'),
+        ('sell-b', '0.1', '105'),
+        ('sell-b', '0.1', '105'),
+    ]
+    times = [f'2026-01-01T{i:02d}:00:00+00:00' for i in range(9)]
+    replay = dict(
+        order_records=[dict(snapshot=dict(intent=dict(client_order_id=key, side=side)))
+                       for key, side in [('buy-a','BUY'), ('buy-b','BUY'),
+                                         ('sell-a','SELL'), ('sell-b','SELL')]],
+        fill_confirmations=[dict(client_order_id=key, cumulative_filled_quantity=quantity,
+                                 fill_price=price, event_time=time)
+                            for (key, quantity, price), time in zip(confirmations, times)],
+        equity_curve=[dict(time=time, equity='1000') for time in times],
+        account=dict(positions=[]))
+    result = ledger_summary(path, replay)
+    assert result['time_in_market'] == 6/9
+    assert result['traded_notional'] == float(Decimal('82'))
+    assert result['turnover_initial_equity'] == float(Decimal('.082'))
