@@ -2,8 +2,10 @@
 
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
-This contract supports offline construction and response injection for official
-Demo Trading, not network order execution. No Demo network writer exists here.
+The P7-D02 contract supports offline construction and response injection for
+official Demo Trading. P7-D03A adds a separate fixed-host network boundary, disabled
+without independent process-local authorization and complete bounded-plan admission.
+No network order execution is authorized by the engineering acceptance.
 `DemoExecutionTransport` is an `OfflineTransport`: its delegate must also be an
 offline transport. Its fixed host identity is `https://demo-fapi.binance.com`,
 but it never constructs a URL, opens a socket or follows a redirect.
@@ -33,7 +35,9 @@ Demo responses, not verified online account conditions. A custom human-readable
 source label cannot substitute for querying the Demo client.
 
 Direct Demo adapter submission is blocked outside gateway admission. The original
-FuturesAdapter submit/cancel offline-transport checks are retained. The ordinary
+FuturesAdapter submit/cancel offline-transport checks are retained, with an exact-type
+DemoNetworkTransport extension requiring independent active authorization and a
+one-use approved request. The ordinary
 read-only network transport still rejects POST/DELETE/PUT, including in Demo.
 Production requests cannot pass the Demo transport, and production credentials
 cannot construct its client. The authorization is never a production capability.
@@ -52,15 +56,50 @@ its event. An explicit locally recorded rejection with no exchange order ID is
 not queried as if it were a previously accepted order. Uncertain orders are still
 queried and never inferred to be rejected from ORDER_NOT_FOUND.
 
-## P7-D03 minimum online integration
+## P7-D03A network admission
 
-A separate authorization and implementation step is required before online writes:
+`DemoNetworkTransport` is separate from the offline delegate contract. Its URL is
+constructed from the literal official Demo host, and `_NoRedirect` disables HTTP
+redirects. Only the existing order POST and specified-order DELETE may pass the
+write boundary. Account configuration, transfers and withdrawals remain absent.
 
-1. Review and authorize a Demo-only network writer with fixed host, no redirects,
-   environment/key checks and an independent process-local network capability.
-   Do not turn the offline delegate into a network transport or remove the base
-   adapter's offline guard. Explicitly decide the narrow execution extension at
-   that boundary; production writes must remain unconditionally blocked.
+`DemoExecutionPlan` requires a Demo credential-bound account, NVDAUSDT, immutable
+MARKET/LIMIT type set, positive Decimal quantity/notional/loss/margin limits,
+positive order/open-order/time limits, UTC expiry, client-ID prefix and explicit
+cleanup/recovery policies. There are no real-plan defaults or CLI write switches.
+Synthetic test values are not approved online limits.
+
+`DemoNetworkAuthorization(plan)` is independent of offline authorization and
+cannot be serialized. It expires by both wall-clock deadline and monotonic elapsed
+time. Restart may reconstruct the plan as data but cannot restore approval.
+Bind the existing controller using `gateway.bind_controller(controller)`; its
+process-local admitted intent proves the shared risk path was traversed. Rules
+must be the current process's account-bound observation from the same Demo client.
+
+Before dispatch, admission checks account trading eligibility, quantitative
+trading locks, fresh one-way account evidence, Demo mark price, percent-price
+bands, position-risk restriction, order count, conservative aggregate collateral,
+virtual loss and every required plan bound. Existing exchange filters, brackets,
+mode/configuration and shared risk checks still apply. The adapter supplies a
+one-use exact-parameter approval only after these checks; its existing journal
+commits order identity before HTTP dispatch. The transport checks the signed key's
+account digest and exact approved request before opening a connection.
+
+Cleanup is not automatic: stop new orders, reconcile unknown IDs via GET, then
+cancel only explicitly known plan orders while the capability remains active.
+After expiry or revocation, GET recovery remains available but all writes,
+including cleanup cancellations, need a newly reviewed bounded approval. Loss and
+margin limits gate new submissions; they are not guaranteed loss stops between
+observations. No background liquidation or automatic closing order is introduced.
+
+## P7-D03B minimum online integration
+
+A separate authorization is required before online writes:
+
+1. Review the Demo-only boundary and approve every plan limit, unique ID prefix,
+   expiry, cleanup and recovery policy. Create a new process-local network capability
+   only in that authorized session. Do not reuse the offline delegate as a network
+   client; production writes remain unconditionally blocked.
 2. In one bounded session, load existing Demo credentials securely, synchronize
    time and fetch Demo NVDAUSDT exchangeInfo, position mode, symbol configuration,
    leverage brackets, available margin and existing orders. UNKNOWN blocks entry.

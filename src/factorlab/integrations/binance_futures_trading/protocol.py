@@ -36,6 +36,7 @@ READ_PATHS = frozenset({
     '/fapi/v1/exchangeInfo', '/fapi/v3/balance', '/fapi/v1/time', '/fapi/v1/order', '/fapi/v1/openOrders', '/fapi/v1/allOrders',
     '/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
     '/fapi/v1/leverageBracket', '/fapi/v1/userTrades', '/fapi/v1/income', '/fapi/v1/symbolConfig',
+    '/fapi/v1/apiTradingStatus', '/fapi/v1/premiumIndex',
 })
 WRITE_PATHS = frozenset({('POST', '/fapi/v1/order'), ('DELETE', '/fapi/v1/order')})
 
@@ -122,7 +123,8 @@ class FuturesClient:
                  timeout=10, clock=time.time, environment=None):
         if type(recv_window) is not int or not 1 <= recv_window <= 60000 or timeout <= 0:
             raise ValueError('invalid recvWindow or timeout')
-        if transport is not None and not isinstance(transport, (OfflineTransport, ReadOnlyNetworkTransport)):
+        from .network import DemoNetworkTransport
+        if transport is not None and not isinstance(transport, (OfflineTransport, ReadOnlyNetworkTransport, DemoNetworkTransport)):
             raise SafetyBlocked('transport must be offline fake or explicitly permitted read-only transport')
         self.environment = environment if environment is None else Environment(environment)
         if isinstance(transport, ReadOnlyNetworkTransport):
@@ -171,7 +173,9 @@ class FuturesClient:
         if self.transport is None:
             raise SafetyBlocked('network disabled by default')
         if method != 'GET' and not isinstance(self.transport, OfflineTransport):
-            raise SafetyBlocked('NO LIVE MONEY: all real trading requests forbidden')
+            from .network import demo_network_permitted
+            if not demo_network_permitted(self):
+                raise SafetyBlocked('NO LIVE MONEY: production or unauthorized network write forbidden')
         if isinstance(self.transport, ReadOnlyNetworkTransport) and not self.transport.permit_account_read:
             raise SafetyBlocked('explicit account read permission required')
         if self.clock() < self.blocked_until:
@@ -179,6 +183,8 @@ class FuturesClient:
         request = self.build(method, path, params, signed=signed)
         try:
             response = self.transport(request, self.timeout)
+        except SafetyBlocked:
+            raise
         except (OSError, TimeoutError):
             if method != 'GET':
                 raise OutcomeUnknown('order outcome unknown; query by clientOrderId, never resend') from None

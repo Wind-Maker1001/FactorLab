@@ -45,6 +45,7 @@ class TradingController:
         if live or not isinstance(broker, PaperBroker):
             raise ValueError("NO LIVE MONEY: only PaperBroker execution is enabled")
         self.broker, self.store, self.limits, self.clock = broker, store, limits, clock
+        self._admitted_intent = None
         utc(clock())
         broker.clock, broker.record_event = clock, store.record_event
         with store.transaction():
@@ -163,6 +164,7 @@ class TradingController:
             self.broker.state.submissions = [t for t in self.broker.state.submissions
                                              if self.clock() - t < timedelta(minutes=1)]
             self.broker.state.submissions.append(self.clock())
+            self._admitted_intent = intent
             try:
                 return self.broker.submit_order(intent)
             except TimeoutError:
@@ -176,6 +178,8 @@ class TradingController:
                         OrderSnapshot(intent), self.clock(), max(quote.price, intent.limit_price or quote.price))
                 self.broker.mark_unknown(intent.client_order_id)
                 return None
+            finally:
+                self._admitted_intent = None
         return self._atomic(operation)
 
     def cancel(self, order_id):

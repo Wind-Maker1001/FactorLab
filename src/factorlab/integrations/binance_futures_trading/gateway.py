@@ -25,7 +25,9 @@ class FuturesPaperGateway(PaperBroker):
     def __init__(self, adapter, rules, instruments, balances, *, leverage=1, max_leverage=1,
                  fee_rate=Decimal('0.001')):
         if not isinstance(adapter.client.transport, OfflineTransport):
-            raise SafetyBlocked('NO LIVE MONEY: paper gateway requires offline transport')
+            from .network import demo_network_permitted
+            if not demo_network_permitted(adapter.client):
+                raise SafetyBlocked('NO LIVE MONEY: gateway requires offline or authorized Demo transport')
         super().__init__(Market.BINANCE_USDM, adapter.account_id, instruments, balances, fee_rate=fee_rate)
         self.adapter, self.rules = adapter, rules
         self.leverage, self.max_leverage = leverage, max_leverage

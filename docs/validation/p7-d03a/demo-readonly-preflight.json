@@ -1,0 +1,130 @@
+{
+  "observed_at": "2026-11-12T08:04:01.772159+00:00",
+  "environment": "DEMO",
+  "symbol": "NVDAUSDT",
+  "network_writes": 0,
+  "endpoints": [
+    {
+      "endpoint": "/fapi/v1/time",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v1/exchangeInfo",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v3/account",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v3/positionRisk",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v1/positionSide/dual",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v1/symbolConfig",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v1/leverageBracket",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v1/openOrders",
+      "result": "READ_OK",
+      "http_status": 200
+    },
+    {
+      "endpoint": "/fapi/v1/apiTradingStatus",
+      "result": "READ_OK",
+      "http_status": 200
+    }
+  ],
+  "conditions": {
+    "trading_symbol": true,
+    "account_can_trade": null,
+    "available_margin_known": true,
+    "available_margin_positive": true,
+    "initial_margin_known": true,
+    "wallet_and_pnl_known": true,
+    "one_way_mode": true,
+    "leverage_known": true,
+    "margin_mode_known": true,
+    "risk_brackets_known": true,
+    "positions_known": true,
+    "no_existing_positions": true,
+    "orders_known": true,
+    "no_existing_orders": true,
+    "quantitative_trading_unlocked": null
+  },
+  "public_rules": {
+    "symbol": "NVDAUSDT",
+    "status": "TRADING",
+    "contractType": "TRADIFI_PERPETUAL",
+    "pricePrecision": 5,
+    "quantityPrecision": 2,
+    "orderTypes": [
+      "LIMIT",
+      "MARKET",
+      "STOP",
+      "STOP_MARKET",
+      "TAKE_PROFIT",
+      "TAKE_PROFIT_MARKET",
+      "TRAILING_STOP_MARKET"
+    ],
+    "filters": [
+      {
+        "filterType": "PRICE_FILTER",
+        "minPrice": "0.01000",
+        "tickSize": "0.01000",
+        "maxPrice": "20000"
+      },
+      {
+        "stepSize": "0.01",
+        "minQty": "0.01",
+        "maxQty": "6000",
+        "filterType": "LOT_SIZE"
+      },
+      {
+        "stepSize": "0.01",
+        "minQty": "0.01",
+        "maxQty": "600",
+        "filterType": "MARKET_LOT_SIZE"
+      },
+      {
+        "limit": 200,
+        "filterType": "MAX_NUM_ORDERS"
+      },
+      {
+        "filterType": "MIN_NOTIONAL",
+        "notional": "5"
+      },
+      {
+        "filterType": "PERCENT_PRICE",
+        "multiplierUp": "1.0300",
+        "multiplierDecimal": "4",
+        "multiplierDown": "0.9700"
+      },
+      {
+        "filterType": "POSITION_RISK_CONTROL",
+        "positionControlSide": "NONE"
+      }
+    ]
+  },
+  "unknown": [
+    "account_can_trade",
+    "quantitative_trading_unlocked"
+  ],
+  "plan": "NOT_AUTHORIZED_BOUNDARIES_UNSET",
+  "execution_admission": "BLOCKED"
+}
