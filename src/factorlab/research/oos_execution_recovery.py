@@ -36,6 +36,11 @@ def apply_issuer_execution_st(bars, evidence):
         if (target.sum() != 1 or not data.loc[target, 'st_status'].eq(2).all()
                 or not data.loc[target, 'is_st'].isna().all()):
             raise SchemaError(f'TARGETED_ST_SOURCE_DRIFT: {grant.day}/{grant.security}')
+        if grant.suspension_document_sha256 is not None and (
+                not data.loc[target, 'suspended'].eq(1).all()
+                or not data.loc[target, 'trade_status'].eq(0).all()
+                or not data.loc[target, 'raw_close'].isna().all()):
+            raise SchemaError(f'BOUNDED_SUSPENSION_SOURCE_DRIFT: {grant.day}/{grant.security}')
         data.loc[target, 'is_st'] = int(grant.candidate_value)
     return data
 

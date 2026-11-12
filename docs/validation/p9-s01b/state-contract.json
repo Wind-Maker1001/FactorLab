@@ -1,0 +1,40 @@
+{
+  "schema": "P9_S01B_BOUNDED_STATE_V1",
+  "version": "1",
+  "symbol": "000540.SZ",
+  "dates": ["2023-05-22", "2023-05-23", "2023-05-24", "2023-05-25", "2023-05-26", "2023-05-29", "2023-05-30", "2023-05-31", "2023-06-01", "2023-06-02", "2023-06-05", "2023-06-06", "2023-06-07", "2023-06-08", "2023-06-09", "2023-06-12", "2023-06-13", "2023-06-14"],
+  "purpose": "EXECUTION_STATE",
+  "consumer_cutoff": "09:30:00+08:00",
+  "designation": {
+    "effective_at": "2023-05-05T09:30:00+08:00",
+    "publication_time": "2023-04-29T23:59:59.999999+08:00",
+    "source_uri": "https://static.cninfo.com.cn/finalpage/2023-04-29/1216703562.PDF",
+    "document_sha256": "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642f90cd54cc2e456",
+    "value": true,
+    "continuity": "Issuer 2023-36 imposes delisting risk warning from May 5 without a scheduled expiry; 2023-56 identifies the same security as *ST during suspension. No status reset is inferred from suspension."
+  },
+  "suspension_evidence": {
+    "security": "000540.SZ",
+    "start_date": "2023-05-19",
+    "end_exclusive": "2023-06-15",
+    "publication_time": "2023-05-19T23:59:59.999999+08:00",
+    "signed_date": "2023-05-18",
+    "effective_at": "2023-05-19T09:30:00+08:00",
+    "document_sha256": "1f8e3f589eecacbcf6064729e57cc3a6091de160b23996c33c07d56097a197af",
+    "source_uri": "https://static.cninfo.com.cn/finalpage/2023-05-19/1216852113.PDF",
+    "verification_status": "DOCUMENT_CONFIRMED",
+    "basis": "Issuer 2023-56: suspension from May 19 open following twenty closes below RMB1; quotes SZSE Listing Rules 9.2.4 and 9.1.15, no delisting trading period. No scheduled resumption. Contract requires unchanged daily suspended=1, trade_status=0 and missing raw_close; any source change stops consumption."
+  },
+  "later_corroboration_only": {
+    "source_uri": "https://static.cninfo.com.cn/finalpage/2023-06-16/1217074647.PDF",
+    "document_sha256": "30b17ce1ec2aa4b3c5372bde1a2c90f8137f1f07fb15a4d0d1ed4ba71ea1851c",
+    "public_date": "2023-06-16",
+    "role": "Same *ST security identity, no delisting trading period; not consumed by pre-June-15 orders"
+  },
+  "valuation_permission": false,
+  "execution_price_permission": false,
+  "fill_permission": false,
+  "global_enum_mapping": false,
+  "end_reason": "Predeclared research reassessment boundary; not a claim that the June 15 decision was known before that day's open",
+  "labels": ["SCENARIO_ONLY", "NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}
