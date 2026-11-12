@@ -1,0 +1,36 @@
+{
+  "labels": [
+    "SCENARIO_ONLY",
+    "NOT_HISTORICAL_VALUATION_CERTIFIED",
+    "NOT_EXECUTION_PRICE",
+    "RIGHTS_UNSETTLED",
+    "NO_LIVE_MONEY",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "bounded_window_completed": true,
+  "strict_first_blocker": {
+    "date": "2023-05-19",
+    "reason": "UNQUALIFIED_HELD_CLOSE: 2023-05-19/000540.SZ: MARKET DATA QUALIFICATION REQUIRED: candidate outside exact security/date/field scope",
+    "prior_000540_shares": 133700
+  },
+  "scenario_first_blocker": {
+    "date": "2023-06-15",
+    "reason": "SCENARIO_EVENT_REASSESSMENT_REQUIRED: 2023-06-15",
+    "source_state": [
+      {
+        "suspended": 1,
+        "st_status": 2,
+        "is_st": null,
+        "raw_close": null
+      }
+    ],
+    "failed_day_not_accepted": true
+  },
+  "remaining": [
+    "June 15 reassessment required",
+    "Account-specific 400174 registration and later share/settlement events remain unqualified"
+  ]
+}

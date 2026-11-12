@@ -1,0 +1,52 @@
+{
+  "labels": [
+    "SCENARIO_ONLY",
+    "NOT_HISTORICAL_VALUATION_CERTIFIED",
+    "NOT_EXECUTION_PRICE",
+    "RIGHTS_UNSETTLED",
+    "NO_LIVE_MONEY",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "comparisons": [
+    {
+      "research_id": "LAST_CLOSE_CARRY_SENSITIVITY",
+      "nav_difference_vs_A": 0.0,
+      "direct_000540_mark_difference": 0.0,
+      "net_path_difference": 0.0,
+      "extra_fees_vs_A": 0.0,
+      "gross_other_holdings_path_difference": 0.0,
+      "explanation": "Gross residual is realized/unrealized market P&L on different holdings and execution paths; fees include frozen slippage. Not a pure mark impairment."
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_HINDSIGHT",
+      "nav_difference_vs_A": -36020.5989720003,
+      "direct_000540_mark_difference": -38773.0,
+      "net_path_difference": 2752.401027999702,
+      "extra_fees_vs_A": 45.75897200000145,
+      "gross_other_holdings_path_difference": 2798.1599999997034,
+      "explanation": "Gross residual is realized/unrealized market P&L on different holdings and execution paths; fees include frozen slippage. Not a pure mark impairment."
+    },
+    {
+      "research_id": "EXTERNAL_FUND_MARK_SENSITIVITY_PUBLICATION_BOUNDED",
+      "nav_difference_vs_A": -39946.44010000001,
+      "direct_000540_mark_difference": -38773.0,
+      "net_path_difference": -1173.440100000007,
+      "extra_fees_vs_A": -20.55989999999929,
+      "gross_other_holdings_path_difference": -1194.0000000000064,
+      "explanation": "Gross residual is realized/unrealized market P&L on different holdings and execution paths; fees include frozen slippage. Not a pure mark impairment."
+    },
+    {
+      "research_id": "ZERO_MARK_STRESS",
+      "nav_difference_vs_A": -50542.33275200019,
+      "direct_000540_mark_difference": -53480.0,
+      "net_path_difference": 2937.6672479998088,
+      "extra_fees_vs_A": 16.392752000000655,
+      "gross_other_holdings_path_difference": 2954.0599999998094,
+      "explanation": "Gross residual is realized/unrealized market P&L on different holdings and execution paths; fees include frozen slippage. Not a pure mark impairment."
+    }
+  ],
+  "budget_timing": "Open uses prior accepted conditional close. B2 May 22 open still uses .40; May 22 close first consumes .11. B1 May 22 open already uses .11."
+}

@@ -43,7 +43,15 @@ ST_EXECUTION_NOTICE_SHA256 = "55f64543cc636130a1befa013868b1a4c37f7f82511bab1642
 ST_EXECUTION_PUBLICATION_DATE = "2023-04-29"
 ST_EXECUTION_KNOWN = "EXECUTION_TIME_STATE_KNOWN"
 _EXECUTION_ST_KEYS = frozenset((ST_EXECUTION_SECURITY, day, "is_st") for day in ST_EXECUTION_DATES)
-_CANDIDATE_KEYS = ALLOWED | _EXECUTION_ST_KEYS
+BOUNDED_ST_DATES = (
+    '2023-05-22', '2023-05-23', '2023-05-24', '2023-05-25', '2023-05-26',
+    '2023-05-29', '2023-05-30', '2023-05-31', '2023-06-01', '2023-06-02',
+    '2023-06-05', '2023-06-06', '2023-06-07', '2023-06-08', '2023-06-09',
+    '2023-06-12', '2023-06-13', '2023-06-14',
+)
+BOUNDED_SUSPENSION_SHA256 = '1f8e3f589eecacbcf6064729e57cc3a6091de160b23996c33c07d56097a197af'
+_BOUNDED_ST_KEYS = frozenset((ST_EXECUTION_SECURITY, day, 'is_st') for day in BOUNDED_ST_DATES)
+_CANDIDATE_KEYS = ALLOWED | _EXECUTION_ST_KEYS | _BOUNDED_ST_KEYS
 
 
 def _same(left, right):
@@ -122,12 +130,14 @@ class MarketEvidence:
         if purpose == "AUDIT":
             return fact
         expected_purpose, expected_knowledge = (
-            ("EXECUTION_STATE", ST_EXECUTION_KNOWN) if key in _EXECUTION_ST_KEYS
+            ("EXECUTION_STATE", ST_EXECUTION_KNOWN) if key in (_EXECUTION_ST_KEYS | _BOUNDED_ST_KEYS)
             else ("SIGNAL_STATE", "SIGNAL_TIME_STATE_KNOWN"))
         if (purpose != expected_purpose or field != "is_st"
                 or fact.known_at_status != expected_knowledge
                 or cutoff is None or timestamp(fact.publication_time) > timestamp(cutoff)):
             fail("evidence cannot authorize requested consumption")
+        if key in _BOUNDED_ST_KEYS and timestamp(cutoff) <= timestamp('2023-05-19T23:59:59.999999+08:00'):
+            fail('bounded suspension not public at consumer cutoff')
         return fact
 
     def carry(self, security, day, *, shares, raw_close, previous_observation):
@@ -199,6 +209,19 @@ def load_sidecar(path, *, source_manifest, originals, documents):
             fail("explicit candidate-only scope and provenance required")
         value, evidence = row["candidate_value"], row["evidence_class"]
         suspension_identity = None
+        if key in _BOUNDED_ST_KEYS:
+            suspension = row['suspension_evidence']
+            suspension_identity = suspension['document_sha256']
+            if (suspension_identity != BOUNDED_SUSPENSION_SHA256
+                    or suspension_identity not in documents
+                    or sha256(documents[suspension_identity]) != suspension_identity
+                    or suspension['security'] != ST_EXECUTION_SECURITY
+                    or suspension['start_date'] != '2023-05-19'
+                    or suspension['end_exclusive'] != '2023-06-15'
+                    or suspension['publication_time'] != '2023-05-19T23:59:59.999999+08:00'
+                    or suspension['verification_status'] != 'DOCUMENT_CONFIRMED'
+                    or timestamp(suspension['publication_time']) > timestamp(key[1])):
+                fail('bounded issuer suspension identity/window differs')
         if key == ("000540.SZ", "2023-05-04", "valuation_mark") or key[0] in SCOPED_SUSPENSIONS:
             start, resume = (("2023-05-04", "2023-05-05") if key[0] == "000540.SZ"
                              else SCOPED_SUSPENSIONS[key[0]][1:3])
@@ -251,7 +274,7 @@ def load_sidecar(path, *, source_manifest, originals, documents):
                 "execution_price_available": "EXECUTION_PRICE_AVAILABLE"}[key[2]]):
             fail("unsupported audit claim")
         known = row["known_at_status"]
-        if key in _EXECUTION_ST_KEYS:
+        if key in (_EXECUTION_ST_KEYS | _BOUNDED_ST_KEYS):
             if (known != ST_EXECUTION_KNOWN or document != ST_EXECUTION_NOTICE_SHA256
                     or timestamp(row["source_publication_time"]) != timestamp(ST_EXECUTION_PUBLICATION_DATE)
                     or row["original_value"] is not None):

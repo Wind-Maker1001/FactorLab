@@ -73,6 +73,27 @@ def load_evidence(args, bars, manifest, payload, documents, sources, observation
             retrospectively_verified_at='2026-11-12', verification_status='DOCUMENT_CONFIRMED',
             consumption_scope='RESEARCH_CANDIDATE_ONLY', limitation='Issuer designation for frozen replay status only'))
 
+    if getattr(args, 'bounded_state', None) is not None:
+        contract = json.loads(args.bounded_state.read_bytes())
+        from factorlab.data.market_evidence_sidecar import BOUNDED_ST_DATES, BOUNDED_SUSPENSION_SHA256
+        notice_bytes = args.suspension_notice.read_bytes()
+        checked(notice_bytes, BOUNDED_SUSPENSION_SHA256)
+        documents[BOUNDED_SUSPENSION_SHA256] = notice_bytes
+        if (contract['schema'] != 'P9_S01B_BOUNDED_STATE_V1'
+                or contract['symbol'] != ST_EXECUTION_SECURITY
+                or contract['dates'] != list(BOUNDED_ST_DATES)):
+            raise SchemaError('BOUNDED_STATE_SCOPE_DRIFT')
+        for day in contract['dates']:
+            payload['candidates'].append(dict(target_security=ST_EXECUTION_SECURITY, target_date=day,
+                field='is_st', original_value=None, candidate_value=True,
+                evidence_class='ISSUER_RISK_DESIGNATION', source_uri=notice['uri'],
+                source_document_sha256=ST_EXECUTION_NOTICE_SHA256,
+                source_publication_time=ST_EXECUTION_PUBLICATION_DATE, known_at_status=ST_EXECUTION_KNOWN,
+                retrospectively_verified_at='2026-11-12', verification_status='DOCUMENT_CONFIRMED',
+                consumption_scope='RESEARCH_CANDIDATE_ONLY',
+                limitation='Bounded suspended security execution state; no price or valuation permission',
+                suspension_evidence=contract['suspension_evidence']))
+
     originals = {}
     for row in payload['candidates']:
         symbol, day, field = row['target_security'], row['target_date'], row['field']

@@ -247,4 +247,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('original', 'study', 'd03', 'd04', 'd05', 'd06', 'evidence-root', 'bigquant-root', 'fund-notice', 'output'):
         parser.add_argument('--'+name, required=True, type=Path)
+    parser.add_argument('--bounded-state', type=Path)
+    parser.add_argument('--suspension-notice', type=Path)
     run(parser.parse_args())
