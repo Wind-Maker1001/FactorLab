@@ -114,6 +114,11 @@ class ExecutionBacktestResult:
     rejections: pd.DataFrame
     signals: pd.DataFrame
     target_comparison: pd.DataFrame = field(default_factory=pd.DataFrame)
+    entitlements: pd.DataFrame = field(default_factory=pd.DataFrame)
+    payments: pd.DataFrame = field(default_factory=pd.DataFrame)
+    recognitions: pd.DataFrame = field(default_factory=pd.DataFrame)
+    return_accounting: pd.DataFrame = field(default_factory=pd.DataFrame)
+    dividend_policy: Optional[str] = None
 
 
 @dataclass
@@ -448,7 +453,7 @@ class AShareExecutionBacktester:
 
         return self._run_selected(selected, prepared_bars, benchmark_data)
 
-    def run_target_weights(self, targets, bars, benchmark):
+    def run_target_weights(self, targets, bars, benchmark, *, dividend_plans=None):
         """Execute complete long-only target snapshots at the next session open.
 
         ``targets`` has date (naive daily signal date), symbol and target_weight.
@@ -456,12 +461,16 @@ class AShareExecutionBacktester:
         No retries or implicit weight renormalization. Buy priority is symbol order.
         Optional optimizer_turnover is the optimizer's gross security-weight change,
         repeated consistently across each snapshot; it is not executed turnover.
+        Optional dividend_plans maps every targeted security to its existing
+        SOFTWARE_ONLY DividendExecutionPlan, including explicit empty coverage.
+        Date-only payments arrive after opening orders, spendable next open.
         """
         selected = self._prepare_targets(targets)
         prepared = _prepare_bars(bars, self.config)
         benchmark_data = _prepare_benchmark(benchmark, self.config.benchmark_open_price_column,
                                             self.config.benchmark_close_price_column)
-        return self._run_selected(selected, prepared, benchmark_data, explicit=True)
+        return self._run_selected(selected, prepared, benchmark_data, explicit=True,
+                                  dividend_plans=dividend_plans)
 
     @staticmethod
     def _prepare_targets(targets):
@@ -499,8 +508,10 @@ class AShareExecutionBacktester:
             raise ConfigurationError("missing target order-size rule for %s" % symbol)
         return rules[key]
 
-    def _run_selected(self, selected, prepared_bars, benchmark_data, *, explicit=False):
-        iterator = self._iterate_selected(selected, prepared_bars, benchmark_data, explicit=explicit)
+    def _run_selected(self, selected, prepared_bars, benchmark_data, *, explicit=False,
+                      dividend_plans=None):
+        iterator = self._iterate_selected(selected, prepared_bars, benchmark_data, explicit=explicit,
+                                          dividend_plans=dividend_plans)
         while True:
             try:
                 next(iterator)
@@ -512,7 +523,8 @@ class AShareExecutionBacktester:
         from .session import ExecutionSession
         return ExecutionSession(self, bars, benchmark, signal_date=signal_date)
 
-    def _iterate_selected(self, selected, prepared_bars, benchmark_data, *, explicit=False, session=None):
+    def _iterate_selected(self, selected, prepared_bars, benchmark_data, *, explicit=False, session=None,
+                          dividend_plans=None):
         calendar = pd.DatetimeIndex(benchmark_data["date"])
         calendar_position = {day: number for number, day in enumerate(calendar)}
         executions: Dict[pd.Timestamp, pd.DataFrame] = {}
@@ -562,13 +574,39 @@ class AShareExecutionBacktester:
         position_rows: List[dict] = []
         comparison_rows = []
 
+        actions = None
+        if dividend_plans is not None:
+            from factorlab.backtest.corporate_actions import DividendExecutionLedger
+            if (self.config.open_price_column != 'raw_open'
+                    or self.config.close_price_column != 'raw_close'):
+                raise SchemaError('dividend execution requires raw_open/raw_close; adjusted prices double-count')
+            if not isinstance(dividend_plans, dict) or set(dividend_plans) != set(selected.symbol):
+                raise SchemaError('dividend plans require exact canonical target security coverage')
+            actions = {symbol: DividendExecutionLedger(plan, symbol, calendar[start_position:])
+                       for symbol, plan in sorted(dividend_plans.items())}
+            event_ids = [event.event_id for action in actions.values() for event in action.events]
+            if len(event_ids) != len(set(event_ids)):
+                raise SchemaError('duplicate dividend event identity across securities')
+
+        def action_balances():
+            return {name: sum(action.balances()[name] for action in actions.values())
+                    for name in ('receivable_gross', 'recognized_receivables', 'restricted_cash', 'tax_accrued')}
+
         scenario = getattr(session, 'scenario_valuation', None)
         for day in calendar[start_position:]:
+            prior_cash = cash
+            if actions is not None:
+                cash += sum(action.before_open(day) for action in actions.values())
+            opening_cash = cash
+            trade_cash_start = cash
+            dividend_assets = (sum(action_balances()[name] for name in
+                                   ('recognized_receivables', 'restricted_cash'))
+                               if actions is not None else 0.0)
             day_bars = prepared_bars.loc[
                 prepared_bars["date"] == day
             ].set_index("symbol", drop=False)
             open_values: Dict[str, float] = {}
-            pretrade_value = cash
+            pretrade_value = cash + dividend_assets
             for symbol in book.symbols():
                 row = day_bars.loc[symbol] if symbol in day_bars.index else None
                 raw_open = (
@@ -718,7 +756,7 @@ class AShareExecutionBacktester:
                     for symbol in book.symbols():
                         if symbol not in open_marks:
                             open_marks[symbol] = float(day_bars.loc[symbol, self.config.open_price_column])
-                    posttrade_value = cash + sum(book.total_shares(symbol) * open_marks[symbol] for symbol in book.symbols())
+                    posttrade_value = cash + dividend_assets + sum(book.total_shares(symbol) * open_marks[symbol] for symbol in book.symbols())
                     for symbol in sorted(comparison_symbols):
                         target_weight = float(order_lookup.loc[symbol, "target_weight"]) if symbol in order_lookup.index else 0.0
                         actual = book.total_shares(symbol) * open_marks.get(symbol, 0.0) / posttrade_value
@@ -728,7 +766,13 @@ class AShareExecutionBacktester:
                             actual_shares=book.total_shares(symbol), actual_weight=actual,
                             weight_deviation=actual-target_weight, valuation="posttrade_open_or_previous_mark"))
 
-            portfolio_value = cash
+            trade_flow = cash - trade_cash_start
+            if actions is not None:
+                cash += sum(action.after_orders(day, book, symbol)
+                            for symbol, action in actions.items())
+                balances = action_balances()
+            portfolio_value = cash + (balances['recognized_receivables'] + balances['restricted_cash']
+                                      if actions is not None else 0.0)
             marks: Dict[str, float] = {}
             for symbol in book.symbols():
                 row = day_bars.loc[symbol] if symbol in day_bars.index else None
@@ -819,12 +863,35 @@ class AShareExecutionBacktester:
                 }
             )
 
+            if actions is not None:
+                unknown_tax = any(action.unknown_tax for action in actions.values())
+                nav_rows[-1].update(balances, opening_available_cash=opening_cash,
+                    available_cash=cash, cash=cash + balances['restricted_cash'],
+                    market_value=sum(book.total_shares(symbol) * marks[symbol] for symbol in book.symbols()),
+                    equity_net=None if unknown_tax else portfolio_value,
+                    equity_before_tax_charges=portfolio_value + balances['tax_accrued'],
+                    trade_cash_flow=trade_flow, dividend_cash_flow=cash - prior_cash - trade_flow,
+                    tax_status='UNKNOWN' if unknown_tax else 'SYNTHETIC_EXPLICIT_OR_NO_ENTITLEMENT')
+
             if session is not None:
                 session._capture(day, book, cash, marks, mark_times, trade_rows, rejection_rows)
                 session._rows = (nav_rows, trade_rows, position_rows, rejection_rows, comparison_rows)
             yield day
 
+        dividend_result = {}
+        if actions is not None:
+            from factorlab.backtest.corporate_actions import dividend_return_accounting
+            for name, attribute in (('entitlements', 'entitlements'), ('payments', 'audit'),
+                                    ('recognitions', 'recognitions')):
+                dividend_result[name] = pd.DataFrame([
+                    dict(row, security_id=symbol)
+                    for symbol, action in actions.items() for row in getattr(action, attribute)])
+            dividend_result['return_accounting'] = dividend_return_accounting(
+                pd.DataFrame(nav_rows), dividend_result['payments'], dividend_result['recognitions'],
+                initial_cash=self.config.initial_cash)
+            dividend_result['dividend_policy'] = 'DATE_ONLY_AFTER_OPEN_ORDERS; AVAILABLE_NEXT_OBSERVED_OPEN'
         return ExecutionBacktestResult(
+            **dividend_result,
             nav=pd.DataFrame(nav_rows),
             target_comparison=pd.DataFrame(comparison_rows),
             trades=_trade_frame(trade_rows),

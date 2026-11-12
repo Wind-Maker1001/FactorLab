@@ -1,0 +1,37 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "code": {
+    "commit": "1aeba4c6552d7a3d6852cdc76ca0d019e56a917a",
+    "tree": "c5f55163260c479fbdb54073d2c2fb2590d3cff6",
+    "git_dirty": false,
+    "git_diff_sha256": null
+  },
+  "environment": {
+    "python_version": "3.13.9",
+    "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "package_versions": {
+      "numpy": "2.3.4",
+      "pandas": "2.3.3",
+      "pyarrow": "22.0.0",
+      "scipy": "1.16.3",
+      "scikit-learn": "1.7.2",
+      "matplotlib": "3.10.7",
+      "akshare": "1.18.88",
+      "baostock": "0.8.9",
+      "lightgbm": "4.6.0",
+      "xgboost": "2.1.4",
+      "PyYAML": "6.0.3",
+      "pytest": "8.4.2",
+      "tzdata": "2026.4"
+    }
+  }
+}

@@ -59,7 +59,18 @@ class DividendExecutionLedger:
     def before_open(self, day):
         delta = Decimal(0)
         for event in self.events:
-            if date(event.pay_date) < day and event.event_id not in self.paid:
+            key = event.event_id
+            if day == date(event.effective_date):
+                gross = self.eligible[key]
+                rate = self.rates[key]
+                net = _dividend_amounts(gross, rate)
+                recognized = gross if net is None else net
+                self.tax_accrued += gross - recognized
+                self.unknown_tax |= rate is None and gross != 0
+                self.receivables[key] = (gross, recognized)
+                self.recognitions.append(dict(event_id=key, effective_date=day, gross=gross,
+                                              net=net, recognized=recognized))
+            if date(event.pay_date) < day and key not in self.paid:
                 delta += self._pay(event, day, "BEFORE_OPEN_AFTER_ACTUAL_PAY_DATE")
         return float(delta)
 
@@ -78,16 +89,6 @@ class DividendExecutionLedger:
                     gross=self.eligible[key], lots=book.lot_snapshot(symbol),
                     position_source="PositionBook AFTER_OPEN_FILLS AT_RECORD_CLOSE",
                     source_id=event.source_id, source_sha256=event.source_sha256))
-            if day == date(event.effective_date):
-                gross = self.eligible[key]
-                rate = self.rates[key]
-                net = _dividend_amounts(gross, rate)
-                recognized = gross if net is None else net
-                self.tax_accrued += gross - recognized
-                self.unknown_tax |= rate is None and gross != 0
-                self.receivables[key] = (gross, recognized)
-                self.recognitions.append(dict(event_id=key, effective_date=day, gross=gross,
-                                              net=net, recognized=recognized))
             if day == date(event.pay_date):
                 delta += self._pay(event, day, "AFTER_OPEN_ORDERS")
         return float(delta)

@@ -1,0 +1,120 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "table": {
+    "schema": {
+      "fields": [
+        {
+          "name": "index",
+          "type": "integer"
+        },
+        {
+          "name": "event_id",
+          "type": "string"
+        },
+        {
+          "name": "actual_date",
+          "type": "datetime"
+        },
+        {
+          "name": "observed_on",
+          "type": "datetime"
+        },
+        {
+          "name": "phase",
+          "type": "string"
+        },
+        {
+          "name": "gross",
+          "type": "string"
+        },
+        {
+          "name": "net",
+          "type": "string"
+        },
+        {
+          "name": "available_cash_delta",
+          "type": "string"
+        },
+        {
+          "name": "restricted_cash_delta",
+          "type": "string"
+        },
+        {
+          "name": "tax_status",
+          "type": "string"
+        },
+        {
+          "name": "security_id",
+          "type": "string"
+        }
+      ],
+      "primaryKey": [
+        "index"
+      ],
+      "pandas_version": "1.4.0"
+    },
+    "data": [
+      {
+        "index": 0,
+        "event_id": "fixture-a",
+        "actual_date": "2024-01-12T00:00:00.000",
+        "observed_on": "2024-01-12T00:00:00.000",
+        "phase": "AFTER_OPEN_ORDERS",
+        "gross": 5000.0,
+        "net": 5000.0,
+        "available_cash_delta": 5000.0,
+        "restricted_cash_delta": 0.0,
+        "tax_status": "SYNTHETIC_EXPLICIT",
+        "security_id": "990001.SH"
+      },
+      {
+        "index": 1,
+        "event_id": "fixture-b2",
+        "actual_date": "2024-01-12T00:00:00.000",
+        "observed_on": "2024-01-12T00:00:00.000",
+        "phase": "AFTER_OPEN_ORDERS",
+        "gross": 800.0,
+        "net": 800.0,
+        "available_cash_delta": 800.0,
+        "restricted_cash_delta": 0.0,
+        "tax_status": "SYNTHETIC_EXPLICIT",
+        "security_id": "990002.SH"
+      },
+      {
+        "index": 2,
+        "event_id": "fixture-b",
+        "actual_date": "2024-01-16T00:00:00.000",
+        "observed_on": "2024-01-16T00:00:00.000",
+        "phase": "AFTER_OPEN_ORDERS",
+        "gross": 4000.0,
+        "net": 4000.0,
+        "available_cash_delta": 4000.0,
+        "restricted_cash_delta": 0.0,
+        "tax_status": "SYNTHETIC_EXPLICIT",
+        "security_id": "990002.SH"
+      },
+      {
+        "index": 3,
+        "event_id": "fixture-no-position",
+        "actual_date": "2024-01-12T00:00:00.000",
+        "observed_on": "2024-01-12T00:00:00.000",
+        "phase": "AFTER_OPEN_ORDERS",
+        "gross": 0.0,
+        "net": 0.0,
+        "available_cash_delta": 0.0,
+        "restricted_cash_delta": 0.0,
+        "tax_status": "SYNTHETIC_EXPLICIT",
+        "security_id": "990003.SH"
+      }
+    ]
+  },
+  "sha256": "9d37470b28fa5565967bbf7b768769049eb6710d0a56f83580bc2cd2cdcf3698"
+}

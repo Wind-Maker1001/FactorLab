@@ -1,0 +1,143 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "table": {
+    "schema": {
+      "fields": [
+        {
+          "name": "index",
+          "type": "integer"
+        },
+        {
+          "name": "event_id",
+          "type": "string"
+        },
+        {
+          "name": "revision",
+          "type": "integer"
+        },
+        {
+          "name": "record_date",
+          "type": "datetime"
+        },
+        {
+          "name": "eligible_shares",
+          "type": "integer"
+        },
+        {
+          "name": "cash_per_share",
+          "type": "string"
+        },
+        {
+          "name": "gross",
+          "type": "string"
+        },
+        {
+          "name": "lots",
+          "type": "string"
+        },
+        {
+          "name": "position_source",
+          "type": "string"
+        },
+        {
+          "name": "source_id",
+          "type": "string"
+        },
+        {
+          "name": "source_sha256",
+          "type": "string"
+        },
+        {
+          "name": "security_id",
+          "type": "string"
+        }
+      ],
+      "primaryKey": [
+        "index"
+      ],
+      "pandas_version": "1.4.0"
+    },
+    "data": [
+      {
+        "index": 0,
+        "event_id": "fixture-a",
+        "revision": 2,
+        "record_date": "2024-01-04T00:00:00.000",
+        "eligible_shares": 500,
+        "cash_per_share": 10.0,
+        "gross": 5000.0,
+        "lots": [
+          [
+            "2024-01-03T00:00:00.000",
+            500
+          ]
+        ],
+        "position_source": "PositionBook AFTER_OPEN_FILLS AT_RECORD_CLOSE",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "security_id": "990001.SH"
+      },
+      {
+        "index": 1,
+        "event_id": "fixture-b",
+        "revision": 2,
+        "record_date": "2024-01-08T00:00:00.000",
+        "eligible_shares": 400,
+        "cash_per_share": 10.0,
+        "gross": 4000.0,
+        "lots": [
+          [
+            "2024-01-03T00:00:00.000",
+            400
+          ]
+        ],
+        "position_source": "PositionBook AFTER_OPEN_FILLS AT_RECORD_CLOSE",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "security_id": "990002.SH"
+      },
+      {
+        "index": 2,
+        "event_id": "fixture-b2",
+        "revision": 2,
+        "record_date": "2024-01-09T00:00:00.000",
+        "eligible_shares": 400,
+        "cash_per_share": 2.0,
+        "gross": 800.0,
+        "lots": [
+          [
+            "2024-01-03T00:00:00.000",
+            400
+          ]
+        ],
+        "position_source": "PositionBook AFTER_OPEN_FILLS AT_RECORD_CLOSE",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "security_id": "990002.SH"
+      },
+      {
+        "index": 3,
+        "event_id": "fixture-no-position",
+        "revision": 2,
+        "record_date": "2024-01-04T00:00:00.000",
+        "eligible_shares": 0,
+        "cash_per_share": 3.0,
+        "gross": 0.0,
+        "lots": [],
+        "position_source": "PositionBook AFTER_OPEN_FILLS AT_RECORD_CLOSE",
+        "source_id": "SYNTHETIC_FIXTURE_SOURCE",
+        "source_sha256": "e3649a27486852da4d7e36373b7e369fd9d0cd961365cf802d9bb5ae28bdef2f",
+        "security_id": "990003.SH"
+      }
+    ]
+  },
+  "sha256": "510ef479c154659355bf011da85b989cc2b3905cb4275b8afed513ed8957c2a9"
+}

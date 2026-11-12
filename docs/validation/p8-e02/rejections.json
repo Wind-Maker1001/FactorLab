@@ -1,0 +1,112 @@
+{
+  "labels": [
+    "SYNTHETIC",
+    "ENGINEERING_ONLY",
+    "NOT_FINANCIAL_EVIDENCE",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "table": {
+    "schema": {
+      "fields": [
+        {
+          "name": "index",
+          "type": "integer"
+        },
+        {
+          "name": "signal_date",
+          "type": "datetime"
+        },
+        {
+          "name": "execution_date",
+          "type": "datetime"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "side",
+          "type": "string"
+        },
+        {
+          "name": "score",
+          "type": "number"
+        },
+        {
+          "name": "rank",
+          "type": "integer"
+        },
+        {
+          "name": "requested_shares",
+          "type": "integer"
+        },
+        {
+          "name": "rejected_shares",
+          "type": "integer"
+        },
+        {
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "primaryKey": [
+        "index"
+      ],
+      "pandas_version": "1.4.0"
+    },
+    "data": [
+      {
+        "index": 0,
+        "signal_date": "2024-01-05T00:00:00.000",
+        "execution_date": "2024-01-08T00:00:00.000",
+        "symbol": "990001.SH",
+        "side": "sell",
+        "score": null,
+        "rank": 1,
+        "requested_shares": 500,
+        "rejected_shares": 500,
+        "reason": "sell_price_limit"
+      },
+      {
+        "index": 1,
+        "signal_date": "2024-01-05T00:00:00.000",
+        "execution_date": "2024-01-08T00:00:00.000",
+        "symbol": "990002.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 2,
+        "requested_shares": 500,
+        "rejected_shares": 500,
+        "reason": "cash_constraint"
+      },
+      {
+        "index": 2,
+        "signal_date": "2024-01-10T00:00:00.000",
+        "execution_date": "2024-01-11T00:00:00.000",
+        "symbol": "990002.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 2,
+        "requested_shares": 700,
+        "rejected_shares": 100,
+        "reason": "cash_constraint"
+      },
+      {
+        "index": 3,
+        "signal_date": "2024-01-12T00:00:00.000",
+        "execution_date": "2024-01-15T00:00:00.000",
+        "symbol": "990002.SH",
+        "side": "buy",
+        "score": null,
+        "rank": 2,
+        "requested_shares": 100,
+        "rejected_shares": 100,
+        "reason": "cash_constraint"
+      }
+    ]
+  },
+  "sha256": "1a127e01ca4207a346d4c0d0a4d01422bd33fa346353224887e324ded025e690"
+}
