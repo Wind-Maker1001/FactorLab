@@ -14,7 +14,7 @@ from factorlab.integrations.binance_equity.client import Response
 from factorlab.integrations.binance_equity_trading.protocol import Rules, Unavailable
 from factorlab.integrations.binance_futures_trading.fake import synthetic_rules
 from factorlab.integrations.binance_futures_trading.protocol import (
-    Credentials, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked, OfflineTransport,
+    Credentials, Environment, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked, OfflineTransport,
 )
 
 NOW = datetime(2026, 11, 12, tzinfo=timezone.utc)
@@ -123,9 +123,11 @@ def test_real_mutations_blocked_before_network(monkeypatch, method, path):
     def forbidden(*_):
         pytest.fail('real network opener must never be constructed')
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener', forbidden)
-    client = FuturesClient(Credentials('offline-key', 'offline-secret'),
-                           transport=ReadOnlyNetworkTransport(permit_account_read=True))
-    with pytest.raises(SafetyBlocked):
+    client = FuturesClient(Credentials('offline-key', 'offline-secret', Environment.PRODUCTION),
+        environment=Environment.PRODUCTION,
+        transport=ReadOnlyNetworkTransport(environment=Environment.PRODUCTION, permit_account_read=True))
+    reason = 'endpoint is not allowlisted' if method == 'GET' else 'NO LIVE MONEY: all real trading requests forbidden'
+    with pytest.raises(SafetyBlocked, match=reason):
         client.request(method, path)
 
 

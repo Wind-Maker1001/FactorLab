@@ -13,7 +13,7 @@ from factorlab.trading.control import RiskRejected
 from factorlab.trading.realtime_service import observe
 from factorlab.trading.storage import PaperStore
 from factorlab.integrations.binance_futures_trading.market import parse
-from factorlab.integrations.binance_futures_trading.protocol import FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked
+from factorlab.integrations.binance_futures_trading.protocol import Environment, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked
 from factorlab.integrations.binance_equity_trading.protocol import Unavailable
 
 NOW = datetime(2026, 11, 12, 12, tzinfo=timezone.utc)
@@ -182,10 +182,14 @@ def test_public_parser_and_equity_identity():
     assert rows[0]['kind'] == 'quote' and rows[0]['symbol'] == 'NVDA'
 
 
-def test_real_trade_paths_blocked():
-    c = FuturesClient(transport=ReadOnlyNetworkTransport(permit_account_read=True))
+def test_real_trade_paths_blocked(monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail('real network opener must never be constructed')
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener', forbidden)
+    c = FuturesClient(environment=Environment.PRODUCTION,
+        transport=ReadOnlyNetworkTransport(environment=Environment.PRODUCTION, permit_account_read=True))
     for method in ['POST', 'DELETE']:
-        with pytest.raises(SafetyBlocked):
+        with pytest.raises(SafetyBlocked, match='NO LIVE MONEY: all real trading requests forbidden'):
             c.request(method, '/fapi/v1/order')
 
 

@@ -44,6 +44,7 @@ def test_environment_routes_key_and_disallows_writes(monkeypatch, environment):
 def test_mismatched_credentials_rejected_before_network():
     demo = ReadOnlyNetworkTransport(environment=Environment.DEMO, permit_account_read=True)
     for credentials, environment in (
+        (Credentials('k', 's', Environment.DEMO), None),
         (Credentials('k', 's', Environment.PRODUCTION), Environment.DEMO),
         (Credentials('k', 's'), Environment.DEMO),
         (Credentials('k', 's', Environment.DEMO), Environment.PRODUCTION),
