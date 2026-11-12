@@ -8,7 +8,7 @@ import sqlite3
 
 from factorlab.integrations.binance_equity.market import stream_rows
 from factorlab.integrations.binance_equity_trading.protocol import Rules, Session, StockOrder, admit, fresh, Unavailable
-from factorlab.integrations.binance_futures_trading.rules import RuleObservation
+from factorlab.integrations.binance_futures_trading.rules import RuleObservation, market_quantity_constraints
 from .contracts import Market, OrderIntent, OrderType, Side, TERMINAL, SAFETY_LABELS, utc
 from .control import RiskLimits, TradingController, RiskRejected
 from .paper import Instrument, PaperBroker, Quote
@@ -46,7 +46,7 @@ class RealtimeAccount:
     def __init__(self, path, market, *, clock=lambda: datetime.now(timezone.utc),
                  quantity=D('0.1'), threshold=D('0.001'), participation=D('0.1'),
                  slippage=D('0.0001'), limits=None, data_mode='offline',
-                 simulation_policy=None, acceptance_signal=False, fee_rate=D('0.001')):
+                 simulation_policy=None, acceptance_signal=False, fee_rate=D('0.001'), strategy=None):
         if simulation_policy is not None and type(simulation_policy) is not PaperSimulationPolicy:
             raise ValueError('only PAPER_SIMULATION is supported by the paper runner')
         if acceptance_signal and simulation_policy is None:
@@ -61,6 +61,9 @@ class RealtimeAccount:
             raise ValueError('unknown market-data mode')
         self.market, self.clock = Market(market), clock
         self.symbol, currency = ('NVDAUSDT', 'USDT') if self.market == Market.BINANCE_USDM else ('NVDA', 'USD')
+        self.strategy = strategy
+        if strategy is not None and (self.market != Market.BINANCE_USDM or acceptance_signal):
+            raise ValueError('bar strategies require futures and no acceptance signal')
         configured_limits = limits or RiskLimits(D('100'), D('500'), D('800'), 10)
         self.configuration = dict(quantity=quantity, threshold=threshold, participation=participation,
                                   slippage=slippage, data_mode=data_mode, limits=asdict(configured_limits))
@@ -69,6 +72,11 @@ class RealtimeAccount:
                 acceptance_signal=acceptance_signal, fee_rate=fee_rate)
         elif fee_rate != D('0.001'):
             raise ValueError('custom synthetic fees require PAPER_SIMULATION')
+        if strategy is not None:
+            deployment = strategy.describe()
+            if deployment['symbol'] != self.symbol or deployment.get('market', self.market.value) != self.market.value:
+                raise ValueError('strategy market or instrument mismatch')
+            self.configuration['strategy'] = deployment
         self.store = PaperStore(path)
         def validate_restore(restored):
             if not restored.runtime or restored.runtime.get('checkpoint') != checkpoint(restored):
@@ -213,10 +221,16 @@ class RealtimeAccount:
                     raise Unavailable('UNKNOWN_ACCOUNT_RISK_BRACKETS')
                 observation = RuleObservation.from_exchange(rules['payload']['symbol'], rules['payload']['bracket'],
                     rules['received'], rules['source'])
-            account = self.controller.account()
+            remaining = None
+            if filling:
+                order = self.state.orders[intent.client_order_id].snapshot
+                remaining = intent.quantity - order.cumulative_filled_quantity
+            account = self.controller.broker.read_account(
+                exclude_order_id=intent.client_order_id if filling else None)
             decision = observation.validate(intent, mark_price=D(mark['price']), leverage=1,
                 available_margin=account.assets[0].available,
-                current_notional=sum((abs(p.quantity) * D(mark['price']) for p in account.positions), D(0)), now=now)
+                current_notional=sum((abs(p.quantity) * D(mark['price']) for p in account.positions), D(0)),
+                now=now, remaining_quantity=remaining)
             if not decision.approved:
                 raise Unavailable(decision.reason)
 
@@ -234,13 +248,12 @@ class RealtimeAccount:
                 raise Unavailable('EXISTING_ORDER_QUERY_ONLY')
             return self.state.confirmations[intent.client_order_id]
         self._admit(intent)
-        decision = self.controller.assess(intent)
-        self.state.runtime['last_risk'] = dict(simulated=True, **asdict(decision))
-        if not decision.approved:
-            raise RiskRejected(decision)
-        now = self.clock()
-        self.state.submissions = [t for t in self.state.submissions if now - t < timedelta(minutes=1)] + [now]
-        event = self.controller.broker.submit_order(intent)
+        try:
+            event = self.controller._submit_in_transaction(intent)
+        except RiskRejected as error:
+            self.state.runtime['last_risk'] = dict(simulated=True, **asdict(error.decision))
+            raise
+        self.state.runtime['last_risk'] = dict(simulated=True, approved=True, reason='APPROVED')
         self.state.runtime['orders'] += 1
         return event
 
@@ -322,6 +335,111 @@ class RealtimeAccount:
         self._verified_observations.pop('session', None)
         return True
 
+    def closed_bar(self, bar):
+        """Record a confirmed bar, never use its OHLC as executable liquidity."""
+        from .strategy import ClosedBar
+        if not isinstance(bar, ClosedBar) or self.strategy is None:
+            raise ValueError('configured strategy and ClosedBar required')
+        if bar.symbol != self.symbol or bar.closed_at > self.clock():
+            raise ValueError('future or wrong instrument bar')
+        if not bar.complete:
+            return False
+        def operation():
+            runtime = self.state.runtime
+            saved = runtime.setdefault('strategy_bars', [])
+            value = asdict(bar)
+            if saved:
+                previous = saved[-1]
+                if bar.closed_at < previous['closed_at']:
+                    return False
+                if bar.closed_at == previous['closed_at']:
+                    if previous != value:
+                        raise PersistenceConflict('closed bar identity conflict')
+                    return False
+                if bar.opened_at != previous['closed_at']:
+                    runtime.update(status='PAUSED', reason='BAR_SEQUENCE_GAP')
+                    return False
+            saved.append(value)
+            del saved[:-self.strategy.history_limit]
+            if runtime['status'] != 'RUNNING':
+                return True
+            signal = self.strategy.signal([ClosedBar(**v) for v in saved], self.clock())
+            runtime['last_strategy_signal'] = asdict(signal)
+            runtime['pending_strategy_signal'] = None
+            if signal.status == 'SIGNAL' and signal.direction != 'HOLD':
+                runtime['signals'] += 1
+                runtime['pending_strategy_signal'] = asdict(signal)
+            self.store.record_metadata('signal:' + signal.signal_id, dict(kind='STRATEGY_SIGNAL', **asdict(signal)))
+            return True
+        return self._change(operation)
+
+    def _strategy_order(self, source, price):
+        runtime = self.state.runtime
+        signal = runtime.get('pending_strategy_signal')
+        if signal is None or source <= signal['input_watermark'] or source < signal['generated_at']:
+            return
+        if source >= signal['input_watermark'] + timedelta(seconds=self.strategy.describe()['interval_seconds']):
+            runtime.update(pending_strategy_signal=None, last_rejection='SIGNAL_EXPIRED')
+            return
+        if not self.state.reconciled or any(r.snapshot.reconcile_required for r in self.state.orders.values()):
+            runtime['last_rejection'] = 'RECONCILE_REQUIRED'
+            return
+        # A single target is planned only after all prior orders are terminal.
+        # This also prevents a partially filled order from being sized twice.
+        if any(r.snapshot.status not in TERMINAL for r in self.state.orders.values()):
+            runtime['last_rejection'] = 'OUTSTANDING_ORDER'
+            return
+        rules = runtime['rules']
+        if rules is None:
+            runtime['last_rejection'] = 'UNKNOWN_RULES'
+            return
+        filters = {f['filterType']: f for f in rules['payload']['symbol']['filters']}
+        try:
+            step, min_quantity, max_quantity = market_quantity_constraints(rules['payload']['symbol'])
+        except Unavailable as error:
+            runtime['last_rejection'] = str(error)
+            return
+        account = self.controller.account()
+        asset = account.assets[0]
+        position = self.state.positions.get(self.symbol)
+        current = D(0) if position is None else position.quantity
+        # Full-collateral paper equity, including marked unrealized P/L.
+        equity = asset.total + sum((p.quantity * (p.mark_price - p.entry_price)
+            for p in account.positions), D(0))
+        target = max(D(0), equity) * signal['target_weight'] / (price * (1 + self.state.fee_rate))
+        if step:
+            target = (target // step) * step
+        delta = target - current
+        runtime['target_position'] = dict(signal_id=signal['signal_id'], quantity=target,
+            current=current, weight=signal['target_weight'], price=price)
+        runtime['pending_strategy_signal'] = None
+        if not delta:
+            runtime['last_signal'] = 'TARGET_ALREADY_MET'
+            return
+        quantity = abs(delta)
+        reducing = current > 0 and delta < 0 and quantity <= current
+        minimum = D(filters.get('MIN_NOTIONAL', {}).get('notional', '0'))
+        if (quantity < min_quantity or quantity > max_quantity
+                or not reducing and quantity * price < minimum):
+            runtime['rejected'] += 1
+            runtime['last_rejection'] = 'TARGET_ORDER_FILTER'
+            self.store.record_metadata('target:' + signal['signal_id'], dict(kind='TARGET_REJECTED',
+                signal_id=signal['signal_id'], reason='TARGET_ORDER_FILTER', quantity=quantity))
+            return
+        order_id = 'sg' + identity((self.configuration['strategy'], signal['signal_id']))[:30]
+        intent = OrderIntent(self.market, self.symbol, Side.BUY if delta > 0 else Side.SELL,
+            OrderType.MARKET, quantity, None, order_id, reduce_only=reducing)
+        try:
+            self._submit(intent)
+            runtime['last_strategy_order'] = dict(signal_id=signal['signal_id'], client_order_id=order_id)
+            outcome = dict(kind='TARGET_ORDER', signal_id=signal['signal_id'], client_order_id=order_id,
+                target_position=target, quantity=quantity)
+        except (Unavailable, RiskRejected) as error:
+            runtime['rejected'] += 1
+            runtime['last_rejection'] = str(error) if isinstance(error, Unavailable) else error.decision.reason
+            outcome = dict(kind='TARGET_REJECTED', signal_id=signal['signal_id'], reason=runtime['last_rejection'])
+        self.store.record_metadata('target:' + signal['signal_id'], outcome)
+
     def event(self, value):
         """Consume normalized replay/public data; never accepts broker execution messages."""
         value = deepcopy(value)
@@ -398,6 +516,9 @@ class RealtimeAccount:
             if runtime['status'] != 'RUNNING':
                 return True
             self._fills(source, price, bid, size)
+            if self.strategy is not None:
+                self._strategy_order(source, price)
+                return True
             previous_price = runtime['previous']
             runtime['previous'] = price
             first_quote = runtime.setdefault('first_signal_quote', source)
@@ -459,6 +580,8 @@ class RealtimeAccount:
             # Partial stock execution respects the observed fractional share step.
             rules = self.state.runtime['rules']['payload']
             step = Rules.from_exchange_info(rules).step if self.market == Market.BINANCE_EQUITY else D(0)
+            if self.strategy is not None:
+                step, _, _ = market_quantity_constraints(rules['symbol'])
             if step:
                 quantity = (quantity // step) * step
             if not quantity:

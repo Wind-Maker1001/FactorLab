@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
+from math import lcm
 import re
 
 from factorlab.integrations.binance.market import _decimal, symbol_name
@@ -10,6 +11,27 @@ from factorlab.trading.contracts import utc
 from factorlab.integrations.binance_equity_trading.protocol import Unavailable
 
 D = _decimal
+
+
+def market_quantity_constraints(symbol_info):
+    """Return the common market-order quantity grid and intersected bounds."""
+    filters = {f['filterType']: f for f in symbol_info.get('filters', ())}
+    lots = [filters.get(name) for name in ('LOT_SIZE', 'MARKET_LOT_SIZE')]
+    if any(f is None or any(f.get(k) is None for k in ('stepSize', 'minQty', 'maxQty'))
+           for f in lots):
+        raise Unavailable('UNKNOWN_QUANTITY_RULE')
+    steps = [D(f['stepSize']) for f in lots if D(f['stepSize']) > 0]
+    step = Decimal(0)
+    if steps:
+        exponent = min(s.as_tuple().exponent for s in steps)
+        integers = []
+        for value in steps:
+            parts = value.as_tuple()
+            coefficient = int(''.join(map(str, parts.digits)))
+            integers.append(coefficient * 10 ** (parts.exponent - exponent))
+        common = lcm(*integers)
+        step = Decimal((0, tuple(map(int, str(common))), exponent))
+    return step, max(D(f['minQty']) for f in lots), min(D(f['maxQty']) for f in lots)
 
 
 @dataclass(frozen=True)
@@ -38,7 +60,7 @@ class RuleObservation:
                    None if 'orderTypes' not in symbol_info else tuple(symbol_info['orderTypes']))
 
     def validate(self, intent, *, mark_price, leverage, available_margin, current_notional,
-                 now, max_leverage=1, max_age_seconds=300):
+                 now, max_leverage=1, max_age_seconds=300, remaining_quantity=None):
         utc(now)
         snapshot = {'source_version': self.source_version, 'observed_at': self.observed_at.isoformat(),
                     'historical': False, 'max_leverage': max_leverage}
@@ -84,11 +106,12 @@ class RuleObservation:
             return decision('UNKNOWN_NOTIONAL_RULE')
         if not intent.reduce_only and notional < D(minimum['notional']):
             return decision('MIN_NOTIONAL')
-        projected = max(Decimal('0'), current_notional - notional) if intent.reduce_only else current_notional + notional
+        risk_notional = (intent.quantity if remaining_quantity is None else remaining_quantity) * (intent.limit_price or mark_price)
+        projected = max(Decimal('0'), current_notional - risk_notional) if intent.reduce_only else current_notional + risk_notional
         bracket = next((b for b in self.brackets if D(b['notionalFloor']) <= projected < D(b['notionalCap'])), None)
         if bracket is None or leverage > int(bracket['initialLeverage']):
             return decision('RISK_BRACKET_LIMIT')
-        if not intent.reduce_only and notional / leverage > available_margin:
+        if not intent.reduce_only and risk_notional / leverage > available_margin:
             return decision('INSUFFICIENT_MARGIN')
         return decision('APPROVED')
 

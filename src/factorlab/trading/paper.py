@@ -197,7 +197,8 @@ class PaperBroker:
         self.state.orders[order_id] = unknown(self.state.orders[order_id])
         self.state.reconciled = False
 
-    def read_account(self) -> AccountSnapshot:
+    def read_account(self, *, exclude_order_id=None) -> AccountSnapshot:
+        """Project collateral; fill admission may release its own pending reservation."""
         reserved = {currency: ZERO for currency in self.state.cash}
         if self.state.market == Market.BINANCE_USDM:
             for position in self.state.positions.values():
@@ -205,7 +206,7 @@ class PaperBroker:
         closable = {symbol: abs(p.quantity) for symbol, p in self.state.positions.items()}
         for record in self.state.orders.values():
             order = record.snapshot
-            if order.status in TERMINAL:
+            if order.status in TERMINAL or order.intent.client_order_id == exclude_order_id:
                 continue
             intent = order.intent
             symbol = intent.instrument_id
@@ -223,7 +224,8 @@ class PaperBroker:
         return AccountSnapshot(self.state.market, self.state.account_id,
             tuple(AssetBalance(c, total, reserved[c]) for c, total in sorted(self.state.cash.items())),
             tuple(self.state.positions[k] for k in sorted(self.state.positions)),
-            tuple(r.snapshot for r in self.state.orders.values() if r.snapshot.status not in TERMINAL),
+            tuple(r.snapshot for r in self.state.orders.values() if r.snapshot.status not in TERMINAL
+                  and r.snapshot.intent.client_order_id != exclude_order_id),
             self.clock(), self.state.reconciled)
 
     def is_reduction(self, intent: OrderIntent, *, include_pending: bool = True) -> bool:

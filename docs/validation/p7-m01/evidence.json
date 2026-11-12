@@ -1,0 +1,3249 @@
+{
+  "source": "BINANCE_USDM_PUBLIC_REST",
+  "data_version": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+  "bars": 2160,
+  "data_authenticity": "REAL_BINANCE_HISTORY / HYPOTHETICAL_PAPER_EXECUTION",
+  "boundaries": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "research": {
+    "contract": {
+      "features": [
+        {
+          "column": "return_1",
+          "kind": "return",
+          "lookback": 1
+        },
+        {
+          "column": "mean_return_6",
+          "kind": "mean_return",
+          "lookback": 6
+        },
+        {
+          "column": "volatility_24",
+          "kind": "volatility",
+          "lookback": 24
+        }
+      ],
+      "label": "NEXT_OPEN_TO_FOLLOWING_OPEN_1H",
+      "split": "chronological_60_20_20_boundaries_ceiled_to_UTC_day",
+      "purge": "label_exit_strictly_before_next_signal",
+      "validation_start": "2026-10-06T00:00:00+00:00",
+      "test_start": "2026-10-24T00:00:00+00:00",
+      "train_last_exit": "2026-10-05T23:00:00+00:00",
+      "params": {
+        "alpha": 1.0,
+        "fit_intercept": true,
+        "max_iter": 10000,
+        "tolerance": 0.0001
+      },
+      "seed": 42,
+      "threshold": {
+        "long": 0.0001,
+        "exit": -0.0001
+      },
+      "target_weight": ".05"
+    },
+    "quality": {
+      "train": {
+        "rows": 1294,
+        "rmse": 0.0032253544215265473,
+        "mae": 0.0017811255961071256,
+        "directional_accuracy": 0.509273570324575,
+        "zero_return_rmse": 0.0032303514012377737
+      },
+      "validation": {
+        "rows": 431,
+        "rmse": 0.0034454539224315454,
+        "mae": 0.002211678691916478,
+        "directional_accuracy": 0.5034802784222738,
+        "zero_return_rmse": 0.0034489114139887728
+      },
+      "test": {
+        "rows": 407,
+        "rmse": 0.005560160073075711,
+        "mae": 0.0033144055991686564,
+        "directional_accuracy": 0.4520884520884521,
+        "zero_return_rmse": 0.005540265545786952
+      }
+    },
+    "bundle": {
+      "bundle_format_version": 2,
+      "model_name": "ridge",
+      "model_version": "fixed-ridge-v1",
+      "model_type": "factorlab.models.ridge.RidgeResearchModel",
+      "feature_names": [
+        "return_1",
+        "mean_return_6",
+        "volatility_24"
+      ],
+      "target": "target",
+      "training_asof": "2026-10-05",
+      "max_label_exit_date": "2026-10-05",
+      "source_dataset_sha256": "562ba9e01c2ca050132a10519b3b514112b2f36e7837ffa838a72ce9bf00b7b4",
+      "source_sha256": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+      "universe_version": "0cd1e422cb9dd13338c63090c034c4590a72f9046a08c72d26367253baeebe49",
+      "research_contract_sha256": "d7b3646931af05326e9fccb533e067d49e296c3e5122186130c37da5b3a5ea55",
+      "git_commit": "fc0fa9412af6f3fa33765b10476213ad7a784941",
+      "seed": 42,
+      "parameters": {
+        "alpha": 1.0,
+        "fit_intercept": true,
+        "max_iter": 10000,
+        "tolerance": 0.0001
+      },
+      "training_rows": 1294,
+      "frozen_at": "2026-11-12T11:24:12.963755Z",
+      "metadata_sha256": "fe5b3ac03d75fd5ffe80891bd8ddc7219c3454cb746bdc7543228daee4f6c53d",
+      "model_sha256": "76708d635fc9cd878e52078ec008d682310fca6072d27c423945f70f856a4932",
+      "content_sha256": "c4fd343330624fccc9cefff11f3ef5c98d88e690566a1a8d9931fd42d3e320eb"
+    }
+  },
+  "hourly_dual_ma": {
+    "signals": 27,
+    "orders": 27,
+    "fills": 27,
+    "rejected": 0,
+    "final_equity": "996.85215286763000",
+    "paper_return": -0.00314784713237,
+    "account": {
+      "market": "BINANCE_USDM",
+      "account_id": "realtime-USDT",
+      "assets": [
+        {
+          "currency": "USDT",
+          "total": "996.85698532763000",
+          "reserved": "48.32943246000"
+        }
+      ],
+      "positions": [
+        {
+          "instrument_id": "NVDAUSDT",
+          "quantity": "0.27",
+          "entry_price": "178.997898000",
+          "mark_price": "178.98000",
+          "quote_currency": "USDT"
+        }
+      ],
+      "open_orders": [],
+      "observed_at": "2026-11-09 23:00:00.002000+00:00",
+      "reconciled": true
+    },
+    "order_records": [
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgf16360a0325556dad337e0be35be6d",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04864986450000",
+          "exchange_order_id": "paper:sgf16360a0325556dad337e0be35be6d",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-24 15:00:00.002000+00:00",
+        "reservation_price": "211.50000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg60557b740c46d0ff1e8ad7dc499494",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04863553596000",
+          "exchange_order_id": "paper:sg60557b740c46d0ff1e8ad7dc499494",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-24 18:00:00.002000+00:00",
+        "reservation_price": "211.48000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg1c9d9ffb6595ce301e0bf2a90d7152",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04875337485000",
+          "exchange_order_id": "paper:sg1c9d9ffb6595ce301e0bf2a90d7152",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-24 19:00:00.002000+00:00",
+        "reservation_price": "211.95000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg563fccb3ef2e3347d87377b21cd4cc",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04885631388000",
+          "exchange_order_id": "paper:sg563fccb3ef2e3347d87377b21cd4cc",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-25 12:00:00.002000+00:00",
+        "reservation_price": "212.44000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg9fb30ca545ea4dce516efde04ee20f",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04897649716000",
+          "exchange_order_id": "paper:sg9fb30ca545ea4dce516efde04ee20f",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-25 15:00:00.002000+00:00",
+        "reservation_price": "212.92000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgbdbb9c88d38b96c880d2553c3d105f",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04869073044000",
+          "exchange_order_id": "paper:sgbdbb9c88d38b96c880d2553c3d105f",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 03:00:00.002000+00:00",
+        "reservation_price": "211.72000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgf63c682fd161f71143e6fbb39722f4",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04908690820000",
+          "exchange_order_id": "paper:sgf63c682fd161f71143e6fbb39722f4",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 13:00:00.002000+00:00",
+        "reservation_price": "213.40000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgf6e0cd12f4505893adb617280af0a6",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04953934557000",
+          "exchange_order_id": "paper:sgf6e0cd12f4505893adb617280af0a6",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-27 07:00:00.002000+00:00",
+        "reservation_price": "215.41000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.22",
+            "limit_price": null,
+            "client_order_id": "sg49adc7174bc99066fa9283a8cd8d53",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.22",
+          "cumulative_fee": "0.04794719424000",
+          "exchange_order_id": "paper:sg49adc7174bc99066fa9283a8cd8d53",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-27 12:00:00.002000+00:00",
+        "reservation_price": "217.92000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.22",
+            "limit_price": null,
+            "client_order_id": "sgf99ad7c4708b6706731b5d31afb3fe",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.22",
+          "cumulative_fee": "0.04787601192000",
+          "exchange_order_id": "paper:sgf99ad7c4708b6706731b5d31afb3fe",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-28 16:00:00.002000+00:00",
+        "reservation_price": "217.64000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg9adfda328c0c4cac4f97681602bb6f",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04941354086000",
+          "exchange_order_id": "paper:sg9adfda328c0c4cac4f97681602bb6f",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-29 13:00:00.002000+00:00",
+        "reservation_price": "214.82000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg9931adb8462cf81d59494761b4b5b1",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04904489502000",
+          "exchange_order_id": "paper:sg9931adb8462cf81d59494761b4b5b1",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-29 18:00:00.002000+00:00",
+        "reservation_price": "213.26000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg510ae68735f1fd12a09b1acb8274cb",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04902250176000",
+          "exchange_order_id": "paper:sg510ae68735f1fd12a09b1acb8274cb",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-31 21:00:00.002000+00:00",
+        "reservation_price": "204.24000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sgfd5ea74d691286a3eeb2cd22044479",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04921667784000",
+          "exchange_order_id": "paper:sgfd5ea74d691286a3eeb2cd22044479",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-01 22:00:00.002000+00:00",
+        "reservation_price": "205.09000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg392bf067feeef780d7370b41551e21",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04955295480000",
+          "exchange_order_id": "paper:sg392bf067feeef780d7370b41551e21",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 01:00:00.002000+00:00",
+        "reservation_price": "206.45000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sgc403d6c0f9ae4ffe08097563c363d2",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04941825768000",
+          "exchange_order_id": "paper:sgc403d6c0f9ae4ffe08097563c363d2",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 19:00:00.002000+00:00",
+        "reservation_price": "205.93000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg7779e515868e5e405732f0fb186be9",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04924572408000",
+          "exchange_order_id": "paper:sg7779e515868e5e405732f0fb186be9",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-03 12:00:00.002000+00:00",
+        "reservation_price": "205.17000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg1b6b743921bfbc8cbb883c29fade9f",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04881111840000",
+          "exchange_order_id": "paper:sg1b6b743921bfbc8cbb883c29fade9f",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-04 03:00:00.002000+00:00",
+        "reservation_price": "203.40000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg4d5dbec533e3cc9bac714cdf541121",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04814611413000",
+          "exchange_order_id": "paper:sg4d5dbec533e3cc9bac714cdf541121",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-04 10:00:00.002000+00:00",
+        "reservation_price": "209.31000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgc0ad2dc8ea57c6896cfb8532dbd3c2",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04724187534000",
+          "exchange_order_id": "paper:sgc0ad2dc8ea57c6896cfb8532dbd3c2",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-04 15:00:00.002000+00:00",
+        "reservation_price": "205.42000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sg22a5558737fbc60f80192890b824e6",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04867946746000",
+          "exchange_order_id": "paper:sg22a5558737fbc60f80192890b824e6",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-06 09:00:00.002000+00:00",
+        "reservation_price": "187.21000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sg022618125793e11fbd777a2b883bb3",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04862033748000",
+          "exchange_order_id": "paper:sg022618125793e11fbd777a2b883bb3",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-06 21:00:00.002000+00:00",
+        "reservation_price": "187.02000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sgcc2b7f78e54cb0ae185c467466b2f2",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04897069658000",
+          "exchange_order_id": "paper:sgcc2b7f78e54cb0ae185c467466b2f2",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-07 12:00:00.002000+00:00",
+        "reservation_price": "188.33000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sg93046cb304931abbd846547c9d6130",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04885171434000",
+          "exchange_order_id": "paper:sg93046cb304931abbd846547c9d6130",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-07 17:00:00.002000+00:00",
+        "reservation_price": "187.91000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sg9af87b1bca8390b1c32451faff2015",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04882508202000",
+          "exchange_order_id": "paper:sg9af87b1bca8390b1c32451faff2015",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-08 11:00:00.002000+00:00",
+        "reservation_price": "187.77000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sgc8a1fa45f6e3854fe7a83f51169eca",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04864113540000",
+          "exchange_order_id": "paper:sgc8a1fa45f6e3854fe7a83f51169eca",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-08 18:00:00.002000+00:00",
+        "reservation_price": "187.10000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg4d86df9c663877284db30be563c5b2",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04832943246000",
+          "exchange_order_id": "paper:sg4d86df9c663877284db30be563c5b2",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-09 23:00:00.002000+00:00",
+        "reservation_price": "178.98000",
+        "confirmed_status": "FILLED"
+      }
+    ],
+    "fill_confirmations": [
+      {
+        "client_order_id": "sgf16360a0325556dad337e0be35be6d",
+        "exchange_order_id": "paper:sgf16360a0325556dad337e0be35be6d",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.521150000",
+        "event_time": "2026-10-24 15:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:2",
+        "cumulative_fee": "0.04864986450000"
+      },
+      {
+        "client_order_id": "sg60557b740c46d0ff1e8ad7dc499494",
+        "exchange_order_id": "paper:sg60557b740c46d0ff1e8ad7dc499494",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.458852000",
+        "event_time": "2026-10-24 18:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:4",
+        "cumulative_fee": "0.04863553596000"
+      },
+      {
+        "client_order_id": "sg1c9d9ffb6595ce301e0bf2a90d7152",
+        "exchange_order_id": "paper:sg1c9d9ffb6595ce301e0bf2a90d7152",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.971195000",
+        "event_time": "2026-10-24 19:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:6",
+        "cumulative_fee": "0.04875337485000"
+      },
+      {
+        "client_order_id": "sg563fccb3ef2e3347d87377b21cd4cc",
+        "exchange_order_id": "paper:sg563fccb3ef2e3347d87377b21cd4cc",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "212.418756000",
+        "event_time": "2026-10-25 12:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:8",
+        "cumulative_fee": "0.04885631388000"
+      },
+      {
+        "client_order_id": "sg9fb30ca545ea4dce516efde04ee20f",
+        "exchange_order_id": "paper:sg9fb30ca545ea4dce516efde04ee20f",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "212.941292000",
+        "event_time": "2026-10-25 15:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:10",
+        "cumulative_fee": "0.04897649716000"
+      },
+      {
+        "client_order_id": "sgbdbb9c88d38b96c880d2553c3d105f",
+        "exchange_order_id": "paper:sgbdbb9c88d38b96c880d2553c3d105f",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.698828000",
+        "event_time": "2026-10-26 03:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:12",
+        "cumulative_fee": "0.04869073044000"
+      },
+      {
+        "client_order_id": "sgf63c682fd161f71143e6fbb39722f4",
+        "exchange_order_id": "paper:sgf63c682fd161f71143e6fbb39722f4",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "213.421340000",
+        "event_time": "2026-10-26 13:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:14",
+        "cumulative_fee": "0.04908690820000"
+      },
+      {
+        "client_order_id": "sgf6e0cd12f4505893adb617280af0a6",
+        "exchange_order_id": "paper:sgf6e0cd12f4505893adb617280af0a6",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "215.388459000",
+        "event_time": "2026-10-27 07:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:16",
+        "cumulative_fee": "0.04953934557000"
+      },
+      {
+        "client_order_id": "sg49adc7174bc99066fa9283a8cd8d53",
+        "exchange_order_id": "paper:sg49adc7174bc99066fa9283a8cd8d53",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.22",
+        "fill_price": "217.941792000",
+        "event_time": "2026-10-27 12:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:18",
+        "cumulative_fee": "0.04794719424000"
+      },
+      {
+        "client_order_id": "sgf99ad7c4708b6706731b5d31afb3fe",
+        "exchange_order_id": "paper:sgf99ad7c4708b6706731b5d31afb3fe",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.22",
+        "fill_price": "217.618236000",
+        "event_time": "2026-10-28 16:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:20",
+        "cumulative_fee": "0.04787601192000"
+      },
+      {
+        "client_order_id": "sg9adfda328c0c4cac4f97681602bb6f",
+        "exchange_order_id": "paper:sg9adfda328c0c4cac4f97681602bb6f",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "214.841482000",
+        "event_time": "2026-10-29 13:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:22",
+        "cumulative_fee": "0.04941354086000"
+      },
+      {
+        "client_order_id": "sg9931adb8462cf81d59494761b4b5b1",
+        "exchange_order_id": "paper:sg9931adb8462cf81d59494761b4b5b1",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "213.238674000",
+        "event_time": "2026-10-29 18:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:24",
+        "cumulative_fee": "0.04904489502000"
+      },
+      {
+        "client_order_id": "sg510ae68735f1fd12a09b1acb8274cb",
+        "exchange_order_id": "paper:sg510ae68735f1fd12a09b1acb8274cb",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "204.260424000",
+        "event_time": "2026-10-31 21:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:26",
+        "cumulative_fee": "0.04902250176000"
+      },
+      {
+        "client_order_id": "sgfd5ea74d691286a3eeb2cd22044479",
+        "exchange_order_id": "paper:sgfd5ea74d691286a3eeb2cd22044479",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "205.069491000",
+        "event_time": "2026-11-01 22:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:28",
+        "cumulative_fee": "0.04921667784000"
+      },
+      {
+        "client_order_id": "sg392bf067feeef780d7370b41551e21",
+        "exchange_order_id": "paper:sg392bf067feeef780d7370b41551e21",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "206.470645000",
+        "event_time": "2026-11-02 01:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:30",
+        "cumulative_fee": "0.04955295480000"
+      },
+      {
+        "client_order_id": "sgc403d6c0f9ae4ffe08097563c363d2",
+        "exchange_order_id": "paper:sgc403d6c0f9ae4ffe08097563c363d2",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "205.909407000",
+        "event_time": "2026-11-02 19:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:32",
+        "cumulative_fee": "0.04941825768000"
+      },
+      {
+        "client_order_id": "sg7779e515868e5e405732f0fb186be9",
+        "exchange_order_id": "paper:sg7779e515868e5e405732f0fb186be9",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "205.190517000",
+        "event_time": "2026-11-03 12:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:34",
+        "cumulative_fee": "0.04924572408000"
+      },
+      {
+        "client_order_id": "sg1b6b743921bfbc8cbb883c29fade9f",
+        "exchange_order_id": "paper:sg1b6b743921bfbc8cbb883c29fade9f",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "203.379660000",
+        "event_time": "2026-11-04 03:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:36",
+        "cumulative_fee": "0.04881111840000"
+      },
+      {
+        "client_order_id": "sg4d5dbec533e3cc9bac714cdf541121",
+        "exchange_order_id": "paper:sg4d5dbec533e3cc9bac714cdf541121",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "209.330931000",
+        "event_time": "2026-11-04 10:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:38",
+        "cumulative_fee": "0.04814611413000"
+      },
+      {
+        "client_order_id": "sgc0ad2dc8ea57c6896cfb8532dbd3c2",
+        "exchange_order_id": "paper:sgc0ad2dc8ea57c6896cfb8532dbd3c2",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "205.399458000",
+        "event_time": "2026-11-04 15:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:40",
+        "cumulative_fee": "0.04724187534000"
+      },
+      {
+        "client_order_id": "sg22a5558737fbc60f80192890b824e6",
+        "exchange_order_id": "paper:sg22a5558737fbc60f80192890b824e6",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "187.228721000",
+        "event_time": "2026-11-06 09:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:42",
+        "cumulative_fee": "0.04867946746000"
+      },
+      {
+        "client_order_id": "sg022618125793e11fbd777a2b883bb3",
+        "exchange_order_id": "paper:sg022618125793e11fbd777a2b883bb3",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "187.001298000",
+        "event_time": "2026-11-06 21:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:44",
+        "cumulative_fee": "0.04862033748000"
+      },
+      {
+        "client_order_id": "sgcc2b7f78e54cb0ae185c467466b2f2",
+        "exchange_order_id": "paper:sgcc2b7f78e54cb0ae185c467466b2f2",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "188.348833000",
+        "event_time": "2026-11-07 12:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:46",
+        "cumulative_fee": "0.04897069658000"
+      },
+      {
+        "client_order_id": "sg93046cb304931abbd846547c9d6130",
+        "exchange_order_id": "paper:sg93046cb304931abbd846547c9d6130",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "187.891209000",
+        "event_time": "2026-11-07 17:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:48",
+        "cumulative_fee": "0.04885171434000"
+      },
+      {
+        "client_order_id": "sg9af87b1bca8390b1c32451faff2015",
+        "exchange_order_id": "paper:sg9af87b1bca8390b1c32451faff2015",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "187.788777000",
+        "event_time": "2026-11-08 11:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:50",
+        "cumulative_fee": "0.04882508202000"
+      },
+      {
+        "client_order_id": "sgc8a1fa45f6e3854fe7a83f51169eca",
+        "exchange_order_id": "paper:sgc8a1fa45f6e3854fe7a83f51169eca",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "187.081290000",
+        "event_time": "2026-11-08 18:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:52",
+        "cumulative_fee": "0.04864113540000"
+      },
+      {
+        "client_order_id": "sg4d86df9c663877284db30be563c5b2",
+        "exchange_order_id": "paper:sg4d86df9c663877284db30be563c5b2",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "178.997898000",
+        "event_time": "2026-11-09 23:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:54",
+        "cumulative_fee": "0.04832943246000"
+      }
+    ],
+    "total_fees": "1.31704330237000",
+    "last_rejection": null,
+    "liquidity": "HYPOTHETICAL_PAPER_LIQUIDITY_NOT_OBSERVED_TRADES",
+    "restart_reconciliation": {
+      "passed": true,
+      "journal_events": 490,
+      "duplicate_confirmations_posted": 0,
+      "cash_and_positions_unchanged": true
+    }
+  },
+  "hourly_frozen_ridge": {
+    "signals": 239,
+    "orders": 55,
+    "fills": 55,
+    "rejected": 27,
+    "final_equity": "991.62297837412000",
+    "paper_return": -0.00837702162588,
+    "account": {
+      "market": "BINANCE_USDM",
+      "account_id": "realtime-USDT",
+      "assets": [
+        {
+          "currency": "USDT",
+          "total": "991.87083513412000",
+          "reserved": "48.57245676000"
+        }
+      ],
+      "positions": [
+        {
+          "instrument_id": "NVDAUSDT",
+          "quantity": "0.27",
+          "entry_price": "179.897988000",
+          "mark_price": "178.98000",
+          "quote_currency": "USDT"
+        }
+      ],
+      "open_orders": [],
+      "observed_at": "2026-11-09 23:00:00.002000+00:00",
+      "reconciled": true
+    },
+    "order_records": [
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgd24d81a5470459ca2c8734dcf3fff5",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04857855737000",
+          "exchange_order_id": "paper:sgd24d81a5470459ca2c8734dcf3fff5",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-24 01:00:00.002000+00:00",
+        "reservation_price": "211.19000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgfde78a06ff81cee3714601bf2677d5",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04874362515000",
+          "exchange_order_id": "paper:sgfde78a06ff81cee3714601bf2677d5",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-24 19:00:00.002000+00:00",
+        "reservation_price": "211.95000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgd790d77ecee5afb1770e148e59ca8a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04893049256000",
+          "exchange_order_id": "paper:sgd790d77ecee5afb1770e148e59ca8a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 00:00:00.002000+00:00",
+        "reservation_price": "212.72000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg600ad2c377be6b973fa13aebe60f65",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04884481503000",
+          "exchange_order_id": "paper:sg600ad2c377be6b973fa13aebe60f65",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 02:00:00.002000+00:00",
+        "reservation_price": "212.39000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sge1e5f1efb94c2a149bd879377f95e0",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04870046956000",
+          "exchange_order_id": "paper:sge1e5f1efb94c2a149bd879377f95e0",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 03:00:00.002000+00:00",
+        "reservation_price": "211.72000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg2ad48e8866eb8ea51bc662f839f50a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04881031848000",
+          "exchange_order_id": "paper:sg2ad48e8866eb8ea51bc662f839f50a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 04:00:00.002000+00:00",
+        "reservation_price": "212.24000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sga927376ce87eac4b4816fb8a28d678",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04869356887000",
+          "exchange_order_id": "paper:sga927376ce87eac4b4816fb8a28d678",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 07:00:00.002000+00:00",
+        "reservation_price": "211.69000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg94c47772d84978949b379f0d2db996",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04910928858000",
+          "exchange_order_id": "paper:sg94c47772d84978949b379f0d2db996",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 12:00:00.002000+00:00",
+        "reservation_price": "213.54000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg76ae20b32223dfd7885ec4b27dd2a8",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04908690820000",
+          "exchange_order_id": "paper:sg76ae20b32223dfd7885ec4b27dd2a8",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 13:00:00.002000+00:00",
+        "reservation_price": "213.40000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg406405f52c960c6d8fc8ae5f3d41e1",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04948645086000",
+          "exchange_order_id": "paper:sg406405f52c960c6d8fc8ae5f3d41e1",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 14:00:00.002000+00:00",
+        "reservation_price": "215.18000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg1f4aa2704b9a148d1dc2a28aff181a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04965276478000",
+          "exchange_order_id": "paper:sg1f4aa2704b9a148d1dc2a28aff181a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-26 16:00:00.002000+00:00",
+        "reservation_price": "215.86000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.01",
+            "limit_price": null,
+            "client_order_id": "sg658df694519ced4dc5c4414e085c3d",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.01",
+          "cumulative_fee": "0.00217898208000",
+          "exchange_order_id": "paper:sg658df694519ced4dc5c4414e085c3d",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-27 12:00:00.002000+00:00",
+        "reservation_price": "217.92000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.22",
+            "limit_price": null,
+            "client_order_id": "sg5ecad6417ba9810f60267ebf020cd6",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.22",
+          "cumulative_fee": "0.04795740378000",
+          "exchange_order_id": "paper:sg5ecad6417ba9810f60267ebf020cd6",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-27 15:00:00.002000+00:00",
+        "reservation_price": "218.01000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.22",
+            "limit_price": null,
+            "client_order_id": "sg6e2280442752481e38fe8c8dcd7f07",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.22",
+          "cumulative_fee": "0.04805720524000",
+          "exchange_order_id": "paper:sg6e2280442752481e38fe8c8dcd7f07",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-27 17:00:00.002000+00:00",
+        "reservation_price": "218.42000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.22",
+            "limit_price": null,
+            "client_order_id": "sgdf1a365495c66b8168364d7d3cf68a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.22",
+          "cumulative_fee": "0.04794860466000",
+          "exchange_order_id": "paper:sgdf1a365495c66b8168364d7d3cf68a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-28 17:00:00.002000+00:00",
+        "reservation_price": "217.97000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgabd49b3a37c9d8c3fca49748a4311a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04978157766000",
+          "exchange_order_id": "paper:sgabd49b3a37c9d8c3fca49748a4311a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-28 19:00:00.002000+00:00",
+        "reservation_price": "216.42000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sga5eb110702112a1f6aede1b4798c99",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04947495201000",
+          "exchange_order_id": "paper:sga5eb110702112a1f6aede1b4798c99",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-28 22:00:00.002000+00:00",
+        "reservation_price": "215.13000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg4e1a147e9a35c98eb8aacc81a21175",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04928242775000",
+          "exchange_order_id": "paper:sg4e1a147e9a35c98eb8aacc81a21175",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-28 23:00:00.002000+00:00",
+        "reservation_price": "214.25000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg64682048bb70a7d132819afc7fd5db",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04841475804000",
+          "exchange_order_id": "paper:sg64682048bb70a7d132819afc7fd5db",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-30 00:00:00.002000+00:00",
+        "reservation_price": "210.52000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg63832022c059e6598fec66b7b648bc",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04802190171000",
+          "exchange_order_id": "paper:sg63832022c059e6598fec66b7b648bc",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-30 01:00:00.002000+00:00",
+        "reservation_price": "208.77000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sge75770af1428875b5067a06cc1930b",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04810658886000",
+          "exchange_order_id": "paper:sge75770af1428875b5067a06cc1930b",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-30 13:00:00.002000+00:00",
+        "reservation_price": "209.18000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg81b46841775a37ca1ae789ad478d58",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04787928745000",
+          "exchange_order_id": "paper:sg81b46841775a37ca1ae789ad478d58",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-30 14:00:00.002000+00:00",
+        "reservation_price": "208.15000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgb40d720c44e683cc7859cbd0494368",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04719358017000",
+          "exchange_order_id": "paper:sgb40d720c44e683cc7859cbd0494368",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-30 20:00:00.002000+00:00",
+        "reservation_price": "205.21000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sgb3d7030e52fe55cbbab22396182230",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04928412792000",
+          "exchange_order_id": "paper:sgb3d7030e52fe55cbbab22396182230",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-30 21:00:00.002000+00:00",
+        "reservation_price": "205.33000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg38fc9c954c5790fd9b34f71e42ec24",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04928387112000",
+          "exchange_order_id": "paper:sg38fc9c954c5790fd9b34f71e42ec24",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-01 14:00:00.002000+00:00",
+        "reservation_price": "205.37000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sge7b688188cf3c201728d9de433cb7b",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04785398492000",
+          "exchange_order_id": "paper:sge7b688188cf3c201728d9de433cb7b",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 05:00:00.002000+00:00",
+        "reservation_price": "208.04000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg5723e67d02e4b35afa85e41e8f67d7",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04787661186000",
+          "exchange_order_id": "paper:sg5723e67d02e4b35afa85e41e8f67d7",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 10:00:00.002000+00:00",
+        "reservation_price": "208.18000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg6c8ac8e74db7e6c3beb571b1b41e7a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04978337784000",
+          "exchange_order_id": "paper:sg6c8ac8e74db7e6c3beb571b1b41e7a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 12:00:00.002000+00:00",
+        "reservation_price": "207.41000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg6fb9c234e99e58f817260a6f229660",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.05000619888000",
+          "exchange_order_id": "paper:sg6fb9c234e99e58f817260a6f229660",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 15:00:00.002000+00:00",
+        "reservation_price": "208.38000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg9b43db55ce29325fcec073932ced75",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04983138264000",
+          "exchange_order_id": "paper:sg9b43db55ce29325fcec073932ced75",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 16:00:00.002000+00:00",
+        "reservation_price": "207.61000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg34c787b8cd4b93598887b1b430cf8a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04871032848000",
+          "exchange_order_id": "paper:sg34c787b8cd4b93598887b1b430cf8a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-02 22:00:00.002000+00:00",
+        "reservation_price": "202.98000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sgbbbd2c0e1bb898a40bb5d681f81358",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04911131064000",
+          "exchange_order_id": "paper:sgbbbd2c0e1bb898a40bb5d681f81358",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-03 03:00:00.002000+00:00",
+        "reservation_price": "204.61000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg32cf39d5f54642957131b369f15387",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04938226128000",
+          "exchange_order_id": "paper:sg32cf39d5f54642957131b369f15387",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-03 10:00:00.002000+00:00",
+        "reservation_price": "205.78000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sgcbd44d57bf563c9519659b4b772695",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04934173368000",
+          "exchange_order_id": "paper:sgcbd44d57bf563c9519659b4b772695",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-03 11:00:00.002000+00:00",
+        "reservation_price": "205.57000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.01",
+            "limit_price": null,
+            "client_order_id": "sga1a3288cbca36041826208422161b7",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.01",
+          "cumulative_fee": "0.00208269171000",
+          "exchange_order_id": "paper:sga1a3288cbca36041826208422161b7",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-03 15:00:00.002000+00:00",
+        "reservation_price": "208.29000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg85e93bf26d1efd0b4d319b8c881a29",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04832966655000",
+          "exchange_order_id": "paper:sg85e93bf26d1efd0b4d319b8c881a29",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-03 22:00:00.002000+00:00",
+        "reservation_price": "210.15000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg0e47af617e1d7a9984ffac971b9876",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04830713023000",
+          "exchange_order_id": "paper:sg0e47af617e1d7a9984ffac971b9876",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-03 23:00:00.002000+00:00",
+        "reservation_price": "210.01000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg89e7de0a167e3f7013418628253f98",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04706709282000",
+          "exchange_order_id": "paper:sg89e7de0a167e3f7013418628253f98",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-04 05:00:00.002000+00:00",
+        "reservation_price": "204.66000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sgd040bd949c2de6673a32ee9310e6ab",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04778727825000",
+          "exchange_order_id": "paper:sgd040bd949c2de6673a32ee9310e6ab",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-04 07:00:00.002000+00:00",
+        "reservation_price": "207.75000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.23",
+            "limit_price": null,
+            "client_order_id": "sg340ba9db6df6b28ff99ed21f076a42",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.23",
+          "cumulative_fee": "0.04701189834000",
+          "exchange_order_id": "paper:sg340ba9db6df6b28ff99ed21f076a42",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-04 17:00:00.002000+00:00",
+        "reservation_price": "204.42000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sg6c198b87209e8fa3108a4c6cce9d70",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04892649216000",
+          "exchange_order_id": "paper:sg6c198b87209e8fa3108a4c6cce9d70",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-04 18:00:00.002000+00:00",
+        "reservation_price": "203.84000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.24",
+            "limit_price": null,
+            "client_order_id": "sgb185039c35984196986c7fff6bd786",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.24",
+          "cumulative_fee": "0.04478192136000",
+          "exchange_order_id": "paper:sgb185039c35984196986c7fff6bd786",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-05 17:00:00.002000+00:00",
+        "reservation_price": "186.61000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sgdff357e998431bbd3d6c0795d91907",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04945814532000",
+          "exchange_order_id": "paper:sgdff357e998431bbd3d6c0795d91907",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-05 18:00:00.002000+00:00",
+        "reservation_price": "183.16000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg5f42eff786cde5892be532c00e3a65",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04988291121000",
+          "exchange_order_id": "paper:sg5f42eff786cde5892be532c00e3a65",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-05 20:00:00.002000+00:00",
+        "reservation_price": "184.77000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg028d6923ee54a1816362cbd73ebd41",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04918001751000",
+          "exchange_order_id": "paper:sg028d6923ee54a1816362cbd73ebd41",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-05 21:00:00.002000+00:00",
+        "reservation_price": "182.13000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg7ceedd24e648d3197ce1fb0bec5343",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04974522498000",
+          "exchange_order_id": "paper:sg7ceedd24e648d3197ce1fb0bec5343",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-06 01:00:00.002000+00:00",
+        "reservation_price": "184.26000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sg200cd38cecc11b2af06373555dc86f",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04831803132000",
+          "exchange_order_id": "paper:sg200cd38cecc11b2af06373555dc86f",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-06 02:00:00.002000+00:00",
+        "reservation_price": "185.82000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.26",
+            "limit_price": null,
+            "client_order_id": "sg8a6d37cda806edb56a5523fbc89ce1",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.26",
+          "cumulative_fee": "0.04888811070000",
+          "exchange_order_id": "paper:sg8a6d37cda806edb56a5523fbc89ce1",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-08 10:00:00.002000+00:00",
+        "reservation_price": "188.05000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sga85aa4df6fde81a4258ba5a47d296a",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04959855936000",
+          "exchange_order_id": "paper:sga85aa4df6fde81a4258ba5a47d296a",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-08 21:00:00.002000+00:00",
+        "reservation_price": "183.68000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg3b08db4f2ea3f8ca45e084f63ba23f",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04919717979000",
+          "exchange_order_id": "paper:sg3b08db4f2ea3f8ca45e084f63ba23f",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-09 01:00:00.002000+00:00",
+        "reservation_price": "182.23000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg3d574a632d80b73d791a8d68454da5",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04890458997000",
+          "exchange_order_id": "paper:sg3d574a632d80b73d791a8d68454da5",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-09 02:00:00.002000+00:00",
+        "reservation_price": "181.11000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sga6565d246c2ea6f6f26baf6aa35d51",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04827387213000",
+          "exchange_order_id": "paper:sga6565d246c2ea6f6f26baf6aa35d51",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-09 09:00:00.002000+00:00",
+        "reservation_price": "178.81000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg3f1da51537177dc00e35db3e72bf6e",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04832673219000",
+          "exchange_order_id": "paper:sg3f1da51537177dc00e35db3e72bf6e",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-09 10:00:00.002000+00:00",
+        "reservation_price": "178.97000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg6e7c8ff3135baff4cafe519d3572dd",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04834406511000",
+          "exchange_order_id": "paper:sg6e7c8ff3135baff4cafe519d3572dd",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-09 15:00:00.002000+00:00",
+        "reservation_price": "179.07000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.27",
+            "limit_price": null,
+            "client_order_id": "sg0f2389280ca8f3931bc715d6f32c80",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.27",
+          "cumulative_fee": "0.04857245676000",
+          "exchange_order_id": "paper:sg0f2389280ca8f3931bc715d6f32c80",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-11-09 16:00:00.002000+00:00",
+        "reservation_price": "179.88000",
+        "confirmed_status": "FILLED"
+      }
+    ],
+    "fill_confirmations": [
+      {
+        "client_order_id": "sgd24d81a5470459ca2c8734dcf3fff5",
+        "exchange_order_id": "paper:sgd24d81a5470459ca2c8734dcf3fff5",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.211119000",
+        "event_time": "2026-10-24 01:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:2",
+        "cumulative_fee": "0.04857855737000"
+      },
+      {
+        "client_order_id": "sgfde78a06ff81cee3714601bf2677d5",
+        "exchange_order_id": "paper:sgfde78a06ff81cee3714601bf2677d5",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.928805000",
+        "event_time": "2026-10-24 19:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:4",
+        "cumulative_fee": "0.04874362515000"
+      },
+      {
+        "client_order_id": "sgd790d77ecee5afb1770e148e59ca8a",
+        "exchange_order_id": "paper:sgd790d77ecee5afb1770e148e59ca8a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "212.741272000",
+        "event_time": "2026-10-26 00:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:6",
+        "cumulative_fee": "0.04893049256000"
+      },
+      {
+        "client_order_id": "sg600ad2c377be6b973fa13aebe60f65",
+        "exchange_order_id": "paper:sg600ad2c377be6b973fa13aebe60f65",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "212.368761000",
+        "event_time": "2026-10-26 02:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:8",
+        "cumulative_fee": "0.04884481503000"
+      },
+      {
+        "client_order_id": "sge1e5f1efb94c2a149bd879377f95e0",
+        "exchange_order_id": "paper:sge1e5f1efb94c2a149bd879377f95e0",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.741172000",
+        "event_time": "2026-10-26 03:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:10",
+        "cumulative_fee": "0.04870046956000"
+      },
+      {
+        "client_order_id": "sg2ad48e8866eb8ea51bc662f839f50a",
+        "exchange_order_id": "paper:sg2ad48e8866eb8ea51bc662f839f50a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "212.218776000",
+        "event_time": "2026-10-26 04:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:12",
+        "cumulative_fee": "0.04881031848000"
+      },
+      {
+        "client_order_id": "sga927376ce87eac4b4816fb8a28d678",
+        "exchange_order_id": "paper:sga927376ce87eac4b4816fb8a28d678",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "211.711169000",
+        "event_time": "2026-10-26 07:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:14",
+        "cumulative_fee": "0.04869356887000"
+      },
+      {
+        "client_order_id": "sg94c47772d84978949b379f0d2db996",
+        "exchange_order_id": "paper:sg94c47772d84978949b379f0d2db996",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "213.518646000",
+        "event_time": "2026-10-26 12:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:16",
+        "cumulative_fee": "0.04910928858000"
+      },
+      {
+        "client_order_id": "sg76ae20b32223dfd7885ec4b27dd2a8",
+        "exchange_order_id": "paper:sg76ae20b32223dfd7885ec4b27dd2a8",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "213.421340000",
+        "event_time": "2026-10-26 13:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:18",
+        "cumulative_fee": "0.04908690820000"
+      },
+      {
+        "client_order_id": "sg406405f52c960c6d8fc8ae5f3d41e1",
+        "exchange_order_id": "paper:sg406405f52c960c6d8fc8ae5f3d41e1",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "215.158482000",
+        "event_time": "2026-10-26 14:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:20",
+        "cumulative_fee": "0.04948645086000"
+      },
+      {
+        "client_order_id": "sg1f4aa2704b9a148d1dc2a28aff181a",
+        "exchange_order_id": "paper:sg1f4aa2704b9a148d1dc2a28aff181a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "215.881586000",
+        "event_time": "2026-10-26 16:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:22",
+        "cumulative_fee": "0.04965276478000"
+      },
+      {
+        "client_order_id": "sg658df694519ced4dc5c4414e085c3d",
+        "exchange_order_id": "paper:sg658df694519ced4dc5c4414e085c3d",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.01",
+        "fill_price": "217.898208000",
+        "event_time": "2026-10-27 12:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:24",
+        "cumulative_fee": "0.00217898208000"
+      },
+      {
+        "client_order_id": "sg5ecad6417ba9810f60267ebf020cd6",
+        "exchange_order_id": "paper:sg5ecad6417ba9810f60267ebf020cd6",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.22",
+        "fill_price": "217.988199000",
+        "event_time": "2026-10-27 15:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:26",
+        "cumulative_fee": "0.04795740378000"
+      },
+      {
+        "client_order_id": "sg6e2280442752481e38fe8c8dcd7f07",
+        "exchange_order_id": "paper:sg6e2280442752481e38fe8c8dcd7f07",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.22",
+        "fill_price": "218.441842000",
+        "event_time": "2026-10-27 17:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:28",
+        "cumulative_fee": "0.04805720524000"
+      },
+      {
+        "client_order_id": "sgdf1a365495c66b8168364d7d3cf68a",
+        "exchange_order_id": "paper:sgdf1a365495c66b8168364d7d3cf68a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.22",
+        "fill_price": "217.948203000",
+        "event_time": "2026-10-28 17:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:30",
+        "cumulative_fee": "0.04794860466000"
+      },
+      {
+        "client_order_id": "sgabd49b3a37c9d8c3fca49748a4311a",
+        "exchange_order_id": "paper:sgabd49b3a37c9d8c3fca49748a4311a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "216.441642000",
+        "event_time": "2026-10-28 19:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:32",
+        "cumulative_fee": "0.04978157766000"
+      },
+      {
+        "client_order_id": "sga5eb110702112a1f6aede1b4798c99",
+        "exchange_order_id": "paper:sga5eb110702112a1f6aede1b4798c99",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "215.108487000",
+        "event_time": "2026-10-28 22:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:34",
+        "cumulative_fee": "0.04947495201000"
+      },
+      {
+        "client_order_id": "sg4e1a147e9a35c98eb8aacc81a21175",
+        "exchange_order_id": "paper:sg4e1a147e9a35c98eb8aacc81a21175",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "214.271425000",
+        "event_time": "2026-10-28 23:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:36",
+        "cumulative_fee": "0.04928242775000"
+      },
+      {
+        "client_order_id": "sg64682048bb70a7d132819afc7fd5db",
+        "exchange_order_id": "paper:sg64682048bb70a7d132819afc7fd5db",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "210.498948000",
+        "event_time": "2026-10-30 00:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:38",
+        "cumulative_fee": "0.04841475804000"
+      },
+      {
+        "client_order_id": "sg63832022c059e6598fec66b7b648bc",
+        "exchange_order_id": "paper:sg63832022c059e6598fec66b7b648bc",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "208.790877000",
+        "event_time": "2026-10-30 01:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:40",
+        "cumulative_fee": "0.04802190171000"
+      },
+      {
+        "client_order_id": "sge75770af1428875b5067a06cc1930b",
+        "exchange_order_id": "paper:sge75770af1428875b5067a06cc1930b",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "209.159082000",
+        "event_time": "2026-10-30 13:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:42",
+        "cumulative_fee": "0.04810658886000"
+      },
+      {
+        "client_order_id": "sg81b46841775a37ca1ae789ad478d58",
+        "exchange_order_id": "paper:sg81b46841775a37ca1ae789ad478d58",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "208.170815000",
+        "event_time": "2026-10-30 14:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:44",
+        "cumulative_fee": "0.04787928745000"
+      },
+      {
+        "client_order_id": "sgb40d720c44e683cc7859cbd0494368",
+        "exchange_order_id": "paper:sgb40d720c44e683cc7859cbd0494368",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "205.189479000",
+        "event_time": "2026-10-30 20:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:46",
+        "cumulative_fee": "0.04719358017000"
+      },
+      {
+        "client_order_id": "sgb3d7030e52fe55cbbab22396182230",
+        "exchange_order_id": "paper:sgb3d7030e52fe55cbbab22396182230",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "205.350533000",
+        "event_time": "2026-10-30 21:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:48",
+        "cumulative_fee": "0.04928412792000"
+      },
+      {
+        "client_order_id": "sg38fc9c954c5790fd9b34f71e42ec24",
+        "exchange_order_id": "paper:sg38fc9c954c5790fd9b34f71e42ec24",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "205.349463000",
+        "event_time": "2026-11-01 14:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:50",
+        "cumulative_fee": "0.04928387112000"
+      },
+      {
+        "client_order_id": "sge7b688188cf3c201728d9de433cb7b",
+        "exchange_order_id": "paper:sge7b688188cf3c201728d9de433cb7b",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "208.060804000",
+        "event_time": "2026-11-02 05:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:52",
+        "cumulative_fee": "0.04785398492000"
+      },
+      {
+        "client_order_id": "sg5723e67d02e4b35afa85e41e8f67d7",
+        "exchange_order_id": "paper:sg5723e67d02e4b35afa85e41e8f67d7",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "208.159182000",
+        "event_time": "2026-11-02 10:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:54",
+        "cumulative_fee": "0.04787661186000"
+      },
+      {
+        "client_order_id": "sg6c8ac8e74db7e6c3beb571b1b41e7a",
+        "exchange_order_id": "paper:sg6c8ac8e74db7e6c3beb571b1b41e7a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "207.430741000",
+        "event_time": "2026-11-02 12:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:56",
+        "cumulative_fee": "0.04978337784000"
+      },
+      {
+        "client_order_id": "sg6fb9c234e99e58f817260a6f229660",
+        "exchange_order_id": "paper:sg6fb9c234e99e58f817260a6f229660",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "208.359162000",
+        "event_time": "2026-11-02 15:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:58",
+        "cumulative_fee": "0.05000619888000"
+      },
+      {
+        "client_order_id": "sg9b43db55ce29325fcec073932ced75",
+        "exchange_order_id": "paper:sg9b43db55ce29325fcec073932ced75",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "207.630761000",
+        "event_time": "2026-11-02 16:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:60",
+        "cumulative_fee": "0.04983138264000"
+      },
+      {
+        "client_order_id": "sg34c787b8cd4b93598887b1b430cf8a",
+        "exchange_order_id": "paper:sg34c787b8cd4b93598887b1b430cf8a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "202.959702000",
+        "event_time": "2026-11-02 22:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:62",
+        "cumulative_fee": "0.04871032848000"
+      },
+      {
+        "client_order_id": "sgbbbd2c0e1bb898a40bb5d681f81358",
+        "exchange_order_id": "paper:sgbbbd2c0e1bb898a40bb5d681f81358",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "204.630461000",
+        "event_time": "2026-11-03 03:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:64",
+        "cumulative_fee": "0.04911131064000"
+      },
+      {
+        "client_order_id": "sg32cf39d5f54642957131b369f15387",
+        "exchange_order_id": "paper:sg32cf39d5f54642957131b369f15387",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "205.759422000",
+        "event_time": "2026-11-03 10:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:66",
+        "cumulative_fee": "0.04938226128000"
+      },
+      {
+        "client_order_id": "sgcbd44d57bf563c9519659b4b772695",
+        "exchange_order_id": "paper:sgcbd44d57bf563c9519659b4b772695",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "205.590557000",
+        "event_time": "2026-11-03 11:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:68",
+        "cumulative_fee": "0.04934173368000"
+      },
+      {
+        "client_order_id": "sga1a3288cbca36041826208422161b7",
+        "exchange_order_id": "paper:sga1a3288cbca36041826208422161b7",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.01",
+        "fill_price": "208.269171000",
+        "event_time": "2026-11-03 15:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:70",
+        "cumulative_fee": "0.00208269171000"
+      },
+      {
+        "client_order_id": "sg85e93bf26d1efd0b4d319b8c881a29",
+        "exchange_order_id": "paper:sg85e93bf26d1efd0b4d319b8c881a29",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "210.128985000",
+        "event_time": "2026-11-03 22:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:72",
+        "cumulative_fee": "0.04832966655000"
+      },
+      {
+        "client_order_id": "sg0e47af617e1d7a9984ffac971b9876",
+        "exchange_order_id": "paper:sg0e47af617e1d7a9984ffac971b9876",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "210.031001000",
+        "event_time": "2026-11-03 23:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:74",
+        "cumulative_fee": "0.04830713023000"
+      },
+      {
+        "client_order_id": "sg89e7de0a167e3f7013418628253f98",
+        "exchange_order_id": "paper:sg89e7de0a167e3f7013418628253f98",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "204.639534000",
+        "event_time": "2026-11-04 05:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:76",
+        "cumulative_fee": "0.04706709282000"
+      },
+      {
+        "client_order_id": "sgd040bd949c2de6673a32ee9310e6ab",
+        "exchange_order_id": "paper:sgd040bd949c2de6673a32ee9310e6ab",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "207.770775000",
+        "event_time": "2026-11-04 07:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:78",
+        "cumulative_fee": "0.04778727825000"
+      },
+      {
+        "client_order_id": "sg340ba9db6df6b28ff99ed21f076a42",
+        "exchange_order_id": "paper:sg340ba9db6df6b28ff99ed21f076a42",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.23",
+        "fill_price": "204.399558000",
+        "event_time": "2026-11-04 17:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:80",
+        "cumulative_fee": "0.04701189834000"
+      },
+      {
+        "client_order_id": "sg6c198b87209e8fa3108a4c6cce9d70",
+        "exchange_order_id": "paper:sg6c198b87209e8fa3108a4c6cce9d70",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "203.860384000",
+        "event_time": "2026-11-04 18:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:82",
+        "cumulative_fee": "0.04892649216000"
+      },
+      {
+        "client_order_id": "sgb185039c35984196986c7fff6bd786",
+        "exchange_order_id": "paper:sgb185039c35984196986c7fff6bd786",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.24",
+        "fill_price": "186.591339000",
+        "event_time": "2026-11-05 17:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:84",
+        "cumulative_fee": "0.04478192136000"
+      },
+      {
+        "client_order_id": "sgdff357e998431bbd3d6c0795d91907",
+        "exchange_order_id": "paper:sgdff357e998431bbd3d6c0795d91907",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "183.178316000",
+        "event_time": "2026-11-05 18:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:86",
+        "cumulative_fee": "0.04945814532000"
+      },
+      {
+        "client_order_id": "sg5f42eff786cde5892be532c00e3a65",
+        "exchange_order_id": "paper:sg5f42eff786cde5892be532c00e3a65",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "184.751523000",
+        "event_time": "2026-11-05 20:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:88",
+        "cumulative_fee": "0.04988291121000"
+      },
+      {
+        "client_order_id": "sg028d6923ee54a1816362cbd73ebd41",
+        "exchange_order_id": "paper:sg028d6923ee54a1816362cbd73ebd41",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "182.148213000",
+        "event_time": "2026-11-05 21:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:90",
+        "cumulative_fee": "0.04918001751000"
+      },
+      {
+        "client_order_id": "sg7ceedd24e648d3197ce1fb0bec5343",
+        "exchange_order_id": "paper:sg7ceedd24e648d3197ce1fb0bec5343",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "184.241574000",
+        "event_time": "2026-11-06 01:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:92",
+        "cumulative_fee": "0.04974522498000"
+      },
+      {
+        "client_order_id": "sg200cd38cecc11b2af06373555dc86f",
+        "exchange_order_id": "paper:sg200cd38cecc11b2af06373555dc86f",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "185.838582000",
+        "event_time": "2026-11-06 02:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:94",
+        "cumulative_fee": "0.04831803132000"
+      },
+      {
+        "client_order_id": "sg8a6d37cda806edb56a5523fbc89ce1",
+        "exchange_order_id": "paper:sg8a6d37cda806edb56a5523fbc89ce1",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.26",
+        "fill_price": "188.031195000",
+        "event_time": "2026-11-08 10:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:96",
+        "cumulative_fee": "0.04888811070000"
+      },
+      {
+        "client_order_id": "sga85aa4df6fde81a4258ba5a47d296a",
+        "exchange_order_id": "paper:sga85aa4df6fde81a4258ba5a47d296a",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "183.698368000",
+        "event_time": "2026-11-08 21:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:98",
+        "cumulative_fee": "0.04959855936000"
+      },
+      {
+        "client_order_id": "sg3b08db4f2ea3f8ca45e084f63ba23f",
+        "exchange_order_id": "paper:sg3b08db4f2ea3f8ca45e084f63ba23f",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "182.211777000",
+        "event_time": "2026-11-09 01:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:100",
+        "cumulative_fee": "0.04919717979000"
+      },
+      {
+        "client_order_id": "sg3d574a632d80b73d791a8d68454da5",
+        "exchange_order_id": "paper:sg3d574a632d80b73d791a8d68454da5",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "181.128111000",
+        "event_time": "2026-11-09 02:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:102",
+        "cumulative_fee": "0.04890458997000"
+      },
+      {
+        "client_order_id": "sga6565d246c2ea6f6f26baf6aa35d51",
+        "exchange_order_id": "paper:sga6565d246c2ea6f6f26baf6aa35d51",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "178.792119000",
+        "event_time": "2026-11-09 09:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:104",
+        "cumulative_fee": "0.04827387213000"
+      },
+      {
+        "client_order_id": "sg3f1da51537177dc00e35db3e72bf6e",
+        "exchange_order_id": "paper:sg3f1da51537177dc00e35db3e72bf6e",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "178.987897000",
+        "event_time": "2026-11-09 10:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:106",
+        "cumulative_fee": "0.04832673219000"
+      },
+      {
+        "client_order_id": "sg6e7c8ff3135baff4cafe519d3572dd",
+        "exchange_order_id": "paper:sg6e7c8ff3135baff4cafe519d3572dd",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "179.052093000",
+        "event_time": "2026-11-09 15:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:108",
+        "cumulative_fee": "0.04834406511000"
+      },
+      {
+        "client_order_id": "sg0f2389280ca8f3931bc715d6f32c80",
+        "exchange_order_id": "paper:sg0f2389280ca8f3931bc715d6f32c80",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.27",
+        "fill_price": "179.897988000",
+        "event_time": "2026-11-09 16:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:110",
+        "cumulative_fee": "0.04857245676000"
+      }
+    ],
+    "total_fees": "2.58438378588000",
+    "last_rejection": "TARGET_ORDER_FILTER",
+    "liquidity": "HYPOTHETICAL_PAPER_LIQUIDITY_NOT_OBSERVED_TRADES",
+    "restart_reconciliation": {
+      "passed": true,
+      "journal_events": 601,
+      "duplicate_confirmations_posted": 0,
+      "cash_and_positions_unchanged": true
+    }
+  },
+  "daily_dual_ma": {
+    "signals": 5,
+    "orders": 4,
+    "fills": 4,
+    "rejected": 0,
+    "final_equity": "997.74132198533000",
+    "paper_return": -0.00225867801467,
+    "account": {
+      "market": "BINANCE_USDM",
+      "account_id": "realtime-USDT",
+      "assets": [
+        {
+          "currency": "USDT",
+          "total": "997.74132198533000",
+          "reserved": "0"
+        }
+      ],
+      "positions": [],
+      "open_orders": [],
+      "observed_at": "2026-11-09 00:00:00.002000+00:00",
+      "reconciled": true
+    },
+    "order_records": [
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.22",
+            "limit_price": null,
+            "client_order_id": "sg82389961616650e0ec596bcaf79fb9",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.22",
+          "cumulative_fee": "0.04962156166000",
+          "exchange_order_id": "paper:sg82389961616650e0ec596bcaf79fb9",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-09-03 00:00:00.002000+00:00",
+        "reservation_price": "225.53000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.22",
+            "limit_price": null,
+            "client_order_id": "sg5a70558763b1c6136f779f82a7faab",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.22",
+          "cumulative_fee": "0.04810478904000",
+          "exchange_order_id": "paper:sg5a70558763b1c6136f779f82a7faab",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-09-13 00:00:00.002000+00:00",
+        "reservation_price": "218.68000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "BUY",
+            "order_type": "MARKET",
+            "quantity": "0.21",
+            "limit_price": null,
+            "client_order_id": "sg6feff56b9679d7c6a15e9047e783fe",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": false
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.21",
+          "cumulative_fee": "0.04776507603000",
+          "exchange_order_id": "paper:sg6feff56b9679d7c6a15e9047e783fe",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-09-22 00:00:00.002000+00:00",
+        "reservation_price": "227.43000",
+        "confirmed_status": "FILLED"
+      },
+      {
+        "snapshot": {
+          "intent": {
+            "market": "BINANCE_USDM",
+            "instrument_id": "NVDAUSDT",
+            "side": "SELL",
+            "order_type": "MARKET",
+            "quantity": "0.21",
+            "limit_price": null,
+            "client_order_id": "sg3558f3ccd6dae4128914849dd06c05",
+            "time_in_force": "GTC",
+            "position_side": null,
+            "reduce_only": true
+          },
+          "status": "FILLED",
+          "cumulative_filled_quantity": "0.21",
+          "cumulative_fee": "0.04721587794000",
+          "exchange_order_id": "paper:sg3558f3ccd6dae4128914849dd06c05",
+          "reconcile_required": false
+        },
+        "observed_at": "2026-10-13 00:00:00.002000+00:00",
+        "reservation_price": "224.86000",
+        "confirmed_status": "FILLED"
+      }
+    ],
+    "fill_confirmations": [
+      {
+        "client_order_id": "sg82389961616650e0ec596bcaf79fb9",
+        "exchange_order_id": "paper:sg82389961616650e0ec596bcaf79fb9",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.22",
+        "fill_price": "225.552553000",
+        "event_time": "2026-09-03 00:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:2",
+        "cumulative_fee": "0.04962156166000"
+      },
+      {
+        "client_order_id": "sg5a70558763b1c6136f779f82a7faab",
+        "exchange_order_id": "paper:sg5a70558763b1c6136f779f82a7faab",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.22",
+        "fill_price": "218.658132000",
+        "event_time": "2026-09-13 00:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:4",
+        "cumulative_fee": "0.04810478904000"
+      },
+      {
+        "client_order_id": "sg6feff56b9679d7c6a15e9047e783fe",
+        "exchange_order_id": "paper:sg6feff56b9679d7c6a15e9047e783fe",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.21",
+        "fill_price": "227.452743000",
+        "event_time": "2026-09-22 00:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:6",
+        "cumulative_fee": "0.04776507603000"
+      },
+      {
+        "client_order_id": "sg3558f3ccd6dae4128914849dd06c05",
+        "exchange_order_id": "paper:sg3558f3ccd6dae4128914849dd06c05",
+        "status": "FILLED",
+        "cumulative_filled_quantity": "0.21",
+        "fill_price": "224.837514000",
+        "event_time": "2026-10-13 00:00:00.002000+00:00",
+        "source": "paper",
+        "event_id": "paper:8",
+        "cumulative_fee": "0.04721587794000"
+      }
+    ],
+    "total_fees": "0.19270730467000",
+    "last_rejection": null,
+    "liquidity": "HYPOTHETICAL_PAPER_LIQUIDITY_NOT_OBSERVED_TRADES",
+    "restart_reconciliation": {
+      "passed": true,
+      "journal_events": 102,
+      "duplicate_confirmations_posted": 0,
+      "cash_and_positions_unchanged": true
+    }
+  },
+  "acceptance": [
+    "P7_M01_STRATEGY_PAPER_INTEGRATED",
+    "P7_M01_MODEL_PAPER_INTEGRATED",
+    "P7_M01_FULL_ACCEPTED"
+  ],
+  "tests": {
+    "passed": 336,
+    "failed": 0,
+    "seconds": 40.64
+  }
+}

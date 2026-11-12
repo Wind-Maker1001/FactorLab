@@ -32,6 +32,9 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
         connection_errors += (ConnectionClosed, InvalidHandshake)
     futures = account.market == Market.BINANCE_USDM
     url = URL if futures else WS_HOST + '/stream'
+    if futures and account.strategy is not None:
+        from factorlab.integrations.binance_futures_trading.market import strategy_stream_url
+        url = strategy_stream_url(account.strategy.describe()['interval_seconds'])
     deadline, failures, messages, accepted = time.monotonic() + seconds, 0, 0, 0
     diagnostics = dict(connection_attempts=0, handshakes=0, frames=0, receive_timeouts=0,
         subscription='URL_ROUTED' if futures else 'NOT_SENT', parsed=0, rejected=0,
@@ -106,6 +109,16 @@ async def observe(account, *, seconds, network=False, reconnects=3, connector=co
                     messages += 1
                     processing_start = time.perf_counter()
                     sample('processing_start_minus_received', processing_start - received_monotonic)
+                    if futures and value.get('e') == 'kline':
+                        if account.strategy is None:
+                            raise ValueError('unsolicited kline')
+                        from factorlab.integrations.binance_futures_trading.market import closed_kline
+                        bar = closed_kline(value, received,
+                            interval_seconds=account.strategy.describe()['interval_seconds'])
+                        diagnostics['closed_bars'] = diagnostics.get('closed_bars', 0) + int(bar is not None)
+                        if bar is not None:
+                            accepted += int(account.closed_bar(bar))
+                        continue
                     events = [parse(value, received)] if futures else list(equity_events(value, received))
                     if not futures and value.get('e') == 'price' and not events:
                         diagnostics['price_frames_without_target'] = diagnostics.get('price_frames_without_target', 0) + 1
@@ -173,6 +186,9 @@ def main():
     source = parser.add_mutually_exclusive_group()
     source.add_argument('--replay', type=Path)
     source.add_argument('--public-market-data', action='store_true')
+    parser.add_argument('--strategy', choices=('threshold', 'dual-ma', 'frozen-model'), default='threshold')
+    parser.add_argument('--strategy-config', type=Path, help='trusted local frozen deployment JSON')
+    parser.add_argument('--bar-seconds', type=int, default=3600)
     parser.add_argument('--paper', action='store_true', help='enable strategy and local paper execution')
     parser.add_argument('--paper-simulation', action='store_true', help='explicit synthetic account eligibility; never live authority')
     parser.add_argument('--acceptance-signal', action='store_true', help='paper-only test signal after 30 seconds without natural signals')
@@ -190,6 +206,10 @@ def main():
     from .simulation import PAPER_SIMULATION
     if (args.observations or args.refresh_rules) and not args.public_market_data:
         parser.error('--observations and --refresh-rules require --public-market-data')
+    from .strategy_config import select_strategy
+    strategy = select_strategy(args.strategy, interval_seconds=args.bar_seconds, config_path=args.strategy_config)
+    if strategy is not None and args.acceptance_signal:
+        parser.error('bar strategies cannot use acceptance signals')
     args.state_dir.mkdir(parents=True, exist_ok=True)
     now = [datetime.now(timezone.utc)]
     clock = (lambda: datetime.now(timezone.utc)) if args.public_market_data else lambda: now[0]
@@ -199,7 +219,8 @@ def main():
             accounts[name] = RealtimeAccount(args.state_dir / (name + '.sqlite'), market, clock=clock,
                 data_mode='public' if args.public_market_data else 'offline',
                 simulation_policy=PAPER_SIMULATION if args.paper_simulation else None,
-                acceptance_signal=args.acceptance_signal)
+                acceptance_signal=args.acceptance_signal,
+                strategy=strategy if market == Market.BINANCE_USDM else None)
             if args.paper:
                 accounts[name].control('start')
         network_results = {}
@@ -240,6 +261,16 @@ def main():
                     account = accounts['futures' if value['symbol'] == 'NVDAUSDT' else 'stocks']
                     if value['kind'] == 'control':
                         account.control(value['action'])
+                    elif value['kind'] == 'bar':
+                        from .strategy import ClosedBar
+                        from .realtime import timestamp
+                        from decimal import Decimal
+                        fields = value['bar']
+                        for key in ('opened_at', 'closed_at'):
+                            fields[key] = timestamp(fields[key])
+                        for key in ('open', 'high', 'low', 'close', 'volume'):
+                            fields[key] = Decimal(fields[key])
+                        account.closed_bar(ClosedBar(**fields))
                     else:
                         account.event(value)
         print(json.dumps(dict(accounts={key: account.health() for key, account in accounts.items()},
