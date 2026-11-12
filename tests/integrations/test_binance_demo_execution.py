@@ -40,18 +40,18 @@ def intent(key='one', side=Side.BUY, limit=None, quantity='2'):
         None if limit is None else D(limit), key)
 
 
-def setup(protocol=':memory:', paper=':memory:', fake=None, authorize=True):
+def setup(protocol=':memory:', paper=':memory:', fake=None, authorize=True, now=NOW):
     fake = DemoFixture() if fake is None else fake
     transport = DemoExecutionTransport(delegate=fake,
         authorization=DemoExecutionAuthorization() if authorize else None)
     client = FuturesClient(Credentials('demo-key', 'demo-secret', E.DEMO),
-        environment=E.DEMO, transport=transport, clock=lambda: NOW.timestamp())
-    adapter = DemoFuturesAdapter(client, PaperStore(protocol), clock=lambda: NOW)
+        environment=E.DEMO, transport=transport, clock=lambda: now.timestamp())
+    adapter = DemoFuturesAdapter(client, PaperStore(protocol), clock=lambda: now)
     observation = observe_demo_rules(adapter, source_version='OFFLINE_DEMO_FIXTURE')
     gateway = DemoExecutionGateway(adapter, observation, (Instrument('NVDAUSDT', 'USDT'),), {'USDT': D('1000')})
-    controller = TradingController(gateway, PaperStore(paper), clock=lambda: NOW,
+    controller = TradingController(gateway, PaperStore(paper), clock=lambda: now,
         limits=RiskLimits(D('500'), D('500'), D('800'), 10))
-    controller.quote(Quote('NVDAUSDT', D('100'), NOW))
+    controller.quote(Quote('NVDAUSDT', D('100'), now))
     gateway.recover(controller)
     return adapter, gateway, controller, fake
 

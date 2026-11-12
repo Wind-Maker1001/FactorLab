@@ -127,6 +127,60 @@ class DemoExecutionGateway(FuturesPaperGateway):
         self._initial_equity = None
         self._controller = None
 
+    def read_account(self, *, exclude_order_id=None):
+        from dataclasses import replace
+        from factorlab.trading.contracts import TERMINAL
+        facts = self.adapter.facts
+        if facts is None:
+            raise SafetyBlocked('Demo account evidence required')
+        if not facts.shared().assets:
+            raise SafetyBlocked('UNKNOWN Demo wallet or available balance')
+        orders = tuple(r.snapshot for key, r in self.state.orders.items()
+                       if key != exclude_order_id and r.snapshot.status not in TERMINAL)
+        local = super().read_account(exclude_order_id=exclude_order_id)
+        remote = facts.shared(orders, reconciled=self.state.reconciled and self.adapter.reconciled)
+        from factorlab.trading.contracts import AssetBalance
+        assets = tuple(AssetBalance(a.currency, a.total,
+            a.total - min(a.available, next(b.available for b in local.assets if b.currency == a.currency)))
+            for a in remote.assets)
+        return replace(remote, assets=assets, positions=tuple(self.state.positions.values()))
+
+    def reconcile(self):
+        """Import authenticated account authority after all execution deltas are booked."""
+        exchange = self.adapter.reconcile()
+        remote_ids = {row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders')}
+        if remote_ids != set(self.state.orders):
+            self.state.reconciled = False
+            return self.read_account()
+        for key, record in tuple(self.state.orders.items()):
+            remote = self.adapter.order(key)
+            if (remote.cumulative_filled_quantity, remote.cumulative_fee) != (
+                    record.snapshot.cumulative_filled_quantity, record.snapshot.cumulative_fee):
+                self.state.reconciled = False
+                return self.read_account()
+        from dataclasses import replace
+        for key, record in tuple(self.state.orders.items()):
+            self.state.orders[key] = replace(record, snapshot=self.adapter.order(key))
+        self.state.cash = {a.currency: a.total for a in exchange.assets}
+        self.state.positions = {p.instrument_id: p for p in exchange.positions}
+        self.state.reconciled = exchange.reconciled
+        return self.read_account()
+
+    def apply(self, event):
+        """Book exchange-confirmed fees rather than the Paper fee estimate."""
+        from factorlab.trading.state import advance
+        if not self.record_event(event):
+            return False
+        record = self.state.orders[event.client_order_id]
+        updated = advance(record, event)
+        delta = updated.snapshot.cumulative_filled_quantity - record.snapshot.cumulative_filled_quantity
+        fee = updated.snapshot.cumulative_fee - record.snapshot.cumulative_fee
+        if delta:
+            self._account_fill(record.snapshot.intent, delta, event.fill_price, fee)
+        self.state.orders[event.client_order_id] = updated
+        self.state.confirmations[event.client_order_id] = event
+        return True
+
     def bind_controller(self, controller):
         from factorlab.trading.control import TradingController
         if not isinstance(controller, TradingController) or controller.broker is not self:
@@ -145,6 +199,12 @@ class DemoExecutionGateway(FuturesPaperGateway):
             return super().submit_order(intent)
         finally:
             self.adapter._admitted_intent = None
+
+    def fill(self, *args, **kwargs):
+        raise SafetyBlocked('Demo fills require exchange confirmation')
+
+    def reject(self, *args, **kwargs):
+        raise SafetyBlocked('Demo rejection requires exchange confirmation')
 
     def _network_admission(self, intent):
         from decimal import Decimal
