@@ -13,7 +13,7 @@ from factorlab.backtest.execution import AShareExecutionBacktester, ExecutionBac
 from factorlab.backtest.fees import FeeSchedule
 from factorlab.errors import DataQualityError, SchemaError
 from tests.research.market_data_fixture import event
-from tests.research.test_dividend_execution import artifact, plan_for, KNOWN
+from tests.research.test_dividend_execution import artifact, plan_for, fees as zero_fees, KNOWN
 
 # Reserved fictional fixture identities, not claims about listed instruments.
 SYMBOLS = ('990001.SH', '990002.SH', '990003.SH')
@@ -125,6 +125,69 @@ def reconcile(result, config, fees):
     return dict(cash_max_abs=float(abs(cash).max()), position_max_abs=position_residual,
                 equity_max_abs=float(abs(equity).max()), receivables_reconciled=True,
                 payment_amounts_reconciled=True, fees_reconciled=True)
+
+
+@pytest.mark.parametrize('second_dividend', [False, True])
+@pytest.mark.parametrize('sell_on_ex', [False, True])
+@pytest.mark.parametrize('pay_on_ex', [False, True])
+def test_ex_open_equity_and_unpaid_liquidity(tmp_path, second_dividend, sell_on_ex, pay_on_ex):
+    calendar = pd.bdate_range('2024-01-02', periods=7)
+    days = calendar[1:]
+    ex, pay = days[2], days[2] if pay_on_ex else days[4]
+    symbols = SYMBOLS[:2]
+    source = artifact(tmp_path, 'terms.json', {'scope': LABELS})
+    frames, plans = [], {}
+    for index, symbol in enumerate(symbols):
+        cash = 20 if index == 0 else 10 if second_dividend else 0
+        prices = np.where(calendar >= ex, 100.0-cash, 100.0)
+        frames.append(pd.DataFrame(dict(date=calendar, symbol=symbol,
+            raw_open=prices, raw_close=prices, raw_high=prices+1, raw_low=prices-1,
+            volume=100000, trade_status=1, is_st=0,
+            limit_up=prices*1.1, limit_down=prices*.9)))
+        events = [event(source, security_id=symbol, event_id='opening-'+str(index),
+            revision=2, available_at=KNOWN, record_date=str(days[1].date()),
+            day=str(ex.date()), pay_date=str(pay.date()), cash=Decimal(cash))] if cash else []
+        plans[symbol] = plan_for(tmp_path / symbol, days, events=events, symbol=symbol)
+    weights = (0, 1) if sell_on_ex else (.5, .5)
+    snapshots = [(calendar[0], (.5, .5)), (days[1], weights)]
+    if not pay_on_ex:
+        snapshots.append((days[3], weights))
+    snapshots.append((pay, weights))
+    targets = pd.DataFrame([dict(date=day, symbol=symbol, target_weight=weight)
+        for day, allocation in snapshots for symbol, weight in zip(symbols, allocation)])
+    config = ExecutionBacktestConfig(initial_cash=100000)
+    result = AShareExecutionBacktester(config, zero_fees()).run_target_weights(
+        targets, pd.concat(frames, ignore_index=True),
+        pd.DataFrame(dict(date=calendar, adj_open=100., adj_close=100.)), dividend_plans=plans)
+    nav = result.nav.set_index('date')
+    comparison = result.target_comparison.query('execution_date == @ex').set_index('symbol')
+    outstanding = 15000 if second_dividend else 10000
+    assert nav.loc[ex, 'turnover_denominator'] == 100000
+    assert nav.loc[ex, 'opening_available_cash'] == 0
+    assert comparison.target_shares.to_dict() == (
+        {symbols[0]: 0, symbols[1]: 1100 if second_dividend else 1000} if sell_on_ex else
+        {symbols[0]: 600, symbols[1]: 500})
+    if not sell_on_ex:
+        assert result.trades.query('execution_date == @ex').empty
+        assert result.rejections.query('execution_date == @ex').reason.eq('cash_constraint').all()
+        assert not result.rejections.query('execution_date == @ex').empty
+        assert nav.loc[ex, 'market_value'] == 100000-outstanding
+        assert comparison.loc[symbols[0], 'actual_weight'] == .4
+        assert comparison.loc[symbols[1], 'actual_weight'] == (.45 if second_dividend else .5)
+    assert nav.portfolio_value.eq(100000).all()
+    if not pay_on_ex:
+        assert nav.loc[ex, 'recognized_receivables'] == outstanding
+        if not sell_on_ex:
+            assert nav.loc[ex:pay, 'opening_available_cash'].eq(0).all()
+            assert nav.loc[ex:days[3], 'available_cash'].eq(0).all()
+    assert nav.loc[pay, 'recognized_receivables'] == 0
+    assert nav.loc[pay, 'dividend_cash_flow'] == outstanding
+    assert nav.loc[pay, 'available_cash'] - nav.loc[pay, 'opening_available_cash'] - nav.loc[pay, 'trade_cash_flow'] == outstanding
+    assert nav.loc[days[days.get_loc(pay)+1], 'opening_available_cash'] == nav.loc[pay, 'available_cash']
+    assert result.entitlements.eligible_shares.eq(500).all()
+    assert len(result.recognitions) == len(result.payments) == len(result.entitlements) == (2 if second_dividend else 1)
+    for name in ('cash_reconciliation', 'dividend_reconciliation', 'equity_reconciliation'):
+        np.testing.assert_allclose(result.return_accounting[name], 0, atol=1e-8, rtol=0)
 
 
 def test_multisecurity_shared_account(tmp_path):
