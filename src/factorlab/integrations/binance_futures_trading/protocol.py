@@ -130,6 +130,9 @@ class FuturesClient:
                 raise SafetyBlocked('explicit matching network environment required')
             if credentials is not None and credentials.environment is not self.environment:
                 raise SafetyBlocked('credential and client environment mismatch')
+        if getattr(transport, 'environment', None) is Environment.DEMO:
+            if self.environment is not Environment.DEMO or (credentials is not None and credentials.environment is not Environment.DEMO):
+                raise SafetyBlocked('Demo transport requires matching Demo client and credentials')
         self.credentials, self.transport = credentials, transport
         self.recv_window, self.timeout, self.clock = recv_window, timeout, clock
         self.offset_ms, self.blocked_until = 0, 0.0
@@ -153,8 +156,9 @@ class FuturesClient:
         if signed:
             if self.credentials is None:
                 raise SafetyBlocked('credentials required for signed protocol')
-            if isinstance(self.transport, ReadOnlyNetworkTransport) and self.credentials.environment is not self.environment:
-                raise SafetyBlocked('credential and client environment mismatch')
+            if getattr(self.transport, 'environment', None) is not None:
+                if self.credentials.environment is not self.environment or self.transport.environment is not self.environment:
+                    raise SafetyBlocked('credential and client environment mismatch')
             params.update(timestamp=int(self.clock() * 1000) + self.offset_ms, recvWindow=self.recv_window)
             headers['X-MBX-APIKEY'] = self.credentials.key
         query = urlencode(sorted(params.items()))

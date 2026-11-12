@@ -187,6 +187,11 @@ class FuturesAdapter:
                 if (previous.client_order_id, previous.status, previous.cumulative_filled_quantity, previous.cumulative_fee) != (
                     event.client_order_id, event.status, event.cumulative_filled_quantity, event.cumulative_fee):
                     raise DataQualityError('event identity conflict')
+                record, _ = self._load(event.client_order_id)
+                if (record.snapshot.reconcile_required and previous.status == record.confirmed_status
+                        and previous.cumulative_filled_quantity == record.snapshot.cumulative_filled_quantity
+                        and previous.cumulative_fee == record.snapshot.cumulative_fee):
+                    self._save(advance(record, previous), quote)
                 return previous
             if self.db.execute('SELECT count(*) FROM futures_events').fetchone()[0] >= self.store.max_events:
                 raise ValueError('adapter event capacity exhausted')
@@ -265,6 +270,9 @@ class FuturesAdapter:
         self.disconnect()
         keys = [row[0] for row in self.db.execute('SELECT id FROM futures_orders')]
         for key in keys:
+            order = self.order(key)
+            if order.status == S.REJECTED and order.exchange_order_id is None:
+                continue
             self.query_order(key)
         facts = self.read_facts()
         known = {key for key in keys if self.order(key).status not in TERMINAL}
