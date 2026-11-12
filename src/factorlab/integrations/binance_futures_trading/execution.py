@@ -173,8 +173,12 @@ class DemoExecutionGateway(FuturesPaperGateway):
         facts = adapter.facts
         if facts is None or facts.account_id != adapter.account_id:
             raise SafetyBlocked('Demo account evidence required')
-        if facts.can_trade is not True or facts.trading_unlocked is not True:
+        if facts.can_trade is not True:
             raise SafetyBlocked('UNKNOWN or blocked account trading eligibility')
+        if facts.quantitative is not None and facts.quantitative.applicable_locks(intent.instrument_id):
+            raise SafetyBlocked('applicable quantitative trading lock')
+        if facts.quantitative is None or facts.quantitative.error:
+            raise SafetyBlocked('quantitative observation UNKNOWN; refresh account evidence')
         if not timedelta(0) <= self.clock() - facts.observed_at <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_ACCOUNT')
         mark = adapter.client.request('GET', '/fapi/v1/premiumIndex', {'symbol': plan.symbol}, signed=False)

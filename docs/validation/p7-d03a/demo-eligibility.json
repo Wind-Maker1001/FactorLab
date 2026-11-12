@@ -1,0 +1,62 @@
+{
+  "observed_at": "2026-11-12T10:36:22.714272+00:00",
+  "environment": "DEMO",
+  "symbol": "NVDAUSDT",
+  "network_writes": 0,
+  "endpoints": [
+    {
+      "endpoint": "/fapi/v1/time",
+      "read_ok": true
+    },
+    {
+      "endpoint": "/fapi/v2/account",
+      "read_ok": true
+    },
+    {
+      "endpoint": "/fapi/v1/apiTradingStatus",
+      "read_ok": true
+    }
+  ],
+  "conditions": {
+    "account_can_trade": true,
+    "quantitative_trading_unlocked": null
+  },
+  "sources": {
+    "account_v2": "https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/derivatives_trading_usds_futures/src/binance_sdk_derivatives_trading_usds_futures/rest_api/models/account_information_v2_response.py",
+    "account_v3": "https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/derivatives_trading_usds_futures/src/binance_sdk_derivatives_trading_usds_futures/rest_api/models/account_information_v3_response.py",
+    "quantitative": "https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/derivatives_trading_usds_futures/src/binance_sdk_derivatives_trading_usds_futures/rest_api/models/futures_trading_quantitative_rules_indicators_response_indicators.py",
+    "lock": "https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/derivatives_trading_usds_futures/src/binance_sdk_derivatives_trading_usds_futures/rest_api/models/futures_trading_quantitative_rules_indicators_response_indicators_account_inner.py",
+    "endpoints": "https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/clients/derivatives_trading_usds_futures/src/binance_sdk_derivatives_trading_usds_futures/rest_api/api/account_api.py"
+  },
+  "execution_admission": "BLOCKED",
+  "formal_admission": "BLOCKED",
+  "production_writes": "BLOCKED",
+  "verdicts": {
+    "account_can_trade": "VERIFIED_TRUE",
+    "quantitative_trading_unlocked": "UNKNOWN"
+  },
+  "evidence": {
+    "account_v2": {
+      "canTrade_present": true,
+      "canTrade_boolean": true
+    },
+    "quantitative": {
+      "indicators_present": true,
+      "scopes": {
+        "NVDAUSDT": {
+          "present": false,
+          "nonempty": false,
+          "explicit_boolean_rows": false,
+          "observed_locked": null
+        },
+        "ACCOUNT": {
+          "present": false,
+          "nonempty": false,
+          "explicit_boolean_rows": false,
+          "observed_locked": null
+        }
+      },
+      "unlocked_coverage_established": false
+    }
+  }
+}

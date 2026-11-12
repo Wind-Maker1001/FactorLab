@@ -37,6 +37,7 @@ class FuturesAdapter:
                 account_id += ':' + hashlib.sha256(client.credentials.key.encode()).hexdigest()
         self.client, self.store, self.account_id, self.clock = client, store, account_id, clock
         self.facts = None
+        self.quantitative_observation = None
         self.db = store.db
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_orders (id TEXT PRIMARY KEY, payload TEXT NOT NULL, quote TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
@@ -254,6 +255,7 @@ class FuturesAdapter:
         try:
             return self._read_facts()
         except (DataQualityError, ValueError, KeyError, TypeError, SafetyBlocked):
+            self.facts = None
             self.disconnect()
             raise
 
@@ -269,17 +271,29 @@ class FuturesAdapter:
         hedge = mode.get('dualSidePosition')
         if hedge is not None and type(hedge) is not bool:
             raise DataQualityError('invalid position mode')
-        unlocked = None
+        from .quantitative import account_can_trade, observe_quantitative
+        quantitative = None
+        can_trade = account_can_trade(account)
         from .network import DemoNetworkTransport
         if type(self.client.transport) is DemoNetworkTransport:
-            status = self.client.request('GET', '/fapi/v1/apiTradingStatus', {'symbol': 'NVDAUSDT'})
-            indicators = status.get('indicators', {})
-            locks = [row.get('isLocked') for rows in indicators.values() for row in rows]
-            unlocked = all(value is False for value in locks) if locks else None
+            if 'canTrade' not in account:
+                can_trade = account_can_trade(account, self.client.request('GET', '/fapi/v2/account'))
+            from .quantitative import QuantitativeObservation
+            try:
+                status = self.client.request('GET', '/fapi/v1/apiTradingStatus')
+            except (DataQualityError, OSError, TimeoutError) as error:
+                category = error.category if isinstance(error, ExchangeError) else type(error).__name__
+                self.quantitative_observation = QuantitativeObservation(error=category)
+                raise
+            quantitative = observe_quantitative(status)
+            self.quantitative_observation = quantitative
+            if quantitative.error:
+                self.facts = None
+                raise DataQualityError('quantitative observation UNKNOWN: ' + quantitative.error)
         self.facts = AccountFacts(self.account_id, self.clock(), tuple(account.get('assets', ())),
             tuple(account.get('positions', ())), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
             isinstance(account.get('assets'), list) and isinstance(account.get('positions'), list),
-            account.get('canTrade'), unlocked)
+            can_trade, quantitative)
         return self.facts
 
     def read_account(self):

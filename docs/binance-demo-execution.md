@@ -76,8 +76,13 @@ Bind the existing controller using `gateway.bind_controller(controller)`; its
 process-local admitted intent proves the shared risk path was traversed. Rules
 must be the current process's account-bound observation from the same Demo client.
 
-Before dispatch, admission checks account trading eligibility, quantitative
-trading locks, fresh one-way account evidence, Demo mark price, percent-price
+Before dispatch, admission requires explicit canTrade and observes quantitative
+lock events: ACCOUNT or order-symbol isLocked=true blocks, false records only
+that named indicator as NOT_LOCKED, and valid omitted indicators are NOT_REPORTED
+without independently blocking Demo. No global unlocked certificate is required.
+Failed, malformed or conflicting observations remain UNKNOWN and use existing
+classified errors, cooldown and reconciliation; failure is not an absent lock.
+Admission also checks fresh one-way account evidence, Demo mark price, percent-price
 bands, position-risk restriction, order count, conservative aggregate collateral,
 virtual loss and every required plan bound. Existing exchange filters, brackets,
 mode/configuration and shared risk checks still apply. The adapter supplies a
