@@ -29,6 +29,12 @@ class FuturesAdapter:
     Restart/disconnect require full REST account/order reconciliation.
     """
     def __init__(self, client, store, *, account_id='offline', clock=lambda: datetime.now(timezone.utc)):
+        if client.environment is not None:
+            if account_id != client.environment.account_id:
+                raise SafetyBlocked('explicit environment account identity required')
+            account_id = client.environment.name + ':' + account_id
+            if client.credentials is not None:
+                account_id += ':' + hashlib.sha256(client.credentials.key.encode()).hexdigest()
         self.client, self.store, self.account_id, self.clock = client, store, account_id, clock
         self.facts = None
         self.db = store.db

@@ -16,7 +16,7 @@ from factorlab.integrations.binance_futures_trading.demo import run
 from factorlab.integrations.binance_futures_trading.fake import FakeTransport, NOW, MS, synthetic_rules
 from factorlab.integrations.binance_futures_trading.protocol import (
     Credentials, ExchangeError, FuturesClient, OfflineTransport, OutcomeUnknown,
-    ReadOnlyNetworkTransport, SafetyBlocked,
+    ReadOnlyNetworkTransport, SafetyBlocked, Environment,
 )
 from factorlab.integrations.binance_futures_trading.rules import order_parameters, current_tier, observe_rules
 from factorlab.integrations.binance_futures_trading.stream import UserDataEvents
@@ -85,7 +85,8 @@ def test_explicit_read_transport_builds_only_authenticated_get(monkeypatch):
         return Result()
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener',
                         lambda *args: SimpleNamespace(open=open_read))
-    client = FuturesClient(Credentials('read-key', 'read-secret'),
+    client = FuturesClient(Credentials('read-key', 'read-secret', Environment.PRODUCTION),
+        environment=Environment.PRODUCTION,
         transport=ReadOnlyNetworkTransport(permit_account_read=True), clock=lambda: NOW.timestamp())
     assert client.request('GET', '/fapi/v3/account') == {'assets': [], 'positions': []}
     assert calls[0].get_method() == 'GET'
@@ -303,13 +304,14 @@ def test_real_network_and_mutating_configuration_are_blocked(monkeypatch):
     def forbidden(*args, **kwargs):
         pytest.fail('network must not execute')
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener', forbidden)
-    credentials = Credentials('k', 's')
+    credentials = Credentials('k', 's', Environment.PRODUCTION)
     with pytest.raises(SafetyBlocked):
         FuturesClient(credentials).request('GET', '/fapi/v3/account')
-    client = FuturesClient(credentials, transport=ReadOnlyNetworkTransport())
+    client = FuturesClient(credentials, environment=Environment.PRODUCTION, transport=ReadOnlyNetworkTransport())
     with pytest.raises(SafetyBlocked):
         client.request('GET', '/fapi/v3/account')
-    permitted = FuturesClient(credentials, transport=ReadOnlyNetworkTransport(permit_account_read=True))
+    permitted = FuturesClient(credentials, environment=Environment.PRODUCTION,
+                              transport=ReadOnlyNetworkTransport(permit_account_read=True))
     for method, path in [('POST', '/fapi/v1/order'), ('DELETE', '/fapi/v1/order'),
                          ('POST', '/fapi/v1/leverage'), ('POST', '/fapi/v1/marginType'), ('POST', '/sapi/v1/asset/transfer')]:
         with pytest.raises(SafetyBlocked):

@@ -53,12 +53,15 @@ def symbol(value):
 class Client:
     """Authentication is read only from the process environment, never CLI args."""
 
-    def __init__(self, *, network=False, request=transport, timeout=30):
+    def __init__(self, *, network=False, request=transport, timeout=30, credentials=None):
         if not network:
             raise ValueError('network access requires explicit opt-in')
         if timeout <= 0:
             raise ValueError('timeout must be positive')
-        key = os.environ.get('BINANCE_EQUITY_API_KEY')
+        from factorlab.integrations.binance_futures_trading.protocol import Environment
+        if credentials is not None and credentials.environment is not Environment.PRODUCTION:
+            raise ValueError('Stocks requires production read-only credentials')
+        key = credentials.key if credentials is not None else os.environ.get('BINANCE_EQUITY_API_KEY')
         if not key or not key.isascii() or not key.isalnum():
             raise MarketDataFailure('MISSING_OR_INVALID_API_KEY')
         self._key = key
