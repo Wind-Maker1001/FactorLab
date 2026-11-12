@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 from factorlab.errors import DataQualityError
+from .quantitative import QuantitativeObservation
 from factorlab.integrations.binance.market import _decimal
 from factorlab.trading import AccountSnapshot, AssetBalance, Market, Position
 
@@ -33,7 +34,7 @@ class AccountFacts:
     symbol_config: tuple[dict, ...] = ()
     source_complete: bool = False
     can_trade: bool | None = None
-    trading_unlocked: bool | None = None
+    quantitative: QuantitativeObservation | None = None
 
     def usdt(self):
         row = next((a for a in self.assets if a.get('asset') == 'USDT'), {})

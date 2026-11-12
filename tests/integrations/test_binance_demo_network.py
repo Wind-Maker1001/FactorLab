@@ -29,11 +29,14 @@ from factorlab.trading import Side, OrderStatus as S
 
 class NetworkFixture(DemoFixture):
     def __call__(self, request, timeout):
+        if request.path == '/fapi/v2/account':
+            self.calls.append((request.method, request.path, parse_qs(request.query)))
+            return Response(200, {}, b'{}')
         if request.path in ('/fapi/v1/premiumIndex', '/fapi/v1/apiTradingStatus'):
             self.calls.append((request.method, request.path, parse_qs(request.query)))
             value = ({'symbol': 'NVDAUSDT', 'markPrice': '100', 'time': MS}
                      if request.path.endswith('premiumIndex') else
-                     {'indicators': {'NVDAUSDT': [{'isLocked': False}]}})
+                     {'indicators': {'NVDAUSDT': [{'indicator': 'UFR', 'isLocked': False}]}})
             return Response(200, {}, json.dumps(value).encode())
         pending = self.response_next
         if request.method == 'GET':
@@ -194,7 +197,9 @@ def test_admission_rejects(wired, condition):
     elif condition == 'canTrade':
         a.facts = replace(a.facts, can_trade=None)
     elif condition == 'locked':
-        a.facts = replace(a.facts, trading_unlocked=None)
+        from factorlab.integrations.binance_futures_trading.quantitative import observe_quantitative
+        a.facts = replace(a.facts, quantitative=observe_quantitative(
+            {'indicators': {'ACCOUNT': [{'indicator': 'TMV', 'isLocked': True}]}}))
     elif condition == 'kill':
         c.set_kill_switch()
     elif condition == 'quantity':
@@ -356,8 +361,94 @@ def test_preflight_retains_only_public_rules_and_conclusions(monkeypatch):
         return result
     monkeypatch.setattr(client, 'request', read)
     report = inspect(client)
-    assert report['network_writes'] == 0 and len(report['endpoints']) == 9
+    assert report['network_writes'] == 0 and len(report['endpoints']) == 10
     assert report['execution_admission'] == 'BLOCKED'
     assert 'account_can_trade' in report['unknown']
-    assert 'quantitative_trading_unlocked' in report['unknown']
+    assert 'quantitative_trading_unlocked' not in report['conditions']
+    assert report['quantitative_risk']['scopes']['ACCOUNT'] == {'status': 'NOT_REPORTED'}
     assert 'NEVER_RETAIN_ACCOUNT_RESPONSE' not in json.dumps(report)
+
+
+@pytest.mark.parametrize('indicators, blocked', [
+    ({}, False), ({'NVDAUSDT': []}, False),
+    ({'NVDAUSDT': [{'indicator': 'UFR', 'isLocked': False}]}, False),
+    ({'ACCOUNT': [{'indicator': 'TMV', 'isLocked': False}]}, False),
+    ({'BTCUSDT': [{'indicator': 'UFR', 'isLocked': True}]}, False),
+    ({'NVDAUSDT': [{'indicator': 'NEW', 'isLocked': True}]}, True),
+    ({'ACCOUNT': [{'indicator': 'TMV', 'isLocked': True}]}, True),
+])
+def test_concrete_lock_admission_through_controller(wired, indicators, blocked):
+    from factorlab.integrations.binance_futures_trading.quantitative import observe_quantitative
+    a, _, c = setup(wired)
+    a.facts = replace(a.facts, quantitative=observe_quantitative({'indicators': indicators}))
+    if blocked:
+        with pytest.raises(SafetyBlocked, match='quantitative trading lock'):
+            c.submit(intent('d03-event'))
+        assert not [r for r in wired[1] if r.get_method() != 'GET']
+    else:
+        assert c.submit(intent('d03-event')).status == S.SUBMITTED
+
+
+@pytest.mark.parametrize('response, category', [
+    (Response(429, {'Retry-After': '60'}, b'{"code":-1003}'), 'RATE_LIMIT'),
+    (Response(401, {}, b'{"code":-2015}'), 'AUTH'),
+    (Response(400, {}, b'{"code":-1022}'), 'SIGNATURE'),
+    (Response(503, {}, b'{"code":-1000}'), 'EXCHANGE_REJECTED'),
+    (TimeoutError('private transport details'), 'DataQualityError'),
+    (Response(200, {}, b'{"indicators":null}'), 'MALFORMED_RESPONSE'),
+    (Response(200, {}, b'{"indicators":{"ACCOUNT":[{"indicator":"TMV","isLocked":true},{"indicator":"TMV","isLocked":false}]}}'), 'CONFLICTING_FIELDS'),
+])
+def test_failed_observation_disconnects_without_retry(wired, monkeypatch, response, category):
+    from factorlab.errors import DataQualityError
+    a, _, _ = setup(wired)
+    original = a.client.transport.__class__.__call__
+    reads = []
+    def respond(transport, request, timeout):
+        if request.path == '/fapi/v1/apiTradingStatus':
+            reads.append(request.path)
+            if isinstance(response, Exception):
+                raise response
+            return response
+        return original(transport, request, timeout)
+    monkeypatch.setattr(a.client.transport.__class__, '__call__', respond)
+    with pytest.raises(DataQualityError, match='account read failed' if isinstance(response, TimeoutError) else category):
+        a.read_facts()
+    assert len(reads) == 1
+    assert not a.reconciled
+    assert a.facts is None
+    assert a.quantitative_observation.error == category
+    assert a.quantitative_observation.report('NVDAUSDT')['status'] == 'UNKNOWN'
+    assert not [r for r in wired[1] if r.get_method() != 'GET']
+
+
+@pytest.mark.parametrize('flag', [True, False, None, 'true'])
+def test_demo_refresh_uses_v2_can_trade_when_v3_omits_it(wired, monkeypatch, flag):
+    a, _, _ = setup(wired)
+    original = a.client.request
+    calls = []
+    def request(method, path, params=None, **kwargs):
+        if path == '/fapi/v2/account':
+            calls.append(path)
+            return {'canTrade': flag}
+        payload = original(method, path, params, **kwargs)
+        if path == '/fapi/v3/account':
+            payload.pop('canTrade')
+        return payload
+    monkeypatch.setattr(a.client, 'request', request)
+    facts = a.read_facts()
+    assert facts.can_trade is (flag if type(flag) is bool else None)
+    assert calls == ['/fapi/v2/account']
+
+
+def test_empty_live_shape_observation_refreshes_and_admits(wired, monkeypatch):
+    a, _, c = setup(wired)
+    original = a.client.request
+    def request(method, path, params=None, **kwargs):
+        if path == '/fapi/v1/apiTradingStatus':
+            assert not params
+            return {'indicators': {}}
+        return original(method, path, params, **kwargs)
+    monkeypatch.setattr(a.client, 'request', request)
+    facts = a.read_facts()
+    assert facts.quantitative.report('NVDAUSDT')['scopes']['ACCOUNT']['status'] == 'NOT_REPORTED'
+    assert c.submit(intent('d03-empty')).status == S.SUBMITTED

@@ -5,11 +5,13 @@ from urllib.parse import parse_qs, urlsplit
 import pytest
 
 from factorlab.integrations.binance_futures_trading.preflight import (
-    account_can_trade, inspect_eligibility, quantitative_evidence,
+    account_can_trade, inspect_eligibility,
 )
 from factorlab.integrations.binance_futures_trading.protocol import (
     Credentials, Environment, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked,
 )
+
+from factorlab.integrations.binance_futures_trading.quantitative import observe_quantitative
 
 
 @pytest.mark.parametrize('flag, expected', [
@@ -40,39 +42,42 @@ def status(symbol=False, account=False):
     }}
 
 
-@pytest.mark.parametrize('symbol, account, expected', [
-    (False, False, None), (True, False, False), (False, True, False),
-    (True, True, False), (1, False, None), (False, 'false', None),
-])
-def test_checks_symbol_and_account_without_certifying_partial_all_clear(symbol, account, expected):
-    value, evidence = quantitative_evidence(status(symbol, account))
-    assert value is expected
-    assert evidence['unlocked_coverage_established'] is False
+@pytest.mark.parametrize('symbol, account', [(False, False), (True, False), (False, True)])
+def test_observed_lock_events(symbol, account):
+    observation = observe_quantitative(status(symbol, account))
+    assert observation.error is None
+    assert bool(observation.applicable_locks('NVDAUSDT')) is (symbol or account)
+    assert observation.report('NVDAUSDT')['scopes']['ACCOUNT']['TMV'] == ('LOCKED' if account else 'NOT_LOCKED')
 
 
-@pytest.mark.parametrize('payload', [
-    None, [], {}, {'indicators': None}, {'indicators': []}, {'indicators': {}},
-    {'data': status()},
-    {'indicators': {'NVDAUSDT': [{'indicator': 'UFR', 'isLocked': False}]}},
-    {'indicators': {'ACCOUNT': [{'indicator': 'TMV', 'isLocked': False}]}},
-    {'indicators': {'NVDAUSDT': [], 'ACCOUNT': []}},
-])
-def test_missing_or_unknown_indicator_structure_is_unknown(payload):
-    assert quantitative_evidence(payload)[0] is None
+@pytest.mark.parametrize('payload', [None, [], {}, {'indicators': None}, {'indicators': []},
+    {'indicators': {'ACCOUNT': [None]}}, {'indicators': {'ACCOUNT': [{'indicator': 'TMV', 'isLocked': 1}]}}])
+def test_invalid_response_is_unknown(payload):
+    observation = observe_quantitative(payload)
+    assert observation.error == 'MALFORMED_RESPONSE'
+    assert observation.report('NVDAUSDT')['status'] == 'UNKNOWN'
 
 
-@pytest.mark.parametrize('rows', [
-    {}, [None], [{}], [{'indicator': 'UFR'}], [{'isLocked': False}],
-    [{'indicator': 'UNKNOWN', 'isLocked': False}],
-    [{'indicator': 'UNKNOWN', 'isLocked': True}],
-    [{'indicator': '', 'isLocked': False}],
-    [{'indicator': 'UFR', 'isLocked': False}, {'indicator': 'UFR', 'isLocked': True}],
-    [{'indicator': 'UFR', 'isLocked': False}, {'indicator': 'UFR', 'isLocked': False}],
-])
-def test_incomplete_and_duplicate_indicators_are_unknown(rows):
-    payload = status()
-    payload['indicators']['NVDAUSDT'] = rows
-    assert quantitative_evidence(payload)[0] is None
+@pytest.mark.parametrize('indicators', [{}, {'NVDAUSDT': []}, {'ACCOUNT': []}])
+def test_not_reported_is_not_a_lock(indicators):
+    observation = observe_quantitative({'indicators': indicators})
+    assert observation.error is None
+    assert observation.applicable_locks('NVDAUSDT') == ()
+    assert observation.report('NVDAUSDT')['scopes']['ACCOUNT'] == {'status': 'NOT_REPORTED'}
+
+
+def test_conflict_retains_lock_and_reports_unknown():
+    observation = observe_quantitative({'indicators': {'ACCOUNT': [
+        {'indicator': 'NEW', 'isLocked': True}, {'indicator': 'NEW', 'isLocked': False}]}})
+    assert observation.error == 'CONFLICTING_FIELDS'
+    assert observation.applicable_locks('NVDAUSDT') == (('ACCOUNT', 'NEW'),)
+
+
+def test_unknown_named_indicator_and_other_contract():
+    observation = observe_quantitative({'indicators': {'BTCUSDT': [{'indicator': 'NEW', 'isLocked': True}]}})
+    assert observation.error is None
+    assert not observation.applicable_locks('NVDAUSDT')
+    assert observation.applicable_locks('BTCUSDT')
 
 
 @pytest.fixture
@@ -131,8 +136,8 @@ def test_bounded_signed_reads_and_sanitized_evidence(readonly):
     client, _, calls = readonly
     result = inspect_eligibility(client)
     assert calls == ['/fapi/v1/time', '/fapi/v2/account', '/fapi/v1/apiTradingStatus']
-    assert result['verdicts'] == {'account_can_trade': 'VERIFIED_TRUE',
-                                  'quantitative_trading_unlocked': 'UNKNOWN'}
+    assert result['verdicts'] == {'account_can_trade': 'VERIFIED_TRUE'}
+    assert result['evidence']['quantitative']['scopes']['ACCOUNT'] == {'status': 'NOT_REPORTED'}
     assert result['execution_admission'] == result['formal_admission'] == result['production_writes'] == 'BLOCKED'
     assert result['network_writes'] == 0
     serialized = json.dumps(result)
@@ -177,3 +182,13 @@ def test_production_client_rejected_before_read():
         transport=ReadOnlyNetworkTransport(environment=Environment.PRODUCTION, permit_account_read=True))
     with pytest.raises(ValueError, match='Demo read-only'):
         inspect_eligibility(client)
+
+
+def test_failed_indicator_read_is_unknown_not_not_reported(readonly):
+    client, payloads, calls = readonly
+    payloads['/fapi/v1/apiTradingStatus'] = TimeoutError('private details')
+    observation = inspect_eligibility(client)['evidence']['quantitative']
+    assert observation['status'] == 'UNKNOWN'
+    assert observation['missing_indicator_state'] == 'UNKNOWN'
+    assert observation['error'] == 'DataQualityError'
+    assert calls.count('/fapi/v1/apiTradingStatus') == 1

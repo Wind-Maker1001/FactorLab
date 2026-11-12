@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 from factorlab.errors import DataQualityError
+from .quantitative import account_can_trade, observe_quantitative, QuantitativeObservation
 from .protocol import Credentials, Environment, ExchangeError, FuturesClient, ReadOnlyNetworkTransport
 
 
@@ -20,48 +21,6 @@ SOURCES = {
 }
 
 
-def account_can_trade(*accounts):
-    flags = [account['canTrade'] for account in accounts
-             if isinstance(account, dict) and 'canTrade' in account]
-    if not flags or any(type(flag) is not bool for flag in flags):
-        return None
-    return flags[0] if all(flag is flags[0] for flag in flags) else None
-
-
-def quantitative_evidence(status):
-    indicators = status.get('indicators') if isinstance(status, dict) else None
-    evidence = {'indicators_present': isinstance(indicators, dict), 'scopes': {}}
-    observations = []
-    valid = isinstance(indicators, dict)
-    for scope in ('NVDAUSDT', 'ACCOUNT'):
-        rows = indicators.get(scope) if isinstance(indicators, dict) else None
-        fields = {'present': isinstance(rows, list), 'nonempty': bool(rows) if isinstance(rows, list) else False}
-        flags = {}
-        complete_rows = isinstance(rows, list) and bool(rows)
-        for row in rows if isinstance(rows, list) else []:
-            if not isinstance(row, dict):
-                complete_rows = False
-                continue
-            name, locked = row.get('indicator'), row.get('isLocked')
-            known = {'TMV'} if scope == 'ACCOUNT' else {'UFR', 'IFER', 'GCR', 'DR'}
-            if not isinstance(name, str) or name not in known or type(locked) is not bool:
-                complete_rows = False
-                continue
-            if name in flags:
-                complete_rows = False
-            flags[name] = locked
-        fields['explicit_boolean_rows'] = complete_rows
-        fields['observed_locked'] = any(flags.values()) if complete_rows else None
-        evidence['scopes'][scope] = fields
-        valid = valid and complete_rows
-        observations.extend(flags.values())
-    # TODO: Establish an exhaustive official indicator contract before certifying
-    # all-clear. Optional SDK fields do not define absent indicators as unlocked.
-    evidence['unlocked_coverage_established'] = False
-    conclusion = False if valid and any(observations) else None
-    return conclusion, evidence
-
-
 def verdict(value):
     return 'VERIFIED_TRUE' if value is True else 'VERIFIED_FALSE' if value is False else 'UNKNOWN'
 
@@ -74,6 +33,7 @@ def inspect_eligibility(client):
               'sources': SOURCES, 'execution_admission': 'BLOCKED', 'formal_admission': 'BLOCKED',
               'production_writes': 'BLOCKED'}
     values = {}
+    quantitative_error = None
     for path in ('/fapi/v1/time', '/fapi/v2/account', '/fapi/v1/apiTradingStatus'):
         row = {'endpoint': path}
         try:
@@ -82,20 +42,24 @@ def inspect_eligibility(client):
             else:
                 values[path] = client.request('GET', path, {}, signed=True)
             row['read_ok'] = True
-        except (ExchangeError, DataQualityError, OSError, TimeoutError):
+        except (ExchangeError, DataQualityError, OSError, TimeoutError) as error:
             row['read_ok'] = False
+            row['error'] = error.category if isinstance(error, ExchangeError) else type(error).__name__
+            if path.endswith('/apiTradingStatus'):
+                quantitative_error = row['error']
         result['endpoints'].append(row)
         if path.endswith('/time') and not row['read_ok']:
             break
     account = values.get('/fapi/v2/account')
     can_trade = account_can_trade(account)
-    unlocked, locks = quantitative_evidence(values.get('/fapi/v1/apiTradingStatus'))
-    result['conditions'] = {'account_can_trade': can_trade, 'quantitative_trading_unlocked': unlocked}
+    locks = (QuantitativeObservation(error=quantitative_error) if quantitative_error else
+             observe_quantitative(values.get('/fapi/v1/apiTradingStatus')))
+    result['conditions'] = {'account_can_trade': can_trade}
     result['verdicts'] = {name: verdict(value) for name, value in result['conditions'].items()}
     result['evidence'] = {
         'account_v2': {'canTrade_present': isinstance(account, dict) and 'canTrade' in account,
                        'canTrade_boolean': can_trade},
-        'quantitative': locks,
+        'quantitative': locks.report('NVDAUSDT'),
     }
     return result
 
@@ -157,8 +121,11 @@ def inspect(client):
     orders = values.get('/fapi/v1/openOrders')
     conditions['orders_known'] = isinstance(orders, list)
     conditions['no_existing_orders'] = not orders if isinstance(orders, list) else None
-    status = values.get('/fapi/v1/apiTradingStatus', {})
-    conditions['quantitative_trading_unlocked'], _ = quantitative_evidence(status)
+    status = values.get('/fapi/v1/apiTradingStatus')
+    endpoint = next(row for row in result['endpoints'] if row['endpoint'] == '/fapi/v1/apiTradingStatus')
+    observation = (observe_quantitative(status) if endpoint['result'] == 'READ_OK' else
+                   QuantitativeObservation(error=endpoint['result']))
+    result['quantitative_risk'] = observation.report('NVDAUSDT')
     result['unknown'] = [k for k, v in conditions.items() if v is None or k.endswith('_known') and not v]
     result['plan'] = 'NOT_AUTHORIZED_BOUNDARIES_UNSET'
     result['execution_admission'] = 'BLOCKED'
