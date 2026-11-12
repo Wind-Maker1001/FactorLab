@@ -28,4 +28,40 @@ def parse(value, received):
     return result
 
 
+def closed_kline(value, received, *, interval_seconds):
+    """Normalize only exchange-confirmed closed UTC buckets; no trade synthesis."""
+    from factorlab.trading.strategy import ClosedBar
+    value = value.get('data', value)
+    kline = value['k']
+    if value['e'] != 'kline' or value['s'] != 'NVDAUSDT' or kline['s'] != 'NVDAUSDT':
+        raise ValueError('unexpected kline identity')
+    if type(kline['x']) is not bool:
+        raise ValueError('explicit close confirmation required')
+    if not kline['x']:
+        return None
+    intervals = {60: '1m', 180: '3m', 300: '5m', 900: '15m', 1800: '30m',
+                 3600: '1h', 7200: '2h', 14400: '4h', 21600: '6h',
+                 28800: '8h', 43200: '12h', 86400: '1d'}
+    if interval_seconds not in intervals or kline['i'] != intervals[interval_seconds]:
+        raise ValueError('kline frequency mismatch')
+    if any(type(v) is not int or v < 0 for v in (kline['t'], kline['T'], value['E'])):
+        raise ValueError('invalid kline timestamp')
+    if kline['t'] % (interval_seconds * 1000) or kline['T'] + 1 - kline['t'] != interval_seconds * 1000:
+        raise ValueError('invalid kline boundary')
+    end = datetime.fromtimestamp((kline['T'] + 1) / 1000, timezone.utc)
+    emitted = datetime.fromtimestamp(value['E'] / 1000, timezone.utc)
+    if not end <= emitted <= received or (received - emitted).total_seconds() > 5:
+        raise ValueError('future or stale closed kline')
+    return ClosedBar('NVDAUSDT', datetime.fromtimestamp(kline['t'] / 1000, timezone.utc), end,
+        *(Decimal(kline[key]) for key in ('o', 'h', 'l', 'c', 'v')),
+        interval_seconds, 'BINANCE_USDM_PUBLIC_REST')
+
+
+def strategy_stream_url(interval_seconds):
+    intervals = {60: '1m', 180: '3m', 300: '5m', 900: '15m', 1800: '30m',
+                 3600: '1h', 7200: '2h', 14400: '4h', 21600: '6h',
+                 28800: '8h', 43200: '12h', 86400: '1d'}
+    return URL + '/nvdausdt@kline_' + intervals[interval_seconds]
+
+
 URL = 'wss://fstream.binance.com/market/stream?streams=nvdausdt@aggTrade/nvdausdt@markPrice@1s'

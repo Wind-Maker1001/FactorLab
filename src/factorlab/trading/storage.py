@@ -109,8 +109,12 @@ class PaperStore:
                         (contracts.CONTRACT_VERSION, payload))
 
     def record_event(self, event):
-        payload = dumps(event)
-        row = self.db.execute("SELECT payload FROM events WHERE id=?", (event.event_id,)).fetchone()
+        return self.record_metadata(event.event_id, event)
+
+    def record_metadata(self, event_id, value):
+        """Append strategy evidence to the existing journal, without economic posting."""
+        payload = dumps(value)
+        row = self.db.execute("SELECT payload FROM events WHERE id=?", (event_id,)).fetchone()
         if row is not None:
             if row[0] != payload:
                 raise ValueError("event identity reused with a different payload")
@@ -119,7 +123,7 @@ class PaperStore:
             raise ValueError("event metadata too large")
         if self.db.execute("SELECT count(*) FROM events").fetchone()[0] >= self.max_events:
             raise ValueError("paper event storage budget exhausted")
-        self.db.execute("INSERT INTO events VALUES(?,?)", (event.event_id, payload))
+        self.db.execute("INSERT INTO events VALUES(?,?)", (event_id, payload))
         return True
 
     def close(self):

@@ -150,6 +150,10 @@ class TradingController:
         return result("APPROVED")
 
     def submit(self, intent):
+        return self._atomic(lambda: self._submit_in_transaction(intent))
+
+    def _submit_in_transaction(self, intent):
+        """Submit inside an existing account transaction, including strategy state."""
         def operation():
             old = self.broker.state.orders.get(intent.client_order_id)
             if old is not None:
@@ -180,7 +184,7 @@ class TradingController:
                 return None
             finally:
                 self._admitted_intent = None
-        return self._atomic(operation)
+        return operation()
 
     def cancel(self, order_id):
         def operation():

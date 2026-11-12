@@ -112,13 +112,20 @@ def prepare_inputs(bars, calendar, config, *, signal_price_column="adj_close"):
     return frame.reset_index(drop=True), research
 
 
+def crossover_indicators(prices, short_window, long_window):
+    """Close-only MA values and confirmed crossings, independent of venue rules."""
+    short = prices.rolling(short_window, min_periods=short_window).mean()
+    long = prices.rolling(long_window, min_periods=long_window).mean()
+    buy = (short.shift(1) <= long.shift(1)) & (short > long)
+    sell = (short.shift(1) >= long.shift(1)) & (short < long)
+    return short, long, buy, sell
+
+
 def moving_average_signals(bars, calendar, config=None, *, signal_price_column="adj_close"):
     config = config or DualMAConfig()
     frame, research = prepare_inputs(bars, calendar, config, signal_price_column=signal_price_column)
-    short = frame[signal_price_column].rolling(config.short_window, min_periods=config.short_window).mean()
-    long = frame[signal_price_column].rolling(config.long_window, min_periods=config.long_window).mean()
-    buy = (short.shift(1) <= long.shift(1)) & (short > long)
-    sell = (short.shift(1) >= long.shift(1)) & (short < long)
+    short, long, buy, sell = crossover_indicators(
+        frame[signal_price_column], config.short_window, config.long_window)
     result = frame[["date", "symbol", signal_price_column]].copy()
     result["ma_short"], result["ma_long"] = short, long
     result["signal"] = np.select([buy, sell], ["buy", "sell"], default="hold")

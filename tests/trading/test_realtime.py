@@ -189,7 +189,7 @@ def test_real_trade_paths_blocked(monkeypatch):
     c = FuturesClient(environment=Environment.PRODUCTION,
         transport=ReadOnlyNetworkTransport(environment=Environment.PRODUCTION, permit_account_read=True))
     for method in ['POST', 'DELETE']:
-        with pytest.raises(SafetyBlocked, match='NO LIVE MONEY: all real trading requests forbidden'):
+        with pytest.raises(SafetyBlocked, match='NO LIVE MONEY: production or unauthorized network write forbidden'):
             c.request(method, '/fapi/v1/order')
 
 
