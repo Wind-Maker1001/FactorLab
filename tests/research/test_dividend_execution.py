@@ -34,10 +34,10 @@ def artifact(root, name, payload):
     return snapshot_file(path, "SYNTHETIC_EXECUTION_EVIDENCE", ACQUIRED)
 
 
-def plan_for(tmp_path, dates, *, pay="2024-01-08", rate="0", events=None):
+def plan_for(tmp_path, dates, *, pay="2024-01-08", rate="0", events=None, symbol=SYMBOL):
     source = artifact(tmp_path, "source.json", {"scope": "SYNTHETIC_ONLY"})
     if events is None:
-        events = [event(source, security_id=SYMBOL, revision=2, available_at=KNOWN, pay_date=pay)]
+        events = [event(source, security_id=symbol, revision=2, available_at=KNOWN, pay_date=pay)]
     supplements, artifacts = [], [source]
     for i, action in enumerate(events):
         original = replace(action, revision=action.revision-1, status="PROPOSED", record_date=None,
@@ -53,11 +53,11 @@ def plan_for(tmp_path, dates, *, pay="2024-01-08", rate="0", events=None):
         supplements.append(EventSupplement(original, "synthetic-v1", link))
     start, end = str(dates[0].date()), str(dates[-1].date())
     coverage_source = artifact(tmp_path, "coverage.json", dict(
-        security_id=SYMBOL, start=start, end=end,
+        security_id=symbol, start=start, end=end,
         event_revisions=sorted([[e.event_id, e.revision] for e in events]),
         completeness_statement="EXHAUSTIVE SYNTHETIC FIXTURE; no external market claim"))
     artifacts.append(coverage_source)
-    coverage = EventCoverage(SYMBOL, start, end, KNOWN, coverage_source.sha256, "COMPLETE")
+    coverage = EventCoverage(symbol, start, end, KNOWN, coverage_source.sha256, "COMPLETE")
     snap = SourceSnapshot("SYNTHETIC_EXECUTION_EVIDENCE", "synthetic-v1", ACQUIRED,
                           tuple(events), (coverage,), tuple(artifacts), (), True)
     taxes = tuple(DividendTax(e.event_id, "SYNTHETIC_EXPLICIT", rate, "SYNTHETIC_FLAT_RATE_V1")
