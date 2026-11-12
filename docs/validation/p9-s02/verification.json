@@ -1,0 +1,21 @@
+{
+  "labels": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED",
+    "SCENARIO_CONDITIONAL_NOT_CERTIFIED",
+    "NOT_HISTORICAL_VALUATION_CERTIFIED"
+  ],
+  "full_ledger_existing_evaluator_passed": true,
+  "daily_security_cash_cost_identity": true,
+  "pairwise_cumulative_nav_identity": true,
+  "tolerance_yuan": 1e-07,
+  "max_daily_residual_yuan": {
+    "A": 2.332853910047561e-10,
+    "B1": 2.000888343900442e-10,
+    "B2": 2.4010660126805305e-10,
+    "C": 2.000888343900442e-10
+  },
+  "max_pair_residual_yuan": 3.319655661471188e-10
+}
