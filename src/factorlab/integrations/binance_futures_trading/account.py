@@ -32,6 +32,8 @@ class AccountFacts:
     hedge_mode: bool | None
     symbol_config: tuple[dict, ...] = ()
     source_complete: bool = False
+    can_trade: bool | None = None
+    trading_unlocked: bool | None = None
 
     def usdt(self):
         row = next((a for a in self.assets if a.get('asset') == 'USDT'), {})

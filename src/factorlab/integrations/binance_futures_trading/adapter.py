@@ -84,7 +84,9 @@ class FuturesAdapter:
 
     def submit_order(self, intent):
         if not isinstance(self.client.transport, OfflineTransport):
-            raise SafetyBlocked('NO LIVE MONEY: submit requires offline transport')
+            from .network import demo_network_permitted
+            if not demo_network_permitted(self.client) or not self.client.transport._admission:
+                raise SafetyBlocked('NO LIVE MONEY: submit requires offline or admitted Demo transport')
         params = order_parameters(intent)
         with self.store.transaction():
             row = self.db.execute('SELECT id FROM futures_orders WHERE id=?', (intent.client_order_id,)).fetchone()
@@ -125,7 +127,9 @@ class FuturesAdapter:
 
     def cancel_order(self, client_order_id):
         if not isinstance(self.client.transport, OfflineTransport):
-            raise SafetyBlocked('NO LIVE MONEY: cancel requires offline transport')
+            from .network import demo_network_permitted
+            if not demo_network_permitted(self.client) or not self.client.transport._admission:
+                raise SafetyBlocked('NO LIVE MONEY: cancel requires offline or admitted Demo transport')
         order = self.order(client_order_id)
         if order.reconcile_required:
             raise OutcomeUnknown('RECONCILE_REQUIRED')
@@ -139,7 +143,18 @@ class FuturesAdapter:
             self._uncertain(client_order_id)
             raise OutcomeUnknown('cancel unconfirmed; reconcile fills before releasing risk') from None
 
+    def _validate_network_identity(self):
+        from .network import DemoNetworkTransport
+        from .protocol import Environment
+        if type(self.client.transport) is DemoNetworkTransport:
+            credentials = self.client.credentials
+            expected = ('DEMO:FactorLab-Demo:' + hashlib.sha256(credentials.key.encode()).hexdigest()
+                        if credentials is not None and credentials.environment is Environment.DEMO else None)
+            if self.client.environment is not Environment.DEMO or self.account_id != expected:
+                raise SafetyBlocked('Demo account identity changed; recovery blocked')
+
     def query_order(self, client_order_id):
+        self._validate_network_identity()
         order = self.order(client_order_id)
         try:
             row = self.client.request('GET', '/fapi/v1/order',
@@ -243,6 +258,7 @@ class FuturesAdapter:
             raise
 
     def _read_facts(self):
+        self._validate_network_identity()
         account = self.client.request('GET', '/fapi/v3/account')
         risk = self.client.request('GET', '/fapi/v3/positionRisk')
         mode = self.client.request('GET', '/fapi/v1/positionSide/dual')
@@ -253,9 +269,17 @@ class FuturesAdapter:
         hedge = mode.get('dualSidePosition')
         if hedge is not None and type(hedge) is not bool:
             raise DataQualityError('invalid position mode')
+        unlocked = None
+        from .network import DemoNetworkTransport
+        if type(self.client.transport) is DemoNetworkTransport:
+            status = self.client.request('GET', '/fapi/v1/apiTradingStatus', {'symbol': 'NVDAUSDT'})
+            indicators = status.get('indicators', {})
+            locks = [row.get('isLocked') for rows in indicators.values() for row in rows]
+            unlocked = all(value is False for value in locks) if locks else None
         self.facts = AccountFacts(self.account_id, self.clock(), tuple(account.get('assets', ())),
             tuple(account.get('positions', ())), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
-            isinstance(account.get('assets'), list) and isinstance(account.get('positions'), list))
+            isinstance(account.get('assets'), list) and isinstance(account.get('positions'), list),
+            account.get('canTrade'), unlocked)
         return self.facts
 
     def read_account(self):
