@@ -138,12 +138,23 @@ class DemoExecutionGateway(FuturesPaperGateway):
         orders = tuple(r.snapshot for key, r in self.state.orders.items()
                        if key != exclude_order_id and r.snapshot.status not in TERMINAL)
         local = super().read_account(exclude_order_id=exclude_order_id)
-        remote = facts.shared(orders, reconciled=self.state.reconciled and self.adapter.reconciled)
+        remote_ids = {row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders')}
+        consistent = remote_ids == set(self.state.orders)
+        if consistent:
+            for key, record in self.state.orders.items():
+                confirmed = self.adapter.order(key)
+                local_order = record.snapshot
+                if (local_order.reconcile_required or confirmed.reconcile_required
+                        or (local_order.status, local_order.cumulative_filled_quantity, local_order.cumulative_fee)
+                        != (confirmed.status, confirmed.cumulative_filled_quantity, confirmed.cumulative_fee)):
+                    consistent = False
+                    break
+        remote = facts.shared(orders, reconciled=self.state.reconciled and self.adapter.reconciled and consistent)
         from factorlab.trading.contracts import AssetBalance
         assets = tuple(AssetBalance(a.currency, a.total,
-            a.total - min(a.available, next(b.available for b in local.assets if b.currency == a.currency)))
-            for a in remote.assets)
-        return replace(remote, assets=assets, positions=tuple(self.state.positions.values()))
+            a.total - min(a.available, next(b.available for b in remote.assets if b.currency == a.currency)))
+            for a in local.assets)
+        return replace(local, assets=assets, reconciled=remote.reconciled)
 
     def reconcile(self):
         """Import authenticated account authority after all execution deltas are booked."""
@@ -188,6 +199,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
         self._controller = controller
 
     def submit_order(self, intent):
+        if not self.read_account().reconciled:
+            raise SafetyBlocked('RECONCILE_REQUIRED: confirmed Demo account projection required')
         if intent.instrument_id != 'NVDAUSDT':
             raise SafetyBlocked('Demo execution contract currently supports NVDAUSDT only')
         if type(self.adapter.client.transport) is DemoNetworkTransport:

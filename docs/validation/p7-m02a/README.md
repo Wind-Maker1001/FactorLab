@@ -18,10 +18,14 @@ controller owns transactions and risk admission; the adapter owns exchange order
 identity and query reconciliation. `target.py` extracts the existing calculation
 from RealtimeAccount without changing its Paper execution semantics.
 
-The Demo gateway books actual confirmed fees using the existing order state
-machine and account-fill machinery. It refreshes account cash and positions from
-exchange-confirmed facts after execution recovery; local reservations remain a
-conservative admission bound. Synthetic fill/rejection entry points are blocked.
+The Demo gateway books actual confirmed fees and realized P&L using the existing
+order state machine and account-fill machinery. Account reads publish this shared
+wallet and position projection immediately; cached REST evidence bounds available
+funds, not wallet totals. Strategy target sizing consumes this same projection,
+including the zero-delta path. Protocol/shared order identity, status, cumulative
+quantity and fee disagreements prevent a reconciled projection and new submissions.
+Execution recovery imports a fresh REST cash/position baseline after replaying
+missing confirmed deltas. Synthetic fill/rejection entry points are blocked.
 The shared recovery scan distinguishes strategy metadata from order events.
 
 ## Execution results
@@ -57,6 +61,38 @@ PYTHONPATH=src python -m pytest tests/integrations/test_binance_demo_strategy.py
 ```
 
 Result: **158 passed in 65.41 seconds**, no skips or failures.
+
+## P7-M02A-R account consistency regression
+
+The two new reproductions failed before the fix: a confirmed 0.99 BUY was sized
+as current=0 for a subsequent zero target, and a 0.099 USDT fee left the published
+wallet at 1000 instead of 999.901 USDT.
+
+Offline regression results:
+
+- BUY 0.99 at 100, then zero target without refreshing REST: SELL 0.99 reduce-only,
+  flat after confirmation, wallet 999.802 USDT; exactly two POSTs. A subsequent
+  zero target records TARGET_ALREADY_MET without an extra order.
+- Confirmed fee 0.099 USDT: wallet 999.901 and available 900.901 USDT before REST;
+  duplicate confirmation and repeated REST recovery preserve those balances.
+- BUY 1 at 100, SELL 1 at 90: realized P&L -10 and total fees 0.19 USDT,
+  wallet 989.81 USDT before and after repeated reconciliation, with no position.
+- Partial confirmations 0.2 + 0.3, duplicates, cancellation and restart retain
+  current=0.5; the next order is target minus 0.5 and fills exactly to target.
+- A 0.05 USDT plan loss ceiling rejects the next order after the confirmed
+  0.099 fee while the cached REST wallet remains 1000 USDT.
+- Disconnection, UNKNOWN and Kill Switch preserve a pending signal without POST;
+  an unbooked protocol/shared identity disagreement also blocks zero-delta signal
+  consumption. Existing Production/Demo authorization, canTrade, quantitative-lock,
+  quantity, margin and order-count tests remain in the targeted suite.
+
+Final revision result: **99 passed in 9.66 seconds**, no skips or failures.
+
+The revision suite runs only the three Demo integration test files listed above,
+using the existing Python 3.12.7 environment. The original logs and JUnit file
+remain evidence for the earlier 158-test run, not this revision.
+
+NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
 
 ## Independent online approval
 

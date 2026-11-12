@@ -124,6 +124,38 @@ def test_unknown_and_risk_admission(condition):
     assert not [call for call in fake.calls if call[0] == 'POST']
 
 
+def test_confirmed_fee_visible_before_rest_refresh():
+    a, g, c, fake = setup()
+    c.submit(intent(quantity='.99'))
+    message = fake.trade_update('one', '.99')
+    c.replay(UserDataEvents(a).parse(message))
+    assert a.facts.usdt()['walletBalance'] == D(1000)
+    balance = c.account().assets[0]
+    assert balance.total == D('999.901')
+    assert balance.available == D('900.901')
+    assert not c.replay(UserDataEvents(a).parse(message))
+    assert c.account().assets[0] == balance
+    assert g.recover(c).assets[0] == balance
+    assert g.recover(c).assets[0] == balance
+
+
+def test_realized_loss_reconciliation_does_not_rebook():
+    a, g, c, fake = setup()
+    c.submit(intent(quantity='1'))
+    buy = fake.trade_update('one', '1')
+    c.replay(UserDataEvents(a).parse(buy))
+    c.submit(replace(intent('close', Side.SELL, quantity='1'), reduce_only=True))
+    sell = fake.trade_update('close', '1', '90')
+    c.replay(UserDataEvents(a).parse(sell))
+    assert not c.account().positions
+    assert c.account().assets[0].total == fake.cash == D('989.81')
+    assert a.facts.usdt()['walletBalance'] == D(1000)
+    assert not c.replay(UserDataEvents(a).parse(sell))
+    assert g.recover(c).assets[0].total == D('989.81')
+    assert g.recover(c).assets[0].total == D('989.81')
+    assert not c.account().positions
+
+
 def test_submit_rejection_and_unknown_recovery():
     a, g, c, fake = setup()
     fake.response_next = Response(400, {}, b'{"code":-2019}')

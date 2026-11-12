@@ -115,19 +115,21 @@ class DemoStrategyRuntime:
             facts = self.gateway.adapter.facts
             if facts is None or not self.gateway.adapter.reconciled:
                 raise SafetyBlocked('Demo account reconciliation required')
-            account = facts.shared(reconciled=True)
+            account = self.gateway.read_account()
             if not account.reconciled:
-                raise SafetyBlocked('complete Demo account required')
+                runtime['last_rejection'] = 'RECONCILE_REQUIRED'
+                return None
             funds = facts.usdt()
             if funds['unrealizedProfit'] is None:
                 raise SafetyBlocked('Demo equity UNKNOWN')
-            equity = funds['walletBalance'] + funds['unrealizedProfit']
+            balance = next(a for a in account.assets if a.currency == 'USDT')
+            equity = balance.total + funds['unrealizedProfit']
             current = next((p.quantity for p in account.positions if p.instrument_id == self.symbol), D(0))
             step, minimum, maximum = market_quantity_constraints(
                 dict(filters=list(self.gateway.rules.filters.values())))
             target = target_quantity(equity=equity, weight=signal['target_weight'], price=quote.price,
                 budget_price=quote.price, fee_rate=state.fee_rate, current=current,
-                available=funds['availableBalance'], step=step)
+                available=balance.available, step=step)
             delta = target - current
             runtime['target_position'] = dict(signal_id=signal['signal_id'], quantity=target, current=current)
             runtime['pending'] = None

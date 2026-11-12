@@ -225,6 +225,19 @@ def test_admission_rejects(wired, condition):
     assert len([r for r in wired[1] if r.get_method() != 'GET']) == before
 
 
+def test_confirmed_fee_triggers_loss_limit_before_rest(wired):
+    a, g, c = setup(wired)
+    reauthorize(a, max_loss=D('.05'))
+    c.submit(intent('d03-one', quantity='.99'))
+    message = wired[0].trade_update('d03-one', '.99')
+    c.replay(UserDataEvents(a).parse(message))
+    assert a.facts.usdt()['walletBalance'] == D(1000)
+    assert c.account().assets[0].total == D('999.901')
+    with pytest.raises(SafetyBlocked, match='virtual loss limit'):
+        c.submit(intent('d03-two', quantity='.1'))
+    assert len([r for r in wired[1] if r.get_method() == 'POST']) == 1
+
+
 def test_unknown_submit_cancel_and_duplicate_recovery(wired):
     a, g, c = setup(wired)
     fake, requests = wired

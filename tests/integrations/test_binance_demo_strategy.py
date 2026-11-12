@@ -123,6 +123,107 @@ def test_actual_fee_not_local_estimate():
     assert runner.recover().reconciled
 
 
+def test_confirmed_buy_then_zero_target_without_rest_refresh():
+    runner, adapter, controller, fake, _ = runtime()
+    now = NOW + timedelta(milliseconds=1)
+    controller.clock = controller.broker.clock = lambda: now
+    event = runner.quote(Quote('NVDAUSDT', D(100), now))
+    qty = controller.broker.state.orders[event.client_order_id].snapshot.intent.quantity
+    controller.replay(UserDataEvents(adapter).parse(fake.trade_update(event.client_order_id, str(qty))))
+    assert not adapter.facts.shared().positions
+    reads = len([c for c in fake.calls if c[0] == 'GET'])
+    pending = dict(controller.broker.state.runtime['last_signal'],
+                   signal_id='close-confirmed-buy', direction='SELL', target_weight=D(0))
+    controller._atomic(lambda: controller.broker.state.runtime.update(pending=pending))
+    close = runner.quote(Quote('NVDAUSDT', D(100), now))
+    assert controller.broker.state.runtime['target_position']['current'] == qty
+    assert close is not None
+    intent = controller.broker.state.orders[close.client_order_id].snapshot.intent
+    assert intent.side.value == 'SELL' and intent.quantity == qty and intent.reduce_only
+    assert len([c for c in fake.calls if c[0] == 'GET']) == reads
+    controller.replay(UserDataEvents(adapter).parse(fake.trade_update(close.client_order_id, str(qty))))
+    assert not controller.account().positions
+    assert controller.account().assets[0].total == fake.cash
+    assert runner.quote(Quote('NVDAUSDT', D(100), now)) is None
+    controller._atomic(lambda: controller.broker.state.runtime.update(
+        pending=dict(pending, signal_id='already-flat')))
+    assert runner.quote(Quote('NVDAUSDT', D(100), now)) is None
+    assert controller.broker.state.runtime['last_order']['kind'] == 'TARGET_ALREADY_MET'
+    assert len([c for c in fake.calls if c[0] == 'POST']) == 2
+
+
+def test_unbooked_confirmation_blocks_zero_delta_signal():
+    runner, adapter, controller, fake, _ = runtime()
+    now = NOW + timedelta(milliseconds=1)
+    controller.clock = controller.broker.clock = lambda: now
+    event = runner.quote(Quote('NVDAUSDT', D(100), now))
+    qty = controller.broker.state.orders[event.client_order_id].snapshot.intent.quantity
+    controller.replay(UserDataEvents(adapter).parse(fake.trade_update(event.client_order_id, str(qty))))
+    controller._atomic(lambda: controller.broker.state.orders.clear())
+    pending = dict(controller.broker.state.runtime['last_signal'],
+                   signal_id='unbooked-zero', target_weight=D(0), direction='SELL')
+    controller._atomic(lambda: controller.broker.state.runtime.update(pending=pending))
+    assert not controller.account().reconciled
+    assert runner.quote(Quote('NVDAUSDT', D(100), now)) is None
+    assert controller.broker.state.runtime['pending'] == pending
+    assert controller.broker.state.runtime['last_rejection'] == 'RECONCILE_REQUIRED'
+    assert len([c for c in fake.calls if c[0] == 'POST']) == 1
+
+
+def test_partial_confirmations_size_remaining_target(tmp_path):
+    protocol, paper = tmp_path / 'protocol', tmp_path / 'account'
+    runner, adapter, controller, fake, _ = runtime(protocol=protocol, paper=paper)
+    now = NOW + timedelta(milliseconds=2)
+    controller.clock = controller.broker.clock = lambda: now
+    first = runner.quote(Quote('NVDAUSDT', D(100), now))
+    for quantity in ('.2', '.3'):
+        message = fake.trade_update(first.client_order_id, quantity)
+        controller.replay(UserDataEvents(adapter).parse(message))
+        assert not controller.replay(UserDataEvents(adapter).parse(message))
+    assert controller.account().positions[0].quantity == D('.5')
+    controller.cancel(first.client_order_id)
+    adapter.store.close()
+    controller.store.close()
+    adapter, gateway, controller, fake = setup(protocol, paper, fake, now=now)
+    runner = DemoStrategyRuntime(controller, DualMAStrategy())
+    assert runner.recover().reconciled
+    assert controller.account().positions[0].quantity == D('.5')
+    pending = dict(gateway.state.runtime['last_signal'], signal_id='remaining-target')
+    controller._atomic(lambda: gateway.state.runtime.update(pending=pending))
+    event = runner.quote(Quote('NVDAUSDT', D(100), now))
+    target = gateway.state.runtime['target_position']
+    assert target['current'] == D('.5')
+    remaining = gateway.state.orders[event.client_order_id].snapshot.intent.quantity
+    assert remaining == target['quantity'] - D('.5')
+    controller.replay(UserDataEvents(adapter).parse(fake.trade_update(event.client_order_id, str(remaining))))
+    assert controller.account().positions[0].quantity == target['quantity']
+    assert controller.account().assets[0].total == fake.cash
+    assert runner.quote(Quote('NVDAUSDT', D(100), now)) is None
+    assert len([c for c in fake.calls if c[0] == 'POST']) == 2
+
+
+@pytest.mark.parametrize('condition', ['disconnect', 'unknown', 'kill'])
+def test_blocked_projection_keeps_signal(condition):
+    runner, adapter, controller, fake, _ = runtime()
+    if condition == 'disconnect':
+        runner.disconnect()
+    elif condition == 'kill':
+        runner.kill()
+    else:
+        fake.timeout_next = True
+        now = NOW + timedelta(milliseconds=1)
+        controller.clock = controller.broker.clock = lambda: now
+        runner.quote(Quote('NVDAUSDT', D(100), now))
+        pending = dict(controller.broker.state.runtime['last_signal'], signal_id='after-unknown')
+        controller._atomic(lambda: controller.broker.state.runtime.update(pending=pending))
+    controller.clock = controller.broker.clock = lambda: NOW + timedelta(milliseconds=2)
+    pending = dict(controller.broker.state.runtime['pending'])
+    before = len([c for c in fake.calls if c[0] == 'POST'])
+    assert runner.quote(Quote('NVDAUSDT', D(100), NOW + timedelta(milliseconds=2))) is None
+    assert controller.broker.state.runtime['pending'] == pending
+    assert len([c for c in fake.calls if c[0] == 'POST']) == before
+
+
 def test_kill_never_dispatches_strategy_order():
     runner, adapter, controller, fake, bar = runtime()
     runner.kill()
