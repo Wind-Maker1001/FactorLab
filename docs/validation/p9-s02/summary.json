@@ -1,0 +1,115 @@
+{
+  "labels": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED",
+    "SCENARIO_CONDITIONAL_NOT_CERTIFIED",
+    "NOT_HISTORICAL_VALUATION_CERTIFIED"
+  ],
+  "baseline": "633308b6b169279a7aaeafdd0ed9987640222b7c",
+  "input": "E:\\FactorLabData\\research\\p9-s01b-20261112-run-1",
+  "period": [
+    "2023-05-19",
+    "2023-06-14"
+  ],
+  "anchor": "2023-05-18",
+  "scenarios": {
+    "A": {
+      "end_nav": 928156.2133640003,
+      "conditional_return": -0.0009192942044136121,
+      "max_drawdown": -0.03998253830058118,
+      "daily_volatility": 0.010697270223727521,
+      "annualized_volatility_252": 0.16981390031543578,
+      "sessions": 19,
+      "gross_security_turnover": 5.27893069096883,
+      "mean_daily_gross_turnover": 0.2778384574194121,
+      "mean_hhi": 0.09444392352848281,
+      "max_security_weight": 0.10705443031848949,
+      "mean_capital_utilization": 0.9991681724716888,
+      "end_cash": 560.2133640003012,
+      "cash_change": -634.0337359998284,
+      "mark_000540_pnl": 0.0,
+      "other_holdings_gross_pnl": 5599.580000000015,
+      "costs": {
+        "commission": 1526.831526,
+        "stamp_duty": 2464.846,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 2461.93621
+      }
+    },
+    "B1": {
+      "end_nav": 892135.614392,
+      "conditional_return": -0.03969238533493902,
+      "max_drawdown": -0.061623952466304255,
+      "daily_volatility": 0.015251625477619048,
+      "annualized_volatility_252": 0.24211204861966026,
+      "sessions": 19,
+      "gross_security_turnover": 5.541759601998767,
+      "mean_daily_gross_turnover": 0.2916715579999351,
+      "mean_hhi": 0.09724126954626722,
+      "max_security_weight": 0.11171373965953904,
+      "mean_capital_utilization": 0.9995903393934263,
+      "end_cash": 470.61439200003224,
+      "cash_change": -723.6327080000974,
+      "mark_000540_pnl": -38773.0,
+      "other_holdings_gross_pnl": 8397.740000000018,
+      "costs": {
+        "commission": 1528.172578,
+        "stamp_duty": 2487.0440000000003,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 2484.1561300000003
+      }
+    },
+    "B2": {
+      "end_nav": 888209.7732640003,
+      "conditional_return": -0.043918217224581446,
+      "max_drawdown": -0.05969162189430566,
+      "daily_volatility": 0.013934978934213643,
+      "annualized_volatility_252": 0.22121093270911918,
+      "sessions": 19,
+      "gross_security_turnover": 5.449553084674297,
+      "mean_daily_gross_turnover": 0.28681858340391037,
+      "mean_hhi": 0.09749497804753765,
+      "max_security_weight": 0.11040046181574095,
+      "mean_capital_utilization": 0.9988665690870061,
+      "end_cash": 846.7732640002941,
+      "cash_change": -347.4738359998355,
+      "mark_000540_pnl": -38773.0,
+      "other_holdings_gross_pnl": 4405.580000000015,
+      "costs": {
+        "commission": 1511.0886260000002,
+        "stamp_duty": 2462.5040000000004,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 2459.4612100000004
+      }
+    },
+    "C": {
+      "end_nav": 877613.8806120001,
+      "conditional_return": -0.05532378856792919,
+      "max_drawdown": -0.07792259839326365,
+      "daily_volatility": 0.017918049020437934,
+      "annualized_volatility_252": 0.2844402101252596,
+      "sessions": 19,
+      "gross_security_turnover": 5.598203498776901,
+      "mean_daily_gross_turnover": 0.2946422894093106,
+      "mean_hhi": 0.09905060078832559,
+      "max_security_weight": 0.11358893982961192,
+      "mean_capital_utilization": 0.9940592464096715,
+      "end_cash": 6905.880612000095,
+      "cash_change": 5711.633511999966,
+      "mark_000540_pnl": -53480.0,
+      "other_holdings_gross_pnl": 8553.640000000027,
+      "costs": {
+        "commission": 1526.245308,
+        "stamp_duty": 2474.926,
+        "transfer_fee": 0.0,
+        "side_fee": 0.0,
+        "slippage": 2468.83518
+      }
+    }
+  }
+}
