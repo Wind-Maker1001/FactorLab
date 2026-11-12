@@ -4,6 +4,11 @@ The caller owns account valuation and execution. Quantity units explicitly map
 legacy grid units to base-asset/contract units; spot cash is never inferred from
 a futures wallet. Paper integration needs a pre-fill turnover admission hook.
 """
+from copy import deepcopy
+from functools import wraps
+from datetime import datetime, timezone
+import re
+
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 
@@ -14,6 +19,23 @@ from .grid import GridStrategy
 
 def D(value):
     return Decimal(str(value))
+
+
+def atomic(method):
+    """Publish a staged decision only after every operation succeeds."""
+    @wraps(method)
+    def apply(self, *args, **kwargs):
+        # TODO: replace history-wide staging with bounded command deltas.
+        staged = deepcopy(self)
+        result = method(staged, *args, **kwargs)
+        self.__dict__ = staged.__dict__
+        return result
+    return apply
+
+
+def validate_identity(value):
+    if not isinstance(value, str) or not re.fullmatch(r'[A-Za-z0-9_.:-]{1,128}', value):
+        raise ValueError('invalid identity')
 
 
 @dataclass(frozen=True)
@@ -45,10 +67,42 @@ class GridAccount:
     committed: Decimal
     turnover: Decimal
     reconciled: bool = True
+    account_id: str = 'external'
+    instrument_id: str = 'external'
+    market: Market | None = None
 
     def __post_init__(self):
+        validate_identity(self.account_id)
+        validate_identity(self.instrument_id)
+        if type(self.reconciled) is not bool or (self.market is not None and not isinstance(self.market, Market)):
+            raise ValueError('invalid account state')
         for name in ('inventory', 'available', 'equity', 'committed', 'turnover'):
             decimal_value(getattr(self, name), name)
+
+
+def project_paper_account(controller, instrument_id, *, turnover):
+    """Read a single-instrument paper account; turnover must come from its journal.
+
+    Position entry notional is collateral for USD-M, not a spot cash purchase.
+    The snapshot lacks historical fill prices, so it cannot infer gross turnover.
+    """
+    state = controller.broker.state
+    snapshot = controller.account()
+    if set(state.instruments) != {instrument_id}:
+        raise ValueError('dedicated single-instrument account required')
+    instrument = state.instruments[instrument_id]
+    asset = next(a for a in snapshot.assets if a.currency == instrument.quote_currency)
+    position = state.positions.get(instrument_id)
+    inventory = position.quantity if position else Decimal(0)
+    if inventory < 0:
+        raise ValueError('long-only Grid cannot project short inventory')
+    entry = inventory * position.entry_price if position else Decimal(0)
+    mark = inventory * position.mark_price if position else Decimal(0)
+    equity = asset.total + (mark-entry if state.market == Market.BINANCE_USDM else mark)
+    committed = asset.reserved if state.market == Market.BINANCE_USDM else entry + asset.reserved
+    return GridAccount(inventory, asset.available, equity, committed, turnover,
+        snapshot.reconciled and not any(o.reconcile_required for o in snapshot.open_orders),
+        snapshot.account_id, instrument_id, state.market)
 
 
 class GridExecution:
@@ -61,11 +115,19 @@ class GridExecution:
     grid_prices = GridStrategy.grid_prices
 
     def __init__(self, config, rules, *, deployment_id, market, instrument_id,
-                 initial_equity, fee_rate=Decimal(0)):
+                 initial_equity, fee_rate=None, fees=None):
         if not deployment_id or len(deployment_id) > 48:
             raise ValueError('bounded deployment identity required')
         decimal_value(initial_equity, 'initial_equity', positive=True)
-        decimal_value(fee_rate, 'fee_rate')
+        from factorlab.backtest.fees import FeeRule, FeeSchedule
+        validate_identity(deployment_id)
+        if fee_rate is not None:
+            decimal_value(fee_rate, 'fee_rate')
+        self.fees = fees or FeeSchedule([FeeRule('1900-01-01',
+            commission_bps=config.fee_bps if fee_rate is None else float(fee_rate * 10000),
+            minimum_commission_cny=0, slippage_bps=config.slippage_bps)])
+        self.timestamp = None
+        self.account_identity = None
         self.config, self.rules = config, rules
         self.deployment_id, self.market, self.instrument_id = deployment_id, market, instrument_id
         self.initial_equity, self.peak, self.fee_rate = initial_equity, initial_equity, fee_rate
@@ -87,6 +149,12 @@ class GridExecution:
     def active(self):
         return [o for o in self.orders.values() if o.status not in TERMINAL]
 
+    def estimated_cost(self, side, price, quantity):
+        """Reserve one minimum-fee execution per quantity step, not one per order."""
+        unit = self.rules.step_size
+        count = quantity / unit
+        return D(self.fees.calculate(self.timestamp, side.value.lower(), float(price * unit)).total) * count
+
     def propose(self, side, target, quantity, level=-1, market=False):
         from factorlab.trading.contracts import OrderSnapshot
         r, a, c = self.rules, self.account, self.config
@@ -105,10 +173,12 @@ class GridExecution:
                      if o.intent.side == Side.SELL), Decimal(0))
         # Outstanding proposals count before a controller has accepted them.
         pending = sum(((o.intent.quantity - o.cumulative_filled_quantity)
-                       * max(self.price, o.intent.limit_price or self.price) * (1 + self.fee_rate)
+                       * max(self.price, o.intent.limit_price or self.price)
+                       + self.estimated_cost(Side.BUY, max(self.price, o.intent.limit_price or self.price),
+                           o.intent.quantity - o.cumulative_filled_quantity)
                        for o in self.active if o.intent.side == Side.BUY
                        and o.status == OrderStatus.NEW), Decimal(0))
-        cost = quantity * max(self.price, valuation) * (1 + self.fee_rate)
+        cost = quantity * valuation + self.estimated_cost(side, valuation, quantity)
         if side == Side.SELL:
             if quantity > a.inventory - sells:
                 return
@@ -116,12 +186,13 @@ class GridExecution:
               or pending + cost > a.available
               or a.committed + pending + cost > D(c.max_cash_committed)):
             return
-        # TODO: preserve effective FeeSchedule minimum fees and slippage erosion.
         if not market and level >= 0:
             adjacent = level + (1 if side == Side.BUY else -1)
             if 0 <= adjacent < len(self.prices):
                 other = D(self.prices[adjacent])
-                if abs(other - target) <= (other + target) * self.fee_rate:
+                opposite = Side.SELL if side == Side.BUY else Side.BUY
+                pair_cost = self.estimated_cost(side, price, r.quantity_unit) + self.estimated_cost(opposite, other, r.quantity_unit)
+                if abs(other - target) * r.quantity_unit <= pair_cost:
                     return
         identity = f'{self.deployment_id}-{len(self.orders) + 1:08d}'
         intent = OrderIntent(self.market, self.instrument_id, side,
@@ -153,7 +224,7 @@ class GridExecution:
         self._settle()
 
     def _settle(self):
-        if self.active:
+        if self.active or self.account is None or not self.account.reconciled:
             return
         if self.pending_rebuild is not None:
             center, spacing = self.pending_rebuild
@@ -170,9 +241,49 @@ class GridExecution:
         if kind == 'RISK':
             self.reason = values['reason']
 
+    def _validate_account(self, account):
+        if not isinstance(account, GridAccount):
+            raise ValueError('GridAccount required')
+        account.__post_init__()
+        key = (account.account_id, account.instrument_id, account.market)
+        if account.instrument_id not in {'external', self.instrument_id} or account.market not in {None, self.market}:
+            raise ValueError('account deployment mismatch')
+        if self.account_identity is not None and key != self.account_identity:
+            raise ValueError('account identity changed')
+        if self.account is not None and account.turnover < self.account.turnover:
+            raise ValueError('turnover regression')
+        self.account_identity = key
+
+    @atomic
     def observe(self, event, account):
-        # TODO: share legacy input validation and ordered-time checks before acceptance.
-        identity = event['id']
+        import pandas as pd
+        identity_value = event['id']
+        validate_identity(identity_value)
+        if identity_value not in self.commands:
+            timestamp = pd.Timestamp(event['time'])
+            if pd.isna(timestamp) or timestamp.tzinfo is not None:
+                raise ValueError('ordered timezone-free observations required')
+            if self.timestamp is not None and timestamp < self.timestamp:
+                raise ValueError('observation time regression')
+            price = D(event['price'])
+            decimal_value(price, 'price', positive=True)
+            if type(event.get('volume')) is not int or event['volume'] < 0:
+                raise ValueError('invalid volume')
+            if type(event.get('completed_bar', False)) is not bool:
+                raise ValueError('invalid completed_bar')
+            if event.get('action', 'observe') not in {'observe', 'cancel'}:
+                raise ValueError('invalid action')
+            if event.get('action') == 'cancel' and event.get('order_id') not in self.orders:
+                raise ValueError('unknown cancel order')
+            if event.get('completed_bar'):
+                high, low, close = (D(event[k]) for k in ('high', 'low', 'close'))
+                for value in (high, low, close):
+                    decimal_value(value, 'OHLC', positive=True)
+                if not low <= close <= high or price != close:
+                    raise ValueError('invalid OHLC')
+            self._validate_account(account)
+            self.timestamp = timestamp
+        identity = identity_value
         command = (dict(event), account)
         if identity in self.commands:
             if self.commands[identity] != command:
@@ -222,12 +333,77 @@ class GridExecution:
                     self._rebuild(close, spacing)
         self._settle()
 
+    def deployment(self):
+        from dataclasses import asdict
+        return dict(config=asdict(self.config), rules=asdict(self.rules),
+            deployment_id=self.deployment_id, market=self.market, instrument_id=self.instrument_id,
+            initial_equity=self.initial_equity, fees=[asdict(rule) | {
+                'effective_from': rule.effective_from.isoformat(),
+                'effective_to': rule.effective_to.isoformat() if rule.effective_to else None}
+                for rule in self.fees.rules])
+
+    def checkpoint(self, store):
+        """Store decision commands in the existing account transaction.
+
+        Caller must hold PaperStore.transaction and have saved authority first.
+        This does not submit or replay economic orders.
+        """
+        from dataclasses import asdict
+        if not store.db.in_transaction:
+            raise ValueError('account transaction required')
+        state = store.load()
+        for key, order in self.orders.items():
+            if order.status != OrderStatus.NEW:
+                authority = state.orders.get(key)
+                if authority is None or authority.snapshot != order:
+                    raise ValueError('strategy ahead of authority')
+        commands = []
+        for action, *args in self.journal:
+            if action in {'observe', 'confirm'}:
+                args[-1] = asdict(args[-1])
+            commands.append([action, *args])
+        state.runtime['grid:'+self.deployment_id] = dict(version=1, deployment=self.deployment(), commands=commands)
+        store.save(state)
+
+    @atomic
+    def restore(self, store):
+        if self.journal:
+            raise ValueError('restore requires fresh deployment')
+        state = store.load()
+        payload = state.runtime.get('grid:'+self.deployment_id)
+        if payload is None or payload['version'] != 1 or payload['deployment'] != self.deployment():
+            raise ValueError('missing or incompatible Grid checkpoint')
+        commands = []
+        for action, *args in payload['commands']:
+            if args[-1] is not None and action in {'observe', 'confirm'}:
+                args[-1] = GridAccount(**args[-1])
+            commands.append([action, *args])
+        self.replay_commands(commands)
+        for key, order in self.orders.items():
+            authority = state.orders.get(key)
+            if authority is not None and authority.snapshot.intent != order.intent:
+                raise ValueError('authority intent mismatch')
+            if order.status != OrderStatus.NEW:
+                confirmed = state.confirmations.get(key)
+                from dataclasses import replace
+                expected = replace(authority.snapshot, status=confirmed.status, reconcile_required=False) if authority is not None and confirmed is not None else None
+                if expected != order:
+                    raise ValueError('checkpoint requires authority reconciliation')
+        if not state.reconciled:
+            for key in list(self.orders):
+                if self.orders[key].status not in TERMINAL:
+                    self.mark_unknown(key)
+
+    @atomic
     def replay_commands(self, commands):
         """Replay into a fresh instance with identical deployment configuration."""
         for command in commands:
             action, *arguments = command
+            if action not in {'observe', 'confirm', 'mark_unknown'}:
+                raise ValueError('invalid replay command')
             getattr(self, action)(*arguments)
 
+    @atomic
     def mark_unknown(self, order_id):
         from datetime import datetime, timezone
         from factorlab.trading.state import OrderRecord, unknown
@@ -237,14 +413,20 @@ class GridExecution:
         self.records[order_id] = unknown(record)
         self.orders[order_id] = self.records[order_id].snapshot
 
+    @atomic
     def confirm(self, event, account):
         from factorlab.trading.state import OrderRecord, advance
+        validate_identity(event.event_id)
         if event.event_id in self.feedback:
             if self.feedback[event.event_id] != (event, account):
                 raise ValueError('feedback identity conflict')
             return
+        self._validate_account(account)
         key = event.client_order_id
         old = self.orders[key]
+        cancel_requested = key in self.cancellations
+        if not isinstance(event.event_time, datetime):
+            raise ValueError('invalid confirmation time')
         record = self.records.get(key, OrderRecord(old, event.event_time, self.targets[key]))
         record = advance(record, event)
         updated = record.snapshot
@@ -261,7 +443,7 @@ class GridExecution:
                 self._risk('MAX_TURNOVER')
         if updated.status in TERMINAL:
             self.cancellations.discard(key)
-        if delta and self.state == 'RUNNING' and self.pending_rebuild is None and key not in self.cancellations:
+        if delta and self.state == 'RUNNING' and self.pending_rebuild is None and not cancel_requested and account.reconciled:
             level = self.levels[key] + (1 if old.intent.side == Side.BUY else -1)
             if 0 <= level < len(self.prices):
                 self.propose(Side.SELL if old.intent.side == Side.BUY else Side.BUY,

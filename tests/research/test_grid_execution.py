@@ -126,3 +126,131 @@ def test_rebuild_retains_reservations_until_cancel():
         report(engine,key,S.CANCELED,0,account,f'c{i}')
     assert engine.pending_rebuild is None and engine.rebuilds == 1
     assert engine.center == 125
+
+
+@pytest.mark.parametrize('change', [
+    {'id':''}, {'price':float('nan')}, {'price':-1}, {'volume':-1},
+    {'completed_bar':1}, {'completed_bar':True}, {'time':'bad'},
+    {'time':'2026-01-01T00:00:00Z'}, {'action':'other'}])
+def test_invalid_observation_atomic(change):
+    from copy import deepcopy
+    engine, account = setup()
+    before = deepcopy(engine.__dict__, {id(engine.fees): engine.fees})
+    with pytest.raises((ValueError, KeyError)):
+        engine.observe(event(1) | change,account)
+    assert engine.__dict__ == before
+
+
+def test_replay_failure_atomic():
+    engine, account = setup()
+    with pytest.raises(ValueError):
+        engine.replay_commands([('observe',event(1),account),('bad',)])
+    assert not engine.orders and not engine.journal
+
+
+@pytest.mark.parametrize('final', [S.CANCELED,S.FILLED])
+def test_cancel_late_fill_does_not_seed(final):
+    engine, account = setup()
+    engine.observe(event(1),account)
+    key = next(iter(engine.orders))
+    report(engine,key,S.SUBMITTED,0,account,'a')
+    engine.observe(event(2,action='cancel',order_id=key),account)
+    report(engine,key,S.PARTIALLY_FILLED,1,replace(account,inventory=D(5)),'b','80')
+    assert len(engine.orders) == 4
+    cumulative = 1 if final == S.CANCELED else 2
+    confirmation = report(engine,key,final,cumulative,replace(account,inventory=D(4+cumulative)),
+                          'c', '80' if final == S.FILLED else None)
+    engine.confirm(confirmation,replace(account,inventory=D(4+cumulative)))
+    assert engine.orders[key].status == final
+    assert len(engine.orders) == 4
+
+
+def test_minimum_fee_each_partial_and_slippage():
+    from factorlab.backtest.fees import FeeRule, FeeSchedule
+    engine, account = setup()
+    engine.rules = replace(engine.rules,step_size=D(1))
+    engine.fees = FeeSchedule([FeeRule('1900-01-01',commission_bps=0,
+        minimum_commission_cny=1,slippage_bps=10)])
+    engine.observe(event(1),account)
+    assert engine.estimated_cost(Side.BUY,D(90),D(2)) == D('2.18')
+    assert engine.fees.calculate('2026-01-01','buy',180).total == 1.18
+
+
+def test_checkpoint_restore_and_drift(tmp_path):
+    from factorlab.trading.paper import PaperBroker, Instrument
+    from factorlab.trading.control import TradingController
+    from factorlab.trading.storage import PaperStore
+    engine, account = setup()
+    store = PaperStore(tmp_path/'paper.sqlite')
+    broker = PaperBroker(Market.BINANCE_USDM,'test',(Instrument('TESTUSDT','USDT'),),{'USDT':D(10000)})
+    TradingController(broker,store)
+    engine.observe(event(1),account)
+    with store.transaction():
+        engine.checkpoint(store)
+    restored, _ = setup()
+    restored.restore(store)
+    assert restored.orders == engine.orders
+    assert restored.journal == engine.journal
+    drift, _ = setup(quantity=3)
+    with pytest.raises(ValueError,match='incompatible'):
+        drift.restore(store)
+    assert not drift.orders
+    with pytest.raises(ValueError,match='transaction'):
+        engine.checkpoint(store)
+    store.db.close()
+
+
+def test_futures_projection_not_spot_cash(tmp_path):
+    from factorlab.strategies.grid_execution import project_paper_account
+    from factorlab.trading.paper import PaperBroker, Instrument, Quote
+    from factorlab.trading.control import TradingController, RiskLimits
+    from factorlab.trading.storage import PaperStore
+    from factorlab.trading.contracts import OrderIntent,OrderType
+    now = datetime(2026,1,1,tzinfo=timezone.utc)
+    store = PaperStore(tmp_path/'paper.sqlite')
+    broker = PaperBroker(Market.BINANCE_USDM,'test',(Instrument('TESTUSDT','USDT'),),{'USDT':D(1000)},fee_rate=D(0))
+    controller = TradingController(broker,store,clock=lambda:now,
+        limits=RiskLimits(D(1000),D(1000),D(1000),10))
+    controller.quote(Quote('TESTUSDT',D(100),now))
+    controller.submit(OrderIntent(Market.BINANCE_USDM,'TESTUSDT',Side.BUY,OrderType.LIMIT,D(2),D(100),'buy'))
+    controller.fill('buy',D(1),D(100))
+    projected = project_paper_account(controller,'TESTUSDT',turnover=D(100))
+    assert projected.inventory == 1 and projected.available == 800
+    assert projected.committed == 200 and projected.equity == 1000
+    assert broker.state.cash['USDT'] == 1000
+    store.db.close()
+
+
+def test_legacy_crossing_sequence_with_partial_feedback():
+    engine, account = setup()
+    engine.rules = replace(engine.rules,step_size=D(1))
+    legacy = GridStrategy(engine.config)
+    counter = 0
+    for n, price in enumerate([100,90,90,100,110,110,100,80,80,90],1):
+        observation = event(n,price)
+        engine.observe(observation,account)
+        offset = len(legacy.events)
+        legacy.on_event(observation | {'volume':1})
+        for key, order in list(engine.orders.items()):
+            if order.status == S.NEW:
+                counter += 1
+                report(engine,key,S.SUBMITTED,0,account,f'accept{counter}')
+        trades = [e for e in legacy.events[offset:] if e['kind'] == 'TRADE']
+        assert len(trades) <= 1
+        for trade in trades:
+            old_order = legacy.orders[trade['order']]
+            key = next(k for k,o in engine.orders.items()
+                if engine.targets[k] == D(old_order.price) and engine.levels[k] == old_order.level
+                and o.intent.side.value.lower() == old_order.side and o.status not in {S.FILLED,S.CANCELED,S.REJECTED})
+            cumulative = engine.orders[key].cumulative_filled_quantity + D(trade['quantity'])
+            account = GridAccount(D(legacy.inventory),D(legacy.cash),D(legacy.cash+legacy.inventory*price),
+                                  D(legacy.cost_basis),D(legacy.notional))
+            counter += 1
+            report(engine,key,S.FILLED if cumulative == engine.orders[key].intent.quantity else S.PARTIALLY_FILLED,
+                   cumulative,account,f'fill{counter}',str(trade['price']))
+        expected = [(o.side,o.price,o.quantity,o.level) for o in legacy.orders.values() if o.status != 'REJECTED']
+        actual = [(o.intent.side.value.lower(),float(engine.targets[k]),float(o.intent.quantity),engine.levels[k])
+                  for k,o in engine.orders.items()]
+        assert actual == expected
+        assert engine.prices == legacy.prices
+        assert engine.state == legacy.state

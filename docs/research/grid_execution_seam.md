@@ -2,64 +2,100 @@
 
 ## Status
 
-BLOCKED — implementation candidate; not P7_G01_GRID_SEAM_ACCEPTED or
-P7_G01_GRID_PAPER_INTEGRATED.
+P7_G01_GRID_SEAM_PARTIAL
 
-The legacy simulator remains unchanged. `GridExecution` exposes Decimal order
-intents and confirmed-order updates without owning cash, positions, costs or
-matching. `GridAccount` must be supplied by the account authority: equity is
-marked equity, available excludes broker reservations, committed includes entry
-capital and pending opening orders, and turnover is confirmed gross notional.
-Its quantity unit explicitly maps a legacy grid unit to a base/contract quantity.
+NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
 
-## Authority and behavior
+## Revision behavior
 
-Legacy grid range construction is reused, including geometric and ATR ranges.
-The initial target-price sequence is compared separately from executable tick
-prices. Buys round down and sells round up; quantities round down to step size.
-Confirmation processing reuses the unified order transition machine. Pending
-cancellations retain their orders until confirmation; reconstruction waits for
-all old orders to terminate. UNKNOWN blocks subsequent observations. An ordered
-in-memory command journal can reconstruct the seam into a fresh deployment.
-It is not an atomic persistent runtime and must not be treated as one.
+Observe, confirm, UNKNOWN and batch replay stage state before publication. Invalid
+commands cannot partially publish journal entries, orders or decision state.
+Observation time is explicitly timezone-free, matching legacy Grid; confirmations
+use the unified UTC OrderEvent contract. IDs, prices, volume, completed-bar/OHLC,
+account identity and cumulative turnover are validated. Confirmation transitions
+reuse trading.state.advance, including per-order confirmation ordering.
 
-Legacy matching uses observed close, an integer shared volume budget, no
-same-event fills, limit-price fills without gap improvement, and per-partial-fill
-FeeSchedule commission/minimum fee/slippage. Unified PaperBroker accepts explicit
-Decimal fills, uses proportional fees, and does not automatically match or
-expire orders. Comparing their economic totals without aligning these assumptions
-is not a strategy equivalence test.
+Fee estimates reuse the effective FeeSchedule. Reservation estimates assume one
+minimum-fee execution per quantity step, with commission, cash-equivalent slippage
+and side costs charged each time. The external executor must guarantee this
+minimum execution quantum for the bound to hold. Two one-unit fills at 90 with
+minimum commission 1 and slippage 10 bps cost 2.18, not the single-fill 1.18.
+These are strategy estimates, never cash postings. PaperBroker's proportional
+fees are not represented as equivalent to this schedule.
 
-## Remaining acceptance gaps
+Cancellation requests retain remaining quantity until a terminal confirmation.
+Late partial or full fills while cancellation is pending update confirmed quantity
+without creating reversal orders. Rebuild waits until all prior orders terminate.
+UNKNOWN retains orders and blocks observations until explicit confirmation.
 
-- Legacy pre-fill turnover clipping cannot be enforced through existing controller
-  submission checks. A minimal core extension would admit each proposed fill
-  against a strategy-provided remaining turnover limit inside the fill transaction.
-- Legacy minimum commissions and cash-equivalent slippage are not represented by
-  the candidate's proportional fee erosion check. No equivalence claim is made
-  for those schedules.
-- Confirmation-time drawdown and turnover stopping is implemented; dedicated
-  cross-engine post-fill risk equivalence tests are still required.
-- Input ordering/validation and durable, atomic journal recovery need completion.
-- Account projection from the broker is explicit caller input, not an implemented
-  spot/futures valuation adapter. No futures wallet is treated as spot cash.
-- Direct controller/PaperBroker tests, late-fill-during-cancel cases, rejection
-  coverage, and full legacy decision sequence comparisons remain necessary.
+project_paper_account is a read-only dedicated-instrument projection. USD-M
+wallet cash is not reduced by entry principal: entry notional is collateral,
+equity includes mark-minus-entry PnL. A tested partial opening leaves wallet 1000,
+available 800, committed 200 and equity 1000. Gross turnover must be supplied from
+the authority's journal because snapshots do not retain historical fill prices.
+No second economic ledger is created.
 
-Do not deploy this candidate as a complete paper trading strategy. The minimum
-next step is to complete the confirmation seam and its account projection before
-adding a core pre-fill hook in a separately authorized change. No exchange API,
-network orders or second economic ledger are introduced.
+## Persistence protocol
 
-## Targeted validation
+checkpoint writes only deployment metadata and decision commands into the existing
+PaperStore runtime, inside an existing account transaction. Confirmed strategy
+orders must match saved authority. Callers save authoritative state first, then
+checkpoint; no network orders are replayed. Restore verifies configuration and
+identity, replays decision commands atomically, and checks authority before use.
+The tests cover unsubmitted proposals, deterministic IDs, deployment drift and
+transaction requirements.
 
-Command:
+## Decision comparison evidence
+
+Arithmetic/geometric initialization compares target prices separately from legal
+ticks. ATR warmup/rebuild compares legacy ranges. A ten-observation fixture
+100,90,90,100,110,110,100,80,80,90 feeds the legacy simulator's confirmed one-unit
+fills to the seam and compares all accepted proposal directions, target prices,
+quantities, levels, grid ranges and strategy states after every observation.
+This shares execution assumptions deliberately; it does not compare different
+matching engines' economic outcomes.
+
+## Remaining SEAM acceptance gaps
+
+- Persistence tests do not yet cover authority advancing without a corresponding
+  checkpoint, corrupted checkpoints, rollback after checkpoint failure, or a full
+  controller restart with filled and UNKNOWN orders. An atomic wrapper coordinating
+  in-memory publication with account transaction completion is still required.
+- Replay copies accumulated state and history for staging; this is not a bounded
+  incremental persistence protocol. Long-running deployments need a bounded
+  checkpoint/command representation rather than increasingly large JSON payloads.
+- Dedicated-instrument projection is tested only on a USD-M partial opening.
+  Historical turnover remains caller-provided, not validated against the authority
+  journal. Multi-instrument accounts are explicitly rejected.
+- Explicit external account identity remains optional for legacy candidate callers.
+  Cross-stream observation/confirmation ordering is not fully specified/validated.
+- Full sequence equivalence still needs expiry, user cancellation, ATR subsequent
+  rebuild, breakout pause/exit, post-fill drawdown/turnover and restart sequences.
+- CANCELED followed by late FILLED (after cancellation has already been confirmed)
+  needs coverage and reversal policy. Current tests cover fills after a cancellation
+  request, not that later reconciliation case.
+
+These gaps prevent SEAM_ACCEPTED. Legacy Grid and prohibited trading core files
+remain unchanged.
+
+## Separate Paper integration dependency
+
+The unified controller must check remaining strategy turnover inside the fill
+transaction, before posting a fill. Legacy clips an otherwise executable fill to
+remaining turnover capacity; submission-only risk checks cannot guarantee this.
+No Grid-specific matcher, fill interceptor or broker bypass is introduced. This
+separate dependency blocks GRID_PAPER_INTEGRATED, not SEAM acceptance itself.
+
+## Tests
 
 ```sh
 PYTHONPATH=src python -m pytest tests/research/test_grid.py tests/research/test_grid_execution.py tests/research/test_grid_experiment.py -q
 ```
 
-First run: 40 passed, 1 failed. The geometric comparison incorrectly compared
-legal tick prices with legacy target prices; the assertion now compares targets.
-Final run, including confirmation-time risk handling: **41 passed in 7.04s**.
-Intermediate rerun after the target assertion fix: 41 passed in 7.68s.
+- Original baseline: 41 passed in 7.04s.
+- Initial revision focused run: 10 passed in 0.82s.
+- Expanded focused run: 16 passed, 9 failed; failure assertions compared deep-copied
+  FeeSchedule object identity, fixed to preserve that immutable schedule reference.
+- Three-file regression before adding crossing fixture: 56 passed in 7.66s.
+- Final focused run including crossing fixture: 26 passed in 1.24s.
+- Final three-file regression: **57 passed in 8.07s**.
