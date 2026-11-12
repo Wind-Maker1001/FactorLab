@@ -155,7 +155,15 @@ class GridExecution:
         count = quantity / unit
         return D(self.fees.calculate(self.timestamp, side.value.lower(), float(price * unit)).total) * count
 
+    def _can_propose(self):
+        return (self.account is not None and self.account.reconciled
+                and not any(o.reconcile_required or o.status == OrderStatus.UNKNOWN for o in self.active))
+
     def propose(self, side, target, quantity, level=-1, market=False):
+        if not self._can_propose() or not (
+                self.state == 'RUNNING' or
+                (self.state == 'EXITING' and market and side == Side.SELL)):
+            return
         from factorlab.trading.contracts import OrderSnapshot
         r, a, c = self.rules, self.account, self.config
         quantity = (quantity / r.step_size).to_integral_value(rounding=ROUND_FLOOR) * r.step_size
@@ -214,6 +222,7 @@ class GridExecution:
         self.cancellations.update(o.intent.client_order_id for o in self.active)
 
     def _risk(self, reason, exit_position=False):
+        self.pending_rebuild = None
         self._cancel_all()
         self.state = 'EXITING' if exit_position and self.account.inventory else 'PAUSED'
         self.reason = reason
@@ -224,9 +233,9 @@ class GridExecution:
         self._settle()
 
     def _settle(self):
-        if self.active or self.account is None or not self.account.reconciled:
+        if self.active or not self._can_propose():
             return
-        if self.pending_rebuild is not None:
+        if self.pending_rebuild is not None and self.state in {'RUNNING', 'WARMUP'}:
             center, spacing = self.pending_rebuild
             self.pending_rebuild = None
             # Reuse the legacy range construction and invalid-range decision.
@@ -443,7 +452,7 @@ class GridExecution:
                 self._risk('MAX_TURNOVER')
         if updated.status in TERMINAL:
             self.cancellations.discard(key)
-        if delta and self.state == 'RUNNING' and self.pending_rebuild is None and not cancel_requested and account.reconciled:
+        if delta and self.state == 'RUNNING' and self.pending_rebuild is None and not cancel_requested and self._can_propose():
             level = self.levels[key] + (1 if old.intent.side == Side.BUY else -1)
             if 0 <= level < len(self.prices):
                 self.propose(Side.SELL if old.intent.side == Side.BUY else Side.BUY,

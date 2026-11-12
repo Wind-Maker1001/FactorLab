@@ -254,3 +254,70 @@ def test_legacy_crossing_sequence_with_partial_feedback():
         assert actual == expected
         assert engine.prices == legacy.prices
         assert engine.state == legacy.state
+
+
+@pytest.mark.parametrize('stop', ['drawdown', 'turnover', 'exit'])
+def test_risk_stop_discards_async_rebuild_after_late_cancels(stop):
+    engine, account = setup(breakout='rebuild', min_rebuild_interval=1, max_drawdown=.01)
+    engine.observe(event(1), account)
+    keys = list(engine.orders)
+    for i, key in enumerate(keys):
+        report(engine, key, S.SUBMITTED, 0, account, f'a{i}')
+    engine.observe(event(2,125), account)
+    assert engine.pending_rebuild is not None
+    if stop == 'exit':
+        engine._risk('BREAKOUT', exit_position=True)
+    else:
+        account = replace(account, **({'equity':D(10000)} if stop == 'drawdown'
+                                     else {'turnover':D(104000)}))
+        report(engine, keys[0], S.SUBMITTED, 0, account, 'risk')
+    assert engine.pending_rebuild is None
+    for i, key in enumerate(keys):
+        report(engine, key, S.CANCELED, 0, account, f'cancel{i}')
+    assert engine.rebuilds == 0
+    assert not any(o.intent.side == Side.BUY for o in engine.active)
+    if stop == 'exit':
+        assert engine.state == 'EXITING'
+        assert len(engine.active) == 1
+        assert engine.active[0].intent.reduce_only
+    else:
+        assert engine.state == 'PAUSED' and not engine.active
+        assert engine.propose(Side.BUY,90,D(1)) is None
+
+
+@pytest.mark.parametrize('block', ['unknown', 'account'])
+def test_blocked_confirmations_record_fills_and_resume_after_reconciliation(block):
+    engine, account = setup()
+    engine.observe(event(1), account)
+    keys = list(engine.orders)
+    for i, key in enumerate(keys):
+        report(engine, key, S.SUBMITTED, 0, account, f'a{i}')
+    if block == 'unknown':
+        engine.mark_unknown(keys[0])
+    else:
+        account = replace(account,reconciled=False)
+    filled = replace(account,inventory=D(5),turnover=D(90))
+    report(engine, keys[1], S.PARTIALLY_FILLED, 1, filled, 'partial','90')
+    assert engine.orders[keys[1]].cumulative_filled_quantity == 1
+    assert len(engine.orders) == 4
+    assert engine.propose(Side.SELL,100,D(1)) is None
+    reconciled = replace(filled,reconciled=True)
+    if block == 'unknown':
+        report(engine,keys[0],S.SUBMITTED,0,reconciled,'reconcile')
+    report(engine, keys[1], S.FILLED, 2, replace(reconciled,inventory=D(6),turnover=D(180)), 'full','90')
+    assert len(engine.orders) == 5
+
+
+def test_async_rebuild_seed_waits_for_reconciled_account():
+    engine, account = setup(breakout='rebuild',min_rebuild_interval=1)
+    engine.observe(event(1),account)
+    keys = list(engine.orders)
+    for i,key in enumerate(keys):
+        report(engine,key,S.SUBMITTED,0,account,f'a{i}')
+    engine.observe(event(2,125),account)
+    for i,key in enumerate(keys):
+        report(engine,key,S.CANCELED,0,replace(account,reconciled=False),f'c{i}')
+    assert engine.rebuilds == 0 and not engine.active
+    assert engine.pending_rebuild is not None
+    engine.observe(event(3,125),account)
+    assert engine.rebuilds == 1 and engine.active

@@ -98,4 +98,9 @@ PYTHONPATH=src python -m pytest tests/research/test_grid.py tests/research/test_
   FeeSchedule object identity, fixed to preserve that immutable schedule reference.
 - Three-file regression before adding crossing fixture: 56 passed in 7.66s.
 - Final focused run including crossing fixture: 26 passed in 1.24s.
-- Final three-file regression: **57 passed in 8.07s**.
+- Previous three-file regression: 57 passed in 8.07s.
+- Risk-stop/reconciliation regressions: **63 passed in 7.77s**. Risk stops
+  discard asynchronous rebuilds; late cancellations cannot resume a paused grid.
+  Proposal and settlement paths share reconciliation/UNKNOWN admission, while
+  valid fills remain recorded. Tests include normal resumption after reconciliation
+  and reduce-only exit after risk cancellation. Status remains SEAM_PARTIAL.
