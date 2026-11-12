@@ -233,7 +233,7 @@ def test_simulation_policy_and_signal_are_explicit(tmp_path):
     ('POST', '/sapi/v1/capital/withdraw/apply')])
 def test_simulation_state_and_environment_do_not_authorize_real_network(tmp_path, monkeypatch, method, path):
     from factorlab.integrations.binance_futures_trading.protocol import (
-        Credentials, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked)
+        Credentials, Environment, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked)
     from factorlab.integrations.binance_equity_trading.requests import live_submit, live_cancel
     for name in ('PAPER_SIMULATION', 'LIVE_EXECUTION', 'BINANCE_LIVE_TRADING', 'ENABLE_LIVE_TRADING'):
         monkeypatch.setenv(name, 'true')
@@ -244,9 +244,10 @@ def test_simulation_state_and_environment_do_not_authorize_real_network(tmp_path
     def forbidden(*args, **kwargs):
         pytest.fail('live network must remain unreachable')
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener', forbidden)
-    client = FuturesClient(Credentials('offline-key', 'offline-secret'),
-        transport=ReadOnlyNetworkTransport(permit_account_read=True))
-    with pytest.raises(SafetyBlocked):
+    client = FuturesClient(Credentials('offline-key', 'offline-secret', Environment.PRODUCTION),
+        environment=Environment.PRODUCTION,
+        transport=ReadOnlyNetworkTransport(environment=Environment.PRODUCTION, permit_account_read=True))
+    with pytest.raises(SafetyBlocked, match='NO LIVE MONEY: all real trading requests forbidden'):
         client.request(method, path, state.runtime)
     for operation in (live_submit, live_cancel):
         with pytest.raises(PermissionError, match='NO LIVE MONEY'):

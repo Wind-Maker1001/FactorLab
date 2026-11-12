@@ -29,7 +29,12 @@ and `read_account` contract. Additional reads are `read_facts`, `read_activity`,
 `FuturesClient`, a dedicated `factorlab.trading.storage.PaperStore`, an account ID
 and an optional UTC clock. All mutations require an injected `OfflineTransport`.
 
-`Credentials.from_env()` reads `BINANCE_API_KEY` and `BINANCE_API_SECRET`.
+Network clients require an explicit `Environment.PRODUCTION` or `Environment.DEMO`
+matching both credentials and transport. `Credentials.from_env(environment)` reads
+`BINANCE_READONLY_API_KEY` / `BINANCE_READONLY_API_SECRET` or
+`BINANCE_DEMO_API_KEY` / `BINANCE_DEMO_API_SECRET`, respectively. The zero-argument
+legacy loader remains usable only for offline clients; it cannot authorize network
+reads. Missing Demo credentials never fall back to production or legacy variables.
 Representations redact credentials and signed query strings. Responses/errors do
 not echo server messages or signed URLs. Credentials/signatures never enter the
 order journal. `FuturesClient.build()` creates exact sorted URL-encoded HMAC-SHA256
@@ -44,9 +49,37 @@ or unusable order response becomes `OutcomeUnknown`.
 The real read transport requires **separate explicit account-read permission**:
 `ReadOnlyNetworkTransport(permit_account_read=True)`. Merely constructing it is
 not permission to perform reads. A user must authorize account access first.
-The transport pins the existing USD-M host, refuses redirects, and independently
-refuses POST/DELETE/configuration/transfer paths. Client-level gates enforce the
+The immutable transport pins `https://fapi.binance.com` for production and
+`https://demo-fapi.binance.com` for official Demo Trading, refuses redirects,
+and independently refuses POST/DELETE/configuration/transfer paths. Demo is not
+selected through the old testnet URL. These hosts are specified by the official
+[SDK constants](https://github.com/binance/binance-connector-python/blob/f75b4a52c5aebf52b1c6ad671b0ce53b96f8e179/common/src/binance_common/constants.py).
+Environment-bound adapters require the corresponding explicit account alias;
+the persisted identity includes the environment and a SHA-256 API-key identity
+digest, so stores cannot cross environments or silently switch credentials.
+The digest is not an exchange-issued account UID; key rotation requires a separate
+store rather than silently assuming the new key identifies the same account. Client-level gates enforce the
 same boundary. No account read permission is needed for the offline tests/demo.
+
+## Bounded read-only verification
+
+```console
+python -m factorlab.integrations.binance_futures_trading.readonly --credential-dialog --permit-account-read
+```
+
+The local masked dialog accepts both existing API-key/secret pairs. Credentials
+remain in that process's memory, are never passed through command arguments,
+and are discarded when the process exits. Omit `--credential-dialog` to use the
+separate environment-variable pairs. This verifier does not load a paper ledger
+or persist private account responses. Production credentials also supply the
+existing fixed-host Stocks rule reader; Demo credentials are rejected there.
+
+Each environment gets one time synchronization, exchangeInfo, account, balance,
+position-risk and open-orders GET. Stocks gets one production NVDA exchangeInfo
+GET. Each call has a ten-second timeout, with no automatic retries or host fallback.
+Output contains capability outcomes and the public Demo symbol/status list only;
+no balance amounts, position details, order details or account payloads are emitted.
+A successful empty order response verifies read access, not trading permission.
 
 ## Verified official protocol source
 
@@ -76,10 +109,10 @@ connector supplies the endpoint/parameter and model contracts used here.
   supplies mark/notional/liquidation fields. Leverage and margin type are read
   separately from symbolConfig, not invented from the v3 position response.
 
-This is source-contract verification, not a claim that authenticated calls or
-account-specific exchange permissions have been tested. Actual account API-key
-permissions, regional/TradFi eligibility, stock-contract agreement status and
-current personalized trading filters/brackets were not queried. No agreement,
+The [P7-D01 read-only observation](validation/p7-d01/REPORT.md) separately records
+authenticated endpoint access. Reads do not establish account-specific trading
+permission, regional/TradFi eligibility or stock-contract agreement status.
+Personalized leverage brackets were not part of that observation. No agreement,
 leverage, margin-mode or other account-setting mutation is allowlisted.
 
 ## Shared contract boundary and risk

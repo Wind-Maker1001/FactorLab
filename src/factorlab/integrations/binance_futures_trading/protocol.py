@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
+from enum import Enum
 import hashlib
 import hmac
 import json
@@ -12,10 +13,27 @@ from urllib.parse import urlencode
 from urllib.request import Request, build_opener
 
 from factorlab.errors import DataQualityError
-from factorlab.integrations.binance.client import HOST, Response, _NoRedirect
+from factorlab.integrations.binance.client import Response, _NoRedirect
+
+class Environment(Enum):
+    PRODUCTION = ('https://fapi.binance.com', 'BINANCE_READONLY', 'FactorLab-ReadOnly')
+    DEMO = ('https://demo-fapi.binance.com', 'BINANCE_DEMO', 'FactorLab-Demo')
+
+    @property
+    def host(self):
+        return self.value[0]
+
+    @property
+    def credential_prefix(self):
+        return self.value[1]
+
+    @property
+    def account_id(self):
+        return self.value[2]
+
 
 READ_PATHS = frozenset({
-    '/fapi/v1/time', '/fapi/v1/order', '/fapi/v1/openOrders', '/fapi/v1/allOrders',
+    '/fapi/v1/exchangeInfo', '/fapi/v3/balance', '/fapi/v1/time', '/fapi/v1/order', '/fapi/v1/openOrders', '/fapi/v1/allOrders',
     '/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
     '/fapi/v1/leverageBracket', '/fapi/v1/userTrades', '/fapi/v1/income', '/fapi/v1/symbolConfig',
 })
@@ -41,14 +59,19 @@ class OutcomeUnknown(TimeoutError):
 class Credentials:
     key: str = field(repr=False)
     secret: str = field(repr=False)
+    environment: Environment | None = None
 
     def __post_init__(self):
         if not self.key or not self.secret:
             raise ValueError('both API key and secret required')
 
     @classmethod
-    def from_env(cls):
-        return cls(os.environ.get('BINANCE_API_KEY', ''), os.environ.get('BINANCE_API_SECRET', ''))
+    def from_env(cls, environment=None):
+        if environment is None:
+            return cls(os.environ.get('BINANCE_API_KEY', ''), os.environ.get('BINANCE_API_SECRET', ''))
+        prefix = environment.credential_prefix
+        return cls(os.environ.get(prefix + '_API_KEY', ''),
+                   os.environ.get(prefix + '_API_SECRET', ''), environment)
 
     def __repr__(self):
         return 'Credentials(<redacted>)'
@@ -60,6 +83,7 @@ class SignedRequest:
     path: str
     query: str = field(repr=False)
     headers: dict = field(repr=False)
+    environment: Environment | None = None
 
     def __repr__(self):
         return f'SignedRequest({self.method}, {self.path}, <redacted>)'
@@ -71,15 +95,18 @@ class OfflineTransport:
         raise NotImplementedError
 
 
+@dataclass(frozen=True, kw_only=True)
 class ReadOnlyNetworkTransport:
     """Explicit opt-in account GETs only, fixed host, no redirects or writes."""
-    def __init__(self, *, permit_account_read=False):
-        self.permit_account_read = permit_account_read
+    permit_account_read: bool = False
+    environment: Environment = Environment.PRODUCTION
 
     def __call__(self, request, timeout):
         if not self.permit_account_read or request.method != 'GET' or request.path not in READ_PATHS:
             raise SafetyBlocked('NO LIVE MONEY: network access disabled or non-read request')
-        url = HOST + request.path + ('?' + request.query if request.query else '')
+        if request.environment is not self.environment:
+            raise SafetyBlocked('credential and transport environment mismatch')
+        url = self.environment.host + request.path + ('?' + request.query if request.query else '')
         try:
             with build_opener(_NoRedirect()).open(Request(url, headers=request.headers, method='GET'), timeout=timeout) as r:
                 return Response(r.status, dict(r.headers), r.read(2 * 1024 * 1024 + 1))
@@ -92,11 +119,17 @@ class ReadOnlyNetworkTransport:
 class FuturesClient:
     """No automatic retry: callers reconcile writes and respect explicit cooldowns."""
     def __init__(self, credentials=None, *, transport=None, recv_window=5000,
-                 timeout=10, clock=time.time):
+                 timeout=10, clock=time.time, environment=None):
         if type(recv_window) is not int or not 1 <= recv_window <= 60000 or timeout <= 0:
             raise ValueError('invalid recvWindow or timeout')
         if transport is not None and not isinstance(transport, (OfflineTransport, ReadOnlyNetworkTransport)):
             raise SafetyBlocked('transport must be offline fake or explicitly permitted read-only transport')
+        self.environment = environment if environment is None else Environment(environment)
+        if isinstance(transport, ReadOnlyNetworkTransport):
+            if self.environment is None or transport.environment is not self.environment:
+                raise SafetyBlocked('explicit matching network environment required')
+            if credentials is not None and credentials.environment is not self.environment:
+                raise SafetyBlocked('credential and client environment mismatch')
         self.credentials, self.transport = credentials, transport
         self.recv_window, self.timeout, self.clock = recv_window, timeout, clock
         self.offset_ms, self.blocked_until = 0, 0.0
@@ -120,13 +153,15 @@ class FuturesClient:
         if signed:
             if self.credentials is None:
                 raise SafetyBlocked('credentials required for signed protocol')
+            if isinstance(self.transport, ReadOnlyNetworkTransport) and self.credentials.environment is not self.environment:
+                raise SafetyBlocked('credential and client environment mismatch')
             params.update(timestamp=int(self.clock() * 1000) + self.offset_ms, recvWindow=self.recv_window)
             headers['X-MBX-APIKEY'] = self.credentials.key
         query = urlencode(sorted(params.items()))
         if signed:
             signature = hmac.new(self.credentials.secret.encode(), query.encode(), hashlib.sha256).hexdigest()
             query += '&signature=' + signature
-        return SignedRequest(method, path, query, headers)
+        return SignedRequest(method, path, query, headers, self.environment)
 
     def request(self, method, path, params=None, *, signed=True):
         if self.transport is None:

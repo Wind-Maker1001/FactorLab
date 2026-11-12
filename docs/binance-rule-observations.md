@@ -81,10 +81,11 @@ GET paths and disabled redirects. Network POST/DELETE/PUT, order placement,
 cancellation, margin-mode changes, transfers and withdrawals are blocked before
 opening a connection.
 
-No real-account access was authorized or performed for this change. Offline
-contract validation is not real-account integration approval. A future authorized
-check must have an explicit request/time budget and publish only capability
-outcomes, never credentials, signatures or private account payloads.
+The bounded 2026-11-12 [dual-environment read-only verification](validation/p7-d01/REPORT.md)
+confirmed production and official Demo Futures GET access and production Stocks
+rule access. Only capability outcomes and public Demo symbol metadata were retained;
+private account payloads, credentials and signatures were not retained. Successful
+reads do not grant order-write permission or formal financial admission.
 
 ## Explicit Paper Simulation Policy
 
