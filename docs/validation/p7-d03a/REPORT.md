@@ -34,12 +34,9 @@ The sanitized observation is in [demo-readonly-preflight.json](demo-readonly-pre
 
 NVDAUSDT was returned as TRADING / TRADIFI_PERPETUAL. Demo evidence confirmed one-way mode, known leverage and margin mode, known brackets and available margin, positive available margin, and no existing positions or orders. Production leverage, margin and risk tiers were not reused.
 
-Two required facts remain UNKNOWN:
+That observation left `account_can_trade` and `quantitative_trading_unlocked` UNKNOWN. The subsequent [eligibility observation](ELIGIBILITY.md) established `account_can_trade` as VERIFIED_TRUE through an explicit V2 boolean. `quantitative_trading_unlocked` remains UNKNOWN because both required indicator scopes lacked usable lock evidence.
 
-- `account_can_trade`
-- `quantitative_trading_unlocked`
-
-HTTP success does not establish trading eligibility. These UNKNOWNs and the unset real plan independently prevent execution admission.
+HTTP success does not establish trading eligibility. The remaining UNKNOWN and the unset real plan independently prevent execution admission.
 
 ## Offline verification and no-write evidence
 
