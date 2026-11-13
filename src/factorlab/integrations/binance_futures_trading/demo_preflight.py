@@ -168,8 +168,12 @@ def _bracket_values(observation):
     return {'notionalCoef': 'NOT_REPORTED' if coefficient is None else coefficient, 'tiers': tiers}
 
 
-def inspect_demo(credential=None, *, plan=None, limit_price=None):
+def inspect_demo(credential=None, *, plan=None, limit_price=None, client_order_id=None, prepare_policy=None):
     """Return only the selected account facts, sanitized endpoint receipt and plan checks."""
+    if client_order_id is not None:
+        import re
+        if not re.fullmatch(r'[A-Za-z0-9_-]{1,36}', client_order_id):
+            raise ValueError('explicit client order identity required')
     transport = _ReadReceipt(environment=DEMO, permit_account_read=True)
     client = FuturesClient(credential, environment=DEMO, transport=transport)
     checks = {}
@@ -188,13 +192,30 @@ def inspect_demo(credential=None, *, plan=None, limit_price=None):
 
     if credential is not None and not time_error:
         with closing(PaperStore(':memory:')) as store:
-            adapter = FuturesAdapter(client, store, account_id=DEMO.account_id)
+            adapter = FuturesAdapter(client, store, account_id=DEMO.account_id,
+                                     clock=lambda: datetime.now(timezone.utc))
             account_id = adapter.account_id
             rules, rules_error = _observe(lambda: observe_demo_rules(
                 adapter, SYMBOL, source_version=DEMO.host, on_symbol=keep_symbol))
             facts, account_error = _observe(adapter.read_facts)
     else:
         info, rules_error = _observe(lambda: read_demo_symbol(client, SYMBOL))
+
+    if client_order_id is not None:
+        identity = UNKNOWN
+        if credential is not None and not time_error:
+            try:
+                client.request('GET', '/fapi/v1/order',
+                               {'symbol': SYMBOL, 'origClientOrderId': client_order_id})
+            except ExchangeError as error:
+                if error.code == -2013:
+                    identity = 'ABSENT'
+            except (DataQualityError, OSError, TimeoutError):
+                pass
+            else:
+                identity = 'PRESENT'
+        add('order_identity', '/fapi/v1/order',
+            {'clientOrderId': client_order_id, 'state': identity}, identity == 'ABSENT')
 
     mark, _ = _observe(lambda: _quote(client.request('GET', MARK, {'symbol': SYMBOL}, signed=False), ('markPrice',)))
     book, _ = _observe(lambda: _book(client.request('GET', BOOK, {'symbol': SYMBOL}, signed=False)))
@@ -296,10 +317,13 @@ def inspect_demo(credential=None, *, plan=None, limit_price=None):
         else:
             plan_result = review_opening_plan(plan, facts=facts, rules=rules.rules,
                 mark_price=mark['markPrice'], quote_price=book['askPrice'], limit_price=limit_price, now=now)
-    return dict(status=status, environment=DEMO.name, host=DEMO.host, symbol=SYMBOL, observed_at=now,
-                safety=SAFETY_LABELS, checks=checks, account_read_error=account_error,
-                rule_read_error=rules_error, minimum_opening_orders=sizing, plan_review=plan_result,
-                execution_admission='BLOCKED', endpoints=transport.endpoints, network_writes=0)
+    result = dict(status=status, environment=DEMO.name, host=DEMO.host, symbol=SYMBOL, observed_at=now,
+                  safety=SAFETY_LABELS, checks=checks, account_read_error=account_error,
+                  rule_read_error=rules_error, minimum_opening_orders=sizing, plan_review=plan_result,
+                  execution_admission='BLOCKED', endpoints=transport.endpoints, network_writes=0)
+    if prepare_policy is not None:
+        result['bounded_preparation'] = prepare_policy(result, facts, rules.rules if rules else None)
+    return result
 
 
 def main():

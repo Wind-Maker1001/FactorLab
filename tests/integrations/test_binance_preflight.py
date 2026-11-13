@@ -277,6 +277,36 @@ def test_demo_signed_contract_separates_observation_from_execution(demo_account_
     assert 'PRIVATE_' not in serialized and 'signature' not in serialized
 
 
+@pytest.mark.parametrize('outcome, state', [(-2013, 'ABSENT'), (-2015, 'UNKNOWN'), (None, 'PRESENT')])
+def test_demo_exact_identity_is_get_only(demo_account_http, monkeypatch, outcome, state):
+    from factorlab.integrations.binance_futures_trading.protocol import ExchangeError
+    original = FuturesClient.request
+    identities = []
+
+    def request(self, method, path, params=None, **kwargs):
+        if path == '/fapi/v1/order':
+            identities.append((method, params))
+            if outcome is not None:
+                raise ExchangeError(outcome, 400, 'ORDER_NOT_FOUND' if outcome == -2013 else 'AUTH')
+            return {'status': 'NEW'}
+        return original(self, method, path, params, **kwargs)
+
+    monkeypatch.setattr(FuturesClient, 'request', request)
+    result = demo_preflight.inspect_demo(Credentials('k', 's', Environment.DEMO), client_order_id='m04-test-01')
+    check = result['checks']['order_identity']
+    assert check['value'] == {'clientOrderId': 'm04-test-01', 'state': state}
+    assert check['eligible'] is (state == 'ABSENT')
+    assert identities == [('GET', {'symbol': 'NVDAUSDT', 'origClientOrderId': 'm04-test-01'})]
+    assert result['network_writes'] == 0
+
+
+def test_demo_invalid_identity_rejected_before_requests(demo_account_http):
+    _, calls, _ = demo_account_http
+    with pytest.raises(ValueError, match='identity'):
+        demo_preflight.inspect_demo(client_order_id='invalid identity')
+    assert calls == []
+
+
 def test_missing_demo_credentials_leave_signed_facts_unknown(demo_account_http):
     _, calls, unsigned = demo_account_http
     result = demo_preflight.inspect_demo()

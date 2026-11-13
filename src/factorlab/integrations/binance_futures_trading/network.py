@@ -29,9 +29,22 @@ class DemoExecutionPlan:
     recovery: str
     environment: Environment = Environment.DEMO
     symbol: str = 'NVDAUSDT'
+    quote_policy: 'BoundedQuotePolicy | None' = None
 
     def __post_init__(self):
         import re
+        if self.quote_policy is not None:
+            from .bounded_quote import BoundedQuotePolicy
+            if type(self.quote_policy) is not BoundedQuotePolicy:
+                raise ValueError('validated bounded quote policy required')
+            policy = self.quote_policy
+            if self.max_orders != 1 or self.max_open_orders != 1:
+                raise ValueError('bounded execution requires one order and one open order')
+            if (self.order_types != frozenset({'LIMIT'}) or policy.account_id != self.account_id
+                    or policy.quantity > self.max_quantity or policy.max_notional > self.max_notional
+                    or policy.max_funds > self.max_margin or policy.expires_at > self.expires_at
+                    or not policy.client_order_id.startswith(self.client_id_prefix)):
+                raise ValueError('bounded quote exceeds execution plan')
         utc(self.expires_at)
         if self.environment is not Environment.DEMO or self.symbol != 'NVDAUSDT':
             raise ValueError('Demo NVDAUSDT plan required')
@@ -125,6 +138,20 @@ class DemoNetworkTransport:
             if (method != request.method or account_id != self.authorization.plan.account_id
                     or actual != {k: [str(v)] for k, v in params.items()}):
                 raise SafetyBlocked('approved order request mismatch')
+            policy = self.authorization.plan.quote_policy
+            if policy is not None:
+                if policy.expires_at <= datetime.now(timezone.utc):
+                    raise SafetyBlocked('bounded policy expired at dispatch')
+                identity_key = 'newClientOrderId' if request.method == 'POST' else 'origClientOrderId'
+                if actual.get(identity_key) != [policy.client_order_id]:
+                    raise SafetyBlocked('bounded exact dispatch identity mismatch')
+            if request.method == 'POST' and policy is not None:
+                guard = self._admission.pop('bounded_guard', None)
+                if guard is None:
+                    raise SafetyBlocked('bounded dispatch observation required')
+                guard()
+                if not self.permitted():
+                    raise SafetyBlocked('Demo authorization expired at dispatch')
         url = 'https://demo-fapi.binance.com' + request.path + ('?' + request.query if request.query else '')
         try:
             with build_opener(_NoRedirect()).open(
