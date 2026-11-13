@@ -1,16 +1,16 @@
 {
   "policy": {
     "account_id": "DEMO:FactorLab-Demo:sha256:...660da077",
-    "account_observation_identity": "943e9d31dd64c7aa09dddd1ed464d60518c15a3e16a9011b45b1a87ef60876c6",
-    "approval_record_id": "unapproved:m05-d11d9b1676a94e48-01",
+    "account_observation_identity": "e86c01450aab820880bbc5f238ca051e969822e67b9bf7e52eacd2ea576a8b84",
+    "approval_record_id": "unapproved:m05-033ae399268e414c-01",
     "automatic_close": false,
     "automatic_market": false,
     "automatic_resubmit": false,
-    "client_order_id": "m05-d11d9b1676a94e48-01",
+    "client_order_id": "m05-033ae399268e414c-01",
     "configuration_identity": "f6bc24839130878e7a20b9665f4d422d668bd6ebfc4bee2db6a3c7fba00ef502",
     "environment": "DEMO",
     "execution_code_identity": "9eb8cd4ebc53efe28f0ed1e68ae86a2b6dc65a64bd5c5a8104940e14670c20d8",
-    "expires_at": "2026-11-13T19:40:34.126457+00:00",
+    "expires_at": "2026-11-13T19:47:53.288307+00:00",
     "fee_rate": "0.001",
     "formula": "floor(best_bid * (1 - offset_bps / 10000) / tickSize) * tickSize",
     "max_ask": "163.37",
@@ -19,14 +19,14 @@
     "max_known_order_deletes": 1,
     "max_limit_posts": 1,
     "max_notional": "6.54",
-    "max_price": "161.88",
+    "max_price": "161.69",
     "max_quote_age_seconds": 5,
-    "min_price": "159.45",
+    "min_price": "159.27",
     "offset_bps": "50",
     "order_type": "LIMIT",
     "position_side": "BOTH",
     "quantity": "0.04",
-    "quote_observed_at": "2026-11-13T17:40:34.126457+00:00",
+    "quote_observed_at": "2026-11-13T17:47:53.288307+00:00",
     "reduce_only": false,
     "rules_identity": "45cf84fd3ded0b27ad5f5887172d407569d80514b552c29b95b203f6773c3d1c",
     "side": "BUY",
@@ -38,13 +38,13 @@
   "plan": {
     "account_id": "DEMO:FactorLab-Demo:sha256:...660da077",
     "cleanup": "CANCEL_KNOWN_THEN_STOP",
-    "client_id_prefix": "m05-d11d9b1676a94e48",
+    "client_id_prefix": "m05-033ae399268e414c",
     "environment": [
       "https://demo-fapi.binance.com",
       "BINANCE_DEMO",
       "FactorLab-Demo"
     ],
-    "expires_at": "2026-11-13T19:40:34.126457+00:00",
+    "expires_at": "2026-11-13T19:47:53.288307+00:00",
     "max_loss": "0.21",
     "max_margin": "6.55",
     "max_notional": "6.54",
@@ -57,16 +57,16 @@
     ],
     "quote_policy": {
       "account_id": "DEMO:FactorLab-Demo:sha256:...660da077",
-      "account_observation_identity": "943e9d31dd64c7aa09dddd1ed464d60518c15a3e16a9011b45b1a87ef60876c6",
-      "approval_record_id": "unapproved:m05-d11d9b1676a94e48-01",
+      "account_observation_identity": "e86c01450aab820880bbc5f238ca051e969822e67b9bf7e52eacd2ea576a8b84",
+      "approval_record_id": "unapproved:m05-033ae399268e414c-01",
       "automatic_close": false,
       "automatic_market": false,
       "automatic_resubmit": false,
-      "client_order_id": "m05-d11d9b1676a94e48-01",
+      "client_order_id": "m05-033ae399268e414c-01",
       "configuration_identity": "f6bc24839130878e7a20b9665f4d422d668bd6ebfc4bee2db6a3c7fba00ef502",
       "environment": "DEMO",
       "execution_code_identity": "9eb8cd4ebc53efe28f0ed1e68ae86a2b6dc65a64bd5c5a8104940e14670c20d8",
-      "expires_at": "2026-11-13T19:40:34.126457+00:00",
+      "expires_at": "2026-11-13T19:47:53.288307+00:00",
       "fee_rate": "0.001",
       "formula": "floor(best_bid * (1 - offset_bps / 10000) / tickSize) * tickSize",
       "max_ask": "163.37",
@@ -75,14 +75,14 @@
       "max_known_order_deletes": 1,
       "max_limit_posts": 1,
       "max_notional": "6.54",
-      "max_price": "161.88",
+      "max_price": "161.69",
       "max_quote_age_seconds": 5,
-      "min_price": "159.45",
+      "min_price": "159.27",
       "offset_bps": "50",
       "order_type": "LIMIT",
       "position_side": "BOTH",
       "quantity": "0.04",
-      "quote_observed_at": "2026-11-13T17:40:34.126457+00:00",
+      "quote_observed_at": "2026-11-13T17:47:53.288307+00:00",
       "reduce_only": false,
       "rules_identity": "45cf84fd3ded0b27ad5f5887172d407569d80514b552c29b95b203f6773c3d1c",
       "side": "BUY",
@@ -94,13 +94,13 @@
     "recovery": "GET_RECONCILE_NO_RESUBMIT",
     "symbol": "NVDAUSDT"
   },
-  "policy_digest": "a89c3bcefba4061aba3582fc842602fbc16ad3270ff3f45e4c6d9eb83466d94f",
-  "plan_digest": "a294c2d6a3752035900653b8a2ef17111fae0355a9827347688a1177a9bdcfdb",
+  "policy_digest": "e319cf6dfaa3559abd2e41abad7b175e7f42ab06fd2c53ab3db79b5217c6bd07",
+  "plan_digest": "d51d427721f26138fc6e146d875cb367401c5f3f2c53a66c62ba73361094979d",
   "exchange_price_band": [
-    "156.257300000000",
-    "165.922700000000"
+    "156.461000000000",
+    "166.139000000000"
   ],
-  "observed_candidate_limit": "160.26000",
+  "observed_candidate_limit": "160.07000",
   "admission_reviews": {
     "opening_plan": {
       "LIMIT": []
@@ -111,11 +111,23 @@
   },
   "write_authorization": false,
   "artifact_type": "SANITIZED_NON_EXECUTABLE_DISPLAY",
-  "status": "P7_M05_EVIDENCE_PARTIAL",
+  "status": "P7_M05_READY_FOR_EXPLICIT_AUTHORIZATION",
+  "evaluated_at": "2026-11-13T17:49:07.815462+00:00",
   "manual_evidence": {
-    "key_trade_permission": "USER_DECLARATION_CONFIRMED",
-    "additional_history": "USER_DECLARATION_NONE",
-    "local_history": "LOCAL_HISTORY_INCOMPLETE"
+    "permission": {
+      "id": "m05-user-declaration-demo-660da077-permissions",
+      "type": "USER_DECLARATION",
+      "result": "VERIFIED"
+    },
+    "additional_history": {
+      "id": "m05-user-declaration-demo-660da077-additional-history",
+      "type": "USER_DECLARATION",
+      "result": "NO_OTHER_EXECUTION_DECLARED"
+    }
   },
-  "remaining_blocker": "SESSION_DATE_VS_RUNTIME_AND_EXCHANGE_DATE_CONFLICT"
+  "residual_evidence": [
+    "LOCAL_HISTORY_INCOMPLETE",
+    "ACCOUNT_AND_NVDAUSDT_NOT_REPORTED"
+  ],
+  "network_authorization": false
 }
