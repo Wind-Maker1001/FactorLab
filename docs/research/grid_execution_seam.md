@@ -2,105 +2,118 @@
 
 ## Status
 
-P7_G01_GRID_SEAM_PARTIAL
+P7_G01_GRID_SEAM_ACCEPTED
 
 NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
 
-## Revision behavior
+## Authority and recovery
 
-Observe, confirm, UNKNOWN and batch replay stage state before publication. Invalid
-commands cannot partially publish journal entries, orders or decision state.
-Observation time is explicitly timezone-free, matching legacy Grid; confirmations
-use the unified UTC OrderEvent contract. IDs, prices, volume, completed-bar/OHLC,
-account identity and cumulative turnover are validated. Confirmation transitions
-reuse trading.state.advance, including per-order confirmation ordering.
+For a dedicated single-instrument Paper account, Grid observation, submission
+and confirmation use the existing TradingController transaction. The quote,
+order journal, account and Grid checkpoint commit together. Grid publishes its
+staged decisions after commit. The transaction reloads authority before changing
+it and checks that the caller holds the current checkpoint revision. A Grid
+proposal canceled before submission can be discarded locally. Once submitted,
+its reservation stays with the authority until a terminal report.
 
-Fee estimates reuse the effective FeeSchedule. Reservation estimates assume one
-minimum-fee execution per quantity step, with commission, cash-equivalent slippage
-and side costs charged each time. The external executor must guarantee this
-minimum execution quantum for the bound to hold. Two one-unit fills at 90 with
-minimum commission 1 and slippage 10 bps cost 2.18, not the single-fill 1.18.
-These are strategy estimates, never cash postings. PaperBroker's proportional
-fees are not represented as equivalent to this schedule.
+The checkpoint binds account, instrument, market, deployment, strategy and
+controller configuration. It binds the journal position and the confirmed orders,
+balances, positions and marks into a digest. It detects a damaged checkpoint or
+an independently advanced account before accepting commands. Restore reads
+working order status and cumulative fills from authority. Paper restart overlays
+UNKNOWN on unfinished orders while preserving their confirmed quantities and
+reservations. Local reconciliation can resolve a stored confirmation. A
+submission timeout with no stored confirmation requires an explicit authority
+report before the account can reconcile.
 
-Cancellation requests retain remaining quantity until a terminal confirmation.
-Late partial or full fills while cancellation is pending update confirmed quantity
-without creating reversal orders. Rebuild waits until all prior orders terminate.
-UNKNOWN retains orders and blocks observations until explicit confirmation.
+Grid uses the shared OrderEvent state machine for valid confirmations. Before
+applying a new report, the seam checks the authoritative terminal record.
+Conflicting status, cumulative fills, fees or exchange identity commit a
+persistent Grid block while leaving the last booked authority intact. The
+block covers existing unsubmitted proposals and survives restart and local
+Paper reconciliation. A conflicting execution needs authoritative resolution
+before the deployment can resume. A late fill during a cancellation request
+still updates the account and confirmed quantity, with no counter-order.
 
-project_paper_account is a read-only dedicated-instrument projection. USD-M
-wallet cash is not reduced by entry principal: entry notional is collateral,
-equity includes mark-minus-entry PnL. A tested partial opening leaves wallet 1000,
-available 800, committed 200 and equity 1000. Gross turnover must be supplied from
-the authority's journal because snapshots do not retain historical fill prices.
-No second economic ledger is created.
+## Checkpoint size and ordering
 
-## Persistence protocol
+PaperStore holds one Grid checkpoint for the dedicated account. It contains the
+current grid, risk state, working order metadata, pending bar or rebuild, a
+rolling ATR window and counters. Accepted order data come from PaperStore.
+The issued-order counter keeps client order IDs unique after terminal orders
+are dropped from Grid memory. The checkpoint and staged Grid state grow with
+the working set and configured window. There are at most 1,000 working orders,
+1,000 grid prices and 4,096 ATR samples. The existing PaperStore caps govern
+the authority journal and order lifetime.
 
-checkpoint writes only deployment metadata and decision commands into the existing
-PaperStore runtime, inside an existing account transaction. Confirmed strategy
-orders must match saved authority. Callers save authoritative state first, then
-checkpoint; no network orders are replayed. Restore verifies configuration and
-identity, replays decision commands atomically, and checks authority before use.
-The tests cover unsubmitted proposals, deterministic IDs, deployment drift and
-transaction requirements.
+Deliveries are consecutive across observations, submissions, confirmations and
+ATR close commands within a deployment. Retrying the latest delivery with the
+same normalized payload is idempotent. An earlier delivery, a gap or a changed
+payload at the current delivery is rejected. Observation IDs are source labels.
+Paper OrderEvent IDs are account-wide and a matching journal entry makes an
+exact retransmission idempotent even at a new delivery. The caller orders the
+feeds by delivery. Observation timestamps remain timezone-free and monotonic.
+OrderEvent timestamps remain UTC and monotonic per order.
 
-## Decision comparison evidence
+## Account projection and turnover
 
-Arithmetic/geometric initialization compares target prices separately from legal
-ticks. ATR warmup/rebuild compares legacy ranges. A ten-observation fixture
-100,90,90,100,110,110,100,80,80,90 feeds the legacy simulator's confirmed one-unit
-fills to the seam and compares all accepted proposal directions, target prices,
-quantities, levels, grid ranges and strategy states after every observation.
-This shares execution assumptions deliberately; it does not compare different
-matching engines' economic outcomes.
+The dedicated quote-currency balance supplies available funds and reservations.
+Equity positions add marked inventory to cash and include entry notional in
+committed capital. USD-M keeps entry notional as collateral, with unrealized
+mark-minus-entry PnL added to wallet equity. UNKNOWN preserves reservations
+and blocks new decisions until reconciliation.
 
-## Remaining SEAM acceptance gaps
+Gross turnover sums the incremental confirmed quantity at each journal fill
+price. Projection reads the snapshot and journal together. Grid begins counting
+at the deployment's journal baseline, adds each new confirmed fill delta in
+the same transaction, and checks the resulting scalar against the authoritative
+journal on restore. The account lifecycle fixture checks both USD-M and equity
+with fees. Two partial opening fills at 90 and 98, a reduction at 110, and a
+close at 100 produce gross turnover of 398. Cancellation releases the remaining
+opening reservation. PaperStore is the sole source of economic records.
 
-- Persistence tests do not yet cover authority advancing without a corresponding
-  checkpoint, corrupted checkpoints, rollback after checkpoint failure, or a full
-  controller restart with filled and UNKNOWN orders. An atomic wrapper coordinating
-  in-memory publication with account transaction completion is still required.
-- Replay copies accumulated state and history for staging; this is not a bounded
-  incremental persistence protocol. Long-running deployments need a bounded
-  checkpoint/command representation rather than increasingly large JSON payloads.
-- Dedicated-instrument projection is tested only on a USD-M partial opening.
-  Historical turnover remains caller-provided, not validated against the authority
-  journal. Multi-instrument accounts are explicitly rejected.
-- Explicit external account identity remains optional for legacy candidate callers.
-  Cross-stream observation/confirmation ordering is not fully specified/validated.
-- Full sequence equivalence still needs expiry, user cancellation, ATR subsequent
-  rebuild, breakout pause/exit, post-fill drawdown/turnover and restart sequences.
-- CANCELED followed by late FILLED (after cancellation has already been confirmed)
-  needs coverage and reversal policy. Current tests cover fills after a cancellation
-  request, not that later reconciliation case.
+Grid's submission estimates continue to use the effective FeeSchedule,
+including minimum fees and cash-equivalent slippage per executable quantity
+step. The fee bound assumes the executor respects that quantity step. Paper
+fees and cash postings follow the Paper authority's configured fee model.
 
-These gaps prevent SEAM_ACCEPTED. Legacy Grid and prohibited trading core files
-remain unchanged.
+## Decision comparison
+
+The tests compare GridStrategy and the seam at matching observation and
+confirmation boundaries. They cover initial arithmetic/geometric levels and a
+ten-observation crossing sequence, then compare the active orders and decision
+state through a touched user cancellation, a touched expiry, and a later ATR
+rebuild with a fill at the same observation. ATR closes explicitly after the
+execution feedback for that observation. A breakout rebuild uses the prior
+ATR spacing even when its cancellation confirmations arrive after the close.
+
+The breakout exit fixture restarts with cancellations pending, reconciles the
+working orders and compares the market exit quantity, flat position and
+EXITED state. Post-fill drawdown and turnover fixtures compare the settled
+PAUSED decision. Legacy Grid can briefly propose and cancel a counter-order
+within the risk-stop observation. The seam uses the confirmed account risk
+state to suppress that proposal.
 
 ## Separate Paper integration dependency
 
-The unified controller must check remaining strategy turnover inside the fill
-transaction, before posting a fill. Legacy clips an otherwise executable fill to
-remaining turnover capacity; submission-only risk checks cannot guarantee this.
-No Grid-specific matcher, fill interceptor or broker bypass is introduced. This
-separate dependency blocks GRID_PAPER_INTEGRATED, not SEAM acceptance itself.
+Inside the authoritative fill transaction, the future turnover admission hook
+needs deployment identity, the proposed incremental quantity, the executable
+fill price and whether the order is a risk liquidation. It reads the confirmed
+gross turnover, clips an ordinary fill to the remaining notional allowance
+at the executable price and rounds down to the legal quantity step. It blocks
+a zero-quantity result before posting. Risk liquidation uses the existing
+reduce-only admission and the legacy turnover exemption.
 
-## Tests
+## Validation
 
-```sh
-PYTHONPATH=src python -m pytest tests/research/test_grid.py tests/research/test_grid_execution.py tests/research/test_grid_experiment.py -q
-```
+`PYTHONPATH=src python -m pytest tests/research/test_grid.py tests/research/test_grid_execution.py tests/research/test_grid_experiment.py -q`
 
-- Original baseline: 41 passed in 7.04s.
-- Initial revision focused run: 10 passed in 0.82s.
-- Expanded focused run: 16 passed, 9 failed; failure assertions compared deep-copied
-  FeeSchedule object identity, fixed to preserve that immutable schedule reference.
-- Three-file regression before adding crossing fixture: 56 passed in 7.66s.
-- Final focused run including crossing fixture: 26 passed in 1.24s.
-- Previous three-file regression: 57 passed in 8.07s.
-- Risk-stop/reconciliation regressions: **63 passed in 7.77s**. Risk stops
-  discard asynchronous rebuilds; late cancellations cannot resume a paused grid.
-  Proposal and settlement paths share reconciliation/UNKNOWN admission, while
-  valid fills remain recorded. Tests include normal resumption after reconciliation
-  and reduce-only exit after risk cancellation. Status remains SEAM_PARTIAL.
+**72 passed in 23.53s.** The transaction fixture denies SQLite COMMIT after the
+event, account and checkpoint have been written, verifies rollback, then
+retries and restarts with a partial fill and an unresolved submission. The
+recovery tests also cover stale writers, authority ahead of the checkpoint,
+checkpoint damage and configuration drift. The boundedness fixture runs
+480 deliveries and checks that the checkpoint grows by at most 32 bytes after
+warmup, with two retained ATR samples and zero Grid command records in the
+Paper journal. The terminal-conflict fixture checks the booked account before
+and after the late report and after restart.
