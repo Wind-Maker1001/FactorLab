@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-14",
+  "market_history_downloaded": false,
+  "observations": [
+    {"url": "https://fapi.binance.com/fapi/v1/exchangeInfo", "outcome": "curl 28; connection timeout; no authenticated contract response"},
+    {"url": "https://fapi.binance.com/fapi/v1/klines?symbol=NVDAUSDT&interval=1h&startTime=0&limit=1", "outcome": "curl 28; connection timeout; no earliest candle response"},
+    {"url": "https://data.binance.vision/?prefix=data/futures/um/monthly/klines/NVDAUSDT/1h/", "outcome": "HTML listing shell retrieved; empty listing element; actual listing loaded from S3 by JavaScript; not coverage evidence"},
+    {"url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?list-type=2&prefix=data/futures/um/monthly/klines/NVDAUSDT/1h/&max-keys=100", "outcome": "curl 35; connection reset; no object listing"},
+    {"url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?list-type=2&prefix=data/futures/um/monthly/klines/BTCUSDT/1h/&max-keys=3", "outcome": "curl 35; connection reset; no object listing"},
+    {"url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?list-type=2&prefix=data/futures/um/monthly/klines/ETHUSDT/1h/&max-keys=3", "outcome": "curl 35; connection reset; no object listing"}
+  ],
+  "interpretation": "transport failures are not evidence of missing exchange data"
+}
