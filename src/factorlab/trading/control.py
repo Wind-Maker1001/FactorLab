@@ -41,7 +41,8 @@ class TradingController:
     A broker subclass may inject those outcomes for deterministic testing.
     """
     def __init__(self, broker: PaperBroker, store: PaperStore, *, limits=RiskLimits(),
-                 clock=lambda: datetime.now(timezone.utc), live=False, validate_restore=None, initialize_state=None):
+                 clock=lambda: datetime.now(timezone.utc), live=False, validate_restore=None, initialize_state=None,
+                 fill_admission=None):
         if live or not isinstance(broker, PaperBroker):
             raise ValueError("NO LIVE MONEY: only PaperBroker execution is enabled")
         self.broker, self.store, self.limits, self.clock = broker, store, limits, clock
@@ -49,6 +50,7 @@ class TradingController:
         self._admitted_cancel_id = None
         utc(clock())
         broker.clock, broker.record_event = clock, store.record_event
+        broker.fill_admission = fill_admission
         with store.transaction():
             restored = store.load()
             if restored is not None:
@@ -188,6 +190,9 @@ class TradingController:
         return operation()
 
     def cancel(self, order_id):
+        return self._atomic(lambda: self._cancel_in_transaction(order_id))
+
+    def _cancel_in_transaction(self, order_id):
         def operation():
             order = self.broker.state.orders[order_id].snapshot
             if order.status in TERMINAL:
@@ -202,7 +207,7 @@ class TradingController:
                 return None
             finally:
                 self._admitted_cancel_id = None
-        return self._atomic(operation)
+        return operation()
 
     def fill(self, order_id, quantity, price=None):
         return self._atomic(lambda: self.broker.fill(order_id, quantity, price))
