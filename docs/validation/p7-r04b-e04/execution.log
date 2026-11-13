@@ -1,0 +1,19 @@
+1/16 completed: base/cash/arithmetic, equity=1000.000000000, account_seconds=62.144, elapsed_seconds=63.433
+2/16 completed: base/fixed_budget_buy_hold/arithmetic, equity=989.821675215, account_seconds=72.219, elapsed_seconds=73.531
+3/16 completed: base/B/geometric, equity=1004.949997034, account_seconds=124.891, elapsed_seconds=126.264
+4/16 completed: base/B/arithmetic, equity=1008.911795280, account_seconds=129.824, elapsed_seconds=131.196
+5/16 completed: base/D/arithmetic, equity=1008.911795280, account_seconds=110.849, elapsed_seconds=184.375
+6/16 completed: stress/cash/arithmetic, equity=1000.000000000, account_seconds=51.064, elapsed_seconds=235.442
+7/16 completed: base/B/atr, equity=1001.550942295, account_seconds=175.822, elapsed_seconds=239.257
+8/16 completed: base/D/geometric, equity=1004.949997034, account_seconds=120.622, elapsed_seconds=246.887
+9/16 completed: stress/fixed_budget_buy_hold/arithmetic, equity=989.593240861, account_seconds=62.700, elapsed_seconds=298.144
+10/16 completed: base/D/atr, equity=1000.965285379, account_seconds=191.839, elapsed_seconds=323.036
+11/16 completed: stress/B/arithmetic, equity=1007.607336183, account_seconds=128.607, elapsed_seconds=367.866
+12/16 completed: stress/B/geometric, equity=1004.630056168, account_seconds=125.736, elapsed_seconds=372.626
+13/16 completed: stress/D/arithmetic, equity=1007.607336183, account_seconds=129.017, elapsed_seconds=452.056
+14/16 completed: stress/B/atr, equity=1000.846685572, account_seconds=154.502, elapsed_seconds=452.650
+15/16 completed: stress/D/geometric, equity=1004.630056168, account_seconds=122.509, elapsed_seconds=490.379
+16/16 completed: stress/D/atr, equity=1000.582753319, account_seconds=138.172, elapsed_seconds=510.801
+{"python": "3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]", "executable": "D:\\Environments\\anaconda3\\python.exe", "platform": "Windows-11-10.0.26340-SP0", "logical_cpus": 28, "physical_cpus": 20, "memory_bytes": 68523327488, "disk_free_before": 96135938048, "sample_interval_seconds": 0.2, "matrix_main_cpu_seconds": 38.265625, "worker_account_cpu_seconds": 657.3125, "worker_cpu_semantics": "Sum of per-account process_time deltas; excludes spawn/import overhead. Derived from executor aggregate minus measured main matrix CPU.", "worker_cpu_boundary_uncertainty_seconds": 0.02, "cli_wall_seconds": 511.11674960004166, "cli_main_cpu_seconds": 38.34375, "peak_process_tree_rss_bytes": 851836928, "peak_observed_child_processes": 5, "memory_semantics": "Peak sampled sum of RSS; shared pages may be counted more than once.", "output_bytes": 14620939}
+
+[exited with code 0]

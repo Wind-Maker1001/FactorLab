@@ -1,0 +1,147 @@
+{
+  "status": "PARALLEL_HISTORY_ACCEPTED",
+  "code_head": "1128b13741a492f02e08a8bdea4394f053581552",
+  "accounts": 16,
+  "serial_wall_seconds": 1081.768,
+  "parallel_wall_seconds": 511.0084756000433,
+  "speedup": 2.1169277060028246,
+  "time_saved_seconds": 570.7595243999567,
+  "reduction": 0.5276173120298961,
+  "comparison": "Exact CSV values (Decimal normalization only), exact parsed FIFO JSON, exact full NAV/trade DataFrames; wall_seconds excluded.",
+  "mismatches": [],
+  "not_verified": [],
+  "accounts_comparison": [
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-6f3d5ae90f3c3d734d573901",
+      "reconciliation_residual": "0",
+      "reported_equity_difference": "0.0"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-adbed181ea190e809811cd53",
+      "reconciliation_residual": "0E-12",
+      "reported_equity_difference": "0E-12"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-da6b4c18ac2060a115c6ff23",
+      "reconciliation_residual": "1E-24",
+      "reported_equity_difference": "-1E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-a69200c592f438bba1a6f89d",
+      "reconciliation_residual": "0E-12",
+      "reported_equity_difference": "0E-12"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-cc32128d38d8367100405574",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-09e77510390706a5e6afde36",
+      "reconciliation_residual": "1E-24",
+      "reported_equity_difference": "-1E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-608d85cb0e5a4dc4e856d6dc",
+      "reconciliation_residual": "0E-12",
+      "reported_equity_difference": "0E-12"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-5a1300055f376b37a10f5ecf",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-990ac5a52d0afd419a9ae1b2",
+      "reconciliation_residual": "0",
+      "reported_equity_difference": "0.0"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-4f91a254abe3165ee342ffdb",
+      "reconciliation_residual": "0E-12",
+      "reported_equity_difference": "0E-12"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-afd81a2bf18fedb043dff215",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-737ba2b9664521f75dd5b14b",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-3037dc332b06725d6b232439",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-c0775f6fdd5df2a5d4bc346e",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-0beeaef0e13604a322eb2106",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    },
+    {
+      "daily.csv": "EXACT_MATCH",
+      "trades.csv": "EXACT_MATCH",
+      "account_id": "p7-r04b-e01-f532c9725bbda4afdb890492",
+      "reconciliation_residual": "0E-24",
+      "reported_equity_difference": "0E-24"
+    }
+  ],
+  "resources": {
+    "python": "3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]",
+    "executable": "D:\\Environments\\anaconda3\\python.exe",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "logical_cpus": 28,
+    "physical_cpus": 20,
+    "memory_bytes": 68523327488,
+    "disk_free_before": 96135938048,
+    "sample_interval_seconds": 0.2,
+    "matrix_main_cpu_seconds": 38.265625,
+    "worker_account_cpu_seconds": 657.3125,
+    "worker_cpu_semantics": "Sum of per-account process_time deltas; excludes spawn/import overhead. Derived from executor aggregate minus measured main matrix CPU.",
+    "worker_cpu_boundary_uncertainty_seconds": 0.02,
+    "cli_wall_seconds": 511.11674960004166,
+    "cli_main_cpu_seconds": 38.34375,
+    "peak_process_tree_rss_bytes": 851836928,
+    "peak_observed_child_processes": 5,
+    "memory_semantics": "Peak sampled sum of RSS; shared pages may be counted more than once.",
+    "output_bytes": 14620939
+  }
+}
