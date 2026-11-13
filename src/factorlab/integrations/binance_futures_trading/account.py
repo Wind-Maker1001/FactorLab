@@ -16,7 +16,10 @@ def instant(milliseconds):
 
 
 def number(row, key):
-    return None if row.get(key) is None else _decimal(row[key])
+    value = row.get(key)
+    if type(value) is bool:
+        raise DataQualityError('invalid numeric account field')
+    return None if value is None else _decimal(value)
 
 
 @dataclass(frozen=True)
@@ -37,7 +40,10 @@ class AccountFacts:
     quantitative: QuantitativeObservation | None = None
 
     def usdt(self):
-        row = next((a for a in self.assets if a.get('asset') == 'USDT'), {})
+        matches = [asset for asset in self.assets if asset.get('asset') == 'USDT']
+        if len(matches) > 1:
+            raise DataQualityError('conflicting USDT assets')
+        row = matches[0] if matches else {}
         return {key: number(row, key) for key in (
             'walletBalance', 'availableBalance', 'marginBalance', 'unrealizedProfit',
             'initialMargin', 'maintMargin', 'positionInitialMargin', 'openOrderInitialMargin')}

@@ -5,12 +5,26 @@ from decimal import Decimal
 from math import lcm
 import re
 
+from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.market import _decimal, symbol_name
 from factorlab.trading import Market, OrderType, RiskDecision, Side
 from factorlab.trading.contracts import utc
 from factorlab.integrations.binance_equity_trading.protocol import Unavailable
 
 D = _decimal
+SUPPORTED_NETWORK_FILTERS = frozenset({
+    'LOT_SIZE', 'MARKET_LOT_SIZE', 'PRICE_FILTER', 'MIN_NOTIONAL',
+    'PERCENT_PRICE', 'MAX_NUM_ORDERS', 'POSITION_RISK_CONTROL',
+})
+
+
+def symbol_row(rows, symbol):
+    if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+        raise DataQualityError('malformed symbol rows')
+    matches = [row for row in rows if row.get('symbol') == symbol]
+    if len(matches) != 1:
+        raise DataQualityError('missing or conflicting symbol row')
+    return matches[0]
 
 
 def market_quantity_constraints(symbol_info):

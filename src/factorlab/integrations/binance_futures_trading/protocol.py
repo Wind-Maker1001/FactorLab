@@ -36,7 +36,7 @@ READ_PATHS = frozenset({
     '/fapi/v1/exchangeInfo', '/fapi/v3/balance', '/fapi/v1/time', '/fapi/v1/order', '/fapi/v1/openOrders', '/fapi/v1/allOrders',
     '/fapi/v2/account', '/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
     '/fapi/v1/leverageBracket', '/fapi/v1/userTrades', '/fapi/v1/income', '/fapi/v1/symbolConfig',
-    '/fapi/v1/apiTradingStatus', '/fapi/v1/premiumIndex',
+    '/fapi/v1/apiTradingStatus', '/fapi/v1/premiumIndex', '/fapi/v1/ticker/bookTicker',
 })
 WRITE_PATHS = frozenset({('POST', '/fapi/v1/order'), ('DELETE', '/fapi/v1/order')})
 
@@ -143,7 +143,7 @@ class FuturesClient:
         before = self.clock()
         payload = self.request('GET', '/fapi/v1/time', signed=False)
         after = self.clock()
-        if type(payload.get('serverTime')) is not int:
+        if not isinstance(payload, dict) or type(payload.get('serverTime')) is not int or payload['serverTime'] <= 0:
             raise DataQualityError('invalid server time response')
         self.offset_ms = payload['serverTime'] - int((before + after) * 500)
         return self.offset_ms
@@ -207,7 +207,8 @@ class FuturesClient:
             if method != 'GET':
                 raise OutcomeUnknown('malformed order response; reconcile') from None
             raise DataQualityError('invalid response JSON') from None
-        code = payload.get('code') if isinstance(payload, dict) else None
+        raw_code = payload.get('code') if isinstance(payload, dict) else None
+        code = raw_code if type(raw_code) is int else None
         if response.status == 408 or response.status >= 500 or code in {-1006, -1007, -4116}:
             if method != 'GET':
                 raise OutcomeUnknown('exchange execution outcome unknown; reconcile')

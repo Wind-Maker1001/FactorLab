@@ -1,10 +1,11 @@
 """Demo execution admission over offline injection or a separately authorized boundary."""
 from dataclasses import dataclass, field
 
+from factorlab.errors import DataQualityError
 from .adapter import FuturesAdapter
 from .gateway import FuturesPaperGateway
 from .protocol import Environment, OfflineTransport, SafetyBlocked, WRITE_PATHS, READ_PATHS
-from .rules import RuleObservation, order_parameters
+from .rules import RuleObservation, SUPPORTED_NETWORK_FILTERS, order_parameters, symbol_row
 from .network import DemoNetworkTransport, DemoNetworkAuthorization, demo_network_permitted
 
 
@@ -51,16 +52,28 @@ class DemoRuleObservation:
     client: object = field(default=None, repr=False, compare=False)
 
 
-def observe_demo_rules(adapter, symbol='NVDAUSDT', *, source_version):
+def demo_symbol_info(info, symbol):
+    if not isinstance(info, dict):
+        raise DataQualityError('malformed exchangeInfo')
+    return symbol_row(info.get('symbols'), symbol)
+
+
+def read_demo_symbol(client, symbol):
+    info = client.request('GET', '/fapi/v1/exchangeInfo', signed=False)
+    return demo_symbol_info(info, symbol)
+
+
+def observe_demo_rules(adapter, symbol='NVDAUSDT', *, source_version, on_symbol=None):
     client = adapter.client
     if client.environment is not Environment.DEMO:
         raise SafetyBlocked('Demo rules require Demo client')
     if symbol != 'NVDAUSDT':
         raise SafetyBlocked('Demo execution contract currently supports NVDAUSDT only')
-    info = client.request('GET', '/fapi/v1/exchangeInfo', signed=False)
-    symbol_info = next(row for row in info['symbols'] if row['symbol'] == symbol)
+    symbol_info = read_demo_symbol(client, symbol)
+    if on_symbol is not None:
+        on_symbol(symbol_info)
     brackets = client.request('GET', '/fapi/v1/leverageBracket', {'symbol': symbol})
-    bracket = next((row for row in brackets if row['symbol'] == symbol), None)
+    bracket = symbol_row([brackets] if isinstance(brackets, dict) else brackets, symbol)
     rules = RuleObservation.from_exchange(symbol_info, bracket, adapter.clock(), source_version)
     observation = DemoRuleObservation(rules, adapter.account_id, client)
     adapter._rule_observation = observation
@@ -77,6 +90,7 @@ class DemoFuturesAdapter(FuturesAdapter):
             raise SafetyBlocked('isolated Demo credentials and injected execution transport required')
         super().__init__(client, store, account_id=Environment.DEMO.account_id, **kwargs)
         self._admitted_intent = None
+        self._admitted_cancel_id = None
 
     def submit_order(self, intent):
         if intent is not self._admitted_intent:
@@ -95,6 +109,8 @@ class DemoFuturesAdapter(FuturesAdapter):
         if type(transport) is DemoNetworkTransport:
             if not demo_network_permitted(self.client):
                 raise SafetyBlocked('Demo network authorization required')
+            if self._admitted_cancel_id != client_order_id:
+                raise SafetyBlocked('Demo cancellation requires shared controller admission')
             order = self.order(client_order_id)
             plan = transport.authorization.plan
             if (plan.account_id != self.account_id or order.intent.instrument_id != plan.symbol
@@ -126,6 +142,9 @@ class DemoExecutionGateway(FuturesPaperGateway):
         super().__init__(adapter, observation.rules, instruments, balances, **kwargs)
         self._initial_equity = None
         self._controller = None
+
+    def _accepts_network_transport(self, client):
+        return type(client.transport) is DemoNetworkTransport
 
     def read_account(self, *, exclude_order_id=None):
         from dataclasses import replace
@@ -213,6 +232,19 @@ class DemoExecutionGateway(FuturesPaperGateway):
         finally:
             self.adapter._admitted_intent = None
 
+    def cancel_order(self, client_order_id):
+        if type(self.adapter.client.transport) is not DemoNetworkTransport:
+            return super().cancel_order(client_order_id)
+        controller = self._controller
+        if (controller is None or controller.broker is not self
+                or controller._admitted_cancel_id != client_order_id):
+            raise SafetyBlocked('Demo cancellation requires shared controller admission')
+        self.adapter._admitted_cancel_id = client_order_id
+        try:
+            return super().cancel_order(client_order_id)
+        finally:
+            self.adapter._admitted_cancel_id = None
+
     def fill(self, *args, **kwargs):
         raise SafetyBlocked('Demo fills require exchange confirmation')
 
@@ -260,9 +292,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
             raise SafetyBlocked('UNKNOWN or stale Demo mark')
         reference = Decimal(mark['markPrice'])
         filters = self.rules.filters
-        supported = {'LOT_SIZE', 'MARKET_LOT_SIZE', 'PRICE_FILTER', 'MIN_NOTIONAL',
-                     'PERCENT_PRICE', 'MAX_NUM_ORDERS', 'POSITION_RISK_CONTROL'}
-        if set(filters) - supported:
+        if set(filters) - SUPPORTED_NETWORK_FILTERS:
             raise SafetyBlocked('unsupported exchange filter')
         if filters.get('POSITION_RISK_CONTROL', {}).get('positionControlSide') not in (None, 'NONE'):
             raise SafetyBlocked('position risk restriction')

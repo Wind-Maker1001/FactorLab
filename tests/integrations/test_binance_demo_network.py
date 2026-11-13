@@ -97,7 +97,7 @@ def wired(monkeypatch):
     return fake, requests
 
 
-def setup(wired, protocol=':memory:', paper=':memory:', authorized=True):
+def make_demo(wired, protocol=':memory:', paper=':memory:', authorized=True):
     import hashlib
     credentials = Credentials('demo-key', 'demo-secret', E.DEMO)
     account = 'DEMO:FactorLab-Demo:' + hashlib.sha256(b'demo-key').hexdigest()
@@ -120,7 +120,7 @@ def setup(wired, protocol=':memory:', paper=':memory:', authorized=True):
 @pytest.mark.parametrize('side', [Side.BUY, Side.SELL])
 @pytest.mark.parametrize('limit', [None, '100.01'])
 def test_http_request_contract(wired, side, limit):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     assert c.submit(intent('d03-one', side=side, limit=limit)).status == S.SUBMITTED
     assert c.cancel('d03-one').status == S.CANCELED
     writes = [r for r in wired[1] if r.get_method() != 'GET']
@@ -132,9 +132,10 @@ def test_http_request_contract(wired, side, limit):
 
 
 def test_default_and_invalid_capabilities(wired, monkeypatch):
-    a, _, _ = setup(wired, authorized=False)
-    with pytest.raises(SafetyBlocked):
-        a.client.request('POST', '/fapi/v1/order', {})
+    a, _, _ = make_demo(wired, authorized=False)
+    for method in ('POST', 'DELETE'):
+        with pytest.raises(SafetyBlocked):
+            a.client.request(method, '/fapi/v1/order')
     for invalid in (True, {}, DemoExecutionAuthorization()):
         with pytest.raises(SafetyBlocked):
             DemoNetworkTransport(authorization=invalid)
@@ -156,7 +157,7 @@ def reauthorize(adapter, **changes):
 
 
 def test_wrong_environment_host_account_and_no_direct_dispatch(wired):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     transport = a.client.transport
     with pytest.raises(FrozenInstanceError):
         transport.environment = E.PRODUCTION
@@ -185,7 +186,7 @@ def test_plan_rejects_missing_or_invalid_limits(change):
 @pytest.mark.parametrize('condition', ['mode', 'margin', 'brackets', 'canTrade', 'locked', 'kill',
     'quantity', 'notional', 'count', 'open', 'loss', 'occupied', 'expired', 'symbol', 'prefix'])
 def test_admission_rejects(wired, condition):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     transport = a.client.transport
     order = intent('d03-one')
     if condition == 'mode':
@@ -226,7 +227,7 @@ def test_admission_rejects(wired, condition):
 
 
 def test_confirmed_fee_triggers_loss_limit_before_rest(wired):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     reauthorize(a, max_loss=D('.05'))
     c.submit(intent('d03-one', quantity='.99'))
     message = wired[0].trade_update('d03-one', '.99')
@@ -239,7 +240,7 @@ def test_confirmed_fee_triggers_loss_limit_before_rest(wired):
 
 
 def test_unknown_submit_cancel_and_duplicate_recovery(wired):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     fake, requests = wired
     fake.timeout_next = True
     assert c.submit(intent('d03-one')) is None
@@ -261,7 +262,7 @@ def test_unknown_submit_cancel_and_duplicate_recovery(wired):
 @pytest.mark.parametrize('response', [Response(429, {'Retry-After': '60'}, b'{"code":-1003}'),
                                       Response(500, {}, b'{"code":-1007}')])
 def test_http_uncertainty_does_not_retry(wired, response):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     wired[0].response_next = response
     assert c.submit(intent('d03-one')) is None
     assert a.order('d03-one').reconcile_required
@@ -274,7 +275,7 @@ def test_http_uncertainty_does_not_retry(wired, response):
 def test_capability_cannot_restore(wired, tmp_path):
     import subprocess
     import sys
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     with pytest.raises(TypeError):
         pickle.dumps(a.client.transport.authorization)
     with pytest.raises(TypeError):
@@ -291,53 +292,74 @@ print('NO_RESTORED_AUTHORIZATION')
 
 
 def test_redirect_does_not_follow_or_fallback(wired):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     wired[0].response_next = Response(302, {'Location': 'https://fapi.binance.com/fapi/v1/order'}, b'{}')
     assert c.submit(intent('d03-one')).status == S.REJECTED
     assert len([r for r in wired[1] if r.get_method() == 'POST']) == 1
 
 
 def test_recovery_without_network_capability_and_changed_key_rejection(wired, tmp_path):
-    a, g, c = setup(wired, tmp_path / 'protocol.sqlite', tmp_path / 'paper.sqlite')
+    protocol, paper = tmp_path / 'protocol.sqlite', tmp_path / 'paper.sqlite'
+    a, _, c = make_demo(wired, protocol, paper)
     c.submit(intent('d03-one'))
+    wired[0].trade_update('d03-one', '0.5')
     a.store.close()
+    c.store.close()
+
     client = FuturesClient(Credentials('demo-key', 'demo-secret', E.DEMO), environment=E.DEMO,
         transport=DemoNetworkTransport(), clock=lambda: NOW.timestamp())
-    restored = DemoFuturesAdapter(client, PaperStore(tmp_path / 'protocol.sqlite'), clock=lambda: NOW)
+    restored = DemoFuturesAdapter(client, PaperStore(protocol), clock=lambda: NOW)
     assert restored.order('d03-one').reconcile_required
-    before = len([r for r in wired[1] if r.get_method() != 'GET'])
-    assert restored.query_order('d03-one').status == S.SUBMITTED
-    with pytest.raises(SafetyBlocked):
-        restored.cancel_order('d03-one')
+    before = len(wired[1])
+    observation = observe_demo_rules(restored, source_version='OFFLINE_HTTP_STUB')
+    gateway = DemoExecutionGateway(restored, observation, (Instrument('NVDAUSDT', 'USDT'),), {'USDT': D('1000')})
+    controller = TradingController(gateway, PaperStore(paper), clock=lambda: NOW, limits=c.limits)
+    gateway.bind_controller(controller)
+    recovered = gateway.recover(controller)
+    assert recovered.reconciled
+    assert recovered.positions[0].quantity == D('0.5')
+    assert recovered.assets[0].total == D('999.95')
+    assert recovered.open_orders[0].status == S.PARTIALLY_FILLED
+    assert recovered.open_orders[0].cumulative_fee == D('0.05')
+    assert gateway.recover(controller) == recovered
+
+    with pytest.raises(SafetyBlocked, match='authorization'):
+        controller.submit(intent('d03-two'))
+    with pytest.raises(SafetyBlocked, match='authorization'):
+        controller.cancel('d03-one')
     client.credentials = Credentials('another-key', 'secret', E.DEMO)
     with pytest.raises(SafetyBlocked):
         restored.query_order('d03-one')
-    assert len([r for r in wired[1] if r.get_method() != 'GET']) == before
+    assert {r.get_method() for r in wired[1][before:]} == {'GET'}
 
 
 def test_shared_controller_cannot_be_bypassed_and_margin_tracks_fills(wired):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     with pytest.raises(SafetyBlocked, match='shared controller'):
         g.submit_order(intent('d03-direct'))
     reauthorize(a, max_margin=D('300'))
     c.submit(intent('d03-one'))
+    with pytest.raises(SafetyBlocked, match='shared controller'):
+        g.cancel_order('d03-one')
+    with pytest.raises(SafetyBlocked, match='shared controller'):
+        a.cancel_order('d03-one')
     c.replay(UserDataEvents(a).parse(wired[0].trade_update('d03-one', '2')))
     with pytest.raises(SafetyBlocked, match='margin limit'):
         c.submit(intent('d03-two'))
-    assert len([r for r in wired[1] if r.get_method() == 'POST']) == 1
+    assert [r.get_method() for r in wired[1] if r.get_method() != 'GET'] == ['POST']
     assert c._admitted_intent is None
 
 
 @pytest.mark.parametrize('quantity,limit', [('0.001', None), ('0.01', None), ('2', '100.001'), ('2', '104')])
 def test_network_path_exchange_filters(wired, quantity, limit):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     with pytest.raises((SafetyBlocked, ValueError)):
         c.submit(intent('d03-one', quantity=quantity, limit=limit))
     assert all(r.get_method() == 'GET' for r in wired[1])
 
 
 def test_cancel_http_timeout_query_only_recovery(wired, monkeypatch):
-    a, g, c = setup(wired)
+    a, g, c = make_demo(wired)
     c.submit(intent('d03-one'))
     from factorlab.integrations.binance_futures_trading import network
     original = network.build_opener
@@ -392,7 +414,7 @@ def test_preflight_retains_only_public_rules_and_conclusions(monkeypatch):
 ])
 def test_concrete_lock_admission_through_controller(wired, indicators, blocked):
     from factorlab.integrations.binance_futures_trading.quantitative import observe_quantitative
-    a, _, c = setup(wired)
+    a, _, c = make_demo(wired)
     a.facts = replace(a.facts, quantitative=observe_quantitative({'indicators': indicators}))
     if blocked:
         with pytest.raises(SafetyBlocked, match='quantitative trading lock'):
@@ -413,7 +435,7 @@ def test_concrete_lock_admission_through_controller(wired, indicators, blocked):
 ])
 def test_failed_observation_disconnects_without_retry(wired, monkeypatch, response, category):
     from factorlab.errors import DataQualityError
-    a, _, _ = setup(wired)
+    a, _, _ = make_demo(wired)
     original = a.client.transport.__class__.__call__
     reads = []
     def respond(transport, request, timeout):
@@ -436,7 +458,7 @@ def test_failed_observation_disconnects_without_retry(wired, monkeypatch, respon
 
 @pytest.mark.parametrize('flag', [True, False, None, 'true'])
 def test_demo_refresh_uses_v2_can_trade_when_v3_omits_it(wired, monkeypatch, flag):
-    a, _, _ = setup(wired)
+    a, _, _ = make_demo(wired)
     original = a.client.request
     calls = []
     def request(method, path, params=None, **kwargs):
@@ -454,7 +476,7 @@ def test_demo_refresh_uses_v2_can_trade_when_v3_omits_it(wired, monkeypatch, fla
 
 
 def test_empty_live_shape_observation_refreshes_and_admits(wired, monkeypatch):
-    a, _, c = setup(wired)
+    a, _, c = make_demo(wired)
     original = a.client.request
     def request(method, path, params=None, **kwargs):
         if path == '/fapi/v1/apiTradingStatus':

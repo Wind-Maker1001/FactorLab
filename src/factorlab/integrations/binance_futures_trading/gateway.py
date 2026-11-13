@@ -24,13 +24,16 @@ class FuturesPaperGateway(PaperBroker):
     """
     def __init__(self, adapter, rules, instruments, balances, *, leverage=1, max_leverage=1,
                  fee_rate=Decimal('0.001')):
-        if not isinstance(adapter.client.transport, OfflineTransport):
-            from .network import demo_network_permitted
-            if not demo_network_permitted(adapter.client):
-                raise SafetyBlocked('NO LIVE MONEY: gateway requires offline or authorized Demo transport')
+        if (not isinstance(adapter.client.transport, OfflineTransport)
+                and not self._accepts_network_transport(adapter.client)):
+            raise SafetyBlocked('NO LIVE MONEY: gateway requires offline or authorized Demo transport')
         super().__init__(Market.BINANCE_USDM, adapter.account_id, instruments, balances, fee_rate=fee_rate)
         self.adapter, self.rules = adapter, rules
         self.leverage, self.max_leverage = leverage, max_leverage
+
+    def _accepts_network_transport(self, client):
+        from .network import demo_network_permitted
+        return demo_network_permitted(client)
 
     def submit_order(self, intent):
         if not self.adapter.reconciled or self.adapter.facts is None:
