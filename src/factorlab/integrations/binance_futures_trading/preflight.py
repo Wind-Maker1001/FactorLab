@@ -132,11 +132,7 @@ def inspect(client):
     return result
 
 
-def main():
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--eligibility-only', action='store_true')
-    args = parser.parse_args()
+def demo_credential_dialog():
     import tkinter as tk
     from tkinter import messagebox
     root = tk.Tk()
@@ -160,10 +156,19 @@ def main():
         root.destroy()
     tk.Button(root, text='Run Demo GET-only checks', command=submit).pack(pady=15)
     root.mainloop()
-    if not credentials:
+    return credentials.pop() if credentials else None
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--eligibility-only', action='store_true')
+    args = parser.parse_args()
+    credentials = demo_credential_dialog()
+    if credentials is None:
         print('{"result":"CANCELLED"}')
         return
-    client = FuturesClient(credentials.pop(), environment=Environment.DEMO,
+    client = FuturesClient(credentials, environment=Environment.DEMO,
         transport=ReadOnlyNetworkTransport(environment=Environment.DEMO, permit_account_read=True))
     try:
         result = inspect_eligibility(client) if args.eligibility_only else inspect(client)

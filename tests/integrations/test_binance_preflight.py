@@ -12,6 +12,7 @@ from factorlab.integrations.binance_futures_trading.protocol import (
 )
 
 from factorlab.integrations.binance_futures_trading.quantitative import observe_quantitative
+from factorlab.integrations.binance_futures_trading import demo_preflight
 
 
 @pytest.mark.parametrize('flag, expected', [
@@ -192,3 +193,107 @@ def test_failed_indicator_read_is_unknown_not_not_reported(readonly):
     assert observation['missing_indicator_state'] == 'UNKNOWN'
     assert observation['error'] == 'DataQualityError'
     assert calls.count('/fapi/v1/apiTradingStatus') == 1
+
+
+@pytest.fixture
+def demo_account_http(monkeypatch):
+    from datetime import datetime
+    from io import BytesIO
+
+    class FrozenClock(datetime):
+        @classmethod
+        def now(cls, tz):
+            return datetime.fromtimestamp(1794538555, tz)
+
+    monkeypatch.setattr(demo_preflight, 'datetime', FrozenClock)
+    symbol = 'NVDAUSDT'
+    server_ms = 1794538555000
+    payloads = {
+        '/fapi/v1/time': {'serverTime': server_ms},
+        '/fapi/v1/exchangeInfo': {'symbols': [{
+            'symbol': symbol, 'status': 'TRADING', 'contractType': 'TRADIFI_PERPETUAL',
+            'marginAsset': 'USDT', 'quoteAsset': 'USDT', 'orderTypes': ['LIMIT', 'MARKET'],
+            'filters': [
+                dict(filterType='LOT_SIZE', minQty='0.01', maxQty='6000', stepSize='0.01'),
+                dict(filterType='MARKET_LOT_SIZE', minQty='0.01', maxQty='600', stepSize='0.01'),
+                dict(filterType='MIN_NOTIONAL', notional='5'),
+                dict(filterType='PRICE_FILTER', minPrice='0.01', maxPrice='20000', tickSize='0.01'),
+                dict(filterType='PERCENT_PRICE', multiplierDown='0.97', multiplierUp='1.03'),
+                dict(filterType='MAX_NUM_ORDERS', limit=200),
+            ],
+        }]},
+        '/fapi/v1/leverageBracket': {'symbol': symbol, 'brackets': [
+            dict(bracket=1, initialLeverage=10, notionalFloor=0, notionalCap=10000, maintMarginRatio='0.05'),
+        ]},
+        '/fapi/v3/account': {'assets': [dict(asset='USDT', walletBalance='1000',
+            availableBalance='1000', unrealizedProfit='0', initialMargin='0')], 'positions': [],
+            'private': 'PRIVATE_PAYLOAD'},
+        '/fapi/v3/positionRisk': [],
+        '/fapi/v1/positionSide/dual': {'dualSidePosition': False},
+        '/fapi/v1/openOrders': [],
+        '/fapi/v1/symbolConfig': [{'symbol': symbol, 'leverage': 20, 'marginType': 'CROSSED'}],
+        '/fapi/v2/account': {'canTrade': True},
+        '/fapi/v1/apiTradingStatus': {'indicators': {}},
+        '/fapi/v1/premiumIndex': {'symbol': symbol, 'markPrice': '165.98', 'time': server_ms - 500},
+        '/fapi/v1/ticker/bookTicker': {'symbol': symbol, 'bidPrice': '165.91', 'askPrice': '166.26', 'time': server_ms},
+    }
+    calls = []
+    unsigned = {'/fapi/v1/time', '/fapi/v1/exchangeInfo', '/fapi/v1/premiumIndex', '/fapi/v1/ticker/bookTicker'}
+
+    def open_stub(request, timeout):
+        url = urlsplit(request.full_url)
+        assert request.get_method() == 'GET'
+        assert url.scheme == 'https' and url.netloc == 'demo-fapi.binance.com'
+        query = parse_qs(url.query)
+        assert ('signature' in query) is (url.path not in unsigned)
+        calls.append(url.path)
+        reply = BytesIO(json.dumps(payloads[url.path]).encode())
+        reply.status, reply.headers = 200, {}
+        return reply
+
+    def client(*args, **kwargs):
+        return FuturesClient(*args, **kwargs, clock=lambda: server_ms / 1000)
+
+    monkeypatch.setattr(demo_preflight, 'FuturesClient', client)
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener',
+                        lambda *handlers: SimpleNamespace(open=open_stub))
+    return payloads, calls, unsigned
+
+
+def test_demo_signed_contract_separates_observation_from_execution(demo_account_http):
+    payloads, calls, _ = demo_account_http
+    result = demo_preflight.inspect_demo(Credentials('PRIVATE_KEY', 'PRIVATE_SECRET', Environment.DEMO))
+    assert calls == list(payloads)
+    assert result['status'] == 'P7_M02B_DEMO_READ_ONLY_VERIFIED'
+    assert result['execution_admission'] == 'BLOCKED' and result['network_writes'] == 0
+    assert result['checks']['api_user_data']['value'] == 'VERIFIED'
+    assert result['checks']['api_key_trade']['value'] == 'UNKNOWN'
+    assert result['checks']['account_can_trade']['value'] is True
+    assert result['checks']['quantitative']['value']['scopes']['NVDAUSDT'] == {'status': 'NOT_REPORTED'}
+    assert result['checks']['leverage']['value'] == 20 and result['checks']['leverage']['eligible'] is False
+    assert result['minimum_opening_orders']['LIMIT']['hypothetical']
+    assert str(result['minimum_opening_orders']['LIMIT']['quantity']) == '0.04'
+    serialized = json.dumps(result, default=str)
+    assert 'PRIVATE_' not in serialized and 'signature' not in serialized
+
+
+def test_missing_demo_credentials_leave_signed_facts_unknown(demo_account_http):
+    _, calls, unsigned = demo_account_http
+    result = demo_preflight.inspect_demo()
+    assert set(calls) == unsigned
+    assert result['status'] == 'P7_M02B_CREDENTIALS_NOT_CONFIGURED'
+    assert result['checks']['account_id']['value'] == 'UNKNOWN'
+    assert result['checks']['leverage_brackets']['value'] == 'UNKNOWN'
+
+
+def test_demo_contract_does_not_infer_flat_from_malformed_positions(demo_account_http):
+    payloads, _, _ = demo_account_http
+    payloads['/fapi/v3/account']['positions'] = None
+    payloads['/fapi/v1/apiTradingStatus'] = {'indicators': {'NVDAUSDT': [
+        {'indicator': 'UFR', 'isLocked': True}, {'indicator': 'UFR', 'isLocked': False},
+    ]}}
+    result = demo_preflight.inspect_demo(Credentials('k', 's', Environment.DEMO))
+    assert result['status'] == 'DEMO_READ_ONLY_INCOMPLETE'
+    assert result['checks']['positions']['value'] == 'UNKNOWN'
+    assert result['checks']['quantitative']['value']['error'] == 'CONFLICTING_FIELDS'
+    assert result['checks']['quantitative']['eligible'] is None

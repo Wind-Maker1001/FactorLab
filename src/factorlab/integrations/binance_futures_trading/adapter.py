@@ -13,7 +13,7 @@ from factorlab.trading.state import OrderRecord, advance, unknown
 from factorlab.trading.storage import dumps, decode
 
 from .account import AccountFacts, instant
-from .protocol import ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport
+from .protocol import Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport, ReadOnlyNetworkTransport
 from .rules import order_parameters
 
 ZERO = Decimal('0')
@@ -146,8 +146,8 @@ class FuturesAdapter:
 
     def _validate_network_identity(self):
         from .network import DemoNetworkTransport
-        from .protocol import Environment
-        if type(self.client.transport) is DemoNetworkTransport:
+        if (type(self.client.transport) is DemoNetworkTransport
+                or isinstance(self.client.transport, ReadOnlyNetworkTransport) and self.client.environment is Environment.DEMO):
             credentials = self.client.credentials
             expected = ('DEMO:FactorLab-Demo:' + hashlib.sha256(credentials.key.encode()).hexdigest()
                         if credentials is not None and credentials.environment is Environment.DEMO else None)
@@ -266,7 +266,9 @@ class FuturesAdapter:
         mode = self.client.request('GET', '/fapi/v1/positionSide/dual')
         orders = self.open_orders()
         config = self.client.request('GET', '/fapi/v1/symbolConfig')
-        if not isinstance(account, dict) or not isinstance(risk, list) or not isinstance(orders, list) or not isinstance(config, list):
+        if not isinstance(account, dict) or not isinstance(mode, dict) or not all(
+                isinstance(rows, list) and all(isinstance(row, dict) for row in rows)
+                for rows in (risk, orders, config)):
             raise DataQualityError('invalid account response shapes')
         hedge = mode.get('dualSidePosition')
         if hedge is not None and type(hedge) is not bool:
@@ -275,24 +277,36 @@ class FuturesAdapter:
         quantitative = None
         can_trade = account_can_trade(account)
         from .network import DemoNetworkTransport
-        if type(self.client.transport) is DemoNetworkTransport:
+        readonly_demo = (isinstance(self.client.transport, ReadOnlyNetworkTransport)
+                         and self.client.environment is Environment.DEMO)
+        if type(self.client.transport) is DemoNetworkTransport or readonly_demo:
             if 'canTrade' not in account:
-                can_trade = account_can_trade(account, self.client.request('GET', '/fapi/v2/account'))
+                try:
+                    can_trade = account_can_trade(self.client.request('GET', '/fapi/v2/account'))
+                except DataQualityError:
+                    if not readonly_demo:
+                        raise
             from .quantitative import QuantitativeObservation
             try:
                 status = self.client.request('GET', '/fapi/v1/apiTradingStatus')
             except (DataQualityError, OSError, TimeoutError) as error:
                 category = error.category if isinstance(error, ExchangeError) else type(error).__name__
-                self.quantitative_observation = QuantitativeObservation(error=category)
-                raise
-            quantitative = observe_quantitative(status)
+                quantitative = QuantitativeObservation(error=category)
+                if not readonly_demo:
+                    self.quantitative_observation = quantitative
+                    raise
+            else:
+                quantitative = observe_quantitative(status)
             self.quantitative_observation = quantitative
-            if quantitative.error:
+            if quantitative.error and not readonly_demo:
                 self.facts = None
                 raise DataQualityError('quantitative observation UNKNOWN: ' + quantitative.error)
-        self.facts = AccountFacts(self.account_id, self.clock(), tuple(account.get('assets', ())),
-            tuple(account.get('positions', ())), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
-            isinstance(account.get('assets'), list) and isinstance(account.get('positions'), list),
+        assets, positions = account.get('assets'), account.get('positions')
+        assets_known = isinstance(assets, list) and all(isinstance(row, dict) for row in assets)
+        positions_known = isinstance(positions, list) and all(isinstance(row, dict) for row in positions)
+        self.facts = AccountFacts(self.account_id, self.clock(), tuple(assets) if assets_known else (),
+            tuple(positions) if positions_known else (), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
+            assets_known and positions_known,
             can_trade, quantitative)
         return self.facts
 

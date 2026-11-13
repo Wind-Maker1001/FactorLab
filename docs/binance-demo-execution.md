@@ -149,3 +149,45 @@ A separate authorization is required before online writes:
 
 P7-D02 engineering acceptance does not claim an online Demo placement, cancellation,
 fill, account-specific permission check or financial admission.
+
+## P7-M02B account and plan review
+
+Run the one-shot official Demo preflight with the existing Demo environment
+variables. Add `--credential-dialog` to enter an existing pair into the local
+masked window. The report includes selected account facts for the operator.
+
+```console
+python -m factorlab.integrations.binance_futures_trading.demo_preflight --credential-dialog
+```
+
+The preflight synchronizes time, reads exchange rules and authenticated account
+facts, and observes the Demo mark and top of book. A successful signed GET verifies
+USER_DATA access. Account `canTrade` and the key's TRADE permission are separate.
+The latter is UNKNOWN through these reads. Omitted quantitative indicators in a
+valid response are NOT_REPORTED. The report distinguishes an applicable lock from
+an unknown or conflicting response. See the
+[P7-M02B observation and plan worksheet](validation/p7-m02b/README.md).
+
+For a complete proposal, construct the existing `DemoExecutionPlan` with the
+reviewed limits and pass it to `inspect_demo(credential, plan=plan, limit_price=...)`.
+The first-order estimate uses the observed Demo ask for a proposed opening BUY.
+LIMIT needs an explicit price for review. The checker uses the exchange quantity
+grid and minimum notional, then checks the larger reservation used by the gateway
+against the plan. It also checks configured leverage against the applicable tier.
+The controller will apply its own risk limits and fee reserve at execution.
+
+### GET recovery with the existing journals
+
+Use the original protocol and controller `PaperStore` instances and the same
+Demo credential pair. After time sync, construct the adapter with
+`DemoNetworkTransport()` and acquire a fresh `observe_demo_rules(adapter, ...)`.
+Reopen the gateway and controller with the persisted account, instrument mapping
+and fee rate. Then call `gateway.recover(controller)`. The shared store normally
+contains the last quote. Supply a fresh Demo quote through `controller.quote()`
+if recovery must import an orphan protocol order and the shared quote is absent.
+
+Recovery queries the journaled client order IDs and the trades that explain any
+new cumulative fill. It books missing quantity and actual fees into the shared
+ledger and refreshes the account projection. An unknown order remains subject to
+reconciliation. An authorized Demo cancellation goes through
+`controller.cancel(client_order_id)` after the known order has been reconciled.

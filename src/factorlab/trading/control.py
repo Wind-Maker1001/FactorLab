@@ -46,6 +46,7 @@ class TradingController:
             raise ValueError("NO LIVE MONEY: only PaperBroker execution is enabled")
         self.broker, self.store, self.limits, self.clock = broker, store, limits, clock
         self._admitted_intent = None
+        self._admitted_cancel_id = None
         utc(clock())
         broker.clock, broker.record_event = clock, store.record_event
         with store.transaction():
@@ -193,11 +194,14 @@ class TradingController:
                 return self.broker.query_order(order_id)
             if order.reconcile_required:
                 raise ValueError("RECONCILE_REQUIRED")
+            self._admitted_cancel_id = order_id
             try:
                 return self.broker.cancel_order(order_id)
             except TimeoutError:
                 self.broker.mark_unknown(order_id)
                 return None
+            finally:
+                self._admitted_cancel_id = None
         return self._atomic(operation)
 
     def fill(self, order_id, quantity, price=None):
