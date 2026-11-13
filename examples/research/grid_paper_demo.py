@@ -26,6 +26,7 @@ def main():
     parser.add_argument('--fee-rate', type=Decimal, default=Decimal('.001'))
     parser.add_argument('--slippage', type=Decimal, default=Decimal('.0005'))
     parser.add_argument('--participation', type=Decimal, default=Decimal('.25'))
+    parser.add_argument('--interval', choices=['1d', '1h'], default='1d')
     parser.add_argument('--start')
     parser.add_argument('--end')
     args = parser.parse_args()
@@ -41,21 +42,27 @@ def main():
     data_identity = 'FIXED_DAILY_GRID_FIXTURE_V1' if args.bars is None else str(args.bars)
     if args.snapshot:
         manifest = json.loads((args.snapshot/'manifest.json').read_text(encoding='utf-8'))
-        if manifest['interval'] != '1d' or not manifest['integrity']['complete']:
-            parser.error('a complete daily history snapshot is required')
-        frame = pd.read_parquet(args.snapshot/manifest['tables']['bars']['path'])
-        bars = [dict(id=f'snapshot-{i}', time=str(row.open_time.date()),
-            price=float(row.close), volume=int(Decimal(str(row.volume))), completed_bar=True,
-            high=float(row.high), low=float(row.low), close=float(row.close))
-            for i, row in enumerate(frame.itertuples())]
-        data_identity = dict(data_version=manifest['data_version'],
-            instrument_id=manifest['contract']['instrument_id'],
-            liquidity='observed daily volume floored to integer units; synthetic participation',
-            costs='conditional proportional fees and slippage; funding not simulated')
+        if args.interval == '1h':
+            from factorlab.experiments.grid_empirical import load_hourly
+            bars, data_identity = load_hourly(args.snapshot)
+        else:
+            if manifest['interval'] != '1d' or not manifest['integrity']['complete']:
+                parser.error('a complete daily history snapshot is required')
+            frame = pd.read_parquet(args.snapshot/manifest['tables']['bars']['path'],
+                                    columns=['open_time', 'close', 'volume', 'high', 'low'])
+            bars = [dict(id=f'snapshot-{i}', time=str(row.open_time.date()),
+                price=float(row.close), volume=int(Decimal(str(row.volume))), completed_bar=True,
+                high=float(row.high), low=float(row.low), close=float(row.close))
+                for i, row in enumerate(frame.itertuples())]
+            data_identity = dict(data_version=manifest['data_version'],
+                instrument_id=manifest['contract']['instrument_id'],
+                liquidity='observed daily volume floored to integer units; synthetic participation',
+                costs='conditional proportional fees and slippage; funding not simulated')
     run_comparison(args.output, bars=bars, config=config, rules=rules,
         capital=args.capital, fee_rate=args.fee_rate, slippage=args.slippage,
         participation=args.participation, start=args.start, end=args.end,
-        market=args.market, instrument_id=args.instrument_id, data_identity=data_identity)
+        market=args.market, instrument_id=args.instrument_id, data_identity=data_identity,
+        interval=args.interval)
     print(args.output)
 
 

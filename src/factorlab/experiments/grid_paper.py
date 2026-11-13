@@ -13,7 +13,7 @@ from factorlab.experiments.provenance import capture_provenance
 from factorlab.evaluation.research import EvaluationContext, ResearchEvaluation, compare_results
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, project_paper_account
-from factorlab.trading.contracts import Market, OrderStatus, Position, ZERO, decimal_value
+from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side, OrderStatus, Position, ZERO, decimal_value
 from factorlab.trading.control import RiskLimits, TradingController, RiskRejected
 from factorlab.trading.execution import execution_candidate
 from factorlab.trading.paper import Instrument, PaperBroker, Quote, InsufficientCollateral
@@ -43,21 +43,35 @@ def _write(path, value):
                                allow_nan=False) + '\n', encoding='utf-8')
 
 
-def _bars(bars, start, end):
+def _bars(bars, start, end, interval='1d'):
     frame = pd.DataFrame(bars).copy()
     required = {'id', 'time', 'price', 'volume', 'high', 'low', 'close', 'completed_bar'}
     if not required.issubset(frame):
         raise ValueError('daily completed OHLC bars required')
+    if interval not in {'1d', '1h'}:
+        raise ValueError('interval must be 1d or 1h')
     dates = pd.to_datetime(frame.time)
-    if (dates.dt.tz is not None or dates.isna().any() or dates.duplicated().any()
-            or not dates.is_monotonic_increasing or not dates.eq(dates.dt.normalize()).all()):
-        raise ValueError('bars require unique ordered timezone-naive daily dates')
+    if interval == '1h':
+        if dates.dt.tz is None or str(dates.dt.tz) != 'UTC':
+            raise ValueError('hourly bars require UTC timestamps')
+        aligned = dates.eq(dates.dt.floor('h')).all()
+    else:
+        aligned = dates.dt.tz is None and dates.eq(dates.dt.normalize()).all()
+    if (dates.isna().any() or dates.duplicated().any()
+            or not dates.is_monotonic_increasing or not aligned):
+        raise ValueError('bars require unique ordered aligned timestamps')
     if frame.id.duplicated().any() or not frame.completed_bar.eq(True).all():
         raise ValueError('unique completed bars required')
     if start is not None:
-        frame = frame.loc[dates >= pd.Timestamp(start)]
+        bound = pd.Timestamp(start)
+        if interval == '1h':
+            bound = bound.tz_localize('UTC') if bound.tzinfo is None else bound.tz_convert('UTC')
+        frame = frame.loc[dates >= bound]
     if end is not None:
-        frame = frame.loc[dates <= pd.Timestamp(end)]
+        bound = pd.Timestamp(end)
+        if interval == '1h':
+            bound = bound.tz_localize('UTC') if bound.tzinfo is None else bound.tz_convert('UTC')
+        frame = frame.loc[dates <= bound]
     if frame.empty:
         raise ValueError('empty research window')
     return frame.to_dict('records')
@@ -65,7 +79,8 @@ def _bars(bars, start, end):
 
 def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    start=None, end=None, participation=1, fee_estimate=None, no_trade=False,
-                   market=Market.BINANCE_EQUITY, instrument_id=SYMBOL, data_identity=None):
+                   market=Market.BINANCE_EQUITY, instrument_id=SYMBOL, data_identity=None,
+                   interval='1d', buy_hold=False):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -74,7 +89,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     fee assumption; Paper always charges proportional fee_rate, never minima.
     Orders consume a shared bar-volume budget at close, only on later bars.
     """
-    bars = _bars(bars, start, end)
+    bars = _bars(bars, start, end, interval)
     capital, fee_rate, slippage, participation = map(D, (capital, fee_rate, slippage, participation))
     decimal_value(capital, 'capital', positive=True)
     decimal_value(fee_rate, 'fee_rate')
@@ -90,7 +105,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     output = Path(output).resolve()
     output.mkdir(parents=True, exist_ok=False)
     def close_time(bar):
-        return (pd.Timestamp(bar['time']) + pd.Timedelta(days=1)
+        return (pd.Timestamp(bar['time']) + pd.Timedelta(interval)
                 - pd.Timedelta(microseconds=1)).to_pydatetime().replace(tzinfo=timezone.utc)
 
     now = [close_time(bars[0])]
@@ -120,10 +135,14 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             prior = [(key, record.snapshot) for key, record in broker.state.orders.items()
                      if record.observed_at < now[0] and record.snapshot.status not in
                      {OrderStatus.FILLED, OrderStatus.CANCELED, OrderStatus.REJECTED}]
-            if no_trade:
+            if no_trade or buy_hold:
                 controller.quote(Quote(instrument_id, close, now[0]))
             else:
-                grid.observe_paper(controller, bar, delivery=grid.delivery + 1, observed_at=now[0])
+                observation = dict(bar)
+                if interval == '1h':
+                    # Grid's observation contract uses timezone-free UTC coordinates.
+                    observation['time'] = pd.Timestamp(bar['time']).tz_convert('UTC').tz_localize(None).isoformat()
+                grid.observe_paper(controller, observation, delivery=grid.delivery + 1, observed_at=now[0])
             budget = D(bar['volume']) * participation
             day_fee = day_slippage = day_notional = ZERO
             for key, order in prior:
@@ -133,7 +152,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                     continue
                 quantity, price = candidate
                 try:
-                    event = grid.fill_paper(controller, key, quantity, price, delivery=grid.delivery + 1)
+                    event = (controller.fill(key, quantity, price) if buy_hold else
+                             grid.fill_paper(controller, key, quantity, price, delivery=grid.delivery + 1))
                 except InsufficientCollateral:
                     risk.append(dict(time=bar['time'], kind='INSUFFICIENT_COLLATERAL', order_id=key))
                     continue
@@ -143,7 +163,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 quantity = event.cumulative_filled_quantity - order.cumulative_filled_quantity
                 fee = event.cumulative_fee - order.cumulative_fee
                 slip = quantity * abs(price - close)
-                estimate = grid.estimated_cost(order.intent.side, price, quantity)
+                estimate = fee + slip if buy_hold else grid.estimated_cost(order.intent.side, price, quantity)
                 estimated_total += estimate
                 notional = quantity * price
                 trades.append(dict(execution_date=bar['time'], event_time=event.event_time.isoformat(),
@@ -158,7 +178,15 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 day_slippage += slip
                 day_notional += notional
                 budget -= quantity
-            if not no_trade:
+            if buy_hold and not broker.state.orders:
+                limit = (close * (1 + slippage) // rules.tick_size) * rules.tick_size
+                quantity = (capital / (limit * (1 + fee_rate)) // rules.step_size) * rules.step_size
+                intent = OrderIntent(market, instrument_id, Side.BUY, OrderType.LIMIT,
+                                     quantity, limit, 'buy-hold')
+                order_details['buy-hold'] = dict(deployment_id='research', grid_level=None,
+                                                 target_price=str(limit))
+                controller.submit(intent)
+            if not no_trade and not buy_hold:
                 for key in sorted(grid.cancellations):
                     grid.cancel_paper(controller, key, delivery=grid.delivery + 1)
                 if grid.pending_bar is not None:
@@ -179,7 +207,15 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 last_risk = current_risk
             account = project_paper_account(controller, instrument_id)
             peak = max(peak, account.equity)
-            rows.append(dict(date=bar['time'], equity=float(account.equity), cash=float(broker.state.cash[currency]),
+            position = broker.state.positions.get(instrument_id)
+            unrealized = (position.quantity * (position.mark_price - position.entry_price)
+                          if position else ZERO)
+            fees_to_date = sum((record.snapshot.cumulative_fee for record in broker.state.orders.values()), ZERO)
+            rows.append(dict(date=bar['time'], close=float(close),
+                unrealized=float(unrealized),
+                realized_gross=float(account.equity - capital - unrealized + fees_to_date),
+                net_exposure=float(account.inventory * close),
+                equity=float(account.equity), cash=float(broker.state.cash[currency]),
                 inventory=float(account.inventory), committed=float(account.committed),
                 available=float(account.available), drawdown=float(1-account.equity/peak),
                 transaction_cost=float(day_fee+day_slippage), fee=float(day_fee), slippage=float(day_slippage),
@@ -198,13 +234,27 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             'transaction_cost', 'estimated_budget_cost'])
         for column in ('trade_notional', 'transaction_cost'):
             ledger[column] = ledger[column].astype(float)
+        evaluation_daily, evaluation_ledger = daily.copy(), ledger.copy()
+        if interval == '1h':
+            evaluation_daily.date = evaluation_daily.date.dt.tz_convert('UTC').dt.tz_localize(None).dt.normalize()
+            sums = {'transaction_cost', 'fee', 'slippage', 'turnover'}
+            evaluation_daily = evaluation_daily.groupby('date', as_index=False).agg(
+                {c: 'sum' if c in sums else 'last' for c in daily.columns if c != 'date'})
+            for prefix in ('strategy', 'benchmark'):
+                nav = evaluation_daily[prefix + '_nav']
+                evaluation_daily[prefix + '_return'] = nav.pct_change().fillna(nav.iloc[0] - 1)
+            evaluation_ledger.execution_date = pd.to_datetime(
+                evaluation_ledger.execution_date, utc=True).dt.tz_localize(None).dt.normalize()
         context = EvaluationContext(dataset_id=json_hash(bars), universe_id=instrument_id,
             label='not_used', label_id='not_used', benchmark_id='endowment-no-trade',
-            calendar=tuple(daily.date.dt.strftime('%Y-%m-%d')), holding_days=1)
-        result = ResearchEvaluation(context).portfolio('no-trade' if no_trade else config.mode,
-                                                     daily, trades=ledger)
+            calendar=tuple(evaluation_daily.date.dt.strftime('%Y-%m-%d')), holding_days=1,
+            periods_per_year=365 if interval == '1h' else 252,
+            source_kind='REAL_CANDIDATE' if isinstance(data_identity, dict) else 'SYNTHETIC')
+        result = ResearchEvaluation(context).portfolio('no-trade' if no_trade else 'buy-hold' if buy_hold else config.mode,
+                                                     evaluation_daily, trades=evaluation_ledger)
         final = dict(schema_version=SCHEMA_VERSION, evidence=EVIDENCE,
-            execution=dict(price='later-bar close quote', participation=str(participation),
+            execution=dict(interval=interval, buy_hold=buy_hold,
+                           price='later-bar close quote', participation=str(participation),
                            slippage=str(slippage), actual_fee_model='proportional', fee_rate=str(fee_rate)),
             config=asdict(config), rules=asdict(rules), capital=str(capital),
             market=market.value, instrument_id=instrument_id, funding='NOT_SIMULATED',
@@ -230,6 +280,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             provenance=capture_provenance(source_context_root()), deterministic=True,
             config=asdict(config), rules=asdict(rules), capital=capital, fee_rate=fee_rate,
             slippage=slippage, participation=participation, no_trade=no_trade,
+            interval=interval, buy_hold=buy_hold,
             market=market.value, instrument_id=instrument_id,
             fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
         return result
