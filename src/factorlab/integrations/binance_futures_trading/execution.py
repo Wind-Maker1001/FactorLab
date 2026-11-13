@@ -91,6 +91,9 @@ class DemoFuturesAdapter(FuturesAdapter):
         super().__init__(client, store, account_id=Environment.DEMO.account_id, **kwargs)
         self._admitted_intent = None
         self._admitted_cancel_id = None
+        self.db.execute('CREATE TABLE IF NOT EXISTS demo_quote_receipts (id TEXT PRIMARY KEY, policy TEXT NOT NULL, receipt TEXT NOT NULL)')
+        self.db.execute('CREATE TABLE IF NOT EXISTS demo_cancel_attempts (id TEXT PRIMARY KEY)')
+        self.db.execute('CREATE TABLE IF NOT EXISTS demo_quote_rejections (id TEXT PRIMARY KEY, receipt TEXT NOT NULL)')
 
     def submit_order(self, intent):
         if intent is not self._admitted_intent:
@@ -120,6 +123,12 @@ class DemoFuturesAdapter(FuturesAdapter):
             transport._admission['request'] = ('DELETE', params, self.account_id)
         elif type(transport.authorization) is not DemoExecutionAuthorization:
             raise SafetyBlocked('Demo injected writes disabled by default')
+        if type(transport) is DemoNetworkTransport and transport.authorization.plan.quote_policy is not None:
+            with self.store.transaction():
+                if self.db.execute('SELECT 1 FROM demo_cancel_attempts WHERE id=?', (client_order_id,)).fetchone():
+                    transport._admission.clear()
+                    raise SafetyBlocked('bounded DELETE opportunity already consumed; GET reconcile only')
+                self.db.execute('INSERT INTO demo_cancel_attempts VALUES(?)', (client_order_id,))
         try:
             return super().cancel_order(client_order_id)
         finally:
@@ -142,6 +151,36 @@ class DemoExecutionGateway(FuturesPaperGateway):
         super().__init__(adapter, observation.rules, instruments, balances, **kwargs)
         self._initial_equity = None
         self._controller = None
+        self._bounded_observation = None
+        self.quote_receipt = None
+
+    def prepare_bounded_quote(self, observation):
+        from .bounded_quote import bounded_quote
+        transport = self.adapter.client.transport
+        if type(transport) is not DemoNetworkTransport or transport.authorization is None:
+            raise SafetyBlocked('bounded quote requires independently authorized Demo plan')
+        plan = transport.authorization.plan
+        if plan.quote_policy is None:
+            raise SafetyBlocked('bounded policy required')
+        key = plan.quote_policy.client_order_id
+        if (self.adapter.db.execute('SELECT 1 FROM futures_orders WHERE id=?', (key,)).fetchone()
+                or self.adapter.db.execute('SELECT 1 FROM demo_quote_receipts WHERE id=?', (key,)).fetchone()):
+            raise SafetyBlocked('bounded identity already consumed; GET reconcile only')
+        if plan.quote_policy.fee_rate < self.state.fee_rate:
+            raise SafetyBlocked('bounded fee reserve below shared gateway fee rate')
+        try:
+            intent, receipt = bounded_quote(plan, observation, facts=self.adapter.facts, rules=self.rules, now=self.clock())
+        except SafetyBlocked as error:
+            self.quote_receipt = error.receipt
+            import json
+            with self.adapter.store.transaction():
+                self.adapter.db.execute('INSERT INTO demo_quote_rejections VALUES(?,?) '
+                    'ON CONFLICT(id) DO UPDATE SET receipt=excluded.receipt',
+                    (key, json.dumps(error.receipt, sort_keys=True)))
+            raise
+        self._bounded_observation = observation
+        self.quote_receipt = receipt
+        return intent
 
     def _accepts_network_transport(self, client):
         return type(client.transport) is DemoNetworkTransport
@@ -226,6 +265,30 @@ class DemoExecutionGateway(FuturesPaperGateway):
             self._network_admission(intent)
         elif type(self.adapter.client.transport.authorization) is not DemoExecutionAuthorization:
             raise SafetyBlocked('Demo injected writes disabled by default')
+        if (type(self.adapter.client.transport) is DemoNetworkTransport
+                and self.adapter.client.transport.authorization.plan.quote_policy is not None):
+            import json
+            policy = self.adapter.client.transport.authorization.plan.quote_policy
+            self.quote_receipt['dispatch'] = 'POSSIBLE_DISPATCH_GET_ONLY'
+            with self.adapter.store.transaction():
+                if self.adapter.db.execute('SELECT 1 FROM demo_quote_receipts WHERE id=?', (intent.client_order_id,)).fetchone():
+                    raise SafetyBlocked('bounded POST opportunity already consumed')
+                self.adapter.db.execute('INSERT INTO demo_quote_receipts VALUES(?,?,?)',
+                    (intent.client_order_id, policy.digest, json.dumps(self.quote_receipt, sort_keys=True)))
+        if (type(self.adapter.client.transport) is DemoNetworkTransport
+                and self.adapter.client.transport.authorization.plan.quote_policy is not None):
+            from .bounded_quote import bounded_quote
+            approved_plan = self.adapter.client.transport.authorization.plan
+            def dispatch_guard():
+                if self.adapter.client.transport.authorization.plan != approved_plan:
+                    raise SafetyBlocked('bounded execution plan changed at dispatch')
+                expected, _ = bounded_quote(approved_plan, self._bounded_observation,
+                    facts=self.adapter.facts, rules=self.rules, now=self.clock())
+                if expected != intent:
+                    raise SafetyBlocked('bounded identity changed at dispatch')
+                if self.state.kill_switch:
+                    raise SafetyBlocked('KILL_SWITCH: no new Demo orders')
+            self.adapter.client.transport._admission['bounded_guard'] = dispatch_guard
         self.adapter._admitted_intent = intent
         try:
             return super().submit_order(intent)
@@ -286,11 +349,27 @@ class DemoExecutionGateway(FuturesPaperGateway):
             raise SafetyBlocked('quantitative observation UNKNOWN; refresh account evidence')
         if not timedelta(0) <= self.clock() - facts.observed_at <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_ACCOUNT')
-        mark = adapter.client.request('GET', '/fapi/v1/premiumIndex', {'symbol': plan.symbol}, signed=False)
-        if (mark.get('symbol') != plan.symbol or type(mark.get('time')) is not int
-                or not timedelta(0) <= self.clock() - instant(mark['time']) <= timedelta(seconds=5)):
-            raise SafetyBlocked('UNKNOWN or stale Demo mark')
-        reference = Decimal(mark['markPrice'])
+        if plan.quote_policy is not None:
+            from .bounded_quote import bounded_quote
+            if self._bounded_observation is None:
+                raise SafetyBlocked('immutable bounded observation required')
+            expected, receipt = bounded_quote(plan, self._bounded_observation,
+                facts=facts, rules=self.rules, now=self.clock())
+            if expected != intent:
+                raise SafetyBlocked('bounded exact intent mismatch')
+            if self.quote_receipt['plan_digest'] != receipt['plan_digest']:
+                raise SafetyBlocked('bounded approved plan changed')
+            reference = self._bounded_observation.mark
+            quote = state.quotes.get(plan.symbol)
+            if quote is None or quote.price != max(self._bounded_observation.ask, reference):
+                raise SafetyBlocked('shared quote differs from bounded observation')
+            self.quote_receipt = receipt
+        else:
+            mark = adapter.client.request('GET', '/fapi/v1/premiumIndex', {'symbol': plan.symbol}, signed=False)
+            if (mark.get('symbol') != plan.symbol or type(mark.get('time')) is not int
+                    or not timedelta(0) <= self.clock() - instant(mark['time']) <= timedelta(seconds=5)):
+                raise SafetyBlocked('UNKNOWN or stale Demo mark')
+            reference = Decimal(mark['markPrice'])
         filters = self.rules.filters
         if set(filters) - SUPPORTED_NETWORK_FILTERS:
             raise SafetyBlocked('unsupported exchange filter')

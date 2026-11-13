@@ -127,7 +127,7 @@ def _account_blockers(facts, symbol, now):
 
 def review_opening_plan(plan: DemoExecutionPlan, *, facts: AccountFacts, rules: RuleObservation,
                         mark_price: Decimal, quote_price: Decimal, limit_price: Decimal | None,
-                        now: datetime) -> dict[str, tuple[str, ...]]:
+                        now: datetime, fixed_quantity: Decimal | None = None) -> dict[str, tuple[str, ...]]:
     """Return blockers per allowed type for one opening with no orders or positions.
 
     The caller supplies fresh prices. Shared risk limits and fees still apply
@@ -185,6 +185,11 @@ def review_opening_plan(plan: DemoExecutionPlan, *, facts: AccountFacts, rules: 
         except DecimalException:
             results[kind] = ('UNKNOWN_RULE_NUMERIC_RANGE',)
             continue
+        if fixed_quantity is not None:
+            from dataclasses import replace
+            candidate = replace(candidate, quantity=fixed_quantity,
+                exchange_notional=fixed_quantity * candidate.price,
+                plan_notional=fixed_quantity * max(candidate.price, quote_price))
         intent = OrderIntent(Market.BINANCE_USDM, plan.symbol, Side.BUY, order_type,
                              candidate.quantity, limit_price if order_type is OrderType.LIMIT else None,
                              plan.client_id_prefix + 'review')
