@@ -35,6 +35,29 @@ def canonical_json(value):
     return json.dumps(_canonical(value), sort_keys=True, separators=(',', ':'), allow_nan=False)
 
 
+def content_digest(value):
+    return hashlib.sha256(canonical_json(value).encode()).hexdigest()
+
+
+def rule_identity(rules):
+    values = asdict(rules)
+    del values['observed_at']
+    return content_digest(values)
+
+
+def configuration_identity(facts, symbol):
+    return content_digest(dict(account_id=facts.account_id, hedge_mode=facts.hedge_mode,
+        symbol_config=[row for row in facts.symbol_config if row.get('symbol') == symbol]))
+
+
+def execution_code_identity():
+    from pathlib import Path
+    root = Path(__file__).parent
+    return content_digest({name: hashlib.sha256((root / (name + '.py')).read_bytes()).hexdigest()
+        for name in ('bounded_quote', 'network', 'execution', 'plan_review', 'rules',
+                     'adapter', 'gateway', 'protocol', 'account', 'quantitative')})
+
+
 @dataclass(frozen=True, kw_only=True)
 class BoundedQuotePolicy:
     account_id: str
@@ -58,6 +81,19 @@ class BoundedQuotePolicy:
     time_in_force: str = 'GTC'
     position_side: str = 'BOTH'
     reduce_only: bool = False
+    rules_identity: str | None = None
+    configuration_identity: str | None = None
+    account_observation_identity: str | None = None
+    quote_observed_at: datetime | None = None
+    execution_code_identity: str | None = None
+    approval_record_id: str | None = None
+    tick_size: Decimal | None = None
+    formula: str = 'floor(best_bid * (1 - offset_bps / 10000) / tickSize) * tickSize'
+    max_limit_posts: int = 1
+    max_known_order_deletes: int = 1
+    automatic_resubmit: bool = False
+    automatic_market: bool = False
+    automatic_close: bool = False
 
     def __post_init__(self):
         import re
@@ -67,8 +103,25 @@ class BoundedQuotePolicy:
             raise ValueError('bounded Demo BUY LIMIT contract required')
         if type(self.max_quote_age_seconds) is not int or not 0 < self.max_quote_age_seconds <= 5:
             raise ValueError('quote freshness must be at most five seconds')
-        if self.version != 1 or type(self.version) is not int:
+        if self.version not in (1, 2) or type(self.version) is not int:
             raise ValueError('unsupported bounded quote version')
+        if (type(self.max_limit_posts) is not int or self.max_limit_posts != 1
+                or type(self.max_known_order_deletes) is not int or self.max_known_order_deletes != 1
+                or any(flag is not False for flag in
+                       (self.automatic_resubmit, self.automatic_market, self.automatic_close))):
+            raise ValueError('one-shot LIMIT and known-order cleanup contract required')
+        if self.formula != 'floor(best_bid * (1 - offset_bps / 10000) / tickSize) * tickSize':
+            raise ValueError('unsupported bounded quote formula')
+        if self.version == 2:
+            for identity in (self.rules_identity, self.configuration_identity,
+                             self.account_observation_identity, self.execution_code_identity):
+                if not isinstance(identity, str) or not re.fullmatch(r'[0-9a-f]{64}', identity):
+                    raise ValueError('complete approval context digests required')
+            utc(self.quote_observed_at)
+            if not isinstance(self.approval_record_id, str) or not self.approval_record_id:
+                raise ValueError('local approval record identity required')
+            if not isinstance(self.tick_size, Decimal) or not self.tick_size.is_finite() or self.tick_size <= 0:
+                raise ValueError('approved positive tick size required')
         if not re.fullmatch(r'DEMO:FactorLab-Demo:[0-9a-f]{64}', self.account_id):
             raise ValueError('credential-bound Demo account required')
         if not re.fullmatch(r'[A-Za-z0-9_-]{1,36}', self.client_order_id):
@@ -82,6 +135,19 @@ class BoundedQuotePolicy:
 
     def to_json(self):
         return canonical_json(self)
+
+    @classmethod
+    def from_json(cls, text):
+        values = json.loads(text)
+        for key in ('quantity', 'offset_bps', 'min_price', 'max_price', 'max_ask',
+                    'max_notional', 'max_fee', 'max_funds', 'fee_rate'):
+            values[key] = Decimal(values[key])
+        values['expires_at'] = datetime.fromisoformat(values['expires_at'])
+        if values.get('quote_observed_at') is not None:
+            values['quote_observed_at'] = datetime.fromisoformat(values['quote_observed_at'])
+        if values.get('tick_size') is not None:
+            values['tick_size'] = Decimal(values['tick_size'])
+        return cls(**values)
 
     @property
     def digest(self):
@@ -155,6 +221,13 @@ def bounded_quote(plan, observation, *, facts, rules, now):
         reject('QUOTE_ACCOUNT_MISMATCH', 'observation.account_id == facts.account_id == policy.account_id')
     if observation.rules_json != canonical_json(rules) or observation.account_json != canonical_json(facts):
         reject('QUOTE_CONTEXT_MISMATCH', 'captured rules/account == current execution rules/account')
+    if policy.version == 2:
+        if policy.rules_identity != rule_identity(rules) or policy.tick_size != tick:
+            reject('QUOTE_APPROVED_RULES_MISMATCH', 'current rules identity == approved rules identity')
+        if policy.configuration_identity != configuration_identity(facts, policy.symbol):
+            reject('QUOTE_APPROVED_CONFIG_MISMATCH', 'current account configuration == approved configuration')
+        if policy.execution_code_identity != execution_code_identity():
+            reject('QUOTE_APPROVED_CODE_MISMATCH', 'execution code identity == approved code identity')
     if not policy.min_price <= price <= policy.max_price or price >= observation.bid:
         reject('QUOTE_PRICE_BOUNDS', 'min_price <= candidate <= max_price and candidate < bid')
     if observation.ask > policy.max_ask:

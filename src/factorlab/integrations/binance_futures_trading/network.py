@@ -65,6 +65,29 @@ class DemoExecutionPlan:
         if self.cleanup != 'CANCEL_KNOWN_THEN_STOP' or self.recovery != 'GET_RECONCILE_NO_RESUBMIT':
             raise ValueError('explicit cleanup and recovery policy required')
 
+    def to_json(self):
+        from .bounded_quote import canonical_json
+        return canonical_json(self)
+
+    @classmethod
+    def from_json(cls, text):
+        import json
+        from .bounded_quote import BoundedQuotePolicy
+        values = json.loads(text)
+        values['environment'] = Environment(tuple(values['environment']))
+        values['order_types'] = frozenset(values['order_types'])
+        for key in ('max_quantity', 'max_notional', 'max_loss', 'max_margin'):
+            values[key] = Decimal(values[key])
+        values['expires_at'] = datetime.fromisoformat(values['expires_at'])
+        if values['quote_policy'] is not None:
+            values['quote_policy'] = BoundedQuotePolicy.from_json(json.dumps(values['quote_policy']))
+        return cls(**values)
+
+    @property
+    def digest(self):
+        import hashlib
+        return hashlib.sha256(self.to_json().encode()).hexdigest()
+
 
 class DemoNetworkAuthorization:
     """Independent process-local approval; never restore this from durable data."""
