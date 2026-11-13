@@ -20,6 +20,8 @@ R04A 原始门槛是“官方上市与首根交叉核实”，不要求秒或毫
 
 重新运行原有 `--preflight-only`，程序实际生成 [e02-preflight/preflight.json](../validation/p7-r04b-e01/e02-preflight/preflight.json)：原 generation、manifest SHA256、行情 SHA256、2,160 根闭合小时线及冻结设计均 PASS，研究准入仍 BLOCKED，退出码 2，检查时磁盘可用 96,325,943,296 bytes。正式账户执行数仍为 0，B/D、模式、成本、FIFO 与跨窗口经济比较均为未运行，而非零收益。没有修改 `require_admission()`、冻结参数或旧 preflight。
 
+2026-11-14 后续核验再次直接请求指定公告及同一 articleCode 的官方 CMS `/article/detail` 端点：分别在 15,011 ms、15,009 ms 连接超时，curl exit 28、HTTP 000，均未取得正文；WebFetch 亦未能获取该域名。实际观测补入现有 [来源收据](../validation/p7-r04b-e01/e02-source-observations.json)。具体缺失项仍为官方公告原文中 NVDAUSDT 的计划上线日期、时间及时区，因而无法完成与留存 `2026-03-26 14:40 UTC` onboardDate 和三月实际成交小时桶的独立交叉核验。分钟成交数据不能补足公告原文，未追加下载。按上市门槛未满足即停止的要求，本次未运行正式账户，未重复预检或测试；没有 16 账户收益可报告。
+
 当前状态为 **P7_R04B_ADMISSION_BLOCKED**。TODO：取得指定官方公告正文或可认证的官方原文补充来源，核验发布日期时区与上线时间，保存实际内容及 SHA256 收据；通过原门槛后重新生成 PASS，再无条件执行全部 16 账户。
 
 复现本轮预检（输出路径必须不存在）：
