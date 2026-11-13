@@ -1,0 +1,90 @@
+{
+  "observations": [
+    {
+      "label": "rest-window",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=NVDAUSDT&interval=1h&startTime=1778716800000&endTime=1778720399999&limit=1",
+      "started_at": "2026-11-13T17:12:32.529141+00:00",
+      "finished_at": "2026-11-13T17:12:41.144464+00:00",
+      "seconds": 8.609,
+      "curl_exit": 28,
+      "http_status": "000",
+      "error": "curl: (28) Connection timed out after 8012 milliseconds",
+      "received_bytes": 0,
+      "sha256": null,
+      "raw_path": null,
+      "headers": ""
+    },
+    {
+      "label": "rest-identity",
+      "url": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+      "started_at": "2026-11-13T17:12:41.146970+00:00",
+      "finished_at": "2026-11-13T17:12:49.185074+00:00",
+      "seconds": 8.047,
+      "curl_exit": 28,
+      "http_status": "000",
+      "error": "curl: (28) Connection timed out after 8012 milliseconds",
+      "received_bytes": 0,
+      "sha256": null,
+      "raw_path": null,
+      "headers": ""
+    },
+    {
+      "label": "public-2026-05",
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-05.zip",
+      "started_at": "2026-11-13T17:12:49.189103+00:00",
+      "finished_at": "2026-11-13T17:12:49.603263+00:00",
+      "seconds": 0.422,
+      "curl_exit": 0,
+      "http_status": "200",
+      "error": "",
+      "received_bytes": 32591,
+      "sha256": "4b9184b4b71163b2a9cc244b049313157fea17207b0a91375496de9b01c7d58a",
+      "raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-05-454cm9hg\\body",
+      "headers": "HTTP/1.1 200 OK\nContent-Type: binary/octet-stream\nContent-Length: 32591\nConnection: keep-alive\nAccept-Ranges: bytes\nDate: Fri, 13 Nov 2026 17:12:47 GMT\nServer: AmazonS3\nLast-Modified: Tue, 02 Jun 2026 10:58:47 GMT\nETag: \"6b3c8458b1096c203698b63af359d7e3\"\nx-amz-server-side-encryption: AES256\nX-Cache: Miss from cloudfront\nVia: 1.1 83fa2b0fcfdd33500c450580584dd080.cloudfront.net (CloudFront)\nX-Amz-Cf-Pop: HKG54-P2\nX-Amz-Cf-Id: zKjIjIxVF8VZ8M9KVuDndIOmDgr9T9HA102DUDeMzNtnyoC7DouJIg==\n\n"
+    },
+    {
+      "label": "public-2026-06",
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-06.zip",
+      "started_at": "2026-11-13T17:12:49.604263+00:00",
+      "finished_at": "2026-11-13T17:12:49.994384+00:00",
+      "seconds": 0.391,
+      "curl_exit": 0,
+      "http_status": "200",
+      "error": "",
+      "received_bytes": 31917,
+      "sha256": "bf3abc351a5d186be3d126ecd080e8b21c8d1aeca785bef34ebb3f3432afb03c",
+      "raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-06-2szec8ki\\body",
+      "headers": "HTTP/1.1 200 OK\nContent-Type: binary/octet-stream\nContent-Length: 31917\nConnection: keep-alive\nAccept-Ranges: bytes\nDate: Fri, 13 Nov 2026 17:12:48 GMT\nServer: AmazonS3\nLast-Modified: Thu, 02 Jul 2026 12:05:37 GMT\nETag: \"6a1e3a381c4589dbad4f773bb0e85f04\"\nx-amz-server-side-encryption: AES256\nX-Cache: Miss from cloudfront\nVia: 1.1 e3c40cafed3b63e76669b4bc6e5796e8.cloudfront.net (CloudFront)\nX-Amz-Cf-Pop: HKG54-P2\nX-Amz-Cf-Id: SRXH20xBVQIrEAmJYDe2x5TzyCBfTdIknqSZJv_L_W3YQinersq5DQ==\n\n"
+    },
+    {
+      "label": "public-2026-07",
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-07.zip",
+      "started_at": "2026-11-13T17:12:49.996397+00:00",
+      "finished_at": "2026-11-13T17:12:50.251576+00:00",
+      "seconds": 0.25,
+      "curl_exit": 0,
+      "http_status": "200",
+      "error": "",
+      "received_bytes": 33087,
+      "sha256": "b004565c2f0fa0e139c3d01119cb9bac2e9c796d80fc48de597430e969197cd8",
+      "raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-07-azd7fap8\\body",
+      "headers": "HTTP/1.1 200 OK\nContent-Type: binary/octet-stream\nContent-Length: 33087\nConnection: keep-alive\nAccept-Ranges: bytes\nDate: Fri, 13 Nov 2026 17:12:48 GMT\nServer: AmazonS3\nLast-Modified: Sun, 02 Aug 2026 10:45:43 GMT\nETag: \"c14a46fe9291152af1b0cc93afaa2d29\"\nx-amz-server-side-encryption: AES256\nX-Cache: Miss from cloudfront\nVia: 1.1 9a06a86043ac92b5eef02a04c8811096.cloudfront.net (CloudFront)\nX-Amz-Cf-Pop: HKG54-P2\nX-Amz-Cf-Id: U3i7mIt3glHKeIM_fZqkGImOVi1XKZrKVRlMIEM4wdWCmpWd3m46-Q==\n\n"
+    },
+    {
+      "label": "public-2026-08",
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-08.zip",
+      "started_at": "2026-11-13T17:12:50.265811+00:00",
+      "finished_at": "2026-11-13T17:12:50.891167+00:00",
+      "seconds": 0.625,
+      "curl_exit": 0,
+      "http_status": "200",
+      "error": "",
+      "received_bytes": 33071,
+      "sha256": "198d588ff3f55eccde27d1f0c4a267765fc6e17b92ceed24e7d906adf8706056",
+      "raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-08-50sz8xnu\\body",
+      "headers": "HTTP/1.1 200 OK\nContent-Type: binary/octet-stream\nContent-Length: 33071\nConnection: keep-alive\nAccept-Ranges: bytes\nDate: Fri, 13 Nov 2026 17:12:48 GMT\nServer: AmazonS3\nLast-Modified: Wed, 02 Sep 2026 09:49:50 GMT\nETag: \"81052d1bdbb2794c4286a039f9bf3bef\"\nx-amz-server-side-encryption: AES256\nX-Cache: Miss from cloudfront\nVia: 1.1 9ceb6f6178c8096ab5d16ef9ff7d1016.cloudfront.net (CloudFront)\nX-Amz-Cf-Pop: HKG54-P2\nX-Amz-Cf-Id: 1NhieWy86Oxyw9VQO6Qfc-aUrR_8zxU_7RGZmUVOYY67idnpY8C6QQ==\n\n"
+    }
+  ],
+  "actual_requests": 6,
+  "retries": 0
+}

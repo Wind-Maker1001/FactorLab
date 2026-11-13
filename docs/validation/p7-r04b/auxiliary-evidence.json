@@ -1,0 +1,12 @@
+{
+  "scope": "Official May objects only; availability probes, not full-window auxiliary certification",
+  "funding": {"rows": 93, "fields": ["calc_time", "funding_interval_hours", "last_funding_rate"], "first_calc_time": 1777593600001, "last_calc_time": 1780243200001, "first_interval_hours": 8, "rate_type": "NOT_PRESENT"},
+  "mark": {"rows": 744, "first_open_time": 1777593600000, "last_open_time": 1780268400000},
+  "index": {"rows": 744, "first_open_time": 1777593600000, "last_open_time": 1780268400000},
+  "first_month": {"rows": 130, "first_open_time": 1774533600000, "first_close_time": 1774537199999, "first_volume": "10870.22", "first_trade_count": 11211},
+  "historical_rules": "D: historical filters, margin tiers, special sessions, account maker/taker fees unknown",
+  "fees": "B: preregistered 4/8 bps; not historical fee authentication",
+  "identity": "C: pinned 2026-11-10 official exchangeInfo; live REST unavailable",
+  "supplementary_budget": {"requests": 8, "maximum_each_bytes": 2097152, "connect_seconds": 8, "total_seconds": 20, "retries": 0},
+  "time_note": "Request UTC timestamps are the actual host clock (2026-11-13); session task date is 2026-11-14. HTTP Date on original object responses independently records 2026-11-13. Neither is substituted for historical availability time."
+}
