@@ -22,7 +22,9 @@ MANIFEST_SHA256 = 'a689366daf5815f4fea2726fa213197d5505ae89548083a094d39476aae3e
 PREREGISTRATION_SHA256 = '7a599b39d13f8cc009a8a37ecc82c3375e09ed587d4997684e39853767fcc43c'
 FROZEN_SOURCES_SHA256 = '0989eab0a86c33854636a78af6b6e739baca643d02af61b5cf3290d32fdd7109'
 VERSION = '352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83'
-BOUNDARIES = ['NO LIVE MONEY', 'PIT_UNVERIFIED', 'HFQ_UNVERIFIED', 'FORMAL_ADMISSION_BLOCKED']
+RESEARCH_LEVEL = 'EXPLORATORY_LISTING_ADMISSION_RELAXED'
+BOUNDARIES = ['NO LIVE MONEY', 'PIT_UNVERIFIED', 'HFQ_UNVERIFIED',
+              'LISTING_UNVERIFIED', 'PREREGISTERED_LISTING_CONDITION_RELAXED']
 
 
 class StudyBlocked(ValueError):
@@ -96,20 +98,17 @@ def account_identity(hashes, identity, scenario, arm, mode):
 
 
 def require_admission(repository):
-    """The checked-in admission record must contain verified source receipts."""
+    """Retain listing evidence without blocking exploratory offline Paper execution."""
     root = Path(repository)
     admission = json.loads((root / 'docs/validation/p7-r04b-e01/admission.json').read_text(encoding='utf-8'))
     if not admission['independence']['not_used_for_parameter_development_or_profit_selection']:
         raise StudyBlocked('independent provenance declaration missing')
     listing = admission['listing_cross_check']
-    if listing['status'] != 'VERIFIED':
-        raise StudyBlocked('official listing announcement / precise first-trade cross-check unresolved')
-    if not listing['receipts']:
-        raise StudyBlocked('listing corroboration receipts missing')
     for receipt in listing['receipts']:
         if digest((root / receipt['path']).read_bytes()) != receipt['sha256']:
             raise StudyBlocked('listing corroboration receipt digest mismatch')
-    return admission
+    return admission | dict(execution_basis=RESEARCH_LEVEL,
+        preregistered_listing_condition_relaxed=True, strict_confirmatory_contract=False)
 
 
 def execute_matrix(output, *, bars, identity, prereg, lifecycle, config, rules, hashes):
@@ -120,7 +119,7 @@ def execute_matrix(output, *, bars, identity, prereg, lifecycle, config, rules, 
     output.mkdir(parents=True, exist_ok=False)
     wall, cpu = perf_counter(), process_time()
     _write(output / 'design.json', dict(preregistration=prereg, frozen_sha256=hashes,
-        accounts=account_matrix(prereg), research_level='ASSUMPTION_BOUND_PAPER_RESEARCH'))
+        accounts=account_matrix(prereg), research_level=RESEARCH_LEVEL))
     _write(output / 'data-identity.json', identity)
     rows = []
     for scenario, arm, mode in account_matrix(prereg):
@@ -169,7 +168,7 @@ def execute_matrix(output, *, bars, identity, prereg, lifecycle, config, rules, 
         wall_seconds=perf_counter()-wall, process_cpu_seconds=process_time()-cpu,
         output_bytes=sum(p.stat().st_size for p in output.rglob('*') if p.is_file()),
         exposure_status='EXPOSURE_NOT_MATCHED', funding='NOT_IN_PAPER_LEDGER',
-        research_level='ASSUMPTION_BOUND_PAPER_RESEARCH', boundaries=BOUNDARIES))
+        research_level=RESEARCH_LEVEL, boundaries=BOUNDARIES))
     return pd.DataFrame(rows)
 
 

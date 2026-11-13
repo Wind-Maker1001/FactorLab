@@ -1,0 +1,57 @@
+{
+  "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+  "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+  "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+  "duplicate_timestamps": 0,
+  "end_exclusive": "2026-08-12T00:00:00+00:00",
+  "external_raw_receipts": [
+    {
+      "acquired_at": "2026-11-13T17:12:49.603263+00:00",
+      "endpoint": "PUBLIC_DATA_MONTHLY_KLINES",
+      "external_raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-05-454cm9hg\\body",
+      "sha256": "4b9184b4b71163b2a9cc244b049313157fea17207b0a91375496de9b01c7d58a",
+      "status": 200,
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-05.zip"
+    },
+    {
+      "acquired_at": "2026-11-13T17:12:49.994384+00:00",
+      "endpoint": "PUBLIC_DATA_MONTHLY_KLINES",
+      "external_raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-06-2szec8ki\\body",
+      "sha256": "bf3abc351a5d186be3d126ecd080e8b21c8d1aeca785bef34ebb3f3432afb03c",
+      "status": 200,
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-06.zip"
+    },
+    {
+      "acquired_at": "2026-11-13T17:12:50.251576+00:00",
+      "endpoint": "PUBLIC_DATA_MONTHLY_KLINES",
+      "external_raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-07-azd7fap8\\body",
+      "sha256": "b004565c2f0fa0e139c3d01119cb9bac2e9c796d80fc48de597430e969197cd8",
+      "status": 200,
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-07.zip"
+    },
+    {
+      "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+      "endpoint": "PUBLIC_DATA_MONTHLY_KLINES",
+      "external_raw_path": "D:\\Code\\p7-r04b-official-payloads\\public-2026-08-50sz8xnu\\body",
+      "sha256": "198d588ff3f55eccde27d1f0c4a267765fc6e17b92ceed24e7d906adf8706056",
+      "status": 200,
+      "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-08.zip"
+    }
+  ],
+  "flat_bars": 0,
+  "funding": "NOT_IN_PAPER_LEDGER",
+  "generation": "bde00b2f948842e2b8c2a00465a9f8c6",
+  "instrument_id": "BINANCE:USDM:NVDAUSDT",
+  "interval": "1h",
+  "invalid_ohlcv": 0,
+  "last_close": "2026-08-11T23:59:59.999000+00:00",
+  "liquidity": "observed base volume floored to integer units before 1% participation",
+  "manifest_sha256": "a689366daf5815f4fea2726fa213197d5505ae89548083a094d39476aae3e12c",
+  "missing_bars": 0,
+  "raw_receipts": [],
+  "rows": 2160,
+  "source": "BINANCE_USDM_PUBLIC_DATA",
+  "start": "2026-05-14T00:00:00+00:00",
+  "valuation": "trade close, not historical intrahour mark; synthetic close execution",
+  "zero_volume_bars": 0
+}

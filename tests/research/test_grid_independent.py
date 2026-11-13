@@ -69,14 +69,41 @@ def test_snapshot_rejects_generation_and_actual_content_hash(tmp_path, monkeypat
         study.load_sample(directory)
 
 
-def test_unresolved_listing_blocks_before_any_account_or_output(tmp_path, monkeypatch):
+def test_unresolved_listing_allows_exploratory_execution(tmp_path, monkeypatch):
     monkeypatch.setattr(study, 'load_sample', lambda _: ([], {}))
-    def forbidden(*args, **kwargs):
-        pytest.fail('an account ran before research admission')
-    monkeypatch.setattr(study, 'execute_matrix', forbidden)
-    with pytest.raises(study.StudyBlocked, match='cross-check unresolved'):
-        study.run_study(tmp_path / 'no-output', snapshot='unused', repository=ROOT)
-    assert not (tmp_path / 'no-output').exists()
+    executed = []
+    def execute(output, **kwargs):
+        output.mkdir()
+        executed.append(output)
+        return 'executed'
+    monkeypatch.setattr(study, 'execute_matrix', execute)
+    output = tmp_path / 'exploratory'
+    assert study.run_study(output, snapshot='unused', repository=ROOT) == 'executed'
+    assert executed == [output]
+    admission = json.loads((output / 'admission.json').read_text())
+    original = json.loads((ROOT / 'docs/validation/p7-r04b-e01/admission.json').read_text())
+    assert admission['listing_cross_check'] == original['listing_cross_check']
+    assert admission['listing_cross_check']['status'] == 'UNRESOLVED'
+    assert admission['execution_basis'] == study.RESEARCH_LEVEL
+    assert admission['preregistered_listing_condition_relaxed'] is True
+    assert admission['strict_confirmatory_contract'] is False
+
+
+def test_independence_and_existing_receipt_integrity_still_required(tmp_path):
+    path = tmp_path / 'docs/validation/p7-r04b-e01/admission.json'
+    path.parent.mkdir(parents=True)
+    admission = json.loads((ROOT / 'docs/validation/p7-r04b-e01/admission.json').read_text())
+    admission['independence']['not_used_for_parameter_development_or_profit_selection'] = False
+    path.write_text(json.dumps(admission))
+    with pytest.raises(study.StudyBlocked, match='provenance declaration'):
+        study.require_admission(tmp_path)
+    admission['independence']['not_used_for_parameter_development_or_profit_selection'] = True
+    receipt = tmp_path / 'receipt.txt'
+    receipt.write_text('actual evidence')
+    admission['listing_cross_check']['receipts'] = [dict(path='receipt.txt', sha256='incorrect')]
+    path.write_text(json.dumps(admission))
+    with pytest.raises(study.StudyBlocked, match='receipt digest mismatch'):
+        study.require_admission(tmp_path)
 
 
 def hourly_bars(prices, volume=100):
