@@ -2,6 +2,111 @@
 
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
+The [C1 approval plan](C1.md) supersedes the expired LIMIT candidate below.
+
+## P7-M02B-R leverage recheck and first LIMIT candidate
+
+**2026-11-13 04:01:29.102 UTC** · **Official USD-M Demo** · **NVDAUSDT**
+
+The signed Demo symbol configuration returned **1×** after the operator's
+manual change. The first LIMIT candidate falls in the **[0, 10,000) USDT** tier,
+which allows up to **10×** and has a **5%** maintenance margin rate.
+`review_opening_plan()` returned `{"LIMIT": ()}`. The original
+`RISK_BRACKET_LIMIT` is cleared at this snapshot.
+
+- `P7_M02B_DEMO_ACCOUNT_PREFLIGHT_PASS`
+- `P7_M02B_BOUNDED_PLAN_READY_FOR_APPROVAL`
+
+| Account or market input | Result | Official Demo GET source |
+| --- | --- | --- |
+| Symbol, contract and configuration | NVDAUSDT `TRADING`, `TRADIFI_PERPETUAL`, USDT quote and margin. Leverage **1×**, `CROSSED`. | `/fapi/v1/exchangeInfo`, `/fapi/v1/symbolConfig` |
+| Position mode and account trading flag | `ONE_WAY`, `canTrade=true`. V3 omitted the flag and V2 supplied it. | `/fapi/v1/positionSide/dual`, `/fapi/v2/account` |
+| Key and permissions | Signed `USER_DATA` verified. The operator confirmed the Futures permission in the web UI. `TRADE_PERMISSION_API_UNVERIFIED`. | `/fapi/v3/account` and other signed GETs |
+| Wallet and available balance | **5,000.00000000 USDT** each. Initial margin and unrealized P&L were **0 USDT**. | `/fapi/v3/account` |
+| Existing exposure | **0** nonzero positions and **0** open orders across the account, including NVDAUSDT. Account and position risk agreed. | `/fapi/v3/account`, `/fapi/v3/positionRisk`, `/fapi/v1/openOrders` |
+| Quantitative restrictions | Valid response. ACCOUNT and NVDAUSDT indicators `NOT_REPORTED`, with no reported applicable lock. | `/fapi/v1/apiTradingStatus` |
+| LIMIT rules | LOT_SIZE 0.01 to 6,000 in steps of 0.01. MIN_NOTIONAL 5 USDT. PRICE_FILTER 0.01 to 20,000 in ticks of 0.01. PERCENT_PRICE 0.97 to 1.03 × mark. | `/fapi/v1/exchangeInfo` |
+| Other exchange limits | 200 open orders allowed by the exchange. POSITION_RISK_CONTROL `NONE`. All returned filters were supported. | `/fapi/v1/exchangeInfo` |
+| Leverage tiers | Maximum leverage 10×, 5×, 4×, 3×, 2× and 1× over the ranges listed below. The signed response omitted `notionalCoef`. | `/fapi/v1/leverageBracket` |
+| Mark and book | Mark **164.00** at **04:01:26.591 UTC**. Bid **163.91**, ask **164.24** at **04:01:27.723 UTC**. Mark band **159.08–168.92 USDT**. | `/fapi/v1/premiumIndex`, `/fapi/v1/ticker/bookTicker` |
+
+### Historical LIMIT candidate (expired at 04:11:29 UTC)
+
+| Parameter | Candidate |
+| --- | --- |
+| Account and instrument | `DEMO`, NVDAUSDT, 1× `CROSSED`, `ONE_WAY`. The plan and account facts used the identity derived from the current Demo credential. |
+| Order | **BUY LIMIT GTC, 0.04 NVDA at 159.58 USDT**, one-way `BOTH`, opening order. |
+| Maximum quantity | **0.04 NVDA**. At 159.58, 0.03 NVDA is 4.7874 USDT and 0.04 NVDA is **6.3832 USDT**. |
+| Maximum notional and margin | **6.57 USDT each**. Full opening reservation at the higher of the limit and ask is `0.04 × 164.24 = 6.5696 USDT`, rounded up to cents, with zero existing margin. |
+| Shared controller limits | **6.57 USDT** each for order notional, instrument exposure and account budget, with **1 order per minute** and a **5-second** quote age limit. The 0.10% internal fee reserve brings required available collateral to **6.5761696 USDT**. `TradingController.assess()` returned `APPROVED` in memory with the observed quote and available balance. |
+| Maximum loss | **0.21 USDT** proposed. Round up `6.3832 × 3% + 2 × 6.57 × 0.10% = 0.204636 USDT`. The 3% is an adverse move from the limit using the observed lower-band multiplier as a stress assumption. The two fee allowances use the controller's internal rate. |
+| Count and duration | **1 total order**, **1 simultaneous open order**, `max_seconds=600`, absolute expiry **2026-11-13 04:11:29 UTC**. The earlier of UTC expiry and 600 seconds from capability creation controls writes. |
+| Client order ID | Prefix `m02br-a93403dbe3cd01`, full ID `m02br-a93403dbe3cd01-01`. Signed `/fapi/v1/allOrders` returned zero NVDAUSDT rows and no prefix matches. The prefix had no match in the repository validation records. |
+| Cleanup and recovery | `CANCEL_KNOWN_THEN_STOP` and `GET_RECONCILE_NO_RESUBMIT`. |
+
+The proposed BUY sits below the observed bid and ask and inside the mark band.
+It uses a tick-aligned price with 0.50 USDT of room above the observed lower
+band. The candidate uses GTC, so a subsequent market move can fill it and a
+capability expiry leaves any open exchange order in place. The loss threshold
+gates opening admission based on account equity. After a fill, it cannot force
+an exit or cap the loss on the resulting position.
+
+Before an independently approved session, refresh the mark, book, account,
+rules and actual controller journals. Check the prefix against the selected
+protocol and controller journals, including terminal orders, and reconcile any
+UNKNOWN identity. This observation found no Demo execution journal in the
+reviewed worktree or local run directories. The exchange order-history result
+covers the endpoint's retention window. The plan's bounds and prefix reside in
+`DemoExecutionPlan`. Approval must also cover the exact side, limit and full
+client ID in the order intent. An expired candidate or a changed price,
+quantity or limit needs a refreshed plan for review. [Binance All Orders](https://developers.binance.com/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/rest-api/trade#all-orders-user_data)
+
+During an authorized session, the adapter journals the ID before dispatch.
+Query the same ID with signed GET. Following a submission or cancellation
+timeout, reconcile that identity with GET and stop new submissions while its
+state is unknown. With separate approval covering cancellation, cancel only
+the known outstanding quantity under the same ID while the capability remains
+active. Query the order again and reconcile open orders, fills, fees, positions
+and controller state. A fill can leave a residual Demo position after
+cancellation. Stop and report it for separate review. After expiry, GET remains
+available and an open order requires fresh cancellation authorization.
+
+### Request receipt and verification
+
+All exchange requests went to `https://demo-fapi.binance.com`.
+
+| Round | Requests | HTTP result |
+| --- | --- | --- |
+| 03:58:20 UTC observation | 4 public GETs (time, exchangeInfo, mark, book) and 2 signed GETs (leverageBracket, account V3) | 4 × 200, 2 × 400 (`-1021 CLOCK_SKEW`) |
+| 04:01:29 UTC observation and prefix check | 4 public GETs (time, exchangeInfo, mark, book) and 9 signed GETs (leverageBracket, account V3, positionRisk, position mode, openOrders, symbolConfig, account V2, apiTradingStatus, allOrders) | 13 × 200 |
+| **Total** | **19 GETs (8 public and 11 signed), 0 POST, 0 DELETE, 0 other methods** | **17 × 200, 2 × 400** |
+
+The successful read-only process subtracted 2,500 ms from its measured signing
+offset and used a 10,000 ms `recvWindow` after the initial timestamp rejection.
+It used the unadjusted midpoint offset of −457 ms to check market observation
+age. Signed account facts, rules and quotes from that process supplied both plan
+reviews. These signing settings were local to the read-only observation.
+[Binance USD-M Demo endpoint and timestamp rules](https://developers.binance.com/en/docs/products/derivatives-trading-usds-futures/general-info)
+
+**94 targeted tests passed** with Python 3.12.7 and pytest 7.4.4 with
+`-p no:nose` and socket connects blocked. The flag prevents pytest 7 from
+calling ordinary `setup` helpers as module fixtures. The first two invocations
+each reached 67 passes and 27 fixture setup errors before the compatibility flag
+was applied. The passing suite covered the Production write refusal, independent
+Demo capability, identity and credential binding, shared risk and limit checks,
+durable identity, duplicate and UNKNOWN order handling, GET-only timeout
+recovery, and capability expiry and restart.
+
+The verified PR #131 head was
+`69da2358d96dea375d3fd9535fa627146e659f27`. GitHub merged it at
+**03:51:18 UTC** as `900eec8dd944513353f122c7b92f4ad5baf5a1ad` and the
+original remote branch was deleted. [PR #131 CI and merge gate](https://github.com/Wind-Maker1001/FactorLab/actions/runs/43358202764)
+This evidence update was recorded in the original local worktree. GitHub's
+successful checks apply to the merged PR head. Execution admission remains
+blocked pending independent approval.
+
+## Historical baseline at 02:55 UTC
+
 `P7_M02B_DEMO_READ_ONLY_VERIFIED` at **2026-11-13 02:55:55 UTC**.
 The opening plan is blocked. Demo reported NVDAUSDT configured at **20×** and
 reported a maximum of **10×** for the tier that would contain either minimum
@@ -39,7 +144,7 @@ Reported leverage tiers use inclusive notional floors and exclusive caps.
 | 250,000 to 2,500,000 | 2× | 25% |
 | 2,500,000 to 5,000,000 | 1× | 50% |
 
-## Pending DemoExecutionPlan
+### Original pending DemoExecutionPlan
 
 | Parameter | Proposed value or decision required |
 | --- | --- |
@@ -70,7 +175,7 @@ placement and cancellation procedure. A later strategy plan needs its own
 approved limits, feed binding and short client ID prefix. A verified Demo software
 path carries no model-performance claim. [Binance USD-M Demo host and security types](https://developers.binance.com/en/docs/products/derivatives-trading-usds-futures/general-info)
 
-## Evidence
+### Original evidence
 
 The credentialed observation made 12 HTTP 200 GETs to `https://demo-fapi.binance.com`.
 Four were public (`/fapi/v1/time`, `/fapi/v1/exchangeInfo`,
