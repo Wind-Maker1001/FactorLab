@@ -45,9 +45,27 @@ class SafetyBlocked(PermissionError):
     pass
 
 
+def rejection_message(payload, *, credentials=None, request=None):
+    """Return bounded display text, suppressing credential or request echoes entirely."""
+    import re
+    message = payload.get('msg') if isinstance(payload, dict) else None
+    if not isinstance(message, str):
+        return None
+    secrets = [] if credentials is None else [credentials.key, credentials.secret]
+    if request is not None:
+        from urllib.parse import parse_qs
+        secrets += parse_qs(request.query).get('signature', [])
+    if (len(message) > 512 or not message.isprintable()
+            or any(value and value in message for value in secrets)
+            or re.search(r'[a-z]+://|signature|api.?key|secret|authorization|[A-Za-z0-9_-]{32,}', message, re.I)):
+        return '[SUPPRESSED_UNSAFE_EXCHANGE_MESSAGE]'
+    return message
+
+
 class ExchangeError(DataQualityError):
-    def __init__(self, code, status, category, retry_after=None):
+    def __init__(self, code, status, category, retry_after=None, *, message=None):
         self.code, self.status, self.category, self.retry_after = code, status, category, retry_after
+        self.message = message
         # Never include server messages, URLs, signatures, keys or payloads.
         super().__init__(f'Binance error code={code} HTTP={status} category={category}')
 
@@ -219,7 +237,8 @@ class FuturesClient:
                          -1111: 'PRECISION'}.get(code, 'EXCHANGE_REJECTED'))
             if response.status in {418, 429}:
                 category = 'RATE_LIMIT'
-            raise ExchangeError(code, response.status, category, retry_after)
+            raise ExchangeError(code, response.status, category, retry_after,
+                                message=rejection_message(payload, credentials=self.credentials, request=request))
         if not isinstance(payload, (dict, list)):
             if method != 'GET':
                 raise OutcomeUnknown('unexpected order response; reconcile')
