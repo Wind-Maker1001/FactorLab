@@ -1,0 +1,90 @@
+{
+  "plan_id": "m03-5589adc5a5e847f9-01",
+  "baseline": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/fapi/v1/time",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/exchangeInfo",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/leverageBracket",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/allOrders",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/order",
+      "http_status": 400,
+      "error_type": "HTTPError"
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v3/account",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v3/positionRisk",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/positionSide/dual",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/openOrders",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/symbolConfig",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v2/account",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/apiTradingStatus",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/premiumIndex",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/ticker/bookTicker",
+      "http_status": 200
+    }
+  ],
+  "status": "P7_M03_REAPPROVAL_REQUIRED",
+  "full_account_binding_matches": true,
+  "fresh_offset_ms": -1282,
+  "prewrite_exact_id": "ORDER_NOT_FOUND:-2013",
+  "error": {
+    "type": "ValueError",
+    "message": "APPROVED_PRICE_BOUNDARY"
+  },
+  "request_counts": {
+    "GET": 14,
+    "POST": 0,
+    "DELETE": 0
+  }
+}

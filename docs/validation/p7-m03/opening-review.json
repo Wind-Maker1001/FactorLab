@@ -1,0 +1,310 @@
+{
+  "clientOrderId": "m03-5589adc5a5e847f9-01",
+  "full_account_binding_matches": true,
+  "local_journals": [],
+  "scan_depth": 3,
+  "prior_approval_id_matches": 0,
+  "exact_id_lookup": {
+    "code": -2013,
+    "category": "ORDER_NOT_FOUND"
+  },
+  "status": "P7_M03_READY_FOR_EXPLICIT_AUTHORIZATION",
+  "baseline": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+  "observed_at": "2026-11-13 10:41:27.737728+00:00",
+  "offset_ms": -684,
+  "plan": {
+    "account_id": "DEMO:FactorLab-Demo:sha256:...660da077",
+    "order_types": [
+      "LIMIT"
+    ],
+    "max_quantity": "0.03",
+    "max_notional": "5.12",
+    "max_orders": 1,
+    "max_open_orders": 1,
+    "max_seconds": 600,
+    "max_loss": "0.17",
+    "max_margin": "5.13",
+    "expires_at": "2026-11-13 12:41:27+00:00",
+    "client_id_prefix": "m03-5589adc5a5e847f9",
+    "cleanup": "CANCEL_KNOWN_THEN_STOP",
+    "recovery": "GET_RECONCILE_NO_RESUBMIT",
+    "environment": "DEMO",
+    "symbol": "NVDAUSDT"
+  },
+  "side": "BUY",
+  "positionSide": "BOTH",
+  "reduceOnly": false,
+  "timeInForce": "GTC",
+  "quantity": "0.03",
+  "limit_price": "168.66000",
+  "ask_ceiling": "170.41",
+  "mark": {
+    "markPrice": "169.51000000",
+    "time_utc": "2026-11-13 10:41:24.592000+00:00"
+  },
+  "book": {
+    "bidPrice": "169.51000",
+    "askPrice": "169.56000",
+    "time_utc": "2026-11-13 10:41:24.399000+00:00"
+  },
+  "market_fresh": true,
+  "filters": {
+    "PRICE_FILTER": {
+      "minPrice": "0.01000",
+      "maxPrice": "20000",
+      "filterType": "PRICE_FILTER",
+      "tickSize": "0.01000"
+    },
+    "LOT_SIZE": {
+      "maxQty": "6000",
+      "minQty": "0.01",
+      "stepSize": "0.01",
+      "filterType": "LOT_SIZE"
+    },
+    "MARKET_LOT_SIZE": {
+      "maxQty": "600",
+      "stepSize": "0.01",
+      "filterType": "MARKET_LOT_SIZE",
+      "minQty": "0.01"
+    },
+    "MAX_NUM_ORDERS": {
+      "limit": 200,
+      "filterType": "MAX_NUM_ORDERS"
+    },
+    "MIN_NOTIONAL": {
+      "notional": "5",
+      "filterType": "MIN_NOTIONAL"
+    },
+    "PERCENT_PRICE": {
+      "multiplierUp": "1.0300",
+      "multiplierDown": "0.9700",
+      "filterType": "PERCENT_PRICE",
+      "multiplierDecimal": "4"
+    },
+    "POSITION_RISK_CONTROL": {
+      "filterType": "POSITION_RISK_CONTROL",
+      "positionControlSide": "NONE"
+    }
+  },
+  "brackets": [
+    {
+      "bracket": 1,
+      "initialLeverage": 10,
+      "notionalCap": 10000,
+      "notionalFloor": 0,
+      "maintMarginRatio": 0.05,
+      "cum": 0.0
+    },
+    {
+      "bracket": 2,
+      "initialLeverage": 5,
+      "notionalCap": 50000,
+      "notionalFloor": 10000,
+      "maintMarginRatio": 0.1,
+      "cum": 500.0
+    },
+    {
+      "bracket": 3,
+      "initialLeverage": 4,
+      "notionalCap": 100000,
+      "notionalFloor": 50000,
+      "maintMarginRatio": 0.125,
+      "cum": 1750.0
+    },
+    {
+      "bracket": 4,
+      "initialLeverage": 3,
+      "notionalCap": 250000,
+      "notionalFloor": 100000,
+      "maintMarginRatio": 0.1667,
+      "cum": 5920.0
+    },
+    {
+      "bracket": 5,
+      "initialLeverage": 2,
+      "notionalCap": 2500000,
+      "notionalFloor": 250000,
+      "maintMarginRatio": 0.25,
+      "cum": 26745.0
+    },
+    {
+      "bracket": 6,
+      "initialLeverage": 1,
+      "notionalCap": 5000000,
+      "notionalFloor": 2500000,
+      "maintMarginRatio": 0.5,
+      "cum": 651745.0
+    }
+  ],
+  "account": {
+    "canTrade": true,
+    "hedge_mode": false,
+    "config": {
+      "symbol": "NVDAUSDT",
+      "leverage": 1,
+      "marginType": "CROSSED"
+    },
+    "funds": {
+      "walletBalance": "5000.00000000",
+      "availableBalance": "5000.00000000",
+      "marginBalance": "5000.00000000",
+      "unrealizedProfit": "0E-8",
+      "initialMargin": "0E-8",
+      "maintMargin": "0E-8",
+      "positionInitialMargin": "0E-8",
+      "openOrderInitialMargin": "0E-8"
+    },
+    "positions": {
+      "count": 0,
+      "NVDAUSDT": []
+    },
+    "open_orders": {
+      "count": 0,
+      "NVDAUSDT_count": 0
+    },
+    "quantitative": {
+      "status": "OBSERVED",
+      "error": null,
+      "missing_indicator_state": "NOT_REPORTED",
+      "scopes": {
+        "ACCOUNT": {
+          "status": "NOT_REPORTED"
+        },
+        "NVDAUSDT": {
+          "status": "NOT_REPORTED"
+        }
+      }
+    }
+  },
+  "history_rows": 0,
+  "history_id_matches": 0,
+  "plan_review": {
+    "LIMIT": []
+  },
+  "controller": {
+    "approved": true,
+    "reason": "APPROVED",
+    "limits_snapshot": {
+      "max_order_notional": "5.12",
+      "max_instrument_exposure": "5.12",
+      "account_budget": "5.12",
+      "orders_per_minute": 1,
+      "max_quote_age_seconds": 5,
+      "kill_switch": false
+    }
+  },
+  "controller_at_ask_ceiling": {
+    "approved": true,
+    "reason": "APPROVED",
+    "limits_snapshot": {
+      "max_order_notional": "5.12",
+      "max_instrument_exposure": "5.12",
+      "account_budget": "5.12",
+      "orders_per_minute": 1,
+      "max_quote_age_seconds": 5,
+      "kill_switch": false
+    }
+  },
+  "amounts": {
+    "order_notional": "5.0598000",
+    "gateway_current": "5.0868000",
+    "fee_reserve_current": "0.0050868000",
+    "controller_current": "5.0918868000",
+    "gateway_at_ask_ceiling": "5.1123",
+    "controller_at_ask_ceiling": "5.1174123",
+    "loss_basis": "0.162034000"
+  },
+  "blockers": [],
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/fapi/v1/time",
+      "signed": false,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/exchangeInfo",
+      "signed": false,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/leverageBracket",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/allOrders",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/order",
+      "signed": true,
+      "http_status": 400
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v3/account",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v3/positionRisk",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/positionSide/dual",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/openOrders",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/symbolConfig",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v2/account",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/apiTradingStatus",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/premiumIndex",
+      "signed": false,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/ticker/bookTicker",
+      "signed": false,
+      "http_status": 200
+    }
+  ],
+  "request_counts": {
+    "GET": 14,
+    "POST": 0,
+    "DELETE": 0
+  },
+  "write_authorization_created": false
+}
