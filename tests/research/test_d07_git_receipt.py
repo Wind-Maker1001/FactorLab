@@ -1,5 +1,6 @@
 """Pinned historical receipts in complete and shallow candidate repositories."""
 import importlib.util
+import os
 from pathlib import Path
 import subprocess
 
@@ -29,7 +30,10 @@ def repository(tmp_path):
     git(repo, 'remote', 'add', 'origin', ROOT.as_uri())
     subject = git(ROOT, 'rev-parse', 'HEAD')
     git(repo, 'fetch', '--no-tags', '--depth=2', 'origin', subject)
-    git(repo, 'checkout', '--detach', subject)
+    subprocess.check_call(
+        ['git', '-C', str(repo), 'checkout', '--detach', subject],
+        env={**os.environ, 'GIT_LFS_SKIP_SMUDGE': '1'},
+    )
     git(repo, 'config', 'user.name', 'Receipt fixture')
     git(repo, 'config', 'user.email', 'receipt@example.invalid')
     return repo
