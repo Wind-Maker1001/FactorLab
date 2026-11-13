@@ -114,7 +114,7 @@ class FuturesAdapter:
             return self.query_order(intent.client_order_id)
         try:
             row = self.client.request('POST', '/fapi/v1/order', params)
-            return self._rest_order(row, intent.client_order_id)
+            return self._confirm_write(row, intent.client_order_id)
         except ExchangeError as exc:
             if exc.category not in {'RATE_LIMIT', 'ORDER_NOT_FOUND'} and exc.status < 500:
                 event = OrderEvent(intent.client_order_id, None, S.REJECTED, ZERO, None,
@@ -139,10 +139,20 @@ class FuturesAdapter:
         try:
             row = self.client.request('DELETE', '/fapi/v1/order',
                                       dict(symbol=order.intent.instrument_id, origClientOrderId=client_order_id))
-            return self._rest_order(row, client_order_id)
+            return self._confirm_write(row, client_order_id)
         except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
             self._uncertain(client_order_id)
             raise OutcomeUnknown('cancel unconfirmed; reconcile fills before releasing risk') from None
+
+    def _confirm_write(self, row, client_order_id):
+        # Binance write acknowledgments can omit cumulative quote. Query Order
+        # supplies it for the journaled identity, including after a partial fill.
+        if isinstance(row, dict) and 'cumQuote' not in row:
+            try:
+                return self.query_order(client_order_id)
+            except ExchangeError:
+                raise OutcomeUnknown('order readback unconfirmed; reconcile without resubmitting') from None
+        return self._rest_order(row, client_order_id)
 
     def _validate_network_identity(self):
         from .network import DemoNetworkTransport

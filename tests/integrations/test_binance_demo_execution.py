@@ -281,3 +281,54 @@ def test_partial_cancel_and_regressing_fill():
     with pytest.raises(DataQualityError, match='regression'):
         a.query_order('one')
     assert a.order('one').reconcile_required
+
+
+class WriteAcknowledgmentFixture(DemoFixture):
+    def __call__(self, request, timeout):
+        response = super().__call__(request, timeout)
+        if request.method in ('POST', 'DELETE') and response.status == 200:
+            row = json.loads(response.body)
+            del row['cumQuote']
+            row['cumQty'] = row['executedQty']
+            return Response(response.status, response.headers, json.dumps(row).encode())
+        return response
+
+
+def test_write_acknowledgment_without_cumulative_quote():
+    a, g, c, fake = setup(fake=WriteAcknowledgmentFixture())
+    order = intent(limit='100.01')
+    assert c.submit(order).status == S.SUBMITTED
+    fake.trade_update(order.client_order_id, '0.5')
+    canceled = c.cancel(order.client_order_id)
+    assert canceled.status == S.CANCELED
+    assert canceled.cumulative_filled_quantity == D('0.5')
+    assert canceled.cumulative_fee == D('0.05')
+    assert c.account().positions[0].quantity == D('0.5')
+    assert [method for method, path, _ in fake.calls if path == '/fapi/v1/order'] == [
+        'POST', 'GET', 'DELETE', 'GET',
+    ]
+
+
+def test_write_acknowledgment_readback_failure_is_unknown():
+    class MissingReadbackFixture(WriteAcknowledgmentFixture):
+        def __call__(self, request, timeout):
+            response = super().__call__(request, timeout)
+            if request.method == 'POST':
+                self.response_next = Response(400, {}, b'{"code":-2013}')
+            return response
+
+    a, g, c, fake = setup(fake=MissingReadbackFixture())
+    order = intent(limit='100.01')
+    assert c.submit(order) is None
+    assert a.order(order.client_order_id).status == S.UNKNOWN
+    with pytest.raises(ValueError, match='RECONCILE_REQUIRED'):
+        c.submit(order)
+    recovery_start = len(fake.calls)
+    g.recover(c)
+    assert a.order(order.client_order_id).status == S.SUBMITTED
+    assert all(method == 'GET' for method, _, _ in fake.calls[recovery_start:])
+    order_calls = [(method, params) for method, path, params in fake.calls if path == '/fapi/v1/order']
+    assert [method for method, _ in order_calls if method != 'GET'] == ['POST']
+    assert {tuple(params['origClientOrderId']) for method, params in order_calls if method == 'GET'} == {
+        (order.client_order_id,),
+    }
