@@ -1,0 +1,38 @@
+[
+  {
+    "fields": [
+      "final_equity",
+      "fills",
+      "buy_fills",
+      "sell_fills",
+      "fees",
+      "end_inventory"
+    ],
+    "matches": true,
+    "mode": "arithmetic"
+  },
+  {
+    "fields": [
+      "final_equity",
+      "fills",
+      "buy_fills",
+      "sell_fills",
+      "fees",
+      "end_inventory"
+    ],
+    "matches": true,
+    "mode": "geometric"
+  },
+  {
+    "fields": [
+      "final_equity",
+      "fills",
+      "buy_fills",
+      "sell_fills",
+      "fees",
+      "end_inventory"
+    ],
+    "matches": true,
+    "mode": "atr"
+  }
+]

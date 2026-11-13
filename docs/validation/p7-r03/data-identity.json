@@ -1,0 +1,37 @@
+{
+  "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+  "bars_sha256": "562ba9e01c2ca050132a10519b3b514112b2f36e7837ffa838a72ce9bf00b7b4",
+  "data_version": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+  "duplicate_timestamps": 0,
+  "end_exclusive": "2026-11-10T00:00:00+00:00",
+  "flat_bars": 0,
+  "funding": "NOT_IN_PAPER_LEDGER",
+  "instrument_id": "BINANCE:USDM:NVDAUSDT",
+  "interval": "1h",
+  "invalid_ohlcv": 0,
+  "last_close": "2026-11-09T23:59:59.999000+00:00",
+  "liquidity": "observed base volume floored to integer units before 1% participation",
+  "missing_bars": 0,
+  "raw_receipts": [
+    {
+      "acquired_at": "2026-11-10T17:54:15.005004+00:00",
+      "sha256": "045307f972cd4bcb9fbe3ecfb5720c1a5891de6e582f873cc5259ae84e89e49a",
+      "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1791889200001&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T17:54:14.133510+00:00",
+      "sha256": "769bd4d8019132bf422e60bd56dce884105abd78338fbe63cb74e020113140ec",
+      "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1786492800000&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1794265200001&symbol=NVDAUSDT"
+    }
+  ],
+  "rows": 2160,
+  "source": "BINANCE_USDM_PUBLIC_REST",
+  "start": "2026-08-12T00:00:00+00:00",
+  "valuation": "trade close, not historical intrahour mark; synthetic close execution",
+  "zero_volume_bars": 0
+}

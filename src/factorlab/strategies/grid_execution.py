@@ -20,18 +20,21 @@ from factorlab.trading.contracts import (
     Market, OrderIntent, OrderSnapshot, OrderStatus, OrderType, Side, TERMINAL, ZERO, decimal_value,
 )
 from factorlab.trading.paper import Quote
+from factorlab.trading.control import RiskRejected
 from factorlab.trading.state import OrderRecord, advance, unknown
 from factorlab.trading.storage import dumps
 from .grid import GridStrategy
 
 
 _CHECKPOINT = 'grid_execution'
-_CHECKPOINT_VERSION = 2
+_CHECKPOINT_VERSION = 3
 _MAX_WORKING_ORDERS = 1000  # The PaperStore order budget.
 _MAX_ATR_WINDOW = 4096
 _DECISION_FIELDS = (
     'price', 'prices', 'center', 'state', 'reason', 'peak', 'sequence', 'last_rebuild',
     'rebuilds', 'previous_close', 'issued_orders', 'delivery', 'last_input', 'conflict',
+    'expiry_reseeds', 'last_expiry_reseed', 'pending_expiry_reseed', 'reseed_bar_ready',
+    'expiry_seed_submitting',
 )
 
 
@@ -210,6 +213,9 @@ class GridExecution:
         self.orders, self.targets, self.levels, self.created = {}, {}, {}, {}
         self.cancellations, self.expirations = set(), set()
         self.pending_rebuild = None
+        self.expiry_reseeds = self.last_expiry_reseed = 0
+        self.pending_expiry_reseed = None
+        self.reseed_bar_ready = self.expiry_seed_submitting = False
         self.pending_bar = None
         self.account = None
         self.issued_orders = self.delivery = 0
@@ -309,6 +315,8 @@ class GridExecution:
 
     def _risk(self, reason, exit_position=False):
         self.pending_rebuild = None
+        self.pending_expiry_reseed = None
+        self.expiry_seed_submitting = False
         self._cancel_all()
         self.state = 'EXITING' if exit_position and self.account.inventory else 'PAUSED'
         self.reason = reason
@@ -325,7 +333,22 @@ class GridExecution:
             center, spacing = self.pending_rebuild
             self.pending_rebuild = None
             # Reuse the legacy range construction and invalid-range decision.
+            self.pending_expiry_reseed = None
             GridStrategy._rebuild(self, center, spacing)
+        elif (self.pending_expiry_reseed is not None and self.state == 'RUNNING'
+              and self.reseed_bar_ready):
+            c = self.config
+            if self.expiry_reseeds >= c.expiry_reseed_limit:
+                self.pending_expiry_reseed = None
+                self._risk('EXPIRY_RESEED_LIMIT')
+            elif self.sequence - self.last_expiry_reseed >= c.expiry_reseed_interval:
+                self.pending_expiry_reseed = None
+                self.expiry_reseeds += 1
+                self.last_expiry_reseed = self.sequence
+                self._seed()
+                self.expiry_seed_submitting = bool(self.active)
+                if not self.active:
+                    self._risk('EXPIRY_RESEED_BLOCKED')
         elif self.state == 'EXITING':
             if self.account.inventory:
                 self._propose(Side.SELL, self.price, self.account.inventory, market=True)
@@ -405,6 +428,7 @@ class GridExecution:
             raise ValueError('complete the current ATR bar before observing another')
         self.timestamp = self._check_observation(event)
         self.account, self.price = account, event['price']
+        self.reseed_bar_ready = event['completed_bar']
         self.sequence += 1
         c = self.config
         if self.sequence == 1 and self.state == 'RUNNING':
@@ -506,11 +530,18 @@ class GridExecution:
         cancel_requested = key in self.cancellations
         level = self.levels[key] + (1 if old.intent.side == Side.BUY else -1)
         delta = updated.cumulative_filled_quantity - old.cumulative_filled_quantity
+        if (self.config.expiry_reseed_limit and self.state == 'RUNNING'
+                and key in self.expirations and updated.status == OrderStatus.CANCELED):
+            self.pending_expiry_reseed = self.pending_expiry_reseed or key
         if updated.status in TERMINAL:
             self._forget(key)
         else:
             self.records[key], self.orders[key] = record, updated
         self.account = account
+        if self.expiry_seed_submitting and not any(o.status == OrderStatus.NEW for o in self.active):
+            self.expiry_seed_submitting = False
+            if not self.active and self.state == 'RUNNING':
+                self._risk('EXPIRY_RESEED_REJECTED')
         self._account_risk()
         if delta and self.state == 'RUNNING' and self.pending_rebuild is None and not cancel_requested and self._can_propose():
             if 0 <= level < len(self.prices):
@@ -675,10 +706,10 @@ class GridExecution:
     def _paper_command(self, controller, delivery, action, command):
         self._bind_admission(controller)
         staged = self._stage()
-        result = None
+        result = rejection = None
 
         def apply():
-            nonlocal result
+            nonlocal result, rejection
             broker, store = controller.broker, controller.store
             state = broker.state
             cursor = store.event_cursor()
@@ -714,9 +745,16 @@ class GridExecution:
                 order = staged.orders[command]
                 if not staged._can_propose() or order.status != OrderStatus.NEW or command in staged.cancellations:
                     raise ValueError('Grid proposal is not submit-ready')
-                controller._submit_in_transaction(order.intent)
-                account = _project_paper_account(broker, staged.instrument_id, turnover)
-                staged._accept_confirmation(state.orders[command], account)
+                try:
+                    controller._submit_in_transaction(order.intent)
+                except RiskRejected as error:
+                    if not staged.expiry_seed_submitting:
+                        raise
+                    rejection = error
+                    staged._risk('EXPIRY_RESEED_' + error.decision.reason)
+                else:
+                    account = _project_paper_account(broker, staged.instrument_id, turnover)
+                    staged._accept_confirmation(state.orders[command], account)
             elif action in {'fill', 'cancel'}:
                 key = command[0] if action == 'fill' else command
                 if not staged._owns(key) or key not in staged.records:
@@ -753,6 +791,8 @@ class GridExecution:
         controller._atomic(apply)
         self.__dict__ = staged.__dict__
         self._require_no_conflict()
+        if rejection is not None:
+            raise rejection
         return result
 
     def _confirm_paper(self, broker, store, event):

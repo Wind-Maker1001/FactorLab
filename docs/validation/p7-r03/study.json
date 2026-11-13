@@ -1,0 +1,8 @@
+{
+  "exposure_status": "EXPOSURE_NOT_MATCHED",
+  "historical_reuse": true,
+  "runs": 26,
+  "status": "P7_R03_GRID_LIFECYCLE_EVALUATED",
+  "stress_triggered": true,
+  "wall_seconds": 1089.9454250000417
+}
