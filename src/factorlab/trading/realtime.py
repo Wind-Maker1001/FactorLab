@@ -12,6 +12,7 @@ from factorlab.integrations.binance_futures_trading.rules import RuleObservation
 from .contracts import Market, OrderIntent, OrderType, Side, TERMINAL, SAFETY_LABELS, utc
 from .control import RiskLimits, TradingController, RiskRejected
 from .paper import Instrument, PaperBroker, Quote
+from .execution import execution_candidate
 from .storage import PaperStore, dumps
 from .simulation import PaperSimulationPolicy
 
@@ -573,24 +574,22 @@ class RealtimeAccount:
             except Unavailable as error:
                 self.state.runtime['last_fill_rejection'] = str(error)
                 continue
-            price = self._execution_price(intent.side, ask if intent.side == Side.BUY else bid)
-            if self.market == Market.BINANCE_EQUITY and intent.order_type == OrderType.MARKET and intent.side == Side.BUY:
-                price = record.reservation_price
-            if intent.order_type == OrderType.LIMIT and (
-                    intent.side == Side.BUY and price > intent.limit_price or
-                    intent.side == Side.SELL and price < intent.limit_price):
-                continue
-            quantity = min(budget, intent.quantity - order.cumulative_filled_quantity)
+            override = (record.reservation_price if self.market == Market.BINANCE_EQUITY
+                        and intent.order_type == OrderType.MARKET and intent.side == Side.BUY else None)
             # Partial stock execution respects the observed fractional share step.
             rules = self.state.runtime['rules']['payload']
             step = Rules.from_exchange_info(rules).step if self.market == Market.BINANCE_EQUITY else D(0)
             if self.strategy is not None:
                 step, _, _ = market_quantity_constraints(rules['symbol'])
-            if step:
-                quantity = (quantity // step) * step
-            if not quantity:
+            candidate = execution_candidate(order, ask=ask, bid=bid, budget=budget,
+                slippage=self.configuration['slippage'], step=step, price_override=override)
+            if candidate is None:
                 continue
-            self.controller.broker.fill(intent.client_order_id, quantity, price)
+            quantity, price = candidate
+            event = self.controller.broker.fill(intent.client_order_id, quantity, price)
+            if event is None:
+                continue
+            quantity = event.cumulative_filled_quantity - order.cumulative_filled_quantity
             runtime = self.state.runtime
             reference = ask if intent.side == Side.BUY else bid
             runtime['slippage_cost'] = runtime.get('slippage_cost', D(0)) + quantity * abs(price - reference)

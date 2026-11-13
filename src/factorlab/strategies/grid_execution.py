@@ -2,7 +2,7 @@
 
 The caller owns account valuation and execution. Quantity units explicitly map
 legacy grid units to base-asset/contract units; spot cash is never inferred from
-a futures wallet. Paper integration needs a pre-fill turnover admission hook.
+a futures wallet. Paper simulation admits turnover before authoritative posting.
 """
 from collections import deque
 from contextlib import contextmanager
@@ -599,12 +599,66 @@ class GridExecution:
             staged._turnover = turnover
             staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
         self.__dict__ = staged.__dict__
+        self._bind_admission(controller)
 
     def observe_paper(self, controller, event, *, delivery, observed_at):
         """Commit the mark and resulting Grid decisions together."""
         observation = _observation(event)
         quote = Quote(self.instrument_id, observation['price'], observed_at)
         self._paper_command(controller, delivery, 'observe', (observation, quote))
+
+    def fill_paper(self, controller, order_id, quantity, price=None, *, delivery):
+        """Simulate and confirm one admitted increment in the account transaction.
+
+        A rejected increment or an already committed delivery returns None.
+        Authoritative confirmation replay remains independent of this admission.
+        """
+        return self._paper_command(controller, delivery, 'fill', (order_id, quantity, price))
+
+    def cancel_paper(self, controller, order_id, *, delivery):
+        """Confirm a requested cancellation through the controller lifecycle."""
+        return self._paper_command(controller, delivery, 'cancel', order_id)
+
+    def _bind_admission(self, controller):
+        existing = controller.broker.fill_admission
+        owner = getattr(existing, '__self__', None)
+        if existing is not None and (not isinstance(owner, GridExecution)
+                                     or owner.deployment() != self.deployment()):
+            raise ValueError('Paper account already has a fill admission policy')
+        controller.broker.fill_admission = self._admit_paper_fill
+        self._paper_controller = controller
+
+    def _admit_paper_fill(self, broker, order, quantity, price):
+        controller = self._paper_controller
+        store, state = controller.store, broker.state
+        if not store.db.in_transaction:
+            raise ValueError('fill admission requires the authoritative transaction')
+        _, payload = self._read_checkpoint(state, store.event_cursor(), self._paper_deployment(controller))
+        intent = order.intent
+        if not self._owns(intent.client_order_id):
+            raise ValueError('fill outside Grid deployment')
+        turnover = _historical_turnover(store, after=payload['baseline'])
+        if turnover != payload['turnover']:
+            raise ValueError('Grid turnover disagrees with Paper authority')
+        account = _project_paper_account(broker, self.instrument_id, turnover)
+        decision = payload['decision']
+        if (not account.reconciled or decision['conflict'] is not None):
+            return ZERO
+        quantity = min(quantity, intent.quantity - order.cumulative_filled_quantity)
+        position = state.positions.get(intent.instrument_id)
+        liquidation = (intent.reduce_only and intent.side == Side.SELL
+                       and intent.order_type == OrderType.MARKET
+                       and decision['state'] == 'EXITING'
+                       and position is not None and ZERO < quantity <= position.quantity)
+        if not liquidation:
+            remaining = max(ZERO, self.initial_equity * D(self.config.max_turnover) - turnover)
+            quantity = min(quantity, remaining / price)
+        step = self.rules.step_size
+        quantity = (quantity / step).to_integral_value(rounding=ROUND_FLOOR) * step
+        minimum = max(self.rules.min_quantity, D(self.config.minimum_quantity) * self.rules.quantity_unit)
+        if quantity < minimum or quantity * price < self.rules.min_notional:
+            return ZERO
+        return quantity
 
     def complete_bar_paper(self, controller, *, delivery):
         self._paper_command(controller, delivery, 'bar', None)
@@ -619,9 +673,12 @@ class GridExecution:
         self._paper_command(controller, delivery, 'confirm', event)
 
     def _paper_command(self, controller, delivery, action, command):
+        self._bind_admission(controller)
         staged = self._stage()
+        result = None
 
         def apply():
+            nonlocal result
             broker, store = controller.broker, controller.store
             state = broker.state
             cursor = store.event_cursor()
@@ -660,6 +717,26 @@ class GridExecution:
                 controller._submit_in_transaction(order.intent)
                 account = _project_paper_account(broker, staged.instrument_id, turnover)
                 staged._accept_confirmation(state.orders[command], account)
+            elif action in {'fill', 'cancel'}:
+                key = command[0] if action == 'fill' else command
+                if not staged._owns(key) or key not in staged.records:
+                    raise ValueError('execution outside submitted Grid orders')
+                old = state.orders[key].snapshot
+                if action == 'fill':
+                    result = broker.fill(*command)
+                else:
+                    if key not in staged.cancellations:
+                        raise ValueError('Grid cancellation was not requested')
+                    result = controller._cancel_in_transaction(key)
+                if result is not None:
+                    delta = result.cumulative_filled_quantity - old.cumulative_filled_quantity
+                    if delta:
+                        staged._turnover += delta * result.fill_price
+                    account = _project_paper_account(broker, staged.instrument_id, staged._turnover)
+                    staged._accept_confirmation(state.orders[key], account)
+                else:
+                    staged._refresh_paper(broker)
+                    staged.account = _project_paper_account(broker, staged.instrument_id, staged._turnover)
             elif action == 'confirm':
                 staged._confirm_paper(broker, store, command)
             else:
@@ -676,6 +753,7 @@ class GridExecution:
         controller._atomic(apply)
         self.__dict__ = staged.__dict__
         self._require_no_conflict()
+        return result
 
     def _confirm_paper(self, broker, store, event):
         key = event.client_order_id

@@ -13,6 +13,10 @@ from .contracts import (
 from .state import OrderRecord, advance, unknown
 
 
+class InsufficientCollateral(ValueError):
+    """A simulated execution cannot be funded with its remaining reservations."""
+
+
 @dataclass(frozen=True)
 class Instrument:
     instrument_id: str
@@ -77,6 +81,7 @@ class PaperBroker:
         self.state = PaperState(market, account_id, {i.instrument_id: i for i in instruments}, dict(balances), fee_rate)
         self.clock: Callable[[], datetime]
         self.record_event: Callable[[OrderEvent], bool]
+        self.fill_admission = None
 
     def set_quote(self, quote: Quote) -> None:
         if quote.instrument_id not in self.state.instruments:
@@ -119,7 +124,7 @@ class PaperBroker:
         self.state.orders[event.client_order_id] = updated
         self.state.confirmations[event.client_order_id] = event
         if any(asset.available < 0 for asset in self.read_account().assets):
-            raise ValueError("insufficient collateral at simulated fill price")
+            raise InsufficientCollateral("insufficient collateral at simulated fill price")
         return True
 
     def _account_fill(self, intent: OrderIntent, quantity: Decimal, price: Decimal, fee: Decimal) -> None:
@@ -160,13 +165,28 @@ class PaperBroker:
         self.apply(event)
         return event
 
-    def fill(self, order_id: str, quantity: Decimal, price: Decimal | None = None) -> OrderEvent:
+    def fill(self, order_id: str, quantity: Decimal, price: Decimal | None = None) -> OrderEvent | None:
+        """Simulate a fill inside the owning controller transaction.
+
+        Optional fill_admission(broker, order, quantity, execution_price) returns
+        a nonnegative Decimal not exceeding the candidate or remaining order.
+        Zero rejects without an event. Policies must not publish external state;
+        confirmed event replay uses apply(), not this simulation admission.
+        """
         decimal_value(quantity, "fill quantity", positive=True)
         order = self.state.orders[order_id].snapshot
         if order.status in TERMINAL or order.reconcile_required:
             raise ValueError("order is not executable")
         price = self.state.quotes[order.intent.instrument_id].price if price is None else price
         decimal_value(price, "fill price", positive=True)
+        if self.fill_admission is not None:
+            admitted = self.fill_admission(self, order, quantity, price)
+            decimal_value(admitted, "admitted fill quantity")
+            if admitted > min(quantity, order.intent.quantity - order.cumulative_filled_quantity):
+                raise ValueError("fill admission cannot increase executable quantity")
+            if not admitted:
+                return None
+            quantity = admitted
         total = order.cumulative_filled_quantity + quantity
         status = S.FILLED if total == order.intent.quantity else S.PARTIALLY_FILLED
         event = self._event(order_id, status, total, price,
