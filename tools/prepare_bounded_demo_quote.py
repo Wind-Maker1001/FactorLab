@@ -73,7 +73,8 @@ def verify_proposal(observation, facts, rules):
     from contextlib import closing
     from factorlab.integrations.binance_futures_trading.network import DemoExecutionPlan
     from factorlab.integrations.binance_futures_trading.bounded_quote import (
-        BoundedQuotePolicy, BoundedQuoteObservation, bounded_quote, canonical_json)
+        BoundedQuotePolicy, canonical_json, content_digest, rule_identity,
+        configuration_identity, execution_code_identity)
     from factorlab.integrations.binance_futures_trading.plan_review import review_opening_plan
     from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side
     from factorlab.trading.control import TradingController, RiskLimits
@@ -89,7 +90,12 @@ def verify_proposal(observation, facts, rules):
         quantity=p['quantity'], offset_bps=p['offset_bps'], min_price=p['min_limit_price'],
         max_price=p['max_limit_price'], max_ask=p['max_ask_price'], max_notional=p['max_notional'],
         max_fee=(p['max_notional']*D('.001')).quantize(D('.01'), rounding=ROUND_CEILING),
-        max_funds=p['max_margin'], fee_rate=D('.001'), expires_at=p['expires_at'], max_quote_age_seconds=5)
+        max_funds=p['max_margin'], fee_rate=D('.001'), expires_at=p['expires_at'], max_quote_age_seconds=5,
+        version=2, rules_identity=rule_identity(rules),
+        configuration_identity=configuration_identity(facts, p['symbol']),
+        account_observation_identity=content_digest(facts), quote_observed_at=observation['observed_at'],
+        execution_code_identity=execution_code_identity(), approval_record_id='unapproved:' + identity,
+        tick_size=D(rules.filters['PRICE_FILTER']['tickSize']))
     plan = DemoExecutionPlan(**{key: p[key] for key in (
         'account_id', 'max_quantity', 'max_notional', 'max_orders', 'max_open_orders',
         'max_seconds', 'max_loss', 'max_margin', 'expires_at', 'client_id_prefix', 'cleanup', 'recovery')},
@@ -118,6 +124,14 @@ def verify_proposal(observation, facts, rules):
                                            controller_upper_boundary=boundary_risk.reason)
     if any(review.values()) or not all(x.approved for x in (official, observed_risk, boundary_risk)):
         candidate['status'] = 'P7_M04_BLOCKED'
+    candidate['policy'] = json.loads(quote_policy.to_json())
+    candidate['plan'] = json.loads(plan.to_json())
+    candidate['policy_digest'] = quote_policy.digest
+    candidate['plan_digest'] = plan.digest
+    candidate['approval_object_complete'] = True
+    candidate['approval_blockers'] = ['API_KEY_TRADE_PERMISSION_UNCONFIRMED', 'ACCOUNT_HISTORY_REVIEW_REQUIRED']
+    candidate['status'] = ('P7_M05_PENDING_MANUAL_EVIDENCE' if candidate['status'] != 'P7_M04_BLOCKED'
+                           else 'P7_M05_BLOCKED')
     return candidate
 
 
@@ -131,7 +145,7 @@ def main():
     if credentials is None:
         print('CANCELLED: no requests sent')
         return
-    client_id = 'm04-' + uuid.uuid4().hex[:16] + '-01'
+    client_id = 'm05-' + uuid.uuid4().hex[:16] + '-01'
     observation = inspect_demo(credentials, client_order_id=client_id, prepare_policy=verify_proposal)
     credentials = None
     candidate = observation.pop('bounded_preparation')

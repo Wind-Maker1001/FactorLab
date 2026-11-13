@@ -63,7 +63,15 @@ def test_preparation_reviews_actual_fixed_quantity_and_controller_boundary(demo_
 
     result = demo_preflight.inspect_demo(Credentials('k', 's', Environment.DEMO), prepare_policy=prepare)
     candidate = result['bounded_preparation']
-    assert candidate['status'] == 'PENDING_EXPLICIT_AUTHORIZATION', candidate
+    assert candidate['status'] == 'P7_M05_PENDING_MANUAL_EVIDENCE', candidate
+    from factorlab.integrations.binance_futures_trading.network import DemoExecutionPlan
+    from factorlab.integrations.binance_futures_trading.bounded_quote import BoundedQuotePolicy, canonical_json
+    plan = DemoExecutionPlan.from_json(canonical_json(candidate['plan']))
+    policy = BoundedQuotePolicy.from_json(canonical_json(candidate['policy']))
+    assert plan.quote_policy == policy
+    assert plan.digest == candidate['plan_digest']
+    assert policy.digest == candidate['policy_digest']
+    assert candidate['approval_object_complete'] is True
     assert candidate['admission_reviews'] == dict(opening_plan={'LIMIT': ()},
         actual_fixed_quantity_rules='APPROVED', controller_observed='APPROVED', controller_upper_boundary='APPROVED')
     assert result['network_writes'] == 0
