@@ -1,0 +1,9 @@
+{
+  "path": "configs/grid_independent_sample_preregistration.json",
+  "sha256": "7a599b39d13f8cc009a8a37ecc82c3375e09ed587d4997684e39853767fcc43c",
+  "primary_window_hours": 2160,
+  "overlap_with_r02_hours": 0,
+  "accounts": 16,
+  "new_sample_economic_runs": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,376 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-13T16:24:51.804373+00:00",
+  "existing_hourly_quality": {
+    "data_version": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+    "bars_sha256": "562ba9e01c2ca050132a10519b3b514112b2f36e7837ffa838a72ce9bf00b7b4",
+    "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+    "instrument_id": "BINANCE:USDM:NVDAUSDT",
+    "source": "BINANCE_USDM_PUBLIC_REST",
+    "interval": "1h",
+    "rows": 2160,
+    "start": "2026-08-12T00:00:00+00:00",
+    "end_exclusive": "2026-11-10T00:00:00+00:00",
+    "last_close": "2026-11-09T23:59:59.999000+00:00",
+    "missing_bars": 0,
+    "duplicate_timestamps": 0,
+    "invalid_ohlcv": 0,
+    "zero_volume_bars": 0,
+    "flat_bars": 0,
+    "raw_receipts": [
+      {
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1791889200001&symbol=NVDAUSDT",
+        "sha256": "045307f972cd4bcb9fbe3ecfb5720c1a5891de6e582f873cc5259ae84e89e49a",
+        "acquired_at": "2026-11-10T17:54:15.005004+00:00"
+      },
+      {
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1786492800000&symbol=NVDAUSDT",
+        "sha256": "769bd4d8019132bf422e60bd56dce884105abd78338fbe63cb74e020113140ec",
+        "acquired_at": "2026-11-10T17:54:14.133510+00:00"
+      },
+      {
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1794265200001&symbol=NVDAUSDT",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "acquired_at": "2026-11-10T17:54:15.651337+00:00"
+      }
+    ],
+    "liquidity": "observed base volume floored to integer units before 1% participation",
+    "valuation": "trade close, not historical intrahour mark; synthetic close execution",
+    "funding": "NOT_IN_PAPER_LEDGER"
+  },
+  "config_constructor_check": "PASS",
+  "scope": "only supplied P6-D02 root, depth four; not a machine-wide inventory",
+  "assets": [
+    {
+      "manifest": "D:\\Code\\FactorLab-worktrees\\p6-d02-binance-history\\results\\p6-d02\\daily\\runs\\bb0c43caaebd4e46a612b75b9b8b2b15\\manifest.json",
+      "manifest_sha256": "012afd958f262dd678dc5e933ce78c54e5881a3d1aee8edee5b78fd5c624d07a",
+      "data_version": "34f804333867a581b2ab135249ca1e7a1b9acacfdec55896005f0be59fb4704d",
+      "interval": "1d",
+      "range": {
+        "end_exclusive": true,
+        "end_ms": 1794268800000,
+        "start_ms": 1786492800000
+      },
+      "integrity": {
+        "calendar": "BINANCE_PERPETUAL_UTC_BUCKETS; NOT_SPOT_SESSIONS",
+        "complete": true,
+        "expected_closed_bars": 90,
+        "funding_coverage": "OBSERVED_EVENTS_ONLY; NO_ASSUMED_SCHEDULE; NO_FILL",
+        "funding_rows": 275,
+        "mark_rows": 1,
+        "missing_ranges": [],
+        "observed_closed_bars": 90,
+        "pre_onboard_excluded": false,
+        "unclosed_or_future_excluded": false
+      },
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "contract_type": "TRADIFI_PERPETUAL",
+      "onboard_time": 1774536000000,
+      "onboard_utc": "2026-03-26T14:40:00+00:00",
+      "tables": {
+        "bars": {
+          "path": "bars.parquet",
+          "rows": 90,
+          "sha256": "1410543b70ff26e039ca89ee5e0dd157d72072fbdd09a2cb25c9a3960dd2c833",
+          "bytes": 16636
+        },
+        "funding": {
+          "path": "funding.parquet",
+          "rows": 275,
+          "sha256": "627aabe7839af1c9ca8dc26411b0d9c3ffceccff1726f46172973e0819624702",
+          "bytes": 9116
+        },
+        "mark": {
+          "path": "mark.parquet",
+          "rows": 1,
+          "sha256": "2cfb7fcff2e41b10f6b51e10db6679fc0d19c8daba4fb8266269b6a7d75dec94",
+          "bytes": 5043
+        }
+      }
+    },
+    {
+      "manifest": "D:\\Code\\FactorLab-worktrees\\p6-d02-binance-history\\results\\p6-d02\\hourly\\runs\\bddaab1cd5c943e28caa62c0fc49ef33\\manifest.json",
+      "manifest_sha256": "1762a0f98483e75a9a70c0d149fac9f408fb206eb4ba4093200ee7aad5be454f",
+      "data_version": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+      "interval": "1h",
+      "range": {
+        "end_exclusive": true,
+        "end_ms": 1794268800000,
+        "start_ms": 1786492800000
+      },
+      "integrity": {
+        "calendar": "BINANCE_PERPETUAL_UTC_BUCKETS; NOT_SPOT_SESSIONS",
+        "complete": true,
+        "expected_closed_bars": 2160,
+        "funding_coverage": "OBSERVED_EVENTS_ONLY; NO_ASSUMED_SCHEDULE; NO_FILL",
+        "missing_ranges": [],
+        "observed_closed_bars": 2160,
+        "pre_onboard_excluded": false,
+        "response_status": "OBSERVED",
+        "unclosed_or_future_excluded": false
+      },
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "contract_type": "TRADIFI_PERPETUAL",
+      "onboard_time": 1774536000000,
+      "onboard_utc": "2026-03-26T14:40:00+00:00",
+      "tables": {
+        "bars": {
+          "path": "bars.parquet",
+          "rows": 2160,
+          "sha256": "562ba9e01c2ca050132a10519b3b514112b2f36e7837ffa838a72ce9bf00b7b4",
+          "bytes": 195862
+        }
+      }
+    },
+    {
+      "manifest": "D:\\Code\\FactorLab-worktrees\\p6-d02-binance-history\\results\\p6-d02\\index-daily\\runs\\a220c221f99745e9989b0a01ccdd6ab7\\manifest.json",
+      "manifest_sha256": "633fd9704d69ebeaafad2a9918d1827b411d8db52913c4a39910ae51a3d98323",
+      "data_version": "eb4a7f484e5fa2e1c4cd3feb80b29f335121ff968cc3360b5cdd4adf2c8666a0",
+      "interval": "1d",
+      "range": {
+        "end_exclusive": true,
+        "end_ms": 1794268800000,
+        "start_ms": 1786492800000
+      },
+      "integrity": {
+        "calendar": "BINANCE_PERPETUAL_UTC_BUCKETS; NOT_SPOT_SESSIONS",
+        "complete": true,
+        "expected_closed_bars": 90,
+        "funding_coverage": "OBSERVED_EVENTS_ONLY; NO_ASSUMED_SCHEDULE; NO_FILL",
+        "missing_ranges": [],
+        "observed_closed_bars": 90,
+        "pre_onboard_excluded": false,
+        "response_status": "OBSERVED",
+        "unclosed_or_future_excluded": false
+      },
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "contract_type": "TRADIFI_PERPETUAL",
+      "onboard_time": 1774536000000,
+      "onboard_utc": "2026-03-26T14:40:00+00:00",
+      "tables": {
+        "index_bars": {
+          "path": "index_bars.parquet",
+          "rows": 90,
+          "sha256": "ab1ae4aac6e890c3f6e71a248f5383c7f749cba5ff83bf7fc6e429e94570f5ab",
+          "bytes": 10217
+        }
+      }
+    },
+    {
+      "manifest": "D:\\Code\\FactorLab-worktrees\\p6-d02-binance-history\\results\\p6-d02\\mark-daily\\runs\\360aecf86aa24b75bd0911bb451f6605\\manifest.json",
+      "manifest_sha256": "21c07bedfb06ec5a20548427f7f3daa7c2e3c8c713c85fa67d870df2ee73958f",
+      "data_version": "6ce4bbc308cebd03661a2af5fdc253c6f925b9e0a59b6273be9ebf07f7b5ab34",
+      "interval": "1d",
+      "range": {
+        "end_exclusive": true,
+        "end_ms": 1794268800000,
+        "start_ms": 1786492800000
+      },
+      "integrity": {
+        "calendar": "BINANCE_PERPETUAL_UTC_BUCKETS; NOT_SPOT_SESSIONS",
+        "complete": true,
+        "expected_closed_bars": 90,
+        "funding_coverage": "OBSERVED_EVENTS_ONLY; NO_ASSUMED_SCHEDULE; NO_FILL",
+        "missing_ranges": [],
+        "observed_closed_bars": 90,
+        "pre_onboard_excluded": false,
+        "response_status": "OBSERVED",
+        "unclosed_or_future_excluded": false
+      },
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "contract_type": "TRADIFI_PERPETUAL",
+      "onboard_time": 1774536000000,
+      "onboard_utc": "2026-03-26T14:40:00+00:00",
+      "tables": {
+        "mark_bars": {
+          "path": "mark_bars.parquet",
+          "rows": 90,
+          "sha256": "26b20fdc467a1f4067316e21f92321c99e6b093bdb5b249237ac431739169473",
+          "bytes": 9565
+        }
+      }
+    },
+    {
+      "manifest": "D:\\Code\\FactorLab-worktrees\\p6-d02-binance-history\\results\\p6-d02\\minute\\runs\\49d054ea60754ccaa17a20bf6b568004\\manifest.json",
+      "manifest_sha256": "5a7268afb4f27cca5f1a0af1c71b727ccf752a08252e09b30a3d581f8b9f9d33",
+      "data_version": "953e3f01722e33b6d4fb580a4ddf9e036f0b67ca0550037562af842ad79e9072",
+      "interval": "1m",
+      "range": {
+        "end_exclusive": true,
+        "end_ms": 1794268800000,
+        "start_ms": 1794182400000
+      },
+      "integrity": {
+        "calendar": "BINANCE_PERPETUAL_UTC_BUCKETS; NOT_SPOT_SESSIONS",
+        "complete": true,
+        "expected_closed_bars": 1440,
+        "funding_coverage": "OBSERVED_EVENTS_ONLY; NO_ASSUMED_SCHEDULE; NO_FILL",
+        "missing_ranges": [],
+        "observed_closed_bars": 1440,
+        "pre_onboard_excluded": false,
+        "response_status": "OBSERVED",
+        "unclosed_or_future_excluded": false
+      },
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "contract_type": "TRADIFI_PERPETUAL",
+      "onboard_time": 1774536000000,
+      "onboard_utc": "2026-03-26T14:40:00+00:00",
+      "tables": {
+        "bars": {
+          "path": "bars.parquet",
+          "rows": 1440,
+          "sha256": "2fe228a3345228e16dd4f1ef66436bb67f89b1cfd33c61f3940aad46797afb2f",
+          "bytes": 117670
+        }
+      }
+    }
+  ],
+  "frozen_sources": {
+    "configs/grid_lifecycle_nvda_hourly.json": {
+      "sha256": "27907bcdc2b13fa00de7fd97eb55f8d74d31438ff0240c90f83ee426b0fd99ee",
+      "content": {
+        "schema_version": 1,
+        "base_config": "configs/grid_paper_nvda_hourly.json",
+        "rules": "configs/grid_paper_nvda_rules.json",
+        "capital": 1000,
+        "participation": "0.01",
+        "base_cost_bps": [
+          4,
+          6
+        ],
+        "stress_cost_bps": [
+          8,
+          12
+        ],
+        "stress_trigger": "any B/A or C/A economic or fill-count difference within the same mode",
+        "expiry_reseed_limit": 20,
+        "expiry_reseed_interval": 100,
+        "range_rule": "retain current grid prices; ATR range rebuild remains independent",
+        "arms": {
+          "A": [
+            false,
+            "pause"
+          ],
+          "B": [
+            true,
+            "pause"
+          ],
+          "C": [
+            false,
+            "exit"
+          ],
+          "D": [
+            true,
+            "exit"
+          ]
+        },
+        "modes": [
+          "arithmetic",
+          "geometric",
+          "atr"
+        ],
+        "exposure_rule": "same ex-ante R02 inventory/order/capital/turnover budgets; actual exposures not matched; no ex-post scaling",
+        "exposure_status": "EXPOSURE_NOT_MATCHED",
+        "funding": "NOT_IN_PAPER_LEDGER",
+        "boundaries": [
+          "NO LIVE MONEY",
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ]
+      }
+    },
+    "configs/grid_paper_nvda_hourly.json": {
+      "sha256": "582c3cb33bf0e0c416a4c0dd2d4e03d2ab8f65dbaeac4903b428d1a8155b7f06",
+      "content": {
+        "lower": 163.472,
+        "upper": 245.208,
+        "levels": 8,
+        "initial_cash": 1000,
+        "initial_inventory": 0,
+        "initial_price": 204.34,
+        "quantity": 10,
+        "max_inventory": 100,
+        "max_cash_committed": 1000,
+        "atr_window": 72,
+        "atr_multiplier": 1,
+        "rebuild_threshold": 2,
+        "min_rebuild_interval": 72,
+        "max_turnover": 10,
+        "max_drawdown": 0.2,
+        "fee_bps": 4,
+        "slippage_bps": 6,
+        "breakout": "pause"
+      }
+    },
+    "configs/grid_paper_nvda_rules.json": {
+      "sha256": "b9d67a85bff0c69447312e4826455f83ead9dce6514d58c9ac7cdbb65dbf12c8",
+      "content": {
+        "quantity_unit": "0.01",
+        "step_size": "0.01",
+        "tick_size": "0.01",
+        "min_quantity": "0.01",
+        "min_notional": "5"
+      }
+    },
+    "docs/validation/p7-r03/design.json": {
+      "sha256": "3dd2e8564175c2ef1d0d210a6d229d32a969bc6a9c3c51339ea10f6372869f4c",
+      "content": {
+        "arms": {
+          "A": [
+            false,
+            "pause"
+          ],
+          "B": [
+            true,
+            "pause"
+          ],
+          "C": [
+            false,
+            "exit"
+          ],
+          "D": [
+            true,
+            "exit"
+          ]
+        },
+        "base_config": "configs/grid_paper_nvda_hourly.json",
+        "base_cost_bps": [
+          4,
+          6
+        ],
+        "boundaries": [
+          "NO LIVE MONEY",
+          "PIT_UNVERIFIED",
+          "HFQ_UNVERIFIED",
+          "FORMAL_ADMISSION_BLOCKED"
+        ],
+        "capital": 1000,
+        "expiry_reseed_interval": 100,
+        "expiry_reseed_limit": 20,
+        "exposure_rule": "same ex-ante R02 inventory/order/capital/turnover budgets; actual exposures not matched; no ex-post scaling",
+        "exposure_status": "EXPOSURE_NOT_MATCHED",
+        "funding": "NOT_IN_PAPER_LEDGER",
+        "modes": [
+          "arithmetic",
+          "geometric",
+          "atr"
+        ],
+        "participation": "0.01",
+        "range_rule": "retain current grid prices; ATR range rebuild remains independent",
+        "rules": "configs/grid_paper_nvda_rules.json",
+        "schema_version": 1,
+        "stress_cost_bps": [
+          8,
+          12
+        ],
+        "stress_trigger": "any B/A or C/A economic or fill-count difference within the same mode"
+      }
+    }
+  },
+  "disk_free_bytes": 96316108800,
+  "archive_extractions": 0,
+  "market_payload_copies": 0,
+  "new_sample_quality": "NOT_VALIDATED",
+  "status": "P7_R04A_DATA_PARTIAL"
+}
