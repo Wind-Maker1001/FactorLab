@@ -36,8 +36,14 @@ class GridConfig:
     slippage_bps: float = 2.0
     order_ttl: int = 100
     center_rule: str = "last_close"
+    expiry_reseed_limit: int = 0
+    expiry_reseed_interval: int = 100
 
     def __post_init__(self):
+        if type(self.expiry_reseed_limit) is not int or not 0 <= self.expiry_reseed_limit <= 100:
+            raise ConfigurationError("expiry_reseed_limit must be an integer in [0, 100]")
+        if type(self.expiry_reseed_interval) is not int or self.expiry_reseed_interval < 1:
+            raise ConfigurationError("expiry_reseed_interval must be a positive integer")
         if self.mode not in {"arithmetic", "geometric", "atr"}:
             raise ConfigurationError("unknown grid mode")
         if self.breakout not in {"pause", "exit", "rebuild"} or self.center_rule != "last_close":

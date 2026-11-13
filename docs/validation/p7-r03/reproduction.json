@@ -1,0 +1,23 @@
+[
+  {
+    "arm": "B",
+    "economic_metrics_equal": true,
+    "fills_equal": true,
+    "hourly_path_equal": true,
+    "mode": "arithmetic"
+  },
+  {
+    "arm": "B",
+    "economic_metrics_equal": true,
+    "fills_equal": true,
+    "hourly_path_equal": true,
+    "mode": "geometric"
+  },
+  {
+    "arm": "D",
+    "economic_metrics_equal": true,
+    "fills_equal": true,
+    "hourly_path_equal": true,
+    "mode": "atr"
+  }
+]

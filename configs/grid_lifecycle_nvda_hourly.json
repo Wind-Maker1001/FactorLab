@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "base_config": "configs/grid_paper_nvda_hourly.json",
+  "rules": "configs/grid_paper_nvda_rules.json",
+  "capital": 1000,
+  "participation": "0.01",
+  "base_cost_bps": [4, 6],
+  "stress_cost_bps": [8, 12],
+  "stress_trigger": "any B/A or C/A economic or fill-count difference within the same mode",
+  "expiry_reseed_limit": 20,
+  "expiry_reseed_interval": 100,
+  "range_rule": "retain current grid prices; ATR range rebuild remains independent",
+  "arms": {"A": [false, "pause"], "B": [true, "pause"], "C": [false, "exit"], "D": [true, "exit"]},
+  "modes": ["arithmetic", "geometric", "atr"],
+  "exposure_rule": "same ex-ante R02 inventory/order/capital/turnover budgets; actual exposures not matched; no ex-post scaling",
+  "exposure_status": "EXPOSURE_NOT_MATCHED",
+  "funding": "NOT_IN_PAPER_LEDGER",
+  "boundaries": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

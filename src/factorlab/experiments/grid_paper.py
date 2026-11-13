@@ -126,6 +126,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             fee_rate=fee_rate, fees=fee_estimate)
         rows, trades, risk = [], [], []
         order_details = {}
+        lifecycle = []
         last_risk = None
         estimated_total = ZERO
         peak = capital
@@ -149,6 +150,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 candidate = execution_candidate(order, ask=close, bid=close, budget=budget,
                                                 slippage=slippage, step=rules.step_size)
                 if candidate is None:
+                    if order_details[key].get('purpose') == 'RISK_EXIT':
+                        risk.append(dict(time=bar['time'], kind='EXIT_NO_EXECUTABLE_VOLUME', order_id=key))
                     continue
                 quantity, price = candidate
                 try:
@@ -188,18 +191,24 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 controller.submit(intent)
             if not no_trade and not buy_hold:
                 for key in sorted(grid.cancellations):
-                    grid.cancel_paper(controller, key, delivery=grid.delivery + 1)
+                    cause = 'TTL' if key in grid.expirations else grid.reason or 'STRATEGY_CANCEL'
+                    event = grid.cancel_paper(controller, key, delivery=grid.delivery + 1)
+                    lifecycle.append(dict(time=bar['time'], order_id=key, cause=cause,
+                                          status=event.status.value if event is not None else 'UNCONFIRMED'))
                 if grid.pending_bar is not None:
                     grid.complete_bar_paper(controller, delivery=grid.delivery + 1)
                 for key, order in list(grid.orders.items()):
                     if order.status == OrderStatus.NEW:
                         order_details[key] = dict(deployment_id=grid.deployment_id,
-                            grid_level=grid.levels[key], target_price=str(grid.targets[key]))
+                            grid_level=grid.levels[key], target_price=str(grid.targets[key]),
+                            purpose='RISK_EXIT' if grid.state == 'EXITING' else 'GRID')
                         try:
                             grid.submit_paper(controller, key, delivery=grid.delivery + 1)
                         except RiskRejected as error:
                             risk.append(dict(time=bar['time'], kind='SUBMISSION_REJECTED',
                                              order_id=key, reason=error.decision.reason))
+                            if grid.state == 'PAUSED':
+                                break
                 current_risk = (grid.state, grid.reason)
                 if (grid.reason is not None and grid.state in {'PAUSED', 'EXITING'}
                         and current_risk != last_risk):
@@ -212,6 +221,10 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                           if position else ZERO)
             fees_to_date = sum((record.snapshot.cumulative_fee for record in broker.state.orders.values()), ZERO)
             rows.append(dict(date=bar['time'], close=float(close),
+                state='REFERENCE' if no_trade or buy_hold else grid.state,
+                state_reason=None if no_trade or buy_hold else grid.reason,
+                expiry_reseeds=grid.expiry_reseeds, range_rebuilds=grid.rebuilds,
+                reseed_pending=grid.pending_expiry_reseed is not None,
                 unrealized=float(unrealized),
                 realized_gross=float(account.equity - capital - unrealized + fees_to_date),
                 net_exposure=float(account.inventory * close),
@@ -263,7 +276,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 actual_fees=str(sum((D(t['fee']) for t in trades), ZERO)),
                 actual_cost=str(sum((D(t['transaction_cost']) for t in trades), ZERO)),
                 estimate_minus_actual=str(estimated_total-sum((D(t['transaction_cost']) for t in trades), ZERO))),
-            final=rows[-1], fills=len(trades),
+            final=rows[-1], fills=len(trades), lifecycle=lifecycle,
             totals=dict(fees=float(daily.fee.sum()), slippage=float(daily.slippage.sum()),
                 transaction_cost=float(daily.transaction_cost.sum()), turnover=float(daily.turnover.sum()),
                 max_drawdown=float(daily.drawdown.max()), max_committed=float(daily.committed.max()),

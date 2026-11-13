@@ -8,7 +8,7 @@ import pytest
 
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, GridRules, GridConfirmationConflict
-from factorlab.trading.contracts import Market, OrderStatus as S, Side
+from factorlab.trading.contracts import Market, OrderStatus as S, Side, RiskDecision
 from factorlab.trading.control import TradingController, RiskLimits
 from factorlab.trading.paper import Instrument, PaperBroker
 from factorlab.trading.storage import PaperStore, dumps
@@ -32,10 +32,11 @@ def setup(path, *, config=None, rules=None):
     return grid, controller, clock
 
 
-def observe(grid, controller, clock, n, price):
+def observe(grid, controller, clock, n, price, *, completed=False):
     clock[0] = NOW + timedelta(days=n)
     grid.observe_paper(controller, dict(id=str(n), time=clock[0].replace(tzinfo=None).isoformat(),
-        price=price, volume=10), delivery=grid.delivery+1, observed_at=clock[0])
+        price=price, volume=10, completed_bar=completed, high=price, low=price, close=price),
+        delivery=grid.delivery+1, observed_at=clock[0])
 
 
 def submit(grid, controller, price=90):
@@ -46,6 +47,177 @@ def submit(grid, controller, price=90):
 
 def fill(grid, controller, key, quantity, price):
     return grid.fill_paper(controller, key, D(quantity), D(price), delivery=grid.delivery+1)
+
+
+def test_expiry_reseed_confirmed_once_and_restart(tmp_path):
+    config = GridConfig(lower=80, upper=120, levels=4, initial_inventory=0,
+        initial_cash=1000, quantity=2, order_ttl=1, expiry_reseed_limit=2,
+        expiry_reseed_interval=1, fee_bps=0, slippage_bps=0)
+    path = tmp_path/'paper.db'
+    grid, controller, clock = setup(path, config=config)
+    observe(grid, controller, clock, 0, 100)
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    old = set(grid.orders)
+    observe(grid, controller, clock, 1, 100, completed=True)
+    assert grid.expiry_reseeds == 0
+    for key in sorted(grid.cancellations):
+        grid.cancel_paper(controller, key, delivery=grid.delivery+1)
+    assert grid.expiry_reseeds == 1 and not old.intersection(grid.orders)
+    issued = grid.issued_orders
+    controller.store.close()
+    restored, controller, clock = setup(path, config=config)
+    restored.restore(controller)
+    assert restored.expiry_reseeds == 1 and restored.issued_orders == issued
+    assert controller.reconcile().reconciled
+    observe(restored, controller, clock, 2, 100, completed=True)
+    assert restored.issued_orders == issued
+    controller.store.close()
+
+
+def test_partial_expiry_reseed_waits_for_unknown(tmp_path):
+    config = GridConfig(lower=80, upper=120, levels=4, initial_inventory=0,
+        initial_cash=1000, quantity=2, order_ttl=1, expiry_reseed_limit=2,
+        expiry_reseed_interval=1, fee_bps=0, slippage_bps=0)
+    grid, controller, clock = setup(tmp_path/'paper.db', config=config)
+    observe(grid, controller, clock, 0, 100)
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    key = next(iter(grid.orders))
+    fill(grid, controller, key, 1, 80)
+    observe(grid, controller, clock, 1, 100)
+    controller.mark_timeout(key)
+    with pytest.raises(ValueError, match='reconciliation|authority|RECONCILE|checkpoint'):
+        grid.cancel_paper(controller, key, delivery=grid.delivery+1)
+    assert grid.expiry_reseeds == 0
+    assert controller.broker.state.positions['TEST'].quantity == 1
+    controller.store.close()
+
+
+def test_reseed_partial_expiry_preserves_inventory_and_reservations(tmp_path):
+    config = GridConfig(lower=80, upper=120, levels=4, initial_inventory=0,
+        initial_cash=1000, quantity=2, order_ttl=1, expiry_reseed_limit=2,
+        expiry_reseed_interval=1, fee_bps=0, slippage_bps=0)
+    grid, controller, clock = setup(tmp_path/'paper.db', config=config)
+    observe(grid, controller, clock, 0, 100, completed=True)
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    key = next(k for k, o in grid.orders.items() if o.intent.limit_price == 90)
+    fill(grid, controller, key, 1, 90)
+    for identity, order in list(grid.orders.items()):
+        if order.status == S.NEW:
+            grid.submit_paper(controller, identity, delivery=grid.delivery+1)
+    observe(grid, controller, clock, 1, 100, completed=True)
+    old = set(grid.orders)
+    for identity in sorted(grid.cancellations):
+        grid.cancel_paper(controller, identity, delivery=grid.delivery+1)
+    assert grid.expiry_reseeds == 1 and not old.intersection(grid.orders)
+    assert grid.account.inventory == 1 and grid.account.committed == 90
+    assert sum(o.intent.quantity for o in grid.active if o.intent.side == Side.SELL) <= 1
+    assert controller.broker.state.positions['TEST'].quantity == 1
+    controller.store.close()
+
+
+def test_reseed_cooldown_completed_bar_bound_and_idempotency(tmp_path):
+    config = GridConfig(lower=80, upper=120, levels=4, initial_inventory=0,
+        initial_cash=1000, quantity=2, order_ttl=1, expiry_reseed_limit=1,
+        expiry_reseed_interval=3, fee_bps=0, slippage_bps=0)
+    grid, controller, clock = setup(tmp_path/'paper.db', config=config)
+    observe(grid, controller, clock, 0, 100)
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    observe(grid, controller, clock, 1, 100)
+    for key in sorted(grid.cancellations):
+        grid.cancel_paper(controller, key, delivery=grid.delivery+1)
+    assert grid.expiry_reseeds == 0 and grid.pending_expiry_reseed
+    observe(grid, controller, clock, 2, 100, completed=True)
+    assert grid.expiry_reseeds == 1
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    observe(grid, controller, clock, 3, 100, completed=True)
+    for key in sorted(grid.cancellations):
+        grid.cancel_paper(controller, key, delivery=grid.delivery+1)
+    assert grid.state == 'PAUSED' and grid.reason == 'EXPIRY_RESEED_LIMIT'
+    issued = grid.issued_orders
+    observe(grid, controller, clock, 4, 100, completed=True)
+    delivery = grid.delivery
+    grid.observe_paper(controller, dict(id='4', time=clock[0].replace(tzinfo=None).isoformat(),
+        price=100, volume=10, completed_bar=True, high=100, low=100, close=100),
+        delivery=delivery, observed_at=clock[0])
+    assert grid.expiry_reseeds == 1 and grid.issued_orders == issued
+    controller.store.close()
+
+
+def test_reseed_cancel_commit_failure_is_atomic(tmp_path, monkeypatch):
+    config = GridConfig(lower=80, upper=120, levels=4, initial_inventory=0,
+        initial_cash=1000, quantity=2, order_ttl=1, expiry_reseed_limit=2,
+        expiry_reseed_interval=1, fee_bps=0, slippage_bps=0)
+    grid, controller, clock = setup(tmp_path/'paper.db', config=config)
+    observe(grid, controller, clock, 0, 100, completed=True)
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    observe(grid, controller, clock, 1, 100, completed=True)
+    keys = sorted(grid.cancellations)
+    for key in keys[:-1]:
+        grid.cancel_paper(controller, key, delivery=grid.delivery+1)
+    before = controller.store.load()
+    revision, delivery, issued = grid._revision, grid.delivery, grid.issued_orders
+    save = controller.store.save
+
+    def fail(state):
+        save(state)
+        raise RuntimeError('injected reseed transaction failure')
+
+    with monkeypatch.context() as patch:
+        patch.setattr(controller.store, 'save', fail)
+        with pytest.raises(RuntimeError, match='injected reseed'):
+            grid.cancel_paper(controller, keys[-1], delivery=delivery+1)
+    assert controller.store.load() == before
+    assert (grid._revision, grid.delivery, grid.issued_orders) == (revision, delivery, issued)
+    assert grid.expiry_reseeds == 0
+    grid.cancel_paper(controller, keys[-1], delivery=delivery+1)
+    assert grid.expiry_reseeds == 1
+    controller.store.close()
+
+
+def test_reseed_without_admissible_orders_pauses(tmp_path):
+    config = GridConfig(lower=80, upper=120, levels=4, initial_inventory=0,
+        initial_cash=1000, quantity=2, order_ttl=1, expiry_reseed_limit=2,
+        expiry_reseed_interval=1, fee_bps=0, slippage_bps=0)
+    grid, controller, clock = setup(tmp_path/'paper.db', config=config)
+    observe(grid, controller, clock, 0, 100, completed=True)
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    observe(grid, controller, clock, 1, 80, completed=True)
+    for key in sorted(grid.cancellations):
+        grid.cancel_paper(controller, key, delivery=grid.delivery+1)
+    assert grid.state == 'PAUSED' and grid.reason == 'EXPIRY_RESEED_BLOCKED'
+    assert not grid.orders and grid.expiry_reseeds == 1
+    observe(grid, controller, clock, 2, 100, completed=True)
+    assert grid.expiry_reseeds == 1 and not grid.orders
+    controller.store.close()
+
+
+def test_reseed_controller_rejection_commits_pause_not_repeated_proposals(tmp_path, monkeypatch):
+    config = GridConfig(lower=80, upper=120, levels=4, initial_inventory=0,
+        initial_cash=1000, quantity=2, order_ttl=1, expiry_reseed_limit=2,
+        expiry_reseed_interval=1, fee_bps=0, slippage_bps=0)
+    grid, controller, clock = setup(tmp_path/'paper.db', config=config)
+    observe(grid, controller, clock, 0, 100, completed=True)
+    for key in list(grid.orders):
+        grid.submit_paper(controller, key, delivery=grid.delivery+1)
+    observe(grid, controller, clock, 1, 100, completed=True)
+    for key in sorted(grid.cancellations):
+        grid.cancel_paper(controller, key, delivery=grid.delivery+1)
+    monkeypatch.setattr(controller, 'assess', lambda _: RiskDecision(False, 'ACCOUNT_BUDGET_LIMIT'))
+    with pytest.raises(ValueError, match='ACCOUNT_BUDGET_LIMIT'):
+        grid.submit_paper(controller, next(iter(grid.orders)), delivery=grid.delivery+1)
+    assert grid.state == 'PAUSED' and grid.reason == 'EXPIRY_RESEED_ACCOUNT_BUDGET_LIMIT'
+    assert not grid.orders and grid.expiry_reseeds == 1
+    issued = grid.issued_orders
+    observe(grid, controller, clock, 2, 100, completed=True)
+    assert grid.issued_orders == issued
+    controller.store.close()
 
 
 def test_incremental_fills_fees_and_duplicate_delivery(tmp_path):
@@ -105,7 +277,11 @@ def test_exit_after_turnover_exhaustion_and_cancellation_race(tmp_path):
         grid.cancel_paper(controller, order_id, delivery=grid.delivery+1)
     exit_id = next(k for k, o in grid.orders.items() if o.intent.limit_price is None)
     grid.submit_paper(controller, exit_id, delivery=grid.delivery+1)
-    closed = fill(grid, controller, exit_id, 2, 70)
+    partial = fill(grid, controller, exit_id, 1, 70)
+    assert partial.status == S.PARTIALLY_FILLED and grid.state == 'EXITING'
+    assert grid.account.inventory == 1
+    closed = fill(grid, controller, exit_id, 20, 70)
+    assert closed.cumulative_filled_quantity == 2
     assert closed.status == S.FILLED and grid.state == 'EXITED'
     assert grid.account.inventory == 0 and grid.account.turnover == 320
     assert controller.broker.state.cash['USD'] == D('959.680')
