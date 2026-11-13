@@ -147,15 +147,22 @@ def test_reference_low_budget_rounding_and_partial_shared_volume(tmp_path):
     assert partial.inventory.tolist() == pytest.approx([0, .05, .1, .15])
 
 
-def test_all_sixteen_synthetic_accounts_repeat_exactly(tmp_path):
+def test_all_sixteen_synthetic_accounts_serial_parallel_equal(tmp_path):
     prereg, lifecycle, config, rules, hashes = study.load_design(ROOT)
     bars = hourly_bars([200, 189, 201, 190, 202, 188, 203, 199])
     identity = dict(generation='synthetic-only', bars_sha256=study.digest(b'fixture'),
                     instrument_id='BINANCE:USDM:NVDAUSDT')
     kwargs = dict(bars=bars, identity=identity, prereg=prereg, lifecycle=lifecycle,
                   config=replace(config, atr_window=2), rules=rules, hashes=hashes)
-    first = study.execute_matrix(tmp_path / 'one', **kwargs)
+    first = study.execute_matrix(tmp_path / 'one', max_workers=1, **kwargs)
     second = study.execute_matrix(tmp_path / 'two', **kwargs)
+    expected = study.account_matrix(prereg)
+    for table in (first, second):
+        assert list(table[['scenario', 'arm', 'mode']].itertuples(index=False, name=None)) == expected
+    assert json.loads((tmp_path / 'two/study.json').read_text())['max_workers'] == 4
+    pd.testing.assert_frame_equal(
+        pd.read_csv(tmp_path / 'one/summary.csv').drop(columns='wall_seconds'),
+        pd.read_csv(tmp_path / 'two/summary.csv').drop(columns='wall_seconds'))
     pd.testing.assert_frame_equal(first.drop(columns='wall_seconds'), second.drop(columns='wall_seconds'))
     assert len(first) == 16
     assert first.ledger_reconciled.all()
@@ -165,3 +172,8 @@ def test_all_sixteen_synthetic_accounts_repeat_exactly(tmp_path):
         for filename in ('daily.csv', 'trades.csv'):
             pd.testing.assert_frame_equal(pd.read_csv(tmp_path / 'one' / relative / filename),
                                           pd.read_csv(tmp_path / 'two' / relative / filename))
+        assert json.loads((tmp_path / 'one' / relative / 'fifo.json').read_text()) == json.loads(
+            (tmp_path / 'two' / relative / 'fifo.json').read_text())
+        for run in ('one', 'two'):
+            assert (tmp_path / run / relative / 'paper.sqlite').is_file()
+    assert len(list((tmp_path / 'two').rglob('paper.sqlite'))) == 16

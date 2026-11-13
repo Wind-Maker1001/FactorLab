@@ -1,5 +1,7 @@
 """Frozen independent-sample matrix on the existing authoritative Paper runner."""
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import replace
+from multiprocessing import get_context
 import hashlib
 import json
 from pathlib import Path
@@ -111,65 +113,112 @@ def require_admission(repository):
         preregistered_listing_condition_relaxed=True, strict_confirmatory_contract=False)
 
 
-def execute_matrix(output, *, bars, identity, prereg, lifecycle, config, rules, hashes):
-    """Execute an admitted design; production callers must use run_study."""
+def _execute_account(output, scenario, arm, mode, *, bars, identity, prereg,
+                     lifecycle, config, rules, hashes):
+    """Keep account execution, SQLite access and reconciliation in one process."""
     from factorlab.experiments.grid_fifo import attribution
 
+    fee, slip = prereg['cost_scenarios_bps'][scenario]
+    reseed, breakout = prereg['lifecycle_arms'].get(arm, [False, 'pause'])
+    settings = replace(config, mode=mode, breakout=breakout, fee_bps=fee, slippage_bps=slip,
+        expiry_reseed_limit=lifecycle['expiry_reseed_limit'] if reseed else 0,
+        expiry_reseed_interval=lifecycle['expiry_reseed_interval'])
+    account = account_identity(hashes, identity, scenario, arm, mode)
+    directory = output / scenario / arm / mode
+    started, cpu = perf_counter(), process_time()
+    run_experiment(directory, bars=bars, config=settings, rules=rules,
+        capital=prereg['risk']['initial_capital_usdt'], fee_rate=D(fee)/10000,
+        slippage=D(slip)/10000, participation=D(prereg['risk']['participation']),
+        interval='1h', market=Market.BINANCE_USDM, instrument_id=identity['instrument_id'],
+        data_identity=identity, no_trade=arm == 'cash', buy_hold=arm == 'fixed_budget_buy_hold',
+        account_id=account, max_exit_quantity=D(prereg['risk']['max_order_base_units']),
+        reference_budget=(dict(
+            max_inventory=prereg['risk']['max_inventory_base_units'],
+            max_order=prereg['risk']['max_order_base_units']) if arm == 'fixed_budget_buy_hold' else None))
+    metrics = lifecycle_metrics(directory)
+    fifo = attribution(directory)
+    economics = fifo['summary']
+    if abs(economics['reconciliation_residual']) > D('0.00000001'):
+        raise ValueError(f'FIFO does not reconcile with authoritative NAV: {account}')
+    if abs(economics['reported_equity_difference']) > D('0.00000001'):
+        raise ValueError(f'reported NAV differs from authoritative NAV: {account}')
+    nav = pd.read_csv(directory / 'daily.csv')
+    trades = pd.read_csv(directory / 'trades.csv')
+    if (metrics['max_inventory'] > float(prereg['risk']['max_inventory_base_units'])
+            or trades.executed_shares.gt(float(prereg['risk']['max_order_base_units'])).any()
+            or metrics['max_committed'] > prereg['risk']['max_committed_usdt']):
+        raise ValueError(f'account exceeds frozen research budget: {account}')
+    _write(directory / 'fifo.json', fifo)
+    flat = {f'fifo_{section}_{key}': value
+            for section in ('normal_sell', 'risk_exit', 'residual', 'completed_cycle')
+            for key, value in economics[section].items()}
+    row = dict(scenario=scenario, arm=arm, mode=mode, account_id=account,
+        wall_seconds=perf_counter()-started, **(metrics | dict(grid_cycles=economics['grid_cycles'])),
+        **flat, fifo_reconciliation_residual=economics['reconciliation_residual'],
+        initial_price_scale_exposure=float(nav.inventory.max()) * float(bars[0]['close']))
+    return row, process_time()-cpu
+
+
+def execute_matrix(output, *, bars, identity, prereg, lifecycle, config, rules, hashes,
+                   max_workers=4):
+    """Execute independent accounts; max_workers=1 provides the serial reference."""
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
     wall, cpu = perf_counter(), process_time()
+    matrix = account_matrix(prereg)
     _write(output / 'design.json', dict(preregistration=prereg, frozen_sha256=hashes,
-        accounts=account_matrix(prereg), research_level=RESEARCH_LEVEL))
+        accounts=matrix, research_level=RESEARCH_LEVEL))
     _write(output / 'data-identity.json', identity)
-    rows = []
-    for scenario, arm, mode in account_matrix(prereg):
-        fee, slip = prereg['cost_scenarios_bps'][scenario]
-        reseed, breakout = prereg['lifecycle_arms'].get(arm, [False, 'pause'])
-        settings = replace(config, mode=mode, breakout=breakout, fee_bps=fee, slippage_bps=slip,
-            expiry_reseed_limit=lifecycle['expiry_reseed_limit'] if reseed else 0,
-            expiry_reseed_interval=lifecycle['expiry_reseed_interval'])
-        account = account_identity(hashes, identity, scenario, arm, mode)
-        directory = output / scenario / arm / mode
-        started = perf_counter()
-        run_experiment(directory, bars=bars, config=settings, rules=rules,
-            capital=prereg['risk']['initial_capital_usdt'], fee_rate=D(fee)/10000,
-            slippage=D(slip)/10000, participation=D(prereg['risk']['participation']),
-            interval='1h', market=Market.BINANCE_USDM, instrument_id=identity['instrument_id'],
-            data_identity=identity, no_trade=arm == 'cash', buy_hold=arm == 'fixed_budget_buy_hold',
-            account_id=account, max_exit_quantity=D(prereg['risk']['max_order_base_units']),
-            reference_budget=(dict(
-                max_inventory=prereg['risk']['max_inventory_base_units'],
-                max_order=prereg['risk']['max_order_base_units']) if arm == 'fixed_budget_buy_hold' else None))
-        metrics = lifecycle_metrics(directory)
-        fifo = attribution(directory)
-        economics = fifo['summary']
-        if abs(economics['reconciliation_residual']) > D('0.00000001'):
-            raise ValueError(f'FIFO does not reconcile with authoritative NAV: {account}')
-        if abs(economics['reported_equity_difference']) > D('0.00000001'):
-            raise ValueError(f'reported NAV differs from authoritative NAV: {account}')
-        nav = pd.read_csv(directory / 'daily.csv')
-        trades = pd.read_csv(directory / 'trades.csv')
-        if (metrics['max_inventory'] > float(prereg['risk']['max_inventory_base_units'])
-                or trades.executed_shares.gt(float(prereg['risk']['max_order_base_units'])).any()
-                or metrics['max_committed'] > prereg['risk']['max_committed_usdt']):
-            raise ValueError(f'account exceeds frozen research budget: {account}')
-        _write(directory / 'fifo.json', fifo)
-        flat = {f'fifo_{section}_{key}': value
-                for section in ('normal_sell', 'risk_exit', 'residual', 'completed_cycle')
-                for key, value in economics[section].items()}
-        rows.append(dict(scenario=scenario, arm=arm, mode=mode, account_id=account,
-            wall_seconds=perf_counter()-started, **(metrics | dict(grid_cycles=economics['grid_cycles'])),
-            **flat, fifo_reconciliation_residual=economics['reconciliation_residual'],
-            initial_price_scale_exposure=float(nav.inventory.max()) * float(bars[0]['close'])))
-        pd.DataFrame(rows).to_csv(output / 'summary.csv', index=False)
-        print(f'{scenario}/{arm}/{mode}: equity={metrics["final_equity"]:.9f}, '
-              f'buys={metrics["buy_fills"]}, sells={metrics["sell_fills"]}', flush=True)
+    inputs = dict(bars=bars, identity=identity, prereg=prereg, lifecycle=lifecycle,
+                  config=config, rules=rules, hashes=hashes)
+    rows = [None] * len(matrix)
+    worker_cpu = 0
+
+    def record(index, result):
+        nonlocal worker_cpu
+        row, elapsed_cpu = result
+        rows[index] = row
+        worker_cpu += elapsed_cpu
+        completed = sum(row is not None for row in rows)
+        print(f'{completed}/{len(matrix)} completed: '
+              f'{row["scenario"]}/{row["arm"]}/{row["mode"]}, '
+              f'equity={row["final_equity"]:.9f}, '
+              f'account_seconds={row["wall_seconds"]:.3f}, '
+              f'elapsed_seconds={perf_counter()-wall:.3f}', flush=True)
+
+    if max_workers == 1:
+        for index, entry in enumerate(matrix):
+            try:
+                result = _execute_account(output, *entry, **inputs)
+            except Exception as error:
+                raise RuntimeError(f'account failed: {"/".join(entry)}: {error}') from error
+            record(index, result)
+    else:
+        with ProcessPoolExecutor(max_workers=max_workers,
+                                 mp_context=get_context('spawn')) as executor:
+            pending = {executor.submit(_execute_account, output, *entry, **inputs): index
+                       for index, entry in enumerate(matrix)}
+            for future in as_completed(pending):
+                index = pending[future]
+                try:
+                    result = future.result()
+                except Exception as error:
+                    for other in pending:
+                        other.cancel()
+                    raise RuntimeError(
+                        f'account failed: {"/".join(matrix[index])}: {error}') from error
+                record(index, result)
+    table = pd.DataFrame(rows)
+    table.to_csv(output / 'summary.csv', index=False)
     _write(output / 'study.json', dict(status='P7_R04B_MECHANISM_EVALUATED', runs=len(rows),
-        wall_seconds=perf_counter()-wall, process_cpu_seconds=process_time()-cpu,
+        wall_seconds=perf_counter()-wall,
+        process_cpu_seconds=(process_time()-cpu if max_workers == 1
+                             else process_time()-cpu+worker_cpu),
+        max_workers=max_workers,
         output_bytes=sum(p.stat().st_size for p in output.rglob('*') if p.is_file()),
         exposure_status='EXPOSURE_NOT_MATCHED', funding='NOT_IN_PAPER_LEDGER',
         research_level=RESEARCH_LEVEL, boundaries=BOUNDARIES))
-    return pd.DataFrame(rows)
+    return table
 
 
 def preflight(output, *, snapshot, repository):
