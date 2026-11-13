@@ -1,5 +1,7 @@
 # P7-M05 E02 Demo time semantics and approval preparation
 
+Current follow-up: [F02 rejection recovery](f02-rejection-recovery.md), **P7_M05_BLOCKED**. The F01 POST was rejected; its original error code/message were not retained. F02 exact-ID GET returned −2013. The E02 readiness observations below are historical, not current write authorization.
+
 **P7_M05_READY_FOR_EXPLICIT_AUTHORIZATION** at the E02 preparation observation below. This is readiness for independent approval, not order authorization or online acceptance. Absolute expiry still applies.
 
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**

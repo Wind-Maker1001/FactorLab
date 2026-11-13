@@ -41,6 +41,7 @@ class FuturesAdapter:
         self.db = store.db
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_orders (id TEXT PRIMARY KEY, payload TEXT NOT NULL, quote TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
+        self.db.execute('CREATE TABLE IF NOT EXISTS futures_rejections (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_meta (id INTEGER PRIMARY KEY CHECK(id=1), account TEXT NOT NULL, reconciled INTEGER NOT NULL)')
         with store.transaction():
             row = self.db.execute('SELECT account FROM futures_meta WHERE id=1').fetchone()
@@ -119,7 +120,10 @@ class FuturesAdapter:
             if exc.category not in {'RATE_LIMIT', 'ORDER_NOT_FOUND'} and exc.status < 500:
                 event = OrderEvent(intent.client_order_id, None, S.REJECTED, ZERO, None,
                                    self.clock(), 'binance-rest', 'reject:' + intent.client_order_id, ZERO)
-                return self._apply(event, ZERO)
+                diagnostic = dict(client_order_id=intent.client_order_id, event_id=event.event_id,
+                                  http_status=exc.status, code=exc.code, message=exc.message,
+                                  category=exc.category)
+                return self._apply(event, ZERO, rejection=diagnostic)
             self._uncertain(intent.client_order_id)
             raise OutcomeUnknown('order admission uncertain; reconcile') from None
         except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
@@ -202,8 +206,11 @@ class FuturesAdapter:
                            'binance-rest', 'rest:' + hashlib.sha256(json.dumps(row, sort_keys=True).encode()).hexdigest(), fee)
         return self._apply(event, quote)
 
-    def _apply(self, event, quote):
+    def _apply(self, event, quote, *, rejection=None):
         with self.store.transaction():
+            if rejection is not None:
+                self.db.execute('INSERT INTO futures_rejections VALUES(?,?)',
+                                (event.client_order_id, json.dumps(rejection)))
             payload = dumps(event)
             duplicate = self.db.execute('SELECT payload FROM futures_events WHERE id=?', (event.event_id,)).fetchone()
             if duplicate is not None:
