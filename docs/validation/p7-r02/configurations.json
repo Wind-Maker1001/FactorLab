@@ -1,0 +1,2282 @@
+[
+  {
+    "arm": "no-trade",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 0,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 0,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "121747b99b6fdb7051d21e9b3a815c195652fb29b21f1400004d6a031a0bb03e",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "low",
+    "window": "full"
+  },
+  {
+    "arm": "buy-hold",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 0,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 0,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": true,
+      "fee_rate": "0",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "3dabe8f31566f9396c405f2380ad7298632a4cb7d61c1a8555828afbff2b99fc",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "low",
+    "window": "full"
+  },
+  {
+    "arm": "arithmetic",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 0,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 0,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "3dabe8f31566f9396c405f2380ad7298632a4cb7d61c1a8555828afbff2b99fc",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "low",
+    "window": "full"
+  },
+  {
+    "arm": "geometric",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 0,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 0,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "3dabe8f31566f9396c405f2380ad7298632a4cb7d61c1a8555828afbff2b99fc",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "low",
+    "window": "full"
+  },
+  {
+    "arm": "atr",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 0,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "atr",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 0,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "low",
+    "window": "full"
+  },
+  {
+    "arm": "no-trade",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "full"
+  },
+  {
+    "arm": "buy-hold",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": true,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "full"
+  },
+  {
+    "arm": "arithmetic",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "full"
+  },
+  {
+    "arm": "geometric",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "full"
+  },
+  {
+    "arm": "atr",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "atr",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "full"
+  },
+  {
+    "arm": "no-trade",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 8,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 12,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0008",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0012"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "stress",
+    "window": "full"
+  },
+  {
+    "arm": "buy-hold",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 8,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 12,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": true,
+      "fee_rate": "0.0008",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0012"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "stress",
+    "window": "full"
+  },
+  {
+    "arm": "arithmetic",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 8,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 12,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0008",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0012"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "stress",
+    "window": "full"
+  },
+  {
+    "arm": "geometric",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 8,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 12,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0008",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0012"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "stress",
+    "window": "full"
+  },
+  {
+    "arm": "atr",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 8,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "atr",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 12,
+      "upper": 245.208
+    },
+    "dataset_id": "339988b3c4c1ce71b2edd57aa6b07abf397c5f6c6ebf344608355cd3a015e2a6",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0008",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0012"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "stress",
+    "window": "full"
+  },
+  {
+    "arm": "no-trade",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "3f78584b143655acb4f11d1b2b9861f665d0db7fcc0aca987063b0726a418839",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "early"
+  },
+  {
+    "arm": "buy-hold",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "3f78584b143655acb4f11d1b2b9861f665d0db7fcc0aca987063b0726a418839",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": true,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "early"
+  },
+  {
+    "arm": "arithmetic",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "3f78584b143655acb4f11d1b2b9861f665d0db7fcc0aca987063b0726a418839",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "early"
+  },
+  {
+    "arm": "geometric",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "3f78584b143655acb4f11d1b2b9861f665d0db7fcc0aca987063b0726a418839",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "early"
+  },
+  {
+    "arm": "atr",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "atr",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "3f78584b143655acb4f11d1b2b9861f665d0db7fcc0aca987063b0726a418839",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "early"
+  },
+  {
+    "arm": "no-trade",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "dd6b749232cf4f14e2ba72741cd00314f9f8afa16df616e49995cb0b30e58a7b",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "middle"
+  },
+  {
+    "arm": "buy-hold",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "dd6b749232cf4f14e2ba72741cd00314f9f8afa16df616e49995cb0b30e58a7b",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": true,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "middle"
+  },
+  {
+    "arm": "arithmetic",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "dd6b749232cf4f14e2ba72741cd00314f9f8afa16df616e49995cb0b30e58a7b",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "middle"
+  },
+  {
+    "arm": "geometric",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "dd6b749232cf4f14e2ba72741cd00314f9f8afa16df616e49995cb0b30e58a7b",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "middle"
+  },
+  {
+    "arm": "atr",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "atr",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "dd6b749232cf4f14e2ba72741cd00314f9f8afa16df616e49995cb0b30e58a7b",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "middle"
+  },
+  {
+    "arm": "no-trade",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "fb78dd9834573b4339338c4f5345e50f432a69126a333ede05ab3e7b28ababc3",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "late"
+  },
+  {
+    "arm": "buy-hold",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "fb78dd9834573b4339338c4f5345e50f432a69126a333ede05ab3e7b28ababc3",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": true,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "late"
+  },
+  {
+    "arm": "arithmetic",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "arithmetic",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "fb78dd9834573b4339338c4f5345e50f432a69126a333ede05ab3e7b28ababc3",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "late"
+  },
+  {
+    "arm": "geometric",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "fb78dd9834573b4339338c4f5345e50f432a69126a333ede05ab3e7b28ababc3",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "late"
+  },
+  {
+    "arm": "atr",
+    "config": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "fee_bps": 4,
+      "initial_cash": 1000.0,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "atr",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "dataset_id": "fb78dd9834573b4339338c4f5345e50f432a69126a333ede05ab3e7b28ababc3",
+    "execution": {
+      "actual_fee_model": "proportional",
+      "buy_hold": false,
+      "fee_rate": "0.0004",
+      "interval": "1h",
+      "participation": "0.01",
+      "price": "later-bar close quote",
+      "slippage": "0.0006"
+    },
+    "provenance": {
+      "code": {
+        "commit": "9cbf6bb44b778bf87e1d8042fe298cfb340ad2da",
+        "git_diff_sha256": "1ee231c59084e23cbaf48110e39c0c313119f78ae7f60b128122fb0d9fea2103",
+        "git_dirty": true,
+        "tree": "d7ea2f54a37e46d902f433932b10f6aa9d7fe8ac"
+      },
+      "environment": {
+        "package_versions": {
+          "PyYAML": "6.0.3",
+          "akshare": "1.18.88",
+          "baostock": "0.8.9",
+          "lightgbm": "4.6.0",
+          "matplotlib": "3.10.7",
+          "numpy": "2.3.4",
+          "pandas": "2.3.3",
+          "pyarrow": "22.0.0",
+          "pytest": "8.4.2",
+          "scikit-learn": "1.7.2",
+          "scipy": "1.16.3",
+          "tzdata": "2026.4",
+          "xgboost": "2.1.4"
+        },
+        "platform": "Windows-11-10.0.26340-SP0",
+        "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+        "python_version": "3.14.0"
+      }
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "scenario": "base",
+    "window": "late"
+  }
+]

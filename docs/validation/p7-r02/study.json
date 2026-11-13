@@ -1,0 +1,12 @@
+{
+  "boundaries": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "parameters_selected": false,
+  "runs": 30,
+  "status": "P7_R02_EMPIRICAL_BASELINE_COMPLETED",
+  "wall_seconds": 676.8777387000155
+}

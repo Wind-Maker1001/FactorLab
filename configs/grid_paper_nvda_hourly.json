@@ -1,0 +1,20 @@
+{
+  "lower": 163.472,
+  "upper": 245.208,
+  "levels": 8,
+  "initial_cash": 1000,
+  "initial_inventory": 0,
+  "initial_price": 204.34,
+  "quantity": 10,
+  "max_inventory": 100,
+  "max_cash_committed": 1000,
+  "atr_window": 72,
+  "atr_multiplier": 1,
+  "rebuild_threshold": 2,
+  "min_rebuild_interval": 72,
+  "max_turnover": 10,
+  "max_drawdown": 0.2,
+  "fee_bps": 4,
+  "slippage_bps": 6,
+  "breakout": "pause"
+}

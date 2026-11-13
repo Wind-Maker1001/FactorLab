@@ -1,0 +1,10 @@
+{
+  "arm": "atr",
+  "window": "full",
+  "scenario": "base",
+  "bars": 2160,
+  "nav_equal": true,
+  "fills_equal": true,
+  "core_equal": true,
+  "ledger_reconciled": true
+}

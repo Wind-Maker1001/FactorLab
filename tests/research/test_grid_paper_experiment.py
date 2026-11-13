@@ -150,3 +150,94 @@ def test_endowed_inventory_and_determinism(tmp_path, inputs):
 def test_invalid_inputs(tmp_path, inputs, change):
     with pytest.raises(ValueError):
         run_experiment(tmp_path/'run', **(inputs | change))
+
+
+def hourly_inputs(inputs):
+    bars = [dict(bar, time=time.isoformat()) for bar, time in zip(
+        inputs['bars'], pd.date_range('2026-01-01', periods=len(inputs['bars']), freq='h', tz='UTC'))]
+    return inputs | dict(bars=bars, interval='1h', market=Market.BINANCE_USDM)
+
+
+def test_hourly_causality_ledger_and_reproduction(tmp_path, inputs):
+    from factorlab.experiments.grid_empirical import summarize
+    args = hourly_inputs(inputs)
+    for name in ('a', 'b'):
+        run_experiment(tmp_path/name, **args)
+    assert (tmp_path/'a'/'daily.csv').read_bytes() == (tmp_path/'b'/'daily.csv').read_bytes()
+    assert (tmp_path/'a'/'trades.csv').read_bytes() == (tmp_path/'b'/'trades.csv').read_bytes()
+    trades = pd.read_csv(tmp_path/'a'/'trades.csv')
+    assert len(trades) > 0
+    events = pd.to_datetime(trades.event_time, utc=True)
+    assert events.min() >= pd.Timestamp(args['bars'][1]['time']) + pd.Timedelta(minutes=59)
+    assert events.dt.minute.eq(59).all()
+    assert events.dt.second.eq(59).all()
+    result = summarize(tmp_path/'a')
+    assert result['ledger_reconciled']
+    assert result['fees'] == pytest.approx(trades.fee.sum())
+    assert result['turnover'] == pytest.approx(trades.trade_notional.sum()/1000)
+    assert result['net_pnl'] == pytest.approx(result['realized_gross']+result['unrealized']-result['fees'])
+
+
+@pytest.mark.parametrize('case', ['duplicate', 'regression', 'naive', 'unfinished'])
+def test_invalid_hourly_timeline(tmp_path, inputs, case):
+    args = hourly_inputs(inputs)
+    bars = args['bars']
+    if case == 'duplicate':
+        bars[1]['time'] = bars[0]['time']
+    elif case == 'regression':
+        bars[0], bars[1] = bars[1], bars[0]
+    elif case == 'naive':
+        for bar in bars:
+            bar['time'] = bar['time'].replace('+00:00', '')
+    else:
+        bars[0]['completed_bar'] = False
+    with pytest.raises(ValueError):
+        run_experiment(tmp_path/'bad', **args)
+
+
+def test_hourly_gap_is_not_filled(tmp_path, inputs):
+    args = hourly_inputs(inputs)
+    args['bars'].pop(2)
+    run_experiment(tmp_path/'run', **args)
+    nav = pd.read_csv(tmp_path/'run'/'daily.csv')
+    assert len(nav) == len(args['bars'])
+    assert pd.to_datetime(nav.date, utc=True).tolist() == [pd.Timestamp(bar['time']) for bar in args['bars']]
+
+
+def test_hourly_future_ohlc_cannot_change_earlier_output(tmp_path, inputs):
+    args = hourly_inputs(inputs)
+    args['config'] = replace(args['config'], mode='atr')
+    run_experiment(tmp_path/'past', **args)
+    altered = [dict(bar) for bar in args['bars']]
+    for bar in altered[6:]:
+        bar.update(high=1000, low=1)
+    run_experiment(tmp_path/'future', **(args | dict(bars=altered)))
+    before = pd.read_csv(tmp_path/'past'/'daily.csv').iloc[:6]
+    after = pd.read_csv(tmp_path/'future'/'daily.csv').iloc[:6]
+    pd.testing.assert_frame_equal(before, after)
+
+
+def test_hourly_buy_hold_is_funded_and_later_bar_only(tmp_path, inputs):
+    args = hourly_inputs(inputs)
+    run_experiment(tmp_path/'hold', **args, buy_hold=True)
+    trades = pd.read_csv(tmp_path/'hold'/'trades.csv')
+    nav = pd.read_csv(tmp_path/'hold'/'daily.csv')
+    assert trades.side.eq('BUY').all()
+    assert not trades.execution_date.eq(args['bars'][0]['time']).any()
+    assert nav.available.ge(0).all()
+    assert nav.inventory.iloc[-1] > 0
+    assert nav.committed.max() <= 1000
+
+
+def test_hourly_window_utc_bounds_and_daily_evaluation(tmp_path, inputs):
+    args = hourly_inputs(inputs)
+    result = run_experiment(tmp_path/'window', **args,
+        start='2026-01-01T02:00:00', end='2026-01-01T05:00:00Z',
+        data_identity={'data_version': 'fixture'})
+    nav = pd.read_csv(tmp_path/'window'/'daily.csv')
+    assert len(nav) == 4
+    assert pd.Timestamp(nav.date.iloc[0]) == pd.Timestamp('2026-01-01T02:00:00Z')
+    assert len(result.tables['daily']) == 1
+    assert result.context.periods_per_year == 365
+    assert result.context.source_kind == 'REAL_CANDIDATE'
+

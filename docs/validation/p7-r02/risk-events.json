@@ -1,0 +1,56 @@
+[
+  {
+    "arm": "atr",
+    "kind": "RISK_TRIGGER",
+    "reason": "BREAKOUT",
+    "scenario": "low",
+    "state": "PAUSED",
+    "time": "2026-08-18T08:00:00+00:00",
+    "window": "full"
+  },
+  {
+    "arm": "atr",
+    "kind": "RISK_TRIGGER",
+    "reason": "BREAKOUT",
+    "scenario": "base",
+    "state": "PAUSED",
+    "time": "2026-08-18T08:00:00+00:00",
+    "window": "full"
+  },
+  {
+    "arm": "atr",
+    "kind": "RISK_TRIGGER",
+    "reason": "BREAKOUT",
+    "scenario": "stress",
+    "state": "PAUSED",
+    "time": "2026-08-18T08:00:00+00:00",
+    "window": "full"
+  },
+  {
+    "arm": "atr",
+    "kind": "RISK_TRIGGER",
+    "reason": "BREAKOUT",
+    "scenario": "base",
+    "state": "PAUSED",
+    "time": "2026-08-18T08:00:00+00:00",
+    "window": "early"
+  },
+  {
+    "arm": "atr",
+    "kind": "RISK_TRIGGER",
+    "reason": "BREAKOUT",
+    "scenario": "base",
+    "state": "PAUSED",
+    "time": "2026-09-14T09:00:00+00:00",
+    "window": "middle"
+  },
+  {
+    "arm": "atr",
+    "kind": "RISK_TRIGGER",
+    "reason": "BREAKOUT",
+    "scenario": "base",
+    "state": "PAUSED",
+    "time": "2026-10-14T12:00:00+00:00",
+    "window": "late"
+  }
+]
