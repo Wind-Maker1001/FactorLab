@@ -111,12 +111,26 @@ class PaperStore:
     def record_event(self, event):
         return self.record_metadata(event.event_id, event)
 
+    def event_payload(self, event_id):
+        row = self.db.execute("SELECT payload FROM events WHERE id=?", (event_id,)).fetchone()
+        return row[0] if row is not None else None
+
+    def event_cursor(self):
+        return self.db.execute("SELECT COALESCE(MAX(rowid), 0) FROM events").fetchone()[0]
+
+    def order_events(self):
+        """Yield authoritative reports in journal insertion order."""
+        for cursor, payload in self.db.execute("SELECT rowid, payload FROM events ORDER BY rowid"):
+            event = decode(json.loads(payload))
+            if isinstance(event, contracts.OrderEvent):
+                yield cursor, event
+
     def record_metadata(self, event_id, value):
         """Append strategy evidence to the existing journal, without economic posting."""
         payload = dumps(value)
-        row = self.db.execute("SELECT payload FROM events WHERE id=?", (event_id,)).fetchone()
-        if row is not None:
-            if row[0] != payload:
+        saved = self.event_payload(event_id)
+        if saved is not None:
+            if saved != payload:
                 raise ValueError("event identity reused with a different payload")
             return False
         if len(payload.encode("utf-8")) > 8192:
