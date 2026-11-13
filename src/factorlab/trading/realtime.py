@@ -407,13 +407,10 @@ class RealtimeAccount:
         equity = asset.total + sum((p.quantity * (p.mark_price - p.entry_price)
             for p in account.positions), D(0))
         budget_price = self._execution_price(Side.BUY, price)
-        target = max(D(0), equity) * signal['target_weight'] / (price * (1 + self.state.fee_rate))
-        if target > current:
-            target = max(current, min(
-                max(D(0), equity) * signal['target_weight'] / (budget_price * (1 + self.state.fee_rate)),
-                current + asset.available / (budget_price * (1 + self.state.fee_rate))))
-        if step:
-            target = (target // step) * step
+        from .target import target_quantity
+        target = target_quantity(equity=equity, weight=signal['target_weight'], price=price,
+            budget_price=budget_price, fee_rate=self.state.fee_rate, current=current,
+            available=asset.available, step=step)
         delta = target - current
         runtime['target_position'] = dict(signal_id=signal['signal_id'], quantity=target,
             current=current, weight=signal['target_weight'], price=price)

@@ -115,6 +115,8 @@ class FuturesPaperGateway(PaperBroker):
         booked = {}
         for raw, in controller.store.db.execute('SELECT payload FROM events ORDER BY rowid'):
             event = decode(json.loads(raw))
+            if not isinstance(event, OrderEvent):
+                continue
             qty, quote = booked.get(event.client_order_id, (ZERO, ZERO))
             delta = event.cumulative_filled_quantity - qty
             if delta > 0:

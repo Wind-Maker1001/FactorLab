@@ -40,18 +40,18 @@ def intent(key='one', side=Side.BUY, limit=None, quantity='2'):
         None if limit is None else D(limit), key)
 
 
-def setup(protocol=':memory:', paper=':memory:', fake=None, authorize=True):
+def setup(protocol=':memory:', paper=':memory:', fake=None, authorize=True, now=NOW):
     fake = DemoFixture() if fake is None else fake
     transport = DemoExecutionTransport(delegate=fake,
         authorization=DemoExecutionAuthorization() if authorize else None)
     client = FuturesClient(Credentials('demo-key', 'demo-secret', E.DEMO),
-        environment=E.DEMO, transport=transport, clock=lambda: NOW.timestamp())
-    adapter = DemoFuturesAdapter(client, PaperStore(protocol), clock=lambda: NOW)
+        environment=E.DEMO, transport=transport, clock=lambda: now.timestamp())
+    adapter = DemoFuturesAdapter(client, PaperStore(protocol), clock=lambda: now)
     observation = observe_demo_rules(adapter, source_version='OFFLINE_DEMO_FIXTURE')
     gateway = DemoExecutionGateway(adapter, observation, (Instrument('NVDAUSDT', 'USDT'),), {'USDT': D('1000')})
-    controller = TradingController(gateway, PaperStore(paper), clock=lambda: NOW,
+    controller = TradingController(gateway, PaperStore(paper), clock=lambda: now,
         limits=RiskLimits(D('500'), D('500'), D('800'), 10))
-    controller.quote(Quote('NVDAUSDT', D('100'), NOW))
+    controller.quote(Quote('NVDAUSDT', D('100'), now))
     gateway.recover(controller)
     return adapter, gateway, controller, fake
 
@@ -122,6 +122,38 @@ def test_unknown_and_risk_admission(condition):
     with pytest.raises((SafetyBlocked, RiskRejected)):
         c.submit(intent())
     assert not [call for call in fake.calls if call[0] == 'POST']
+
+
+def test_confirmed_fee_visible_before_rest_refresh():
+    a, g, c, fake = setup()
+    c.submit(intent(quantity='.99'))
+    message = fake.trade_update('one', '.99')
+    c.replay(UserDataEvents(a).parse(message))
+    assert a.facts.usdt()['walletBalance'] == D(1000)
+    balance = c.account().assets[0]
+    assert balance.total == D('999.901')
+    assert balance.available == D('900.901')
+    assert not c.replay(UserDataEvents(a).parse(message))
+    assert c.account().assets[0] == balance
+    assert g.recover(c).assets[0] == balance
+    assert g.recover(c).assets[0] == balance
+
+
+def test_realized_loss_reconciliation_does_not_rebook():
+    a, g, c, fake = setup()
+    c.submit(intent(quantity='1'))
+    buy = fake.trade_update('one', '1')
+    c.replay(UserDataEvents(a).parse(buy))
+    c.submit(replace(intent('close', Side.SELL, quantity='1'), reduce_only=True))
+    sell = fake.trade_update('close', '1', '90')
+    c.replay(UserDataEvents(a).parse(sell))
+    assert not c.account().positions
+    assert c.account().assets[0].total == fake.cash == D('989.81')
+    assert a.facts.usdt()['walletBalance'] == D(1000)
+    assert not c.replay(UserDataEvents(a).parse(sell))
+    assert g.recover(c).assets[0].total == D('989.81')
+    assert g.recover(c).assets[0].total == D('989.81')
+    assert not c.account().positions
 
 
 def test_submit_rejection_and_unknown_recovery():

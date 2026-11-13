@@ -97,6 +97,38 @@ including cleanup cancellations, need a newly reviewed bounded approval. Loss an
 margin limits gate new submissions; they are not guaranteed loss stops between
 observations. No background liquidation or automatic closing order is introduced.
 
+## Closed-bar strategy composition
+
+`DemoStrategyRuntime(controller, strategy, client_id_prefix=...)` composes an
+existing Demo gateway/controller with `DualMAStrategy` or `FrozenModelStrategy`.
+Call `recover()` before execution, feed confirmed `closed_bar()` observations,
+then feed a strictly later `Quote` through `quote()`. Bar prices never generate
+fills. The runtime stores deployment identity, history, pending signal and the
+signal-to-client-order mapping in the existing controller transaction and journal.
+A restored deployment must match its persisted identity; the caller must recreate
+any separately approved capability in the new process.
+
+Target sizing shares the Paper runner's pure long-only calculation, using Demo
+wallet equity, reported available balance, confirmed position and exchange lot
+constraints. Shared admission remains conservative about local reservations.
+REST reconciliation updates the shared cash/position projection from exchange
+facts, including external account changes, after missing trade deltas have been
+booked. Actual confirmed fees are journaled independently of the local fee budget.
+Synthetic `fill()` and `reject()` are blocked on the Demo gateway.
+
+`disconnect()` pauses new orders; `recover()` queries existing identities and
+books missing deltas without replacement POSTs. `kill()` changes only local state
+and blocks every strategy-generated order, including reductions. It neither
+cancels nor liquidates. Explicit cancellation still requires the existing
+independent write authorization. A bar-sequence gap pauses execution.
+
+Offline execution evidence is retained under `docs/validation/p7-m02a/`.
+For an online session, supply actual account identity, strategy/model bundle and
+source/interval binding, client-ID prefix, allowed order types, quantity,
+notional, total/open-order, loss, margin and time limits, UTC expiry, and explicit
+cleanup/recovery policies. Review those values and grant an independent bounded
+Demo network authorization; offline execution approval is not that authorization.
+
 ## P7-D03B minimum online integration
 
 A separate authorization is required before online writes:
