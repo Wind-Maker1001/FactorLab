@@ -1,0 +1,345 @@
+{
+  "status": "P7_M02B_DEMO_READ_ONLY_VERIFIED",
+  "environment": "DEMO",
+  "host": "https://demo-fapi.binance.com",
+  "symbol": "NVDAUSDT",
+  "observed_at": "2026-11-13 10:38:54.868741+00:00",
+  "safety": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "checks": {
+    "server_clock": {
+      "source": "/fapi/v1/time",
+      "value": {
+        "offset_ms": -1139
+      },
+      "eligible": true
+    },
+    "mark": {
+      "source": "/fapi/v1/premiumIndex",
+      "value": {
+        "markPrice": "170.06516282",
+        "time_utc": "2026-11-13 10:38:50.592000+00:00"
+      },
+      "eligible": true
+    },
+    "book": {
+      "source": "/fapi/v1/ticker/bookTicker",
+      "value": {
+        "bidPrice": "169.47000",
+        "askPrice": "169.56000",
+        "time_utc": "2026-11-13 10:38:53.167000+00:00"
+      },
+      "eligible": true
+    },
+    "symbol": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "symbol": "NVDAUSDT",
+        "status": "TRADING",
+        "contractType": "TRADIFI_PERPETUAL",
+        "marginAsset": "USDT",
+        "quoteAsset": "USDT",
+        "orderTypes": [
+          "LIMIT",
+          "MARKET",
+          "STOP",
+          "STOP_MARKET",
+          "TAKE_PROFIT",
+          "TAKE_PROFIT_MARKET",
+          "TRAILING_STOP_MARKET"
+        ]
+      },
+      "eligible": true
+    },
+    "LOT_SIZE": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "minQty": "0.01",
+        "maxQty": "6000",
+        "stepSize": "0.01"
+      },
+      "eligible": true
+    },
+    "MARKET_LOT_SIZE": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "minQty": "0.01",
+        "maxQty": "600",
+        "stepSize": "0.01"
+      },
+      "eligible": true
+    },
+    "MIN_NOTIONAL": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "notional": "5"
+      },
+      "eligible": true
+    },
+    "PRICE_FILTER": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "minPrice": "0.01000",
+        "maxPrice": "20000",
+        "tickSize": "0.01000"
+      },
+      "eligible": true
+    },
+    "PERCENT_PRICE": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "multiplierDown": "0.9700",
+        "multiplierUp": "1.0300"
+      },
+      "eligible": true
+    },
+    "MAX_NUM_ORDERS": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "limit": 200
+      },
+      "eligible": true
+    },
+    "POSITION_RISK_CONTROL": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": {
+        "positionControlSide": "NONE"
+      },
+      "eligible": true
+    },
+    "unsupported_filters": {
+      "source": "/fapi/v1/exchangeInfo",
+      "value": [],
+      "eligible": true
+    },
+    "leverage_brackets": {
+      "source": "/fapi/v1/leverageBracket",
+      "value": {
+        "notionalCoef": "NOT_REPORTED",
+        "tiers": [
+          {
+            "notionalFloor": "0",
+            "notionalCap": "10000",
+            "maintMarginRatio": "0.05",
+            "bracket": 1,
+            "initialLeverage": 10
+          },
+          {
+            "notionalFloor": "10000",
+            "notionalCap": "50000",
+            "maintMarginRatio": "0.1",
+            "bracket": 2,
+            "initialLeverage": 5
+          },
+          {
+            "notionalFloor": "50000",
+            "notionalCap": "100000",
+            "maintMarginRatio": "0.125",
+            "bracket": 3,
+            "initialLeverage": 4
+          },
+          {
+            "notionalFloor": "100000",
+            "notionalCap": "250000",
+            "maintMarginRatio": "0.1667",
+            "bracket": 4,
+            "initialLeverage": 3
+          },
+          {
+            "notionalFloor": "250000",
+            "notionalCap": "2500000",
+            "maintMarginRatio": "0.25",
+            "bracket": 5,
+            "initialLeverage": 2
+          },
+          {
+            "notionalFloor": "2500000",
+            "notionalCap": "5000000",
+            "maintMarginRatio": "0.5",
+            "bracket": 6,
+            "initialLeverage": 1
+          }
+        ]
+      },
+      "eligible": true
+    },
+    "account_id": {
+      "source": "/fapi/v3/account",
+      "value": "DEMO:FactorLab-Demo:sha256:...660da077",
+      "eligible": true
+    },
+    "api_user_data": {
+      "source": "/fapi/v3/account",
+      "value": "VERIFIED",
+      "eligible": true
+    },
+    "api_key_trade": {
+      "source": "Demo key permissions",
+      "value": "UNKNOWN",
+      "eligible": null
+    },
+    "account_can_trade": {
+      "source": "/fapi/v2/account",
+      "value": true,
+      "eligible": true
+    },
+    "quantitative": {
+      "source": "/fapi/v1/apiTradingStatus",
+      "value": {
+        "status": "OBSERVED",
+        "error": null,
+        "missing_indicator_state": "NOT_REPORTED",
+        "scopes": {
+          "ACCOUNT": {
+            "status": "NOT_REPORTED"
+          },
+          "NVDAUSDT": {
+            "status": "NOT_REPORTED"
+          }
+        }
+      },
+      "eligible": true
+    },
+    "position_mode": {
+      "source": "/fapi/v1/positionSide/dual",
+      "value": "ONE_WAY",
+      "eligible": true
+    },
+    "usdt": {
+      "source": "/fapi/v3/account",
+      "value": {
+        "walletBalance": "5000.00000000",
+        "availableBalance": "5000.00000000",
+        "unrealizedProfit": "0E-8",
+        "initialMargin": "0E-8"
+      },
+      "eligible": true
+    },
+    "positions": {
+      "source": "/fapi/v3/account and /fapi/v3/positionRisk",
+      "value": {
+        "count": 0,
+        "NVDAUSDT": []
+      },
+      "eligible": true
+    },
+    "open_orders": {
+      "source": "/fapi/v1/openOrders",
+      "value": {
+        "count": 0,
+        "NVDAUSDT_count": 0
+      },
+      "eligible": true
+    },
+    "leverage": {
+      "source": "/fapi/v1/symbolConfig",
+      "value": 1,
+      "eligible": true
+    },
+    "margin_type": {
+      "source": "/fapi/v1/symbolConfig",
+      "value": "CROSSED",
+      "eligible": true
+    }
+  },
+  "account_read_error": null,
+  "rule_read_error": null,
+  "minimum_opening_orders": {
+    "MARKET": {
+      "quantity": "0.03",
+      "price": "170.06516282",
+      "exchange_notional": "5.1019548846",
+      "plan_notional": "5.25501353113800",
+      "hypothetical": false
+    },
+    "LIMIT": {
+      "quantity": "0.03",
+      "price": "170.06000",
+      "exchange_notional": "5.1018000",
+      "plan_notional": "5.1018000",
+      "hypothetical": true
+    }
+  },
+  "plan_review": "PENDING_APPROVED_PARAMETERS",
+  "execution_admission": "BLOCKED",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/fapi/v1/time",
+      "signed": false,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/exchangeInfo",
+      "signed": false,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/leverageBracket",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v3/account",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v3/positionRisk",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/positionSide/dual",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/openOrders",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/symbolConfig",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v2/account",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/apiTradingStatus",
+      "signed": true,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/premiumIndex",
+      "signed": false,
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/fapi/v1/ticker/bookTicker",
+      "signed": false,
+      "http_status": 200
+    }
+  ],
+  "network_writes": 0,
+  "full_account_binding_matches_historical_approval": true
+}
