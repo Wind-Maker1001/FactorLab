@@ -138,7 +138,7 @@ PYTHONPATH=src python examples/research/grid_lifecycle_evidence.py \
 
 确定性小路径覆盖下跌反弹闭环、到期重播、确认幂等、部分成交撤单、UNKNOWN 阻断、冷却和上限、重启、预算拒绝、无量退出、部分退出及事务失败回滚。未来 Bar 改动不改变既有路径；新订单最早后续 Bar 可执行，不推断 OHLC 内部路径。既有 #128/#134 真实换手、原子记账和账户恢复测试继续复用，不开展全仓库版本矩阵。
 
-真实数据的 B 等差、B 等比、D ATR 再次重放，经济指标、全部小时轨迹和成交表一致，见 [reproduction.json](../validation/p7-r03/reproduction.json)。最终定向测试 **86 passed，55.94 秒**，见 [targeted-tests.xml](../validation/p7-r03/targeted-tests.xml)。PR CI 待创建 Draft PR 后记录。
+真实数据的 B 等差、B 等比、D ATR 再次重放，经济指标、全部小时轨迹和成交表一致，见 [reproduction.json](../validation/p7-r03/reproduction.json)。最终定向测试 **86 passed，55.94 秒**，见 [targeted-tests.xml](../validation/p7-r03/targeted-tests.xml)。独立 [Draft PR #139](https://github.com/Wind-Maker1001/FactorLab/pull/139) 已触发现有 `FactorLab PR validation`；各次提交的 CI 终态以 [PR 检查页](https://github.com/Wind-Maker1001/FactorLab/pull/139/checks) 为准，未修改受保护工作流。
 
 ## 五个问题与下一步
 
