@@ -1,6 +1,6 @@
 # P7-M05 E01 admission evidence
 
-**P7_M05_PENDING_MANUAL_EVIDENCE**
+**P7_M05_EVIDENCE_PARTIAL**
 
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
@@ -15,7 +15,7 @@ Baseline: `0d3c4a17eab5ddb6294c1f7fa183dd781c89e66f`.
 
 ## Network and account facts
 
-E01 actual official Demo traffic: **GET=17, POST=0, DELETE=0, account-configuration writes=0**. Preparation issued 13 GET; historical identity/quantitative inspection issued four GET. These counts exclude the predecessor M05 observation (13 GET). Official documentation retrieval did not complete and is not exchange account traffic.
+E01 actual official Demo traffic: **GET=31, POST=0, DELETE=0, account-configuration writes=0**. Initial preparation issued 13 GET; historical identity/quantitative inspection issued four GET; local/server time comparison issued one GET; refreshed preparation issued 13 GET. These counts exclude the predecessor M05 observation (13 GET). Official documentation retrieval did not complete and is not exchange account traffic.
 
 Host: `https://demo-fapi.binance.com`. Account reference: `DEMO:FactorLab-Demo:sha256:...660da077`. The private full credential-derived binding matches the historical M03 plan and refreshed preparation exactly; this is an API-key-bound identity, not an independently reported exchange UID.
 
@@ -49,7 +49,17 @@ Known historical IDs, deduplicated by exact identity:
 
 No unresolved UNKNOWN was found in the located records. **LOCAL_HISTORY_INCOMPLETE** remains: missing execution journals and exact-ID absence cannot prove that no historical order ever existed, including orders outside exchange retention. Current flatness and no open orders are distinct facts. Any recovered local UNKNOWN must retain the existing conservative block until exact-ID recovery resolves it. USER_DECLARATION recorded on 2026-11-14: no manual orders, other script executions or ambiguous order outcomes occurred on this Demo account outside the reviewed M02–M05 flows. This closes the requested additional-history disclosure, but does not reconstruct missing local journals or constitute exchange-wide historical proof. No new order may be used to test history.
 
-## Candidate boundaries and immutable identities
+## Refreshed candidate and time evidence
+
+A subsequent official Demo time GET returned `2026-11-13T17:39:53.445Z`; local UTC was `2026-11-13T17:39:55.049451Z`, with midpoint offset −1.350361 seconds. Thus both runtime and exchange report November 13, while the session date is November 14. This discrepancy is unresolved; no timestamp or expiry is rewritten and no READY status is issued.
+
+Refreshed GET-only preparation completed at `2026-11-13T17:40:34.126457Z`, expiry `2026-11-13T19:40:34.126457Z`. The same masked account reference was observed; canTrade=true, ONE_WAY, 1×, CROSSED, zero positions and zero open orders. ACCOUNT/NVDAUSDT remain NOT_REPORTED. All four opening/rule/controller reviews passed.
+
+This refreshed candidate supersedes the earlier candidate below for review, but is not represented as currently unexpired against the session date. Its complete boundaries are in [candidate-summary.json](candidate-summary.json), a sanitized non-executable display. The executable full-account object remains only in the private `preparation-refresh.json` receipt. Its policy hash is `a89c3bcefba4061aba3582fc842602fbc16ad3270ff3f45e4c6d9eb83466d94f`; plan hash is `a294c2d6a3752035900653b8a2ef17111fae0355a9827347688a1177a9bdcfdb`.
+
+The standalone preparation tool does not consume external manual declarations: its generic permission/history blockers remain in the original immutable receipt. The declarations recorded above close those manual evidence requests in this report, not by editing the receipt. Remaining preparation status is **P7_M05_EVIDENCE_PARTIAL** because time/validity is unresolved, not because another permission/history declaration is required.
+
+## Earlier candidate boundaries and immutable identities
 
 The private receipt holds the full executable account binding and canonical version-2 Policy nested in the canonical Plan. `BoundedQuotePolicy.from_json()` and `DemoExecutionPlan.from_json()` reconstruct those same objects; the display is derived directly from their canonical serialization, not an independently assembled authorization dictionary. A masked public summary is not an executable policy and cannot reproduce the full-account digest. Serialized data never grants process-local network authorization.
 
