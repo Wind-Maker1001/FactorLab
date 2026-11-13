@@ -8,10 +8,10 @@ Baseline: `0d3c4a17eab5ddb6294c1f7fa183dd781c89e66f`.
 
 | Evidence | Result | Meaning |
 | --- | --- | --- |
-| API Key futures trading permission | UNKNOWN | Signed account GET is verified; no management-page declaration has been supplied. |
+| API Key futures trading permission | VERIFIED | USER_DECLARATION confirms Read and Futures permission for the exact Demo credential bound to ...660da077; no API permission-query verification. |
 | Quantitative restrictions | PARTIAL | Official response contains `indicators: {}` and `updateTime`; neither ACCOUNT nor NVDAUSDT is reported. |
 | Historical orders / UNKNOWN | PARTIAL | Full local account bindings match; two known historical identities return `-2013`; LOCAL_HISTORY_INCOMPLETE. |
-| Immutable approval object | PARTIAL | Version-2 Policy and Plan round-trip and hashes exist; manual permission/history evidence remains outstanding. |
+| Immutable approval object | PARTIAL | Version-2 Policy and Plan round-trip and hashes exist; history evidence and a current unexpired candidate remain outstanding. |
 
 ## Network and account facts
 
@@ -25,7 +25,7 @@ Latest complete account observation: **2026-11-13T17:23:16.790595Z**, as recorde
 
 `canTrade` proves the account flag, not API-key TRADE permission. Signed GET success proves those authenticated reads only. No applicable Demo key-permission GET has been established: the existing USD-M read interface contains no key-restrictions endpoint, and official documentation retrieval was unavailable. This is UNKNOWN, not a finding that no such official endpoint could exist. Do not probe with POST or use a production SAPI key-restrictions endpoint against this Demo credential.
 
-In the official Binance Demo interface, open the API management page for the exact credential used locally. Confirm that it belongs to the Demo account, is enabled and unexpired, and explicitly permits USD-M futures trading (the interface's Futures/Trade permission, not merely Read). Check any IP restriction against the execution host. If the page does not expose a separate trade permission, report that fact rather than inferring it. Provide a dated declaration naming the Demo context, local account reference, displayed permission wording and result; crop or redact API key, secret, QR codes and identifiers before sharing any screenshot. No secret needs to be submitted. Record this as USER_DECLARATION, separately from API_OBSERVATION. The present declaration state is NOT_PROVIDED.
+In the official Binance Demo interface, open the API management page for the exact credential used locally. Confirm that it belongs to the Demo account, is enabled and unexpired, and explicitly permits USD-M futures trading (the interface's Futures/Trade permission, not merely Read). Check any IP restriction against the execution host. If the page does not expose a separate trade permission, report that fact rather than inferring it. Provide a dated declaration naming the Demo context, local account reference, displayed permission wording and result; crop or redact API key, secret, QR codes and identifiers before sharing any screenshot. No secret needs to be submitted. Record this as USER_DECLARATION, separately from API_OBSERVATION. USER_DECLARATION recorded on 2026-11-14: the exact official Demo credential bound to `...660da077` has Read and Futures enabled; Spot, Margin and Stocks permissions are also enabled. The environment and credential association are explicitly confirmed. This closes the manual key-permission evidence only; it is not an API-observed permission result or order-write authorization. IP restriction compatibility and credential expiry were not separately declared.
 
 The first separately authorized LIMIT POST may still reject for key-level permissions or exchange-only order validation. That is a first-write acceptance condition, not a prerequisite for finishing read-only preparation. A rejected request must not be retried automatically; an ambiguous outcome permits exact-ID GET recovery only.
 
@@ -99,4 +99,4 @@ Targeted existing preparation, bounded quote, network, execution and preflight s
 
 Private original receipts remain at `D:/Code/FactorLab-final-evidence/p7-m05-e01/private/preparation.json` and sibling `history.json`; the local masked preparation is in sibling `review/preparation.json`. They are not uploaded. No new environment, order ledger or admission system was created.
 
-TODO: Obtain the actual Demo management-page permission declaration and missing-history disclosure; establish a current, consistent observation time and generate a new unexpired candidate for independent approval. Until then formal approval preparation is not complete. No prior authorization carries forward and no order write is authorized by this report.
+TODO: Obtain the missing-history disclosure; establish a current, consistent observation time and generate a new unexpired candidate for independent approval. Until then formal approval preparation is not complete. No prior authorization carries forward and no order write is authorized by this report.
