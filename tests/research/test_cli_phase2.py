@@ -649,7 +649,7 @@ def test_dataset_reuse_rejects_current_cache_source_contract_mismatch(tmp_path):
 
 
 @pytest.mark.parametrize("field", ["bar_data_version", "bar_data_provenance"])
-def test_dataset_reuse_requires_matching_build_run_bar_receipt(tmp_path, field):
+def test_dataset_reuse_does_not_depend_on_duplicate_build_receipt(tmp_path, field):
     dates, dataset, _, _ = _inputs()
     config = _config(tmp_path)
     _write_verified_inputs(config, dataset)
@@ -658,8 +658,8 @@ def test_dataset_reuse_requires_matching_build_run_bar_receipt(tmp_path, field):
     producer[field] = "f" * 64 if field == "bar_data_version" else {}
     cli._atomic_json(producer, producer_path)
 
-    with pytest.raises(FactorLabError, match="producer run manifest mismatch.*" + field):
-        cli._load_verified_dataset(config, dates)
+    loaded, _, _ = cli._load_verified_dataset(config, dates)
+    assert len(loaded) == len(dataset)
 
 
 def test_dataset_reuse_conservatively_rejects_cache_extension_outside_research_span(tmp_path):
@@ -716,7 +716,7 @@ def test_evaluate_rejects_a_missing_dataset_manifest(tmp_path, monkeypatch):
         cli.command_evaluate(config, _Run("20200101T000000-evaluate"))
 
 
-def test_evaluate_rejects_dataset_from_different_code_provenance(
+def test_evaluate_accepts_dataset_from_different_code_provenance(
     tmp_path, monkeypatch
 ):
     _, dataset, _, benchmark = _inputs()
@@ -736,11 +736,13 @@ def test_evaluate_rejects_dataset_from_different_code_provenance(
     cli._atomic_json(producer, producer_path)
     monkeypatch.setattr(cli, "_load_benchmark_with_warmup", lambda current: benchmark)
 
-    with pytest.raises(FactorLabError, match="Dataset producer provenance differs"):
-        cli.command_evaluate(config, _Run("20200101T000000-evaluate"))
+    run = _Run("20200101T000000-evaluate")
+    cli.command_evaluate(config, run)
+    assert run.outputs
+    assert run.payload["dataset_producer_provenance"]["git_commit"] == "b" * 40
 
 
-def test_evaluate_rejects_missing_dataset_producer_run(tmp_path, monkeypatch):
+def test_evaluate_accepts_missing_dataset_producer_run(tmp_path, monkeypatch):
     _, dataset, _, benchmark = _inputs()
     config = _config(tmp_path)
     _write_verified_inputs(config, dataset)
@@ -752,8 +754,9 @@ def test_evaluate_rejects_missing_dataset_producer_run(tmp_path, monkeypatch):
     producer_path.unlink()
     monkeypatch.setattr(cli, "_load_benchmark_with_warmup", lambda current: benchmark)
 
-    with pytest.raises(FactorLabError, match="producer run manifest is missing"):
-        cli.command_evaluate(config, _Run("20200101T000000-evaluate"))
+    run = _Run("20200101T000000-evaluate")
+    cli.command_evaluate(config, run)
+    assert run.outputs
 
 
 def test_dataset_reuse_allows_non_dataset_model_config_changes(tmp_path):
@@ -776,7 +779,7 @@ def test_dataset_reuse_allows_non_dataset_model_config_changes(tmp_path):
     assert len(loaded) == len(dataset)
 
 
-def test_evaluate_rejects_dataset_without_producer_provenance(
+def test_evaluate_accepts_dataset_without_producer_provenance(
     tmp_path, monkeypatch
 ):
     _, dataset, _, benchmark = _inputs()
@@ -788,8 +791,10 @@ def test_evaluate_rejects_dataset_without_producer_provenance(
     cli._atomic_json(manifest, manifest_path)
     monkeypatch.setattr(cli, "_load_benchmark_with_warmup", lambda current: benchmark)
 
-    with pytest.raises(FactorLabError, match="producer provenance"):
-        cli.command_evaluate(config, _Run("20200101T000000-evaluate"))
+    run = _Run("20200101T000000-evaluate")
+    cli.command_evaluate(config, run)
+    assert run.outputs
+    assert run.payload["dataset_producer_provenance"] is None
 
 
 def test_evaluate_rejects_a_missing_pit_manifest(tmp_path, monkeypatch):

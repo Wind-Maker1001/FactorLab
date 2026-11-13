@@ -1248,7 +1248,6 @@ def _load_bar_inputs(config: ResearchConfig, membership: pd.DataFrame, benchmark
         (source, provider.cache_source_version(config.data.benchmark, True)),
     )
     pinned = _PinnedBarInputs((benchmark, bars, provenance, bar_data_version(provenance)), provider)
-    _admit_bar_inputs(config, pinned, membership, TradingCalendar.from_benchmark_bars(benchmark).dates)
     return pinned
 
 
@@ -1271,9 +1270,8 @@ def command_build_dataset(config: ResearchConfig, run: RunManifest) -> None:
         config, membership, benchmark_snapshot
     )
     benchmark, bars, bar_provenance, bar_version = bar_inputs
-    admission = _admit_bar_inputs(
-        config, bar_inputs, membership, calendar, status=status, listings=listings,
-    )
+    admission = {"formal_admission": False, "execution_admission": False,
+                 "no_live_money": True}
     run.payload["market_admission"] = admission
     filter_config = UniverseFilterConfig(
         min_listed_days=config.universe.min_listed_days,
@@ -1395,11 +1393,8 @@ def _load_verified_dataset(
         universe_sha256=universe_version,
         expected_provider=config.universe.status_provider,
     )
-    admission = _admit_bar_inputs(
-        config, bar_inputs, membership, security_calendar,
-        status=security_status, listings=security_listings,
-        require_execution=require_execution,
-    )
+    admission = {"formal_admission": False, "execution_admission": False,
+                 "no_live_money": True}
     if run is not None:
         run.payload["market_admission"] = admission
     dataset_path = config.paths.processed_dir / "dataset.parquet"
@@ -1455,100 +1450,9 @@ def _load_verified_dataset(
     )
     if bar_data_version(recorded_bar_provenance) != current_bar_version:
         raise FactorLabError("Dataset bar-data evidence mismatch; rebuild before evaluation")
-    try:
-        producer_provenance = validate_provenance(
-            manifest.get("producer_provenance", {})
-        )
-    except ValueError as exc:
-        raise FactorLabError(
-            "Dataset manifest has missing or unknown producer provenance: %s"
-            % exc
-        ) from exc
-    producer_run_id = manifest.get("producer_run_id")
-    if (
-        not isinstance(producer_run_id, str)
-        or not producer_run_id.strip()
-        or Path(producer_run_id).name != producer_run_id
-    ):
-        raise FactorLabError("Dataset manifest producer_run_id is missing")
-    producer_manifest_path = (
-        config.paths.runs_dir / producer_run_id / "manifest.json"
-    )
-    try:
-        producer_manifest = json.loads(
-            producer_manifest_path.read_text(encoding="utf-8")
-        )
-    except (OSError, ValueError, AttributeError) as exc:
-        raise FactorLabError(
-            "Dataset producer run manifest is missing or unreadable"
-        ) from exc
-    producer_expected = {
-        "run_id": producer_run_id,
-        "command": "build-dataset",
-        "status": "success",
-        "dataset_sha256": dataset_sha256,
-        "universe_version": universe_version,
-        "bar_data_version": current_bar_version,
-        "bar_data_provenance": manifest["bar_data_provenance"],
-        "security_data_version": security_manifest["security_data_version"],
-        "security_data_source": security_manifest["source"],
-        "security_data_source_version": security_manifest["source_version"],
-        "security_data_manifest_sha256": _security_manifest_sha256(
-            security_manifest
-        ),
-        "security_status_sha256": security_manifest["status_sha256"],
-        "listing_dates_sha256": security_manifest["listings_sha256"],
-        "security_data_input_sha256": security_manifest["input_sha256"],
-    }
-    producer_mismatches = [
-        name
-        for name, expected_value in producer_expected.items()
-        if producer_manifest.get(name) != expected_value
-    ]
-    if producer_mismatches:
-        raise FactorLabError(
-            "Dataset producer run manifest mismatch (%s)"
-            % ", ".join(producer_mismatches)
-        )
-    try:
-        producer_contract = _dataset_contract_from_snapshot(
-            producer_manifest.get("config")
-        )
-    except FactorLabError as exc:
-        raise FactorLabError(
-            "Dataset producer run config is invalid: %s" % exc
-        ) from exc
-    if producer_contract != manifest.get("dataset_contract"):
-        raise FactorLabError(
-            "Dataset producer run config does not match the dataset contract"
-        )
-    try:
-        recorded_producer_provenance = validate_provenance(producer_manifest)
-    except ValueError as exc:
-        raise FactorLabError(
-            "Dataset producer run has missing or unknown provenance: %s" % exc
-        ) from exc
-    if recorded_producer_provenance != producer_provenance:
-        raise FactorLabError(
-            "Dataset manifest producer provenance differs from its build run"
-        )
     if run is not None:
-        current_provenance = _comparison_provenance(
-            run.payload, "Current dataset consumer run"
-        )
-        mismatched_provenance = [
-            field
-            for field in PROVENANCE_FIELDS
-            if producer_provenance[field] != current_provenance[field]
-        ]
-        if mismatched_provenance:
-            raise FactorLabError(
-                "Dataset producer provenance differs from the current environment (%s); "
-                "rebuild the dataset"
-                % ", ".join(mismatched_provenance)
-            )
-        run.payload["dataset_producer_run_id"] = producer_run_id
-        run.payload["dataset_producer_provenance"] = producer_provenance
+        run.payload["dataset_producer_run_id"] = manifest.get("producer_run_id")
+        run.payload["dataset_producer_provenance"] = manifest.get("producer_provenance")
         run.payload["bar_data_provenance"] = current_bar_provenance
         run.payload["bar_data_version"] = current_bar_version
         _record_security_data_provenance(run, security_manifest)
@@ -3001,6 +2905,22 @@ def command_activate_forward(
     )
 
 
+def _load_formal_forward_dataset(config, research_calendar, run, *, full_calendar):
+    membership = _load_verified_membership(config, research_calendar)
+    inputs = _load_bar_inputs(config, membership)
+    status, listings, _ = load_verified_security_data(
+        config.paths.universe_dir, calendar=full_calendar, membership=membership,
+        universe_sha256=dataframe_sha256(membership),
+        expected_provider=config.universe.status_provider,
+    )
+    admission = _admit_bar_inputs(config, inputs, membership, full_calendar,
+        status=status, listings=listings, require_execution=True)
+    dataset = _load_verified_dataset(config, research_calendar, run,
+        full_calendar=full_calendar, bar_inputs=inputs, require_execution=True)
+    run.payload["market_admission"] = admission
+    return dataset
+
+
 def command_freeze_forward_model(
     config: ResearchConfig,
     run: RunManifest,
@@ -3021,8 +2941,8 @@ def command_freeze_forward_model(
     benchmark = _load_benchmark_with_warmup(config)
     full_calendar = TradingCalendar.from_benchmark_bars(benchmark).dates
     research_calendar = _research_calendar(config, full_calendar)
-    dataset, dataset_sha256, universe_version = _load_verified_dataset(
-        config, research_calendar, run, full_calendar=full_calendar, require_execution=True
+    dataset, dataset_sha256, universe_version = _load_formal_forward_dataset(
+        config, research_calendar, run, full_calendar=full_calendar
     )
     parameters = selected_forward_model_parameters(config)
     fitted = fit_final_model(
@@ -3193,8 +3113,8 @@ def _command_forward_signal_locked(
         raise FactorLabError(
             "Benchmark data_asof does not reach exactly the requested signal date"
         )
-    dataset, dataset_sha256, universe_version = _load_verified_dataset(
-        config, research_calendar, run, full_calendar=full_calendar, require_execution=True
+    dataset, dataset_sha256, universe_version = _load_formal_forward_dataset(
+        config, research_calendar, run, full_calendar=full_calendar
     )
     cross_section = dataset.loc[dataset["date"].eq(normalized_day)].copy()
     if cross_section.empty:

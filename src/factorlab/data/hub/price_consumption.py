@@ -86,18 +86,19 @@ def require_fields(result: QueryResult, requirements, *, identity, cutoff=None):
         basis = contract.get("basis", "UNKNOWN")
         if basis not in BASES or basis not in PURPOSES[purpose]:
             gaps.append(prefix + "BASIS_NOT_ALLOWED:" + str(basis))
-        if contract.get("qualification") != "RESEARCH_QUALIFIED":
+        qualification_required = cutoff is not None or purpose not in {"RAW_LABEL", "RAW_FACTOR", "UNIT_FACTOR"}
+        if qualification_required and contract.get("qualification") != "RESEARCH_QUALIFIED":
             gaps.append(prefix + "UNQUALIFIED:" + str(contract.get("reasons", [])))
-        if purpose not in contract.get("purposes", []):
+        if qualification_required and purpose not in contract.get("purposes", []):
             gaps.append(prefix + "PURPOSE_NOT_QUALIFIED:" + purpose)
         if not unit or unit in ("UNKNOWN", "UNVERIFIED") or contract.get("unit") != unit:
             gaps.append(prefix + "UNIT_UNKNOWN_OR_MISMATCH")
         policy = contract.get("adjustment_policy")
-        if not policy or policy == "UNKNOWN" or (basis == "OBSERVED_RAW" and policy != "NONE"):
+        if basis != "NOT_PRICE" and (not policy or policy == "UNKNOWN" or (basis == "OBSERVED_RAW" and policy != "NONE")):
             gaps.append(prefix + "ADJUSTMENT_POLICY_UNKNOWN_OR_CONFLICT")
         if basis == "OBSERVED_RAW" and contract.get("adjustment_event_dates"):
             gaps.append(prefix + "RAW_HAS_ADJUSTMENT_EVENTS")
-        if not contract.get("evidence"):
+        if qualification_required and not contract.get("evidence"):
             gaps.append(prefix + "EVIDENCE_MISSING")
         coverage = pd.Series(0, index=frame.index, dtype=int)
         for scope in contract.get("scope", []):

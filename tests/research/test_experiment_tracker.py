@@ -148,6 +148,16 @@ def test_provenance(tmp_path):
     assert receipt["environment"]["python_version"] == platform.python_version()
 
 
+def test_provenance_without_checkout(tmp_path):
+    from factorlab.experiments.provenance import capture_provenance
+    receipt = capture_provenance(tmp_path)
+    assert receipt["code"] == {
+        "commit": None, "tree": None,
+        "git_dirty": None, "git_diff_sha256": None,
+    }
+    assert receipt["environment"]["python_version"]
+
+
 def test_index_failure_preserves_record(tmp_path, definition, monkeypatch):
     tracker = ExperimentTracker(tmp_path)
     tracker.create_experiment("e1", definition)

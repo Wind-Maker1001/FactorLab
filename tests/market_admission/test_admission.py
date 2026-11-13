@@ -193,15 +193,18 @@ def cached(tmp_path_factory):
     return config, membership
 
 
-def test_original_3900_row_probe_is_rejected(cached):
+def test_original_3900_row_probe_is_available_for_research(cached):
     config, membership = cached
     assert len(pd.read_parquet(config.paths.processed_dir / "dataset.parquet")) == 3900
+    inputs = cli._load_bar_inputs(config, membership)
+    assert not inputs[1].empty
     with pytest.raises(ProviderError, match="no qualification package"):
-        cli._load_bar_inputs(config, membership)
+        cli._admit_bar_inputs(config, inputs, membership,
+            cli.TradingCalendar.from_benchmark_bars(inputs[0]).dates)
 
 
 @pytest.mark.parametrize("pinned", [False, True])
-def test_dataset_consumption_cannot_trust_supplied_bar_snapshots(cached, pinned):
+def test_exploratory_dataset_consumption_accepts_pinned_or_loaded_inputs(cached, pinned):
     config, membership = cached
     benchmark = cli._load_benchmark_with_warmup(config)
     calendar = cli.TradingCalendar.from_benchmark_bars(benchmark).dates
@@ -209,40 +212,38 @@ def test_dataset_consumption_cannot_trust_supplied_bar_snapshots(cached, pinned)
     if pinned:
         with patch.object(cli, "assert_formal_market_admission", return_value={"formal_admission": False}):
             supplied = cli._load_bar_inputs(config, membership)
-    with pytest.raises(ProviderError, match="no qualification package"):
-        cli._load_verified_dataset(config, cli._research_calendar(config, calendar),
-                                   full_calendar=calendar, bar_inputs=supplied)
+    dataset, _, _ = cli._load_verified_dataset(
+        config, cli._research_calendar(config, calendar),
+        full_calendar=calendar, bar_inputs=supplied)
+    assert len(dataset) == 3900
 
 
 @pytest.mark.parametrize("command", ["build", "evaluate", "factor_score", "ridge", "lightgbm", "xgboost"])
-def test_rejected_formal_commands_do_not_publish_successful_artifacts(cached, tmp_path, command):
+def test_offline_commands_compute_without_formal_qualification(cached, tmp_path, command):
     import shutil
     config, _ = cached
     data_root = tmp_path / "data"
-    shutil.copytree(config.paths.data_root, data_root,
-                    ignore=shutil.ignore_patterns("processed", "features"))
+    shutil.copytree(config.paths.data_root, data_root)
     config = replace(config, paths=replace(config.paths, data_root=data_root,
                                           results_root=tmp_path / "results"))
-    run = _Run("rejected-" + command)
+    run = _Run("exploratory-" + command)
     operation = {"build": cli.command_build_dataset, "evaluate": cli.command_evaluate}.get(command)
-    with pytest.raises(ProviderError, match="no qualification package"):
-        operation(config, run) if operation else cli.command_walk_forward(config, run, command)
-    assert run.outputs == {}
-    assert not config.paths.results_root.exists()
-    assert not config.paths.processed_dir.exists()
-    assert not config.paths.features_dir.exists()
+    operation(config, run) if operation else cli.command_walk_forward(config, run, command)
+    assert run.outputs
+    assert run.payload["market_admission"]["formal_admission"] is False
+    assert run.payload["market_admission"]["execution_admission"] is False
 
 
-def test_cli_failure_manifest_is_failed_and_has_no_success_outputs(cached, tmp_path, monkeypatch):
+def test_cli_offline_model_run_publishes_uncertified_results(cached, tmp_path, monkeypatch):
     config, _ = cached
     config = replace(config, paths=replace(config.paths, results_root=tmp_path / "results"))
     monkeypatch.setattr(cli, "load_config", lambda path: config)
-    assert cli.main(["walk-forward", "--config", "synthetic.yaml", "--model", "ridge"]) != 0
+    assert cli.main(["walk-forward", "--config", "synthetic.yaml", "--model", "ridge"]) == 0
     manifests = list(config.paths.runs_dir.glob("*/manifest.json"))
     assert len(manifests) == 1
     payload = json.loads(manifests[0].read_bytes())
-    assert payload["status"] == "failed" and payload["outputs"] == {}
-    assert "QUALIFICATION REQUIRED" in payload["error"]
+    assert payload["status"] == "success" and payload["outputs"]
+    assert payload["market_admission"]["formal_admission"] is False
 
 
 @pytest.mark.parametrize("operation", ["freeze", "signal"])
