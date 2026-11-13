@@ -1,6 +1,6 @@
 # P7-R04B-E01：独立历史样本研究入口与 FIFO 经济归因
 
-**P7_R04B_ENGINEERING_ONLY — ASSUMPTION_BOUND_PAPER_RESEARCH**
+**P7_R04B_ADMISSION_BLOCKED — ASSUMPTION_BOUND_PAPER_RESEARCH**
 
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
@@ -11,6 +11,24 @@
 **正式账户执行数为 0；没有新样本经济结果。** R04A/R04B 保留的官方上市公告／精确首成交交叉核实门槛仍未关闭。限定范围检查已有 R04A/R04B/P6-D02 证据和官方载荷缓存，并进行两次有界公告检索，未取得能关闭门槛的官方交叉材料。官方 March 小时档案首桶 `2026-03-26 14:00 UTC` 与留档 `onboardDate=14:40 UTC` 属于不同时间语义；首桶不是 14:00 已成交的证据，也不能用上线字段自证真实首成交。不得以数据完整性通过替代该门槛。
 
 本轮继续开发软件能力，但不移动窗口、不缩减正式矩阵、不重建行情，也不凭空填写 16 账户的权益或收益。软件定向验证已完成，状态为 **P7_R04B_ENGINEERING_ONLY**，不是机制实证完成。16 个冻结账户的确定性身份及 `NOT_RUN_ADMISSION_BLOCKED` 逐项记录在 [account-disposition.csv](../validation/p7-r04b-e01/account-disposition.csv)，不以 0 填充未运行账户的收益。
+
+## R04B-E02：指定公告核验与准入判断
+
+本轮直接访问[指定官方公告](https://www.binance.com/en/support/announcement/detail/1aa8f5f80e4a4afcab149e653fd3113d)，并查询同一 articleCode 的官方 CMS 端点；两次 curl 均返回 exit 7、HTTP 000、下载 0 bytes，未取得公告正文或 HTTP 响应。紧凑失败收据见 [e02-source-observations.json](../validation/p7-r04b-e01/e02-source-observations.json)。没有为不存在的正文生成 SHA256，没有把待核验标题、发布日期或时区写成已认证事实。
+
+R04A 原始门槛是“官方上市与首根交叉核实”，不要求秒或毫秒级首笔成交。经核验的公告计划上线时间、留档 onboardDate 与包含该时刻的真实小时成交桶可以形成该等级的交叉证据；小时桶起点不能被解释为实际首笔成交时刻。当前缺的是可取得并核验的官方公告正文及其时间语义，不是必须补齐逐笔时间。分钟线不能替代缺失的公告，因此本轮未下载分钟行情。
+
+重新运行原有 `--preflight-only`，程序实际生成 [e02-preflight/preflight.json](../validation/p7-r04b-e01/e02-preflight/preflight.json)：原 generation、manifest SHA256、行情 SHA256、2,160 根闭合小时线及冻结设计均 PASS，研究准入仍 BLOCKED，退出码 2，检查时磁盘可用 96,325,943,296 bytes。正式账户执行数仍为 0，B/D、模式、成本、FIFO 与跨窗口经济比较均为未运行，而非零收益。没有修改 `require_admission()`、冻结参数或旧 preflight。
+
+当前状态为 **P7_R04B_ADMISSION_BLOCKED**。TODO：取得指定官方公告正文或可认证的官方原文补充来源，核验发布日期时区与上线时间，保存实际内容及 SHA256 收据；通过原门槛后重新生成 PASS，再无条件执行全部 16 账户。
+
+复现本轮预检（输出路径必须不存在）：
+
+```bash
+PYTHONPATH=src D:/Environments/anaconda3/python.exe examples/research/grid_independent_demo.py \
+  --snapshot D:/Code/p7-r04b-official-payloads/certified/runs/bde00b2f948842e2b8c2a00465a9f8c6 \
+  --output docs/validation/p7-r04b-e01/e02-preflight --preflight-only
+```
 
 ## 最小研究入口
 
