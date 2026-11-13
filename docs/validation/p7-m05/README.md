@@ -47,7 +47,7 @@ Known historical IDs, deduplicated by exact identity:
 | `m04-3f07f8d7d793423d-01` | Prior M05 private preparation with matching full binding; refreshed exact GET returns -2013 ABSENT; preparation recorded zero POST/DELETE. |
 | `m05-21c7e4fe2d7d4f2e-01` | Newly generated candidate; preparation exact GET returns -2013 ABSENT. |
 
-No unresolved UNKNOWN was found in the located records. **LOCAL_HISTORY_INCOMPLETE** remains: missing execution journals and exact-ID absence cannot prove that no historical order ever existed, including orders outside exchange retention. Current flatness and no open orders are distinct facts. Any recovered local UNKNOWN must retain the existing conservative block until exact-ID recovery resolves it. The user must disclose any additional execution roots, attempts or unknown identities associated with this credential/account; no new order may be used to test history.
+No unresolved UNKNOWN was found in the located records. **LOCAL_HISTORY_INCOMPLETE** remains: missing execution journals and exact-ID absence cannot prove that no historical order ever existed, including orders outside exchange retention. Current flatness and no open orders are distinct facts. Any recovered local UNKNOWN must retain the existing conservative block until exact-ID recovery resolves it. USER_DECLARATION recorded on 2026-11-14: no manual orders, other script executions or ambiguous order outcomes occurred on this Demo account outside the reviewed M02–M05 flows. This closes the requested additional-history disclosure, but does not reconstruct missing local journals or constitute exchange-wide historical proof. No new order may be used to test history.
 
 ## Candidate boundaries and immutable identities
 
@@ -99,4 +99,4 @@ Targeted existing preparation, bounded quote, network, execution and preflight s
 
 Private original receipts remain at `D:/Code/FactorLab-final-evidence/p7-m05-e01/private/preparation.json` and sibling `history.json`; the local masked preparation is in sibling `review/preparation.json`. They are not uploaded. No new environment, order ledger or admission system was created.
 
-TODO: Obtain the missing-history disclosure; establish a current, consistent observation time and generate a new unexpired candidate for independent approval. Until then formal approval preparation is not complete. No prior authorization carries forward and no order write is authorized by this report.
+TODO: Establish a current, consistent observation time and generate a new unexpired candidate for independent approval; retain LOCAL_HISTORY_INCOMPLETE as a disclosed residual evidence gap. Until then formal approval preparation is not complete. No prior authorization carries forward and no order write is authorized by this report.
