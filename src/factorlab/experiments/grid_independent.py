@@ -20,6 +20,7 @@ GENERATION = 'bde00b2f948842e2b8c2a00465a9f8c6'
 BARS_SHA256 = '16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab'
 MANIFEST_SHA256 = 'a689366daf5815f4fea2726fa213197d5505ae89548083a094d39476aae3e12c'
 PREREGISTRATION_SHA256 = '7a599b39d13f8cc009a8a37ecc82c3375e09ed587d4997684e39853767fcc43c'
+FROZEN_SOURCES_SHA256 = '0989eab0a86c33854636a78af6b6e739baca643d02af61b5cf3290d32fdd7109'
 VERSION = '352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83'
 BOUNDARIES = ['NO LIVE MONEY', 'PIT_UNVERIFIED', 'HFQ_UNVERIFIED', 'FORMAL_ADMISSION_BLOCKED']
 
@@ -48,7 +49,10 @@ def load_design(repository):
         raise StudyBlocked('preregistration lock identity mismatch')
     prereg = locked_json(root, lock['path'], PREREGISTRATION_SHA256)
     sources = json.loads((root / 'docs/validation/p7-r04a/verified-assets.json').read_text(encoding='utf-8'))['frozen_sources']
-    frozen = {path: locked_json(root, path, receipt['sha256']) for path, receipt in sources.items()}
+    source_hashes = {path: receipt['sha256'] for path, receipt in sources.items()}
+    if digest(json.dumps(source_hashes, sort_keys=True, separators=(',', ':')).encode()) != FROZEN_SOURCES_SHA256:
+        raise StudyBlocked('frozen source mapping digest mismatch')
+    frozen = {path: locked_json(root, path, expected) for path, expected in source_hashes.items()}
     lifecycle = frozen[prereg['strategy_source']]
     config = GridConfig(**frozen[lifecycle['base_config']])
     rules = GridRules(**{k: D(v) for k, v in frozen[lifecycle['rules']].items()})
@@ -133,7 +137,8 @@ def execute_matrix(output, *, bars, identity, prereg, lifecycle, config, rules, 
             slippage=D(slip)/10000, participation=D(prereg['risk']['participation']),
             interval='1h', market=Market.BINANCE_USDM, instrument_id=identity['instrument_id'],
             data_identity=identity, no_trade=arm == 'cash', buy_hold=arm == 'fixed_budget_buy_hold',
-            account_id=account, reference_budget=(dict(
+            account_id=account, max_exit_quantity=D(prereg['risk']['max_order_base_units']),
+            reference_budget=(dict(
                 max_inventory=prereg['risk']['max_inventory_base_units'],
                 max_order=prereg['risk']['max_order_base_units']) if arm == 'fixed_budget_buy_hold' else None))
         metrics = lifecycle_metrics(directory)

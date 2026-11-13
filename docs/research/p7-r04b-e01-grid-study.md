@@ -30,6 +30,24 @@ PYTHONPATH=src D:/Environments/anaconda3/python.exe examples/research/grid_indep
   --output docs/validation/p7-r04b-e01/e02-preflight --preflight-only
 ```
 
+## R04B-E03：冻结身份与风险退出单量修复
+
+来源冻结原先只核验配置和可同时更新的收据自洽，不能独立确认既定设计。现从已合并 R04A 提交 `0d3c4a17eab5ddb6294c1f7fa183dd781c89e66f` 的 `verified-assets.json` 提取四个冻结来源的 `path → sha256` 映射，以 `json.dumps(mapping, sort_keys=True, separators=(',', ':')).encode()` 规范化，固定摘要 **`0989eab0a86c33854636a78af6b6e739baca643d02af61b5cf3290d32fdd7109`**。`load_design()` 先比较此独立代码常量，再验证各文件；路径替换、增删来源及配置/收据同时改写均不再可自证通过。原预注册、配置和内容锁保持不变，LF/CRLF 等价仍保留。代码固定摘要是针对既定版本的变更检测，不是抵御仓库代码与证据同时被恶意修改的密码学签名证明。
+
+风险退出原先把总库存一次性作为 MARKET SELL 数量，事后的成交量检查无法保证提交单量。新增可选 `max_exit_quantity`，由 R04B 原入口从冻结 `max_order_base_units=0.1` 注入，默认 `None` 保留 R03 聚合退出。约束绑定既有部署身份和 Paper checkpoint，并进入运行 manifest。`GridExecution._settle()` 依数量步长、最小数量、当前价格及最小名义额计算合法分批；预留剩余各批的最小合法数量，避免贪心切分产生本可避免的非法尾单。`_propose()` 在创建退出订单前限制单量。仍只有前单权威终态确认且无活动订单后，才按真实剩余库存创建下一张唯一 ID 订单；部分成交不提前追加，沿用下一可执行 Bar、共享撮合、费用和滑点口径。无法合法分批时保留 `EXITING` 和真实库存，以已有 reason 字段记录 `RISK_EXIT_FILTERS`，不增加状态体系或放宽过滤器。
+
+直接回归位于 `tests/research/test_grid_p2_regressions.py`：原样与 LF/CRLF、单改配置、配置/收据同步篡改、路径替换及来源增删；真实 Paper 买入后单库存、多库存退出、参与量限制下部分成交、合法尾单分配、不可退出库存及默认聚合退出。FIFO 从既有权威事件读取，仍要求 NAV 残差和报告权益差均不超过 `1e-8 USDT`。新增直接回归 **14 passed，11.57 秒**，见 [e03-direct-tests.xml](../validation/p7-r04b-e01/e03-direct-tests.xml)；受影响五个原测试文件（independent、FIFO、Paper experiment、lifecycle、GridExecution）**80 passed，87.81 秒**，见 [e03-affected-tests.xml](../validation/p7-r04b-e01/e03-affected-tests.xml)。直接回归调试中，单库存夹具最初在 breakout 同一 Bar 被取消而未形成买入，改用先完成买入、下一 Bar 突破的因果路径；尾单夹具最初参与量不足以满足既有逐次成交最小名义额，改为只在买入段限制参与量，退出段提供足够量，且按权威记录计入突破 Bar 实际新增成交。未修改撮合或过滤器来迁就夹具。工程审查状态为 **P7_R04B_P2_REVIEW_FIXED**，不代表正式机制研究完成。
+
+修复后直接调用冻结历史入口：
+
+```bash
+PYTHONPATH=src D:/Environments/anaconda3/python.exe examples/research/grid_independent_demo.py \
+  --snapshot D:/Code/p7-r04b-official-payloads/certified/runs/bde00b2f948842e2b8c2a00465a9f8c6 \
+  --output results/p7-r04b-e03-history
+```
+
+实际退出码 **2**：`P7_R04B_BLOCKED: official listing announcement / precise first-trade cross-check unresolved`，在创建账户之前停止。正式历史账户仍为 0；没有真实收益可报告，也没有旧正式结果需要重算。原上市证据通过后必须用修复代码从原冻结行情完整运行 16 账户，不拼接部分结果。紧凑收据见 [e03-assessment.json](../validation/p7-r04b-e01/e03-assessment.json)。
+
 ## 最小研究入口
 
 `factorlab.experiments.grid_independent` 读取原预注册、R04A 内容锁及冻结源文件，验证原始 SHA256。预注册锁按 Git LF 内容冻结，部分旧配置锁按 Windows CRLF 原始字节冻结；只允许 LF/CRLF 换行等价，不允许 JSON 值、空格等其他内容静默改变。

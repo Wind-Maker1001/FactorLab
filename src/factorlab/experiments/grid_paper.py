@@ -81,7 +81,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    start=None, end=None, participation=1, fee_estimate=None, no_trade=False,
                    market=Market.BINANCE_EQUITY, instrument_id=SYMBOL, data_identity=None,
                    interval='1d', buy_hold=False, reference_budget=None,
-                   account_id='research-grid'):
+                   account_id='research-grid', max_exit_quantity=None):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -132,7 +132,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             limits=RiskLimits(capital, capital, capital, 1000))
         grid = GridExecution(config, rules, deployment_id='research', account_id=account_id,
             market=market, instrument_id=instrument_id, initial_equity=capital,
-            fee_rate=fee_rate, fees=fee_estimate)
+            fee_rate=fee_rate, fees=fee_estimate, max_exit_quantity=max_exit_quantity)
         rows, trades, risk = [], [], []
         order_details = {}
         lifecycle = []
@@ -322,6 +322,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             slippage=slippage, participation=participation, no_trade=no_trade,
             interval=interval, buy_hold=buy_hold,
             account_id=account_id, reference_budget=reference_budget,
+            max_exit_quantity=max_exit_quantity,
             market=market.value, instrument_id=instrument_id,
             fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
         return result

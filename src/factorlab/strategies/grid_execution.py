@@ -184,7 +184,7 @@ class GridExecution:
     grid_prices = GridStrategy.grid_prices
 
     def __init__(self, config, rules, *, deployment_id, account_id, market, instrument_id,
-                 initial_equity, fee_rate=None, fees=None):
+                 initial_equity, fee_rate=None, fees=None, max_exit_quantity=None):
         validate_identity(deployment_id)
         validate_identity(account_id)
         validate_identity(instrument_id)
@@ -198,6 +198,9 @@ class GridExecution:
         self.fees = fees or FeeSchedule([FeeRule('1900-01-01',
             commission_bps=config.fee_bps if fee_rate is None else float(fee_rate * 10000),
             minimum_commission_cny=0, slippage_bps=config.slippage_bps)])
+        if max_exit_quantity is not None:
+            decimal_value(max_exit_quantity, 'max_exit_quantity', positive=True)
+        self.max_exit_quantity = max_exit_quantity
         self.timestamp = None
         self.config, self.rules = config, rules
         self.deployment_id = deployment_id
@@ -254,6 +257,8 @@ class GridExecution:
                 (self.state == 'EXITING' and market and side == Side.SELL)):
             return
         r, a, c = self.rules, self.account, self.config
+        if market and side == Side.SELL and self.max_exit_quantity is not None:
+            quantity = min(quantity, self.max_exit_quantity)
         quantity = (quantity / r.step_size).to_integral_value(rounding=ROUND_FLOOR) * r.step_size
         target = D(target)
         price = (target / r.tick_size).to_integral_value(
@@ -351,7 +356,21 @@ class GridExecution:
                     self._risk('EXPIRY_RESEED_BLOCKED')
         elif self.state == 'EXITING':
             if self.account.inventory:
-                self._propose(Side.SELL, self.price, self.account.inventory, market=True)
+                quantity = self.account.inventory
+                if self.max_exit_quantity is not None:
+                    r = self.rules
+                    minimum = (max(r.min_quantity, D(self.config.minimum_quantity) * r.quantity_unit,
+                                   r.min_notional / self.price) / r.step_size).to_integral_value(
+                                       rounding=ROUND_CEILING) * r.step_size
+                    quantity = (min(quantity, self.max_exit_quantity) // r.step_size) * r.step_size
+                    if quantity > 0:
+                        chunks = (self.account.inventory / quantity).to_integral_value(rounding=ROUND_CEILING)
+                        quantity = (min(quantity, self.account.inventory - (chunks - 1) * minimum)
+                                    // r.step_size) * r.step_size
+                    if quantity < minimum:
+                        self.reason = 'RISK_EXIT_FILTERS'
+                        return
+                self._propose(Side.SELL, self.price, quantity, market=True)
             else:
                 self.state = 'EXITED'
 
@@ -479,7 +498,9 @@ class GridExecution:
                 self._risk('MAX_TURNOVER')
 
     def deployment(self):
-        return dict(config=asdict(self.config), rules=asdict(self.rules),
+        return dict(({'max_exit_quantity': self.max_exit_quantity}
+                     if self.max_exit_quantity is not None else {}),
+            config=asdict(self.config), rules=asdict(self.rules),
             deployment_id=self.deployment_id, account_id=self.account_id,
             market=self.market, instrument_id=self.instrument_id,
             initial_equity=self.initial_equity, fees=[asdict(rule) | {
