@@ -8,10 +8,12 @@ from factorlab.strategies.grid_execution import GridAccount, GridExecution
 from factorlab.trading import Market, OrderEvent, OrderStatus, OrderType, Side
 from factorlab.trading.contracts import TERMINAL
 from factorlab.trading.storage import decode, dumps
+from factorlab.trading.paper import Quote
 
 from .demo_runtime import MAX_NOTIONAL, MAX_QUANTITY
 from .execution import DemoExecutionGateway, DemoExecutionTransport
 from .protocol import SafetyBlocked
+from .demo_session import DemoSession
 
 ZERO = Decimal(0)
 
@@ -23,18 +25,28 @@ def minimum_quantity(rules, price):
 
 
 class DemoGridBridge:
-    """Offline composition seam; does not grant network execution authority.
+    """Serial composition seam; does not grant network execution authority.
 
     Pending Grid proposals remain reservations, not exchange orders. Commands
     persist strategy inputs in the controller journal so a crash before dispatch
     cannot lose an issued identity. Economic events stay in the existing ledger.
     """
 
-    def __init__(self, grid, controller):
+    def __init__(self, grid, controller, *, expect=None):
+        self.session = controller if isinstance(controller, DemoSession) else None
+        self.expect = expect
+        if self.session is not None:
+            controller = self.session.controller
+            if expect is None or self.session._write_guard is None:
+                raise SafetyBlocked('Grid network delivery requires persistent runtime admission')
+            plan = self.session.client.transport.authorization.plan
+            if (not grid.deployment_id.startswith(plan.client_id_prefix + '-')
+                    or len(grid.deployment_id) + 9 > 36):
+                raise SafetyBlocked('Grid identity is outside the authorized campaign or length limit')
         gateway = controller.broker
-        if not isinstance(gateway, DemoExecutionGateway) or not isinstance(
-                gateway.adapter.client.transport, DemoExecutionTransport):
-            raise SafetyBlocked('Grid bridge currently requires offline Demo transport')
+        if not isinstance(gateway, DemoExecutionGateway) or (self.session is None and not isinstance(
+                gateway.adapter.client.transport, DemoExecutionTransport)):
+            raise SafetyBlocked('Grid network delivery requires a bound Demo session')
         if not isinstance(grid, GridExecution) or (grid.market, grid.account_id, grid.instrument_id) != (
                 Market.BINANCE_USDM, gateway.adapter.account_id, 'NVDAUSDT'):
             raise ValueError('Grid Demo identity mismatch')
@@ -135,7 +147,12 @@ class DemoGridBridge:
     def recover(self):
         """GET-reconcile first; replay missing confirmations, never resubmit."""
         self.ready = False
-        self.gateway.recover(self.controller)
+        if self.session is None:
+            self.gateway.recover(self.controller)
+        else:
+            self.session.recover()
+            book = self.session._fresh_book()
+            self.controller.quote(Quote(self.grid.instrument_id, book['askPrice'], book['time_utc']))
         if not self.account().reconciled:
             raise SafetyBlocked('RECONCILE_REQUIRED')
         if not self.restored:
@@ -175,8 +192,8 @@ class DemoGridBridge:
                 self._command('confirm', event)
                 continue
             if known[key].snapshot.status not in TERMINAL:
-                result = self.controller.cancel(key)
-                self.ready = result is not None
+                result = (self.controller.cancel(key) if self.session is None else self.session.cancel(key))
+                self.ready = result is not None and not (self.session and self.session.write_uncertain)
                 self._sync()
                 return result
         if self.controller.account().open_orders:
@@ -188,15 +205,20 @@ class DemoGridBridge:
             account = self.account()
             quote = self.gateway.state.quotes[intent.instrument_id].price
             if intent.order_type is not OrderType.LIMIT:
-                raise SafetyBlocked('Demo Grid requires LIMIT orders')
+                self.ready = False
+                raise SafetyBlocked('Demo Grid requires LIMIT orders; delivery paused for manual risk disposition')
             notional = intent.quantity * max(intent.limit_price, quote)
             if (intent.quantity > MAX_QUANTITY or notional > MAX_NOTIONAL
                     or (intent.side is Side.BUY and (account.inventory + intent.quantity > MAX_QUANTITY
                         or account.committed + notional > MAX_NOTIONAL))
                     or (intent.side is Side.SELL and (not intent.reduce_only or intent.quantity > account.inventory))):
                 raise SafetyBlocked('Grid intent exceeds Demo budget or confirmed inventory')
-            result = self.controller.submit(intent)
-            self.ready = result is not None
+            if self.session is None:
+                result = self.controller.submit(intent)
+            else:
+                self.expect(intent)
+                result = self.session.submit_intent(intent)
+            self.ready = result is not None and not (self.session and self.session.write_uncertain)
             self._sync()
             return result
         return None
