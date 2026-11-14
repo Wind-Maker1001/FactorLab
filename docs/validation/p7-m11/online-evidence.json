@@ -1,0 +1,492 @@
+{
+  "disposition": "PARTIAL",
+  "campaign": "demo-c5b931026bf948fbaa6f55110c465af0",
+  "workers": {
+    "first": [
+      {
+        "status": "RUNNING",
+        "reason": null,
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682320000,
+          1794682322015
+        ],
+        "last_bar": "2026-11-14 18:52:00+00:00",
+        "requests": {
+          "GET": 140,
+          "POST": 1,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": null,
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682380000,
+          1794682390239
+        ],
+        "last_bar": "2026-11-14 18:53:00+00:00",
+        "requests": {
+          "GET": 184,
+          "POST": 1,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "EXITED",
+        "reason": null,
+        "bars": null,
+        "quotes": null,
+        "watermarks": [
+          1794682380000,
+          1794682390239
+        ],
+        "last_bar": "2026-11-14 18:53:00+00:00",
+        "requests": {
+          "GET": 184,
+          "POST": 1,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      }
+    ],
+    "restart": [
+      {
+        "status": "RUNNING",
+        "reason": "PAUSED",
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682440000,
+          1794682498987
+        ],
+        "last_bar": "2026-11-14 18:54:00+00:00",
+        "requests": {
+          "GET": 54,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": "PAUSED",
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682500000,
+          1794682526787
+        ],
+        "last_bar": "2026-11-14 18:55:00+00:00",
+        "requests": {
+          "GET": 98,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": "PAUSED",
+        "bars": 0,
+        "quotes": 1,
+        "watermarks": [
+          1794682500000,
+          1794682553847
+        ],
+        "last_bar": "2026-11-14 18:55:00+00:00",
+        "requests": {
+          "GET": 142,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": "PAUSED",
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682560000,
+          1794682604703
+        ],
+        "last_bar": "2026-11-14 18:56:00+00:00",
+        "requests": {
+          "GET": 186,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "EXITED",
+        "reason": "PAUSED",
+        "bars": null,
+        "quotes": null,
+        "watermarks": [
+          1794682560000,
+          1794682604703
+        ],
+        "last_bar": "2026-11-14 18:56:00+00:00",
+        "requests": {
+          "GET": 186,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      }
+    ],
+    "resumed": [
+      {
+        "status": "RUNNING",
+        "reason": "FRESH_CLOSED_BAR_REQUIRED",
+        "bars": 4,
+        "quotes": 1,
+        "watermarks": [
+          1794682800000,
+          1794682821667
+        ],
+        "last_bar": "2026-11-14 19:00:00+00:00",
+        "requests": {
+          "GET": 54,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": null,
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682860000,
+          1794682883131
+        ],
+        "last_bar": "2026-11-14 19:01:00+00:00",
+        "requests": {
+          "GET": 98,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": null,
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682920000,
+          1794682955816
+        ],
+        "last_bar": "2026-11-14 19:02:00+00:00",
+        "requests": {
+          "GET": 142,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": null,
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794682980000,
+          1794683005715
+        ],
+        "last_bar": "2026-11-14 19:03:00+00:00",
+        "requests": {
+          "GET": 186,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      },
+      {
+        "status": "RUNNING",
+        "reason": null,
+        "bars": 1,
+        "quotes": 1,
+        "watermarks": [
+          1794683040000,
+          1794683060999
+        ],
+        "last_bar": "2026-11-14 19:04:00+00:00",
+        "requests": {
+          "GET": 230,
+          "POST": 0,
+          "DELETE": 0
+        },
+        "deployment_id": "fl-b77ee78873704451-g"
+      }
+    ]
+  },
+  "reconciliations": {
+    "restart-recovery": {
+      "observed_at": "2026-11-14 18:54:12.559635+00:00",
+      "reconciled": true,
+      "positions": [],
+      "open_orders": [
+        {
+          "client_order_id": "fl-b77ee78873704451-g-00000001",
+          "symbol": "NVDAUSDT",
+          "side": "BUY",
+          "order_id": "191960373",
+          "status": "NEW",
+          "filled_quantity": "0"
+        }
+      ],
+      "unknown": [],
+      "requests": {
+        "GET": 51,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-c5b931026bf948fbaa6f55110c465af0",
+        "expires_at": "2026-11-14T19:48:52.136355+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      },
+      "order": {
+        "order_id": "191960373",
+        "side": "BUY",
+        "status": "SUBMITTED",
+        "quantity": "0.04",
+        "limit_price": "158.83000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 18:52:20.815000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:97451bfb10d3ffdcaaf1d6144ee022c7142101e979d03d8d8e7235d1dd09479c",
+        "rejection": null
+      }
+    },
+    "clock-recovery": {
+      "observed_at": "2026-11-14 18:58:56.851048+00:00",
+      "reconciled": true,
+      "positions": [],
+      "open_orders": [
+        {
+          "client_order_id": "fl-b77ee78873704451-g-00000001",
+          "symbol": "NVDAUSDT",
+          "side": "BUY",
+          "order_id": "191960373",
+          "status": "NEW",
+          "filled_quantity": "0"
+        }
+      ],
+      "unknown": [],
+      "requests": {
+        "GET": 51,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-c5b931026bf948fbaa6f55110c465af0",
+        "expires_at": "2026-11-14T19:48:52.136355+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      },
+      "order": {
+        "order_id": "191960373",
+        "side": "BUY",
+        "status": "SUBMITTED",
+        "quantity": "0.04",
+        "limit_price": "158.83000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 18:52:20.815000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:97451bfb10d3ffdcaaf1d6144ee022c7142101e979d03d8d8e7235d1dd09479c",
+        "rejection": null
+      }
+    },
+    "final-precleanup": {
+      "observed_at": "2026-11-14 19:06:48.692668+00:00",
+      "reconciled": true,
+      "positions": [],
+      "open_orders": [
+        {
+          "client_order_id": "fl-b77ee78873704451-g-00000001",
+          "symbol": "NVDAUSDT",
+          "side": "BUY",
+          "order_id": "191960373",
+          "status": "NEW",
+          "filled_quantity": "0"
+        }
+      ],
+      "unknown": [],
+      "requests": {
+        "GET": 51,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-c5b931026bf948fbaa6f55110c465af0",
+        "expires_at": "2026-11-14T19:48:52.136355+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      },
+      "order": {
+        "order_id": "191960373",
+        "side": "BUY",
+        "status": "SUBMITTED",
+        "quantity": "0.04",
+        "limit_price": "158.83000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 18:52:20.815000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:97451bfb10d3ffdcaaf1d6144ee022c7142101e979d03d8d8e7235d1dd09479c",
+        "rejection": null
+      }
+    },
+    "cancel": {
+      "observed_at": "2026-11-14 19:08:04.127523+00:00",
+      "reconciled": true,
+      "positions": [],
+      "open_orders": [],
+      "unknown": [],
+      "requests": {
+        "GET": 100,
+        "POST": 0,
+        "DELETE": 1
+      },
+      "budget": {
+        "campaign": "demo-c5b931026bf948fbaa6f55110c465af0",
+        "expires_at": "2026-11-14T19:48:52.136355+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      },
+      "order": {
+        "order_id": "191960373",
+        "side": "BUY",
+        "status": "CANCELED",
+        "quantity": "0.04",
+        "limit_price": "158.83000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 19:07:35.011000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:592bad21c72d9b794808f19cb9b88937cfff8438b5259b201f1780e110a2d34d",
+        "rejection": null
+      }
+    },
+    "after-cancel": {
+      "observed_at": "2026-11-14 19:08:45.052928+00:00",
+      "reconciled": true,
+      "positions": [],
+      "open_orders": [],
+      "unknown": [],
+      "requests": {
+        "GET": 51,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-c5b931026bf948fbaa6f55110c465af0",
+        "expires_at": "2026-11-14T19:48:52.136355+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      },
+      "order": {
+        "order_id": "191960373",
+        "side": "BUY",
+        "status": "CANCELED",
+        "quantity": "0.04",
+        "limit_price": "158.83000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 19:07:35.011000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:592bad21c72d9b794808f19cb9b88937cfff8438b5259b201f1780e110a2d34d",
+        "rejection": null
+      }
+    },
+    "final": {
+      "observed_at": "2026-11-14 19:09:42.500292+00:00",
+      "reconciled": true,
+      "positions": [],
+      "open_orders": [],
+      "unknown": [],
+      "requests": {
+        "GET": 51,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-c5b931026bf948fbaa6f55110c465af0",
+        "expires_at": "2026-11-14T19:48:52.136355+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": false
+      },
+      "order": {
+        "order_id": "191960373",
+        "side": "BUY",
+        "status": "CANCELED",
+        "quantity": "0.04",
+        "limit_price": "158.83000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 19:07:35.011000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:592bad21c72d9b794808f19cb9b88937cfff8438b5259b201f1780e110a2d34d",
+        "rejection": null
+      }
+    }
+  },
+  "write_receipts": [
+    {
+      "method": "POST",
+      "http_status": 200,
+      "client_order_id": "fl-b77ee78873704451-g-00000001",
+      "code": null,
+      "message": null,
+      "order_id": "191960373",
+      "status": "NEW",
+      "filled_quantity": "0.00"
+    },
+    {
+      "method": "DELETE",
+      "http_status": 200,
+      "client_order_id": "fl-b77ee78873704451-g-00000001",
+      "code": null,
+      "message": null,
+      "order_id": "191960373",
+      "status": "CANCELED",
+      "filled_quantity": "0.00"
+    }
+  ],
+  "authorization_shutdown": {
+    "status": "DEMO_STOPPED",
+    "enabled": false
+  }
+}
