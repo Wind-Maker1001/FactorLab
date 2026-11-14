@@ -1,0 +1,74 @@
+[
+  {
+    "arm": "B",
+    "fifo_residual": "0E-25",
+    "final_state": "RUNNING",
+    "first_hour_equity": 1000.0,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "mode": "geometric",
+    "reported_nav_difference": "0E-25",
+    "scenario": "base",
+    "configuration_rules_execution_equal_r04b": true
+  },
+  {
+    "arm": "D",
+    "fifo_residual": "0E-25",
+    "final_state": "RUNNING",
+    "first_hour_equity": 1000.0,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "mode": "geometric",
+    "reported_nav_difference": "0E-25",
+    "scenario": "base",
+    "configuration_rules_execution_equal_r04b": true
+  },
+  {
+    "arm": "D",
+    "fifo_residual": "0E-12",
+    "final_state": "EXITED",
+    "first_hour_equity": 1000.0,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "mode": "atr",
+    "reported_nav_difference": "0E-12",
+    "scenario": "base",
+    "configuration_rules_execution_equal_r04b": true
+  },
+  {
+    "arm": "B",
+    "fifo_residual": "0E-25",
+    "final_state": "RUNNING",
+    "first_hour_equity": 1000.0,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "mode": "geometric",
+    "reported_nav_difference": "0E-25",
+    "scenario": "stress",
+    "configuration_rules_execution_equal_r04b": true
+  },
+  {
+    "arm": "D",
+    "fifo_residual": "0E-25",
+    "final_state": "RUNNING",
+    "first_hour_equity": 1000.0,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "mode": "geometric",
+    "reported_nav_difference": "0E-25",
+    "scenario": "stress",
+    "configuration_rules_execution_equal_r04b": true
+  },
+  {
+    "arm": "D",
+    "fifo_residual": "0",
+    "final_state": "PAUSED",
+    "first_hour_equity": 1000.0,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "mode": "atr",
+    "reported_nav_difference": "0.0",
+    "scenario": "stress",
+    "configuration_rules_execution_equal_r04b": true
+  }
+]

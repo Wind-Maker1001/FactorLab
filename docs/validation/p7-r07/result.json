@@ -1,0 +1,12 @@
+{
+  "status": "TEMPORAL_REPLICATION_MIXED",
+  "positive_funded_closed_cycles_both_costs": true,
+  "positive_funded_accounts_both_costs": false,
+  "accounts": 6,
+  "boundaries": [
+    "NO LIVE MONEY",
+    "EXPLORATORY_RESEARCH"
+  ],
+  "funding": "POSTHOC_NO_CASH_CONSTRAINT_FEEDBACK",
+  "sample": "PREVIOUSLY_USED_R02_WINDOW_NOT_STRICT_OOS"
+}

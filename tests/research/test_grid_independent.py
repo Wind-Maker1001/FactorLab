@@ -147,6 +147,40 @@ def test_reference_low_budget_rounding_and_partial_shared_volume(tmp_path):
     assert partial.inventory.tolist() == pytest.approx([0, .05, .1, .15])
 
 
+@pytest.mark.parametrize('target,maximum,step,capital,legal', [
+    ('.11', '.10', '.01', 100, True),
+    ('1', '.10', '.01', 23, True),
+    ('.10', '.10', '.01', 100, True),
+    ('.02', '.10', '.01', 100, False),
+    ('.11', '.02', '.01', 100, False),
+    ('.05', '.04', '.01', 100, False),
+])
+def test_reference_exact_legal_partition(tmp_path, target, maximum, step, capital, legal):
+    tmp_path = tmp_path / 'reference'
+    _, _, config, rules, _ = study.load_design(ROOT)
+    rules = replace(rules, step_size=D(step), min_quantity=D('.01'), min_notional=D(5))
+    kwargs = dict(bars=hourly_bars([200, 200]), config=config, rules=rules,
+        capital=capital, fee_rate=D('.0004'), slippage=D('.0006'), participation=D('.01'),
+        market=Market.BINANCE_USDM, instrument_id='BINANCE:USDM:NVDAUSDT', interval='1h',
+        buy_hold=True, reference_budget=dict(max_inventory=target, max_order=maximum))
+    if not legal:
+        with pytest.raises(ValueError, match='bounded reference'):
+            run_experiment(tmp_path, **kwargs)
+        return
+    run_experiment(tmp_path, **kwargs)
+    result = json.loads((tmp_path / 'result.json').read_text())
+    intents = [order['intent'] for order in result['orders'].values()]
+    quantities = [D(intent['quantity']) for intent in intents]
+    expected = min(D(target), D(capital) / (D(200) * D('1.0006') * D('1.0004')))
+    expected = expected // D(step) * D(step)
+    assert sum(quantities, D(0)) == expected
+    assert all(q % D(step) == 0 and rules.min_quantity <= q <= D(maximum) for q in quantities)
+    assert all(D(intent['quantity']) * D(intent['limit_price']) >= D(5) for intent in intents)
+    assert sum(D(intent['quantity']) * D(intent['limit_price']) * D('1.0004')
+               for intent in intents) <= D(capital)
+    assert pd.read_csv(tmp_path / 'daily.csv').committed.max() <= capital
+
+
 def test_all_sixteen_synthetic_accounts_serial_parallel_equal(tmp_path):
     prereg, lifecycle, config, rules, hashes = study.load_design(ROOT)
     bars = hourly_bars([200, 189, 201, 190, 202, 188, 203, 199])

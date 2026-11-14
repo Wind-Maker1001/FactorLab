@@ -1,0 +1,27 @@
+{
+  "max_benchmark_fifo_nav_difference": 5.684341886080802e-14,
+  "fixed_reference": {
+    "base": {
+      "net_pnl": 0.0,
+      "max_drawdown": 0.0,
+      "mean_notional": 0.0,
+      "max_notional": 0.0,
+      "max_committed": 0.0,
+      "holding_fraction": 0.0,
+      "fills": 0.0,
+      "turnover_usdt": 0.0,
+      "total_cost": 0.0
+    },
+    "stress": {
+      "net_pnl": 0.0,
+      "max_drawdown": 0.0,
+      "mean_notional": 0.0,
+      "max_notional": 0.0,
+      "max_committed": 0.0,
+      "holding_fraction": 0.0,
+      "fills": 0.0,
+      "turnover_usdt": 0.0,
+      "total_cost": 0.0
+    }
+  }
+}
