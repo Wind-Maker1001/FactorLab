@@ -322,6 +322,7 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
                 read_only=read_only)
             with controller_store.transaction():
                 controller_store.record_metadata(key + ':' + deployment['campaign'], deployment)
+            bridge.runtime = runtime
             yield bridge
 
 

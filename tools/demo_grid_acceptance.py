@@ -58,12 +58,25 @@ def submit_initial(bridge):
             bridge.controller.store.record_metadata(key, event)
     else:
         event = decode(json.loads(raw))
-    # Command replay already includes this observation, even after an unknown POST.
+    # Replay restores proposals; only the first identity may resume before execution.
     for (payload,) in bridge.controller.store.db.execute(
             'SELECT payload FROM events WHERE id LIKE ?', (bridge.prefix + 'command:%',)):
         command = decode(json.loads(payload))
         if command['action'] == 'observe' and command['value']['id'] == event['id']:
-            return None
+            identity = bridge.grid.deployment_id + '-00000001'
+            proposals = bridge.grid.active
+            if (len(proposals) != 1 or proposals[0].intent.client_order_id != identity
+                    or proposals[0].intent.side.value != 'BUY'
+                    or identity in bridge.grid.cancellations
+                    or bridge.grid.state != 'RUNNING'
+                    or identity in bridge.gateway.state.orders
+                    or bridge.session.adapter.db.execute(
+                        'SELECT 1 FROM futures_orders WHERE id=?', (identity,)).fetchone()):
+                return None
+            if bridge.runtime.db.execute("SELECT 1 FROM dispatches WHERE method='POST' AND client_id=?",
+                    (identity,)).fetchone():
+                return None
+            return bridge.dispatch()
     return bridge.observe(event)
 
 

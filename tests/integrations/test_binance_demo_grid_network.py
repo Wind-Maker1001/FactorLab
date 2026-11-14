@@ -378,6 +378,7 @@ def test_acceptance_restart_changed_book_and_readonly_after_stop(network_grid, m
         assert bridge.grid.active[0].intent.client_order_id == key
         assert bridge.controller.store.event_payload(bridge.prefix + 'initial-observation') == observation
         tool.execute(bridge, 'cancel', key)
+        tool.execute(bridge, 'submit')
     assert len(writes(requests)) == len(writes(requests, 'DELETE')) == 1
     with closing(DemoRuntime(root)) as runtime:
         runtime.stop()
@@ -407,6 +408,36 @@ def test_acceptance_utc_conversion_reaches_grid_observe(network_grid):
         assert event['time'] == '2026-11-11T12:00:00'
         assert bridge.observe(event).status is S.SUBMITTED
         assert bridge.grid.timestamp.isoformat() == event['time']
+
+
+@pytest.mark.parametrize('reserved', [False, True])
+def test_acceptance_resumes_only_unattempted_initial_proposal(network_grid, monkeypatch, reserved):
+    tool = acceptance_tool()
+    root, store, factory, enable, fake, requests = network_grid
+    campaign = enable()
+    with open_grid_session(root, store, factory) as bridge:
+        bridge.recover()
+        with monkeypatch.context() as patch:
+            patch.setattr(bridge, 'dispatch', lambda: (_ for _ in ()).throw(SafetyBlocked('temporary quote failure')))
+            with pytest.raises(SafetyBlocked, match='temporary quote'):
+                tool.submit_initial(bridge)
+        identity = bridge.grid.active[0].intent.client_order_id
+        original_price = bridge.grid.active[0].intent.limit_price
+        if reserved:
+            with bridge.runtime.db:
+                bridge.runtime.db.execute('INSERT INTO dispatches VALUES (?, ?, ?, ?, NULL)',
+                    (campaign['id'], 'POST', identity, '{}'))
+        else:
+            tool.execute(bridge, 'recover')
+            assert not writes(requests)
+    with open_grid_session(root, store, tool.factory) as bridge:
+        original = bridge.session._fresh_book
+        monkeypatch.setattr(bridge.session, '_fresh_book', lambda: dict(original(), askPrice=D('151')))
+        tool.execute(bridge, 'submit')
+        tool.execute(bridge, 'submit')
+        assert bridge.grid.active[0].intent.client_order_id == identity
+        assert bridge.grid.active[0].intent.limit_price == original_price
+    assert len(writes(requests)) == (0 if reserved else 1)
 
 
 def test_acceptance_repeated_submit_does_not_dispatch_reverse(network_grid):
