@@ -85,6 +85,7 @@ class FuturesAdapter:
             self.db.execute('UPDATE futures_meta SET reconciled=0')
 
     def submit_order(self, intent):
+        from .network import DemoWriteRefused
         if not isinstance(self.client.transport, OfflineTransport):
             from .network import demo_network_permitted
             if not demo_network_permitted(self.client) or not self.client.transport._admission:
@@ -116,6 +117,11 @@ class FuturesAdapter:
         try:
             row = self.client.request('POST', '/fapi/v1/order', params)
             return self._confirm_write(row, intent.client_order_id)
+        except DemoWriteRefused:
+            # Only this call's placeholder exists, and the transport never attempted HTTP.
+            with self.store.transaction():
+                self.db.execute('DELETE FROM futures_orders WHERE id=?', (intent.client_order_id,))
+            raise
         except ExchangeError as exc:
             if exc.category not in {'RATE_LIMIT', 'ORDER_NOT_FOUND'} and exc.status < 500:
                 event = OrderEvent(intent.client_order_id, None, S.REJECTED, ZERO, None,

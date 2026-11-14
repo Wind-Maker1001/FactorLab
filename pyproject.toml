@@ -26,6 +26,7 @@ binance-equity = ["websockets>=15,<17"]
 
 [project.scripts]
 factorlab = "factorlab.cli:main"
+factorlab-demo = "factorlab.integrations.binance_futures_trading.demo_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

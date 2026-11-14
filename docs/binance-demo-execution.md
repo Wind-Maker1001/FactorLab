@@ -3,9 +3,9 @@
 **NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED**
 
 The P7-D02 contract supports offline construction and response injection for
-official Demo Trading. P7-D03A adds a separate fixed-host network boundary, disabled
-without independent process-local authorization and complete bounded-plan admission.
-No network order execution is authorized by the engineering acceptance.
+official Demo Trading. P7-D03A adds a separate fixed-host network boundary that
+requires process-local authorization and complete bounded-plan admission. The
+Windows CLI creates that authorization from an explicit, account-bound Demo budget.
 `DemoExecutionTransport` is an `OfflineTransport`: its delegate must also be an
 offline transport. Its fixed host identity is `https://demo-fapi.binance.com`,
 but it never constructs a URL, opens a socket or follows a redirect.
@@ -56,6 +56,43 @@ its event. An explicit locally recorded rejection with no exchange order ID is
 not queried as if it were a previously accepted order. Uncertain orders are still
 queried and never inferred to be rejected from ORDER_NOT_FOUND.
 
+## Windows Demo CLI
+
+Run `factorlab-demo setup` after installing FactorLab on Windows. For a source
+checkout, set `PYTHONPATH` to `src` and use
+`python -m factorlab.integrations.binance_futures_trading.demo_cli` in place of
+`factorlab-demo`. Setup first reads the current user's saved Demo key pair,
+then tries `BINANCE_DEMO_API_KEY` and `BINANCE_DEMO_API_SECRET`, and finally
+opens a masked local input window. It verifies the key on the official Demo
+host and stores the pair and private account binding in Windows Credential
+Manager. Subsequent commands read the key from there. Use `credentials-update`
+to change the secret for the same API key. A different API key needs an explicit
+`credentials-delete` followed by `setup`. Deletion stops writes and removes both
+Credential Manager entries. Local order history remains under
+`%LOCALAPPDATA%\FactorLab\BinanceDemo` and is reopened when the same key is set up
+again.
+
+| Command | Operation |
+| --- | --- |
+| `factorlab-demo status` | Read account balances, positions, active orders and local order status after GET reconciliation. |
+| `factorlab-demo recover` | Reopen the existing journals and reconcile using GET only. |
+| `factorlab-demo smoke-test` | Spend the single local acceptance budget. Start flat and submit one `0.04` BUY LIMIT at the fresh ask. Cancel an active known order once. If the entry fills, attempt one reduce-only SELL LIMIT for the confirmed test position, then reconcile again in a separate process. |
+| `factorlab-demo enable-demo --seconds 3600 --orders 4 --max-loss 1` | Enable an explicit one-hour budget of four POST attempts and a 1 USDT loss threshold. The lifetime quantity, exposure and one-open-order rules apply within the campaign. |
+| `factorlab-demo buy-limit 0.04` | Submit a LIMIT from the latest best ask through the active budget and shared controller. |
+| `factorlab-demo reduce-limit 0.04` | Submit a reduce-only SELL LIMIT from the latest best bid against the confirmed long. |
+| `factorlab-demo cancel CLIENT_ORDER_ID` | Spend the active campaign's single cancel attempt for that known order. |
+| `factorlab-demo stop` | Disable the current campaign's writes immediately. `disable-demo` and `kill` are aliases. Existing orders and positions stay recoverable through GET. |
+
+The CLI is limited to one-way `NVDAUSDT`, quantity and net long position up to
+`0.04`, up to `7 USDT` of notional and margin, and one open order. Orders must
+still satisfy current exchange filters and account settings. A campaign's expiry,
+opening equity and consumed writes survive restart. The CLI reconstructs the
+in-process capability only for an active campaign and matching account. An HTTP
+400 stops the run and retains the sanitized response. An uncertain write spends
+its attempt and is recovered by querying the same client ID. A GTC order may
+stay active after a stop, expiry, or an uncertain response. Inspect the reported
+orders and positions after any incomplete run.
+
 ## P7-D03A network admission
 
 `DemoNetworkTransport` is separate from the offline delegate contract. Its URL is
@@ -66,12 +103,14 @@ write boundary. Account configuration, transfers and withdrawals remain absent.
 `DemoExecutionPlan` requires a Demo credential-bound account, NVDAUSDT, immutable
 MARKET/LIMIT type set, positive Decimal quantity/notional/loss/margin limits,
 positive order/open-order/time limits, UTC expiry, client-ID prefix and explicit
-cleanup/recovery policies. There are no real-plan defaults or CLI write switches.
-Synthetic test values are not approved online limits.
+cleanup/recovery policies. The direct constructor requires explicit limits. The
+Windows CLI uses its documented risk limits with an explicitly enabled campaign
+or the one-time smoke budget.
 
 `DemoNetworkAuthorization(plan)` is independent of offline authorization and
 cannot be serialized. It expires by both wall-clock deadline and monotonic elapsed
-time. Restart may reconstruct the plan as data but cannot restore approval.
+time. For an enabled Windows Demo campaign, the CLI checks the persistent budget
+and account on startup before creating a new capability.
 Bind the existing controller using `gateway.bind_controller(controller)`; its
 process-local admitted intent proves the shared risk path was traversed. Rules
 must be the current process's account-bound observation from the same Demo client.
