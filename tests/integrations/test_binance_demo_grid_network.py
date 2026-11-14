@@ -347,3 +347,77 @@ def test_cancel_partial_order_retains_below_minimum_inventory(network_grid):
         assert bridge.account().inventory == D('.02')
         assert bridge.dispatch() is None
     assert len(writes(requests)) == len(writes(requests, 'DELETE')) == 1
+
+
+def acceptance_tool():
+    import importlib.util
+    from pathlib import Path
+    spec = importlib.util.spec_from_file_location('grid_acceptance',
+        Path(__file__).parents[2] / 'tools' / 'demo_grid_acceptance.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_acceptance_restart_changed_book_and_readonly_after_stop(network_grid, monkeypatch):
+    tool = acceptance_tool()
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory) as bridge:
+        deployment = bridge.grid.deployment()
+        tool.execute(bridge, 'submit')
+        key = bridge.grid.active[0].intent.client_order_id
+        observation = bridge.controller.store.event_payload(bridge.prefix + 'initial-observation')
+    # The factory must restore rather than derive a new deployment from a new book.
+    with open_grid_session(root, store, tool.factory) as bridge:
+        assert bridge.grid.deployment() == deployment
+        original = bridge.session._fresh_book
+        monkeypatch.setattr(bridge.session, '_fresh_book', lambda: dict(original(), askPrice=D('151')))
+        tool.execute(bridge, 'submit')
+        assert bridge.grid.active[0].intent.client_order_id == key
+        assert bridge.controller.store.event_payload(bridge.prefix + 'initial-observation') == observation
+        tool.execute(bridge, 'cancel', key)
+    assert len(writes(requests)) == len(writes(requests, 'DELETE')) == 1
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.stop()
+    before = len(requests)
+    with open_grid_session(root, store, read_only=True) as bridge:
+        tool.execute(bridge, 'status')
+        assert bridge.grid.deployment() == deployment
+        assert not bridge.controller.account().open_orders
+        with pytest.raises(SafetyBlocked, match='read-only'):
+            bridge.dispatch()
+        with pytest.raises(SafetyBlocked, match='authorization'):
+            bridge.session.submit_intent(next(iter(bridge.grid.orders.values())))
+        with pytest.raises(SafetyBlocked, match='authorization'):
+            bridge.session.cancel(key)
+    assert all(request.get_method() == 'GET' for request in requests[before:])
+
+
+def test_acceptance_utc_conversion_reaches_grid_observe(network_grid):
+    from datetime import datetime, timedelta, timezone
+    tool = acceptance_tool()
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory) as bridge:
+        bridge.recover()
+        event = tool.initial_observation(dict(askPrice=D('150'),
+            time_utc=datetime(2026, 11, 11, 20, tzinfo=timezone(timedelta(hours=8)))))
+        assert event['time'] == '2026-11-11T12:00:00'
+        assert bridge.observe(event).status is S.SUBMITTED
+        assert bridge.grid.timestamp.isoformat() == event['time']
+
+
+def test_acceptance_repeated_submit_does_not_dispatch_reverse(network_grid):
+    tool = acceptance_tool()
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory) as bridge:
+        tool.execute(bridge, 'submit')
+        key = bridge.grid.active[0].intent.client_order_id
+        fake.trade_update(key, '.04', '146')
+    with open_grid_session(root, store, tool.factory) as bridge:
+        tool.execute(bridge, 'submit')
+        assert bridge.account().inventory == D('.04')
+        assert bridge.grid.active[0].intent.side is Side.SELL
+    assert len(writes(requests)) == 1

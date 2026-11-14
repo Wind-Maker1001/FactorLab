@@ -1,11 +1,13 @@
-"""One bounded original-limit Grid observation under an existing Demo campaign."""
+"""Explicit bounded Grid submission and restart-safe read-only recovery."""
+import argparse
 from datetime import timezone
 from decimal import Decimal as D, ROUND_FLOOR, ROUND_CEILING
 import json
 
 from factorlab.integrations.binance_futures_trading.demo_credentials import DemoCredentialStore
 from factorlab.integrations.binance_futures_trading.demo_grid_bridge import minimum_quantity
-from factorlab.integrations.binance_futures_trading.demo_runtime import open_grid_session, state_root
+from factorlab.integrations.binance_futures_trading.demo_runtime import open_grid_session, state_root, restore_grid
+from factorlab.trading.storage import decode
 from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, GridRules
@@ -13,6 +15,9 @@ from factorlab.trading import Market
 
 
 def factory(session, deployment_id):
+    saved = session.controller.store.event_payload('demo-grid:deployment')
+    if saved is not None:
+        return restore_grid(decode(json.loads(saved))['deployment'])
     session.recover()
     status = session.status()
     if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
@@ -35,19 +40,56 @@ def factory(session, deployment_id):
         instrument_id='NVDAUSDT', initial_equity=D(status['balances']['walletBalance']))
 
 
-def main():
-    with open_grid_session(state_root(), DemoCredentialStore(), factory) as bridge:
+def initial_observation(book):
+    return dict(id='bounded-grid-real-book',
+        time=book['time_utc'].astimezone(timezone.utc).replace(tzinfo=None).isoformat(),
+        price=str(book['askPrice']), volume=0)
+
+
+def submit_initial(bridge):
+    key = bridge.prefix + 'initial-observation'
+    raw = bridge.controller.store.event_payload(key)
+    if raw is None:
+        event = initial_observation(bridge.session._fresh_book())
+        with bridge.controller.store.transaction():
+            bridge.controller.store.record_metadata(key, event)
+    else:
+        event = decode(json.loads(raw))
+    # Command replay already includes this observation, even after an unknown POST.
+    for (payload,) in bridge.controller.store.db.execute(
+            'SELECT payload FROM events WHERE id LIKE ?', (bridge.prefix + 'command:%',)):
+        command = decode(json.loads(payload))
+        if command['action'] == 'observe' and command['value']['id'] == event['id']:
+            return None
+    return bridge.observe(event)
+
+
+def execute(bridge, command, client_order_id=None):
+    bridge.recover()
+    result = None
+    if command == 'submit':
+        result = submit_initial(bridge)
+    elif command == 'cancel':
+        if not bridge.grid._owns(client_order_id) or not any(
+                order.intent.client_order_id == client_order_id
+                for order in bridge.controller.account().open_orders):
+            raise SafetyBlocked('cancel requires a known open order owned by this Grid deployment')
+        result = bridge.session.cancel(client_order_id)
         bridge.recover()
-        book = bridge.session._fresh_book()
-        result = bridge.observe(dict(id='bounded-grid-real-book', time=book['time_utc'].astimezone(timezone.utc).replace(tzinfo=None).isoformat(),
-            price=str(book['askPrice']), volume=0))
-        print(json.dumps(dict(kind='GRID_DISPATCH', result=str(result), account=bridge.session.status()), default=str), flush=True)
-        bridge.recover()
-        for order in bridge.controller.account().open_orders:
-            if bridge.grid._owns(order.intent.client_order_id):
-                bridge.session.cancel(order.intent.client_order_id)
-        bridge.recover()
-        print(json.dumps(dict(kind='GRID_FINAL', account=bridge.session.status()), default=str), flush=True)
+    return dict(kind='GRID_' + command.upper(), result=str(result),
+        deployment=bridge.grid.deployment(), account=bridge.session.status())
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('command', nargs='?', default='status', choices=('status', 'recover', 'submit', 'cancel'))
+    parser.add_argument('client_order_id', nargs='?')
+    args = parser.parse_args(argv)
+    if (args.command == 'cancel') != (args.client_order_id is not None):
+        parser.error('cancel requires CLIENT_ORDER_ID; other commands accept no order ID')
+    with open_grid_session(state_root(), DemoCredentialStore(), factory,
+            read_only=args.command in ('status', 'recover')) as bridge:
+        print(json.dumps(execute(bridge, args.command, args.client_order_id), default=str), flush=True)
 
 
 if __name__ == '__main__':
