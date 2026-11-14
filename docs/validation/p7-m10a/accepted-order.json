@@ -1,0 +1,295 @@
+{
+  "result": "REAL_DEMO_ORDER_LIFECYCLE_ACCEPTED",
+  "host": "https://demo-fapi.binance.com",
+  "http_stub": false,
+  "campaign": "demo-18a8dd9673194131bc2d9b2170731088",
+  "configuration": {
+    "kind": "GRID_CONFIGURATION",
+    "lower": "158.63000",
+    "upper": "161.85000",
+    "quantity": ".04",
+    "book": {
+      "bidPrice": "160.07000",
+      "askPrice": "160.24000",
+      "time_utc": "2026-11-14 17:21:12.007000+00:00"
+    }
+  },
+  "order_id": "191944057",
+  "client_order_id": "fl-9624718bcfb044b8-g-00000001",
+  "original_grid_limit": "158.63",
+  "accepted_limit": "158.63000",
+  "quantity": "0.04",
+  "order_type": "LIMIT",
+  "time_in_force": "GTC",
+  "limits": {
+    "seconds": 3600,
+    "orders": 2,
+    "max_loss_usdt": "1",
+    "max_quantity": "0.04",
+    "max_notional_usdt": "7",
+    "max_open_orders": 1
+  },
+  "stages": {
+    "submit": {
+      "observed_at": "2026-11-14 17:22:00.562677+00:00",
+      "order": {
+        "order_id": "191944057",
+        "side": "BUY",
+        "status": "SUBMITTED",
+        "quantity": "0.04",
+        "limit_price": "158.63000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 17:22:02.315000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "rest:588d85bd41fd480b1de07b5adeae43717c2331b158207c4f3c0c098ec0e6510c",
+        "rejection": null
+      },
+      "reconciled": true,
+      "balances": {
+        "walletBalance": "4999.97114760",
+        "availableBalance": "4999.97114760",
+        "marginBalance": "4999.97114760",
+        "unrealizedProfit": "0E-8",
+        "initialMargin": "0E-8",
+        "maintMargin": "0E-8",
+        "positionInitialMargin": "0E-8",
+        "openOrderInitialMargin": "0E-8"
+      },
+      "positions": [],
+      "open_orders": [],
+      "unknown": [],
+      "requests": {
+        "GET": 132,
+        "POST": 1,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-18a8dd9673194131bc2d9b2170731088",
+        "expires_at": "2026-11-14T18:19:18.766399+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      }
+    },
+    "independent_recover": {
+      "observed_at": "2026-11-14 17:23:42.260686+00:00",
+      "order": {
+        "order_id": "191944057",
+        "side": "BUY",
+        "status": "SUBMITTED",
+        "quantity": "0.04",
+        "limit_price": "158.63000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 17:22:02.315000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:082780e8c26596b9147eb0c917269e7ae81d9ae134f4aec45e6080040561f6b2",
+        "rejection": null
+      },
+      "reconciled": true,
+      "balances": {
+        "walletBalance": "4999.97114760",
+        "availableBalance": "4993.62594760",
+        "marginBalance": "4999.97114760",
+        "unrealizedProfit": "0E-8",
+        "initialMargin": "6.34520000",
+        "maintMargin": "0E-8",
+        "positionInitialMargin": "0E-8",
+        "openOrderInitialMargin": "6.34520000"
+      },
+      "positions": [],
+      "open_orders": [
+        {
+          "client_order_id": "fl-9624718bcfb044b8-g-00000001",
+          "symbol": "NVDAUSDT",
+          "side": "BUY",
+          "order_id": "191944057",
+          "status": "NEW",
+          "filled_quantity": "0"
+        }
+      ],
+      "unknown": [],
+      "requests": {
+        "GET": 49,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-18a8dd9673194131bc2d9b2170731088",
+        "expires_at": "2026-11-14T18:19:18.766399+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      }
+    },
+    "cancel": {
+      "observed_at": "2026-11-14 17:26:03.228022+00:00",
+      "order": {
+        "order_id": "191944057",
+        "side": "BUY",
+        "status": "CANCELED",
+        "quantity": "0.04",
+        "limit_price": "158.63000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 17:25:09.879000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:8adb403991d0c3ca9dbd96e5a0eb1218178fbb3e92f6fbdf9411d64edbbd9423",
+        "rejection": null
+      },
+      "reconciled": true,
+      "balances": {
+        "walletBalance": "4999.97114760",
+        "availableBalance": "4999.97114760",
+        "marginBalance": "4999.97114760",
+        "unrealizedProfit": "0E-8",
+        "initialMargin": "0E-8",
+        "maintMargin": "0E-8",
+        "positionInitialMargin": "0E-8",
+        "openOrderInitialMargin": "0E-8"
+      },
+      "positions": [],
+      "open_orders": [],
+      "unknown": [],
+      "requests": {
+        "GET": 96,
+        "POST": 0,
+        "DELETE": 1
+      },
+      "budget": {
+        "campaign": "demo-18a8dd9673194131bc2d9b2170731088",
+        "expires_at": "2026-11-14T18:19:18.766399+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      }
+    },
+    "after_cancel_independent_recover": {
+      "observed_at": "2026-11-14 17:27:29.479548+00:00",
+      "order": {
+        "order_id": "191944057",
+        "side": "BUY",
+        "status": "CANCELED",
+        "quantity": "0.04",
+        "limit_price": "158.63000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 17:25:09.879000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:8adb403991d0c3ca9dbd96e5a0eb1218178fbb3e92f6fbdf9411d64edbbd9423",
+        "rejection": null
+      },
+      "reconciled": true,
+      "balances": {
+        "walletBalance": "4999.97114760",
+        "availableBalance": "4999.97114760",
+        "marginBalance": "4999.97114760",
+        "unrealizedProfit": "0E-8",
+        "initialMargin": "0E-8",
+        "maintMargin": "0E-8",
+        "positionInitialMargin": "0E-8",
+        "openOrderInitialMargin": "0E-8"
+      },
+      "positions": [],
+      "open_orders": [],
+      "unknown": [],
+      "requests": {
+        "GET": 49,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-18a8dd9673194131bc2d9b2170731088",
+        "expires_at": "2026-11-14T18:19:18.766399+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": true
+      }
+    },
+    "after_stop_independent_recover": {
+      "observed_at": "2026-11-14 17:28:53.112484+00:00",
+      "order": {
+        "order_id": "191944057",
+        "side": "BUY",
+        "status": "CANCELED",
+        "quantity": "0.04",
+        "limit_price": "158.63000",
+        "filled_quantity": "0.00",
+        "fee_usdt": "0",
+        "average_fill_price": null,
+        "exchange_updated_at": "2026-11-14 17:25:09.879000+00:00",
+        "reduce_only": false,
+        "reconcile_required": false,
+        "event_id": "recovery:8adb403991d0c3ca9dbd96e5a0eb1218178fbb3e92f6fbdf9411d64edbbd9423",
+        "rejection": null
+      },
+      "reconciled": true,
+      "balances": {
+        "walletBalance": "4999.97114760",
+        "availableBalance": "4999.97114760",
+        "marginBalance": "4999.97114760",
+        "unrealizedProfit": "0E-8",
+        "initialMargin": "0E-8",
+        "maintMargin": "0E-8",
+        "positionInitialMargin": "0E-8",
+        "openOrderInitialMargin": "0E-8"
+      },
+      "positions": [],
+      "open_orders": [],
+      "unknown": [],
+      "requests": {
+        "GET": 49,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "budget": {
+        "campaign": "demo-18a8dd9673194131bc2d9b2170731088",
+        "expires_at": "2026-11-14T18:19:18.766399+00:00",
+        "post_budget": 2,
+        "posts_consumed": 1,
+        "active": false
+      }
+    }
+  },
+  "write_receipts": [
+    {
+      "method": "POST",
+      "http_status": 200,
+      "client_order_id": "fl-9624718bcfb044b8-g-00000001",
+      "code": null,
+      "message": null,
+      "order_id": "191944057",
+      "status": "NEW",
+      "filled_quantity": "0.00"
+    },
+    {
+      "method": "DELETE",
+      "http_status": 200,
+      "client_order_id": "fl-9624718bcfb044b8-g-00000001",
+      "code": null,
+      "message": null,
+      "order_id": "191944057",
+      "status": "CANCELED",
+      "filled_quantity": "0.00"
+    }
+  ],
+  "stop": {
+    "status": "DEMO_STOPPED",
+    "enabled": false
+  },
+  "order_posts": 1,
+  "order_deletes": 1,
+  "filled_quantity": "0.00",
+  "fee_usdt": "0",
+  "wallet_change_usdt": "0",
+  "safety": "NO LIVE MONEY"
+}
