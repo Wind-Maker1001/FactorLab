@@ -122,3 +122,42 @@ from Binance Demo.
 
 The post-agreement order was accepted, so `-4411` did not block this test. The
 two older `-4411` refusals remain in the journal.
+
+## P7-M08: Reduce-only close and round-trip reconciliation
+
+**DEMO_REDUCE_ONLY_FILLED / DEMO_POSITION_FLAT / DEMO_ROUND_TRIP_RECONCILED / NO LIVE MONEY**
+
+The same bound Demo account (`…f216660da077`) reported a `0.04` NVDAUSDT long
+at `162.94 USDT`, `ONE_WAY`, 1× CROSSED, with no active orders or unresolved
+UNKNOWN. A new persistent campaign allowed one POST for 900 seconds. The
+acceptance invocation used the existing runtime, controller, gateway, adapter
+and Demo transport. Its dispatch guard required the exact authorized
+reduce-only order and rechecked the current long before sending.
+
+| Evidence | Observed result |
+| --- | --- |
+| Close request | `SELL LIMIT GTC`, `0.04 NVDAUSDT` at `162.30 USDT`, `positionSide=BOTH`, `reduceOnly=true`, no `closePosition` parameter |
+| Exchange response | HTTP `200`, `FILLED`, no Binance error code |
+| Close identity | `orderId=191865793`, `clientOrderId=fl-75475821429342b2-1000911ffbc2` |
+| Close execution | `2026-11-14T11:30:11.319Z` (19:30:11.319 Beijing), `0.04` at average `162.30 USDT`, notional `6.4920000 USDT` |
+| Order budget | `GET=182`, order `POST=1`, agreement `POST=0`, `DELETE=0`. The close filled immediately. |
+| Independent process | `DEMO_RECONCILED`. Open and close orders were both `FILLED`. The account was flat, with no active orders or unresolved order UNKNOWN. |
+| Ending balances | At `2026-11-14T11:32:00.531732Z`, wallet and available balance each `4999.97114760 USDT`. |
+| Authorization state | `DEMO_STOPPED`. The one-POST budget was consumed. |
+
+| Round-trip amount | USDT |
+| --- | ---: |
+| BUY commission, trade `39911928` | `0.00162940` |
+| SELL commission, trade `39913139` | `0.00162300` |
+| Total commission | `0.00325240` |
+| Binance SELL `realizedPnl` | `-0.02560000` |
+| Price P&L, `(162.30 - 162.94) × 0.04` | `-0.02560000` |
+| Net P&L after both commissions | `-0.02885240` |
+
+The signed trade list confirms both executions and commissions. The signed
+income query records the realized P&L and the SELL commission, with no funding
+or other cash movement in the queried interval. The BUY commission is confirmed
+by its trade row and the post-entry wallet. The wallet moved from `5000.00000000`
+before entry to `4999.99837060` before the close and `4999.97114760` after
+the close. Each order has one positive execution delta in the controller journal
+after restart, matching its Binance trade quantity, quote amount and fee.
