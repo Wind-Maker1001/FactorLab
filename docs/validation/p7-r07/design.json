@@ -1,0 +1,175 @@
+{
+  "accounts": [
+    [
+      "B",
+      "geometric"
+    ],
+    [
+      "D",
+      "geometric"
+    ],
+    [
+      "D",
+      "atr"
+    ]
+  ],
+  "atr_start": "original empty indicator state, 72 completed in-window bars",
+  "boundaries": [
+    "NO LIVE MONEY",
+    "EXPLORATORY_RESEARCH"
+  ],
+  "config": {
+    "atr_multiplier": 1,
+    "atr_window": 72,
+    "breakout": "pause",
+    "budget": null,
+    "center_rule": "last_close",
+    "expiry_reseed_interval": 100,
+    "expiry_reseed_limit": 0,
+    "fee_bps": 4,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "initial_price": 204.34,
+    "levels": 8,
+    "lower": 163.472,
+    "max_cash_committed": 1000,
+    "max_drawdown": 0.2,
+    "max_inventory": 100,
+    "max_turnover": 10,
+    "min_rebuild_interval": 72,
+    "minimum_price": 0.01,
+    "minimum_quantity": 1,
+    "mode": "arithmetic",
+    "order_ttl": 100,
+    "quantity": 10,
+    "rebuild_threshold": 2,
+    "slippage_bps": 6,
+    "upper": 245.208
+  },
+  "costs": {
+    "base": [
+      4,
+      6
+    ],
+    "stress": [
+      8,
+      12
+    ]
+  },
+  "first_funding": "2026-08-12T00:00:00.001000+00:00",
+  "funding_rows": 275,
+  "funding_types": {
+    "Regular": 274,
+    "Special": 1
+  },
+  "identity": {
+    "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+    "bars_sha256": "562ba9e01c2ca050132a10519b3b514112b2f36e7837ffa838a72ce9bf00b7b4",
+    "data_version": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+    "duplicate_timestamps": 0,
+    "end_exclusive": "2026-11-10T00:00:00+00:00",
+    "flat_bars": 0,
+    "funding": "NOT_IN_PAPER_LEDGER",
+    "generation": "bddaab1cd5c943e28caa62c0fc49ef33",
+    "instrument_id": "BINANCE:USDM:NVDAUSDT",
+    "interval": "1h",
+    "invalid_ohlcv": 0,
+    "last_close": "2026-11-09T23:59:59.999000+00:00",
+    "liquidity": "observed base volume floored to integer units before 1% participation",
+    "missing_bars": 0,
+    "raw_receipts": [
+      {
+        "acquired_at": "2026-11-10T17:54:15.005004+00:00",
+        "sha256": "045307f972cd4bcb9fbe3ecfb5720c1a5891de6e582f873cc5259ae84e89e49a",
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1791889200001&symbol=NVDAUSDT"
+      },
+      {
+        "acquired_at": "2026-11-10T17:54:14.133510+00:00",
+        "sha256": "769bd4d8019132bf422e60bd56dce884105abd78338fbe63cb74e020113140ec",
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1786492800000&symbol=NVDAUSDT"
+      },
+      {
+        "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1794265200001&symbol=NVDAUSDT"
+      }
+    ],
+    "rows": 2160,
+    "source": "BINANCE_USDM_PUBLIC_REST",
+    "start": "2026-08-12T00:00:00+00:00",
+    "study": "P7-R07",
+    "valuation": "trade close, not historical intrahour mark; synthetic close execution",
+    "zero_volume_bars": 0
+  },
+  "initial_cash": 1000,
+  "initial_fifo": [],
+  "initial_inventory": 0,
+  "initial_orders": 0,
+  "last_funding": "2026-11-09T16:00:00.001000+00:00",
+  "lifecycle": {
+    "arms": {
+      "A": [
+        false,
+        "pause"
+      ],
+      "B": [
+        true,
+        "pause"
+      ],
+      "C": [
+        false,
+        "exit"
+      ],
+      "D": [
+        true,
+        "exit"
+      ]
+    },
+    "base_config": "configs/grid_paper_nvda_hourly.json",
+    "base_cost_bps": [
+      4,
+      6
+    ],
+    "boundaries": [
+      "NO LIVE MONEY",
+      "PIT_UNVERIFIED",
+      "HFQ_UNVERIFIED",
+      "FORMAL_ADMISSION_BLOCKED"
+    ],
+    "capital": 1000,
+    "expiry_reseed_interval": 100,
+    "expiry_reseed_limit": 20,
+    "exposure_rule": "same ex-ante R02 inventory/order/capital/turnover budgets; actual exposures not matched; no ex-post scaling",
+    "exposure_status": "EXPOSURE_NOT_MATCHED",
+    "funding": "NOT_IN_PAPER_LEDGER",
+    "modes": [
+      "arithmetic",
+      "geometric",
+      "atr"
+    ],
+    "participation": "0.01",
+    "range_rule": "retain current grid prices; ATR range rebuild remains independent",
+    "rules": "configs/grid_paper_nvda_rules.json",
+    "schema_version": 1,
+    "stress_cost_bps": [
+      8,
+      12
+    ],
+    "stress_trigger": "any B/A or C/A economic or fill-count difference within the same mode"
+  },
+  "regular_gap_hours": [
+    1.0,
+    4.0,
+    7.999999722222222,
+    8.0,
+    8.000000277777778
+  ],
+  "rules": {
+    "min_notional": "5",
+    "min_quantity": "0.01",
+    "quantity_unit": "0.01",
+    "step_size": "0.01",
+    "tick_size": "0.01"
+  },
+  "study": "P7-R07"
+}

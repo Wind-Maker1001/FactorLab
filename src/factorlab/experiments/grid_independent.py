@@ -94,9 +94,10 @@ def account_matrix(prereg):
 
 
 def account_identity(hashes, identity, scenario, arm, mode):
-    payload = dict(study='P7-R04B-E01', frozen=hashes, generation=identity['generation'],
+    study = identity.get('study', 'P7-R04B-E01')
+    payload = dict(study=study, frozen=hashes, generation=identity['generation'],
                    bars_sha256=identity['bars_sha256'], scenario=scenario, arm=arm, mode=mode)
-    return 'p7-r04b-e01-' + digest(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode())[:24]
+    return study.lower() + '-' + digest(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode())[:24]
 
 
 def require_admission(repository):
