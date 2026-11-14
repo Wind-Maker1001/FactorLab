@@ -1,0 +1,113 @@
+{
+  "result": "BLOCKED_BEFORE_ORDER_SUBMISSION",
+  "environment": "BINANCE_OFFICIAL_DEMO",
+  "host": "https://demo-fapi.binance.com",
+  "http_stub": false,
+  "baseline": "3fff0b1",
+  "limits": {
+    "symbol": "NVDAUSDT",
+    "seconds": 900,
+    "max_order_posts": 2,
+    "max_loss_usdt": "1",
+    "max_quantity": "0.04",
+    "max_notional_usdt": "7",
+    "max_open_orders": 1
+  },
+  "readonly_observation": {
+    "observed_at_utc": "2026-11-14T16:57:56.977233Z",
+    "bid": "159.69",
+    "ask": "160.14",
+    "mark": "159.92055026",
+    "min_quantity": "0.01",
+    "quantity_step": "0.01",
+    "price_tick": "0.01",
+    "min_notional_usdt": "5",
+    "price_multiplier_down": "0.97",
+    "price_multiplier_up": "1.03",
+    "derived_grid_lower": "158.53",
+    "derived_grid_upper": "161.75",
+    "minimum_pair_quantity": "0.04",
+    "lower_limit_notional_usdt": "6.3412",
+    "upper_limit_notional_usdt": "6.47",
+    "budget_feasible_at_observation": true,
+    "derived_prices_were_submitted": false
+  },
+  "enable_attempt": {
+    "status": "DEMO_BLOCKED",
+    "reason": "account read failed; reconciliation required",
+    "new_campaign_created": false,
+    "requests": {"GET": 11, "POST": 0, "DELETE": 0},
+    "historical_order_requiring_reconciliation": "fl-6134cc5d117d4d20-01",
+    "submit_executed": false
+  },
+  "subsequent_independent_recovery": {
+    "status": "FAILED",
+    "exchange_error_code": -1021,
+    "http_status": 400,
+    "category": "CLOCK_SKEW",
+    "endpoint": "/fapi/v3/account"
+  },
+  "shutdown": {"status": "DEMO_STOPPED", "enabled": false},
+  "final_independent_recovery": {
+    "status": "GRID_RECOVER",
+    "observed_at_utc": "2026-11-14T17:02:20.900344Z",
+    "reconciled": true,
+    "wallet_balance_usdt": "4999.97114760",
+    "available_balance_usdt": "4999.97114760",
+    "positions": [],
+    "open_orders": [],
+    "unknown": [],
+    "requests": {"GET": 47, "POST": 0, "DELETE": 0},
+    "saved_campaign": "demo-cecf78c0f8484b43829e9cdad10bc58f",
+    "saved_deployment": "fl-e59f3a925a6b4a84-g",
+    "saved_campaign_active": false,
+    "saved_campaign_posts_consumed": 0,
+    "saved_campaign_write_receipts": []
+  },
+  "this_run_order_evidence": {
+    "order_id": null,
+    "client_order_id": null,
+    "submitted_limit": null,
+    "accepted_limit": null,
+    "order_status": "NOT_SUBMITTED",
+    "cumulative_fill_quantity": "0",
+    "fees_usdt": "0",
+    "cancel_result": "NOT_APPLICABLE_NO_NEW_ORDER",
+    "order_post_count": 0,
+    "order_delete_count": 0
+  },
+  "readonly_diagnosis": {
+    "windows_time_service": "NOT_STARTED_0x80070426",
+    "windows_timezone": "China Standard Time UTC+08:00",
+    "recv_window_ms_unchanged": 5000,
+    "client_timeout_seconds": 10,
+    "offset_before_sync_ms": 0,
+    "offset_after_sync_ms": 617,
+    "time_sync_rtt_ms": 1495.5178,
+    "time_sync_wall_elapsed_ms": 1495.6851,
+    "server_time_ms": 1794675889596,
+    "signed_order_get_rtt_ms": [2052.7901, 2255.9052, 765.4478, 708.6684],
+    "historical_order_get_results": [
+      {"client_order_id": "fl-7002aff6a4cb475f-01", "exchange_code": -2013, "exchange_result": "ORDER_NOT_FOUND", "journal_status": "REJECTED", "journal_rejection_code": -4411},
+      {"client_order_id": "fl-cd01d35a5c10454a-01", "exchange_code": -2013, "exchange_result": "ORDER_NOT_FOUND", "journal_status": "REJECTED", "journal_rejection_code": -4411},
+      {"client_order_id": "fl-6134cc5d117d4d20-01", "order_id": "191862895", "exchange_status": "FILLED", "limit_price": "162.94000", "filled_quantity": "0.04", "journal_fee_usdt": "0.00162940"},
+      {"client_order_id": "fl-75475821429342b2-1000911ffbc2", "order_id": "191865793", "exchange_status": "FILLED", "limit_price": "162.30000", "filled_quantity": "0.04", "reduce_only": true, "journal_fee_usdt": "0.00162300"}
+    ],
+    "requests": {"GET": 5, "POST": 0, "DELETE": 0},
+    "final_recovery": {
+      "observed_at_utc": "2026-11-14T17:06:04.445462Z",
+      "reconciled": true,
+      "wallet_balance_usdt": "4999.97114760",
+      "available_balance_usdt": "4999.97114760",
+      "positions": [], "open_orders": [], "unknown": [],
+      "saved_campaign_active": false,
+      "requests": {"GET": 47, "POST": 0, "DELETE": 0}
+    },
+    "clock_skew_reproduced": false,
+    "root_cause": "UNCONFIRMED: W32Time unavailable; network RTT and midpoint offset uncertainty observed, but failed-request timing was not captured.",
+    "TODO": "If CLOCK_SKEW recurs, capture the failing GET sync RTT and request timing to distinguish clock jumps, asymmetric synchronization latency and request delay. Do not widen recvWindow or retry writes.",
+    "production_code_changed": false
+  },
+  "historical_order_ids_not_this_run": ["191862895", "191865793"],
+  "safety": "NO LIVE MONEY"
+}
