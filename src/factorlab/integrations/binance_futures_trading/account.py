@@ -54,9 +54,15 @@ class AccountFacts:
             risk = next((r for r in self.risk if (r.get('symbol'), r.get('positionSide')) ==
                          (row.get('symbol'), row.get('positionSide'))), {})
             config = next((c for c in self.symbol_config if c.get('symbol') == row.get('symbol')), {})
+            quantity = number(row, 'positionAmt')
+            entry_price = number(row, 'entryPrice')
+            # Account Information V3 omits entryPrice. Position Information V3
+            # supplies it for the same symbol, side and observed position amount.
+            if entry_price is None and quantity and number(risk, 'positionAmt') == quantity:
+                entry_price = number(risk, 'entryPrice')
             rows.append({
                 'symbol': row.get('symbol'), 'position_side': row.get('positionSide'),
-                'quantity': number(row, 'positionAmt'), 'entry_price': number(row, 'entryPrice'),
+                'quantity': quantity, 'entry_price': entry_price,
                 'unrealized_pnl': number(row, 'unrealizedProfit'),
                 'initial_margin': number(row, 'initialMargin'), 'maintenance_margin': number(row, 'maintMargin'),
                 'leverage': config.get('leverage'), 'margin_type': config.get('marginType'),

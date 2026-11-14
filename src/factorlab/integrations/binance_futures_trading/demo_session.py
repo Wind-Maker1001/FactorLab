@@ -244,12 +244,15 @@ class DemoSession:
         """Selected account and protocol facts with no full credentials or binding."""
         orders = {}
         for client_id in self._protocol_ids():
-            order = self.adapter.order(client_id)
+            record, filled_notional = self.adapter._load(client_id)
+            order = record.snapshot
             diagnostic = self.adapter.db.execute('SELECT payload FROM futures_rejections WHERE id=?', (client_id,)).fetchone()
             event = self.gateway.state.confirmations.get(client_id)
             orders[client_id] = dict(order_id=order.exchange_order_id, side=order.intent.side.value,
                 status=order.status.value, quantity=order.intent.quantity, limit_price=order.intent.limit_price,
                 filled_quantity=order.cumulative_filled_quantity, fee_usdt=order.cumulative_fee,
+                average_fill_price=filled_notional / order.cumulative_filled_quantity if order.cumulative_filled_quantity else None,
+                exchange_updated_at=record.observed_at if order.exchange_order_id is not None else None,
                 reduce_only=order.intent.reduce_only, reconcile_required=order.reconcile_required,
                 event_id=event.event_id if event is not None else None,
                 rejection=json.loads(diagnostic[0]) if diagnostic is not None else None)

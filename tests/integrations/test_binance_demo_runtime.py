@@ -78,6 +78,12 @@ def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entr
             payload = json.loads(response.body)
             for position in payload:
                 position['positionAmt'] = str(self.quantity)
+                position['entryPrice'] = str(self.entry)
+            return Response(200, {}, json.dumps(payload).encode())
+        if request.path == '/fapi/v3/account':
+            payload = json.loads(response.body)
+            for position in payload['positions']:
+                del position['entryPrice']
             return Response(200, {}, json.dumps(payload).encode())
         if request.method == 'POST' and response.status == 200:
             order = json.loads(response.body)
@@ -118,6 +124,7 @@ def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entr
             restored = session.recover()
             assert restored['reconciled']
             assert sum(order['fee_usdt'] for order in restored['orders'].values()) == Decimal('0.0064') * before
+            assert restored['orders'][campaign['prefix'] + '-01']['average_fill_price'] == Decimal('160')
             assert bool(restored['positions']) is (lose_entry_reply or order_budget == 1)
         assert counts['POST'] == before
         store.credential = Credentials('different-key', 'demo-secret', Environment.DEMO)

@@ -84,3 +84,41 @@ web interface after signing. For the credential with local masked binding
 The signed agreement POST at `10:25:59.590154Z` then returned HTTP 200 with no
 parseable application confirmation. Please verify the agreement state for the
 Demo API account and clarify whether the web and API share that state.
+
+## P7-M07: API order after the agreement request
+
+**DEMO_ORDER_ACCEPTED / DEMO_FILL_RECONCILED / NO LIVE MONEY**
+
+The stored credential matched the full account binding from the agreement
+request (`…f216660da077`). The user authorized one new BUY and at most one
+cancellation of that known order. The test used a fresh one-POST budget, a
+unique client order ID, and a limit derived from the current ask. The original
+agreement receipt remains `OUTCOME_UNKNOWN`. The test omitted
+`--require-tradfi-signed` and made no new agreement request.
+
+| Evidence | Observed result |
+| --- | --- |
+| Scope | `https://demo-fapi.binance.com`, `NVDAUSDT`, `BUY LIMIT GTC`, `BOTH`, `reduceOnly=false` |
+| Order | `0.04` at `162.94 USDT`, `6.5176 USDT` notional |
+| Exchange response | HTTP 200, `FILLED`, no Binance error code |
+| Order identity | `orderId=191862895`, `clientOrderId=fl-6134cc5d117d4d20-01` |
+| Exchange fill time | `2026-11-14T11:15:52.715Z` (19:15:52.715 Beijing) |
+| Confirmed execution | `0.04` at average `162.94 USDT`, `0.00162940 USDT` commission |
+| Signed account snapshot | `2026-11-14T11:17:58.677854Z`. Wallet `4999.99837060 USDT`, available `4993.47853546 USDT`. |
+| Remaining exposure | Long `0.04 NVDAUSDT` at entry `162.94 USDT`, 1× CROSSED. No active orders or unresolved order UNKNOWN. |
+| Cleanup | The order was already filled. No cancellation or reduction was sent. The one-POST budget was consumed and the runtime ended disabled. |
+| Request counts | `GET=158`, order `POST=1`, agreement `POST=0`, `DELETE=0` across execution and recovery. |
+
+The original process and its first restart recovered the fill and commission,
+but the account projection expected `entryPrice` in Account Information V3.
+The fix uses the value from Position Information V3 when symbol, position side,
+and quantity match the account row. The CLI reports the average execution price
+from the journaled cumulative quote and filled quantity. A new process then
+reconciled the same order, trade fees, position and wallet using 42 GETs. The
+wallet decrease from 5,000 USDT matches the confirmed commission. The targeted
+runtime and protocol suites passed 55 tests, including the observed V3 response
+shape. Those tests use synthetic responses. The order and recovery above are
+from Binance Demo.
+
+The post-agreement order was accepted, so `-4411` did not block this test. The
+two older `-4411` refusals remain in the journal.
