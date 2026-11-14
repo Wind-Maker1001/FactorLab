@@ -7,7 +7,7 @@ import json
 import sqlite3
 import subprocess
 import sys
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from factorlab.errors import DataQualityError
 from factorlab.trading import Side
@@ -145,7 +145,7 @@ def smoke_lifecycle(session, expect, campaign):
     return dict(status='DEMO_FILL_RECONCILED', account=report)
 
 
-def run_command(args, root, store, runtime, requests):
+def run_command(args, root, store, runtime, requests, smoke_id):
     command = args.command
     if command == 'setup' or command == 'credentials-update':
         return configure(store, requests, replace=command == 'credentials-update')
@@ -157,7 +157,7 @@ def run_command(args, root, store, runtime, requests):
     if command in {'status', 'recover', 'enable-demo', 'smoke-test'}:
         started_at = now()
         stop_epoch = runtime.stop_epoch()
-        if command == 'smoke-test' and runtime.campaign(SMOKE_CAMPAIGN):
+        if command == 'smoke-test' and runtime.campaign(smoke_id):
             raise SafetyBlocked('the one-time Demo smoke budget was already started; use recover')
         with open_session(root, store, runtime, requests) as (session, _):
             result = run_operation(session, lambda: dict(status='DEMO_RECONCILED', account=recover(session)))
@@ -171,7 +171,7 @@ def run_command(args, root, store, runtime, requests):
             raise SafetyBlocked('Demo account canTrade is unavailable or false')
         campaign = runtime.start(binding, seconds=900 if smoke else args.seconds, orders=2 if smoke else args.orders,
             opening_equity=equity(result['account']), max_loss=Decimal('1') if smoke else args.max_loss,
-            stop_epoch=stop_epoch, started_at=started_at if smoke else now(), smoke=smoke)
+            stop_epoch=stop_epoch, started_at=started_at if smoke else now(), smoke_id=smoke_id if smoke else None)
         if not smoke:
             return dict(status='DEMO_ENABLED', campaign=campaign['id'])
         try:
@@ -222,8 +222,11 @@ def parse_decimal(value):
 def parse_args(argv):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
-    for name in ('setup', 'credentials-update', 'credentials-delete', 'status', 'recover', 'smoke-test'):
+    for name in ('setup', 'credentials-update', 'credentials-delete', 'status', 'recover'):
         commands.add_parser(name)
+    smoke = commands.add_parser('smoke-test')
+    smoke.add_argument('--approval-id', type=UUID,
+        help='record a separately approved one-time Demo test under this unique UUID')
     enable = commands.add_parser('enable-demo', help='enable a persistent, expiring Demo order budget')
     enable.add_argument('--seconds', type=int, required=True)
     enable.add_argument('--orders', type=int, required=True)
@@ -237,6 +240,7 @@ def parse_args(argv):
 
 def main(argv=None):
     args = parse_args(argv)
+    smoke_id = 'smoke-' + args.approval_id.hex if args.command == 'smoke-test' and args.approval_id else SMOKE_CAMPAIGN
     requests = dict(GET=0, POST=0, DELETE=0)
     result = dict(status='DEMO_BLOCKED')
     restart_smoke = False
@@ -248,13 +252,13 @@ def main(argv=None):
                 result = dict(status='DEMO_STOPPED')
             else:
                 with operator_lock(root):
-                    before = runtime.campaign(SMOKE_CAMPAIGN)
+                    before = runtime.campaign(smoke_id)
                     try:
-                        result = run_command(args, root, DemoCredentialStore(), runtime, requests)
+                        result = run_command(args, root, DemoCredentialStore(), runtime, requests, smoke_id)
                     finally:
-                        restart_smoke = args.command == 'smoke-test' and before is None and runtime.campaign(SMOKE_CAMPAIGN) is not None
-            result['runtime'] = runtime.report()
-            result['smoke_receipts'] = runtime.receipts(SMOKE_CAMPAIGN)
+                        restart_smoke = args.command == 'smoke-test' and before is None and runtime.campaign(smoke_id) is not None
+            result['runtime'] = runtime.report(smoke_id)
+            result['smoke_receipts'] = runtime.receipts(smoke_id)
     except (DemoCredentialStoreError, *OPERATING_ERRORS) as error:
         result['reason'] = str(error)
     except (OSError, ValueError, KeyError, TypeError, sqlite3.Error) as error:
@@ -266,6 +270,7 @@ def main(argv=None):
                              capture_output=True, text=True, encoding='utf-8', check=False)
         if run.stdout:
             result['restart_recovery'] = json.loads(run.stdout)
+            result['restart_recovery'].pop('smoke_receipts', None)
             for method, count in result['restart_recovery']['requests'].items():
                 requests[method] += count
         else:

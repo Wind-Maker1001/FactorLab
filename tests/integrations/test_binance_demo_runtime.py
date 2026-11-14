@@ -12,7 +12,7 @@ from test_binance_demo_network import NetworkFixture, wired
 from factorlab.integrations.binance.client import Response
 from factorlab.integrations.binance_futures_trading.demo_cli import open_session, smoke_lifecycle
 from factorlab.integrations.binance_futures_trading.demo_credentials import DemoCredentialStore
-from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, bind_account, now
+from factorlab.integrations.binance_futures_trading.demo_runtime import SMOKE_CAMPAIGN, DemoRuntime, bind_account, now
 from factorlab.integrations.binance_futures_trading.demo_session import demo_account_configuration, observe_demo_account
 from factorlab.integrations.binance_futures_trading.fake import MS
 from factorlab.integrations.binance_futures_trading.protocol import Credentials, Environment, SafetyBlocked
@@ -96,7 +96,7 @@ def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entr
     counts = dict(GET=0, POST=0, DELETE=0)
     with closing(DemoRuntime(tmp_path)) as runtime:
         campaign = runtime.start(binding, seconds=900, orders=2, max_loss=Decimal('1'),
-            opening_equity=Decimal('1000'), stop_epoch=runtime.stop_epoch(), started_at=now(), smoke=True)
+            opening_equity=Decimal('1000'), stop_epoch=runtime.stop_epoch(), started_at=now(), smoke_id=SMOKE_CAMPAIGN)
         with open_session(tmp_path, store, runtime, counts, campaign=campaign) as (session, expect):
             if lose_entry_reply:
                 with pytest.raises(SafetyBlocked, match='response was uncertain'):
@@ -111,7 +111,7 @@ def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entr
         assert runtime.active_campaign() is None
         with pytest.raises(SafetyBlocked, match='already started'):
             runtime.start(binding, seconds=900, orders=2, max_loss=Decimal('1'),
-                opening_equity=Decimal('1000'), stop_epoch=runtime.stop_epoch(), started_at=now(), smoke=True)
+                opening_equity=Decimal('1000'), stop_epoch=runtime.stop_epoch(), started_at=now(), smoke_id=SMOKE_CAMPAIGN)
         assert runtime.post_count(campaign['id']) == (1 if lose_entry_reply else 2)
         before = counts['POST']
         with open_session(tmp_path, store, runtime, counts) as (session, _):
@@ -172,3 +172,21 @@ def test_stopped_campaign_cannot_dispatch_with_a_running_capability(tmp_path, mo
                 session.submit_limit(client_id, Side.BUY, quantity)
             assert counts['POST'] == resumed.post_count(restored['id']) == 0
             assert session.status()['orders'] == {}
+
+
+def test_separate_smoke_approval_preserves_consumed_budget(tmp_path):
+    binding = dict(account_id='synthetic-account', configuration={})
+    with closing(DemoRuntime(tmp_path)) as runtime:
+        def start(approval):
+            return runtime.start(binding, seconds=900, orders=2, max_loss=Decimal('1'),
+                opening_equity=Decimal('1000'), stop_epoch=runtime.stop_epoch(), started_at=now(), smoke_id=approval)
+
+        first = start(SMOKE_CAMPAIGN)
+        runtime.stop()
+        next_approval = 'smoke-' + uuid4().hex
+        second = start(next_approval)
+        runtime.stop()
+        assert first['prefix'] != second['prefix']
+        for approval in (SMOKE_CAMPAIGN, next_approval):
+            with pytest.raises(SafetyBlocked, match='already started'):
+                start(approval)

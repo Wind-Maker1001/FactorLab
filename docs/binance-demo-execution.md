@@ -77,6 +77,7 @@ again.
 | `factorlab-demo status` | Read account balances, positions, active orders and local order status after GET reconciliation. |
 | `factorlab-demo recover` | Reopen the existing journals and reconcile using GET only. |
 | `factorlab-demo smoke-test` | Spend the single local acceptance budget. Start flat and submit one `0.04` BUY LIMIT at the fresh ask. Cancel an active known order once. If the entry fills, attempt one reduce-only SELL LIMIT for the confirmed test position, then reconcile again in a separate process. |
+| `factorlab-demo smoke-test --approval-id UUID` | Run a separately approved acceptance test under its own one-time budget. Reusing the UUID preserves the existing outcome and refuses a new submission. |
 | `factorlab-demo enable-demo --seconds 3600 --orders 4 --max-loss 1` | Enable an explicit one-hour budget of four POST attempts and a 1 USDT loss threshold. The lifetime quantity, exposure and one-open-order rules apply within the campaign. |
 | `factorlab-demo buy-limit 0.04` | Submit a LIMIT from the latest best ask through the active budget and shared controller. |
 | `factorlab-demo reduce-limit 0.04` | Submit a reduce-only SELL LIMIT from the latest best bid against the confirmed long. |

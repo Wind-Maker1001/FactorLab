@@ -107,13 +107,14 @@ class DemoRuntime:
     def stop_epoch(self):
         return self._get('stop_epoch')
 
-    def start(self, binding, *, seconds, orders, opening_equity, max_loss, stop_epoch, started_at, smoke=False):
+    def start(self, binding, *, seconds, orders, opening_equity, max_loss, stop_epoch, started_at, smoke_id=None):
+        smoke = smoke_id is not None
         if seconds <= 0 or not 1 <= orders <= 1000 or not Decimal(0) < max_loss <= MAX_NOTIONAL:
             raise SafetyBlocked('Demo budgets require a positive duration, 1–1000 POSTs and a positive loss cap up to 7 USDT')
         if smoke and (seconds > 900 or orders != 2):
             raise SafetyBlocked('the one-time Demo budget permits two POSTs within fifteen minutes')
         expires_at = started_at + timedelta(seconds=seconds)
-        campaign = SMOKE_CAMPAIGN if smoke else 'demo-' + uuid4().hex
+        campaign = smoke_id if smoke else 'demo-' + uuid4().hex
         with self.db:
             self.db.execute('BEGIN IMMEDIATE')
             if stop_epoch != self.stop_epoch():
@@ -145,9 +146,9 @@ class DemoRuntime:
         row = self.db.execute('SELECT payload FROM campaigns WHERE id = ?', (key,)).fetchone()
         return json.loads(row[0]) if row else None
 
-    def report(self):
+    def report(self, smoke_id):
         campaign = self.active_campaign()
-        smoke = self.campaign(SMOKE_CAMPAIGN)
+        smoke = self.campaign(smoke_id)
         return dict(enabled=campaign is not None, expires_at=campaign['expires_at'] if campaign else None,
             authorization_kind=('SMOKE' if campaign['smoke'] else 'PERSISTENT') if campaign else None,
             policy=campaign['policy'] if campaign else None,
