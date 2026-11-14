@@ -1,3 +1,4 @@
+from contextlib import closing
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D
@@ -28,6 +29,56 @@ def controller(path=":memory:", *, market=Market.BINANCE_EQUITY, cash="10000", l
     control = TradingController(broker, store, limits=limits, clock=clock)
     control.quote(Quote("TEST", D("100"), clock()))
     return control
+
+
+def test_existing_bounded_store_can_persist_continuous_policy(tmp_path):
+    path = tmp_path / 'existing.sqlite'
+    with closing(PaperStore(path, max_events=1)) as store:
+        store.record_metadata('existing', {})
+    with closing(PaperStore(path, continuous_capacity=True)) as store:
+        assert store.record_metadata('enabled', {})
+    with closing(PaperStore(path)) as store:
+        assert store.continuous_capacity
+        assert store.record_metadata('reopened', {})
+
+
+def test_continuous_store_preserves_history_and_identity_across_reopen(tmp_path):
+    path = tmp_path / 'continuous.sqlite'
+    store = PaperStore(path, continuous_capacity=True)
+    broker = PaperBroker(Market.BINANCE_EQUITY, 'test', (Instrument('TEST', 'USD'),),
+                         {'USD': D(10000)})
+    broker.state.orders.update({str(i): str(i) for i in range(1001)})
+    broker.state.runtime['large'] = 'x' * (32 * 1024 * 1024)
+    with store.transaction():
+        store.save(broker.state)
+        for i in range(10001):
+            store.record_metadata(str(i), {'sequence': i})
+    store.close()
+    reopened = PaperStore(path)
+    restored = reopened.load()
+    assert len(restored.orders) == 1001
+    assert len(restored.runtime['large']) == 32 * 1024 * 1024
+    assert reopened.continuous_capacity
+    assert reopened.event_cursor() == 10002
+    assert reopened.record_metadata('0', {'sequence': 0}) is False
+    with pytest.raises(ValueError, match='different payload'):
+        reopened.record_metadata('0', {'sequence': -1})
+    with pytest.raises(ValueError, match='metadata too large'):
+        reopened.record_metadata('oversize', 'x' * 8193)
+    assert reopened.record_metadata('10001', {'sequence': 10001})
+    reopened.close()
+    bounded = PaperStore(tmp_path / 'bounded.sqlite')
+    with pytest.raises(ValueError, match='order storage budget'):
+        bounded.save(restored)
+    restored.orders.clear()
+    with pytest.raises(ValueError, match='snapshot storage budget'):
+        bounded.save(restored)
+    with bounded.transaction():
+        for i in range(10000):
+            bounded.record_metadata(str(i), {})
+    with pytest.raises(ValueError, match='event storage budget'):
+        bounded.record_metadata('new', {})
+    bounded.close()
 
 
 @pytest.mark.parametrize("market", list(Market))

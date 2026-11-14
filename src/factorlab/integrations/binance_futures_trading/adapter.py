@@ -38,6 +38,7 @@ class FuturesAdapter:
             account_id = (f'{client.environment.name}:{account_id}' if client.credentials is None
                           else credential_account_id(client.environment, client.credentials.key))
         self.client, self.store, self.account_id, self.clock = client, store, account_id, clock
+        self.get_confirmed_writes = False
         self.facts = None
         self.quantitative_observation = None
         self.db = store.db
@@ -108,7 +109,8 @@ class FuturesAdapter:
                                  for r in self.db.execute('SELECT payload FROM futures_orders'))
                 if not self.reconciled or unresolved:
                     raise SafetyBlocked('RECONCILE_REQUIRED')
-                if self.db.execute('SELECT count(*) FROM futures_orders').fetchone()[0] >= self.store.max_orders:
+                if (self.store.max_orders is not None and
+                        self.db.execute('SELECT count(*) FROM futures_orders').fetchone()[0] >= self.store.max_orders):
                     raise ValueError('adapter order capacity exhausted')
                 # No confirmed exchange timestamp exists before dispatch.
                 record = OrderRecord(OrderSnapshot(intent), instant(0), intent.limit_price or ZERO)
@@ -126,6 +128,13 @@ class FuturesAdapter:
             raise
         except ExchangeError as exc:
             if exc.category not in {'RATE_LIMIT', 'ORDER_NOT_FOUND'} and exc.status < 500:
+                if self.get_confirmed_writes:
+                    try:
+                        return self.query_order(intent.client_order_id)
+                    except ExchangeError as readback:
+                        if readback.code != -2013 or readback.category != 'ORDER_NOT_FOUND':
+                            self._uncertain(intent.client_order_id)
+                            raise OutcomeUnknown('rejection requires GET confirmation') from None
                 event = OrderEvent(intent.client_order_id, None, S.REJECTED, ZERO, None,
                                    self.clock(), 'binance-rest', 'reject:' + intent.client_order_id, ZERO)
                 diagnostic = dict(client_order_id=intent.client_order_id, event_id=event.event_id,
@@ -157,6 +166,11 @@ class FuturesAdapter:
             raise OutcomeUnknown('cancel unconfirmed; reconcile fills before releasing risk') from None
 
     def _confirm_write(self, row, client_order_id):
+        if self.get_confirmed_writes:
+            try:
+                return self.query_order(client_order_id)
+            except ExchangeError:
+                raise OutcomeUnknown('order readback unconfirmed; reconcile without resubmitting') from None
         # Binance write acknowledgments can omit cumulative quote. Query Order
         # supplies it for the journaled identity, including after a partial fill.
         if isinstance(row, dict) and 'cumQuote' not in row:
@@ -234,7 +248,8 @@ class FuturesAdapter:
                         and previous.cumulative_fee == record.snapshot.cumulative_fee):
                     self._save(advance(record, previous), quote)
                 return previous
-            if self.db.execute('SELECT count(*) FROM futures_events').fetchone()[0] >= self.store.max_events:
+            if (self.store.max_events is not None and
+                    self.db.execute('SELECT count(*) FROM futures_events').fetchone()[0] >= self.store.max_events):
                 raise ValueError('adapter event capacity exhausted')
             record, _ = self._load(event.client_order_id)
             if record.confirmed_status == S.NEW and event.status not in {S.SUBMITTED, S.REJECTED}:

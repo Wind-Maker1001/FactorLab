@@ -35,6 +35,7 @@ _DECISION_FIELDS = (
     'rebuilds', 'previous_close', 'issued_orders', 'delivery', 'last_input', 'conflict',
     'expiry_reseeds', 'last_expiry_reseed', 'pending_expiry_reseed', 'reseed_bar_ready',
     'expiry_seed_submitting', 'reverse_remainders',
+    'withdrawn_orders', 'seed_needed', 'reseed_bar_pending',
 )
 
 
@@ -158,6 +159,11 @@ def _observation(event):
         raise ValueError('invalid action')
     observation = dict(id=event['id'], time=timestamp.isoformat(), price=price,
                        volume=volume, action=action, completed_bar=completed_bar)
+    reseed_withdrawn = event.get('reseed_withdrawn', False)
+    if type(reseed_withdrawn) is not bool:
+        raise ValueError('invalid reseed_withdrawn')
+    if reseed_withdrawn:
+        observation['reseed_withdrawn'] = True
     if action == 'cancel':
         observation['order_id'] = event['order_id']
         validate_identity(observation['order_id'])
@@ -184,13 +190,19 @@ class GridExecution:
     grid_prices = GridStrategy.grid_prices
 
     def __init__(self, config, rules, *, deployment_id, account_id, market, instrument_id,
-                 initial_equity, fee_rate=None, fees=None, max_exit_quantity=None):
+                 initial_equity, fee_rate=None, fees=None, max_exit_quantity=None,
+                 continuous_capacity=False):
         validate_identity(deployment_id)
         validate_identity(account_id)
         validate_identity(instrument_id)
         if len(deployment_id) > 48 or not isinstance(market, Market):
             raise ValueError('invalid Grid deployment')
-        if config.levels >= _MAX_WORKING_ORDERS or (config.mode == 'atr' and config.atr_window > _MAX_ATR_WINDOW):
+        if type(continuous_capacity) is not bool:
+            raise ValueError('continuous_capacity must be a bool')
+        self.continuous_capacity = continuous_capacity
+        self._deployment_continuous_capacity = continuous_capacity
+        if ((not continuous_capacity and config.levels >= _MAX_WORKING_ORDERS)
+                or (config.mode == 'atr' and config.atr_window > _MAX_ATR_WINDOW)):
             raise ValueError('Grid range or ATR window exceeds the checkpoint budget')
         decimal_value(initial_equity, 'initial_equity', positive=True)
         if fee_rate is not None:
@@ -213,6 +225,8 @@ class GridExecution:
         self.reason = None
         self.true_ranges, self.previous_close = deque(maxlen=config.atr_window), None
         self.records = {}
+        self.withdrawn_orders = {}
+        self.seed_needed = self.reseed_bar_pending = False
         self.reverse_remainders = {}
         self.orders, self.targets, self.levels, self.created = {}, {}, {}, {}
         self.cancellations, self.expirations = set(), set()
@@ -230,7 +244,7 @@ class GridExecution:
     def _stage(self):
         staged = copy(self)
         for name in ('records', 'orders', 'targets', 'levels', 'created',
-                     'cancellations', 'expirations', 'true_ranges', 'reverse_remainders'):
+                     'cancellations', 'expirations', 'true_ranges', 'reverse_remainders', 'withdrawn_orders'):
             setattr(staged, name, getattr(self, name).copy())
         return staged
 
@@ -296,7 +310,7 @@ class GridExecution:
                 pair_cost = self.estimated_cost(side, price, r.quantity_unit) + self.estimated_cost(opposite, other, r.quantity_unit)
                 if abs(other - target) * r.quantity_unit <= pair_cost:
                     return
-        if len(self.orders) == _MAX_WORKING_ORDERS:
+        if not self.continuous_capacity and len(self.orders) >= _MAX_WORKING_ORDERS:
             raise ValueError('Grid working order budget exhausted')
         next_order = self.issued_orders + 1
         identity = f'{self.deployment_id}-{next_order:08d}'
@@ -420,6 +434,8 @@ class GridExecution:
                     staged.conflict = command.event_id
                 else:
                     raise ValueError('confirmation outside Grid deployment')
+            elif action == 'withdraw':
+                staged._withdraw_unsubmitted(command, account)
             elif action == 'unknown':
                 staged._mark_unknown(command)
             else:
@@ -429,6 +445,29 @@ class GridExecution:
 
     def observe(self, event, account, *, delivery):
         self._apply_external(delivery, 'observe', _observation(event), account)
+
+    def withdraw_unsubmitted(self, order_ids, account, *, delivery):
+        """Withdraw local proposals, retaining evidence without an exchange report."""
+        self._apply_external(delivery, 'withdraw', list(order_ids), account)
+
+    def _withdraw_unsubmitted(self, order_ids, account):
+        self._validate_account(account)
+        if (not order_ids or len(set(order_ids)) != len(order_ids)
+                or any(key not in self.orders or self.orders[key].status != OrderStatus.NEW
+                       or key in self.records for key in order_ids)):
+            raise ValueError('withdrawal requires unique unsubmitted Grid proposals')
+        for key in order_ids:
+            self.withdrawn_orders[key] = [self.orders[key], self.targets[key],
+                                          self.levels[key], self.created[key]]
+            self._forget(key)
+        self.account = account
+        self.seed_needed = True
+
+    def _reseed_withdrawn(self):
+        if (self.seed_needed and self.state == 'RUNNING' and not self.active
+                and self.pending_rebuild is None and self._can_propose()):
+            self._seed()
+            self.seed_needed = False
 
     def complete_bar(self, *, delivery):
         """Apply the ATR close after execution feedback for the observation."""
@@ -472,6 +511,11 @@ class GridExecution:
         if event['completed_bar'] and c.mode == 'atr':
             self.pending_bar = tuple(float(event[key]) for key in ('high', 'low', 'close'))
         self._settle()
+        if event['completed_bar'] and event.get('reseed_withdrawn', False):
+            if self.pending_bar is not None:
+                self.reseed_bar_pending = True
+            else:
+                self._reseed_withdrawn()
 
     def _complete_bar(self):
         if self.pending_bar is None:
@@ -491,6 +535,9 @@ class GridExecution:
             interval_elapsed = self.sequence - self.last_rebuild >= c.min_rebuild_interval
             if spacing > 0 and (self.state == 'WARMUP' or (moved and interval_elapsed)):
                 self._rebuild(close, spacing)
+        if self.reseed_bar_pending:
+            self.reseed_bar_pending = False
+            self._reseed_withdrawn()
 
     def _account_risk(self):
         self.peak = max(self.peak, self.account.equity)
@@ -500,9 +547,14 @@ class GridExecution:
             elif self.account.turnover / self.initial_equity >= D(self.config.max_turnover):
                 self._risk('MAX_TURNOVER')
 
+    def enable_continuous_capacity(self):
+        """Lift operational lifetime limits without replacing an existing deployment."""
+        self.continuous_capacity = True
+
     def deployment(self):
         return dict(({'max_exit_quantity': self.max_exit_quantity}
-                     if self.max_exit_quantity is not None else {}),
+                     if self.max_exit_quantity is not None else {})
+                    | ({'continuous_capacity': True} if self._deployment_continuous_capacity else {}),
             config=asdict(self.config), rules=asdict(self.rules),
             deployment_id=self.deployment_id, account_id=self.account_id,
             market=self.market, instrument_id=self.instrument_id,
@@ -644,7 +696,10 @@ class GridExecution:
                 broker.state, store.event_cursor(), staged._paper_deployment(controller))
             staged._baseline = payload['baseline']
             for name in _DECISION_FIELDS:
-                setattr(staged, name, payload['decision'][name])
+                if name in {'withdrawn_orders', 'seed_needed', 'reseed_bar_pending'}:
+                    setattr(staged, name, payload['decision'].get(name, getattr(staged, name)))
+                else:
+                    setattr(staged, name, payload['decision'][name])
             staged.timestamp = pd.Timestamp(payload['timestamp'])
             staged.true_ranges.extend(payload['true_ranges'])
             for name in ('pending_rebuild', 'pending_bar'):
