@@ -251,7 +251,7 @@ DEMO_LIMITS = RiskLimits(MAX_NOTIONAL, MAX_NOTIONAL, MAX_NOTIONAL, orders_per_mi
 
 
 @contextmanager
-def open_grid_session(root, store, grid_factory=None, *, read_only=False):
+def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_deployment=False):
     """Open one campaign-bound Grid bridge over the shared Demo journals."""
     from factorlab.trading.storage import PaperStore, dumps, decode
 
@@ -289,7 +289,17 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False):
                 authorization=authorization, limits=DEMO_LIMITS,
                 write_guard=None if read_only else guard, receipt_sink=None if read_only else record)
             key = 'demo-grid:deployment'
-            saved = controller_store.event_payload(key)
+            saved = saved_grid_deployment(controller_store)
+            if new_deployment:
+                if read_only:
+                    raise SafetyBlocked('new Grid deployment requires explicit write mode')
+                if saved is not None and decode(json.loads(saved))['campaign'] == campaign['id']:
+                    raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
+                session.recover()
+                status = session.status()
+                if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
+                    raise SafetyBlocked('new Grid deployment requires a reconciled flat account without open or UNKNOWN orders')
+                saved = None
             if saved is not None:
                 deployment = decode(json.loads(saved))
                 if not read_only and deployment['campaign'] != campaign['id']:
@@ -311,8 +321,15 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False):
             bridge = DemoGridBridge(grid, session, expect=None if read_only else expect,
                 read_only=read_only)
             with controller_store.transaction():
-                controller_store.record_metadata(key, deployment)
+                controller_store.record_metadata(key + ':' + deployment['campaign'], deployment)
             yield bridge
+
+
+def saved_grid_deployment(store):
+    """Read the latest immutable campaign binding, including the original journal key."""
+    row = store.db.execute("SELECT payload FROM events WHERE id = 'demo-grid:deployment' "
+        "OR id LIKE 'demo-grid:deployment:%' ORDER BY rowid DESC LIMIT 1").fetchone()
+    return row[0] if row else None
 
 
 def restore_grid(deployment):

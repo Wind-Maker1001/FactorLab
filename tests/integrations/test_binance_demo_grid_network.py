@@ -367,6 +367,7 @@ def test_acceptance_restart_changed_book_and_readonly_after_stop(network_grid, m
         deployment = bridge.grid.deployment()
         tool.execute(bridge, 'submit')
         key = bridge.grid.active[0].intent.client_order_id
+        intent = bridge.grid.active[0].intent
         observation = bridge.controller.store.event_payload(bridge.prefix + 'initial-observation')
     # The factory must restore rather than derive a new deployment from a new book.
     with open_grid_session(root, store, tool.factory) as bridge:
@@ -388,7 +389,7 @@ def test_acceptance_restart_changed_book_and_readonly_after_stop(network_grid, m
         with pytest.raises(SafetyBlocked, match='read-only'):
             bridge.dispatch()
         with pytest.raises(SafetyBlocked, match='authorization'):
-            bridge.session.submit_intent(next(iter(bridge.grid.orders.values())))
+            bridge.session.submit_intent(intent)
         with pytest.raises(SafetyBlocked, match='authorization'):
             bridge.session.cancel(key)
     assert all(request.get_method() == 'GET' for request in requests[before:])
@@ -421,3 +422,27 @@ def test_acceptance_repeated_submit_does_not_dispatch_reverse(network_grid):
         assert bridge.account().inventory == D('.04')
         assert bridge.grid.active[0].intent.side is Side.SELL
     assert len(writes(requests)) == 1
+
+
+def test_explicit_new_campaign_deployment_preserves_previous_journal(network_grid):
+    root, store, factory, enable, fake, requests = network_grid
+    first = enable()
+    with open_grid_session(root, store, factory) as bridge:
+        bridge.recover()
+        old_prefix = bridge.prefix
+        old_binding = bridge.controller.store.event_payload(old_prefix + 'deployment')
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.stop()
+    second = enable()
+    with pytest.raises(SafetyBlocked, match='campaign differs'):
+        with open_grid_session(root, store, factory):
+            pytest.fail('silently adopted a replacement campaign')
+    with open_grid_session(root, store, factory, new_deployment=True) as bridge:
+        assert bridge.grid.deployment_id == second['prefix'] + '-g'
+        assert bridge.controller.store.event_payload(old_prefix + 'deployment') == old_binding
+        assert bridge.grid.deployment_id != first['prefix'] + '-g'
+    with pytest.raises(SafetyBlocked, match='already has'):
+        with open_grid_session(root, store, factory, new_deployment=True):
+            pytest.fail('replaced the same campaign deployment')
+    assert not writes(requests)
+    assert not writes(requests, 'DELETE')

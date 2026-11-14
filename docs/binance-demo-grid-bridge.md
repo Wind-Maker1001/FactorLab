@@ -4,7 +4,7 @@
 `DemoExecutionGateway` and its existing `TradingController`. Offline injection
 continues to use `DemoExecutionTransport`. Network delivery uses a bound
 `DemoSession` inside `open_grid_session`; the bridge itself grants no authority.
-No CLI command or market-data driver is changed.
+The bounded acceptance driver is separate from the continuous strategy worker.
 
 Construct a fresh Grid with the bound account identity and observed exchange
 rules, construct the bridge, then call `recover()` before `observe(event)` or
@@ -99,7 +99,10 @@ observing events or dispatching. It does not enable a campaign or submit on entr
 The supplied deployment identity is derived from the persisted campaign prefix;
 the deployment binding and command journal must match on reopen. Changing a
 campaign or deployment requires explicit operator disposition, not silently
-adopting another deployment's inventory.
+adopting another deployment's inventory. `read_only=True` reopens the saved
+configuration and command journal without reconstructing write authority, including
+after the campaign expires or is stopped. It never calls the configuration factory
+to replace the persisted deployment. Read-only dispatch is blocked.
 
 Network delivery calls `DemoSession.submit_intent` with the original LIMIT intent.
 Fresh book and mark observations inform risk only: they never replace the Grid
@@ -111,7 +114,7 @@ remain enforced. Confirmed known cancellations use `DemoSession.cancel`, without
 running new-order notional admission when market movements exceed the budget.
 
 A caller must supply ordered Grid observations and recover after disconnect; no
-new market-data driver is included. A lost write response stops the campaign via
+continuous Grid market-data driver is included. A lost write response stops the campaign via
 the existing receipt path. GET recovery establishes order/account facts but does
 not restore stopped authorization. An unresolved order continues occupying the
 single slot. Reauthorization is an explicit existing operator action.
@@ -126,6 +129,50 @@ The HTTP Stub integration tests intercept actual `DemoNetworkTransport` requests
 through the production Session, controller, gateway, adapter and persistent guard.
 Offline tests also retain ATR pending-bar replay and fragmented reverse-quantity
 accumulation across restart.
+
+## Bounded acceptance commands
+
+From an installed source checkout, use the acceptance driver in separate processes:
+
+```powershell
+python tools/demo_grid_acceptance.py status
+python tools/demo_grid_acceptance.py submit
+python tools/demo_grid_acceptance.py recover
+python tools/demo_grid_acceptance.py cancel CLIENT_ORDER_ID
+python tools/demo_grid_acceptance.py recover
+```
+
+Each invocation opens and closes its own session; run `recover` as a separate
+process for the restart acceptance evidence. JSON output includes the original
+deployment, exchange-backed order snapshots, account state, campaign POST usage
+and stored write receipts.
+
+No argument selects read-only status. `submit` and `cancel` require an already
+explicitly enabled persistent Demo campaign; the driver never enables or renews
+one. `recover` and `status` remain GET-only after expiry or revocation. Cancellation
+does not liquidate filled inventory.
+
+The first submission stores the complete deployment before dispatch. Subsequent
+processes reuse its configuration, deployment identity and command journal rather
+than choosing new limits from a changed book. Fresh prices remain risk inputs only.
+A repeated submission must not replace a known or uncertain order. A separately
+authorized campaign does not silently adopt an older deployment: use `submit
+--new-deployment` to explicitly initialize a new campaign deployment only after
+GET reconciliation confirms a flat account without active or UNKNOWN orders.
+Previous deployment and order journals are retained. This option does not enable
+or renew authorization and cannot replace a deployment in the same campaign.
+Recover UNKNOWN
+through GET; do not delete journals or repeat a failed POST.
+
+All commands are limited to official Binance Demo NVDAUSDT. The existing 0.04 NVDA,
+7 USDT, one-active-order and persistent POST limits apply. Exchange minimums can
+make a deployment infeasible within these caps; no cap is increased to compensate.
+
+Online acceptance evidence must include the exchange order ID and status, original
+limit and accepted limit, actual fills/fees, known-order cancellation result, and
+an independent GET recovery. A resting or canceled unfilled order demonstrates
+order delivery, not a profitable Grid round trip. Offline intercepted responses
+are not real exchange acceptance.
 
 ### Intercepted request evidence
 
