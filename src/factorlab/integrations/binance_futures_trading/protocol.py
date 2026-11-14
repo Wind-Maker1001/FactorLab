@@ -41,7 +41,7 @@ READ_PATHS = frozenset({
     '/fapi/v1/exchangeInfo', '/fapi/v3/balance', '/fapi/v1/time', '/fapi/v1/order', '/fapi/v1/openOrders', '/fapi/v1/allOrders',
     '/fapi/v2/account', '/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
     '/fapi/v1/leverageBracket', '/fapi/v1/userTrades', '/fapi/v1/income', '/fapi/v1/symbolConfig',
-    '/fapi/v1/apiTradingStatus', '/fapi/v1/premiumIndex', '/fapi/v1/ticker/bookTicker',
+    '/fapi/v1/apiTradingStatus', '/fapi/v1/premiumIndex', '/fapi/v1/ticker/bookTicker', '/fapi/v1/klines',
 })
 WRITE_PATHS = frozenset({('POST', '/fapi/v1/order'), ('DELETE', '/fapi/v1/order')})
 
