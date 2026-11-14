@@ -1,0 +1,58 @@
+{
+  "symbol": "NVDAUSDT",
+  "status": "TRADING",
+  "contractType": "TRADIFI_PERPETUAL",
+  "timeInForce": [
+    "GTC",
+    "IOC",
+    "FOK",
+    "GTX",
+    "GTD"
+  ],
+  "triggerProtect": "0.0300",
+  "marketTakeBound": "0.03",
+  "filters": [
+    {
+      "minPrice": "0.01000",
+      "maxPrice": "20000",
+      "filterType": "PRICE_FILTER",
+      "tickSize": "0.01000"
+    },
+    {
+      "maxQty": "6000",
+      "minQty": "0.01",
+      "stepSize": "0.01",
+      "filterType": "LOT_SIZE"
+    },
+    {
+      "maxQty": "600",
+      "stepSize": "0.01",
+      "filterType": "MARKET_LOT_SIZE",
+      "minQty": "0.01"
+    },
+    {
+      "limit": 200,
+      "filterType": "MAX_NUM_ORDERS"
+    },
+    {
+      "notional": "5",
+      "filterType": "MIN_NOTIONAL"
+    },
+    {
+      "multiplierUp": "1.0300",
+      "multiplierDown": "0.9700",
+      "filterType": "PERCENT_PRICE",
+      "multiplierDecimal": "4"
+    },
+    {
+      "filterType": "POSITION_RISK_CONTROL",
+      "positionControlSide": "NONE"
+    }
+  ],
+  "observed_at": "2026-11-14T09:34:09.194520+00:00",
+  "endpoint_receipt": {
+    "method": "GET",
+    "path": "/fapi/v1/exchangeInfo",
+    "http_status": 200
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "reference_candidate": {
+    "approved": true,
+    "reason": "APPROVED",
+    "parameters": {
+      "symbol": "NVDAUSDT",
+      "side": "BUY",
+      "type": "LIMIT",
+      "quantity": "0.04",
+      "newClientOrderId": "m06-7da365fc71994d9e-01",
+      "positionSide": "BOTH",
+      "newOrderRespType": "RESULT",
+      "reduceOnly": "false",
+      "price": "161.76000",
+      "timeInForce": "GTC"
+    }
+  },
+  "min_price": {
+    "approved": true,
+    "reason": "APPROVED",
+    "parameters": {
+      "symbol": "NVDAUSDT",
+      "side": "BUY",
+      "type": "LIMIT",
+      "quantity": "0.04",
+      "newClientOrderId": "m06-7da365fc71994d9e-01",
+      "positionSide": "BOTH",
+      "newOrderRespType": "RESULT",
+      "reduceOnly": "false",
+      "price": "160.96000",
+      "timeInForce": "GTC"
+    }
+  },
+  "max_price": {
+    "approved": true,
+    "reason": "APPROVED",
+    "parameters": {
+      "symbol": "NVDAUSDT",
+      "side": "BUY",
+      "type": "LIMIT",
+      "quantity": "0.04",
+      "newClientOrderId": "m06-7da365fc71994d9e-01",
+      "positionSide": "BOTH",
+      "newOrderRespType": "RESULT",
+      "reduceOnly": "false",
+      "price": "162.56000",
+      "timeInForce": "GTC"
+    }
+  },
+  "budget": {
+    "worst_frozen_quote_notional": "6.5744000",
+    "fee_budget_at_rate": "0.0065744000",
+    "full_reservation": "6.5809744000",
+    "within_notional": true,
+    "within_fee": true,
+    "within_funds": true
+  },
+  "scope": "Offline replay of selected actual GET facts at their recorded observation time, not current freshness or order acceptance; no account binding or full controller admission claimed."
+}
