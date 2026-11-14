@@ -106,6 +106,16 @@ def analyze_account(directory, events, output):
         allocation[category] += amount
         if completed:
             allocation['completed_cycle'] += amount
+    flows = position_settlements(trades, events)
+    total = sum((r['funding'] for r in flows), ZERO)
+    if sum((allocation[k] for k in ('normal_sell', 'risk_exit', 'residual')), ZERO) != total:
+        raise ValueError('FIFO funding allocation differs from position funding')
+    result = account_overlay(trades, daily, flows, output)
+    return dict(**result, **{'funding_'+k:v for k,v in allocation.items()})
+
+
+def position_settlements(trades, events):
+    """Settle each account independently, with settlement before exact-tie fills."""
     flows = []
     for time, price, rate, kind in events:
         before = sum((D(r['executed_shares']) * (1 if r['side']=='BUY' else -1)
@@ -115,9 +125,12 @@ def analyze_account(directory, events, output):
         flows.append(dict(time=time.isoformat(), quantity=before, rate=rate, mark_price=price,
                           rate_type=kind, funding=cashflow(before, price, rate),
                           tie_alternative=cashflow(after, price, rate)))
+    return flows
+
+
+def account_overlay(trades, daily, flows, output):
+    """Overlay funding on saved hourly equity without changing the source account."""
     total = sum((r['funding'] for r in flows), ZERO)
-    if sum((allocation[k] for k in ('normal_sell', 'risk_exit', 'residual')), ZERO) != total:
-        raise ValueError('FIFO funding allocation differs from position funding')
     nav = []
     for row in daily:
         # Export date is bar OPEN; fills/NAV are observed at completed bar end.
@@ -142,8 +155,7 @@ def analyze_account(directory, events, output):
                 additional_adverse_funding_to_zero=final-D(1000),
                 original_drawdown_pct=drawdown([r['original_nav'] for r in nav]),
                 adjusted_hourly_drawdown_pct=drawdown([r['research_nav'] for r in nav]),
-                tie_cashflow_difference=sum((r['tie_alternative']-r['funding'] for r in flows), ZERO),
-                **{'funding_'+k:v for k,v in allocation.items()})
+                tie_cashflow_difference=sum((r['tie_alternative']-r['funding'] for r in flows), ZERO))
 
 
 def run(evidence, funding_file, output):
