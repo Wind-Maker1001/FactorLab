@@ -165,10 +165,32 @@ def _run_payloads(files):
     ]
 
 
+def _assert_exploratory_outputs(config, files):
+    dataset = pd.read_parquet(config.paths.processed_dir / "dataset.parquet")
+    assert not dataset.empty
+    assert set(dataset["symbol"]) == set(SYMBOLS)
+    assert set(dataset["date"]).issubset(set(files["research_dates"]))
+    manifest = _json(config.paths.processed_dir / "dataset_manifest.json")
+    assert manifest["rows"] == len(dataset)
+    assert manifest["market_admission"] == {
+        "formal_admission": False, "execution_admission": False, "no_live_money": True,
+    }
+    for name in ("raw_factors.parquet", "processed_factors.parquet"):
+        factors = pd.read_parquet(config.paths.features_dir / name)
+        assert not factors.empty
+        prefix = "raw_" if name == "raw_factors.parquet" else ""
+        assert {prefix + factor for factor in config.factors}.issubset(factors.columns)
+    assert (config.paths.factor_results_dir / "summary.md").is_file()
+    bundle = _json(config.paths.market_input_root / "manifest.json")
+    assert bundle["source"] == "synthetic-test-fixture-not-market-data"
+    assert bundle["source_declaration"] == "user-provided-not-independently-verified"
+    assert bundle["schema_version"] == 1
+
+
 def test_legacy_cli_imports_and_cache_remain_diagnostic_without_qualification(local_files):
     files = local_files
     commands = _commands(files)
-    assert [cli.main(command) for command in commands] == [0, 0, 0, 0, 1, 1]
+    assert [cli.main(command) for command in commands] == [0, 0, 0, 0, 0, 0]
     config = load_config(files["config_path"])
     bundle = _json(config.paths.market_input_root / "manifest.json")
     assert bundle["source"] == "synthetic-test-fixture-not-market-data"
@@ -194,18 +216,12 @@ def test_legacy_cli_imports_and_cache_remain_diagnostic_without_qualification(lo
     assert security["source"] == "local-import"
     assert security["universe_sha256"] == universe["sha256"]
     dataset_path = config.paths.processed_dir / "dataset.parquet"
-    assert not dataset_path.exists()
-    assert not (config.paths.processed_dir / "dataset_manifest.json").exists()
+    _assert_exploratory_outputs(config, files)
     assert len(config.factors) == 14
-    for name in ("raw_factors.parquet", "processed_factors.parquet"):
-        assert not (config.paths.features_dir / name).exists()
-    for filename in ("summary.md", "factor_ic.png", "rank_ic.png", "factor_correlation.png", "quantile_returns.png"):
-        assert not (config.paths.factor_results_dir / filename).exists()
     runs = _run_payloads(files)
     assert len(runs) == 6
     assert {run["command"] for run in runs} == {command[0] for command in commands}
-    assert sum(run["status"] == "success" for run in runs) == 4
-    assert sum(run["status"] == "failed" for run in runs) == 2
+    assert all(run["status"] == "success" for run in runs)
     assert all(run["random_seed"] == 42 for run in runs)
     assert all(len(run["git_commit"]) == 40 for run in runs)
     assert all(run["completed_at"] for run in runs)
@@ -214,12 +230,13 @@ def test_legacy_cli_imports_and_cache_remain_diagnostic_without_qualification(lo
     assert importer["market_data_bundle_manifest"] == bundle
     build = next(run for run in runs if run["command"] == "build-dataset")
     evaluate = next(run for run in runs if run["command"] == "evaluate-factors")
-    assert "v2 qualification" in build["error"]
-    assert "v2 qualification" in evaluate["error"]
-    assert build["outputs"] == evaluate["outputs"] == {}
+    assert build["market_admission"] == {
+        "formal_admission": False, "execution_admission": False, "no_live_money": True,
+    }
+    assert build["outputs"] and evaluate["outputs"]
 
-    # A corrected source snapshot may not silently reuse an old, covered
-    # cache. Diagnostic generations survive without producing a dataset.
+    # A corrected source snapshot must reject stale cache identity without
+    # replacing the previously built dataset.
     original_benchmark_metadata = ParquetBarCache(config.paths.benchmark_dir).read_metadata("000905.SH")
     changed_stocks = files["stocks"].copy()
     row = changed_stocks["symbol"].eq(SYMBOLS[0]) & changed_stocks["date"].eq(files["dates"][-1])
@@ -235,10 +252,10 @@ def test_legacy_cli_imports_and_cache_remain_diagnostic_without_qualification(lo
     for role in ("stocks", "benchmark"):
         assert (config.paths.market_input_root / bundle[role + "_file"]).is_file()
     assert cli.main(["build-dataset", "--config", str(files["config_path"])]) == 1
-    assert not dataset_path.exists()
+    assert dataset_path.exists()
     assert ParquetBarCache(config.paths.benchmark_dir).read_metadata("000905.SH") == original_benchmark_metadata
     failures = [run for run in _run_payloads(files) if run["status"] == "failed"]
-    assert len(failures) == 3
+    assert len(failures) == 1
     cache_failure = next(run for run in failures if "cache source identity mismatch" in run["error"])
     assert bundle["bundle_version"] in cache_failure["error"]
     assert corrected_bundle["bundle_version"] in cache_failure["error"]
@@ -282,7 +299,7 @@ def test_relative_import_paths_use_repository_root_from_another_cwd(
     monkeypatch.chdir(unrelated_cwd)
 
     commands = _commands(relative_files)
-    assert [cli.main(command) for command in commands] == [0, 0, 0, 0, 1, 1]
+    assert [cli.main(command) for command in commands] == [0, 0, 0, 0, 0, 0]
 
     bundle = _json(config.paths.market_input_root / "manifest.json")
     assert bundle["input_files"] == {
@@ -299,11 +316,10 @@ def test_relative_import_paths_use_repository_root_from_another_cwd(
         "status": str(files["status_path"].resolve()),
         "listings": str(files["listings_path"].resolve()),
     }
-    assert not (config.paths.processed_dir / "dataset.parquet").exists()
+    _assert_exploratory_outputs(config, files)
     runs = _run_payloads(files)
     assert len(runs) == 6
-    assert sum(run["status"] == "success" for run in runs) == 4
-    assert sum(run["status"] == "failed" for run in runs) == 2
+    assert all(run["status"] == "success" for run in runs)
     assert {run["command"] for run in runs} == {command[0] for command in commands}
     assert all(
         Path(output).is_absolute()
@@ -311,7 +327,9 @@ def test_relative_import_paths_use_repository_root_from_another_cwd(
         for output in run["outputs"].values()
     )
     build = next(run for run in runs if run["command"] == "build-dataset")
-    assert "v2 qualification" in build["error"]
+    assert not build["market_admission"]["formal_admission"]
+    assert not build["market_admission"]["execution_admission"]
+    assert build["market_admission"]["no_live_money"]
     assert not (unrelated_cwd / "data").exists()
     assert not (unrelated_cwd / "results").exists()
 

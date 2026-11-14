@@ -2675,6 +2675,10 @@ def command_compare_models(config: ResearchConfig, run: RunManifest) -> None:
         robustness=robustness,
     )
     fold_path = comparison_dir / "walk_forward_results.csv"
+    run.payload["market_admission"] = {
+        "formal_admission": False, "execution_admission": False,
+        "no_live_money": True,
+    }
     run.payload["compared_models"] = list(model_names)
     run.payload["source_model_runs"] = {
         name: path.name for name, path in outputs.items()

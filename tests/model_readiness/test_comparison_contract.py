@@ -113,16 +113,30 @@ def test_unsealed_prediction_bytes_rejected(comparison_bundle):
         path.write_bytes(saved)
 
 
-def test_successful_synthetic_producers_cannot_authorize_formal_comparison(
+def test_offline_comparison_does_not_authorize_formal_market_consumption(
     comparison_bundle, monkeypatch,
 ):
     from factorlab.data.admission import assert_formal_market_admission
 
     config, _, _ = comparison_bundle
-    # Restore the real boundary after software-only producer preparation.
     monkeypatch.setattr(cli, "assert_formal_market_admission", assert_formal_market_admission)
-    run = _Run("unqualified-historical-comparison")
+
+    # Comparison verifies sealed historical artifacts, not current market admission.
+    comparison_run = _Run("unqualified-historical-comparison")
+    cli.command_compare_models(config, comparison_run)
+    assert comparison_run.outputs
+    assert comparison_run.payload["market_admission"] == {
+        "formal_admission": False, "execution_admission": False, "no_live_money": True,
+    }
+
+    # A successful offline report cannot qualify the same inputs for Forward.
+    _, dataset, _, benchmark = _inputs()
+    calendar = pd.DatetimeIndex(benchmark.date.drop_duplicates().sort_values())
+    research_calendar = pd.DatetimeIndex(dataset.date.drop_duplicates().sort_values())
+    run = _Run("unqualified-formal-forward")
     with pytest.raises(FactorLabError, match="MARKET DATA QUALIFICATION REQUIRED.*no qualification package"):
-        cli.command_compare_models(config, run)
+        cli._load_formal_forward_dataset(
+            config, research_calendar, run, full_calendar=calendar,
+        )
     assert run.outputs == {}
-    assert not (config.paths.report_dir / run.run_id).exists()
+    assert not (config.paths.model_results_dir / "ridge" / run.run_id).exists()

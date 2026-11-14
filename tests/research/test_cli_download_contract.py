@@ -34,6 +34,7 @@ from tests.research.test_cli_reproducibility import (
 from tests.research.test_akshare_provider import _vendor_frame
 from tests.research.test_local_cli_pipeline import (
     _commands,
+    _assert_exploratory_outputs,
     _run_payloads,
     local_files,
 )
@@ -516,7 +517,7 @@ def test_actual_akshare_transport_exception_is_skipped_through_cache_and_cli(
     assert snapshot.metadata["source_version"] == provider.cache_source_version(SYMBOLS[1], False)
 
 
-def test_public_local_file_failure_recovers_cache_but_still_rejects_research(
+def test_public_local_file_failure_blocks_research_until_verified_recovery(
     local_files, monkeypatch,
 ):
     """Only an artificial provider fault is injected; networking is prohibited."""
@@ -596,30 +597,25 @@ def test_public_local_file_failure_recovers_cache_but_still_rejects_research(
     assert repaired["resolved_download_receipts"] == [fatal[0]["receipt_id"]]
     assert repaired["unresolved_download_receipts"] == []
 
-    # A repaired schema-v1 cache remains diagnostic; it is not formal evidence.
+    # Repaired history is usable offline without becoming formal evidence.
     recovered_metadata = {
         symbol: cache.load_snapshot(symbol).metadata_sha256 for symbol in SYMBOLS
     }
     for command in commands[4:]:
-        assert cli.main(command) == 1
-        rejected = max(_run_payloads(files), key=lambda item: item["run_id"])
-        assert rejected["command"] == command[0]
-        assert rejected["status"] == "failed"
-        assert "v2 qualification" in rejected["error"]
-        assert "schema-v1 bundles are diagnostic only" in rejected["error"]
-        assert rejected["outputs"] == {}
+        assert cli.main(command) == 0
+        recovered = max(_run_payloads(files), key=lambda item: item["run_id"])
+        assert recovered["command"] == command[0]
+        assert recovered["status"] == "success"
+        assert recovered["outputs"]
+    _assert_exploratory_outputs(config, files)
     assert list_unresolved(receipt_root) == []
     assert {
         symbol: cache.load_snapshot(symbol).metadata_sha256 for symbol in SYMBOLS
     } == recovered_metadata
-    assert not (config.paths.processed_dir / "dataset.parquet").exists()
-    assert not (config.paths.processed_dir / "dataset_manifest.json").exists()
-    assert not list(config.paths.features_dir.glob("*.parquet"))
-    assert not list(config.paths.factor_results_dir.glob("*"))
     runs = _run_payloads(files)
     assert len(runs) == 9
-    assert sum(run["status"] == "failed" for run in runs) == 5
-    assert sum(run["status"] == "success" for run in runs) == 4
+    assert sum(run["status"] == "failed" for run in runs) == 3
+    assert sum(run["status"] == "success" for run in runs) == 6
     failed_download = next(
         run for run in runs if run["command"] == "download-data" and run["status"] == "failed"
     )

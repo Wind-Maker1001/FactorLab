@@ -5,6 +5,7 @@ import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 import zipfile
 
 import pandas as pd
@@ -13,7 +14,6 @@ import pytest
 from factorlab.application.research_pipeline import ResearchPipeline
 from factorlab.data.hub.contracts import QueryResult, SourceMetadata, UnsupportedQueryError
 from factorlab.diagnostics.pipeline_preflight import content_identity, pipeline_preflight
-from factorlab.errors import ProviderError
 
 ROOT = Path(__file__).parents[2]
 SPEC = importlib.util.spec_from_file_location('p4_03_cli', ROOT / 'tools/data/audit_p4_03_controlled_inputs.py')
@@ -183,14 +183,46 @@ def test_exact_routes_reject_unregistered_window_symbol_and_pit_cutoff(controlle
         hub.read('joinquant', 'daily_bars', start='2021-01-04', end='2021-01-19', symbol='600000.SH')
 
 
-def test_real_candidate_without_independent_qualification_is_refused(controlled):
+@pytest.mark.parametrize('damage', [None, 'response_version', 'builder_version', 'missing_input', 'time'])
+def test_real_candidate_controlled_routes_enter_exploratory_builder(controlled, tmp_path, damage):
     definition, inputs, _ = controlled
+    if damage == 'response_version':
+        inputs['bars'] = replace(inputs['bars'], metadata=replace(inputs['bars'].metadata, data_version='fixture-v2'))
     hub, bindings, _ = cli.register(definition, inputs)
-    config = SimpleNamespace(source_kind='REAL_CANDIDATE', builder=SimpleNamespace(snapshot=object()),
+    build_started = RuntimeError('controlled exploratory dataset build started')
+    builder = SimpleNamespace(snapshot=object(), data_version='fixture-v1',
+        build_chunked=Mock(side_effect=build_started))
+    config = SimpleNamespace(source_kind='REAL_CANDIDATE', builder=builder,
         models={'predeclared': {}}, queries={g: tuple(p.query for p in entries) for g, entries in bindings.items()},
-        research_start=definition['window']['research_start'], research_end=definition['window']['research_end'])
-    with pytest.raises(ProviderError, match='replayable v2 qualification'):
+        research_start=definition['window']['research_start'], research_end=definition['window']['research_end'],
+        output=tmp_path / 'exploration', chunked=object())
+    if damage == 'builder_version':
+        builder.data_version = 'fixture-v2'
+    elif damage == 'missing_input':
+        del config.queries['membership']
+    elif damage == 'time':
+        config.research_end = definition['window']['end']
+    errors = {'response_version': 'DataHub version differs from pinned query',
+        'builder_version': 'builder data version must bind the selected bars version',
+        'missing_input': 'six explicit input query groups required',
+        'time': 'research interval requires a subsequent execution/label calendar'}
+    if damage is not None:
+        with pytest.raises(ValueError, match=errors[damage]):
+            ResearchPipeline(config).run(hub, tracker=None, repo_root=ROOT, command=[])
+        builder.build_chunked.assert_not_called()
+        assert not config.output.exists()
+        return
+    with pytest.raises(RuntimeError) as caught:
         ResearchPipeline(config).run(hub, tracker=None, repo_root=ROOT, command=[])
+    assert caught.value is build_started
+    builder.build_chunked.assert_called_once()
+    bars, benchmark, membership, status, listings, calendar = builder.build_chunked.call_args.args
+    assert set(bars.symbol) == set(status.symbol) == set(listings.symbol) == set(definition['symbols'])
+    assert set(benchmark.symbol) == {'000905.SH'}
+    assert membership.date.between(config.research_start, config.research_end).all()
+    assert len(membership) == 6
+    assert calendar.equals(pd.DatetimeIndex(inputs['calendar'].data.date))
+    assert builder.build_chunked.call_args.kwargs == dict(output_dir=config.output / 'dataset', config=config.chunked)
 
 
 def test_receipt_only_cli_never_claims_raw_consumption(controlled, tmp_path, monkeypatch):
