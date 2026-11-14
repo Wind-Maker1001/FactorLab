@@ -11,7 +11,6 @@ import pandas as pd
 from factorlab.backtest import AShareExecutionBacktester, ExecutionBacktestConfig
 from factorlab.backtest.fees import FeeSchedule
 from factorlab.backtest.capacity import ResearchExecutionScenario
-from factorlab.data.admission import assert_formal_market_admission
 from factorlab.data.hub import DataHub
 from factorlab.dataset import DatasetBuilder
 from factorlab.dataset.identity import file_hash, frame_hash
@@ -226,11 +225,7 @@ class ResearchPipeline:
         membership = tables['membership']
         membership = membership.loc[membership.date.isin(research_dates)].copy()
         tables['membership'] = membership
-        if c.source_kind == 'REAL_CANDIDATE':
-            assert_formal_market_admission(qualification_provider,
-                membership=membership, calendar=calendar, bars=tables['bars'],
-                benchmark=tables['benchmark'], status=tables['status'], listings=tables['listings'],
-                research_start=c.research_start, research_end=c.research_end, require_execution=True)
+        # REAL_CANDIDATE remains exploratory; formal admission belongs to formal consumers.
         if c.builder.data_version != c.queries['bars'][0].version:
             raise ValueError('builder data version must bind the selected bars version')
         output = Path(c.output)

@@ -1,0 +1,17 @@
+scenario,arm,mode,account_id,status
+base,cash,arithmetic,p7-r04b-e01-6f3d5ae90f3c3d734d573901,NOT_RUN_ADMISSION_BLOCKED
+base,fixed_budget_buy_hold,arithmetic,p7-r04b-e01-adbed181ea190e809811cd53,NOT_RUN_ADMISSION_BLOCKED
+base,B,arithmetic,p7-r04b-e01-da6b4c18ac2060a115c6ff23,NOT_RUN_ADMISSION_BLOCKED
+base,B,geometric,p7-r04b-e01-a69200c592f438bba1a6f89d,NOT_RUN_ADMISSION_BLOCKED
+base,B,atr,p7-r04b-e01-cc32128d38d8367100405574,NOT_RUN_ADMISSION_BLOCKED
+base,D,arithmetic,p7-r04b-e01-09e77510390706a5e6afde36,NOT_RUN_ADMISSION_BLOCKED
+base,D,geometric,p7-r04b-e01-608d85cb0e5a4dc4e856d6dc,NOT_RUN_ADMISSION_BLOCKED
+base,D,atr,p7-r04b-e01-5a1300055f376b37a10f5ecf,NOT_RUN_ADMISSION_BLOCKED
+stress,cash,arithmetic,p7-r04b-e01-990ac5a52d0afd419a9ae1b2,NOT_RUN_ADMISSION_BLOCKED
+stress,fixed_budget_buy_hold,arithmetic,p7-r04b-e01-4f91a254abe3165ee342ffdb,NOT_RUN_ADMISSION_BLOCKED
+stress,B,arithmetic,p7-r04b-e01-afd81a2bf18fedb043dff215,NOT_RUN_ADMISSION_BLOCKED
+stress,B,geometric,p7-r04b-e01-737ba2b9664521f75dd5b14b,NOT_RUN_ADMISSION_BLOCKED
+stress,B,atr,p7-r04b-e01-3037dc332b06725d6b232439,NOT_RUN_ADMISSION_BLOCKED
+stress,D,arithmetic,p7-r04b-e01-c0775f6fdd5df2a5d4bc346e,NOT_RUN_ADMISSION_BLOCKED
+stress,D,geometric,p7-r04b-e01-0beeaef0e13604a322eb2106,NOT_RUN_ADMISSION_BLOCKED
+stress,D,atr,p7-r04b-e01-f532c9725bbda4afdb890492,NOT_RUN_ADMISSION_BLOCKED

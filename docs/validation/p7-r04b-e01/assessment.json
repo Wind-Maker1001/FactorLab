@@ -1,0 +1,36 @@
+{
+  "status": "P7_R04B_ENGINEERING_ONLY",
+  "formal_accounts_executed": 0,
+  "formal_accounts_required": 16,
+  "data_and_design": "PASS",
+  "blocking_reason": "official listing announcement / precise first-trade cross-check unresolved",
+  "targeted_tests": {
+    "tests": 39,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite_seconds": 69.76,
+    "console_seconds": 69.82
+  },
+  "synthetic_validation": {
+    "matrix_accounts_per_run": 16,
+    "replays": 2,
+    "independent_sample_economic_evidence": false,
+    "economic_metrics_fills_hourly_nav_equal": true
+  },
+  "resources": {
+    "preflight_wall_seconds": 0.11622750002425164,
+    "preflight_process_cpu_seconds": 0.09375,
+    "disk_available_bytes": 96328314880,
+    "evidence_payload_bytes_excluding_assessment": 12715
+  },
+  "research_level": "ASSUMPTION_BOUND_PAPER_RESEARCH",
+  "funding": "NOT_IN_PAPER_LEDGER",
+  "exposure_status": "EXPOSURE_NOT_MATCHED",
+  "boundaries": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}

@@ -199,7 +199,7 @@ def test_v1_tdx_declaration_cannot_promote_staging(tmp_path):
     assert not (tmp_path / "bundle").exists()
 
 
-def test_synthetic_v2_is_rejected_by_formal_market_input_loader(tmp_path, monkeypatch):
+def test_synthetic_v2_supports_offline_inputs_but_not_formal_admission(tmp_path):
     from factorlab import cli
     from factorlab.config import load_config
     i, k, c, s, b, path = package(tmp_path, periods=85)
@@ -215,8 +215,16 @@ def test_synthetic_v2_is_rejected_by_formal_market_input_loader(tmp_path, monkey
     for symbol, frame, cache, is_index in [("000905.SH", b, cli._benchmark_cache(config), True), ("600000.SH", s, cli._stock_cache(config), False)]:
         provider = cli._provider(config)
         cache.update(symbol, frame, c.min(), c.max(), source=provider.__class__.__name__, source_version=provider.cache_source_version(symbol, is_index))
+    membership = i.membership.loc[i.membership.date.isin(c[-20:])]
+    loaded = cli._load_bar_inputs(config, membership)
+    pd.testing.assert_frame_equal(loaded[0], b)
+    pd.testing.assert_frame_equal(loaded[1], s)
+    report = loaded.provider.qualification_report
+    assert report["synthetic_only"] and not report["formal_admission"]
+    assert not report["execution_admission"]
+    assert report["stages"]["FORMAL"] == "SOFTWARE_ONLY"
     with pytest.raises(ProviderError, match="SOFTWARE_ONLY"):
-        cli._load_bar_inputs(config, i.membership.loc[i.membership.date.isin(c[-20:])])
+        cli._admit_bar_inputs(config, loaded, membership, c)
 
 
 def test_identity_change_is_explicit_and_different_entity_not_concatenated(tmp_path):

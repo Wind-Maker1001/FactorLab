@@ -1,0 +1,44 @@
+{
+  "study": "P7-R04B-E02",
+  "status": "P7_R04B_ADMISSION_BLOCKED",
+  "observations": [
+    {
+      "url": "https://www.binance.com/en/support/announcement/detail/1aa8f5f80e4a4afcab149e653fd3113d",
+      "method": "curl -L --max-time 60",
+      "curl_exit_code": 7,
+      "http_code": "000",
+      "downloaded_bytes": 0,
+      "error": "Failed to connect to www.binance.com port 443 after 2107 ms: Could not connect to server",
+      "original_body_obtained": false
+    },
+    {
+      "url": "https://www.binance.com/bapi/composite/v1/public/cms/article/detail/query?articleCode=1aa8f5f80e4a4afcab149e653fd3113d",
+      "method": "curl --connect-timeout 8 --max-time 20",
+      "curl_exit_code": 7,
+      "http_code": "000",
+      "downloaded_bytes": 0,
+      "error": "Failed to connect to www.binance.com port 443 after 2125 ms: Could not connect to server",
+      "original_body_obtained": false
+    }
+  ],
+  "follow_up_observations": {
+    "date": "2026-11-14",
+    "announcement_url": "https://www.binance.com/en/support/announcement/detail/1aa8f5f80e4a4afcab149e653fd3113d",
+    "cms_url": "https://www.binance.com/bapi/composite/v1/public/cms/article/detail?articleCode=1aa8f5f80e4a4afcab149e653fd3113d",
+    "method": "curl -L --connect-timeout 15 --max-time 40",
+    "announcement": {"curl_exit_code": 28, "http_code": "000", "error": "Connection timed out after 15011 milliseconds"},
+    "cms": {"curl_exit_code": 28, "http_code": "000", "error": "Connection timed out after 15009 milliseconds"},
+    "web_fetch": "Unable to verify if domain www.binance.com is safe to fetch",
+    "original_body_obtained": false,
+    "formal_accounts_executed": 0
+  },
+  "body_sha256": null,
+  "publication_timestamp_verified": false,
+  "publication_timezone_verified": false,
+  "gate_interpretation": "R04A requires official listing and first-bar cross-verification, not an exact millisecond first execution. An authentic announcement corroborated by retained onboardDate and the official observed hourly trading bucket can satisfy that requirement if its contents and time semantics are verified. The announcement body remains missing.",
+  "minute_data_requested": false,
+  "minute_data_reason": "Minute bars cannot replace the missing official listing announcement; the original R04A contract does not require exact first-execution time.",
+  "preflight": "e02-preflight/preflight.json",
+  "formal_accounts_executed": 0,
+  "boundaries": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

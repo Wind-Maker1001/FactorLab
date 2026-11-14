@@ -1,0 +1,66 @@
+{
+  "lots": [],
+  "matches": [],
+  "summary": {
+    "actual_fees": "0",
+    "actual_slippage": "0",
+    "buy_fill_lots": 0,
+    "completed_cycle": {
+      "buy_fee": "0",
+      "buy_slippage": "0",
+      "execution_gross": "0",
+      "fees": "0",
+      "net": "0",
+      "quantity": "0",
+      "reference_gross": "0",
+      "sell_fee": "0",
+      "sell_slippage": "0",
+      "slippage": "0"
+    },
+    "economic_net": "0",
+    "final_equity": "1000",
+    "final_nav": "1",
+    "funding": "NOT_SIMULATED",
+    "grid_cycles": 0,
+    "normal_sell": {
+      "buy_fee": "0",
+      "buy_slippage": "0",
+      "execution_gross": "0",
+      "fees": "0",
+      "net": "0",
+      "quantity": "0",
+      "reference_gross": "0",
+      "sell_fee": "0",
+      "sell_slippage": "0",
+      "slippage": "0"
+    },
+    "reconciliation_residual": "0",
+    "reported_equity_difference": "0.0",
+    "residual": {
+      "buy_fee": "0",
+      "buy_slippage": "0",
+      "execution_gross": "0",
+      "fees": "0",
+      "net": "0",
+      "quantity": "0",
+      "reference_gross": "0",
+      "sell_fee": "0",
+      "sell_slippage": "0",
+      "slippage": "0"
+    },
+    "residual_inventory": "0",
+    "risk_exit": {
+      "buy_fee": "0",
+      "buy_slippage": "0",
+      "execution_gross": "0",
+      "fees": "0",
+      "net": "0",
+      "quantity": "0",
+      "reference_gross": "0",
+      "sell_fee": "0",
+      "sell_slippage": "0",
+      "slippage": "0"
+    },
+    "valuation_adjustment": "0"
+  }
+}

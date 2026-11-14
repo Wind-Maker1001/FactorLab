@@ -1,0 +1,98 @@
+[
+  {
+    "account_id": "p7-r04b-e01-6f3d5ae90f3c3d734d573901",
+    "reconciliation_residual": "0",
+    "reported_equity_difference": "0.0",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-adbed181ea190e809811cd53",
+    "reconciliation_residual": "0E-12",
+    "reported_equity_difference": "0E-12",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-da6b4c18ac2060a115c6ff23",
+    "reconciliation_residual": "1E-24",
+    "reported_equity_difference": "-1E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-a69200c592f438bba1a6f89d",
+    "reconciliation_residual": "0E-12",
+    "reported_equity_difference": "0E-12",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-cc32128d38d8367100405574",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-09e77510390706a5e6afde36",
+    "reconciliation_residual": "1E-24",
+    "reported_equity_difference": "-1E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-608d85cb0e5a4dc4e856d6dc",
+    "reconciliation_residual": "0E-12",
+    "reported_equity_difference": "0E-12",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-5a1300055f376b37a10f5ecf",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-990ac5a52d0afd419a9ae1b2",
+    "reconciliation_residual": "0",
+    "reported_equity_difference": "0.0",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-4f91a254abe3165ee342ffdb",
+    "reconciliation_residual": "0E-12",
+    "reported_equity_difference": "0E-12",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-afd81a2bf18fedb043dff215",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-737ba2b9664521f75dd5b14b",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-3037dc332b06725d6b232439",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-c0775f6fdd5df2a5d4bc346e",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-0beeaef0e13604a322eb2106",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  },
+  {
+    "account_id": "p7-r04b-e01-f532c9725bbda4afdb890492",
+    "reconciliation_residual": "0E-24",
+    "reported_equity_difference": "0E-24",
+    "ledger_reconciled": "True"
+  }
+]

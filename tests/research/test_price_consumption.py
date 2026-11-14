@@ -63,7 +63,18 @@ def test_raw_rejects_nonraw_even_with_declared_permission(basis):
 ])
 def test_specific_gaps(changes, reason):
     with pytest.raises(PriceConsumptionError, match=reason):
-        check(envelope(**changes))
+        check(envelope(**changes), **({"cutoff": "2020-01-20"}
+            if reason in {"UNQUALIFIED", "EVIDENCE_MISSING", "PURPOSE_NOT_QUALIFIED"} else {}))
+
+
+def test_unqualified_retrospective_prices_compute_without_certification():
+    result = envelope(qualification="UNKNOWN", evidence=[], purposes=[],
+                      reasons=["independent review unavailable"])
+    output = raw_forward_returns(result, identity=IDENTITY, calendar=result.data.date)
+    assert output.raw_forward_return.notna().sum() == 2
+    assert result.metadata.field_semantics["raw_open"]["consumption"]["qualification"] == "UNKNOWN"
+    with pytest.raises(PriceConsumptionError, match="UNQUALIFIED"):
+        execution_bars(result, identity=IDENTITY, config=ExecutionBacktestConfig())
 
 
 def test_missing_contract_and_source_name_never_grant_qualification():

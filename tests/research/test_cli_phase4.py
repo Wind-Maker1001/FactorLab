@@ -250,8 +250,10 @@ def test_freeze_and_signal_lifecycle_is_explicit_and_append_only(tmp_path, monke
     monkeypatch.setattr(cli, "_load_benchmark_with_warmup", lambda config: benchmark)
     monkeypatch.setattr(
         cli,
-        "_load_verified_dataset",
-        lambda config, calendar, run=None, **kwargs: (
+        # This lifecycle exercises fitting and publication after a compliant
+        # dataset boundary; real PIT/admission rejection is tested separately.
+        "_load_formal_forward_dataset",
+        lambda config, calendar, run, *, full_calendar: (
             dataset.copy(),
             "b" * 64,
             "c" * 64,
@@ -367,6 +369,23 @@ def test_freeze_and_signal_lifecycle_is_explicit_and_append_only(tmp_path, monke
         )
     versions = sorted(path.name for path in first_path.parent.parent.iterdir())
     assert versions == ["v000001", "v000002"]
+
+
+def test_freeze_rejects_unverified_baostock_pit_before_publication(tmp_path, monkeypatch):
+    config = _config(tmp_path)
+    object.__setattr__(config, "universe", replace(config.universe, provider="baostock"))
+    _activate(config)
+    monkeypatch.setattr(cli, "_load_benchmark_with_warmup", lambda current: _benchmark())
+    run = _Run("freeze-unverified-pit")
+
+    with pytest.raises(
+        FactorLabError,
+        match="POINT-IN-TIME UNIVERSE REQUIRED.*EFFECTIVE MEMBERSHIP SEMANTICS UNVERIFIED",
+    ):
+        cli.command_freeze_forward_model(config, run)
+
+    assert run.outputs == {}
+    assert not config.paths.forward_models_dir.exists()
 
 
 def test_freeze_requires_dataset_end_exactly_at_training_cutoff(tmp_path):

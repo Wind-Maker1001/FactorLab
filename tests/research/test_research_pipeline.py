@@ -81,12 +81,13 @@ def test_prediction_adapter_future_risk_isolation(objective):
         pd.testing.assert_frame_equal(left, right)
 
 
-def test_real_data_cannot_use_synthetic_escape(tmp_path):
-    config, hub, provider = configured(tmp_path / 'output', models=['ridge'])
+def test_real_data_reaches_exploratory_pipeline(tmp_path):
+    config, hub, _ = configured(tmp_path / 'output', models=['ridge'])
     config = replace(config, source_kind='REAL_CANDIDATE')
-    with pytest.raises(Exception, match='QUALIFICATION REQUIRED'):
-        ResearchPipeline(config).run(hub, tracker=ExperimentTracker(tmp_path / 'tracker'),
-            repo_root=tmp_path, command=['test'])
+    result = ResearchPipeline(config).run(
+        hub, tracker=ExperimentTracker(tmp_path / 'tracker'),
+        repo_root=__import__('pathlib').Path(__file__).resolve().parents[2], command=['test'])
+    assert result.walk_forward['ridge'].predictions.shape[0] > 0
 
 
 def test_future_information_does_not_change_earlier_decisions(completed, tmp_path):

@@ -1,0 +1,22 @@
+{
+  "engineering_status": "P7_R04B_P2_REVIEW_FIXED",
+  "research_status": "P7_R04B_ADMISSION_BLOCKED",
+  "frozen_source_anchor": {
+    "source_commit": "0d3c4a17eab5ddb6294c1f7fa183dd781c89e66f",
+    "source_path": "docs/validation/p7-r04a/verified-assets.json",
+    "projection": "frozen_sources path -> sha256",
+    "serialization": "json.dumps(mapping, sort_keys=True, separators=(',', ':')).encode()",
+    "sha256": "0989eab0a86c33854636a78af6b6e739baca643d02af61b5cf3290d32fdd7109"
+  },
+  "direct_tests": {"passed": 14, "failed": 0, "seconds": 11.57, "receipt": "e03-direct-tests.xml"},
+  "affected_tests": {"passed": 80, "failed": 0, "seconds": 87.81, "receipt": "e03-affected-tests.xml"},
+  "historical_invocation": {
+    "command": "PYTHONPATH=src D:/Environments/anaconda3/python.exe examples/research/grid_independent_demo.py --snapshot D:/Code/p7-r04b-official-payloads/certified/runs/bde00b2f948842e2b8c2a00465a9f8c6 --output results/p7-r04b-e03-history",
+    "exit_code": 2,
+    "output": "P7_R04B_BLOCKED: official listing announcement / precise first-trade cross-check unresolved",
+    "formal_accounts_executed": 0,
+    "gate_modified": false,
+    "next_run": "After original listing admission is verified, execute the complete 16-account matrix with corrected code from the original frozen snapshot; no partial result reuse."
+  },
+  "boundaries": ["NO LIVE MONEY", "PIT_UNVERIFIED", "HFQ_UNVERIFIED", "FORMAL_ADMISSION_BLOCKED"]
+}

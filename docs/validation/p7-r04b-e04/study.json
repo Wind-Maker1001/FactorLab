@@ -1,0 +1,18 @@
+{
+  "boundaries": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "LISTING_UNVERIFIED",
+    "PREREGISTERED_LISTING_CONDITION_RELAXED"
+  ],
+  "exposure_status": "EXPOSURE_NOT_MATCHED",
+  "funding": "NOT_IN_PAPER_LEDGER",
+  "max_workers": 4,
+  "output_bytes": 14619090,
+  "process_cpu_seconds": 695.578125,
+  "research_level": "EXPLORATORY_LISTING_ADMISSION_RELAXED",
+  "runs": 16,
+  "status": "P7_R04B_MECHANISM_EVALUATED",
+  "wall_seconds": 511.0084756000433
+}

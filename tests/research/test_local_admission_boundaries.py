@@ -34,7 +34,7 @@ def test_v1_source_name_cannot_grant_research_admission(tmp_path, source):
         provider.assert_research_admission(inputs.membership, dates, stocks)
 
 
-def test_cached_alias_v1_is_rejected_by_the_research_cli_loader(tmp_path):
+def test_cached_alias_v1_supports_offline_research_without_qualification(tmp_path):
     inputs, dates, stocks, benchmark, root, _ = legacy_bundle(tmp_path, "vipdoc", periods=85)
     repository = Path(__file__).resolve().parents[2]
     document = yaml.safe_load((repository / "configs/research/csi500_local_smoke.yaml").read_text(encoding="utf-8"))
@@ -51,5 +51,10 @@ def test_cached_alias_v1_is_rejected_by_the_research_cli_loader(tmp_path):
                                           ("600000.SH", stocks, cli._stock_cache(config), False)]:
         cache.update(symbol, frame, dates[0], dates[-1], source=provider.__class__.__name__,
                      source_version=provider.cache_source_version(symbol, is_index))
+    loaded = cli._load_bar_inputs(config, inputs.membership.loc[inputs.membership.date.isin(dates[-20:])])
+    pd.testing.assert_frame_equal(loaded[0], benchmark)
+    pd.testing.assert_frame_equal(loaded[1], stocks)
+    assert loaded.provider.get_bundle_manifest()["source"] == "vipdoc"
+    assert loaded.provider.qualification_report is None
     with pytest.raises(ProviderError, match="v2 qualification"):
-        cli._load_bar_inputs(config, inputs.membership.loc[inputs.membership.date.isin(dates[-20:])])
+        loaded.provider.assert_research_admission(inputs.membership, dates, stocks)

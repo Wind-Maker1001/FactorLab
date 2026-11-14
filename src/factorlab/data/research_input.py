@@ -4,7 +4,8 @@ from io import BytesIO
 import json
 from pathlib import Path
 import time
-import subprocess
+
+from factorlab._identity import software_identity
 
 import numpy as np
 import pandas as pd
@@ -128,7 +129,7 @@ def prepare(config_path, source_root, raw_root, output):
         snapshot='EXTERNAL_IMMUTABLE_P5_R03_BARS; NO_DUPLICATE_PARQUET', metadata=asdict(meta),
         quality_sha256=file_hash(output / 'quality.json'), config_sha256=file_hash(output / 'config.json'),
         mapping_version='CSMAR_MARKET_CANDIDATE_V1_RAW_ONLY',
-        code_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=Path(__file__).resolve().parents[3], text=True).strip(),
+        code_commit=software_identity()['git_commit'],
         implementation_sha256=file_hash(Path(__file__)),
         implementation_files={str(p.relative_to(Path(__file__).resolve().parents[3])).replace('\\', '/'): file_hash(p)
             for p in (Path(__file__), Path(__file__).parent / 'csmar/prepare.py', Path(__file__).parent / 'csmar/profiles.py', Path(__file__).parent / 'hub/contracts.py')},

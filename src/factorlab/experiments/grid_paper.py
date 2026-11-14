@@ -80,7 +80,8 @@ def _bars(bars, start, end, interval='1d'):
 def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    start=None, end=None, participation=1, fee_estimate=None, no_trade=False,
                    market=Market.BINANCE_EQUITY, instrument_id=SYMBOL, data_identity=None,
-                   interval='1d', buy_hold=False):
+                   interval='1d', buy_hold=False, reference_budget=None,
+                   account_id='research-grid', max_exit_quantity=None):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -96,6 +97,14 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     decimal_value(slippage, 'slippage')
     if fee_rate >= 1 or slippage >= 1 or not ZERO <= participation <= 1:
         raise ValueError('fee_rate/slippage must be below one and participation in [0, 1]')
+    if reference_budget is not None:
+        if not buy_hold or config.initial_inventory:
+            raise ValueError('bounded reference requires buy_hold and zero initial inventory')
+        reference_budget = {key: D(value) for key, value in reference_budget.items()}
+        for key in ('max_inventory', 'max_order'):
+            decimal_value(reference_budget[key], key, positive=True)
+        if rules.step_size != D('0.01'):
+            raise ValueError('bounded reference requires the frozen 0.01 quantity step')
     inventory = D(config.initial_inventory) * rules.quantity_unit
     cash = capital - inventory * D(config.initial_price) if market == Market.BINANCE_EQUITY else capital
     currency = 'USD' if market == Market.BINANCE_EQUITY else 'USDT'
@@ -109,7 +118,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 - pd.Timedelta(microseconds=1)).to_pydatetime().replace(tzinfo=timezone.utc)
 
     now = [close_time(bars[0])]
-    broker = PaperBroker(market, 'research-grid', (Instrument(instrument_id, currency),),
+    broker = PaperBroker(market, account_id, (Instrument(instrument_id, currency),),
                         {currency: cash}, fee_rate=fee_rate)
 
     def initialize(state):
@@ -121,9 +130,9 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     try:
         controller = TradingController(broker, store, clock=lambda: now[0], initialize_state=initialize,
             limits=RiskLimits(capital, capital, capital, 1000))
-        grid = GridExecution(config, rules, deployment_id='research', account_id='research-grid',
+        grid = GridExecution(config, rules, deployment_id='research', account_id=account_id,
             market=market, instrument_id=instrument_id, initial_equity=capital,
-            fee_rate=fee_rate, fees=fee_estimate)
+            fee_rate=fee_rate, fees=fee_estimate, max_exit_quantity=max_exit_quantity)
         rows, trades, risk = [], [], []
         order_details = {}
         lifecycle = []
@@ -183,12 +192,30 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 budget -= quantity
             if buy_hold and not broker.state.orders:
                 limit = (close * (1 + slippage) // rules.tick_size) * rules.tick_size
-                quantity = (capital / (limit * (1 + fee_rate)) // rules.step_size) * rules.step_size
-                intent = OrderIntent(market, instrument_id, Side.BUY, OrderType.LIMIT,
-                                     quantity, limit, 'buy-hold')
-                order_details['buy-hold'] = dict(deployment_id='research', grid_level=None,
-                                                 target_price=str(limit))
-                controller.submit(intent)
+                if reference_budget is None:
+                    quantity = (capital / (limit * (1 + fee_rate)) // rules.step_size) * rules.step_size
+                    chunks = [('buy-hold', quantity)]
+                else:
+                    quantity = (min(reference_budget['max_inventory'],
+                        capital / (close * (1 + slippage) * (1 + fee_rate)))
+                        // rules.step_size) * rules.step_size
+                    chunk_size = (reference_budget['max_order'] // rules.step_size) * rules.step_size
+                    if quantity < rules.min_quantity or chunk_size < rules.min_quantity:
+                        raise ValueError('bounded reference quantity cannot meet frozen minimum')
+                    chunks = []
+                    remaining = quantity
+                    while remaining:
+                        chunk = min(chunk_size, remaining)
+                        if chunk < rules.min_quantity or chunk * limit < rules.min_notional:
+                            raise ValueError('bounded reference order fails frozen minimum rules')
+                        chunks.append((f'buy-hold-{len(chunks):02d}', chunk))
+                        remaining -= chunk
+                for key, chunk in chunks:
+                    intent = OrderIntent(market, instrument_id, Side.BUY, OrderType.LIMIT,
+                                         chunk, limit, key)
+                    order_details[key] = dict(deployment_id='research', grid_level=None,
+                                              target_price=str(limit), purpose='REFERENCE')
+                    controller.submit(intent)
             if not no_trade and not buy_hold:
                 for key in sorted(grid.cancellations):
                     cause = 'TTL' if key in grid.expirations else grid.reason or 'STRATEGY_CANCEL'
@@ -294,6 +321,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             config=asdict(config), rules=asdict(rules), capital=capital, fee_rate=fee_rate,
             slippage=slippage, participation=participation, no_trade=no_trade,
             interval=interval, buy_hold=buy_hold,
+            account_id=account_id, reference_budget=reference_budget,
+            max_exit_quantity=max_exit_quantity,
             market=market.value, instrument_id=instrument_id,
             fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
         return result

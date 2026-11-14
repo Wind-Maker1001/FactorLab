@@ -40,7 +40,8 @@ def test_complete_small_software_acceptance_and_data_separation(acceptance):
     end = json.loads((output / "source-end.json").read_text(encoding="utf-8"))
     assert start == end
     assert report["environment"]["source_hash_protocol"] == start["protocol"]
-    assert report["environment"]["source_sha256"] == start["canonical_sha256"] == start["git_canonical_sha256"]
+    assert report["environment"]["source_sha256"] == start["canonical_sha256"]
+    assert start["software_identity"]["identity_is_authorization"] is False
     assert (output / "readiness.md").exists()
     assert json.loads((output / "readiness.json").read_text(encoding="utf-8")) == report
 

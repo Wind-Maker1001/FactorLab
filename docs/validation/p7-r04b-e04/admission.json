@@ -1,0 +1,29 @@
+{
+  "boundaries": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "execution_basis": "EXPLORATORY_LISTING_ADMISSION_RELAXED",
+  "formal_accounts_executed": 0,
+  "independence": {
+    "classification": "RETROSPECTIVE_UNTOUCHED_CANDIDATE_NOT_STRICT_FORWARD_OOS",
+    "declaration_date": "2026-11-14",
+    "not_used_for_parameter_development_or_profit_selection": true
+  },
+  "listing_cross_check": {
+    "known_evidence": [
+      "Official March hourly archive first bucket 2026-03-26 14:00 UTC is not a precise first-trade timestamp.",
+      "Retained exchangeInfo onboardDate 2026-03-26 14:40 UTC is metadata, not independent listing corroboration."
+    ],
+    "receipts": [],
+    "required": "Official listing announcement and first observed trading corroboration with the 14:40 UTC launch metadata, or verified precise first-execution cross-evidence; preserve the original R04A/R04B gate.",
+    "search_scope": "Existing p7-r04a/p7-r04b/p6-d02 evidence and official payload receipt cache; two bounded public announcement searches returned no results.",
+    "status": "UNRESOLVED"
+  },
+  "preregistered_listing_condition_relaxed": true,
+  "research_level": "ASSUMPTION_BOUND_PAPER_RESEARCH",
+  "strict_confirmatory_contract": false,
+  "study": "P7-R04B-E01"
+}

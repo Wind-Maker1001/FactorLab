@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pandas as pd
 import pytest
@@ -14,7 +15,6 @@ from factorlab.data.hub.contracts import QueryResult, SourceMetadata
 from factorlab.diagnostics.pipeline_preflight import (
     ActionBinding, FIELDS, InputBinding, content_identity, pipeline_preflight,
 )
-from factorlab.errors import ProviderError
 
 ROOT = Path(__file__).parents[2]
 SYMBOLS = ('600000.SH', '000001.SZ')
@@ -200,14 +200,46 @@ def test_pit_hfq_unverified_formal_request_rejected():
     assert report['historical_pit'] == report['hfq_qualification'] == 'UNKNOWN'
 
 
-def test_real_candidate_pipeline_hits_original_admission_gate(tmp_path):
+@pytest.mark.parametrize('damage', [None, 'response_version', 'builder_version', 'missing_input', 'time'])
+def test_real_candidate_pipeline_enters_exploratory_builder(tmp_path, damage):
     sources, pins, options = fixture()
-    config = SimpleNamespace(source_kind='REAL_CANDIDATE', builder=SimpleNamespace(snapshot=object()),
+    build_started = RuntimeError('exploratory dataset build started')
+    builder = SimpleNamespace(snapshot=object(), data_version='v1',
+        build_chunked=Mock(side_effect=build_started))
+    config = SimpleNamespace(source_kind='REAL_CANDIDATE', builder=builder,
         models={'predeclared': {}}, queries={g: tuple(p.query for p in v) for g, v in pins.items()},
-        research_start=options['research_start'], research_end=options['research_end'])
-    with pytest.raises(ProviderError, match='replayable v2 qualification'):
+        research_start=options['research_start'], research_end=options['research_end'],
+        output=tmp_path / 'exploration', chunked=object())
+    if damage == 'response_version':
+        adapter = sources[pins['bars'][0].query.source]
+        adapter.result = replace(adapter.result, metadata=replace(adapter.result.metadata, data_version='v2'))
+    elif damage == 'builder_version':
+        builder.data_version = 'v2'
+    elif damage == 'missing_input':
+        del config.queries['status']
+    elif damage == 'time':
+        config.research_end = options['end']
+    errors = {'response_version': 'DataHub version differs from pinned query',
+        'builder_version': 'builder data version must bind the selected bars version',
+        'missing_input': 'six explicit input query groups required',
+        'time': 'research interval requires a subsequent execution/label calendar'}
+    if damage is not None:
+        with pytest.raises(ValueError, match=errors[damage]):
+            ResearchPipeline(config).run(DataHub(sources), tracker=None, repo_root=ROOT, command=[])
+        builder.build_chunked.assert_not_called()
+        assert not config.output.exists()
+        return
+    with pytest.raises(RuntimeError) as caught:
         ResearchPipeline(config).run(DataHub(sources), tracker=None, repo_root=ROOT, command=[])
-    assert not list(tmp_path.iterdir())
+    assert caught.value is build_started
+    builder.build_chunked.assert_called_once()
+    bars, benchmark, membership, status, listings, calendar = builder.build_chunked.call_args.args
+    assert set(bars.symbol) == set(status.symbol) == set(listings.symbol) == set(SYMBOLS)
+    assert set(benchmark.symbol) == {'000905.SH'}
+    assert membership.date.between(config.research_start, config.research_end).all()
+    assert len(membership) == 6
+    assert calendar.equals(pd.bdate_range(options['start'], options['end']))
+    assert builder.build_chunked.call_args.kwargs == dict(output_dir=config.output / 'dataset', config=config.chunked)
 
 
 def load_cli():

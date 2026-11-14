@@ -1,0 +1,189 @@
+{
+  "accounts": [
+    [
+      "base",
+      "cash",
+      "arithmetic"
+    ],
+    [
+      "base",
+      "fixed_budget_buy_hold",
+      "arithmetic"
+    ],
+    [
+      "base",
+      "B",
+      "arithmetic"
+    ],
+    [
+      "base",
+      "B",
+      "geometric"
+    ],
+    [
+      "base",
+      "B",
+      "atr"
+    ],
+    [
+      "base",
+      "D",
+      "arithmetic"
+    ],
+    [
+      "base",
+      "D",
+      "geometric"
+    ],
+    [
+      "base",
+      "D",
+      "atr"
+    ],
+    [
+      "stress",
+      "cash",
+      "arithmetic"
+    ],
+    [
+      "stress",
+      "fixed_budget_buy_hold",
+      "arithmetic"
+    ],
+    [
+      "stress",
+      "B",
+      "arithmetic"
+    ],
+    [
+      "stress",
+      "B",
+      "geometric"
+    ],
+    [
+      "stress",
+      "B",
+      "atr"
+    ],
+    [
+      "stress",
+      "D",
+      "arithmetic"
+    ],
+    [
+      "stress",
+      "D",
+      "geometric"
+    ],
+    [
+      "stress",
+      "D",
+      "atr"
+    ]
+  ],
+  "frozen_sha256": {
+    "configs/grid_independent_sample_preregistration.json": "7a599b39d13f8cc009a8a37ecc82c3375e09ed587d4997684e39853767fcc43c",
+    "configs/grid_lifecycle_nvda_hourly.json": "27907bcdc2b13fa00de7fd97eb55f8d74d31438ff0240c90f83ee426b0fd99ee",
+    "configs/grid_paper_nvda_hourly.json": "582c3cb33bf0e0c416a4c0dd2d4e03d2ab8f65dbaeac4903b428d1a8155b7f06",
+    "configs/grid_paper_nvda_rules.json": "b9d67a85bff0c69447312e4826455f83ead9dce6514d58c9ac7cdbb65dbf12c8",
+    "docs/validation/p7-r03/design.json": "3dd2e8564175c2ef1d0d210a6d229d32a969bc6a9c3c51339ea10f6372869f4c"
+  },
+  "preregistration": {
+    "accounts_per_scenario": 8,
+    "baseline_commit": "3ab9e51be03e1edcd14bb2f47a6a9fce42a4b471",
+    "boundaries": [
+      "NO LIVE MONEY",
+      "PIT_UNVERIFIED",
+      "HFQ_UNVERIFIED",
+      "FORMAL_ADMISSION_BLOCKED"
+    ],
+    "candidate_symbols_if_nvda_unavailable": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "cost_scenarios_bps": {
+      "base": [
+        4,
+        6
+      ],
+      "stress": [
+        8,
+        12
+      ]
+    },
+    "execution_gate": [
+      "official first-bar and listing corroboration",
+      "complete new-window hourly identity and quality",
+      "independence provenance declaration",
+      "bounded R04B adapter for two-arm matrix and common-budget reference",
+      "ledger FIFO gross/cost/net cycle attribution",
+      "preregistration content hash recorded before any economic result"
+    ],
+    "funding": "NOT_IN_PAPER_LEDGER; event-specific sensitivity separately, never combined into certified NAV",
+    "lifecycle_arms": {
+      "B": [
+        true,
+        "pause"
+      ],
+      "D": [
+        true,
+        "exit"
+      ]
+    },
+    "maximum_accounts": 16,
+    "modes": [
+      "arithmetic",
+      "geometric",
+      "atr"
+    ],
+    "parameter_identity": "docs/validation/p7-r04a/verified-assets.json#frozen_sources",
+    "priority_symbol": "NVDAUSDT",
+    "references": [
+      "cash",
+      "fixed_budget_buy_hold"
+    ],
+    "research_level": "DATA_PARTIAL",
+    "risk": {
+      "actual_exposure_status": "EXPOSURE_NOT_MATCHED",
+      "exposure_matched_reference": null,
+      "initial_capital_usdt": 1000,
+      "interpretation": "common ex-ante quantity/capital risk scale, not equal realized exposure or hard mark-to-market notional cap",
+      "max_committed_usdt": 1000,
+      "max_inventory_base_units": "1",
+      "max_order_base_units": "0.1",
+      "metrics": [
+        "max_capital_committed",
+        "max_net_notional",
+        "mean_net_notional",
+        "holding_hour_fraction",
+        "position_hours",
+        "max_drawdown",
+        "realized_pnl",
+        "unrealized_pnl",
+        "residual_inventory"
+      ],
+      "participation": "0.01",
+      "posthoc_scaling": false,
+      "quantity_unit": "0.01",
+      "reference_quantity_rule": "At first closed bar p0: floor(min(1, 1000 / (p0 * (1 + slippage) * (1 + fee)))) to 0.01. Split into orders <=0.1; all obey common cash/reservation/volume limits, earliest next completed bar; no future resizing."
+    },
+    "schema_version": 1,
+    "status": "P7_R04A_DATA_PARTIAL",
+    "strategy_source": "configs/grid_lifecycle_nvda_hourly.json",
+    "study": "P7-R04A",
+    "window_selection": {
+      "approved_for_execution": false,
+      "coverage": "UNVERIFIED",
+      "failure_policy": "stop; preserve gaps and missing evidence; no window shopping",
+      "independence": "RETROSPECTIVE_UNTOUCHED_CANDIDATE_NOT_STRICT_FORWARD_OOS",
+      "primary_candidate_utc": [
+        "2026-05-14T00:00:00Z",
+        "2026-08-12T00:00:00Z"
+      ],
+      "required_bars": 2160,
+      "rule": "90 full UTC days immediately before R02; metadata and quality only, never profitability",
+      "supplementary_window": null
+    }
+  },
+  "research_level": "EXPLORATORY_LISTING_ADMISSION_RELAXED"
+}

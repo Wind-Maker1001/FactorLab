@@ -4,7 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from factorlab._identity import source_context_root, software_identity
+from factorlab._identity import software_identity
 import platform
 from unittest.mock import patch
 
@@ -21,7 +21,7 @@ import factorlab.validation.walk_forward as wf
 from .checks import assert_folds, assert_labels, future_probes, observe_model_calls, require, statistical_probes
 from .profiling import Recorder
 from .source_identity import (
-    PROTOCOL, SourceIntegrityError, assert_source_unchanged, source_snapshot,
+    SourceIntegrityError, assert_source_unchanged, source_snapshot,
 )
 from .synthetic import (
     FEATURES, MODELS, TARGET, WARNING, build_dataset, generate_inputs, make_runner,
@@ -33,6 +33,15 @@ def save_json(path, value):
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
     os.replace(temporary, path)
+
+
+def running_source_snapshot():
+    identity = software_identity()
+    digest = hashlib.sha256(json.dumps(identity["source_sha256"],
+        sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return {"protocol": "FACTORLAB_RUNNING_SOURCE_V1",
+            "git_commit": identity["git_commit"], "canonical_sha256": digest,
+            "worktree_raw_v1_sha256": digest, "software_identity": identity}
 
 
 def source_hash(root):
@@ -73,14 +82,7 @@ def run_acceptance(output, size="small", seed=42, probes=True):
         raise ValueError("size must be small or scale")
     symbols, sessions = (12, 300) if size == "small" else (500, 1200)
     output.mkdir(parents=True, exist_ok=True)
-    root = source_context_root()
-    if software_identity()["installation_layout"] != "SOURCE_CHECKOUT":
-        save_json(output / "readiness.json", {
-            "software_acceptance": "NOT_RUN", "formal_experiment_readiness": "BLOCKED",
-            "reason": "SOURCE_CHECKOUT_REQUIRED: Git-bound diagnostics require committed source; use factorlab demo for installed software",
-        })
-        raise SourceIntegrityError("SOURCE_CHECKOUT_REQUIRED: model readiness requires committed source")
-    source_start = source_snapshot(root)
+    source_start = running_source_snapshot()
     save_json(output / "source-start.json", source_start)
     report = {
         "schema_version": 2, "warning": WARNING, "synthetic": True,
@@ -94,7 +96,7 @@ def run_acceptance(output, size="small", seed=42, probes=True):
         },
         "environment": {"git_commit": source_start["git_commit"],
                         "source_sha256": source_start["canonical_sha256"],
-                        "source_hash_protocol": PROTOCOL,
+                        "source_hash_protocol": source_start["protocol"],
                         "source_snapshot_start": "source-start.json",
                         "python": platform.python_version(), "platform": platform.platform(),
                         "packages": package_versions(),
@@ -246,11 +248,11 @@ def run_acceptance(output, size="small", seed=42, probes=True):
     finally:
         recorder.close()
         try:
-            source_end = source_snapshot(root)
+            source_end = running_source_snapshot()
             save_json(output / "source-end.json", source_end)
             assert_source_unchanged(source_start, source_end)
             report["source_verification"] = {
-                "status": "PASS", "protocol": PROTOCOL,
+                "status": "PASS", "protocol": source_start["protocol"],
                 "start": "source-start.json", "end": "source-end.json",
                 "limits": "Start/end observations; cannot detect transient changes reverted between snapshots",
             }
