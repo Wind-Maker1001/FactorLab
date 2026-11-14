@@ -66,7 +66,7 @@ def write_csv(path, rows):
         writer.writerows(rows)
 
 
-def analyze_account(directory, events, output):
+def analyze_account(directory, events, output, *, end=END):
     trades = read_csv(directory/'trades.csv')
     daily = read_csv(directory/'daily.csv')
     fifo = json.loads((directory/'fifo.json').read_text())
@@ -99,7 +99,7 @@ def analyze_account(directory, events, output):
     for lot in lots.values():
         if D(lot['remaining']):
             fragments.append((D(lot['remaining']), timestamp(by_id[lot['event_id']]['event_time']),
-                              END, 'residual', False))
+                              end, 'residual', False))
     allocation = dict(normal_sell=ZERO, risk_exit=ZERO, residual=ZERO, completed_cycle=ZERO)
     for quantity, buy, sell, category, completed in fragments:
         amount = fragment_funding(quantity, buy, sell, events)

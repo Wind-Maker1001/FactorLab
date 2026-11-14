@@ -1,0 +1,223 @@
+{
+  "boundaries": [
+    "NO LIVE MONEY",
+    "EXPLORATORY_RESEARCH"
+  ],
+  "funding_receipts": [
+    {
+      "acquired_at": "2026-11-10T17:50:43.496625+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1791676799999,
+        "limit": 1000,
+        "startTime": 1786492800000,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/293ee62e01b3d466fe135310622e58f543d2e6bf2d725fa5eff4664937d5de73.bin",
+      "sha256": "293ee62e01b3d466fe135310622e58f543d2e6bf2d725fa5eff4664937d5de73",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1791676799999&limit=1000&startTime=1786492800000&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T17:50:44.201642+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1791676799999,
+        "limit": 1000,
+        "startTime": 1791648000002,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.bin",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1791676799999&limit=1000&startTime=1791648000002&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T17:50:38.814260+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1793404799999,
+        "limit": 1000,
+        "startTime": 1793376000002,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.bin",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1793404799999&limit=1000&startTime=1793376000002&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T17:50:41.374621+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1793145599999,
+        "limit": 1000,
+        "startTime": 1793116800002,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.bin",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1793145599999&limit=1000&startTime=1793116800002&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T09:24:03.141322+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1794268799999,
+        "limit": 1000,
+        "startTime": 1794240000002,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.bin",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1794268799999&limit=1000&startTime=1794240000002&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T17:50:38.179886+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1793404799999,
+        "limit": 1000,
+        "startTime": 1793145600000,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/a930a93f103b9f0f1e631511560bf3b7d3964b0ffe76295172c765e8f33f9a3c.bin",
+      "sha256": "a930a93f103b9f0f1e631511560bf3b7d3964b0ffe76295172c765e8f33f9a3c",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1793404799999&limit=1000&startTime=1793145600000&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T09:24:02.410893+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1794268799999,
+        "limit": 1000,
+        "startTime": 1793404800000,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/2d9b47553f06a854003e458931d5b99d51b94d0081e3721edd2a79321db48a07.bin",
+      "sha256": "2d9b47553f06a854003e458931d5b99d51b94d0081e3721edd2a79321db48a07",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1794268799999&limit=1000&startTime=1793404800000&symbol=NVDAUSDT"
+    },
+    {
+      "acquired_at": "2026-11-10T17:50:40.746781+00:00",
+      "endpoint": "fundingRate",
+      "headers": {
+        "Retry-After": null
+      },
+      "params": {
+        "endTime": 1793145599999,
+        "limit": 1000,
+        "startTime": 1791676800000,
+        "symbol": "NVDAUSDT"
+      },
+      "raw_path": "raw/43382c11a50419f2b9af2b9e93d045f3c1e4ee48fbcba7ec66286eec7d4b5159.bin",
+      "sha256": "43382c11a50419f2b9af2b9e93d045f3c1e4ee48fbcba7ec66286eec7d4b5159",
+      "status": 200,
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?endTime=1793145599999&limit=1000&startTime=1791676800000&symbol=NVDAUSDT"
+    }
+  ],
+  "funding_rows": 275,
+  "funding_source": "D:\\Code\\FactorLab-worktrees\\p6-d02-binance-history\\results\\p6-d02\\daily\\runs\\bb0c43caaebd4e46a612b75b9b8b2b15",
+  "hourly": {
+    "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+    "bars_sha256": "562ba9e01c2ca050132a10519b3b514112b2f36e7837ffa838a72ce9bf00b7b4",
+    "data_version": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+    "duplicate_timestamps": 0,
+    "end_exclusive": "2026-11-10T00:00:00+00:00",
+    "flat_bars": 0,
+    "funding": "NOT_IN_PAPER_LEDGER",
+    "generation": "bddaab1cd5c943e28caa62c0fc49ef33",
+    "instrument_id": "BINANCE:USDM:NVDAUSDT",
+    "interval": "1h",
+    "invalid_ohlcv": 0,
+    "last_close": "2026-11-09T23:59:59.999000+00:00",
+    "liquidity": "observed base volume floored to integer units before 1% participation",
+    "missing_bars": 0,
+    "raw_receipts": [
+      {
+        "acquired_at": "2026-11-10T17:54:15.005004+00:00",
+        "sha256": "045307f972cd4bcb9fbe3ecfb5720c1a5891de6e582f873cc5259ae84e89e49a",
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1791889200001&symbol=NVDAUSDT"
+      },
+      {
+        "acquired_at": "2026-11-10T17:54:14.133510+00:00",
+        "sha256": "769bd4d8019132bf422e60bd56dce884105abd78338fbe63cb74e020113140ec",
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1786492800000&symbol=NVDAUSDT"
+      },
+      {
+        "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1794265200001&symbol=NVDAUSDT"
+      }
+    ],
+    "rows": 2160,
+    "source": "BINANCE_USDM_PUBLIC_REST",
+    "start": "2026-08-12T00:00:00+00:00",
+    "study": "P7-R07",
+    "valuation": "trade close, not historical intrahour mark; synthetic close execution",
+    "zero_volume_bars": 0
+  },
+  "mark_source": "historical markPrice attached to each fundingRate event; not premiumIndex snapshot",
+  "prior_window_use": "R02 data-identity uses this exact snapshot and window",
+  "projected_equals_raw": true,
+  "request_intervals_ms": [
+    [
+      1786492800000,
+      1791676800000
+    ],
+    [
+      1791648000002,
+      1791676800000
+    ],
+    [
+      1791676800000,
+      1793145600000
+    ],
+    [
+      1793116800002,
+      1793145600000
+    ],
+    [
+      1793145600000,
+      1793404800000
+    ],
+    [
+      1793376000002,
+      1793404800000
+    ],
+    [
+      1793404800000,
+      1794268800000
+    ],
+    [
+      1794240000002,
+      1794268800000
+    ]
+  ],
+  "request_window_covered": true
+}
