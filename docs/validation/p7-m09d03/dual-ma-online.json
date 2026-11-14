@@ -1,0 +1,827 @@
+[
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670140000,
+      1794670186411
+    ],
+    "bars": 21,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:29:48.065683+00:00",
+        "input_watermark": "2026-11-14 15:29:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "8ecd9fa32db999037f512c241e3bec6855fc7e9fc98d5b6ea134ef39f7b4c64e",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 85,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670200000,
+      1794670226339
+    ],
+    "bars": 1,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:30:26.935150+00:00",
+        "input_watermark": "2026-11-14 15:30:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "513de21265647b12a49995af5b84a7b95be53facdefb12dc8410bef1ed586862",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 124,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "PAUSED",
+    "reason": "RECONCILE_REQUIRED",
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670200000,
+      1794670226339
+    ],
+    "bars": 0,
+    "quotes": 0,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "PAUSED",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:30:26.935150+00:00",
+        "input_watermark": "2026-11-14 15:30:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "513de21265647b12a49995af5b84a7b95be53facdefb12dc8410bef1ed586862",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 159,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670320000,
+      1794670325603
+    ],
+    "bars": 2,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:32:06.814456+00:00",
+        "input_watermark": "2026-11-14 15:32:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "ad220c401f1b3f45e3914e24c708edb397cb767471ac4fa20e841687b99867df",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 234,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670320000,
+      1794670356715
+    ],
+    "bars": 0,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:32:06.814456+00:00",
+        "input_watermark": "2026-11-14 15:32:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "ad220c401f1b3f45e3914e24c708edb397cb767471ac4fa20e841687b99867df",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 273,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670380000,
+      1794670389940
+    ],
+    "bars": 1,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:33:10.577856+00:00",
+        "input_watermark": "2026-11-14 15:33:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "18c28b0fed9c53bed2fe74f703658cc5664956163683ab0d8c146ea17879b168",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 312,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670380000,
+      1794670422495
+    ],
+    "bars": 0,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:33:10.577856+00:00",
+        "input_watermark": "2026-11-14 15:33:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "18c28b0fed9c53bed2fe74f703658cc5664956163683ab0d8c146ea17879b168",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 351,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670440000,
+      1794670456219
+    ],
+    "bars": 1,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:34:17.779230+00:00",
+        "input_watermark": "2026-11-14 15:34:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "d8d3f624f8d5f8a28b53c79f16703794f71bf0831457266accb1d2556cad79aa",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 390,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670500000,
+      1794670501483
+    ],
+    "bars": 1,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:35:02.055799+00:00",
+        "input_watermark": "2026-11-14 15:35:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "4f7ee91bd7a1f693fc59d9a53066184ae1240434eb458b1dc84fd946a4efd13d",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 429,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670500000,
+      1794670535655
+    ],
+    "bars": 0,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:35:02.055799+00:00",
+        "input_watermark": "2026-11-14 15:35:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "4f7ee91bd7a1f693fc59d9a53066184ae1240434eb458b1dc84fd946a4efd13d",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 468,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "PAUSED",
+    "reason": "RECONCILE_REQUIRED",
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670500000,
+      1794670535655
+    ],
+    "bars": 0,
+    "quotes": 0,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "PAUSED",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:35:02.055799+00:00",
+        "input_watermark": "2026-11-14 15:35:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "4f7ee91bd7a1f693fc59d9a53066184ae1240434eb458b1dc84fd946a4efd13d",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 478,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "PAUSED",
+    "reason": "RECONCILE_REQUIRED",
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670500000,
+      1794670535655
+    ],
+    "bars": 0,
+    "quotes": 0,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "PAUSED",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:35:02.055799+00:00",
+        "input_watermark": "2026-11-14 15:35:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "4f7ee91bd7a1f693fc59d9a53066184ae1240434eb458b1dc84fd946a4efd13d",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 483,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670620000,
+      1794670658243
+    ],
+    "bars": 2,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:37:39.822884+00:00",
+        "input_watermark": "2026-11-14 15:37:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "68339d2df86c656c51b45649b136108b7acfe541e95eb763ca0668ddc9b60bf1",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 558,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670680000,
+      1794670696159
+    ],
+    "bars": 1,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:38:16.572175+00:00",
+        "input_watermark": "2026-11-14 15:38:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "ed1d477f4daec894a09128473cfbfb4bf27d1f183ced95a312e0b0018d341ed7",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 597,
+      "POST": 0,
+      "DELETE": 0
+    }
+  },
+  {
+    "status": "RUNNING",
+    "reason": null,
+    "source": "BINANCE_USDM_DEMO_REST",
+    "interval": "1m",
+    "watermarks": [
+      1794670740000,
+      1794670743991
+    ],
+    "bars": 1,
+    "quotes": 1,
+    "mode": "execute",
+    "strategy": {
+      "configuration": {
+        "strategy": {
+          "symbol": "NVDAUSDT",
+          "interval_seconds": 60,
+          "max_weight": "0.1",
+          "source": "BINANCE_USDM_DEMO_REST",
+          "strategy_id": "dual_ma",
+          "strategy_version": "1",
+          "history_limit": 21
+        },
+        "client_id_prefix": "fl-e59f3a925a6b4a84-",
+        "max_notional": "7",
+        "max_quantity": "0.04"
+      },
+      "pending": null,
+      "status": "RUNNING",
+      "enabled": true,
+      "last_signal": {
+        "strategy_id": "dual_ma",
+        "strategy_version": "1",
+        "symbol": "NVDAUSDT",
+        "generated_at": "2026-11-14 15:39:04.423128+00:00",
+        "input_watermark": "2026-11-14 15:39:00+00:00",
+        "direction": "HOLD",
+        "target_weight": null,
+        "source": "BINANCE_USDM_DEMO_REST",
+        "signal_id": "73725e81ef9132fba1f7092ac2e9d86cd88bee9a83939790481fc72a0c926e4c",
+        "status": "NO_SIGNAL",
+        "model_id": null,
+        "model_version": null,
+        "model_bundle_id": null,
+        "score": null,
+        "reason": null
+      }
+    },
+    "retained_bars": 21,
+    "requests": {
+      "GET": 636,
+      "POST": 0,
+      "DELETE": 0
+    }
+  }
+]
