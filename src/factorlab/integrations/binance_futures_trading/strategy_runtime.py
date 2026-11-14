@@ -128,16 +128,26 @@ class DemoStrategyRuntime:
                 or not self.gateway.read_account().reconciled
                 or any(r.snapshot.status not in TERMINAL for r in state.orders.values())):
             book = None
-        elif not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5):
-            self.controller._atomic(lambda: runtime.update(last_rejection='STALE_QUOTE'))
-            return None
         elif self.session is not None:
             book = self.session.prepare_limit_book()
         else:
             book = dict(askPrice=quote.price, bidPrice=quote.price, time_utc=quote.observed_at)
         def operation():
-            self.gateway.set_quote(quote)
             state, runtime = self.gateway.state, self.gateway.state.runtime
+            current = state.quotes.get(self.symbol)
+            if current is not None:
+                if quote.observed_at < current.observed_at:
+                    return None
+                if quote.observed_at == current.observed_at and quote != current:
+                    raise PersistenceConflict('quote identity conflict')
+            if (runtime['pending'] is not None and runtime['status'] == 'RUNNING'
+                    and not state.kill_switch and state.reconciled
+                    and not any(r.snapshot.status not in TERMINAL for r in state.orders.values())
+                    and not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5)):
+                runtime['last_rejection'] = 'STALE_QUOTE'
+                return None
+            if current is None or quote.observed_at > current.observed_at:
+                self.gateway.set_quote(quote)
             signal = runtime['pending']
             if signal is None:
                 return None

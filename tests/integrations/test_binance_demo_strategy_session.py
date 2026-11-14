@@ -1,4 +1,5 @@
 """Strategy events through the persistent, HTTP-stubbed Demo session."""
+from copy import deepcopy
 from contextlib import closing
 from datetime import timedelta
 from decimal import Decimal as D
@@ -20,6 +21,7 @@ from factorlab.integrations.binance_futures_trading.strategy_runtime import Demo
 from factorlab.trading import OrderType, Side, OrderStatus
 from factorlab.trading.control import RiskLimits
 from factorlab.trading.paper import Quote
+from factorlab.trading.realtime import PersistenceConflict
 from factorlab.trading.strategy import ClosedBar, DualMAStrategy
 
 
@@ -81,6 +83,69 @@ def bars(runner):
             price, price, price, price, D(100), 3600, 'BINANCE_USDM_PUBLIC_REST')
         runner.closed_bar(bar)
     return bar
+
+
+def test_rest_book_quote_redelivery_preserves_pending_and_restart(deployment, monkeypatch):
+    root, store, campaign, fake = deployment
+    counts = dict(GET=0, POST=0, DELETE=0)
+    event = Quote('NVDAUSDT', D(100), AT)
+    book_at = AT + timedelta(milliseconds=1)
+    prepare = DemoSession.prepare_limit_book
+
+    def newer_book(self):
+        return dict(prepare(self), time_utc=book_at)
+
+    monkeypatch.setattr(DemoSession, 'prepare_limit_book', newer_book)
+    with closing(DemoRuntime(root)) as runtime:
+        with open_session(root, store, runtime, counts, campaign=campaign) as (session, expect):
+            runner = runner_for(session, expect, campaign)
+            bars(runner)
+            monkeypatch.setattr(session, '_now', lambda: book_at)
+            monkeypatch.setattr(session.gateway, 'clock', lambda: book_at)
+            monkeypatch.setattr(session.controller, 'clock', lambda: book_at)
+            runner.quote(event)
+            key = session.gateway.state.runtime['last_order']['client_order_id']
+            assert session.gateway.state.quotes['NVDAUSDT'].observed_at == book_at
+            before = deepcopy(session.gateway.state)
+            # The transaction must use the persisted book, not this stale projection.
+            session.gateway.state.quotes['NVDAUSDT'] = event
+            for _ in range(2):
+                assert runner.quote(event) is None
+                assert session.gateway.state == before
+            with monkeypatch.context() as patch:
+                def unexpected_write(quote):
+                    pytest.fail('duplicate quote must not call set_quote')
+                patch.setattr(session.gateway, 'set_quote', unexpected_write)
+                assert runner.quote(before.quotes['NVDAUSDT']) is None
+                assert session.gateway.state == before
+            assert counts['POST'] == runtime.post_count(campaign['id']) == 1
+            fake.trade_update(key, str(session.adapter.order(key).intent.quantity))
+            assert runner.recover().reconciled
+    with closing(DemoRuntime(root)) as runtime:
+        with open_session(root, store, runtime, counts, campaign=campaign) as (session, expect):
+            runner = runner_for(session, expect, campaign)
+            signal = dict(session.gateway.state.runtime['last_signal'],
+                signal_id='after-rest-book', direction='SELL', target_weight=D(0))
+            session.controller._atomic(lambda: session.gateway.state.runtime.update(pending=signal))
+            before = deepcopy(session.gateway.state)
+            assert runner.quote(event) is None
+            assert session.gateway.state == before
+            assert session.gateway.state.runtime['last_order']['client_order_id'] == key
+            assert counts['POST'] == 1
+            with pytest.raises(PersistenceConflict, match='quote identity conflict'):
+                runner.quote(Quote('NVDAUSDT', D(101), book_at))
+            assert session.gateway.state == before
+            newer = book_at + timedelta(milliseconds=1)
+            monkeypatch.setattr(session, 'prepare_limit_book', lambda: dict(
+                bidPrice=D(100), askPrice=D(100), time_utc=newer))
+            monkeypatch.setattr(session, '_now', lambda: newer)
+            monkeypatch.setattr(session.gateway, 'clock', lambda: newer)
+            monkeypatch.setattr(session.controller, 'clock', lambda: newer)
+            runner.quote(Quote('NVDAUSDT', D(100), newer))
+            exit_key = session.gateway.state.runtime['last_order']['client_order_id']
+            assert exit_key != key
+            assert session.adapter.order(exit_key).intent.reduce_only
+            assert counts['POST'] == runtime.post_count(campaign['id']) == 2
 
 
 @pytest.mark.parametrize('lost_reply', [False, True])
