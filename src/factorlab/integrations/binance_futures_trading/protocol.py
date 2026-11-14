@@ -32,6 +32,11 @@ class Environment(Enum):
         return self.value[2]
 
 
+def credential_account_id(environment, key):
+    digest = hashlib.sha256(key.encode()).hexdigest()
+    return f'{environment.name}:{environment.account_id}:{digest}'
+
+
 READ_PATHS = frozenset({
     '/fapi/v1/exchangeInfo', '/fapi/v3/balance', '/fapi/v1/time', '/fapi/v1/order', '/fapi/v1/openOrders', '/fapi/v1/allOrders',
     '/fapi/v2/account', '/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
@@ -114,6 +119,16 @@ class OfflineTransport:
         raise NotImplementedError
 
 
+def _request_http(host, request, timeout, *, opener):
+    url = host + request.path + ('?' + request.query if request.query else '')
+    try:
+        with opener(_NoRedirect()).open(Request(url, headers=request.headers, method=request.method),
+                                        timeout=timeout) as reply:
+            return Response(reply.status, dict(reply.headers), reply.read(2 * 1024 * 1024 + 1))
+    except HTTPError as error:
+        return Response(error.code, dict(error.headers), error.read(2 * 1024 * 1024 + 1))
+
+
 @dataclass(frozen=True, kw_only=True)
 class ReadOnlyNetworkTransport:
     """Explicit opt-in account GETs only, fixed host, no redirects or writes."""
@@ -125,12 +140,8 @@ class ReadOnlyNetworkTransport:
             raise SafetyBlocked('NO LIVE MONEY: network access disabled or non-read request')
         if request.environment is not self.environment:
             raise SafetyBlocked('credential and transport environment mismatch')
-        url = self.environment.host + request.path + ('?' + request.query if request.query else '')
         try:
-            with build_opener(_NoRedirect()).open(Request(url, headers=request.headers, method='GET'), timeout=timeout) as r:
-                return Response(r.status, dict(r.headers), r.read(2 * 1024 * 1024 + 1))
-        except HTTPError as exc:
-            return Response(exc.code, dict(exc.headers), exc.read(2 * 1024 * 1024 + 1))
+            return _request_http(self.environment.host, request, timeout, opener=build_opener)
         except OSError:
             raise OSError('account read transport failed') from None
 
@@ -170,22 +181,25 @@ class FuturesClient:
         if not ((method == 'GET' and path in READ_PATHS) or (method, path) in WRITE_PATHS):
             raise SafetyBlocked('endpoint is not allowlisted')
         params = dict(params or {})
+        if signed:
+            return self._signed_request(method, path, params)
         if {'signature', 'timestamp', 'recvWindow'} & params.keys():
             raise ValueError('authentication fields are owned by the signer')
-        headers = {}
-        if signed:
-            if self.credentials is None:
-                raise SafetyBlocked('credentials required for signed protocol')
-            if getattr(self.transport, 'environment', None) is not None:
-                if self.credentials.environment is not self.environment or self.transport.environment is not self.environment:
-                    raise SafetyBlocked('credential and client environment mismatch')
-            params.update(timestamp=int(self.clock() * 1000) + self.offset_ms, recvWindow=self.recv_window)
-            headers['X-MBX-APIKEY'] = self.credentials.key
+        return SignedRequest(method, path, urlencode(sorted(params.items())), {}, self.environment)
+
+    def _signed_request(self, method, path, params):
+        if {'signature', 'timestamp', 'recvWindow'} & params.keys():
+            raise ValueError('authentication fields are owned by the signer')
+        if self.credentials is None:
+            raise SafetyBlocked('credentials required for signed protocol')
+        if getattr(self.transport, 'environment', None) is not None:
+            if self.credentials.environment is not self.environment or self.transport.environment is not self.environment:
+                raise SafetyBlocked('credential and client environment mismatch')
+        params = dict(params, timestamp=int(self.clock() * 1000) + self.offset_ms, recvWindow=self.recv_window)
+        headers = {'X-MBX-APIKEY': self.credentials.key}
         query = urlencode(sorted(params.items()))
-        if signed:
-            signature = hmac.new(self.credentials.secret.encode(), query.encode(), hashlib.sha256).hexdigest()
-            query += '&signature=' + signature
-        return SignedRequest(method, path, query, headers, self.environment)
+        signature = hmac.new(self.credentials.secret.encode(), query.encode(), hashlib.sha256).hexdigest()
+        return SignedRequest(method, path, query + '&signature=' + signature, headers, self.environment)
 
     def request(self, method, path, params=None, *, signed=True):
         if self.transport is None:
@@ -207,9 +221,13 @@ class FuturesClient:
             if method != 'GET':
                 raise OutcomeUnknown('order outcome unknown; query by clientOrderId, never resend') from None
             raise DataQualityError('account read failed; reconciliation required') from None
+        return self._parse_response(request, response)
+
+    def _parse_response(self, request, response, *, operation='order', observe_diagnostics=None):
+        method = request.method
         if not isinstance(response, Response) or len(response.body) > 2 * 1024 * 1024:
             if method != 'GET':
-                raise OutcomeUnknown('unusable order response; reconcile')
+                raise OutcomeUnknown(f'unusable {operation} response; reconcile')
             raise DataQualityError('invalid HTTP response')
         retry_after = None
         if response.status in {418, 429}:
@@ -223,10 +241,14 @@ class FuturesClient:
             payload = json.loads(response.body)
         except (ValueError, UnicodeError):
             if method != 'GET':
-                raise OutcomeUnknown('malformed order response; reconcile') from None
+                raise OutcomeUnknown(f'malformed {operation} response; reconcile') from None
             raise DataQualityError('invalid response JSON') from None
         raw_code = payload.get('code') if isinstance(payload, dict) else None
         code = raw_code if type(raw_code) is int else None
+        diagnostic = None
+        if observe_diagnostics is not None:
+            diagnostic = rejection_message(payload, credentials=self.credentials, request=request)
+            observe_diagnostics(code, diagnostic)
         if response.status == 408 or response.status >= 500 or code in {-1006, -1007, -4116}:
             if method != 'GET':
                 raise OutcomeUnknown('exchange execution outcome unknown; reconcile')
@@ -237,10 +259,11 @@ class FuturesClient:
                          -1111: 'PRECISION'}.get(code, 'EXCHANGE_REJECTED'))
             if response.status in {418, 429}:
                 category = 'RATE_LIMIT'
-            raise ExchangeError(code, response.status, category, retry_after,
-                                message=rejection_message(payload, credentials=self.credentials, request=request))
+            if observe_diagnostics is None:
+                diagnostic = rejection_message(payload, credentials=self.credentials, request=request)
+            raise ExchangeError(code, response.status, category, retry_after, message=diagnostic)
         if not isinstance(payload, (dict, list)):
             if method != 'GET':
-                raise OutcomeUnknown('unexpected order response; reconcile')
+                raise OutcomeUnknown(f'unexpected {operation} response; reconcile')
             raise DataQualityError('unexpected response shape')
         return payload

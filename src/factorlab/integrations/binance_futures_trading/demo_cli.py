@@ -23,6 +23,7 @@ from .demo_runtime import (
 from .demo_session import DEMO, SYMBOL, DemoSession, demo_account_configuration, observe_demo_account
 from .preflight import demo_credential_dialog
 from .protocol import Credentials, SafetyBlocked
+from .tradfi_agreement import sign_tradfi_agreement
 
 
 OPERATING_ERRORS = (SafetyBlocked, DataQualityError, RiskRejected, TimeoutError)
@@ -46,12 +47,17 @@ def configure(store, requests, *, replace=False):
                 credential_reference=store.reference)
 
 
-@contextmanager
-def open_session(root, store, runtime, requests, *, campaign=None):
+def load_bound_credential(store):
     binding = private_binding(store)
     credential = store.read()
     if credential is None:
         raise SafetyBlocked('saved Demo credential missing; run setup')
+    return binding, credential
+
+
+@contextmanager
+def open_session(root, store, runtime, requests, *, campaign=None):
+    binding, credential = load_bound_credential(store)
     authorization = runtime.authority(binding, campaign) if campaign is not None else None
     expected = None
 
@@ -131,6 +137,8 @@ def smoke_lifecycle(session, expect, campaign):
         return dict(status='DEMO_ORDER_REJECTED_DIAGNOSED', account=report)
     if not entry.cumulative_filled_quantity:
         return dict(status='DEMO_ORDER_LIFECYCLE_ACCEPTED', account=report)
+    if campaign['orders'] == 1:
+        return dict(status='DEMO_FILL_RECONCILED', account=report)
 
     quantity = entry.cumulative_filled_quantity
     positions = report['positions']
@@ -154,11 +162,28 @@ def run_command(args, root, store, runtime, requests, smoke_id):
         store.delete()
         store.delete_config()
         return dict(status='DEMO_CREDENTIALS_DELETED')
+    if command == 'tradfi-sign':
+        binding, credential = load_bound_credential(store)
+        account_id = binding['account_id']
+        saved = runtime.tradfi_receipt(account_id)
+        if saved is not None:
+            return dict(status='DEMO_TRADFI_ATTEMPT_RECORDED', agreement=saved)
+        receipt = sign_tradfi_agreement(credential, account_id=account_id, accept_agreement=args.accept_agreement,
+            requests=requests, reserve=lambda pending: runtime.reserve_tradfi(account_id, pending))
+        runtime.save_tradfi(account_id, receipt)
+        status = 'DEMO_TRADFI_SIGNED' if receipt['success'] else 'DEMO_TRADFI_NOT_CONFIRMED'
+        return dict(status=status, agreement=receipt)
     if command in {'status', 'recover', 'enable-demo', 'smoke-test'}:
         started_at = now()
         stop_epoch = runtime.stop_epoch()
-        if command == 'smoke-test' and runtime.campaign(smoke_id):
-            raise SafetyBlocked('the one-time Demo smoke budget was already started; use recover')
+        if command == 'smoke-test':
+            if runtime.campaign(smoke_id):
+                raise SafetyBlocked('the one-time Demo smoke budget was already started; use recover')
+            if args.require_tradfi_signed:
+                binding = private_binding(store)
+                receipt = runtime.tradfi_receipt(binding['account_id'])
+                if receipt is None or not receipt['success']:
+                    raise SafetyBlocked('successful TradFi agreement receipt required for this Demo account')
         with open_session(root, store, runtime, requests) as (session, _):
             result = run_operation(session, lambda: dict(status='DEMO_RECONCILED', account=recover(session)))
         if command in {'status', 'recover'} or result['status'] == 'DEMO_BLOCKED':
@@ -169,7 +194,8 @@ def run_command(args, root, store, runtime, requests, smoke_id):
             raise SafetyBlocked('the one-time Demo test requires an initially flat account with no open orders')
         if not result['account']['can_trade']:
             raise SafetyBlocked('Demo account canTrade is unavailable or false')
-        campaign = runtime.start(binding, seconds=900 if smoke else args.seconds, orders=2 if smoke else args.orders,
+        orders = (2 if args.close_after_fill else 1) if smoke else args.orders
+        campaign = runtime.start(binding, seconds=900 if smoke else args.seconds, orders=orders,
             opening_equity=equity(result['account']), max_loss=Decimal('1') if smoke else args.max_loss,
             stop_epoch=stop_epoch, started_at=started_at if smoke else now(), smoke_id=smoke_id if smoke else None)
         if not smoke:
@@ -227,6 +253,13 @@ def parse_args(argv):
     smoke = commands.add_parser('smoke-test')
     smoke.add_argument('--approval-id', type=UUID,
         help='record a separately approved one-time Demo test under this unique UUID')
+    smoke.add_argument('--close-after-fill', action='store_true',
+        help='authorize one reduce-only SELL LIMIT for the confirmed test fill')
+    smoke.add_argument('--require-tradfi-signed', action='store_true',
+        help='require a successful agreement receipt for this account before using the order budget')
+    tradfi = commands.add_parser('tradfi-sign', help='sign the TradFi-Perps agreement for the bound Demo account')
+    tradfi.add_argument('--accept-agreement', action='store_true', required=True,
+        help='explicitly accept the Binance TradFi-Perps agreement for this Demo account')
     enable = commands.add_parser('enable-demo', help='enable a persistent, expiring Demo order budget')
     enable.add_argument('--seconds', type=int, required=True)
     enable.add_argument('--orders', type=int, required=True)
@@ -278,7 +311,8 @@ def main(argv=None):
     result['requests'] = requests
     result['safety'] = 'NO LIVE MONEY'
     print(json.dumps(result, indent=2, default=str))
-    return int(result['status'] == 'DEMO_BLOCKED')
+    return int(result['status'] in {'DEMO_BLOCKED', 'DEMO_TRADFI_NOT_CONFIRMED'}
+               or result['status'] == 'DEMO_TRADFI_ATTEMPT_RECORDED' and not result['agreement']['success'])
 
 
 if __name__ == '__main__':

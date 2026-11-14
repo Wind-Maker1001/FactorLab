@@ -111,8 +111,8 @@ class DemoRuntime:
         smoke = smoke_id is not None
         if seconds <= 0 or not 1 <= orders <= 1000 or not Decimal(0) < max_loss <= MAX_NOTIONAL:
             raise SafetyBlocked('Demo budgets require a positive duration, 1–1000 POSTs and a positive loss cap up to 7 USDT')
-        if smoke and (seconds > 900 or orders != 2):
-            raise SafetyBlocked('the one-time Demo budget permits two POSTs within fifteen minutes')
+        if smoke and (seconds > 900 or orders not in (1, 2)):
+            raise SafetyBlocked('the one-time Demo budget permits at most two POSTs within fifteen minutes')
         expires_at = started_at + timedelta(seconds=seconds)
         campaign = smoke_id if smoke else 'demo-' + uuid4().hex
         with self.db:
@@ -145,6 +145,21 @@ class DemoRuntime:
     def campaign(self, key):
         row = self.db.execute('SELECT payload FROM campaigns WHERE id = ?', (key,)).fetchone()
         return json.loads(row[0]) if row else None
+
+    def tradfi_receipt(self, account_id):
+        saved = self._get('tradfi-agreement:' + journal_id(account_id))
+        return json.loads(saved) if saved is not None else None
+
+    def reserve_tradfi(self, account_id, receipt):
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            if self.tradfi_receipt(account_id) is not None:
+                raise SafetyBlocked('this Demo account already has a recorded agreement attempt')
+            self._set('tradfi-agreement:' + journal_id(account_id), json.dumps(receipt))
+
+    def save_tradfi(self, account_id, receipt):
+        with self.db:
+            self._set('tradfi-agreement:' + journal_id(account_id), json.dumps(receipt))
 
     def report(self, smoke_id):
         campaign = self.active_campaign()

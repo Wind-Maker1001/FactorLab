@@ -60,8 +60,8 @@ class MemoryCredentialStore:
         self.config = config
 
 
-@pytest.mark.parametrize('lose_entry_reply', [False, True])
-def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entry_reply):
+@pytest.mark.parametrize(('lose_entry_reply', 'order_budget'), [(False, 1), (False, 2), (True, 2)])
+def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entry_reply, order_budget):
     original = NetworkFixture.__call__
 
     def filled_exchange(self, request, timeout):
@@ -95,7 +95,7 @@ def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entr
     binding = bind_account(store, credential, facts, demo_account_configuration(facts))
     counts = dict(GET=0, POST=0, DELETE=0)
     with closing(DemoRuntime(tmp_path)) as runtime:
-        campaign = runtime.start(binding, seconds=900, orders=2, max_loss=Decimal('1'),
+        campaign = runtime.start(binding, seconds=900, orders=order_budget, max_loss=Decimal('1'),
             opening_equity=Decimal('1000'), stop_epoch=runtime.stop_epoch(), started_at=now(), smoke_id=SMOKE_CAMPAIGN)
         with open_session(tmp_path, store, runtime, counts, campaign=campaign) as (session, expect):
             if lose_entry_reply:
@@ -104,7 +104,7 @@ def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entr
             else:
                 result = smoke_lifecycle(session, expect, campaign)
                 assert result['status'] == 'DEMO_FILL_RECONCILED'
-                assert result['account']['positions'] == []
+                assert bool(result['account']['positions']) is (order_budget == 1)
         runtime.stop()
 
     with closing(DemoRuntime(tmp_path)) as runtime:
@@ -112,13 +112,13 @@ def test_demo_smoke_lifecycle_and_reopen(tmp_path, monkeypatch, wired, lose_entr
         with pytest.raises(SafetyBlocked, match='already started'):
             runtime.start(binding, seconds=900, orders=2, max_loss=Decimal('1'),
                 opening_equity=Decimal('1000'), stop_epoch=runtime.stop_epoch(), started_at=now(), smoke_id=SMOKE_CAMPAIGN)
-        assert runtime.post_count(campaign['id']) == (1 if lose_entry_reply else 2)
+        assert runtime.post_count(campaign['id']) == (1 if lose_entry_reply else order_budget)
         before = counts['POST']
         with open_session(tmp_path, store, runtime, counts) as (session, _):
             restored = session.recover()
             assert restored['reconciled']
             assert sum(order['fee_usdt'] for order in restored['orders'].values()) == Decimal('0.0064') * before
-            assert bool(restored['positions']) is lose_entry_reply
+            assert bool(restored['positions']) is (lose_entry_reply or order_budget == 1)
         assert counts['POST'] == before
         store.credential = Credentials('different-key', 'demo-secret', Environment.DEMO)
         with pytest.raises(SafetyBlocked, match='account binding mismatch'):

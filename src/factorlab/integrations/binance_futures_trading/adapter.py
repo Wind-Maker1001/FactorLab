@@ -13,7 +13,10 @@ from factorlab.trading.state import OrderRecord, advance, unknown
 from factorlab.trading.storage import dumps, decode
 
 from .account import AccountFacts, instant
-from .protocol import Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport, ReadOnlyNetworkTransport
+from .protocol import (
+    Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport,
+    ReadOnlyNetworkTransport, credential_account_id,
+)
 from .rules import order_parameters
 
 ZERO = Decimal('0')
@@ -32,9 +35,8 @@ class FuturesAdapter:
         if client.environment is not None:
             if account_id != client.environment.account_id:
                 raise SafetyBlocked('explicit environment account identity required')
-            account_id = client.environment.name + ':' + account_id
-            if client.credentials is not None:
-                account_id += ':' + hashlib.sha256(client.credentials.key.encode()).hexdigest()
+            account_id = (f'{client.environment.name}:{account_id}' if client.credentials is None
+                          else credential_account_id(client.environment, client.credentials.key))
         self.client, self.store, self.account_id, self.clock = client, store, account_id, clock
         self.facts = None
         self.quantitative_observation = None
@@ -169,7 +171,7 @@ class FuturesAdapter:
         if (type(self.client.transport) is DemoNetworkTransport
                 or isinstance(self.client.transport, ReadOnlyNetworkTransport) and self.client.environment is Environment.DEMO):
             credentials = self.client.credentials
-            expected = ('DEMO:FactorLab-Demo:' + hashlib.sha256(credentials.key.encode()).hexdigest()
+            expected = (credential_account_id(Environment.DEMO, credentials.key)
                         if credentials is not None and credentials.environment is Environment.DEMO else None)
             if self.client.environment is not Environment.DEMO or self.account_id != expected:
                 raise SafetyBlocked('Demo account identity changed; recovery blocked')

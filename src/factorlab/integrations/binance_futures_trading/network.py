@@ -8,7 +8,7 @@ from urllib.error import HTTPError
 from urllib.parse import parse_qs
 from urllib.request import Request, build_opener
 
-from .protocol import Environment, SafetyBlocked, SignedRequest, READ_PATHS, WRITE_PATHS
+from .protocol import Environment, SafetyBlocked, SignedRequest, READ_PATHS, WRITE_PATHS, credential_account_id
 from factorlab.integrations.binance.client import Response, _NoRedirect
 from factorlab.trading.contracts import utc
 
@@ -143,10 +143,9 @@ class DemoNetworkTransport:
         if request.environment is not Environment.DEMO:
             raise SafetyBlocked('Demo network environment mismatch')
         if request.headers:
-            import hashlib
             key = request.headers.get('X-MBX-APIKEY', '')
             if self.authorization is not None:
-                expected = 'DEMO:FactorLab-Demo:' + hashlib.sha256(key.encode()).hexdigest()
+                expected = credential_account_id(Environment.DEMO, key)
                 if expected != self.authorization.plan.account_id:
                     raise SafetyBlocked('Demo credential account mismatch')
         if request.method == 'GET':
