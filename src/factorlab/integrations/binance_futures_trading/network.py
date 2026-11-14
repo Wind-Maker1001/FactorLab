@@ -1,15 +1,20 @@
-"""Fixed-host Demo network boundary; no CLI or persisted state grants capability."""
+"""Fixed-host Demo network boundary requiring a process-local capability."""
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from decimal import Decimal
 import time
+from typing import Callable
 from urllib.error import HTTPError
 from urllib.parse import parse_qs
 from urllib.request import Request, build_opener
 
-from .protocol import Environment, SafetyBlocked, READ_PATHS, WRITE_PATHS
+from .protocol import Environment, SafetyBlocked, SignedRequest, READ_PATHS, WRITE_PATHS, credential_account_id
 from factorlab.integrations.binance.client import Response, _NoRedirect
 from factorlab.trading.contracts import utc
+
+
+class DemoWriteRefused(SafetyBlocked):
+    """The durable guard refused admission before the transport attempted HTTP."""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -116,6 +121,10 @@ class DemoNetworkAuthorization:
 @dataclass(frozen=True, kw_only=True)
 class DemoNetworkTransport:
     authorization: DemoNetworkAuthorization | None = field(default=None, repr=False)
+    write_guard: Callable[[str, dict, DemoExecutionPlan], None] | None = field(
+        default=None, repr=False, compare=False)
+    observe_response: Callable[[SignedRequest, Response | None], None] | None = field(
+        default=None, repr=False, compare=False)
     environment: Environment = field(default=Environment.DEMO, init=False)
     _admission: dict = field(default_factory=dict, init=False, repr=False, compare=False)
 
@@ -134,10 +143,9 @@ class DemoNetworkTransport:
         if request.environment is not Environment.DEMO:
             raise SafetyBlocked('Demo network environment mismatch')
         if request.headers:
-            import hashlib
             key = request.headers.get('X-MBX-APIKEY', '')
             if self.authorization is not None:
-                expected = 'DEMO:FactorLab-Demo:' + hashlib.sha256(key.encode()).hexdigest()
+                expected = credential_account_id(Environment.DEMO, key)
                 if expected != self.authorization.plan.account_id:
                     raise SafetyBlocked('Demo credential account mismatch')
         if request.method == 'GET':
@@ -175,15 +183,27 @@ class DemoNetworkTransport:
                 guard()
                 if not self.permitted():
                     raise SafetyBlocked('Demo authorization expired at dispatch')
+            if self.write_guard is not None:
+                try:
+                    self.write_guard(method, dict(params), self.authorization.plan)
+                except SafetyBlocked as error:
+                    raise DemoWriteRefused(str(error)) from None
+                if not self.permitted():
+                    raise DemoWriteRefused('Demo authorization expired at dispatch')
         url = 'https://demo-fapi.binance.com' + request.path + ('?' + request.query if request.query else '')
+        response = None
         try:
             with build_opener(_NoRedirect()).open(
-                    Request(url, headers=request.headers, method=request.method), timeout=timeout) as response:
-                return Response(response.status, dict(response.headers), response.read(2 * 1024 * 1024 + 1))
+                    Request(url, headers=request.headers, method=request.method), timeout=timeout) as reply:
+                response = Response(reply.status, dict(reply.headers), reply.read(2 * 1024 * 1024 + 1))
         except HTTPError as error:
-            return Response(error.code, dict(error.headers), error.read(2 * 1024 * 1024 + 1))
+            response = Response(error.code, dict(error.headers), error.read(2 * 1024 * 1024 + 1))
         except OSError:
             raise OSError('Demo request failed') from None
+        finally:
+            if self.observe_response is not None:
+                self.observe_response(request, response)
+        return response
 
 
 def demo_network_permitted(client):

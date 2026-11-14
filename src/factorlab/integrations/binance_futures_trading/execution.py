@@ -385,7 +385,10 @@ class DemoExecutionGateway(FuturesPaperGateway):
         quote = state.quotes.get(plan.symbol)
         if quote is None or not low <= quote.price <= high:
             raise SafetyBlocked('Demo quote outside mark band')
-        notional = intent.quantity * max(price, quote.price)
+        reservation_price = max(price, quote.price)
+        if transport.write_guard is not None:
+            reservation_price = max(reservation_price, reference)
+        notional = intent.quantity * reservation_price
         if notional > plan.max_notional:
             raise SafetyBlocked('plan notional limit')
         rows = [adapter.order(row[0]) for row in adapter.db.execute('SELECT id FROM futures_orders')]
@@ -416,5 +419,13 @@ class DemoExecutionGateway(FuturesPaperGateway):
                         * max(o.intent.limit_price or quote.price, quote.price) for o in pending), Decimal('0'))
         collateral = sum((abs(p.quantity) * max(p.entry_price, reference, quote.price)
                           for p in state.positions.values()), Decimal('0'))
-        if max(funds['initialMargin'], collateral) + reserved + notional > plan.max_margin:
+        additional_margin = notional
+        if (transport.write_guard is not None and intent.reduce_only
+                and intent.side.value == 'SELL' and intent.order_type.value == 'LIMIT'):
+            if facts.hedge_mode is not False or not any(
+                    position.instrument_id == plan.symbol and position.quantity >= intent.quantity
+                    for position in facts.shared().positions):
+                raise SafetyBlocked('confirmed Demo long must cover reduce-only SELL LIMIT')
+            additional_margin = Decimal('0')
+        if max(funds['initialMargin'], collateral) + reserved + additional_margin > plan.max_margin:
             raise SafetyBlocked('plan margin limit')

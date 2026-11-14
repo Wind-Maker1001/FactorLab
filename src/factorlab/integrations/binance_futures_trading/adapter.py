@@ -13,7 +13,10 @@ from factorlab.trading.state import OrderRecord, advance, unknown
 from factorlab.trading.storage import dumps, decode
 
 from .account import AccountFacts, instant
-from .protocol import Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport, ReadOnlyNetworkTransport
+from .protocol import (
+    Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport,
+    ReadOnlyNetworkTransport, credential_account_id,
+)
 from .rules import order_parameters
 
 ZERO = Decimal('0')
@@ -32,9 +35,8 @@ class FuturesAdapter:
         if client.environment is not None:
             if account_id != client.environment.account_id:
                 raise SafetyBlocked('explicit environment account identity required')
-            account_id = client.environment.name + ':' + account_id
-            if client.credentials is not None:
-                account_id += ':' + hashlib.sha256(client.credentials.key.encode()).hexdigest()
+            account_id = (f'{client.environment.name}:{account_id}' if client.credentials is None
+                          else credential_account_id(client.environment, client.credentials.key))
         self.client, self.store, self.account_id, self.clock = client, store, account_id, clock
         self.facts = None
         self.quantitative_observation = None
@@ -85,6 +87,7 @@ class FuturesAdapter:
             self.db.execute('UPDATE futures_meta SET reconciled=0')
 
     def submit_order(self, intent):
+        from .network import DemoWriteRefused
         if not isinstance(self.client.transport, OfflineTransport):
             from .network import demo_network_permitted
             if not demo_network_permitted(self.client) or not self.client.transport._admission:
@@ -116,6 +119,11 @@ class FuturesAdapter:
         try:
             row = self.client.request('POST', '/fapi/v1/order', params)
             return self._confirm_write(row, intent.client_order_id)
+        except DemoWriteRefused:
+            # Only this call's placeholder exists, and the transport never attempted HTTP.
+            with self.store.transaction():
+                self.db.execute('DELETE FROM futures_orders WHERE id=?', (intent.client_order_id,))
+            raise
         except ExchangeError as exc:
             if exc.category not in {'RATE_LIMIT', 'ORDER_NOT_FOUND'} and exc.status < 500:
                 event = OrderEvent(intent.client_order_id, None, S.REJECTED, ZERO, None,
@@ -163,7 +171,7 @@ class FuturesAdapter:
         if (type(self.client.transport) is DemoNetworkTransport
                 or isinstance(self.client.transport, ReadOnlyNetworkTransport) and self.client.environment is Environment.DEMO):
             credentials = self.client.credentials
-            expected = ('DEMO:FactorLab-Demo:' + hashlib.sha256(credentials.key.encode()).hexdigest()
+            expected = (credential_account_id(Environment.DEMO, credentials.key)
                         if credentials is not None and credentials.environment is Environment.DEMO else None)
             if self.client.environment is not Environment.DEMO or self.account_id != expected:
                 raise SafetyBlocked('Demo account identity changed; recovery blocked')
