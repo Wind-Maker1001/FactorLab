@@ -268,11 +268,16 @@ def parse_args(argv):
     for name in ('buy-limit', 'reduce-limit'):
         commands.add_parser(name).add_argument('quantity', type=parse_decimal)
     commands.add_parser('cancel').add_argument('client_order_id')
+    from .demo_grid_supervisor import add_arguments
+    add_arguments(commands.add_parser('grid-supervisor', help='continuous closed-bar Demo Grid'))
     return parser.parse_args(argv)
 
 
 def main(argv=None):
     args = parse_args(argv)
+    if args.command == 'grid-supervisor':
+        from .demo_grid_supervisor import run
+        return run(args)
     smoke_id = 'smoke-' + args.approval_id.hex if args.command == 'smoke-test' and args.approval_id else SMOKE_CAMPAIGN
     requests = dict(GET=0, POST=0, DELETE=0)
     result = dict(status='DEMO_BLOCKED')

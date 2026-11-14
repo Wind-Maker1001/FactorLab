@@ -1,4 +1,4 @@
-"""Bounded SQLite paper metadata, one atomic account snapshot and event journal."""
+"""SQLite paper metadata, one atomic account snapshot and event journal."""
 from contextlib import contextmanager
 from dataclasses import fields, is_dataclass
 from datetime import datetime, timezone
@@ -61,12 +61,17 @@ class PaperStore:
     """One controller per file; caps stop writes rather than deleting identity history.
 
     Defaults bound lifetime use to 1,000 orders, 10,000 events and a 32 MiB
-    snapshot. A full store needs a new, explicitly separate simulation account.
+    snapshot. Explicit continuous capacity removes these lifetime limits without
+    deleting history; per-event size and identity checks remain unchanged.
     """
-    def __init__(self, path, *, max_orders=1000, max_events=10000):
+    def __init__(self, path, *, max_orders=1000, max_events=10000, continuous_capacity=False):
+        if type(continuous_capacity) is not bool:
+            raise ValueError("continuous_capacity must be a bool")
         if not 1 <= max_orders <= 1000 or not 1 <= max_events <= 10000:
             raise ValueError("storage limits exceed paper metadata budget")
-        self.max_orders, self.max_events = max_orders, max_events
+        self.continuous_capacity = continuous_capacity
+        self.max_orders = None if continuous_capacity else max_orders
+        self.max_events = None if continuous_capacity else max_events
         self.transaction_count = 0
         self.last_transaction = None
         self.last_transaction_times = None
@@ -100,10 +105,10 @@ class PaperStore:
         return decode(json.loads(row[1]))
 
     def save(self, state):
-        if len(state.orders) > self.max_orders:
+        if self.max_orders is not None and len(state.orders) > self.max_orders:
             raise ValueError("paper order storage budget exhausted")
         payload = dumps(state)
-        if len(payload.encode("utf-8")) > 32 * 1024 * 1024:
+        if not self.continuous_capacity and len(payload.encode("utf-8")) > 32 * 1024 * 1024:
             raise ValueError("paper snapshot storage budget exhausted")
         self.db.execute("INSERT INTO snapshot VALUES(1,?,?) ON CONFLICT(id) DO UPDATE SET version=excluded.version,payload=excluded.payload",
                         (contracts.CONTRACT_VERSION, payload))
@@ -135,7 +140,7 @@ class PaperStore:
             return False
         if len(payload.encode("utf-8")) > 8192:
             raise ValueError("event metadata too large")
-        if self.db.execute("SELECT count(*) FROM events").fetchone()[0] >= self.max_events:
+        if self.max_events is not None and self.db.execute("SELECT count(*) FROM events").fetchone()[0] >= self.max_events:
             raise ValueError("paper event storage budget exhausted")
         self.db.execute("INSERT INTO events VALUES(?,?)", (event_id, payload))
         return True

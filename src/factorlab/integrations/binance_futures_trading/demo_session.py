@@ -79,7 +79,8 @@ class DemoSession:
     """A caller-owned session whose persistent write guard is independent of recovery."""
 
     def __init__(self, credential, *, protocol_store, controller_store, account_id, configuration,
-                 authorization=None, limits=RiskLimits(), write_guard=None, receipt_sink=None, request_counts=None):
+                 authorization=None, limits=RiskLimits(), write_guard=None, receipt_sink=None, request_counts=None,
+                 get_confirmed_writes=False):
         if (authorization is None) != (write_guard is None):
             raise SafetyBlocked('Demo writes require authorization and a persistent guard')
         self.requests = _new_request_counts() if request_counts is None else request_counts
@@ -98,6 +99,7 @@ class DemoSession:
             raise SafetyBlocked('persisted Demo account configuration mismatch')
 
         self.adapter = DemoFuturesAdapter(self.client, protocol_store, clock=self._now)
+        self.adapter.get_confirmed_writes = get_confirmed_writes
         observation = observe_demo_rules(self.adapter, source_version=DEMO.host, on_symbol=self._check_symbol)
         self.adapter.facts = facts
         balance = facts.usdt()['walletBalance']

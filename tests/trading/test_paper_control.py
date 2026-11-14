@@ -30,6 +30,41 @@ def controller(path=":memory:", *, market=Market.BINANCE_EQUITY, cash="10000", l
     return control
 
 
+def test_continuous_store_preserves_history_and_identity_across_reopen(tmp_path):
+    path = tmp_path / 'continuous.sqlite'
+    store = PaperStore(path, continuous_capacity=True)
+    broker = PaperBroker(Market.BINANCE_EQUITY, 'test', (Instrument('TEST', 'USD'),),
+                         {'USD': D(10000)})
+    broker.state.orders.update({str(i): str(i) for i in range(1001)})
+    broker.state.runtime['large'] = 'x' * (32 * 1024 * 1024)
+    with store.transaction():
+        store.save(broker.state)
+        for i in range(10001):
+            store.record_metadata(str(i), {'sequence': i})
+    store.close()
+    reopened = PaperStore(path, continuous_capacity=True)
+    restored = reopened.load()
+    assert len(restored.orders) == 1001
+    assert len(restored.runtime['large']) == 32 * 1024 * 1024
+    assert reopened.event_cursor() == 10001
+    assert reopened.record_metadata('0', {'sequence': 0}) is False
+    with pytest.raises(ValueError, match='different payload'):
+        reopened.record_metadata('0', {'sequence': -1})
+    with pytest.raises(ValueError, match='metadata too large'):
+        reopened.record_metadata('oversize', 'x' * 8193)
+    assert reopened.record_metadata('10001', {'sequence': 10001})
+    reopened.close()
+    bounded = PaperStore(path)
+    with pytest.raises(ValueError, match='order storage budget'):
+        bounded.save(restored)
+    restored.orders.clear()
+    with pytest.raises(ValueError, match='snapshot storage budget'):
+        bounded.save(restored)
+    with pytest.raises(ValueError, match='event storage budget'):
+        bounded.record_metadata('new', {})
+    bounded.close()
+
+
 @pytest.mark.parametrize("market", list(Market))
 def test_partial_fill_cancel_and_late_full_fill(market):
     c = controller(market=market)

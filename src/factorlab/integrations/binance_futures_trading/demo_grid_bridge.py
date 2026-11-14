@@ -1,5 +1,5 @@
 """Serial delivery of Grid proposals through the existing Demo controller."""
-from copy import deepcopy
+from copy import copy
 from dataclasses import asdict
 from decimal import Decimal, ROUND_CEILING
 import json
@@ -32,13 +32,17 @@ class DemoGridBridge:
     cannot lose an issued identity. Economic events stay in the existing ledger.
     """
 
-    def __init__(self, grid, controller, *, expect=None, read_only=False):
+    def __init__(self, grid, controller, *, expect=None, read_only=False, preview=False):
         self.session = controller if isinstance(controller, DemoSession) else None
         self.expect = expect
         self.read_only = read_only
+        self.preview = preview
+        self.event_cursor = self.turnover_cursor = 0
+        self.filled = {}
+        self.turnover = ZERO
         if self.session is not None:
             controller = self.session.controller
-        if self.session is not None and not read_only:
+        if self.session is not None and not read_only and not preview:
             if expect is None or self.session._write_guard is None:
                 raise SafetyBlocked('Grid network delivery requires persistent runtime admission')
             plan = self.session.client.transport.authorization.plan
@@ -93,18 +97,30 @@ class DemoGridBridge:
             grid.complete_bar(delivery=grid.delivery + 1)
         else:
             account = GridAccount(**command['account'])
-            getattr(grid, action)(value, account, delivery=grid.delivery + 1)
+            method = grid.withdraw_unsubmitted if action == 'withdraw' else getattr(grid, action)
+            method(value, account, delivery=grid.delivery + 1)
 
-    def _command(self, action, value=None):
+    def _command(self, action, value=None, *, source_id=None):
+        store = self.controller.store
+        source_key = self.prefix + 'source:' + source_id if source_id is not None else None
+        if source_key is not None:
+            saved = store.event_payload(source_key)
+            if saved is not None:
+                if saved != dumps(value):
+                    raise ValueError('Grid market event identity conflict')
+                return False
         command = dict(action=action, value=value,
                        account=asdict(self.account()) if action != 'bar' else None)
-        staged = deepcopy(self.grid)
+        staged = copy(self.grid)
         self._apply(staged, command)
-        with self.controller.store.transaction():
-            self.controller.store.record_metadata(self.prefix + 'command:' + str(staged.delivery), command)
+        with store.transaction():
+            if source_key is not None:
+                store.record_metadata(source_key, value)
+            store.record_metadata(self.prefix + 'command:' + str(staged.delivery), command)
         self.grid.__dict__ = staged.__dict__
         if action == 'confirm':
             self._remember(value)
+        return True
 
     @staticmethod
     def _report(event):
@@ -129,21 +145,23 @@ class DemoGridBridge:
         committed += sum(((o.intent.quantity - o.cumulative_filled_quantity)
                          * max(o.intent.limit_price or quote, quote)
                          for o in snapshot.open_orders if o.intent.side is Side.BUY), ZERO)
-        turnover, filled = ZERO, {}
-        for _, event in self.controller.store.order_events():
-            previous = filled.get(event.client_order_id, ZERO)
+        for cursor, event in self._events_after(self.turnover_cursor):
+            self.turnover_cursor = cursor
+            if not isinstance(event, OrderEvent):
+                continue
+            previous = self.filled.get(event.client_order_id, ZERO)
             delta = event.cumulative_filled_quantity - previous
             if delta > 0:
                 if self.grid._owns(event.client_order_id):
-                    turnover += delta * event.fill_price
-                filled[event.client_order_id] = event.cumulative_filled_quantity
+                    self.turnover += delta * event.fill_price
+                self.filled[event.client_order_id] = event.cumulative_filled_quantity
         if inventory > MAX_QUANTITY:
             raise SafetyBlocked('confirmed account exceeds Demo budget')
         asset = next(a for a in snapshot.assets if a.currency == 'USDT')
         confirmed_equity = asset.total + sum((p.quantity * (p.mark_price - p.entry_price)
                                              for p in positions), ZERO)
         return GridAccount(inventory, min(asset.available, funds['availableBalance']),
-            min(confirmed_equity, funds['walletBalance'] + funds['unrealizedProfit']), committed, turnover,
+            min(confirmed_equity, funds['walletBalance'] + funds['unrealizedProfit']), committed, self.turnover,
             snapshot.account_id, self.grid.instrument_id, snapshot.market, snapshot.reconciled)
 
     def recover(self):
@@ -165,22 +183,41 @@ class DemoGridBridge:
         self.ready = True
         return self.account()
 
+    def _events_after(self, after):
+        rows = self.controller.store.db.execute(
+            'SELECT rowid,payload FROM events WHERE rowid>? ORDER BY rowid', (after,)).fetchall()
+        for cursor, raw in rows:
+            event = decode(json.loads(raw))
+            yield cursor, event
+
     def _sync(self):
-        for _, event in list(self.controller.store.order_events()):
-            if (self.grid._owns(event.client_order_id) and event.event_id not in self.seen
+        for cursor, event in self._events_after(self.event_cursor):
+            if (isinstance(event, OrderEvent) and self.grid._owns(event.client_order_id)
+                    and event.event_id not in self.seen
                     and self._report(event) not in self.terminal_reports):
                 self._command('confirm', event)
+            self.event_cursor = cursor
 
-    def observe(self, event):
+    def withdraw_unsubmitted(self):
+        """Withdraw only local reservations; never change an exchange order."""
+        keys = [order.intent.client_order_id for order in self.grid.active
+                if order.intent.client_order_id not in self.gateway.state.orders]
+        if keys:
+            self._command('withdraw', keys)
+
+    def observe(self, event, *, dispatch=True, source_id=None):
         if self.read_only:
             raise SafetyBlocked('Grid session is read-only')
         if not self.ready or not self.account().reconciled:
             raise SafetyBlocked('recover Demo account before Grid decisions')
         self._sync()
-        self._command('observe', event)
-        if self.grid.pending_bar is not None:
+        accepted = self._command('observe', event, source_id=source_id)
+        result = self.dispatch() if dispatch and accepted else None
+        if self.grid.pending_bar is not None and self.ready:
             self._command('bar')
-        return self.dispatch()
+            if dispatch and accepted and result is None:
+                result = self.dispatch()
+        return result
 
     def dispatch(self):
         """Deliver at most one proposal, without changing its price or quantity."""
@@ -188,6 +225,8 @@ class DemoGridBridge:
             raise SafetyBlocked('RECONCILE_REQUIRED')
         if self.read_only:
             raise SafetyBlocked('Grid session is read-only')
+        if self.preview:
+            raise SafetyBlocked('Grid preview cannot write orders')
         self._sync()
         known = self.gateway.state.orders
         for key in tuple(self.grid.cancellations):

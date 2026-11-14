@@ -21,14 +21,16 @@ SYMBOL = 'TESTUSDT'
 ACCOUNT = 'paper-grid'
 
 
-def setup(*, market=Market.BINANCE_USDM, account_id=ACCOUNT, deployment_id='test', **changes):
+def setup(*, market=Market.BINANCE_USDM, account_id=ACCOUNT, deployment_id='test',
+          continuous_capacity=False, **changes):
     config = replace(GridConfig(lower=80, upper=120, levels=4, initial_inventory=4,
         quantity=2, fee_bps=0, slippage_bps=0, max_drawdown=1, breakout='pause'), **changes)
     rules = GridRules(D(1), D('.1'), D('.1'), D('.1'), D(1))
     entry = D(config.initial_inventory) * D(config.initial_price)
     equity = D(config.initial_cash) + entry
     engine = GridExecution(config, rules, deployment_id=deployment_id, account_id=account_id,
-        market=market, instrument_id=SYMBOL, initial_equity=equity)
+        market=market, instrument_id=SYMBOL, initial_equity=equity,
+        continuous_capacity=continuous_capacity)
     return engine, GridAccount(D(config.initial_inventory), D(config.initial_cash), equity, entry,
                                D(0), account_id, SYMBOL, market)
 
@@ -50,6 +52,58 @@ def report(engine, order, status, filled, account, identity, price=None):
     value = confirmation(order, status, filled, identity, price)
     engine.confirm(value, account, delivery=engine.delivery + 1)
     return value
+
+
+def test_continuous_capacity_preserves_working_orders_beyond_default():
+    bounded, _ = setup()
+    with pytest.raises(ValueError, match='checkpoint budget'):
+        setup(levels=1000)
+    engine, account = setup(continuous_capacity=True)
+    engine.account = account
+    bounded.account = account
+    engine.config = bounded.config = replace(engine.config, max_inventory=10000,
+                                             max_cash_committed=100000000)
+    engine.account = bounded.account = replace(account, available=D(100000000))
+    engine.timestamp = bounded.timestamp = NOW
+    for _ in range(1000):
+        assert engine.propose(Side.BUY, D(90), D(1)) is not None
+        assert bounded.propose(Side.BUY, D(90), D(1)) is not None
+    with pytest.raises(ValueError, match='working order budget'):
+        bounded.propose(Side.BUY, D(90), D(1))
+    assert engine.propose(Side.BUY, D(90), D(1)) is not None
+    assert len(engine.orders) == 1001
+    assert engine.deployment()['continuous_capacity'] is True
+    assert 'continuous_capacity' not in bounded.deployment()
+
+
+def test_withdrawal_is_local_atomic_and_reseeds_only_live_completed_bar():
+    engine, account = setup()
+    observe(engine, event(1), account)
+    keys = list(engine.orders)
+    with pytest.raises(ValueError, match='unsubmitted'):
+        engine.withdraw_unsubmitted(keys + ['missing'], account, delivery=2)
+    assert list(engine.orders) == keys and engine.delivery == 1
+    engine.withdraw_unsubmitted(keys, account, delivery=2)
+    engine.withdraw_unsubmitted(keys, account, delivery=2)
+    assert not engine.orders and set(engine.withdrawn_orders) == set(keys)
+    assert all(value[0].status == S.NEW for value in engine.withdrawn_orders.values())
+    observe(engine, event(2, completed_bar=True, high=101, low=99, close=100), account)
+    assert not engine.orders
+    observe(engine, event(3, reseed_withdrawn=True), account)
+    assert not engine.orders
+    observe(engine, event(4, completed_bar=True, reseed_withdrawn=True, high=101, low=99, close=100), account)
+    assert engine.orders and not engine.seed_needed
+    assert not set(engine.orders) & set(keys)
+
+
+def test_withdrawal_rejects_submitted_proposals():
+    engine, account = setup()
+    observe(engine, event(1), account)
+    key = next(iter(engine.orders))
+    report(engine, key, S.SUBMITTED, 0, account, 'submitted')
+    with pytest.raises(ValueError, match='unsubmitted'):
+        engine.withdraw_unsubmitted([key], account, delivery=engine.delivery + 1)
+    assert key in engine.orders and not engine.withdrawn_orders
 
 
 @pytest.mark.parametrize('mode', ['arithmetic', 'geometric'])
