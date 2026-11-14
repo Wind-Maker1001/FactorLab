@@ -27,14 +27,14 @@ from .grid import GridStrategy
 
 
 _CHECKPOINT = 'grid_execution'
-_CHECKPOINT_VERSION = 3
+_CHECKPOINT_VERSION = 4
 _MAX_WORKING_ORDERS = 1000  # The PaperStore order budget.
 _MAX_ATR_WINDOW = 4096
 _DECISION_FIELDS = (
     'price', 'prices', 'center', 'state', 'reason', 'peak', 'sequence', 'last_rebuild',
     'rebuilds', 'previous_close', 'issued_orders', 'delivery', 'last_input', 'conflict',
     'expiry_reseeds', 'last_expiry_reseed', 'pending_expiry_reseed', 'reseed_bar_ready',
-    'expiry_seed_submitting',
+    'expiry_seed_submitting', 'reverse_remainders',
 )
 
 
@@ -213,6 +213,7 @@ class GridExecution:
         self.reason = None
         self.true_ranges, self.previous_close = deque(maxlen=config.atr_window), None
         self.records = {}
+        self.reverse_remainders = {}
         self.orders, self.targets, self.levels, self.created = {}, {}, {}, {}
         self.cancellations, self.expirations = set(), set()
         self.pending_rebuild = None
@@ -229,7 +230,7 @@ class GridExecution:
     def _stage(self):
         staged = copy(self)
         for name in ('records', 'orders', 'targets', 'levels', 'created',
-                     'cancellations', 'expirations', 'true_ranges'):
+                     'cancellations', 'expirations', 'true_ranges', 'reverse_remainders'):
             setattr(staged, name, getattr(self, name).copy())
         return staged
 
@@ -319,6 +320,7 @@ class GridExecution:
         self.cancellations.update(o.intent.client_order_id for o in self.active)
 
     def _risk(self, reason, exit_position=False):
+        self.reverse_remainders.clear()
         self.pending_rebuild = None
         self.pending_expiry_reseed = None
         self.expiry_seed_submitting = False
@@ -327,6 +329,7 @@ class GridExecution:
         self.reason = reason
 
     def _rebuild(self, center, spacing=None):
+        self.reverse_remainders.clear()
         self._cancel_all()
         self.pending_rebuild = (center, spacing)
         self._settle()
@@ -566,8 +569,19 @@ class GridExecution:
         self._account_risk()
         if delta and self.state == 'RUNNING' and self.pending_rebuild is None and not cancel_requested and self._can_propose():
             if 0 <= level < len(self.prices):
-                self._propose(Side.SELL if old.intent.side == Side.BUY else Side.BUY,
-                              self.prices[level], delta, level)
+                side = Side.SELL if old.intent.side == Side.BUY else Side.BUY
+                remainder_key = f'{side.value}:{level}'
+                quantity = self.reverse_remainders.get(remainder_key, Decimal(0)) + delta
+                proposal = self._propose(side, self.prices[level], quantity, level)
+                if proposal is None:
+                    # Exchange minimums apply to orders, not individual trade reports.
+                    self.reverse_remainders[remainder_key] = quantity
+                else:
+                    residual = quantity - proposal.quantity
+                    if residual:
+                        self.reverse_remainders[remainder_key] = residual
+                    else:
+                        self.reverse_remainders.pop(remainder_key, None)
         self._settle()
 
     def _authority(self, state, cursor):

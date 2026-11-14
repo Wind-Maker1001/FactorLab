@@ -63,6 +63,22 @@ def test_legacy_initial_proposals(mode):
             for o in engine.active] == [(o.side, o.price, o.quantity) for o in legacy.active_orders]
 
 
+def test_reverse_minimum_aggregates_trade_reports():
+    engine, account = setup(initial_inventory=0, levels=1, quantity=2)
+    engine.rules = replace(engine.rules, min_notional=D(150))
+    observe(engine, event(1), account)
+    key = next(iter(engine.orders))
+    report(engine, key, S.SUBMITTED, 0, account, 'accepted')
+    partial = replace(account, inventory=D(1), turnover=D(80))
+    report(engine, key, S.PARTIALLY_FILLED, 1, partial, 'partial', '80')
+    assert engine.reverse_remainders == {'SELL:1': D(1)}
+    complete = replace(account, inventory=D(2), turnover=D(160))
+    report(engine, key, S.FILLED, 2, complete, 'complete', '80')
+    assert not engine.reverse_remainders
+    assert [(o.intent.side, o.intent.quantity, o.intent.limit_price) for o in engine.active] == [
+        (Side.SELL, D(2), D(120))]
+
+
 def test_partial_full_duplicate():
     engine, account = setup()
     observe(engine, event(1), account)
@@ -230,6 +246,23 @@ def paper_observe(engine, controller, observation):
 
 def paper_confirm(engine, controller, value):
     engine.confirm_paper(controller, value, delivery=engine.delivery + 1)
+
+
+def test_reverse_remainder_paper_checkpoint(tmp_path):
+    engine = setup_paper(levels=1, quantity=2)
+    engine.rules = replace(engine.rules, min_notional=D(150))
+    controller = make_controller(tmp_path / 'remainder.sqlite', engine.market)
+    paper_observe(engine, controller, event(1))
+    key = next(iter(engine.orders))
+    engine.submit_paper(controller, key, delivery=engine.delivery + 1)
+    paper_confirm(engine, controller, confirmation(key, S.PARTIALLY_FILLED, 1, 'partial', '80'))
+    restored = setup_paper(levels=1, quantity=2)
+    restored.rules = engine.rules
+    restored.restore(controller)
+    assert restored.reverse_remainders == {'SELL:1': D(1)}
+    paper_confirm(restored, controller, confirmation(key, S.FILLED, 2, 'full', '80'))
+    assert not restored.reverse_remainders
+    assert any(o.intent.side is Side.SELL and o.intent.quantity == 2 for o in restored.active)
 
 
 def test_paper_commit_rollback_and_restart(tmp_path, monkeypatch):
