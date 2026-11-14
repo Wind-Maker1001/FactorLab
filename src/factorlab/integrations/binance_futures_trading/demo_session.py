@@ -199,7 +199,21 @@ class DemoSession:
         if confirmed != local or any(symbol != SYMBOL for symbol in confirmed):
             raise SafetyBlocked('Demo account position changed; use GET recovery')
 
-    def submit_limit(self, client_order_id, side, quantity, *, reduce_only=False):
+    def prepare_limit_book(self):
+        """Refresh bound account facts and the book used for target sizing."""
+        self._fresh_facts_for_submission()
+        return self._fresh_book()
+
+    @staticmethod
+    def limit_price(rules, side, book):
+        """Round the executable inside price onto the observed tick grid."""
+        tick = Decimal(rules.filters['PRICE_FILTER']['tickSize'])
+        if tick <= 0:
+            raise SafetyBlocked('positive Demo price tick required')
+        inside, rounding = (book['askPrice'], ROUND_CEILING) if side is Side.BUY else (book['bidPrice'], ROUND_FLOOR)
+        return (inside / tick).to_integral_value(rounding=rounding) * tick
+
+    def submit_limit(self, client_order_id, side, quantity, *, reduce_only=False, book=None):
         """Submit once from the current inside market through the shared controller."""
         if self._write_guard is None or not self.client.transport.permitted():
             raise SafetyBlocked('active Demo runtime authorization required')
@@ -211,12 +225,10 @@ class DemoSession:
             raise SafetyBlocked('reconcile Demo orders and account before submission')
         self._require_absent(client_order_id)
         self._fresh_facts_for_submission()
-        book = self._fresh_book()
-        tick = Decimal(self.gateway.rules.filters['PRICE_FILTER']['tickSize'])
-        if tick <= 0:
-            raise SafetyBlocked('positive Demo price tick required')
-        inside, rounding = (book['askPrice'], ROUND_CEILING) if side is Side.BUY else (book['bidPrice'], ROUND_FLOOR)
-        price = (inside / tick).to_integral_value(rounding=rounding) * tick
+        book = self._fresh_book() if book is None else book
+        if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
+            raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
+        price = self.limit_price(self.gateway.rules, side, book)
         intent = OrderIntent(Market.BINANCE_USDM, SYMBOL, side, OrderType.LIMIT, quantity, price,
                              client_order_id, position_side='BOTH', reduce_only=reduce_only)
         self._order_quote_at = book['time_utc']
