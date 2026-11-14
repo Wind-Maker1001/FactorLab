@@ -210,7 +210,9 @@ class DemoStrategyRuntime:
                 return None
             if quote.observed_at <= signal['input_watermark'] or quote.observed_at < signal['generated_at']:
                 return None
-            if quote.observed_at >= signal['input_watermark'] + timedelta(seconds=self.strategy.describe()['interval_seconds']):
+            expires_at = signal['input_watermark'] + timedelta(seconds=self.strategy.describe()['interval_seconds'])
+            if (quote.observed_at >= expires_at or self.controller.clock() >= expires_at
+                    or book is not None and book['time_utc'] >= expires_at):
                 runtime.update(pending=None, last_rejection='SIGNAL_EXPIRED')
                 return None
             if any(r.snapshot.status not in TERMINAL for r in state.orders.values()):
