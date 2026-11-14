@@ -237,6 +237,91 @@ def test_continuous_execution_preserves_existing_deployment_and_serial_admission
                 pytest.fail('second execution owner admitted')
 
 
+def test_manual_management_inherits_continuous_capacity_after_stop(network_grid):
+    from contextlib import closing
+    from dataclasses import replace
+    import pickle
+    from pathlib import Path
+    import subprocess
+    import sys
+
+    from factorlab.integrations.binance_futures_trading.demo_cli import open_session
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
+    from factorlab.trading import OrderStatus
+
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory, continuous=True) as b:
+        b.recover()
+        b.observe(dict(id='initial', time=NOW.replace(tzinfo=None).isoformat(), price='150', volume=0))
+        identity = b.grid.active[0].intent.client_order_id
+        record, _ = b.session.adapter._load(identity)
+        with b.session.adapter.store.transaction():
+            for i in range(1001):
+                intent = replace(record.snapshot.intent, client_order_id=f'historical-rejected-{i}')
+                snapshot = replace(record.snapshot, intent=intent, status=OrderStatus.REJECTED,
+                    exchange_order_id=None)
+                b.session.adapter._save(replace(record, snapshot=snapshot), D('0'))
+        for journal in (b.session.adapter.store, b.controller.store):
+            with journal.transaction():
+                for i in range(10001):
+                    journal.record_metadata('capacity-test:' + str(i), {})
+        controller_path = Path(b.controller.store.db.execute('PRAGMA database_list').fetchone()[2])
+        cursor = b.controller.store.event_cursor()
+    fake.trade_update(identity, '.02', '146')
+    exchange = root / 'offline-exchange.pickle'
+    exchange.write_bytes(pickle.dumps(fake.__dict__))
+    subprocess.run([sys.executable, '-c', '''
+import pickle
+from decimal import Decimal as D
+from pathlib import Path
+import sys
+import pytest
+sys.path.insert(0, sys.argv[1])
+sys.path.insert(0, str(Path(sys.argv[1]).parents[1] / 'src'))
+from test_binance_demo_network import wired
+from test_binance_demo_grid_network import network_grid
+from factorlab.integrations.binance_futures_trading.demo_cli import open_session
+from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime
+from factorlab.trading import Side
+from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
+from contextlib import closing
+root = Path(sys.argv[2])
+with pytest.MonkeyPatch.context() as patch:
+    wire = wired.__wrapped__(patch)
+    _, store, _, _, fake, requests = network_grid.__wrapped__(root, patch, wire)
+    fake.__dict__.update(pickle.loads((root / 'offline-exchange.pickle').read_bytes()))
+    with closing(DemoRuntime(root)) as runtime:
+        with open_session(root, store, runtime, dict(GET=0, POST=0, DELETE=0)) as (session, _):
+            assert session.adapter.store.continuous_capacity
+            assert session.controller.store.continuous_capacity
+            report = session.recover()
+            assert report['reconciled']
+            assert len(session.gateway.state.orders) == 1002
+            assert len(session.controller.store.load().orders) == 1002
+            assert session.adapter.order(sys.argv[3]).cumulative_filled_quantity == D('.02')
+            with pytest.raises(SafetyBlocked):
+                session.cancel(sys.argv[3])
+            with pytest.raises(SafetyBlocked):
+                session.submit_limit('unauthorized', Side.BUY, D('.04'))
+    assert all(request.get_method() == 'GET' for request in requests)
+''',
+        str(Path(__file__).parent), str(root), identity], check=True)
+    from factorlab.trading.storage import PaperStore
+    with closing(PaperStore(controller_path)) as journal:
+        assert journal.event_cursor() > cursor
+        assert any(event.client_order_id == identity for _, event in journal.order_events())
+    with closing(DemoRuntime(root)) as runtime:
+        campaign = runtime.active_campaign()
+        with open_session(root, store, runtime, dict(GET=0, POST=0, DELETE=0), campaign=campaign) as (session, _):
+            session.recover()
+            assert session.cancel(identity).status is OrderStatus.CANCELED
+            assert session.adapter.order(identity).status is OrderStatus.CANCELED
+            assert session.controller.store.load().orders[identity].snapshot.status is OrderStatus.CANCELED
+    assert sum(request.get_method() == 'POST' for request in requests) == 1
+    assert sum(request.get_method() == 'DELETE' for request in requests) == 1
+
+
 def test_http_preview_needs_no_authority_and_does_not_contend_for_execution_lock(deployment):
     from contextlib import closing
     from factorlab.integrations.binance_futures_trading.demo_runtime import (

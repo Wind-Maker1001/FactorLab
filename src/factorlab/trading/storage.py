@@ -61,8 +61,9 @@ class PaperStore:
     """One controller per file; caps stop writes rather than deleting identity history.
 
     Defaults bound lifetime use to 1,000 orders, 10,000 events and a 32 MiB
-    snapshot. Explicit continuous capacity removes these lifetime limits without
-    deleting history; per-event size and identity checks remain unchanged.
+    snapshot. Explicit continuous capacity persists in the journal and removes
+    these lifetime limits on subsequent opens without deleting history;
+    per-event size and identity checks remain unchanged.
     """
     def __init__(self, path, *, max_orders=1000, max_events=10000, continuous_capacity=False):
         if type(continuous_capacity) is not bool:
@@ -79,6 +80,13 @@ class PaperStore:
         self.db.execute("PRAGMA synchronous=FULL")
         self.db.execute("CREATE TABLE IF NOT EXISTS snapshot (id INTEGER PRIMARY KEY CHECK(id=1), version INTEGER NOT NULL, payload TEXT NOT NULL)")
         self.db.execute("CREATE TABLE IF NOT EXISTS events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)")
+        capacity_key = 'paper-store:continuous-capacity'
+        if continuous_capacity:
+            self.record_metadata(capacity_key, True)
+        elif self.event_payload(capacity_key) is not None:
+            self.continuous_capacity = True
+            self.max_orders = None
+            self.max_events = None
 
     @contextmanager
     def transaction(self):

@@ -73,7 +73,7 @@ Status reports mode, effective state/reason, deployment, last bar, feed watermar
 
 ## Continuous history
 
-The supervisor explicitly enables continuous capacity for its protocol/controller stores and Grid execution, including restored deployments without changing their saved binding. It retains order identities and event history rather than rolling over accounts or deleting records. Ordinary PaperStore/Grid callers keep their bounded defaults. Continuous capacity is not an authorization extension: the independent expiring campaign and POST budget still apply.
+The supervisor explicitly enables continuous capacity for its protocol/controller stores and Grid execution, including restored deployments without changing their saved binding. It retains order identities and event history rather than rolling over accounts or deleting records. Each journal persists its continuous-capacity policy, so manual recovery and cancellation retain that capacity after the supervisor exits, independently of current authorization. Journals without that policy and ordinary Grid callers keep their bounded defaults. Continuous capacity is not an authorization extension: the independent expiring campaign and POST budget still apply.
 
 Database/disk use grows with retained history. Recovery replays the deployment's history; routine bridge event projection uses incremental journal cursors. Operational storage must have space for the intended deployment lifetime.
 
