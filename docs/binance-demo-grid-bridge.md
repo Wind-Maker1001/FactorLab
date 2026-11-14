@@ -1,9 +1,10 @@
 # Binance Demo serial Grid bridge
 
 `DemoGridBridge` composes confirmation-driven `GridExecution` with
-`DemoExecutionGateway` and its existing `TradingController`. It currently accepts
-only `DemoExecutionTransport` (offline injection); it does not authorize network
-orders. No CLI command or market-data driver is changed.
+`DemoExecutionGateway` and its existing `TradingController`. Offline injection
+continues to use `DemoExecutionTransport`. Network delivery uses a bound
+`DemoSession` inside `open_grid_session`; the bridge itself grants no authority.
+No CLI command or market-data driver is changed.
 
 Construct a fresh Grid with the bound account identity and observed exchange
 rules, construct the bridge, then call `recover()` before `observe(event)` or
@@ -40,10 +41,29 @@ fees and existing reservations also consume Grid available/committed capacity.
 Rules must come from the bound Demo rule observation; constructor rejects
 stepSize, tickSize, minimum quantity or minimum notional mismatches.
 
-The offline fixture uses N=5, s=0.01, m=0.01. These are explicitly synthetic rules,
-not a statement of current Binance filters. At prices 145/155 with risk reference
-150, q_min is 0.04 on both legs: 5.8/6.2 USDT. A 0.04 order fits. At price 100,
-q_min is 0.05 and the same budget cannot execute even one opening grid order.
+The recorded Demo [rule observation](validation/p7-d03a/demo-readonly-preflight.json)
+at 2026-11-12T08:04:01.772159Z has N=5 USDT, s=m=0.01 NVDA,
+tick=0.01 USDT, price range 0.01–20000 and mark multipliers 0.97–1.03.
+Public Demo GETs attempted on 2026-11-14 failed to connect; these recorded rules
+are dated evidence, not a fresh trading authorization. Every network session
+observes exchange rules again and rejects stale evidence at submission.
+
+With those recorded filters and an illustrative fresh book/mark of 150, limits
+146/154 require q_min=0.04 on each leg. The price band is 145.50–154.50;
+both limits are tick-aligned and inside it. BUY notional is 5.84, SELL notional
+6.16; conservative order reservations are 6.00 and 6.16 USDT, leaving room under
+7 for the configured fee reserve. A one-interval arithmetic or geometric grid
+can therefore fit the unchanged limits in the offline network fixture. This is
+conditional on the observed account and rules also passing admission.
+
+At price 100, q_min=0.05 exceeds the inventory cap, so that layer is illegal.
+For q=0.04, the opening minimum requires limit >=125 and the notional budget
+requires max(limit, book, mark)<=175 before fee reserves or other commitments.
+Every layer and its adjacent reverse leg must separately satisfy these bounds
+and the live percent-price band. In particular, 145/155 at mark 150 meets the
+quantity/notional bounds but violates the recorded 3% price band; it is not a
+legal network pair. No limit is automatically increased to make a layer fit.
+
 The prior recorded Demo buy at 162.94 for 0.04 had notional 6.5176 USDT
 ([execution evidence](validation/binance-demo-persistent-execution.md)); that
 historical execution is not an admission decision for a new grid configuration.
@@ -69,21 +89,68 @@ order, synthetic fill, top-up or automatic budget increase.
 The generic fix changes the Paper Grid checkpoint version from 3 to 4; existing
 version-3 checkpoints are rejected rather than silently losing remainder state.
 
-## Remaining real-Demo interfaces
+## Authorized network composition
 
-- Network composition needs a separately authorized, persistent runtime entry
-  accepting the exact Grid limit price and identity. `DemoSession.submit_limit`
-  intentionally chooses the current inside-market price and is not that entry.
-- Its persistent dispatch guard, campaign prefix, total POST budget, expiry,
-  loss cap, fresh account/quote checks and operator lock must all remain enforced.
-  The offline bridge deliberately refuses a network transport rather than bypass
-  those controls.
-- A market-data caller must supply ordered Grid observations and invoke recovery
-  after disconnect; no new driver is included here.
-- Below-minimum residual inventory after terminal cancellation requires an
-  explicit operator policy. LIMIT-only runtime also needs an explicit operator
-  policy for Grid MARKET risk exits, which this bridge refuses.
+`open_grid_session(root, credential_store, grid_factory)` owns the Windows operator
+lock and opens the existing persistent Demo campaign and account journals.
+`grid_factory(session, deployment_id)` constructs a fresh Grid using the observed
+rules and account identity. The context yields a bridge; call `recover()` before
+observing events or dispatching. It does not enable a campaign or submit on entry.
+The supplied deployment identity is derived from the persisted campaign prefix;
+the deployment binding and command journal must match on reopen. Changing a
+campaign or deployment requires explicit operator disposition, not silently
+adopting another deployment's inventory.
 
-Offline tests exercise original-price submission, confirmed buy/sell inventory,
-partial fills and cancellation, expiry, rejection, duplicate confirmation, lost
-response recovery, restart with fills while disconnected, and rule/budget bounds.
+Network delivery calls `DemoSession.submit_intent` with the original LIMIT intent.
+Fresh book and mark observations inform risk only: they never replace the Grid
+limit price. The existing `submit_limit` inside-market API remains available to
+its existing callers. Persistent dispatch admission binds the Grid's exact price,
+identity, side, quantity and reduce-only flag before network I/O. POST consumption,
+expiry, loss limits, account binding, fresh evidence and Demo-only authorization
+remain enforced. Confirmed known cancellations use `DemoSession.cancel`, without
+running new-order notional admission when market movements exceed the budget.
+
+A caller must supply ordered Grid observations and recover after disconnect; no
+new market-data driver is included. A lost write response stops the campaign via
+the existing receipt path. GET recovery establishes order/account facts but does
+not restore stopped authorization. An unresolved order continues occupying the
+single slot. Reauthorization is an explicit existing operator action.
+
+Below-minimum residual inventory remains in the confirmed account ledger. The
+LIMIT-only bridge rejects MARKET risk exits rather than converting them into
+market orders. Pause and inspect the reported inventory; use the existing
+manual authorized LIMIT/cancellation path only when exchange rules and budgets
+permit. No synthetic fill, automatic top-up or limit increase is performed.
+
+The HTTP Stub integration tests intercept actual `DemoNetworkTransport` requests
+through the production Session, controller, gateway, adapter and persistent guard.
+Offline tests also retain ATR pending-bar replay and fragmented reverse-quantity
+accumulation across restart.
+
+### Intercepted request evidence
+
+`test_original_limit_and_confirmed_reduce_only_round_trip` inspects the actual
+URL query received by the HTTP opener stub, with fresh bid/ask/mark all 150.
+The signed-request fields asserted by that test are:
+
+| Field | Opening POST `/fapi/v1/order` | Reversal POST `/fapi/v1/order` |
+| --- | --- | --- |
+| symbol | NVDAUSDT | NVDAUSDT |
+| side | BUY | SELL |
+| type / timeInForce | LIMIT / GTC | LIMIT / GTC |
+| quantity | 0.04 | 0.04 |
+| price | **146** | **154** |
+| positionSide | BOTH | BOTH |
+| reduceOnly | false | true |
+
+The second request is admitted only after authenticated GET reconciliation of
+the first fill. The 150 risk reference does not appear as either order's price.
+Client IDs derive from the persisted campaign prefix and Grid sequence; the
+restart test asserts the same identity and no extra POST. Timestamp, signature
+and credential headers are intentionally absent from this evidence.
+
+Run the focused network suite with:
+
+```sh
+PYTHONPATH=src python -m pytest tests/integrations/test_binance_demo_grid_network.py -q
+```

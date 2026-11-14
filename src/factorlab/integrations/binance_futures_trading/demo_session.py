@@ -215,6 +215,18 @@ class DemoSession:
 
     def submit_limit(self, client_order_id, side, quantity, *, reduce_only=False, book=None):
         """Submit once from the current inside market through the shared controller."""
+        book = self._fresh_book() if book is None else book
+        price = self.limit_price(self.gateway.rules, side, book)
+        intent = OrderIntent(Market.BINANCE_USDM, SYMBOL, side, OrderType.LIMIT, quantity, price,
+                             client_order_id, position_side='BOTH', reduce_only=reduce_only)
+        return self.submit_intent(intent, book=book)
+
+    def submit_intent(self, intent, *, book=None):
+        """Validate and deliver an exact LIMIT intent without repricing or resizing."""
+        if (intent.market is not Market.BINANCE_USDM or intent.instrument_id != SYMBOL
+                or intent.order_type is not OrderType.LIMIT or intent.position_side not in (None, 'BOTH')):
+            raise SafetyBlocked('Demo runtime requires NVDAUSDT one-way LIMIT')
+        client_order_id, side, reduce_only = intent.client_order_id, intent.side, intent.reduce_only
         if self._write_guard is None or not self.client.transport.permitted():
             raise SafetyBlocked('active Demo runtime authorization required')
         if (side is not Side.BUY and side is not Side.SELL) or reduce_only is not (side is Side.SELL):
@@ -228,9 +240,6 @@ class DemoSession:
         book = self._fresh_book() if book is None else book
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
-        price = self.limit_price(self.gateway.rules, side, book)
-        intent = OrderIntent(Market.BINANCE_USDM, SYMBOL, side, OrderType.LIMIT, quantity, price,
-                             client_order_id, position_side='BOTH', reduce_only=reduce_only)
         self._order_quote_at = book['time_utc']
         self.controller.quote(Quote(SYMBOL, book['askPrice'], self._order_quote_at))
         if self.controller.submit(intent) is None:

@@ -1,6 +1,6 @@
 """Current-user Demo runtime and restart-safe write budgets."""
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import json
@@ -207,7 +207,10 @@ class DemoRuntime:
             if self._get('active') != campaign['id'] or now() >= plan.expires_at:
                 raise SafetyBlocked('Demo authorization stopped or expired')
             if method == 'POST':
-                if expected is None or (client_id, params['side'], Decimal(params['quantity']), params['reduceOnly']) != expected:
+                actual = (client_id, params['side'], Decimal(params['quantity']), params['reduceOnly'])
+                if expected is not None and len(expected) == 5:
+                    actual += (Decimal(params['price']),)
+                if expected is None or actual != expected:
                     raise SafetyBlocked('Demo order differs from the admitted runtime intent')
                 if (params['type'], params['timeInForce'], params['positionSide']) != ('LIMIT', 'GTC', 'BOTH'):
                     raise SafetyBlocked('Demo runtime accepts one-way LIMIT GTC only')
@@ -245,3 +248,55 @@ class DemoRuntime:
 
 
 DEMO_LIMITS = RiskLimits(MAX_NOTIONAL, MAX_NOTIONAL, MAX_NOTIONAL, orders_per_minute=20)
+
+
+@contextmanager
+def open_grid_session(root, store, grid_factory):
+    """Open one campaign-bound Grid bridge over the shared Demo journals."""
+    from factorlab.trading.storage import PaperStore, dumps
+
+    from .demo_grid_bridge import DemoGridBridge
+    from .demo_session import DemoSession
+
+    with operator_lock(root), closing(DemoRuntime(root)) as runtime:
+        binding = private_binding(store)
+        credential = store.read()
+        if credential is None:
+            raise SafetyBlocked('saved Demo credential missing; run setup')
+        campaign = runtime.active_campaign()
+        if campaign is None or campaign['smoke']:
+            raise SafetyBlocked('no persistent Demo authorization; run enable-demo')
+        authorization = runtime.authority(binding, campaign)
+        expected = None
+
+        def expect(intent):
+            nonlocal expected
+            expected = (intent.client_order_id, intent.side.value, intent.quantity,
+                'true' if intent.reduce_only else 'false', intent.limit_price)
+
+        def guard(method, params, plan):
+            runtime.reserve(campaign, method, params, plan, expected=expected, facts=session.adapter.facts)
+
+        def record(receipt):
+            runtime.record_receipt(campaign, receipt)
+
+        journal = root / journal_id(binding['account_id'])
+        journal.mkdir(exist_ok=True)
+        with (closing(PaperStore(journal / 'protocol.sqlite3')) as protocol_store,
+              closing(PaperStore(journal / 'controller.sqlite3')) as controller_store):
+            session = DemoSession(credential, protocol_store=protocol_store, controller_store=controller_store,
+                account_id=binding['account_id'], configuration=binding['configuration'],
+                authorization=authorization, limits=DEMO_LIMITS, write_guard=guard, receipt_sink=record)
+            deployment_id = campaign['prefix'] + '-g'
+            grid = grid_factory(session, deployment_id)
+            if grid.deployment_id != deployment_id:
+                raise SafetyBlocked('Grid deployment identity differs from the active Demo campaign')
+            deployment = dict(campaign=campaign['id'], deployment=grid.deployment())
+            key = 'demo-grid:deployment'
+            saved = controller_store.event_payload(key)
+            if saved is not None and saved != dumps(deployment):
+                raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
+            bridge = DemoGridBridge(grid, session, expect=expect)
+            with controller_store.transaction():
+                controller_store.record_metadata(key, deployment)
+            yield bridge
