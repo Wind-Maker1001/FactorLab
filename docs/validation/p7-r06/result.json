@@ -1,0 +1,14 @@
+{
+  "status": "INCONCLUSIVE",
+  "historical_evidence": "BENCHMARK_METHOD_DEPENDENT",
+  "above_cash_both_costs": true,
+  "above_adjacent_fixed_both_costs": true,
+  "above_lagged_control_both_costs": false,
+  "completed_cycles_dominate_both_costs": true,
+  "question": "Positive economic advantage over comparable passive exposure",
+  "explanation": "Historical control comparisons are method dependent unless all controls agree; single-window evidence remains exploratory even if positive.",
+  "boundaries": [
+    "NO LIVE MONEY",
+    "EXPLORATORY_RESEARCH"
+  ]
+}
