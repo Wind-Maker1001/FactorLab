@@ -1,0 +1,24 @@
+{
+  "targeted_tests": {
+    "command": "PYTHONPATH=src python -m pytest -q tests/research/test_grid_weekend.py",
+    "passed": 6,
+    "failed": 0
+  },
+  "real_export_reconciliation": {
+    "accounts": 12,
+    "passed": 12,
+    "absolute_tolerance_usdt": 1e-9,
+    "checks": [
+      "sum hourly PnL equals final authoritative exported equity minus initial 1000",
+      "hourly fee and slippage sums equal fill export sums",
+      "prior inventory price carry minus fees and slippage equals account PnL",
+      "completed FIFO cycles plus risk exits plus residual net equals account PnL",
+      "UTC day partitions sum to funding-adjusted account PnL",
+      "US session partitions sum to funding-adjusted account PnL"
+    ]
+  },
+  "end_to_end": "completed using the two frozen snapshots and existing account exports",
+  "strategy_backtests_executed": 0,
+  "market_downloads": 0,
+  "historical_ledger_writes": 0
+}

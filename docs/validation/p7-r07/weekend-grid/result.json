@@ -1,0 +1,120 @@
+{
+  "study": "P7-R07-WEEKEND",
+  "boundaries": [
+    "NO LIVE MONEY",
+    "EXPLORATORY_RESEARCH"
+  ],
+  "inputs": [
+    {
+      "path": "D:/Code/p7-r04b-official-payloads/certified/runs/bde00b2f948842e2b8c2a00465a9f8c6",
+      "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+      "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+      "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "source": "BINANCE_USDM_PUBLIC_DATA",
+      "interval": "1h",
+      "rows": 2160,
+      "start": "2026-05-14T00:00:00+00:00",
+      "end_exclusive": "2026-08-12T00:00:00+00:00",
+      "last_close": "2026-08-11T23:59:59.999000+00:00",
+      "missing_bars": 0,
+      "duplicate_timestamps": 0,
+      "invalid_ohlcv": 0,
+      "zero_volume_bars": 0,
+      "flat_bars": 0,
+      "raw_receipts": [],
+      "liquidity": "observed base volume floored to integer units before 1% participation",
+      "valuation": "trade close, not historical intrahour mark; synthetic close execution",
+      "funding": "NOT_IN_PAPER_LEDGER"
+    },
+    {
+      "path": "D:/Code/FactorLab-worktrees/p6-d02-binance-history/results/p6-d02/hourly/runs/bddaab1cd5c943e28caa62c0fc49ef33",
+      "data_version": "8f4861c8b3bef653b6f68cc778516e771ec7bd88678c00ad404b9111ac9ca607",
+      "bars_sha256": "562ba9e01c2ca050132a10519b3b514112b2f36e7837ffa838a72ce9bf00b7b4",
+      "acquired_at": "2026-11-10T17:54:15.651337+00:00",
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "source": "BINANCE_USDM_PUBLIC_REST",
+      "interval": "1h",
+      "rows": 2160,
+      "start": "2026-08-12T00:00:00+00:00",
+      "end_exclusive": "2026-11-10T00:00:00+00:00",
+      "last_close": "2026-11-09T23:59:59.999000+00:00",
+      "missing_bars": 0,
+      "duplicate_timestamps": 0,
+      "invalid_ohlcv": 0,
+      "zero_volume_bars": 0,
+      "flat_bars": 0,
+      "raw_receipts": [
+        {
+          "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1791889200001&symbol=NVDAUSDT",
+          "sha256": "045307f972cd4bcb9fbe3ecfb5720c1a5891de6e582f873cc5259ae84e89e49a",
+          "acquired_at": "2026-11-10T17:54:15.005004+00:00"
+        },
+        {
+          "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1786492800000&symbol=NVDAUSDT",
+          "sha256": "769bd4d8019132bf422e60bd56dce884105abd78338fbe63cb74e020113140ec",
+          "acquired_at": "2026-11-10T17:54:14.133510+00:00"
+        },
+        {
+          "url": "https://fapi.binance.com/fapi/v1/klines?endTime=1794268799999&interval=1h&limit=1500&startTime=1794265200001&symbol=NVDAUSDT",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "acquired_at": "2026-11-10T17:54:15.651337+00:00"
+        }
+      ],
+      "liquidity": "observed base volume floored to integer units before 1% participation",
+      "valuation": "trade close, not historical intrahour mark; synthetic close execution",
+      "funding": "NOT_IN_PAPER_LEDGER"
+    }
+  ],
+  "old": "D:/Code/FactorLab-final-evidence/p7-r04b-e01-grid-study",
+  "new": "D:/Code/FactorLab-final-evidence/p7-r07-temporal-stability",
+  "old_funding": "D:/Code/FactorLab-final-evidence/p7-r05-funding-economics/final",
+  "binary_models": [
+    {
+      "cost_per_period": 0,
+      "gain": 0.05,
+      "loss": -0.7,
+      "arithmetic_break_even_p": 0.9333333333333332,
+      "geometric_break_even_p": 0.9610539540228975
+    },
+    {
+      "cost_per_period": 0.001,
+      "gain": 0.049,
+      "loss": -0.701,
+      "arithmetic_break_even_p": 0.9346666666666666,
+      "geometric_break_even_p": 0.9618871320616151
+    },
+    {
+      "cost_per_period": 0.002,
+      "gain": 0.048,
+      "loss": -0.702,
+      "arithmetic_break_even_p": 0.9359999999999999,
+      "geometric_break_even_p": 0.9627181756578744
+    }
+  ],
+  "market_weekend_uncertainty": {
+    "n": 26,
+    "mean": 0.004142820592896919,
+    "bootstrap_mean_q025": -0.001231239028001267,
+    "bootstrap_mean_q975": 0.008775597228492865,
+    "two_week_block_mean_q025": -0.0018069701873201433,
+    "two_week_block_mean_q975": 0.009331872207136454,
+    "minimum": -0.045010615711252755,
+    "maximum": 0.022568311106966332,
+    "positive": 19,
+    "zero": 0,
+    "sum_without_best": 0.08514502430835358,
+    "sum_without_worst": 0.15272395112657267
+  },
+  "definitions": {
+    "extremes": "absolute hourly log return >=1% or >=3%; not news events",
+    "breakout": "close outside previous 24 hourly high/low envelope; first 24 hours excluded",
+    "uncertainty": "10000 fixed-seed IID weekend-block percentile bootstrap; serial independence unproven",
+    "economic_sample": "continuous frozen strategies, NOT fresh weekend-entry/exit experiments",
+    "calendar": "2026 NYSE full holidays May25 Jun19 Jul03 Sep07; no early closes in window",
+    "fifo": "completed-cycle net booked at sell time; not economic accrual within that hour",
+    "liquidity": "hourly candles do not certify executable weekend order books",
+    "funding": "saved historical posthoc overlay; no cash-constraint feedback",
+    "orders": "read-only journal first-event submission cohorts and final snapshot dispositions; right-censored at window end"
+  }
+}
