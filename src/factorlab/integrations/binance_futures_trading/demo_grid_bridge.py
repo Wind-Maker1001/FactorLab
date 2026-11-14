@@ -123,7 +123,7 @@ class DemoGridBridge:
                 if self.grid._owns(event.client_order_id):
                     turnover += delta * event.fill_price
                 filled[event.client_order_id] = event.cumulative_filled_quantity
-        if inventory > MAX_QUANTITY or committed > MAX_NOTIONAL:
+        if inventory > MAX_QUANTITY:
             raise SafetyBlocked('confirmed account exceeds Demo budget')
         asset = next(a for a in snapshot.assets if a.currency == 'USDT')
         confirmed_equity = asset.total + sum((p.quantity * (p.mark_price - p.entry_price)
@@ -141,6 +141,8 @@ class DemoGridBridge:
         if not self.restored:
             self._restore()
         self._sync()
+        if self.grid.pending_bar is not None:
+            self._command('bar')
         self.ready = True
         return self.account()
 

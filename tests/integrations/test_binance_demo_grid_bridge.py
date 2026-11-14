@@ -12,18 +12,18 @@ from factorlab.trading.paper import Quote
 from test_binance_demo_execution import setup
 
 
-def grid(account_id):
+def grid(account_id, **config):
     return GridExecution(GridConfig(lower=145, upper=155, levels=1, initial_price=150,
         initial_inventory=0, quantity=1, max_inventory=1, max_cash_committed=7,
-        breakout='pause'), GridRules(D('.04'), D('.01'), D('.01'), D('.01'), D('5')),
+        breakout='pause', **config), GridRules(D('.04'), D('.01'), D('.01'), D('.01'), D('5')),
         deployment_id='grid-demo', account_id=account_id, market=Market.BINANCE_USDM,
         instrument_id='NVDAUSDT', initial_equity=D('1000'))
 
 
-def bridge(protocol=':memory:', paper=':memory:', fake=None):
+def bridge(protocol=':memory:', paper=':memory:', fake=None, **config):
     a, g, c, fake = setup(protocol, paper, fake)
     c.quote(Quote('NVDAUSDT', D('150'), NOW))
-    b = DemoGridBridge(grid(a.account_id), c)
+    b = DemoGridBridge(grid(a.account_id, **config), c)
     b.recover()
     return b, fake
 
@@ -174,6 +174,97 @@ def test_queued_expiry_withdraws_without_exchange_cancel():
     b.observe(dict(id='second', time='2026-11-11T12:00:01', price='150', volume=1))
     assert not b.grid.active
     assert not [call for call in fake.calls if call[0] != 'GET']
+
+
+def test_pending_atr_bar_recovery_is_durable(tmp_path):
+    protocol, paper = tmp_path / 'protocol.db', tmp_path / 'controller.db'
+    config = dict(mode='atr', atr_window=2, atr_multiplier=1)
+    b, fake = bridge(protocol, paper, **config)
+    first = dict(id='bar-1', time='2026-11-11T12:00:00', price='150', volume=1,
+                 completed_bar=True, high=153, low=147, close=150)
+    b._command('observe', first)
+    assert b.grid.pending_bar is not None
+    assert not b.grid.true_ranges
+    b.gateway.adapter.store.close()
+    b.controller.store.close()
+    b, fake = bridge(protocol, paper, fake, **config)
+    assert b.grid.pending_bar is None
+    assert list(b.grid.true_ranges) == [6]
+    delivery = b.grid.delivery
+    b.recover()
+    assert b.grid.delivery == delivery
+    b.gateway.adapter.store.close()
+    b.controller.store.close()
+    b, fake = bridge(protocol, paper, fake, **config)
+    assert b.grid.delivery == delivery
+    assert list(b.grid.true_ranges) == [6]
+    b.observe(dict(first, id='bar-2', time='2026-11-11T12:00:01', high=154, low=146))
+    assert list(b.grid.true_ranges) == [6, 8]
+    orders = tuple(b.grid.orders)
+    posts = len([call for call in fake.calls if call[0] == 'POST'])
+    b.gateway.adapter.store.close()
+    b.controller.store.close()
+    b, fake = bridge(protocol, paper, fake, **config)
+    assert list(b.grid.true_ranges) == [6, 8]
+    assert tuple(b.grid.orders) == orders
+    b.dispatch()
+    assert len([call for call in fake.calls if call[0] == 'POST']) == posts
+
+
+def test_pending_atr_waits_for_reconciliation(monkeypatch):
+    from dataclasses import replace
+    b, fake = bridge(mode='atr', atr_window=2)
+    b._command('observe', dict(id='pending', time='2026-11-11T12:00:00', price='150',
+        volume=1, completed_bar=True, high=153, low=147, close=150))
+    account = b.account()
+    delivery = b.grid.delivery
+    with monkeypatch.context() as patch:
+        patch.setattr(b.gateway, 'recover', lambda _: None)
+        patch.setattr(b, 'account', lambda: replace(account, reconciled=False))
+        with pytest.raises(SafetyBlocked, match='RECONCILE_REQUIRED'):
+            b.recover()
+        assert not b.ready
+        assert b.grid.pending_bar is not None
+        assert b.grid.delivery == delivery
+        assert not b.grid.true_ranges
+    b.recover()
+    assert b.grid.pending_bar is None
+    assert list(b.grid.true_ranges) == [6]
+    assert not [call for call in fake.calls if call[0] == 'POST']
+
+
+def test_over_budget_recovery_observation_and_cancel(tmp_path):
+    protocol, paper = tmp_path / 'protocol.db', tmp_path / 'controller.db'
+    b, fake = bridge(protocol, paper)
+    observe(b)
+    key = b.grid.active[0].intent.client_order_id
+    b.controller.quote(Quote('NVDAUSDT', D('180'), NOW))
+    assert b.account().committed == D('7.2')
+    b.recover()
+    assert b.account().committed == D('7.2')
+    b.gateway.adapter.store.close()
+    b.controller.store.close()
+    a, g, c, fake = setup(protocol, paper, fake)
+    c.quote(Quote('NVDAUSDT', D('180'), NOW))
+    b = DemoGridBridge(grid(a.account_id), c)
+    b.recover()
+    assert b.account().committed == D('7.2')
+    b.observe(dict(id='breakout', time='2026-11-11T12:00:01', price='180', volume=1))
+    assert b.gateway.adapter.order(key).status is S.CANCELED
+    assert b.account().committed == 0
+    assert len([call for call in fake.calls if call[0] == 'POST']) == 1
+
+
+def test_new_buy_still_checks_market_budget():
+    b, fake = bridge()
+    b._command('observe', dict(id='queued', time='2026-11-11T12:00:00', price='150', volume=1))
+    b.controller.quote(Quote('NVDAUSDT', D('180'), NOW))
+    with pytest.raises(SafetyBlocked, match='budget'):
+        b.dispatch()
+    assert not [call for call in fake.calls if call[0] == 'POST']
+    b.controller.quote(Quote('NVDAUSDT', D('150'), NOW))
+    assert b.dispatch().status is S.SUBMITTED
+    assert b.account().committed == D('6')
 
 
 def test_minimum_quantity_and_config_budget():
