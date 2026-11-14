@@ -99,9 +99,15 @@ def publish(args):
             'fills','turnover_usdt','fees','slippage','completed_cycles','completed_cycle_net',
             'funding_completed_cycle','completed_cycle_adjusted','risk_exit_net','funding_risk_exit',
             'final_inventory','residual_net','funding_residual']
+    def table(frame):
+        header = '| '+' | '.join(frame.columns)+' |\n'
+        header += '| '+' | '.join(['---']*len(frame.columns))+' |\n'
+        for row in frame.itertuples(index=False,name=None):
+            header += '| '+' | '.join('nan' if pd.isna(v) else f'{v:.6f}' if isinstance(v,float) else str(v) for v in row)+' |\n'
+        return header
     (dest/'tables.md').write_text('# R07 economic metrics\n\nNO LIVE MONEY · EXPLORATORY_RESEARCH\n\n'
-        +frame[cols].to_markdown(index=False,floatfmt='.6f')+'\n\n'
-        +pd.read_csv(dest/'comparisons.csv').to_markdown(index=False,floatfmt='.6f')+'\n',encoding='utf-8')
+        +table(frame[cols])+'\n'
+        +table(pd.read_csv(dest/'comparisons.csv')),encoding='utf-8')
     print(frame[['scenario','name','net_pnl','funding','adjusted_profit','completed_cycle_net',
                  'completed_cycle_adjusted','risk_exit_net','residual_net','mean_notional','max_drawdown']].to_string(index=False))
     print(pd.read_csv(dest/'comparisons.csv').to_string(index=False))
