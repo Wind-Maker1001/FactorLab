@@ -10,8 +10,8 @@ import xml.etree.ElementTree as ET
 
 import pandas as pd
 
-from .runner import run_acceptance, save_json, set_row, write_report
-from .source_identity import SourceIntegrityError, assert_source_unchanged, source_snapshot
+from .runner import run_acceptance, running_source_snapshot, save_json, set_row, write_report
+from .source_identity import SourceIntegrityError, assert_source_unchanged
 from .synthetic import WARNING
 
 
@@ -39,7 +39,7 @@ def main():
                 "真实比较入口反例：%d项；见comparison-tests.xml/log" % len(suites))
         try:
             start = json.loads((args.output / "source-start.json").read_text(encoding="utf-8"))
-            final = source_snapshot(root)
+            final = running_source_snapshot()
             save_json(args.output / "source-final.json", final)
             assert_source_unchanged(start, final)
             report["source_verification"]["final"] = "source-final.json"

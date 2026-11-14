@@ -1,7 +1,7 @@
 """Close-quote research driven exclusively by authoritative Paper transactions."""
 from dataclasses import asdict, replace
 from datetime import timezone
-from decimal import Decimal
+from decimal import Decimal, ROUND_CEILING
 import json
 from pathlib import Path
 
@@ -199,16 +199,21 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                     quantity = (min(reference_budget['max_inventory'],
                         capital / (close * (1 + slippage) * (1 + fee_rate)))
                         // rules.step_size) * rules.step_size
-                    chunk_size = (reference_budget['max_order'] // rules.step_size) * rules.step_size
-                    if quantity < rules.min_quantity or chunk_size < rules.min_quantity:
+                    maximum = int(reference_budget['max_order'] // rules.step_size)
+                    minimum = int(max(rules.min_quantity / rules.step_size,
+                        rules.min_notional / (limit * rules.step_size)).to_integral_value(
+                            rounding=ROUND_CEILING))
+                    units = int(quantity / rules.step_size)
+                    if maximum < minimum or units < minimum:
                         raise ValueError('bounded reference quantity cannot meet frozen minimum')
+                    count = (units + maximum - 1) // maximum
+                    if units < count * minimum:
+                        raise ValueError('bounded reference order fails frozen minimum rules')
                     chunks = []
-                    remaining = quantity
-                    while remaining:
-                        chunk = min(chunk_size, remaining)
-                        if chunk < rules.min_quantity or chunk * limit < rules.min_notional:
-                            raise ValueError('bounded reference order fails frozen minimum rules')
-                        chunks.append((f'buy-hold-{len(chunks):02d}', chunk))
+                    remaining = units
+                    for index in range(count):
+                        chunk = min(maximum, remaining - (count - index - 1) * minimum)
+                        chunks.append((f'buy-hold-{index:02d}', chunk * rules.step_size))
                         remaining -= chunk
                 for key, chunk in chunks:
                     intent = OrderIntent(market, instrument_id, Side.BUY, OrderType.LIMIT,
