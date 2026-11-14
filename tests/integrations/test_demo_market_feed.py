@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import json
 from urllib.parse import parse_qs
 
@@ -109,6 +109,110 @@ def test_backfill_bound_and_callback_failure(tmp_path):
     feed.close()
 
 
+@pytest.mark.parametrize('advance', [120000, 180000])
+def test_first_failure_preserves_start_across_restart(tmp_path, advance):
+    feed, transport, consumer = make(tmp_path, max_backfill=3)
+    consumer.fail = True
+    with pytest.raises(RuntimeError):
+        feed.poll()
+    feed.close()
+    transport.time += advance
+    consumer.fail = False
+    feed, _, _ = make(tmp_path, transport, consumer, max_backfill=3)
+    if advance == 180000:
+        with pytest.raises(FeedPaused, match='BACKFILL_LIMIT'):
+            feed.poll()
+        assert feed.watermarks() == (None, None)
+        assert not consumer.bars
+    else:
+        assert feed.poll() == dict(bars=3, quotes=1)
+        assert [b.opened_at.timestamp() for b in consumer.bars] == [120, 180, 240]
+    feed.close()
+
+
+def test_slow_backfill_pauses_quote_then_resumes_without_bar_replay(tmp_path):
+    feed, transport, consumer = make(tmp_path)
+    original = consumer.closed_bar
+    def slow(bar):
+        original(bar)
+        transport.time += 6000
+    consumer.closed_bar = slow
+    with pytest.raises(FeedPaused, match='STALE_OR_FUTURE_QUOTE'):
+        feed.poll()
+    assert feed.watermarks() == (180000, None)
+    assert not consumer.quotes
+    assert feed.poll() == dict(bars=0, quotes=1)
+    assert len(consumer.bars) == 1
+    assert feed.status == 'RUNNING'
+    feed.close()
+
+
+@pytest.mark.parametrize('column,value', [
+    (1, 'NaN'), (2, 'Infinity'), (3, '-Infinity'), (4, 'sNaN'),
+    (1, 'not-a-decimal'), (2, '100'), (3, '102'), (5, '-1'),
+    (1, '0'), (5, None),
+])
+def test_invalid_ohlcv_pauses_and_recovers(tmp_path, column, value):
+    feed, transport, consumer = make(tmp_path)
+    row = bar(120000)
+    row[column] = value
+    transport.rows = [row]
+    with pytest.raises(FeedPaused, match='INVALID_OHLCV|DECIMAL_STRINGS_REQUIRED'):
+        feed.poll()
+    assert feed.status == 'PAUSED'
+    assert feed.watermarks() == (None, None)
+    assert not consumer.bars and not consumer.quotes
+    transport.rows = None
+    assert feed.poll() == dict(bars=1, quotes=1)
+    feed.close()
+
+
+@pytest.mark.parametrize('callback', ['closed_bar', 'quote'])
+@pytest.mark.parametrize('error_type', [ValueError, InvalidOperation])
+def test_consumer_errors_are_not_market_parse_errors(tmp_path, callback, error_type):
+    feed, _, consumer = make(tmp_path)
+    def fail(_):
+        raise error_type('consumer bug')
+    setattr(consumer, callback, fail)
+    with pytest.raises(error_type, match='consumer bug') as error:
+        feed.poll()
+    assert not isinstance(error.value, FeedPaused)
+    assert feed.reason == 'POLL_OR_CONSUMER_FAILED'
+    feed.close()
+
+
+def test_supervisor_recovers_from_invalid_ohlcv(tmp_path):
+    feed, transport, consumer = make(tmp_path)
+    row = bar(120000)
+    row[1] = 'invalid'
+    transport.rows = [row]
+    reports = []
+    def report(message):
+        reports.append(json.loads(message))
+        transport.rows = None
+        if len(reports) == 2:
+            supervisor.stop()
+    supervisor = DemoSupervisor(feed, poll_seconds=0.001, report=report)
+    supervisor.run()
+    assert [(r['status'], r['reason']) for r in reports] == [
+        ('PAUSED', 'INVALID_OHLCV'), ('RUNNING', None)]
+    assert len(consumer.bars) == len(consumer.quotes) == 1
+    feed.close()
+
+
+def test_existing_cursor_schema_is_migrated(tmp_path):
+    import sqlite3
+    with sqlite3.connect(tmp_path / 'cursor.sqlite') as db:
+        db.execute('CREATE TABLE cursor (id TEXT PRIMARY KEY, bar INTEGER, quote INTEGER)')
+        db.execute('INSERT INTO cursor VALUES (?, ?, ?)',
+            (f'{SOURCE}:NVDAUSDT:1m:test', 180000, 180001))
+    feed, _, consumer = make(tmp_path)
+    assert feed.poll() == dict(bars=0, quotes=0)
+    assert feed.watermarks() == (180000, 180001)
+    assert not consumer.bars and not consumer.quotes
+    feed.close()
+
+
 def test_recovery_and_stop(tmp_path):
     feed, transport, consumer = make(tmp_path)
     transport.failed = True
@@ -167,7 +271,8 @@ def test_ack_crash_replays_to_idempotent_consumer(tmp_path):
     with pytest.raises(RuntimeError):
         feed.poll()
     feed.close()
+    transport.time += 120000
     feed, _, _ = make(tmp_path, transport, consumer)
     feed.poll()
-    assert len(consumer.bars) == 1
+    assert [b.opened_at.timestamp() for b in consumer.bars] == [120, 180, 240]
     feed.close()

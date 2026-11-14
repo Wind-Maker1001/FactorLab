@@ -1,6 +1,6 @@
 """Bounded Demo REST events with consumer-acknowledged durable cursors."""
 from datetime import datetime, timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 import sqlite3
 
@@ -22,8 +22,11 @@ class FeedPaused(ValueError):
 def timestamp(milliseconds):
     if type(milliseconds) is not int or milliseconds < 0:
         raise FeedPaused('INVALID_TIMESTAMP')
-    return datetime.fromtimestamp(milliseconds // 1000, timezone.utc).replace(
-        microsecond=milliseconds % 1000 * 1000)
+    try:
+        return datetime.fromtimestamp(milliseconds // 1000, timezone.utc).replace(
+            microsecond=milliseconds % 1000 * 1000)
+    except (ValueError, OverflowError, OSError) as error:
+        raise FeedPaused('INVALID_TIMESTAMP') from error
 
 
 class DemoMarketFeed:
@@ -56,7 +59,9 @@ class DemoMarketFeed:
         self.db.execute('CREATE TABLE IF NOT EXISTS cursor (id TEXT PRIMARY KEY, bar INTEGER, quote INTEGER)')
         self.identity = f'{SOURCE}:{SYMBOL}:{interval}:{consumer_id}'
         with self.db:
-            self.db.execute('INSERT OR IGNORE INTO cursor VALUES (?, NULL, NULL)', (self.identity,))
+            if 'initial_start' not in {row[1] for row in self.db.execute('PRAGMA table_info(cursor)')}:
+                self.db.execute('ALTER TABLE cursor ADD COLUMN initial_start INTEGER')
+            self.db.execute('INSERT OR IGNORE INTO cursor (id, bar, quote) VALUES (?, NULL, NULL)', (self.identity,))
 
     def close(self):
         self.db.close()
@@ -90,7 +95,14 @@ class DemoMarketFeed:
         width = self.seconds * 1000
         boundary = server // width * width
         last_bar, last_quote = self.watermarks()
-        start = last_bar if last_bar is not None else boundary - width
+        initial_start = self.db.execute('SELECT initial_start FROM cursor WHERE id=?',
+            (self.identity,)).fetchone()[0]
+        if last_bar is None and initial_start is None:
+            initial_start = boundary - width
+            with self.db:
+                self.db.execute('UPDATE cursor SET initial_start=? WHERE id=?',
+                    (initial_start, self.identity))
+        start = last_bar if last_bar is not None else initial_start
         if start > boundary:
             raise FeedPaused('CLOCK_REGRESSION')
         if boundary - start > self.max_backfill * width:
@@ -121,18 +133,25 @@ class DemoMarketFeed:
                 raise FeedPaused('BAR_SEQUENCE_GAP')
             if any(not isinstance(v, str) for v in row[1:6]):
                 raise FeedPaused('DECIMAL_STRINGS_REQUIRED')
-            bars.append(ClosedBar(SYMBOL, timestamp(opened), timestamp(closed + 1),
-                *(Decimal(v) for v in row[1:6]), self.seconds, SOURCE))
+            try:
+                bars.append(ClosedBar(SYMBOL, timestamp(opened), timestamp(closed + 1),
+                    *(Decimal(v) for v in row[1:6]), self.seconds, SOURCE))
+            except (ValueError, InvalidOperation) as error:
+                raise FeedPaused('INVALID_OHLCV') from error
         if start + len(bars) * width != boundary:
             raise FeedPaused('BAR_SEQUENCE_GAP')
         raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
-        observed = timestamp(raw['time'])
-        if (raw['symbol'] != SYMBOL or raw['time'] < boundary
+        try:
+            observed = timestamp(raw['time'])
+            bid, ask = Decimal(raw['bidPrice']), Decimal(raw['askPrice'])
+            symbol = raw['symbol']
+        except (KeyError, TypeError, ValueError, InvalidOperation) as error:
+            raise FeedPaused('INVALID_BOOK') from error
+        if (symbol != SYMBOL or raw['time'] < boundary
                 or not 0 <= (self.clock() - observed).total_seconds() <= self.max_quote_age):
             raise FeedPaused('STALE_OR_FUTURE_QUOTE')
         if last_quote is not None and raw['time'] < last_quote:
             raise FeedPaused('QUOTE_TIME_REGRESSION')
-        bid, ask = Decimal(raw['bidPrice']), Decimal(raw['askPrice'])
         if not bid.is_finite() or not ask.is_finite() or not 0 < bid <= ask:
             raise FeedPaused('INVALID_BOOK')
         # Validate the entire batch before advancing even one strategy input.
@@ -141,10 +160,13 @@ class DemoMarketFeed:
         for bar in bars:
             self.consumer.closed_bar(bar)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
-        self.status, self.reason = 'RUNNING', None
         delivered = 0
         if last_quote is None or raw['time'] > last_quote:
-            self.consumer.quote(Quote(SYMBOL, (bid + ask) / 2, observed))
+            quote = Quote(SYMBOL, (bid + ask) / 2, observed)
+            if not 0 <= (self.clock() - observed).total_seconds() <= self.max_quote_age:
+                raise FeedPaused('STALE_OR_FUTURE_QUOTE')
+            self.consumer.quote(quote)
             self._ack('quote', raw['time'])
             delivered = 1
+        self.status, self.reason = 'RUNNING', None
         return dict(bars=len(bars), quotes=delivered)
