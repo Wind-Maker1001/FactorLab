@@ -1,0 +1,17 @@
+{
+  "status": "OBSERVED_HISTORY_RESEARCH_OVERLAY",
+  "rows": 279,
+  "first": "2026-05-14T00:00:00.001000+00:00",
+  "last": "2026-08-11T16:00:00.001000+00:00",
+  "regular_rows": 278,
+  "special_rows": 1,
+  "max_regular_gap_hours": 8.000000277777778,
+  "missing_mark_prices": 0,
+  "window_start": "2026-05-14T00:00:00+00:00",
+  "window_end": "2026-08-12T00:00:00+00:00",
+  "boundaries": [
+    "NO LIVE MONEY",
+    "NOT_EXCHANGE_ACCOUNT_SETTLEMENT"
+  ],
+  "completeness": "Observed API events; no assumed fixed schedule or fabricated events"
+}
