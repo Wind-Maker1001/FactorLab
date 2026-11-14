@@ -49,7 +49,10 @@ Stop new account writes and recover without submitting replacements:
 ## Remaining work
 
 - TODO: Observe a legal natural-signal order and fill, then independently recover its actual trade and fee records.
-- TODO: Validate original-limit Grid acceptance, known-order cancellation and cross-process Grid replay under a separately enabled campaign. The acceptance driver currently generates configuration from the current book and is not a restart driver; persist and reuse the exact deployment configuration before attempting that replay.
-- TODO: Exercise the acceptance driver's UTC timestamp conversion in a focused offline test before another online attempt.
+- TODO: Validate original-limit Grid acceptance, known-order cancellation and cross-process Grid replay under a separately enabled campaign. Use the persisted original deployment for each process; changing the book must not change its limits or deployment identity.
+The focused offline Grid network/bridge/runtime suite passed 45 tests, including
+UTC conversion through actual Grid observation, immutable deployment restoration,
+no duplicate initial POST, known-order cancellation, and GET-only recovery after
+campaign stop. These intercepted responses are not real exchange acceptance.
 - Real online POST-budget exhaustion and UNKNOWN recovery were not exercised in this campaign.
 - Long-duration unattended operation is not established by this bounded observation.

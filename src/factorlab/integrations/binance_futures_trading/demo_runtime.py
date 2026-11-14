@@ -251,9 +251,9 @@ DEMO_LIMITS = RiskLimits(MAX_NOTIONAL, MAX_NOTIONAL, MAX_NOTIONAL, orders_per_mi
 
 
 @contextmanager
-def open_grid_session(root, store, grid_factory):
+def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_deployment=False):
     """Open one campaign-bound Grid bridge over the shared Demo journals."""
-    from factorlab.trading.storage import PaperStore, dumps
+    from factorlab.trading.storage import PaperStore, dumps, decode
 
     from .demo_grid_bridge import DemoGridBridge
     from .demo_session import DemoSession
@@ -264,9 +264,9 @@ def open_grid_session(root, store, grid_factory):
         if credential is None:
             raise SafetyBlocked('saved Demo credential missing; run setup')
         campaign = runtime.active_campaign()
-        if campaign is None or campaign['smoke']:
+        if not read_only and (campaign is None or campaign['smoke']):
             raise SafetyBlocked('no persistent Demo authorization; run enable-demo')
-        authorization = runtime.authority(binding, campaign)
+        authorization = None if read_only else runtime.authority(binding, campaign)
         expected = None
 
         def expect(intent):
@@ -286,17 +286,61 @@ def open_grid_session(root, store, grid_factory):
               closing(PaperStore(journal / 'controller.sqlite3')) as controller_store):
             session = DemoSession(credential, protocol_store=protocol_store, controller_store=controller_store,
                 account_id=binding['account_id'], configuration=binding['configuration'],
-                authorization=authorization, limits=DEMO_LIMITS, write_guard=guard, receipt_sink=record)
-            deployment_id = campaign['prefix'] + '-g'
-            grid = grid_factory(session, deployment_id)
-            if grid.deployment_id != deployment_id:
-                raise SafetyBlocked('Grid deployment identity differs from the active Demo campaign')
-            deployment = dict(campaign=campaign['id'], deployment=grid.deployment())
+                authorization=authorization, limits=DEMO_LIMITS,
+                write_guard=None if read_only else guard, receipt_sink=None if read_only else record)
             key = 'demo-grid:deployment'
-            saved = controller_store.event_payload(key)
-            if saved is not None and saved != dumps(deployment):
-                raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
-            bridge = DemoGridBridge(grid, session, expect=expect)
+            saved = saved_grid_deployment(controller_store)
+            if new_deployment:
+                if read_only:
+                    raise SafetyBlocked('new Grid deployment requires explicit write mode')
+                if saved is not None and decode(json.loads(saved))['campaign'] == campaign['id']:
+                    raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
+                session.recover()
+                status = session.status()
+                if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
+                    raise SafetyBlocked('new Grid deployment requires a reconciled flat account without open or UNKNOWN orders')
+                saved = None
+            if saved is not None:
+                deployment = decode(json.loads(saved))
+                if not read_only and deployment['campaign'] != campaign['id']:
+                    raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
+                if grid_factory is None or read_only:
+                    grid = restore_grid(deployment['deployment'])
+                else:
+                    grid = grid_factory(session, campaign['prefix'] + '-g')
+                    if dumps(grid.deployment()) != dumps(deployment['deployment']):
+                        raise SafetyBlocked('persisted Grid deployment differs')
+            else:
+                if read_only or grid_factory is None:
+                    raise SafetyBlocked('no persisted Grid deployment')
+                deployment_id = campaign['prefix'] + '-g'
+                grid = grid_factory(session, deployment_id)
+                if grid.deployment_id != deployment_id:
+                    raise SafetyBlocked('Grid deployment identity differs from the active Demo campaign')
+                deployment = dict(campaign=campaign['id'], deployment=grid.deployment())
+            bridge = DemoGridBridge(grid, session, expect=None if read_only else expect,
+                read_only=read_only)
             with controller_store.transaction():
-                controller_store.record_metadata(key, deployment)
+                controller_store.record_metadata(key + ':' + deployment['campaign'], deployment)
+            bridge.runtime = runtime
             yield bridge
+
+
+def saved_grid_deployment(store):
+    """Read the latest immutable campaign binding, including the original journal key."""
+    row = store.db.execute("SELECT payload FROM events WHERE id = 'demo-grid:deployment' "
+        "OR id LIKE 'demo-grid:deployment:%' ORDER BY rowid DESC LIMIT 1").fetchone()
+    return row[0] if row else None
+
+
+def restore_grid(deployment):
+    """Reconstruct the exact journaled economic deployment, before command replay."""
+    from factorlab.backtest.fees import FeeRule, FeeSchedule
+    from factorlab.strategies.grid import GridConfig
+    from factorlab.strategies.grid_execution import GridExecution, GridRules
+
+    values = dict(deployment)
+    values['config'] = GridConfig(**values['config'])
+    values['rules'] = GridRules(**values['rules'])
+    values['fees'] = FeeSchedule([FeeRule(**rule) for rule in values['fees']])
+    return GridExecution(**values)

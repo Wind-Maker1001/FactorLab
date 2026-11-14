@@ -32,11 +32,13 @@ class DemoGridBridge:
     cannot lose an issued identity. Economic events stay in the existing ledger.
     """
 
-    def __init__(self, grid, controller, *, expect=None):
+    def __init__(self, grid, controller, *, expect=None, read_only=False):
         self.session = controller if isinstance(controller, DemoSession) else None
         self.expect = expect
+        self.read_only = read_only
         if self.session is not None:
             controller = self.session.controller
+        if self.session is not None and not read_only:
             if expect is None or self.session._write_guard is None:
                 raise SafetyBlocked('Grid network delivery requires persistent runtime admission')
             plan = self.session.client.transport.authorization.plan
@@ -170,6 +172,8 @@ class DemoGridBridge:
                 self._command('confirm', event)
 
     def observe(self, event):
+        if self.read_only:
+            raise SafetyBlocked('Grid session is read-only')
         if not self.ready or not self.account().reconciled:
             raise SafetyBlocked('recover Demo account before Grid decisions')
         self._sync()
@@ -182,6 +186,8 @@ class DemoGridBridge:
         """Deliver at most one proposal, without changing its price or quantity."""
         if not self.ready or not self.account().reconciled:
             raise SafetyBlocked('RECONCILE_REQUIRED')
+        if self.read_only:
+            raise SafetyBlocked('Grid session is read-only')
         self._sync()
         known = self.gateway.state.orders
         for key in tuple(self.grid.cancellations):
