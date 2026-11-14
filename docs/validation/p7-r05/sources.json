@@ -1,0 +1,35 @@
+{
+  "source": "https://fapi.binance.com/fapi/v1/fundingRate",
+  "symbol": "NVDAUSDT",
+  "startTime": 1778716800000,
+  "endTime": 1786492799999,
+  "rows": 279,
+  "price_coverage_pct": 100,
+  "regular_hours_utc": {
+    "0": 90,
+    "8": 90,
+    "16": 90,
+    "20": 1,
+    "21": 1,
+    "22": 1,
+    "23": 1,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+  },
+  "distinct_regular_hour_buckets": 278,
+  "special_events": [
+    {
+      "symbol": "NVDAUSDT",
+      "fundingTime": 1780531200007,
+      "fundingRate": "-0.00116812",
+      "markPrice": "214.27000000",
+      "rateType": "Special"
+    }
+  ],
+  "provenance": "PublicClient request/raw receipts retained alongside local acquisition",
+  "settlement_order": "Fills strictly earlier than fundingTime; exact ties reported separately",
+  "price": "Historical markPrice supplied with each fundingRate event",
+  "documentation_fetch": "Official developer documentation and Binance FAQ connection timed out; not authenticated by this run"
+}
