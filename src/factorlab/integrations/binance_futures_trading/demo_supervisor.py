@@ -12,11 +12,13 @@ from .protocol import Environment, ExchangeError, FuturesClient, ReadOnlyNetwork
 
 
 class DemoSupervisor:
-    def __init__(self, feed, *, poll_seconds=2, max_backoff=60, report=print):
+    def __init__(self, feed, *, poll_seconds=2, max_backoff=60, report=print,
+                 before_poll=None, on_pause=None):
         if poll_seconds <= 0 or max_backoff < poll_seconds:
             raise ValueError('invalid polling bounds')
         self.feed, self.poll_seconds, self.max_backoff = feed, poll_seconds, max_backoff
         self.report, self.stopped = report, Event()
+        self.before_poll, self.on_pause = before_poll, on_pause
 
     def stop(self):
         self.stopped.set()
@@ -30,10 +32,16 @@ class DemoSupervisor:
             while not self.stopped.is_set() and (deadline is None or monotonic() < deadline):
                 delay = self.poll_seconds
                 try:
+                    if self.before_poll is not None:
+                        self.before_poll()
+                    if self.stopped.is_set():
+                        break
                     result = self.feed.poll()
                     backoff = self.poll_seconds
                 except (DataQualityError, FeedPaused, OSError) as error:
                     self.feed.pause(str(error) if isinstance(error, FeedPaused) else type(error).__name__)
+                    if self.on_pause is not None:
+                        self.on_pause()
                     result = dict(bars=0, quotes=0)
                     delay = max(backoff, error.retry_after or 0) if isinstance(error, ExchangeError) else backoff
                     backoff = min(self.max_backoff, backoff * 2)

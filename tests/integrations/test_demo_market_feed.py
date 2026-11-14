@@ -61,6 +61,31 @@ def make(tmp_path, transport=None, consumer=None, **kwargs):
     return feed, transport, consumer
 
 
+def test_strategy_bootstrap_range_survives_failed_callback_and_restart(tmp_path):
+    transport = Transport()
+    transport.time = 1800001
+    consumer = Consumer()
+    consumer.fail = True
+    feed, _, _ = make(tmp_path, transport, consumer, initial_bars=21)
+    with pytest.raises(RuntimeError, match='consumer failed'):
+        feed.poll()
+    assert feed.watermarks() == (None, None)
+    feed.close()
+    transport.time += 60000
+    consumer.fail = False
+    feed, _, _ = make(tmp_path, transport, consumer, initial_bars=21)
+    assert feed.poll()['bars'] == 22
+    assert len(consumer.bars) == 22
+    assert consumer.bars[0].opened_at.timestamp() == 540
+    feed.close()
+
+
+@pytest.mark.parametrize('initial_bars', [0, 121, True])
+def test_strategy_bootstrap_must_fit_backfill(tmp_path, initial_bars):
+    with pytest.raises(ValueError, match='initial history'):
+        make(tmp_path, initial_bars=initial_bars)
+
+
 def test_complete_precision_duplicate_restart(tmp_path):
     feed, transport, consumer = make(tmp_path)
     assert feed.poll() == dict(bars=1, quotes=1)
