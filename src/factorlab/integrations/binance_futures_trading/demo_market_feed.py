@@ -37,7 +37,7 @@ class DemoMarketFeed:
     Exceptions leave that event unacknowledged. One owner must use each cursor file.
     """
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
-                 max_backfill=120, max_quote_age=5, clock=lambda: datetime.now(timezone.utc)):
+                 max_backfill=120, max_quote_age=5, initial_bars=1, clock=lambda: datetime.now(timezone.utc)):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -48,6 +48,9 @@ class DemoMarketFeed:
             raise ValueError('invalid feed identity or backfill bound')
         if not 0 < max_quote_age <= 5:
             raise ValueError('quote freshness must be within five seconds')
+        if type(initial_bars) is not int or not 1 <= initial_bars <= max_backfill:
+            raise ValueError('initial history must fit backfill bound')
+        self.initial_bars = initial_bars
         self.client, self.consumer, self.clock = client, consumer, clock
         self.interval, self.seconds = interval, INTERVALS[interval]
         self.max_backfill, self.max_quote_age = max_backfill, max_quote_age
@@ -98,7 +101,7 @@ class DemoMarketFeed:
         initial_start = self.db.execute('SELECT initial_start FROM cursor WHERE id=?',
             (self.identity,)).fetchone()[0]
         if last_bar is None and initial_start is None:
-            initial_start = boundary - width
+            initial_start = boundary - width * self.initial_bars
             with self.db:
                 self.db.execute('UPDATE cursor SET initial_start=? WHERE id=?',
                     (initial_start, self.identity))

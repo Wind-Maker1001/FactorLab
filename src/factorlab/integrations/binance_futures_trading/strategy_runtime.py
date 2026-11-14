@@ -21,7 +21,8 @@ class DemoStrategyRuntime:
     Construction grants no write capability. Recovery is explicit and read-only;
     only a subsequent quote can consume a causal pending signal.
     """
-    def __init__(self, controller, strategy, *, client_id_prefix='sg', expect=None):
+    def __init__(self, controller, strategy, *, client_id_prefix='sg', expect=None,
+                 max_notional=None, max_quantity=None, preview=False):
         self.session = controller if isinstance(controller, DemoSession) else None
         self.expect = expect
         if self.session is not None:
@@ -36,6 +37,15 @@ class DemoStrategyRuntime:
         if self.symbol != 'NVDAUSDT':
             raise ValueError('Demo strategy supports NVDAUSDT only')
         self.configuration = dict(strategy=strategy.describe(), client_id_prefix=client_id_prefix)
+        for name, value in (('max_notional', max_notional), ('max_quantity', max_quantity)):
+            if value is not None:
+                value = D(value)
+                if not value.is_finite() or value <= 0:
+                    raise ValueError(name + ' must be finite and positive')
+                self.configuration[name] = value
+        if preview:
+            self.configuration['preview'] = True
+        self.strategy_id = identity(strategy.describe())
         self.gateway.bind_controller(controller)
         def initialize():
             runtime = self.gateway.state.runtime
@@ -45,6 +55,38 @@ class DemoStrategyRuntime:
                 runtime.update(configuration=self.configuration, bars=[], pending=None, status='PAUSED')
                 runtime['enabled'] = True
         controller._atomic(initialize)
+
+    def activate(self, *, client_id_prefix, max_notional=..., max_quantity=..., preview=...):
+        """Start a fresh campaign on a stopped checkpoint, retaining its journal."""
+        if not client_id_prefix or len(client_id_prefix) > 21:
+            raise ValueError('client ID prefix must contain 1..21 characters')
+        configuration = dict(strategy=self.strategy.describe(), client_id_prefix=client_id_prefix)
+        if max_notional is ...:
+            max_notional = self.configuration.get('max_notional')
+        if max_quantity is ...:
+            max_quantity = self.configuration.get('max_quantity')
+        if preview is ...:
+            preview = self.configuration.get('preview', False)
+        for name, value in (('max_notional', max_notional), ('max_quantity', max_quantity)):
+            if value is not None:
+                value = D(value)
+                if not value.is_finite() or value <= 0:
+                    raise ValueError(name + ' must be finite and positive')
+                configuration[name] = value
+        if preview:
+            configuration['preview'] = True
+        def activated():
+            runtime = self.gateway.state.runtime
+            if runtime['status'] != 'STOPPED':
+                raise SafetyBlocked('campaign activation requires a stopped strategy')
+            self.controller.store.record_metadata('strategy-activation:' + identity((
+                runtime['configuration'], configuration, self.controller.clock())),
+                dict(kind='STRATEGY_ACTIVATION', previous_configuration=runtime['configuration'],
+                     configuration=configuration, activated_at=self.controller.clock()))
+            runtime.update(configuration=configuration, pending=None, status='PAUSED',
+                           enabled=True, freshness_boundary=self.controller.clock())
+        self.controller._atomic(activated)
+        self.configuration = configuration
 
     def recover(self):
         """Query existing identities before permitting any new strategy order."""
@@ -109,19 +151,24 @@ class DemoStrategyRuntime:
                     runtime['status'] = 'PAUSED'
                     runtime['reason'] = 'BAR_SEQUENCE_GAP'
                     return False
+            runtime.pop('reason', None)
             bars.append(value)
             del bars[:-self.strategy.history_limit]
             signal = self.strategy.signal([ClosedBar(**v) for v in bars], self.controller.clock())
             runtime['last_signal'] = asdict(signal)
-            runtime['pending'] = asdict(signal) if signal.status == 'SIGNAL' and signal.direction != 'HOLD' else None
+            runtime['pending'] = (asdict(signal) if signal.status == 'SIGNAL'
+                and signal.direction != 'HOLD' and ('freshness_boundary' not in runtime
+                    or signal.input_watermark > runtime['freshness_boundary']) else None)
             self.controller.store.record_metadata('signal:' + signal.signal_id,
                 dict(kind='STRATEGY_SIGNAL', **asdict(signal)))
             return True
         return self.controller._atomic(operation)
 
     def quote(self, quote):
+        """Validate the trigger on receipt and executable book after account GETs."""
         if not isinstance(quote, Quote) or quote.instrument_id != self.symbol:
             raise ValueError('deployment quote required')
+        received_at = self.controller.clock()
         state = self.gateway.state
         runtime = state.runtime
         if (runtime['pending'] is None or runtime['status'] != 'RUNNING' or state.kill_switch
@@ -143,7 +190,8 @@ class DemoStrategyRuntime:
             if (runtime['pending'] is not None and runtime['status'] == 'RUNNING'
                     and not state.kill_switch and state.reconciled
                     and not any(r.snapshot.status not in TERMINAL for r in state.orders.values())
-                    and not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5)):
+                    and (not timedelta(0) <= received_at - quote.observed_at <= timedelta(seconds=5)
+                        or book is not None and not timedelta(0) <= self.controller.clock() - book['time_utc'] <= timedelta(seconds=5))):
                 runtime['last_rejection'] = 'STALE_QUOTE'
                 return None
             if current is None or quote.observed_at > current.observed_at:
@@ -162,7 +210,9 @@ class DemoStrategyRuntime:
                 return None
             if quote.observed_at <= signal['input_watermark'] or quote.observed_at < signal['generated_at']:
                 return None
-            if quote.observed_at >= signal['input_watermark'] + timedelta(seconds=self.strategy.describe()['interval_seconds']):
+            expires_at = signal['input_watermark'] + timedelta(seconds=self.strategy.describe()['interval_seconds'])
+            if (quote.observed_at >= expires_at or self.controller.clock() >= expires_at
+                    or book is not None and book['time_utc'] >= expires_at):
                 runtime.update(pending=None, last_rejection='SIGNAL_EXPIRED')
                 return None
             if any(r.snapshot.status not in TERMINAL for r in state.orders.values()):
@@ -194,6 +244,23 @@ class DemoStrategyRuntime:
             target = target_quantity(equity=equity, weight=signal['target_weight'], price=price,
                 budget_price=price, fee_rate=state.fee_rate, current=current,
                 available=balance.available, step=step)
+            if signal['direction'] == 'BUY' and (
+                    ('max_notional' in self.configuration
+                     and current * price > self.configuration['max_notional'])
+                    or ('max_quantity' in self.configuration
+                        and current > self.configuration['max_quantity'])):
+                runtime['last_rejection'] = 'HOLDINGS_EXCEED_BUDGET'
+                return None
+            if target < current:
+                price = DemoSession.limit_price(self.gateway.rules, Side.SELL, book)
+                target = target_quantity(equity=equity, weight=signal['target_weight'], price=price,
+                    budget_price=price, fee_rate=state.fee_rate, current=current,
+                    available=balance.available, step=step)
+            if 'max_notional' in self.configuration:
+                target = min(target, self.configuration['max_notional'] / price)
+            if 'max_quantity' in self.configuration:
+                target = min(target, self.configuration['max_quantity'])
+            target = (target // step) * step if step else target
             delta = target - current
             runtime['target_position'] = dict(signal_id=signal['signal_id'], quantity=target, current=current)
             runtime['pending'] = None
@@ -210,7 +277,36 @@ class DemoStrategyRuntime:
                 intent = OrderIntent(state.market, self.symbol, side, OrderType.LIMIT, abs(delta),
                     DemoSession.limit_price(self.gateway.rules, side, book), key,
                     position_side='BOTH', reduce_only=side is Side.SELL)
-                outcome.update(intent=asdict(intent), submission='DECIDED')
+                notional = intent.quantity * intent.limit_price
+                reason = None
+                if (('max_notional' in self.configuration
+                        and notional > self.configuration['max_notional'])
+                        or ('max_quantity' in self.configuration
+                            and intent.quantity > self.configuration['max_quantity'])):
+                    reason = 'TARGET_ORDER_BUDGET'
+                minimum_notional = self.gateway.rules.filters.get('MIN_NOTIONAL')
+                notional_filter = self.gateway.rules.filters.get('NOTIONAL')
+                if (not intent.reduce_only and minimum_notional is not None
+                        and notional < D(minimum_notional['notional'])):
+                    reason = 'MIN_NOTIONAL'
+                if notional_filter is not None:
+                    if not intent.reduce_only and notional < D(notional_filter['minNotional']):
+                        reason = 'MIN_NOTIONAL'
+                    if notional > D(notional_filter['maxNotional']):
+                        reason = 'MAX_NOTIONAL'
+                outcome.update(intent=asdict(intent))
+                if reason is not None:
+                    runtime['last_rejection'] = reason
+                    outcome.update(kind='TARGET_REJECTED', reason=reason)
+                    intent = None
+                else:
+                    outcome.update(submission='PREVIEW' if self.configuration.get('preview') else 'DECIDED')
+                    if self.configuration.get('preview'):
+                        intent = None
+            outcome.update(strategy_id=self.strategy_id, budget=dict(
+                max_notional=self.configuration.get('max_notional'),
+                max_quantity=self.configuration.get('max_quantity'), equity=equity,
+                available=balance.available, fee_rate=state.fee_rate, price=price))
             self.controller.store.record_metadata('target:' + signal['signal_id'], outcome)
             runtime['last_order'] = outcome
             return intent
