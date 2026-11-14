@@ -22,10 +22,10 @@ from .demo_supervisor import DemoSupervisor
 from .protocol import SafetyBlocked
 
 
-def grid_factory(settings):
+def grid_factory(settings, *, new_deployment=False):
     """Bind the initial range once; subsequent starts restore the saved deployment."""
     def create(session, deployment_id):
-        saved = saved_grid_deployment(session.controller.store)
+        saved = None if new_deployment else saved_grid_deployment(session.controller.store)
         if saved is not None:
             deployment = decode(json.loads(saved))['deployment']
             if deployment['deployment_id'] != deployment_id:
@@ -160,20 +160,24 @@ class GridConsumer:
 
     def status(self):
         known = self.bridge.gateway.state.orders
+        account = self.bridge.session.status()
         effective = ('STOPPED' if self.control.desired() == 'STOPPED' else
                      'PAUSED' if not self.running or self.reason else self.bridge.grid.state)
         return dict(reason=self.reason, effective=effective, deployment=self.bridge.grid.deployment(),
             grid_state=self.bridge.grid.state, grid_reason=self.bridge.grid.reason,
-            last_bar=self.last_bar, inventory=sum(
-                (position.quantity for position in self.bridge.controller.account().positions), D(0)),
+            last_bar=self.last_bar, inventory=(sum(
+                (position['quantity'] for position in account['positions']), D(0))
+                if account['positions'] is not None else None),
             reservations=[asdict(order.intent) for order in self.bridge.grid.active
                           if order.intent.client_order_id not in known],
-            account=self.bridge.session.status())
+            account=account)
 
 
 def add_arguments(parser):
     parser.add_argument('action', choices=('start', 'pause', 'resume', 'stop', 'status'))
     parser.add_argument('--execute', action='store_true', help='use existing persistent Demo authorization')
+    parser.add_argument('--new-deployment', action='store_true',
+                        help='initialize a new campaign Grid on a reconciled flat account; start --execute only')
     parser.add_argument('--interval', choices=INTERVALS, default='1m')
     parser.add_argument('--poll-seconds', type=float, default=2)
     parser.add_argument('--max-backfill', type=int, default=120)
@@ -182,6 +186,8 @@ def add_arguments(parser):
 
 
 def run(args, *, root=None, credentials=None):
+    if args.new_deployment and (args.action != 'start' or not args.execute):
+        raise SafetyBlocked('--new-deployment requires start --execute')
     root = state_root() if root is None else root
     mode = 'execute' if args.execute else 'dry-run'
     directory = root if args.execute else root / 'grid-preview'
@@ -204,9 +210,10 @@ def run(args, *, root=None, credentials=None):
         consumer = None
         def gate():
             consumer.gate()
-        with open_grid_session(root, credentials or DemoCredentialStore(), grid_factory(settings),
-                preview=not args.execute, continuous=True, request_counts=requests,
-                dispatch_gate=gate) as bridge:
+        with open_grid_session(root, credentials or DemoCredentialStore(),
+                grid_factory(settings, new_deployment=args.new_deployment),
+                new_deployment=args.new_deployment, preview=not args.execute,
+                continuous=True, request_counts=requests, dispatch_gate=gate) as bridge:
             def authority():
                 if not args.execute:
                     return True

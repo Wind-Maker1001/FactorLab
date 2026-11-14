@@ -48,6 +48,71 @@ def posts(fake):
     return [params for method, _, params in fake.calls if method == 'POST']
 
 
+@pytest.mark.parametrize('arguments', [
+    ['start', '--new-deployment'],
+    ['pause', '--execute', '--new-deployment'],
+])
+def test_new_deployment_requires_explicit_execution_start(tmp_path, arguments):
+    from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import run
+    args = parse_args(['grid-supervisor', *arguments])
+    with pytest.raises(SafetyBlocked, match='requires start --execute'):
+        run(args, root=tmp_path)
+    assert not list(tmp_path.iterdir())
+
+
+def test_new_campaign_factory_retains_history_and_restores_current_grid(network_grid):
+    from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import grid_factory
+    from contextlib import closing
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
+    from factorlab.trading.storage import decode
+    import json
+
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory, continuous=True) as b:
+        old = b.grid.deployment()
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.stop()
+    enable()
+    with pytest.raises(SafetyBlocked, match='campaign differs'):
+        with open_grid_session(root, store, grid_factory(None), continuous=True):
+            pytest.fail('old campaign restored for execution')
+    with open_grid_session(root, store, grid_factory(None, new_deployment=True),
+                           new_deployment=True, continuous=True) as b:
+        current = b.grid.deployment()
+        assert current['deployment_id'] != old['deployment_id']
+        rows = b.controller.store.db.execute(
+            "SELECT payload FROM events WHERE id LIKE 'demo-grid:deployment:%'").fetchall()
+        assert [decode(json.loads(row[0]))['deployment'] for row in rows] == [old, current]
+    with open_grid_session(root, store, grid_factory(None), continuous=True) as b:
+        assert b.grid.deployment() == current
+    with pytest.raises(SafetyBlocked, match='already has a Grid deployment'):
+        with open_grid_session(root, store, grid_factory(None, new_deployment=True),
+                               new_deployment=True, continuous=True):
+            pytest.fail('same campaign initialized twice')
+    assert not [request for request in requests if request.get_method() != 'GET']
+
+
+def test_new_campaign_rejects_existing_activity(network_grid):
+    from contextlib import closing
+    from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import grid_factory
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
+
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory, continuous=True) as b:
+        b.recover()
+        b.observe(dict(id='initial', time=NOW.replace(tzinfo=None).isoformat(), price='150', volume=0))
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.stop()
+    enable()
+    with pytest.raises(SafetyBlocked, match='reconciled flat account'):
+        with open_grid_session(root, store, grid_factory(None, new_deployment=True),
+                               new_deployment=True, continuous=True):
+            pytest.fail('new deployment admitted with an active order')
+    assert sum(request.get_method() == 'POST' for request in requests) == 1
+
+
 def test_contiguous_bars_warm_atr_without_quote_time_regression():
     b, fake = bridge(mode='atr', atr_window=2, atr_multiplier=1)
     consumer, _ = worker(b)
@@ -193,6 +258,23 @@ def test_authority_expiry_blocks_dispatch():
     consumer.before_poll()
     assert consumer.reason == 'AUTHORIZATION_REQUIRED'
     assert not b.grid.active
+
+
+def test_status_reports_unavailable_account_evidence_without_claiming_flat(network_grid):
+    from factorlab.integrations.binance_futures_trading.demo_runtime import open_grid_session
+
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory, continuous=True) as b:
+        consumer, _ = worker(b)
+        consumer.disconnect()
+        b.gateway.adapter.facts = None
+        status = consumer.status()
+        assert status['inventory'] is None
+        assert status['account']['positions'] is None
+        assert not status['account']['reconciled']
+        assert status['reason'] == 'RECONCILE_REQUIRED'
+    assert not [request for request in requests if request.get_method() != 'GET']
 
 
 def test_preview_keeps_proposals_without_order_writes():
