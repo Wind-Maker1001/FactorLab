@@ -77,4 +77,10 @@ index to discover runs and read/validate their authoritative JSON records.
 Use a single writer or externally serialize writes and rebuilds for a store.
 External research files remain external and are never deleted by the tracker.
 
+The [Monte Carlo adapter](research/monte_carlo.md) binds scenario parameters and
+input hashes to an existing experiment. It stores risk-scenario metrics and a
+compact report, never random path matrices. Its evaluation identity is separate
+from historical tests; `REAL_CANDIDATE` describes input provenance, not simulation
+qualification as a financial backtest.
+
 NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
