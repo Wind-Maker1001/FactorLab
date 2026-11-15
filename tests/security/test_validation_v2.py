@@ -133,10 +133,15 @@ def test_empty_shards_are_refused(modules):
         sharding.partition([f'module{i}.py::test' for i in range(modules)], {})
 
 
+@pytest.fixture(params=[3, 4])
+def shard_count(request):
+    return request.param
+
+
 @pytest.fixture
-def shard_receipts(tmp_path, monkeypatch):
-    nodes = [f'tests/{m}.py::test_node' for m in 'abc']
-    weights = {n.split('::')[0]: float(3 - i) for i, n in enumerate(nodes)}
+def shard_receipts(tmp_path, monkeypatch, shard_count):
+    nodes = [f'tests/{m}.py::test_node' for m in 'abcd'[:shard_count]]
+    weights = {n.split('::')[0]: float(shard_count - i) for i, n in enumerate(nodes)}
     timings = tmp_path / 'timings.json'
     timings.write_text(json.dumps(dict(module_seconds=weights)))
     monkeypatch.setattr(sharding, 'TIMINGS', timings)
@@ -145,18 +150,20 @@ def shard_receipts(tmp_path, monkeypatch):
         folder = tmp_path / str(i)
         folder.mkdir()
         folders.append(folder)
-        inventory = dict(current=nodes, selected=[node], shard=i, shard_count=3,
+        inventory = dict(current=nodes, selected=[node], shard=i, shard_count=shard_count,
                          historical_collected=['old::test'], historical_collection_errors=['broken.py'],
                          module_plan=sharding.module_plan(nodes, weights))
         execution = dict(started=[node], completed=[node], exit_code=0, collection_errors=[])
         receipt = dict(status='PASS', exit_code=0, validation_inputs_unchanged=True,
+                       shard=i, shard_count=shard_count,
+                       counts=dict(tests=1, passed=1, failures=0, errors=0, skipped=0),
                        python='3.13.17', platform='Windows-2025Server', subject_sha='head',
                        github_pr_head_sha='head', validation_input_sha256={'source': 'bytes'},
                        dependencies_sha256='dependencies', environment={'TZ': 'UTC'}, elapsed_seconds=i+1)
         for name, value in [('selection', inventory), ('execution', execution), ('receipt', receipt)]:
             (folder / (name + '.json')).write_text(json.dumps(value))
         root = ET.Element('testsuite')
-        ET.SubElement(root, 'testcase', classname='tests.' + 'abc'[i], name='test_node')
+        ET.SubElement(root, 'testcase', classname='tests.' + 'abcd'[i], name='test_node')
         ET.ElementTree(root).write(folder / 'tests.xml')
         (folder / 'tests.log').write_text(node)
     return folders, tmp_path / 'combined'
@@ -177,18 +184,18 @@ def pr_shard_receipts(shard_receipts, tmp_path):
             receipt = json.loads((folder / 'receipt.json').read_bytes())
             dependencies = 'pytest==8.0\nfactorlab==1.0\n'
             (folder / 'dependencies.txt').write_text(dependencies, encoding='utf-8')
-            receipt.update(identity, suite='current', shard=shard, python=version + '.0',
+            receipt.update(identity, suite='current', shard=shard, shard_count=len(folders), python=version + '.0',
                            dependencies_sha256=hashlib.sha256(dependencies.encode()).hexdigest())
             (folder / 'receipt.json').write_text(json.dumps(receipt))
     return root, tmp_path / 'verified-pr', identity
 
 
-def test_pr_six_shards_verify_both_python_versions(pr_shard_receipts):
+def test_pr_shards_verify_both_python_versions(pr_shard_receipts, shard_count):
     root, output, identity = pr_shard_receipts
-    sharding.aggregate_pr(root, output, identity)
+    sharding.aggregate_pr(root, output, identity, shard_count)
     for version in ('3.13', '3.14'):
         receipt = json.loads((output / version / 'receipt.json').read_bytes())
-        assert receipt['counts']['passed'] == 3
+        assert receipt['counts']['passed'] == shard_count
         assert all(receipt[key] == value for key, value in identity.items())
 
 
@@ -198,7 +205,7 @@ def test_pr_six_shards_verify_both_python_versions(pr_shard_receipts):
     'suite', 'receipt_shard', 'overlap', 'omission', 'dependencies', 'dependency_file',
     'environment', 'inputs', 'cross_python', 'all_stale', 'all_wrong_head', 'missing_identity',
 ])
-def test_pr_six_shard_faults_fail_closed(pr_shard_receipts, attack):
+def test_pr_shard_faults_fail_closed(pr_shard_receipts, attack, shard_count):
     root, output, identity = pr_shard_receipts
     folder = root / '3.14' / '1' / 'current'
     path = folder / 'receipt.json'
@@ -246,17 +253,18 @@ def test_pr_six_shard_faults_fail_closed(pr_shard_receipts, attack):
     if attack not in ('all_stale', 'all_wrong_head', 'inputs'):
         path.write_text(json.dumps(receipt))
     with pytest.raises((ValueError, FileNotFoundError)):
-        sharding.aggregate_pr(root, output, identity)
+        sharding.aggregate_pr(root, output, identity, shard_count)
     assert not (output / '3.14' / 'receipt.json').exists()
 
 
-def test_full_shard_cli_accepts_legacy_receipts(shard_receipts, monkeypatch):
+def test_full_shard_cli_accepts_legacy_receipts(shard_receipts, monkeypatch, shard_count):
     folders, output = shard_receipts
     monkeypatch.setattr(sys, 'argv', ['sharding', '--shards', *map(str, folders),
-                                     '--python', '3.13', '--output', str(output)])
+                                     '--python', '3.13', '--output', str(output),
+                                     *(['--shard-count', str(shard_count)] if shard_count == 4 else [])])
     sharding.main()
     receipt = json.loads((output / 'receipt.json').read_bytes())
-    assert receipt['counts']['passed'] == 3
+    assert receipt['counts']['passed'] == shard_count
     assert 'trusted_base_sha' not in receipt
     assert 'github_run_id' not in receipt
     assert 'github_run_attempt' not in receipt
@@ -279,19 +287,19 @@ def test_pr_shard_cli_requires_each_identity(pr_shard_receipts, monkeypatch, mis
     assert not output.exists()
 
 
-def test_actual_shards_aggregate_without_reexecuting_tests(shard_receipts):
+def test_actual_shards_aggregate_without_reexecuting_tests(shard_receipts, shard_count):
     folders, output = shard_receipts
-    sharding.aggregate(folders, output, '3.13')
+    sharding.aggregate(folders, output, '3.13', shard_count)
     evidence = json.loads((output / 'execution.json').read_bytes())
-    assert evidence['count'] == 3
+    assert evidence['count'] == shard_count
     assert evidence['actual_disjoint'] and evidence['actual_union_equals_full_inventory']
-    assert len(outcomes(output / 'tests.xml')) == 3
+    assert len(outcomes(output / 'tests.xml')) == shard_count
 
 
 @pytest.mark.parametrize('attack', ['missing_shard', 'wrong_shard', 'missing_started', 'duplicate_completed',
     'overlap', 'failed', 'cancelled', 'collection_error', 'subject', 'inputs', 'changed_inputs',
     'dependencies', 'runtime', 'full_inventory', 'junit_missing', 'junit_failed', 'plan_only'])
-def test_actual_shard_faults_fail_closed(shard_receipts, attack):
+def test_actual_shard_faults_fail_closed(shard_receipts, attack, shard_count):
     folders, output = shard_receipts
     if attack == 'missing_shard':
         folders.pop()
@@ -322,7 +330,7 @@ def test_actual_shard_faults_fail_closed(shard_receipts, attack):
         elif attack == 'plan_only': data['started'] = data['completed'] = []
         path.write_text(json.dumps(data))
     with pytest.raises(ValueError):
-        sharding.aggregate(folders, output, '3.13')
+        sharding.aggregate(folders, output, '3.13', shard_count)
     assert not output.exists()
 
 
@@ -348,15 +356,16 @@ raise SystemExit(pytest.main([sys.argv[1], '-q', '-o', 'addopts=', '-c', str(Pat
     assert actual['exit_code'] == int(fail)
 
 
-def test_collection_partitions_full_inventory_before_sharding(tmp_path, monkeypatch):
-    nodes = ['tests/a.py::test_1', 'tests/b.py::test_2', 'tests/c.py::test_3']
+@pytest.mark.parametrize('count', [3, 4])
+def test_collection_partitions_full_inventory_before_sharding(tmp_path, monkeypatch, count):
+    nodes = [f'tests/{module}.py::test_{i}' for i, module in enumerate('abcd'[:count])]
     monkeypatch.setattr(validation_layers, 'historical_nodes', lambda: {'old.py::test_old', 'broken.py'})
     weights = tmp_path / 'weights.json'
     weights.write_text(json.dumps(dict(module_seconds={n.split('::')[0]: i+1 for i, n in enumerate(nodes)})))
     monkeypatch.setattr(sharding, 'TIMINGS', weights)
     inventory = tmp_path / 'selection.json'
     deselected = []
-    options = {'--historical-only': False, '--current-shard': 1, '--current-layer-inventory': inventory}
+    options = {'--historical-only': False, '--current-shard': 1, '--current-shard-count': count, '--current-layer-inventory': inventory}
     config = SimpleNamespace(getoption=options.__getitem__, hook=SimpleNamespace(
         pytest_deselected=lambda items: deselected.extend(item.nodeid for item in items)))
     items = [SimpleNamespace(nodeid=n) for n in [*nodes, 'old.py::test_old']]

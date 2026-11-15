@@ -28,6 +28,27 @@ blocked until outstanding locking and historical-check risk decisions are
 resolved. Replaying genuine archives or an approved append-only migration is
 required for historical certification; creating replacement pins is forbidden.
 
+## Trusted targeted subsets
+
+Risk-selected files use the matrix and selector loaded beside the trusted CI
+controller, never the candidate's copies. Every collected node outside the exact
+historical subset must complete setup, call and teardown successfully. Missing
+historical nodes, unexplained deselection, new failures, skipped/xfail phases and
+collection errors fail the targeted check. Whole-file historical collection
+blockers require byte equality with the trusted file before isolation, so changes
+to such a file cannot hide newly introduced tests.
+
+The V2 execution inventory and targeted receipt list isolated history as
+`BLOCKED` with the trusted matrix digest. A targeted `PASS` describes current
+software execution only, not historical certification. An entirely historical
+selection can have pytest's original no-tests exit code 5; the receipt retains
+that code and accepts only the exact, exhaustive historical partition with no
+current nodes or execution errors. Legacy execution and its failures are unchanged.
+
+TODO: Deploy the independent targeted controller through `ci-control-review`
+and the trusted merge gate before treating dependent PR runs as validation of
+this path. Candidate controller results do not approve their own deployment.
+
 ## Configuration path contract
 
 An explicit `repo_root` must be absolute and name an existing directory. It
