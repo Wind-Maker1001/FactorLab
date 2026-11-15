@@ -93,7 +93,8 @@ def run(suite, output, shard=None, risk_plan=None):
                '--junitxml='+str(output/'tests.xml')]
     if suite == 'targeted':
         command = [sys.executable, '-I', '-u', str(Path(__file__).with_name('targeted_validation.py')),
-                   '--execution-inventory='+str(output/'execution.json'), *command[4:]]
+                   '--execution-inventory='+str(output/'execution.json'),
+                   *['--target-file='+target for target in targets], *command[4:]]
     if suite in ('current', 'historical'):
         command += ['-p', 'tools.ci.current_validation',
                     '--current-layer-inventory='+str(output/'selection.json'),
@@ -122,10 +123,10 @@ def run(suite, output, shard=None, risk_plan=None):
     observed = True
     if suite == 'targeted':
         from targeted_validation import evidence_passed
-        observed = evidence_passed(output/'execution.json', targets)
+        observed = evidence_passed(output/'execution.json', targets, actual_exit_code=code)
     receipt = dict(schema='FACTORLAB_INCREMENTAL_CI_V1', suite=suite, shard=shard,
                    scope='FULL_PROJECT_REGRESSION' if suite == 'legacy' else 'DECLARED_INCREMENTAL_SCOPE',
-                   status='PASS' if code == 0 and unchanged and observed else 'FAIL',
+                   status='PASS' if (code == 0 or suite == 'targeted') and unchanged and observed else 'FAIL',
                    exit_code=code, subject_sha=head,
                    github_event_sha=os.environ.get('GITHUB_SHA'),
                    github_pr_head_sha=os.environ.get('FACTORLAB_PR_HEAD_SHA'),
@@ -141,8 +142,16 @@ def run(suite, output, shard=None, risk_plan=None):
                    elapsed_seconds=time.perf_counter()-started,
                    financial_authorization='BLOCKED', formal_admission='FORMAL_ADMISSION_BLOCKED',
                    pit='PIT_UNVERIFIED', hfq='HFQ_UNVERIFIED', no_live_money=True)
+    if suite == 'targeted':
+        execution = json.loads((output/'execution.json').read_text(encoding='utf-8'))
+        receipt.update(historical_status=execution['historical_status'],
+                       historical_blocked=execution['historical_collected']
+                       + execution['historical_collection_errors'],
+                       historical_matrix_sha256=execution['historical_matrix_sha256'])
     (output/'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n', encoding='utf-8')
     print(suite, receipt['status'], json.dumps(receipt['counts']), 'exit', code, flush=True)
+    if suite == 'targeted':
+        return int(not unchanged or not observed)
     return code if code else int(not unchanged or not observed)
 
 
