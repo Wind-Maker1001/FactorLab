@@ -376,6 +376,45 @@ def test_gateway_restart_recovers_confirmed_missed_fills_not_replacement(tmp_pat
     assert len([call for call in fake.calls if call[0] == 'POST']) == 1
 
 
+def test_gateway_recovery_batch_rolls_back_and_retries(tmp_path, monkeypatch):
+    a, fake = setup(tmp_path / 'protocol.sqlite')
+    gateway, c = gateway_setup(a, tmp_path / 'paper.sqlite')
+    c.submit(intent('one', quantity='1'))
+    c.submit(intent('two', quantity='1'))
+    fake.trade_update('one', '1')
+    fake.trade_update('two', '1')
+    before = c.store.load()
+    events = list(c.store.order_events())
+    apply = gateway.apply
+    applied = []
+
+    def interrupted(event):
+        result = apply(event)
+        applied.append(event.client_order_id)
+        if len(applied) == 2:
+            raise RuntimeError('interrupted recovery batch')
+        return result
+
+    with monkeypatch.context() as patch:
+        patch.setattr(gateway, 'apply', interrupted)
+        with pytest.raises(RuntimeError, match='interrupted recovery batch'):
+            gateway.recover(c)
+    assert applied == ['one', 'two']
+    assert gateway.state == c.store.load() == before
+    assert list(c.store.order_events()) == events
+    assert not c.store.db.in_transaction
+    account = gateway.recover(c)
+    assert account.reconciled
+    assert account.positions[0].quantity == D('2')
+    assert account.assets[0].total == D('999.8')
+    recovered = c.store.load()
+    events = list(c.store.order_events())
+    assert gateway.recover(c) == account
+    assert c.store.load() == recovered
+    assert list(c.store.order_events()) == events
+    assert len([call for call in fake.calls if call[0] == 'POST']) == 2
+
+
 def test_gateway_rejects_margin_bracket_and_shared_risk_before_post():
     from factorlab.trading.control import RiskRejected
     a, fake = setup()
