@@ -1,6 +1,9 @@
 # ExperimentTracker
 
 An optional local recorder, independent of training and backtesting.
+Compute-aware callers can store `ResolvedCompute.to_dict()` under
+`environment["compute"]`; see [Compute Backend V1](architecture/compute_backend_v1.md)
+for selection, execution-evidence and budget semantics.
 
 ```python
 from factorlab.experiments import ExperimentTracker
