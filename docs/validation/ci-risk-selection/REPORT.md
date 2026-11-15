@@ -25,6 +25,8 @@ Original cProfile evidence identified 587,589,353 string suffix checks and appro
 
 The complete 110,725-byte risk plans and sealed validation identities matched byte-for-byte within the comparison process, with no excluded fields. A separate-process byte check initially failed: original set traversal can reorder reason records between interpreter hash seeds. This is not removed from the strict original/optimized comparison; that comparison uses the same process and requires identical bytes and digest. Independent-repeat comparisons may normalize reason-list ordering only, preserving every record and all fields.
 
+An independent optimized repeat completed in **25.696 seconds** and matched the complete JSON plan after reason-order normalization, with no excluded fields. The repeat harness first needed JSON round-trip normalization because Python tuples in raw tree entries become JSON arrays; this harness correction did not modify the analyzer.
+
 Targeted verification: `python -m pytest -q tests/security/test_pr_risk.py tests/security/test_pr_identity.py`: **112 passed in 118.09 seconds**. The first run had one incorrect new test expectation: the original conservative module substring rule treats module `x` as matching `prefix`; the expectation was corrected rather than narrowing that rule.
 
 ## Reproduction and adoption
