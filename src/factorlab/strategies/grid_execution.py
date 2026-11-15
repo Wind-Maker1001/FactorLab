@@ -148,8 +148,9 @@ def _observation(event):
         raise ValueError('ordered timezone-free observations required')
     price = D(event['price'])
     decimal_value(price, 'price', positive=True)
-    volume = event['volume']
-    if type(volume) is not int or volume < 0:
+    close_only = event.get('scenario') == 'CLOSE_ONLY_SCENARIO'
+    volume = None if close_only else event['volume']
+    if not close_only and (type(volume) is not int or volume < 0):
         raise ValueError('invalid volume')
     completed_bar = event.get('completed_bar', False)
     if type(completed_bar) is not bool:
@@ -167,7 +168,9 @@ def _observation(event):
     if action == 'cancel':
         observation['order_id'] = event['order_id']
         validate_identity(observation['order_id'])
-    if completed_bar:
+    if close_only:
+        observation['scenario'] = 'CLOSE_ONLY_SCENARIO'
+    if completed_bar and not close_only:
         high, low, close = (D(event[key]) for key in ('high', 'low', 'close'))
         for value in (high, low, close):
             decimal_value(value, 'OHLC', positive=True)
@@ -482,6 +485,8 @@ class GridExecution:
         return timestamp
 
     def _observe(self, event, account):
+        if event.get('scenario') == 'CLOSE_ONLY_SCENARIO' and self.config.mode == 'atr':
+            raise ValueError('ATR requires observed OHLC, not close-only scenarios')
         self._validate_account(account)
         if self.conflict or not account.reconciled or any(o.reconcile_required for o in self.active):
             raise ValueError('RECONCILE_REQUIRED')
