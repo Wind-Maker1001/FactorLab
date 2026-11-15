@@ -153,6 +153,9 @@ def output_path_literals(parsed):
 
 
 def graph(texts, names):
+    dependencies = [(path, PurePosixPath(path).name,
+                     path.removeprefix('src/').removesuffix('.py').replace('/', '.')
+                     if path.endswith('.py') else None) for path in names]
     modules = {}
     for path in texts:
         if path.endswith('.py'):
@@ -211,17 +214,21 @@ def graph(texts, names):
         # TODO: Resolve basename-only input provenance and path-comparison literals;
         # unknown references still conservatively connect every same-named file.
         # Computed references are never resolved by executing code.
-        for dependency in names:
-            basename = PurePosixPath(dependency).name
-            module = dependency.removeprefix('src/').removesuffix('.py').replace('/', '.')
-            for value in literals:
-                if (dependency in value or
-                    (dependency.endswith('.py') and module in value) or
-                    (basename == value and len(basename) > 3) or
-                    ('/' in value and not value.startswith(('*', '?')) and
-                     ('*' in value or '?' in value) and fnmatch.fnmatchcase(dependency, value))):
-                    edge(dependency, path)
-                    break
+        if not literals:
+            continue
+        literal_names = {value for value in literals if len(value) > 3}
+        literal_text = '\0'.join(literals)
+        patterns = [value for value in literals
+                    if '/' in value and not value.startswith(('*', '?')) and
+                    ('*' in value or '?' in value)]
+        for dependency, basename, module in dependencies:
+            if (basename in literal_names or
+                    ((dependency in literal_text or
+                      (module is not None and module in literal_text)) and
+                     any(dependency in value or (module is not None and module in value)
+                         for value in literals)) or
+                    any(fnmatch.fnmatchcase(dependency, pattern) for pattern in patterns)):
+                edge(dependency, path)
     return consumers, uncertain
 
 

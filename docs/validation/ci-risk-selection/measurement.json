@@ -1,0 +1,43 @@
+{
+  "subject": "336d64f80fceb90e6973b340fe049bf9363ca63a",
+  "tree": "b8b856ac9c33ea95027a90cdf770439fd1673ee0",
+  "base": "ac3505faa13f2cc9533fb13ba16551c4d521cd36",
+  "pr_head": "e1af57acd48cb27738d5b8315df129c5156bcaa5",
+  "measurements": [
+    {
+      "label": "before",
+      "selection_seconds": 145.0365454999992,
+      "serialization_seconds": 0.0026241999985359143,
+      "stages_inclusive_seconds": {
+        "git": 0.2350832000010996,
+        "tree": 0.13649100000111503,
+        "contents": 0.7064080000018294,
+        "output_path_literals": 11.310800500010373,
+        "graph": 144.0669334000013,
+        "closure": 0.0017439000330341514,
+        "classify": 0.005656799996359041
+      },
+      "bytes": 110725,
+      "risk_sha256": "b16ba0405e03dc632f59e3c238d7f67f7ed5036a208a6d2c2c2b8d351cd6a2b5"
+    },
+    {
+      "label": "after",
+      "selection_seconds": 28.14580769999884,
+      "serialization_seconds": 0.002278599997225683,
+      "stages_inclusive_seconds": {
+        "git": 0.29049769999619457,
+        "tree": 0.16175680000014836,
+        "contents": 0.8117502999994031,
+        "output_path_literals": 11.62674710003921,
+        "graph": 27.01502399999663,
+        "closure": 0.0016497999422426801,
+        "classify": 0.004051400032039965
+      },
+      "bytes": 110725,
+      "risk_sha256": "b16ba0405e03dc632f59e3c238d7f67f7ed5036a208a6d2c2c2b8d351cd6a2b5"
+    }
+  ],
+  "risk_plan_bytes_identical": true,
+  "sealed_identity_bytes_identical": true,
+  "excluded_fields": []
+}

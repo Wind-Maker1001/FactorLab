@@ -1,6 +1,6 @@
 """Conservative selection and mandatory extension failure propagation."""
 import pytest
-from tools.ci.pr_risk import FLAGS, affected_consumers, classify, git, select
+from tools.ci.pr_risk import FLAGS, affected_consumers, classify, git, graph, select
 
 
 @pytest.mark.parametrize('path', ['docs/validation/new/REPORT.md',
@@ -143,6 +143,34 @@ def test_only_proven_pathlib_outputs_are_not_inputs(tmp_path, source, high):
     result = select(tmp_path, base, commit(tmp_path))
     assert all(result[key] is high for key in FLAGS)
     assert ('tools/ci/consumer.py' in result['affected']) is high
+
+
+@pytest.mark.parametrize('literal,expected', [
+    ('prefix docs/validation/a/input.json suffix', {'docs/validation/a/input.json', 'x.py'}),
+    ('input.json', {'docs/validation/a/input.json', 'docs/validation/b/input.json'}),
+    ('factorlab.factors.alpha', {'src/factorlab/factors/alpha.py'}),
+    ('docs/validation/*/input.json', {'docs/validation/a/input.json', 'docs/validation/b/input.json'}),
+    ('*/input.json', set()),
+    ('docs/validation/[ab]/input.json', set()),
+    ('docs/validation/?/input.json', {'docs/validation/a/input.json', 'docs/validation/b/input.json'}),
+    ('x.py', {'x.py'}),
+])
+def test_literal_consumer_matching_preserves_all_reference_forms(literal, expected):
+    names = ['docs/validation/a/input.json', 'docs/validation/b/input.json',
+             'src/factorlab/factors/alpha.py', 'x.py']
+    consumers, uncertain = graph({'tools/ci/read.py': 'INPUT = ' + repr(literal)}, names)
+    assert consumers == {name: {'tools/ci/read.py'} for name in expected}
+    assert uncertain == {}
+
+
+def test_inert_evidence_still_has_runtime_consumers_and_dynamic_analysis():
+    evidence = 'docs/validation/history.json'
+    loader = 'src/factorlab/loader.py'
+    texts = {evidence: '["src/factorlab/loader.py"]',
+             loader: 'import runpy\nrunpy.run_path(resolve())\nINPUT = ' + repr(evidence)}
+    consumers, uncertain = graph(texts, texts)
+    assert consumers == {evidence: {loader}}
+    assert uncertain == {loader: ['run_path']}
 
 
 def test_output_exclusion_does_not_hide_dynamic_execution(tmp_path):
