@@ -13,14 +13,20 @@ from decimal import Decimal as D
 
 
 def execute(path, rule=None, *, prices=None, volumes=None, capital=1000, participation=1,
-            market=Market.BINANCE_EQUITY, config_overrides=None):
+            market=Market.BINANCE_EQUITY, config_overrides=None, close_only=False):
     prices = prices or [100, 89] + [89] * 202
     volumes = volumes or [100] * len(prices)
     bars = [dict(id=str(i), time=t.isoformat(), price=p, close=p, high=p+1, low=p-1,
                  volume=v, completed_bar=True)
             for i, (t, p, v) in enumerate(zip(pd.date_range('2026-01-01', periods=len(prices),
                                                         freq='h', tz='UTC'), prices, volumes))]
+    scenario_options = {}
+    if close_only:
+        bars = [{k: v for k, v in bar.items() if k not in {'high', 'low', 'volume'}}
+                for bar in bars]
+        scenario_options = dict(scenario='CLOSE_ONLY_SCENARIO', synthetic_capacity=D(100))
     run_experiment(path, bars=bars, interval='1h', inventory_risk=rule, market=market,
+        **scenario_options,
         config=replace(GridConfig(lower=80, upper=120, levels=4, initial_price=100,
             initial_inventory=0, initial_cash=capital, quantity=10, minimum_quantity=1,
             max_inventory=1000, max_cash_committed=capital, max_drawdown=1,
@@ -29,6 +35,28 @@ def execute(path, rule=None, *, prices=None, volumes=None, capital=1000, partici
         rules=GridRules(D('.01'), D('.01'), D('.01'), D('.01'), D(1)),
         capital=capital, fee_rate=D('.0004'), slippage=D('.0006'), participation=participation)
     return pd.read_csv(path/'daily.csv'), pd.read_csv(path/'trades.csv')
+
+
+@pytest.mark.parametrize('rule', ['age', 'loss', 'cap'])
+def test_close_only_inventory_risk_matches_paper(tmp_path, rule):
+    prices = [100, 89, 79] + [20] * 201
+    options = dict(prices=prices, config_overrides={'breakout': 'pause'})
+    ordinary = tmp_path/'ordinary'
+    scenario = tmp_path/'scenario'
+    nav, trades = execute(ordinary, rule, **options)
+    other_nav, other_trades = execute(scenario, rule, close_only=True, **options)
+    pd.testing.assert_frame_equal(nav, other_nav)
+    pd.testing.assert_frame_equal(trades, other_trades)
+    assert json.loads((ordinary/'inventory-risk.json').read_text()) == json.loads(
+        (scenario/'inventory-risk.json').read_text())
+    manifest = json.loads((scenario/'manifest.json').read_text())
+    assert manifest['inventory_risk'] == rule
+    assert manifest['scenario'] == 'CLOSE_ONLY_SCENARIO'
+    assert D(manifest['synthetic_capacity']) == D(100)
+    assert manifest['interval'] == '1h'
+    assert other_trades.groupby('execution_date').executed_shares.sum().le(100).all()
+    result = json.loads((scenario/'result.json').read_text())
+    assert result['execution']['scenario'] == 'CLOSE_ONLY_SCENARIO'
 
 
 def test_age_gate_and_later_bar_exit(tmp_path):

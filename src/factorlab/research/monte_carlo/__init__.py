@@ -110,6 +110,19 @@ class MonteCarloResult:
             "evidence": list(EVIDENCE), "financial_evidence": False}
 
 
+def _loss_tail(losses, confidence):
+    """Linear VaR and fractional-boundary worst-tail mean, including negative losses."""
+    var = float(np.quantile(losses, confidence))
+    tail_mass = (1 - confidence) * len(losses)
+    descending = np.sort(losses)[::-1]
+    whole = int(np.floor(tail_mass))
+    fraction = tail_mass - whole
+    tail_sum = descending[:whole].sum()
+    if fraction:
+        tail_sum += fraction * descending[whole]
+    return var, float(tail_sum / tail_mass)
+
+
 def _vector(value, n, name):
     array = np.asarray(value, dtype=np.float64)
     if array.shape != (n,) or not np.isfinite(array).all():
@@ -341,15 +354,7 @@ class MonteCarloRunner:
         if not np.isfinite(terminal).all() or not np.isfinite(drawdowns).all():
             raise FloatingPointError("simulation produced nonfinite wealth")
         losses = 1 - terminal / c.initial_value
-        var = float(np.quantile(losses, c.confidence))
-        tail_mass = (1 - c.confidence) * c.n_paths
-        descending = np.sort(losses)[::-1]
-        whole = int(np.floor(tail_mass))
-        fraction = tail_mass - whole
-        tail_sum = descending[:whole].sum()
-        if fraction:
-            tail_sum += fraction * descending[whole]
-        cvar = float(tail_sum / tail_mass)
+        var, cvar = _loss_tail(losses, c.confidence)
         evidence = resolved.to_dict()
         evidence["execution"] = {"backend": resolved.backend, "batch_size": batch,
             "private_pool_limit_enforced": bool(gpu and budget is not None),

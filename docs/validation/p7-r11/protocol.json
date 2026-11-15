@@ -1,0 +1,80 @@
+{
+  "experiment_id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+  "id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+  "kind": "experiments",
+  "payload": {
+    "costs": null,
+    "dataset": {
+      "admission": "FROZEN_FORWARD_ONLY"
+    },
+    "factors": [],
+    "label": {},
+    "model": "P7_R11_ENGINEERING_V1",
+    "parameters": {
+      "accounting_contract": {
+        "costs": "fees plus separately reported embedded slippage; never deduct slippage twice",
+        "cycles": "entire BUY lot exhausted by normal SELL, excluding risk-exit contamination",
+        "differences": "Grid minus each preregistered control on funding-adjusted account profit",
+        "drawdown": "max(1 - NAV / running peak), including initial capital",
+        "exposure": "marked signed position and absolute notional at each observation",
+        "funding_nav": "NAV + cumulative signed observed funding cashflows",
+        "inventory": "FIFO lots, age at common end, residual inventory marked not force-filled",
+        "nav": "initial capital + realized PnL + unrealized PnL - fees; slippage in fill price",
+        "net_profit": "terminal NAV minus initial capital"
+      },
+      "activation_rule": "new immutable financial version; never mutate this engineering version",
+      "comparison_contract": {
+        "attribution": "Paper simulation, statistical inference and Demo execution are distinct",
+        "capital": "one initial capital and one predeclared notional cap for all accounts",
+        "cash": "same initial capital, zero trading/funding and zero assumed interest",
+        "costs": "one fee/slippage schedule and settlement evidence for all accounts",
+        "fixed_hold": "quantity frozen before start, never fitted to future mean inventory",
+        "lagged_exposure": "prior observed Grid target only; execute on later observation",
+        "window": "identical UTC half-open [start,end), mark and observation clock"
+      },
+      "conclusion": "NOT_ESTABLISHED",
+      "controls": [
+        "grid_original",
+        "fixed_hold",
+        "lagged_exposure",
+        "cash"
+      ],
+      "evidence_classes": [
+        "HISTORICAL_REFERENCE",
+        "FORWARD_PAPER",
+        "DEMO_CONFIRMED"
+      ],
+      "execution_rule": "orders generated at a close execute only on later observations",
+      "financial_parameters": null,
+      "financial_status": "PENDING_APPROVAL",
+      "frozen_at": "2026-11-15T12:27:55.334651+00:00",
+      "funding_rule": "observed settlements only; post-hoc overlay is not executable cash",
+      "historical_windows": [
+        [
+          "2026-05-14",
+          "2026-08-12"
+        ],
+        [
+          "2026-08-12",
+          "2026-11-10"
+        ]
+      ],
+      "knowledge_rule": "closed_at <= known_at <= decision_at <= evaluated_at",
+      "missing_data_rule": "BLOCK; do not interpolate or silently shorten window",
+      "r09": "EXCLUDED_UNTIL_SEPARATELY_FROZEN",
+      "safety": "NO LIVE MONEY",
+      "schema": "P7_R11_ENGINEERING_V1",
+      "version": "engineering-v1"
+    },
+    "walk_forward": {
+      "status": "BLOCKED_PENDING_FINANCIAL_APPROVAL"
+    },
+    "windows": {
+      "test": null,
+      "train": null,
+      "validation": null
+    }
+  },
+  "schema": "FACTORLAB_EXPERIMENT_V1",
+  "sha256": "c5e3bc5116660ac735b9dbe8c6db4850108d7ec3585bc38cadf7cbdda66ebbb1"
+}

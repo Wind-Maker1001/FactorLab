@@ -160,6 +160,7 @@ class DemoMarketFeed:
         # Validate the entire batch before advancing even one strategy input.
         if (self.clock() - server_at).total_seconds() > self.max_quote_age:
             raise FeedPaused('STALE_POLL')
+        book_received_at = self.clock()
         for bar in bars:
             self.consumer.closed_bar(bar)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
@@ -169,6 +170,8 @@ class DemoMarketFeed:
             if not 0 <= (self.clock() - observed).total_seconds() <= self.max_quote_age:
                 raise FeedPaused('STALE_OR_FUTURE_QUOTE')
             self.consumer.quote(quote)
+            if hasattr(self.consumer, 'observe_book'):
+                self.consumer.observe_book(raw, book_received_at)
             self._ack('quote', raw['time'])
             delivered = 1
         self.status, self.reason = 'RUNNING', None

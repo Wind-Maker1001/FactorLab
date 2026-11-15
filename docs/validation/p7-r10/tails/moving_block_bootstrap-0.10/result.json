@@ -1,0 +1,311 @@
+{
+  "capital": "1000",
+  "config": {
+    "atr_multiplier": 1,
+    "atr_window": 72,
+    "breakout": "pause",
+    "budget": null,
+    "center_rule": "last_close",
+    "expiry_reseed_interval": 100,
+    "expiry_reseed_limit": 0,
+    "fee_bps": 4,
+    "initial_cash": 1000.0,
+    "initial_inventory": 0,
+    "initial_price": 204.34,
+    "levels": 8,
+    "lower": 163.472,
+    "max_cash_committed": 1000,
+    "max_drawdown": 0.2,
+    "max_inventory": 100,
+    "max_turnover": 10,
+    "min_rebuild_interval": 72,
+    "minimum_price": 0.01,
+    "minimum_quantity": 1,
+    "mode": "geometric",
+    "order_ttl": 100,
+    "quantity": 10,
+    "rebuild_threshold": 2,
+    "slippage_bps": 6,
+    "upper": 245.208
+  },
+  "evidence": [
+    "SOFTWARE_ONLY",
+    "SYNTHETIC_QUOTE_EXECUTION",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "execution": {
+    "actual_fee_model": "proportional",
+    "buy_hold": false,
+    "fee_rate": "0.0004",
+    "interval": "1h",
+    "participation": "1",
+    "price": "later-bar close quote",
+    "scenario": "CLOSE_ONLY_SCENARIO",
+    "slippage": "0.0006",
+    "synthetic_capacity": "0.10"
+  },
+  "fee_budget": {
+    "actual_cost": "0.038977570815618898",
+    "actual_fees": "0.015596639749703377",
+    "estimate_minus_actual": "0.000014028558639552",
+    "estimated_cost": "0.038991599374258450",
+    "minimum_fees_applied_by_broker": false,
+    "rules": [
+      {
+        "buy_fee_bps": 0.0,
+        "commission_bps": 4.0,
+        "effective_from": "1900-01-01",
+        "effective_to": null,
+        "minimum_commission_cny": 0.0,
+        "sell_fee_bps": 0.0,
+        "slippage_bps": 6.0,
+        "stamp_duty_bps": 0.0,
+        "transfer_fee_bps": 0.0
+      }
+    ]
+  },
+  "fills": 2,
+  "final": {
+    "available": 960.9928039859918,
+    "cash": 999.9844033602503,
+    "close": 185.2589027241393,
+    "committed": 38.99159937425844,
+    "date": "2026-11-22T00:00:00+00:00",
+    "drawdown": 0.0019554154691802878,
+    "equity": 998.0445845308197,
+    "expiry_reseeds": 0,
+    "fee": 0.0,
+    "holdings": 1,
+    "inventory": 0.2,
+    "net_exposure": 37.05178054482786,
+    "range_rebuilds": 0,
+    "realized_gross": 0.0,
+    "reseed_pending": false,
+    "slippage": 0.0,
+    "state": "RUNNING",
+    "state_reason": null,
+    "transaction_cost": 0.0,
+    "turnover": 0.0,
+    "unrealized": -1.9398188294305845
+  },
+  "funding": "NOT_SIMULATED",
+  "instrument_id": "BINANCE:USDM:NVDAUSDT",
+  "lifecycle": [
+    {
+      "cause": "TTL",
+      "order_id": "research-00000001",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000002",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000003",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000006",
+      "status": "CANCELED",
+      "time": "2026-11-19T17:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000007",
+      "status": "CANCELED",
+      "time": "2026-11-20T06:00:00+00:00"
+    }
+  ],
+  "market": "BINANCE_USDM",
+  "orders": {
+    "research-00000001": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000001",
+      "grid_level": 0,
+      "intent": {
+        "client_order_id": "research-00000001",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "163.47",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "163.472"
+    },
+    "research-00000002": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000002",
+      "grid_level": 1,
+      "intent": {
+        "client_order_id": "research-00000002",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "171.97",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "171.97082844450907"
+    },
+    "research-00000003": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000003",
+      "grid_level": 2,
+      "intent": {
+        "client_order_id": "research-00000003",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "180.91",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "180.91150677725096"
+    },
+    "research-00000004": {
+      "cumulative_fee": "0.007608632815564918948640",
+      "cumulative_filled_quantity": "0.10",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000004",
+      "grid_level": 3,
+      "intent": {
+        "client_order_id": "research-00000004",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "190.31",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "FILLED",
+      "target_price": "190.31700655542397"
+    },
+    "research-00000005": {
+      "cumulative_fee": "0.007988006934138458858320",
+      "cumulative_filled_quantity": "0.10",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000005",
+      "grid_level": 4,
+      "intent": {
+        "client_order_id": "research-00000005",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "200.21",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "FILLED",
+      "target_price": "200.21149361612584"
+    },
+    "research-00000006": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000006",
+      "grid_level": 5,
+      "intent": {
+        "client_order_id": "research-00000006",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "210.63",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": true,
+        "side": "SELL",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "210.62039016637527"
+    },
+    "research-00000007": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000007",
+      "grid_level": 4,
+      "intent": {
+        "client_order_id": "research-00000007",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "200.22",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": true,
+        "side": "SELL",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "200.21149361612584"
+    }
+  },
+  "risk": [],
+  "rules": {
+    "min_notional": "5",
+    "min_quantity": "0.01",
+    "quantity_unit": "0.01",
+    "step_size": "0.01",
+    "tick_size": "0.01"
+  },
+  "schema_version": 1,
+  "totals": {
+    "fees": 0.015596639749703378,
+    "max_committed": 102.210868,
+    "max_drawdown": 0.0026430158272671717,
+    "max_inventory": 0.2,
+    "risk_triggers": 0,
+    "slippage": 0.023380931065915517,
+    "transaction_cost": 0.038977570815618895,
+    "turnover": 0.038991599374258445
+  }
+}

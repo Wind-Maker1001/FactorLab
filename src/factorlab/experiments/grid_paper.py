@@ -43,11 +43,21 @@ def _write(path, value):
                                allow_nan=False) + '\n', encoding='utf-8')
 
 
-def _bars(bars, start, end, interval='1d'):
+def _bars(bars, start, end, interval='1d', *, close_only=False):
     frame = pd.DataFrame(bars).copy()
-    required = {'id', 'time', 'price', 'volume', 'high', 'low', 'close', 'completed_bar'}
+    required = {'id', 'time', 'price', 'close', 'completed_bar'}
+    if not close_only:
+        required |= {'volume', 'high', 'low'}
     if not required.issubset(frame):
-        raise ValueError('daily completed OHLC bars required')
+        raise ValueError('completed close observations required' if close_only else 'daily completed OHLC bars required')
+    if close_only:
+        if {'high', 'low', 'volume'} & set(frame):
+            raise ValueError('close-only scenarios must not supply OHLC or volume')
+        for row in frame.itertuples():
+            price, close = D(row.price), D(row.close)
+            decimal_value(price, 'scenario price', positive=True)
+            if price != close:
+                raise ValueError('scenario price must equal close')
     if interval not in {'1d', '1h'}:
         raise ValueError('interval must be 1d or 1h')
     dates = pd.to_datetime(frame.time)
@@ -81,7 +91,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    start=None, end=None, participation=1, fee_estimate=None, no_trade=False,
                    market=Market.BINANCE_EQUITY, instrument_id=SYMBOL, data_identity=None,
                    interval='1d', buy_hold=False, reference_budget=None,
-                   account_id='research-grid', max_exit_quantity=None, inventory_risk=None):
+                   account_id='research-grid', max_exit_quantity=None,
+                   scenario=None, synthetic_capacity=None, inventory_risk=None):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -90,7 +101,17 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     fee assumption; Paper always charges proportional fee_rate, never minima.
     Orders consume a shared bar-volume budget at close, only on later bars.
     """
-    bars = _bars(bars, start, end, interval)
+    if scenario not in {None, 'CLOSE_ONLY_SCENARIO'}:
+        raise ValueError('unknown execution scenario')
+    close_only = scenario == 'CLOSE_ONLY_SCENARIO'
+    if close_only:
+        if config.mode == 'atr':
+            raise ValueError('close-only scenarios cannot supply ATR OHLC')
+        synthetic_capacity = D(synthetic_capacity)
+        decimal_value(synthetic_capacity, 'synthetic_capacity', positive=True)
+    elif synthetic_capacity is not None:
+        raise ValueError('synthetic capacity requires CLOSE_ONLY_SCENARIO')
+    bars = _bars(bars, start, end, interval, close_only=close_only)
     capital, fee_rate, slippage, participation = map(D, (capital, fee_rate, slippage, participation))
     decimal_value(capital, 'capital', positive=True)
     decimal_value(fee_rate, 'fee_rate')
@@ -155,11 +176,13 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 controller.quote(Quote(instrument_id, close, now[0]))
             else:
                 observation = dict(bar)
+                if close_only:
+                    observation['scenario'] = scenario
                 if interval == '1h':
                     # Grid's observation contract uses timezone-free UTC coordinates.
                     observation['time'] = pd.Timestamp(bar['time']).tz_convert('UTC').tz_localize(None).isoformat()
                 grid.observe_paper(controller, observation, delivery=grid.delivery + 1, observed_at=now[0])
-            budget = D(bar['volume']) * participation
+            budget = synthetic_capacity if close_only else D(bar['volume']) * participation
             day_fee = day_slippage = day_notional = ZERO
             for key, order in prior:
                 candidate = execution_candidate(order, ask=close, bid=close, budget=budget,
@@ -304,7 +327,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
         result = ResearchEvaluation(context).portfolio('no-trade' if no_trade else 'buy-hold' if buy_hold else config.mode,
                                                      evaluation_daily, trades=evaluation_ledger)
         final = dict(schema_version=SCHEMA_VERSION, evidence=EVIDENCE,
-            execution=dict(interval=interval, buy_hold=buy_hold,
+            execution=dict(interval=interval, buy_hold=buy_hold, scenario=scenario,
+                           synthetic_capacity=str(synthetic_capacity) if close_only else None,
                            price='later-bar close quote', participation=str(participation),
                            slippage=str(slippage), actual_fee_model='proportional', fee_rate=str(fee_rate)),
             config=asdict(config), rules=asdict(rules), capital=str(capital),
@@ -333,7 +357,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             provenance=capture_provenance(source_context_root()), deterministic=True,
             config=asdict(config), rules=asdict(rules), capital=capital, fee_rate=fee_rate,
             slippage=slippage, participation=participation, no_trade=no_trade,
-            interval=interval, buy_hold=buy_hold,
+            interval=interval, buy_hold=buy_hold, scenario=scenario,
+            synthetic_capacity=synthetic_capacity,
             account_id=account_id, reference_budget=reference_budget,
             max_exit_quantity=max_exit_quantity,
             **({'inventory_risk': inventory_risk} if inventory_risk is not None else {}),

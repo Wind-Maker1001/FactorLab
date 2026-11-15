@@ -1,0 +1,571 @@
+{
+  "capital": "1000",
+  "config": {
+    "atr_multiplier": 1,
+    "atr_window": 72,
+    "breakout": "pause",
+    "budget": null,
+    "center_rule": "last_close",
+    "expiry_reseed_interval": 100,
+    "expiry_reseed_limit": 0,
+    "fee_bps": 4,
+    "initial_cash": 1000.0,
+    "initial_inventory": 0,
+    "initial_price": 204.34,
+    "levels": 8,
+    "lower": 163.472,
+    "max_cash_committed": 1000,
+    "max_drawdown": 0.2,
+    "max_inventory": 100,
+    "max_turnover": 10,
+    "min_rebuild_interval": 72,
+    "minimum_price": 0.01,
+    "minimum_quantity": 1,
+    "mode": "geometric",
+    "order_ttl": 100,
+    "quantity": 10,
+    "rebuild_threshold": 2,
+    "slippage_bps": 6,
+    "upper": 245.208
+  },
+  "evidence": [
+    "SOFTWARE_ONLY",
+    "SYNTHETIC_QUOTE_EXECUTION",
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "execution": {
+    "actual_fee_model": "proportional",
+    "buy_hold": false,
+    "fee_rate": "0.0004",
+    "interval": "1h",
+    "participation": "1",
+    "price": "later-bar close quote",
+    "scenario": "CLOSE_ONLY_SCENARIO",
+    "slippage": "0.0006",
+    "synthetic_capacity": "0.01"
+  },
+  "fee_budget": {
+    "actual_cost": "0",
+    "actual_fees": "0",
+    "estimate_minus_actual": "0",
+    "estimated_cost": "0",
+    "minimum_fees_applied_by_broker": false,
+    "rules": [
+      {
+        "buy_fee_bps": 0.0,
+        "commission_bps": 4.0,
+        "effective_from": "1900-01-01",
+        "effective_to": null,
+        "minimum_commission_cny": 0.0,
+        "sell_fee_bps": 0.0,
+        "slippage_bps": 6.0,
+        "stamp_duty_bps": 0.0,
+        "transfer_fee_bps": 0.0
+      }
+    ]
+  },
+  "fills": 0,
+  "final": {
+    "available": 1000.0,
+    "cash": 1000.0,
+    "close": 187.86418283647026,
+    "committed": 0.0,
+    "date": "2026-11-22T00:00:00+00:00",
+    "drawdown": 0.0,
+    "equity": 1000.0,
+    "expiry_reseeds": 0,
+    "fee": 0.0,
+    "holdings": 0,
+    "inventory": 0.0,
+    "net_exposure": 0.0,
+    "range_rebuilds": 0,
+    "realized_gross": 0.0,
+    "reseed_pending": false,
+    "slippage": 0.0,
+    "state": "RUNNING",
+    "state_reason": null,
+    "transaction_cost": 0.0,
+    "turnover": 0.0,
+    "unrealized": 0.0
+  },
+  "funding": "NOT_SIMULATED",
+  "instrument_id": "BINANCE:USDM:NVDAUSDT",
+  "lifecycle": [
+    {
+      "cause": "TTL",
+      "order_id": "research-00000001",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000002",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000003",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000004",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    },
+    {
+      "cause": "TTL",
+      "order_id": "research-00000005",
+      "status": "CANCELED",
+      "time": "2026-11-19T04:00:00+00:00"
+    }
+  ],
+  "market": "BINANCE_USDM",
+  "orders": {
+    "research-00000001": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000001",
+      "grid_level": 0,
+      "intent": {
+        "client_order_id": "research-00000001",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "163.47",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "163.472"
+    },
+    "research-00000002": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000002",
+      "grid_level": 1,
+      "intent": {
+        "client_order_id": "research-00000002",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "171.97",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "171.97082844450907"
+    },
+    "research-00000003": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000003",
+      "grid_level": 2,
+      "intent": {
+        "client_order_id": "research-00000003",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "180.91",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "180.91150677725096"
+    },
+    "research-00000004": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000004",
+      "grid_level": 3,
+      "intent": {
+        "client_order_id": "research-00000004",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "190.31",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "190.31700655542397"
+    },
+    "research-00000005": {
+      "cumulative_fee": "0",
+      "cumulative_filled_quantity": "0",
+      "deployment_id": "research",
+      "exchange_order_id": "paper:research-00000005",
+      "grid_level": 4,
+      "intent": {
+        "client_order_id": "research-00000005",
+        "instrument_id": "BINANCE:USDM:NVDAUSDT",
+        "limit_price": "200.21",
+        "market": "BINANCE_USDM",
+        "order_type": "LIMIT",
+        "position_side": null,
+        "quantity": "0.10",
+        "reduce_only": false,
+        "side": "BUY",
+        "time_in_force": "GTC"
+      },
+      "purpose": "GRID",
+      "reconcile_required": false,
+      "status": "CANCELED",
+      "target_price": "200.21149361612584"
+    }
+  },
+  "risk": [
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-15T23:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-16T01:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-16T03:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-16T09:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-16T10:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-16T11:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-16T22:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-16T23:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T00:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T01:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T02:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T03:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T04:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T05:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T06:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T07:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T08:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T09:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T10:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T11:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T12:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T13:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T14:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T15:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T16:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T17:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T18:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T19:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T20:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T21:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T22:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-17T23:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T00:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T01:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T02:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T03:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T04:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T05:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T06:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T07:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T08:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T09:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T10:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T11:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T12:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T13:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T14:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T15:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T16:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T17:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T18:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T19:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T20:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T21:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T22:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-18T23:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-19T00:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-19T01:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-19T02:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-19T03:00:00+00:00"
+    },
+    {
+      "kind": "FILL_ADMISSION_DENIED",
+      "order_id": "research-00000005",
+      "time": "2026-11-19T04:00:00+00:00"
+    }
+  ],
+  "rules": {
+    "min_notional": "5",
+    "min_quantity": "0.01",
+    "quantity_unit": "0.01",
+    "step_size": "0.01",
+    "tick_size": "0.01"
+  },
+  "schema_version": 1,
+  "totals": {
+    "fees": 0.0,
+    "max_committed": 102.210868,
+    "max_drawdown": 0.0,
+    "max_inventory": 0.0,
+    "risk_triggers": 61,
+    "slippage": 0.0,
+    "transaction_cost": 0.0,
+    "turnover": 0.0
+  }
+}
