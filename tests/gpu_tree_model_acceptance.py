@@ -1,4 +1,4 @@
-"""Opt-in native GPU acceptance: FACTORLAB_GPU_RUNTIME=1 pytest this file."""
+"""Native GPU acceptance: pytest tests/gpu_tree_model_acceptance.py."""
 import os
 from pathlib import Path
 import subprocess
@@ -13,10 +13,6 @@ from factorlab.compute import ComputeConfig, ComputeUnavailableError
 from factorlab.models import tree_compute
 from factorlab.models.xgboost import XGBoostResearchModel
 from factorlab.models.lightgbm import LightGBMResearchModel
-
-pytestmark = pytest.mark.skipif(os.environ.get('FACTORLAB_GPU_RUNTIME') != '1',
-    reason='Explicit native GPU hardware acceptance only')
-
 
 @pytest.mark.parametrize('model_class', [XGBoostResearchModel, LightGBMResearchModel])
 def test_gpu_train_predict_save_reload_and_cpu_inference(tmp_path, model_class):

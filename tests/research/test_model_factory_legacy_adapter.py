@@ -76,6 +76,25 @@ def test_omitted_arguments_keep_original_defaults_and_provenance(name):
         assert actual.random_seed == 42
 
 
+@pytest.mark.parametrize('name', ['lightgbm', 'xgboost'])
+def test_compute_default_provenance_does_not_change_legacy_parameter_identity(name):
+    from factorlab.compute import ComputeConfig
+
+    request = request_for(name)
+    cpu = describe(create_legacy_model(request), name, request)
+    policy = ComputeConfig(device='gpu')
+    model = create_legacy_model(request, compute=policy)
+    gpu = describe(model, name, request)
+    assert model.compute == policy
+    assert 'compute' in cpu.defaults_used
+    assert gpu.defaults_used == cpu.defaults_used
+    assert gpu.parameters == cpu.parameters
+    assert gpu.strict_spec == cpu.strict_spec
+    assert 'compute' not in gpu.parameters
+    assert 'compute' not in gpu.strict_spec.parameters
+    assert 'compute' not in gpu.explicit_arguments
+
+
 LOOSE = [
     ('factor_score', 'weights', OrderedDict((('REV1', '-2.5'), ('MOM20', '1')))),
     ('factor_score', 'weights', {1: 1.0, None: -1.0}),

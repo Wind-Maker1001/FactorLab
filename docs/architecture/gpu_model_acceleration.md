@@ -48,6 +48,19 @@ raise `ComputeMemoryError`; a failed fit does not publish partial state or retry
 on CPU. Unexpected native errors propagate. CPU/GPU numerical equivalence is not
 bitwise equivalence, and GPU LightGBM does not inherit CPU determinism guarantees.
 
+## Test entry points
+
+CPU-only CI discovers the software-contract tests normally. Native hardware
+acceptance is an explicit entry point, outside `test_*.py` discovery:
+
+```sh
+python -m pytest tests/gpu_tree_model_acceptance.py -q
+```
+
+This entry requires working XGBoost CUDA and LightGBM GPU training runtimes;
+missing hardware fails rather than skips. It exercises training, prediction
+policy, save/load and CPU-only inference, not the performance benchmark.
+
 ## Runtime evidence
 
 On Windows with Python 3.13, XGBoost 2.1.4 and LightGBM 4.6.0:

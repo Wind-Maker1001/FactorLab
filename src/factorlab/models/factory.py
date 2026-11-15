@@ -582,6 +582,9 @@ class LegacyEffectiveSpec:
     explicit_arguments/defaults_used are None when provenance was not supplied;
     model state cannot reveal which values were explicitly passed. strict_spec
     is absent when the old successful input cannot be expressed faithfully.
+    defaults_used records constructor defaults omitted by the request, including
+    compute; these names do not enter parameter identity or describe a separately
+    supplied factory execution policy.
     """
 
     original_model_id: str
@@ -634,7 +637,7 @@ def effective_spec_from_legacy(model: ResearchModel, *, model_id: str,
                                  for i in range(len(args)))
         explicit = tuple(name for name in positional_names if name is not None) + keyword_names
         defaults = tuple(name for name, p in signature(descriptor.legacy_constructor).parameters.items()
-                         if p.default is not Parameter.empty and name not in explicit and name != "compute")
+                         if p.default is not Parameter.empty and name not in explicit)
     parameters = {name: getattr(model, name) for name in descriptor.parameter_defaults}
     fixed = descriptor.model_id == "factor_score"
     if fixed:
