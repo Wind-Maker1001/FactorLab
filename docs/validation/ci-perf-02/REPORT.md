@@ -104,6 +104,26 @@ coverage and actual process status. This local replay is not trusted Actions
 integration evidence. Deployment requires formal control review and merge to
 main before dependent PR validation can use it.
 
+## Integration with trusted historical layering
+
+Merged main `27180431626e6395dfb7907bab5e81f74cbb20fe` without textual conflicts.
+The optimizer and immutable upstream reference were unchanged. The reference
+SHA-256 remains `b211d3202b6bf159e5ea585b37469b745584889523b477f13722f0ee834cdb99`;
+the historical matrix's Git bytes remain unchanged as well.
+
+On Windows 11 / CPython 3.12.7, the trusted targeted observer collected all 115
+archive nodes: **40 passed, 75 exact historical nodes BLOCKED**, in 122.30 s.
+Execution inventory validation accepted the actual exit code 0, complete current
+phase reports and exact historical coverage, with no selection errors. Historical
+nodes were not counted as software passes. Migration boundary and CI security
+regressions produced **352 passed** in 447.21 s, including strict targeted evidence
+failure paths, risk selection, identity and three/four-shard coverage contracts.
+
+No optimizer implementation changed during integration, so the original bounded
+performance measurements above remain the comparison data; this regression run
+is not a new controlled performance comparison. Financial admission remains
+blocked independently of software validation.
+
 ## Reproduction
 
 Run with a configured Python 3.13 environment from the repository root:
