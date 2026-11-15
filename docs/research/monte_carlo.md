@@ -149,6 +149,8 @@ Run the small example with the installed package:
 python examples/monte_carlo.py --device cpu
 python examples/monte_carlo.py --device gpu --store results/mc-store
 python -m pytest tests/research/test_monte_carlo.py tests/research/test_compute.py tests/research/test_experiment_tracker.py -q
+# Hardware acceptance on a CUDA host (missing CuPy/device is an error):
+python -m pytest tests/research/cuda_monte_carlo.py -q
 python tools/benchmark_monte_carlo.py --output results/mc-benchmark.json
 # One bounded case only:
 python tools/benchmark_monte_carlo.py --case bootstrap_medium --output results/mc-bootstrap.json
