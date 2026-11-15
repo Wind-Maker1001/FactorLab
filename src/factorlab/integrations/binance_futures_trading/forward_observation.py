@@ -225,7 +225,8 @@ class ShadowConsumer(GridConsumer):
 
     def _end_inactive(self):
         active = {self.bridge.grid.deployment_id + ':' + order.intent.client_order_id
-                  for order in self.bridge.grid.active}
+                  for order in self.bridge.grid.active
+                  if order.intent.client_order_id not in self.bridge.grid.cancellations}
         self.evidence.end('STRATEGY_INVALIDATED:' + str(self.bridge.grid.reason),
                           ids=set(self.evidence.proposals) - active)
 

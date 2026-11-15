@@ -68,6 +68,76 @@ def test_replay_history_and_restart_identity(tmp_path):
     assert all(method == 'GET' for method, _, _ in fake.calls)
 
 
+@pytest.mark.parametrize('cause', ['breakout', 'risk_pause', 'rebuild', 'order_expiry'])
+def test_strategy_cancellation_ends_before_later_books(tmp_path, cause):
+    from dataclasses import replace
+
+    b, fake, clock, evidence, consumer = setup(tmp_path)
+    changes = {
+        'breakout': {},
+        'risk_pause': dict(max_drawdown=0.1),
+        'rebuild': dict(breakout='rebuild', min_rebuild_interval=1),
+        'order_expiry': dict(order_ttl=1),
+    }
+    b.grid.config = replace(b.grid.config, **changes[cause])
+    if cause == 'risk_pause':
+        b.grid.peak = D('2000')
+    event = bar(2, high=D('161'), close=D('160')) if cause in {'breakout', 'rebuild'} else bar(2)
+    clock[0] = event.closed_at
+    assert consumer.closed_bar(event)
+    proposal = next(iter(evidence.proposals.values()))
+    assert proposal['proposal'] in b.grid.cancellations
+    assert proposal['proposal'] in {o.intent.client_order_id for o in b.grid.active}
+    assert proposal['status'] == 'ENDED'
+    assert proposal['reason'] == 'STRATEGY_INVALIDATED:' + str(b.grid.reason)
+    assert proposal['ended_at'] == clock[0].isoformat()
+    assert proposal['right_censored']
+    frozen = dict(proposal)
+    ends = [row for row in evidence.rows if row['kind'] == 'end']
+    assert not consumer.closed_bar(event)
+    consumer._end_inactive()
+    clock[0] += timedelta(seconds=1)
+    consumer.observe_book(book(clock[0], '143', '144'), clock[0])
+    assert proposal == frozen
+    assert [row for row in evidence.rows if row['kind'] == 'end'] == ends
+
+    restored = ShadowEvidence(evidence.path, version='fixture', clock=lambda: clock[0])
+    resumed = ShadowConsumer(b, Control(), restored, clock=lambda: clock[0])
+    resumed.before_poll()
+    assert not resumed.closed_bar(event)
+    clock[0] += timedelta(seconds=1)
+    resumed.observe_book(book(clock[0], '143', '144'), clock[0])
+    assert restored.proposals[proposal['id']] == frozen
+    assert [row for row in restored.rows if row['kind'] == 'end'] == ends
+    assert all(method == 'GET' for method, _, _ in fake.calls)
+
+
+def test_pending_cancellation_keeps_other_proposals_observing(tmp_path):
+    from dataclasses import replace
+    from factorlab.trading import Side
+
+    b, fake, clock, evidence, consumer = setup(tmp_path)
+    original = next(iter(evidence.proposals.values()))
+    b.grid.config = replace(b.grid.config, max_inventory=2, max_cash_committed=14)
+    b.grid.propose(Side.BUY, D('144'), D('.04'))
+    clock[0] += timedelta(seconds=1)
+    event = bar(2)
+    evidence.begin('second', event, True, clock[0])
+    evidence.capture('second', b.grid, clock[0])
+    other = next(p for p in evidence.proposals.values() if p is not original)
+    b.grid.cancellations.add(original['proposal'])
+    consumer._end_inactive()
+    frozen = dict(original)
+    clock[0] += timedelta(seconds=1)
+    consumer.observe_book(book(clock[0], '142', '143'), clock[0])
+    assert original == frozen
+    assert original['status'] == 'ENDED'
+    assert other['status'] == 'OBSERVING'
+    assert other['first_touch'] == clock[0].isoformat()
+    assert other['first_potential'] == clock[0].isoformat()
+    assert all(method == 'GET' for method, _, _ in fake.calls)
+
+
 @pytest.mark.parametrize('offset,reason', [(6, 'STALE'), (-1, 'FUTURE')])
 def test_reject_stale_future_book(tmp_path, offset, reason):
     _, _, clock, evidence, consumer = setup(tmp_path)
