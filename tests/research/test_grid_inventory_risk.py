@@ -1,5 +1,6 @@
 """FIFO gates exercised through authoritative Paper transactions."""
 import json
+from dataclasses import replace
 
 import pandas as pd
 import pytest
@@ -12,7 +13,7 @@ from decimal import Decimal as D
 
 
 def execute(path, rule=None, *, prices=None, volumes=None, capital=1000, participation=1,
-            market=Market.BINANCE_EQUITY):
+            market=Market.BINANCE_EQUITY, config_overrides=None):
     prices = prices or [100, 89] + [89] * 202
     volumes = volumes or [100] * len(prices)
     bars = [dict(id=str(i), time=t.isoformat(), price=p, close=p, high=p+1, low=p-1,
@@ -20,10 +21,11 @@ def execute(path, rule=None, *, prices=None, volumes=None, capital=1000, partici
             for i, (t, p, v) in enumerate(zip(pd.date_range('2026-01-01', periods=len(prices),
                                                         freq='h', tz='UTC'), prices, volumes))]
     run_experiment(path, bars=bars, interval='1h', inventory_risk=rule, market=market,
-        config=GridConfig(lower=80, upper=120, levels=4, initial_price=100,
+        config=replace(GridConfig(lower=80, upper=120, levels=4, initial_price=100,
             initial_inventory=0, initial_cash=capital, quantity=10, minimum_quantity=1,
             max_inventory=1000, max_cash_committed=capital, max_drawdown=1,
             max_turnover=100, order_ttl=1000, fee_bps=4, slippage_bps=6),
+            **(config_overrides or {})),
         rules=GridRules(D('.01'), D('.01'), D('.01'), D('.01'), D(1)),
         capital=capital, fee_rate=D('.0004'), slippage=D('.0006'), participation=participation)
     return pd.read_csv(path/'daily.csv'), pd.read_csv(path/'trades.csv')
@@ -116,6 +118,104 @@ def test_usdm_cash_and_equity_conserve(tmp_path):
     assert nav.inventory.iloc[-1] == .1
     assert (nav.equity-nav.cash-nav.unrealized).abs().max() < 1e-9
     assert nav.cash.iloc[-1] == pytest.approx(1000-trades.fee.sum())
+
+
+@pytest.mark.parametrize('tail_volume, expected_inventory, expected_state', [
+    (100, 0, 'EXITED'), (0, .1, 'EXITING'), (1, .05, 'EXITING'),
+])
+def test_paused_inventory_reaches_age_exit(tmp_path, tail_volume, expected_inventory, expected_state):
+    path = tmp_path/'paused_age'
+    nav, trades = execute(path, 'age', prices=[100, 89, 79]+[79]*201,
+        volumes=[2000, 2000]+[0]*200+[tail_volume, 0], participation=D('.05'),
+        config_overrides={'breakout': 'pause'})
+    assert nav.state.iloc[2] == 'PAUSED'
+    assert nav.inventory.iloc[2] == .1
+    assert nav.state.iloc[201] == 'EXITING'
+    assert nav.state.iloc[-1] == expected_state
+    assert nav.inventory.iloc[-1] == expected_inventory
+    assert trades.side.tolist() == (['BUY'] if tail_volume == 0 else ['BUY', 'SELL'])
+    events = json.loads((path/'inventory-risk.json').read_text())['events']
+    assert [e['age_hours'] for e in events] == [100, 200]
+    assert events[-1]['exit_reason'] == 'INVENTORY_AGE'
+    if tail_volume:
+        assert trades.executed_shares.iloc[-1] == .1-expected_inventory
+        assert pd.Timestamp(trades.event_time.iloc[-1]).tz_localize(None) > pd.Timestamp(events[-1]['time'])
+
+
+@pytest.mark.parametrize('same_check', [False, True])
+def test_paused_loss_budget_uses_latest_account_and_price(tmp_path, monkeypatch, same_check):
+    from factorlab.strategies.grid_execution import GridExecution
+    transitions = []
+    original = GridExecution._risk
+
+    def record_risk(grid, reason, exit_position=False):
+        original(grid, reason, exit_position)
+        transitions.append((reason, grid.state))
+
+    monkeypatch.setattr(GridExecution, '_risk', record_risk)
+    path = tmp_path/'paused_loss'
+    overrides = {'breakout': 'pause', **({'max_drawdown': .005} if same_check else {})}
+    prices = [100, 89, 89 if same_check else 79, 20, 20, 20]
+    nav, trades = execute(path, 'loss', prices=prices, volumes=[100, 100, 0, 0, 100, 100],
+                          config_overrides=overrides)
+    assert nav.state.iloc[2] == ('RUNNING' if same_check else 'PAUSED')
+    assert nav.state.iloc[3] == 'EXITING'
+    assert nav.state.iloc[-1] == 'EXITED'
+    assert trades.side.tolist() == ['BUY', 'SELL']
+    events = json.loads((path/'inventory-risk.json').read_text())['events']
+    assert len(events) == 1
+    event = events[0]
+    assert event['exit_reason'] == 'LOSS_BUDGET'
+    assert float(event['equity']) == pytest.approx(nav.equity.iloc[3])
+    assert transitions == [('MAX_DRAWDOWN' if same_check else 'BREAKOUT', 'PAUSED'),
+                           ('LOSS_BUDGET', 'EXITING')]
+    assert D(event['remaining_budget']) == D('.005')*D(event['equity']) + D(event['realized_net']) + D(event['unrealized'])
+    assert D(event['remaining_budget']) <= 0
+    result = json.loads((path/'result.json').read_text())
+    assert len([r for r in result['risk'] if r['state'] == 'EXITING']) == 1
+
+
+def test_parent_pauses_on_fill_before_age_threshold(tmp_path):
+    path = tmp_path/'drawdown'
+    nav, trades = execute(path, 'age', config_overrides={'max_drawdown': .000001})
+    assert nav.state.iloc[1] == 'PAUSED'
+    assert nav.state.iloc[200] == 'PAUSED'
+    assert nav.state.iloc[201] == 'EXITING'
+    assert nav.state.iloc[-1] == 'EXITED'
+    assert trades.side.tolist() == ['BUY', 'SELL']
+
+
+@pytest.mark.parametrize('rule', ['age', 'loss'])
+def test_paused_below_threshold_never_resumes_buying(tmp_path, rule):
+    nav, trades = execute(tmp_path/rule, rule, prices=[100, 89, 79, 100, 89, 79, 100],
+                          volumes=[100, 100, 0, 100, 100, 100, 100],
+                          config_overrides={'breakout': 'pause'})
+    assert nav.state.iloc[2:].tolist() == ['PAUSED']*5
+    assert nav.inventory.iloc[-1] == .1
+    assert trades.side.tolist() == ['BUY']
+
+
+@pytest.mark.parametrize('rule', ['age', 'loss'])
+def test_empty_paused_account_never_sells(tmp_path, rule):
+    path = tmp_path/rule
+    nav, trades = execute(path, rule, prices=[100, 121]+[20]*204,
+                          config_overrides={'breakout': 'pause'})
+    assert nav.state.iloc[1:].eq('PAUSED').all()
+    assert nav.inventory.eq(0).all()
+    assert trades.empty
+    assert not json.loads((path/'inventory-risk.json').read_text())['events']
+
+
+def test_paused_exit_blocked_by_trading_minimum_keeps_inventory(tmp_path):
+    path = tmp_path/'filters'
+    nav, trades = execute(path, 'age', prices=[100, 89, 79]+[2]*201,
+        volumes=[100, 100, 0]+[100]*201, config_overrides={'breakout': 'pause'})
+    assert nav.state.iloc[2] == 'PAUSED'
+    assert nav.state.iloc[-1] == 'EXITING'
+    assert nav.inventory.iloc[-1] == .1
+    assert trades.side.tolist() == ['BUY']
+    events = json.loads((path/'inventory-risk.json').read_text())['events']
+    assert len([e for e in events if e['exit_reason']]) == 1
 
 
 def test_loss_budget_and_repeatability(tmp_path):

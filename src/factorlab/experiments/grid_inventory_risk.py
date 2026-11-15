@@ -75,7 +75,7 @@ class InventoryRiskGrid(GridExecution):
 
     def _account_risk(self):
         super()._account_risk()
-        if self.state != 'RUNNING':
+        if self.state not in {'RUNNING', 'PAUSED'}:
             return
         # Grid timestamps label the completed hour; Paper executions use its end.
         now = self.timestamp.replace(tzinfo=None) + timedelta(hours=1, microseconds=-1)

@@ -1,0 +1,198 @@
+{
+  "scope": "All 16 frozen R09 accounts; published hourly inventory plus authoritative complete risk transition logs and fills",
+  "accounts": [
+    {
+      "window": "R04B",
+      "cost": "base",
+      "rule": "age",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 2,
+      "affected": false
+    },
+    {
+      "window": "R04B",
+      "cost": "base",
+      "rule": "baseline",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 17,
+      "affected": false
+    },
+    {
+      "window": "R04B",
+      "cost": "base",
+      "rule": "cap",
+      "paused_hours": 60,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [
+        {
+          "kind": "RISK_TRIGGER",
+          "reason": "EXPIRY_RESEED_LIMIT",
+          "state": "PAUSED",
+          "time": "2026-08-09T12:00:00+00:00"
+        }
+      ],
+      "fills": 0,
+      "affected": false
+    },
+    {
+      "window": "R04B",
+      "cost": "base",
+      "rule": "loss",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 17,
+      "affected": false
+    },
+    {
+      "window": "R04B",
+      "cost": "stress",
+      "rule": "age",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 2,
+      "affected": false
+    },
+    {
+      "window": "R04B",
+      "cost": "stress",
+      "rule": "baseline",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 17,
+      "affected": false
+    },
+    {
+      "window": "R04B",
+      "cost": "stress",
+      "rule": "cap",
+      "paused_hours": 60,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [
+        {
+          "kind": "RISK_TRIGGER",
+          "reason": "EXPIRY_RESEED_LIMIT",
+          "state": "PAUSED",
+          "time": "2026-08-09T12:00:00+00:00"
+        }
+      ],
+      "fills": 0,
+      "affected": false
+    },
+    {
+      "window": "R04B",
+      "cost": "stress",
+      "rule": "loss",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 17,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "base",
+      "rule": "age",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 2,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "base",
+      "rule": "baseline",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 12,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "base",
+      "rule": "cap",
+      "paused_hours": 60,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [
+        {
+          "kind": "RISK_TRIGGER",
+          "reason": "EXPIRY_RESEED_LIMIT",
+          "state": "PAUSED",
+          "time": "2026-11-07T12:00:00+00:00"
+        }
+      ],
+      "fills": 0,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "base",
+      "rule": "loss",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 14,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "stress",
+      "rule": "age",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 2,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "stress",
+      "rule": "baseline",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 12,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "stress",
+      "rule": "cap",
+      "paused_hours": 60,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [
+        {
+          "kind": "RISK_TRIGGER",
+          "reason": "EXPIRY_RESEED_LIMIT",
+          "state": "PAUSED",
+          "time": "2026-11-07T12:00:00+00:00"
+        }
+      ],
+      "fills": 0,
+      "affected": false
+    },
+    {
+      "window": "R07",
+      "cost": "stress",
+      "rule": "loss",
+      "paused_hours": 0,
+      "paused_inventory_hours": 0,
+      "paused_transitions": [],
+      "fills": 14,
+      "affected": false
+    }
+  ],
+  "affected_accounts": 0,
+  "recomputed_accounts": 0,
+  "conclusion": "No account entered PAUSED with inventory; only four cap accounts paused, each without fills. The changed state guard cannot alter these paths. Published returns, reconciliation and conclusions remain unchanged.",
+  "thresholds_changed": false,
+  "inputs_changed": false
+}

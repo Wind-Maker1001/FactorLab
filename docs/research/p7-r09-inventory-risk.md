@@ -17,7 +17,7 @@
 
 资金费使用原始历史结算事件事后归因，不回写Paper现金约束、不进入触发公式；这不是资金费参与现金约束后的执行回测。滑点仅进入成交价一次，手续费仅记账一次。USDM权益守恒为 `equity = cash + unrealized`，不是现货的现金加持仓市值。
 
-研究观察使用已完成小时。只有观察前存在的订单才有当前Bar撮合资格；新观测触发的BUY门控在撮合准入处阻止尚未发生的BUY，撤销随后通过原确认流程执行。风险SELL须在撤单确认后生成，最早下一Bar成交。每次成交按实际增量进入FIFO，部分卖出消耗最老批次，不重置剩余年龄。禁BUY不是PAUSED，EXITING不是清仓；实际归零才EXITED。
+研究观察使用已完成小时。只有观察前存在的订单才有当前Bar撮合资格；新观测触发的BUY门控在撮合准入处阻止尚未发生的BUY，撤销随后通过原确认流程执行。风险SELL须在撤单确认后生成，最早下一Bar成交。每次成交按实际增量进入FIFO，部分卖出消耗最老批次，不重置剩余年龄。禁BUY不是PAUSED，EXITING不是清仓；实际归零才EXITED。已有库存即使因突破、回撤或换手进入PAUSED，仍按最新有效账户权益、价格与FIFO批次检查200小时年龄及浮亏预算退出条件；未触发时保持PAUSED禁买，触发后沿用受控退出，不重启已进入EXITING/EXITED的账户。
 
 ## 2. 完整账户结果
 
@@ -137,6 +137,10 @@ age前窗相对动态收益更差但回撤低0.295218个百分点，后窗收益
 研究入口复用 `grid_paper.run_experiment`、GridExecution、PaperBroker、TradingController、PaperStore、`grid_fifo.attribution`、`grid_funding.analyze_account` 与既有评价/对照。新增模块只由研究Paper入口的可选参数选择，Demo路径未接入。
 
 38项已有Paper/FIFO/资金费定向用例及10项新增风险/汇总用例通过。新增覆盖FIFO部分卖出年龄、100/200小时边界、禁买保留SELL、挂单额度、未来价格前缀隔离、后续Bar成交、无量及部分退出、预算算式、USDM现金/权益守恒、零成交汇总和重复一致性。全窗口R07/base/age额外重复一次，逐小时、逐成交及完整result完全一致；四条baseline逐小时和成交序列全部与原研究一致。验证文件见[validation.json](../validation/p7-r09/validation.json)、[determinism.json](../validation/p7-r09/determinism.json)和定向JUnit XML。
+
+PAUSED退出回归共21项风险/汇总用例通过，另38项既有Paper/FIFO/资金费用例通过，证据见[paused-risk-tests.xml](../validation/p7-r09/paused-risk-tests.xml)与[paused-existing-tests.xml](../validation/p7-r09/paused-existing-tests.xml)。暂停用例覆盖后续200小时退出、后续0.5%预算耗尽、父类同次检查先暂停再转退出、成交时父类暂停、阈值前不恢复买入、零库存、无量、部分成交、最小名义金额阻断及退出后不重复触发。
+
+PAUSED退出修复的历史影响核对见[paused-impact.json](../validation/p7-r09/paused-impact.json)：逐一核对全部16账户的已发布小时库存、权威完整风险转换及成交记录，age/loss均未进入PAUSED；仅4个cap账户因重播上限各暂停60小时，均零成交、零库存。没有账户经过PAUSED且持有库存的受影响状态，因此无需复算，原收益表、对账及研究结论保持有效；参数与既有输入未变。
 
 16账户FIFO/NAV归因误差最大约1e−25 USDT，原NAV差同量级，USDM现金加未实现损益与权益差最大约2.1e−13。资金费逐小时持仓与实际成交事件核对，普通卖出/退出/残余分配之和等于账户总资金费。摘要开发中修正过USDM守恒公式与空成交布尔索引；已完成账本只重新归因，没有为此重做策略交易或调整阈值。
 
