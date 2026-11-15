@@ -1,0 +1,2 @@
+buy_event_id,buy_fee,buy_slippage,endowed,execution_gross,fees,net,purpose,quantity,reference_gross,sell_event_id,sell_fee,sell_order_id,sell_slippage,slippage
+paper:20,0.008840901360,0.01325340,False,-1.03789960,0.017266642880,-1.055166242880,RISK_EXIT,0.10,-1.01200000,paper:32,0.008425741520,research-00000016,0.01264620,0.02589960

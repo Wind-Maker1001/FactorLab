@@ -81,7 +81,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    start=None, end=None, participation=1, fee_estimate=None, no_trade=False,
                    market=Market.BINANCE_EQUITY, instrument_id=SYMBOL, data_identity=None,
                    interval='1d', buy_hold=False, reference_budget=None,
-                   account_id='research-grid', max_exit_quantity=None):
+                   account_id='research-grid', max_exit_quantity=None, inventory_risk=None):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -130,7 +130,13 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     try:
         controller = TradingController(broker, store, clock=lambda: now[0], initialize_state=initialize,
             limits=RiskLimits(capital, capital, capital, 1000))
-        grid = GridExecution(config, rules, deployment_id='research', account_id=account_id,
+        grid_type, risk_options = GridExecution, {}
+        if inventory_risk is not None:
+            from factorlab.experiments.grid_inventory_risk import InventoryRiskGrid
+            if interval != '1h' or inventory:
+                raise ValueError('inventory risk research requires hourly bars and zero endowment')
+            grid_type, risk_options = InventoryRiskGrid, dict(inventory_risk=inventory_risk)
+        grid = grid_type(config, rules, **risk_options, deployment_id='research', account_id=account_id,
             market=market, instrument_id=instrument_id, initial_equity=capital,
             fee_rate=fee_rate, fees=fee_estimate, max_exit_quantity=max_exit_quantity)
         rows, trades, risk = [], [], []
@@ -318,6 +324,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
         daily.to_csv(output / 'daily.csv', index=False)
         ledger.to_csv(output / 'trades.csv', index=False)
         _write(output / 'evaluation.json', result.to_dict())
+        if inventory_risk is not None:
+            _write(output / 'inventory-risk.json', dict(rule=inventory_risk, events=grid.risk_events))
         _write(output / 'result.json', final)
         _write(output / 'manifest.json', dict(schema_version=SCHEMA_VERSION,
             dataset_id=json_hash(bars), data_identity=data_identity,
@@ -328,6 +336,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             interval=interval, buy_hold=buy_hold,
             account_id=account_id, reference_budget=reference_budget,
             max_exit_quantity=max_exit_quantity,
+            **({'inventory_risk': inventory_risk} if inventory_risk is not None else {}),
             market=market.value, instrument_id=instrument_id,
             fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
         return result

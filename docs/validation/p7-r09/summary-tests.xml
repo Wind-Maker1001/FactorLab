@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="2.143" timestamp="2026-11-15T20:39:54.978008+08:00" hostname="Desktop"><testcase classname="tests.research.test_grid_inventory_risk" name="test_empty_cap_account_summary" time="0.972" /></testsuite></testsuites>

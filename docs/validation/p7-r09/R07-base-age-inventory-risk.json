@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "age_hours": 100.0,
+      "buy_blocked": true,
+      "equity": "999.463905698640",
+      "exit_reason": null,
+      "realized_net": "-0.008840901360",
+      "remaining_budget": "4.461225227133200",
+      "time": "2026-08-22T12:59:59.999999",
+      "unrealized": "-0.52725340"
+    },
+    {
+      "age_hours": 200.0,
+      "buy_blocked": true,
+      "equity": "998.895905698640",
+      "exit_reason": "INVENTORY_AGE",
+      "realized_net": "-0.008840901360",
+      "remaining_budget": "3.890385227133200",
+      "time": "2026-08-26T16:59:59.999999",
+      "unrealized": "-1.09525340"
+    }
+  ],
+  "rule": "age"
+}
