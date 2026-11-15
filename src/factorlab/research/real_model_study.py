@@ -10,6 +10,7 @@ from factorlab.exploratory.factor_discovery.engine import compile_expression
 from factorlab.factors.registry_v2 import FactorDefinition, FactorRegistrySnapshot, FactorDataContext
 from factorlab.validation.factor_selection import FactorSelectionConfig, TrainFactorSelector
 from factorlab.validation.splitter import ExpandingWalkForwardSplitter
+from factorlab.compute import ComputeConfig
 from factorlab.validation.walk_forward import WalkForwardRunner
 
 KEYS = ['date', 'symbol']
@@ -140,6 +141,8 @@ def make_runner(config, model, names, selector=None):
     else:
         options[model + '_candidates'] = (p[model],)
         options[model + '_n_jobs'] = config['threads']
+        if 'compute' in config:
+            options['compute'] = ComputeConfig(**config['compute'])
     return WalkForwardRunner(ExpandingWalkForwardSplitter(**config['splitter']), **options)
 
 

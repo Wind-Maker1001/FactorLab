@@ -17,7 +17,7 @@ def walk_forward_metadata(result, *, top_k, minimum_cross_section):
     if len(overall) != 1:
         raise ValueError("Exactly one overall evaluation required")
     metrics = json.loads(overall.drop(columns=["scope", "period"]).to_json(orient="records"))[0]
-    return {
+    metadata = {
         "prediction_metrics": metrics,
         "validation": {
             "sample_hash": frame_hash(result.predictions.drop(
@@ -30,3 +30,6 @@ def walk_forward_metadata(result, *, top_k, minimum_cross_section):
         "artifacts": {"model_%d" % i: {"path": str(path.resolve())}
                       for i, path in enumerate(result.model_paths)},
     }
+    if result.compute_records:
+        metadata["environment"] = {"compute": list(result.compute_records)}
+    return metadata

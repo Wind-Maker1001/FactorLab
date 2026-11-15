@@ -1810,6 +1810,8 @@ def command_walk_forward(
     else:
         raise FactorLabError("Unsupported model: %s" % model_name)
 
+    if model_name in {"lightgbm", "xgboost"}:
+        runner_options["compute"] = config.compute
     runner = WalkForwardRunner(
         _walk_forward_splitter(config), **runner_options
     )

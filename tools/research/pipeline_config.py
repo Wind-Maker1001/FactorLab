@@ -9,6 +9,7 @@ import re
 import pandas as pd
 
 from examples.research.research_pipeline_synthetic import configured
+from factorlab.compute import ComputeConfig
 from factorlab.backtest.fees import FeeSchedule
 from factorlab.dataset import DatasetBuilder
 from factorlab.dataset.identity import frame_hash
@@ -56,7 +57,10 @@ def load_config(path):
 
 
 def validate(c):
-    fields(c, 'schema_version experiment_id source_kind data factors models research split label portfolio execution costs', 'config')
+    fields(c, 'schema_version experiment_id source_kind data factors models research split label portfolio execution costs'
+        + (' compute' if 'compute' in c else ''), 'config')
+    if 'compute' in c:
+        compute_config(c['compute'])
     if type(c['schema_version']) is not int or c['schema_version'] != 1:
         raise ValueError('schema_version must be 1')
     if c['source_kind'] != 'SYNTHETIC':
@@ -130,6 +134,12 @@ def validate(c):
         number(value, 0, 10000, key)
 
 
+def compute_config(value):
+    if type(value) is not dict or set(value) - {'device', 'allow_fallback', 'gpu_memory_limit_mb'}:
+        raise ValueError('compute: expected device, allow_fallback, gpu_memory_limit_mb fields')
+    return ComputeConfig(**value)
+
+
 def configure(c, output):
     """Reuse the fixed provider and existing builders, selector and model runner."""
     validate(c)
@@ -152,17 +162,19 @@ def configure(c, output):
         else:
             settings[name + '_candidates'] = [spec['parameters']]
         models[name] = settings
+    compute = compute_config(c['compute']) if 'compute' in c else None
     splitter = ExpandingWalkForwardSplitter(**c['split'])
     for name, settings in models.items():
         WalkForwardRunner(splitter, model_name=name, feature_names=builder.factor_names,
-                          minimum_cross_section=5, **settings)
+                          minimum_cross_section=5, **settings,
+                          **({'compute': compute} if compute is not None and name in {'lightgbm', 'xgboost'} else {}))
     dates = provider.tables['calendar']
     start, end = map(pd.Timestamp, (c['research']['start'], c['research']['end']))
     if start not in dates or end not in dates or start < dates[65] or start >= end or end > dates[-c['label']['holding_days'] - 2]:
         raise ValueError('invalid research interval: preserve warmup and future label/execution calendar')
     fees = FeeSchedule(replace(rule, **c['costs']) for rule in base.fees.rules)
     config = replace(base, experiment_id=c['experiment_id'], output=Path(output), builder=builder,
-        models=models, splitter=splitter, optimizer=replace(base.optimizer, **c['portfolio']),
+        models=models, splitter=splitter, compute=compute, optimizer=replace(base.optimizer, **c['portfolio']),
         execution=replace(base.execution, initial_cash=c['execution']['initial_cash']),
         execution_mode=c['execution']['mode'], fees=fees,
         research_start=c['research']['start'], research_end=c['research']['end'],

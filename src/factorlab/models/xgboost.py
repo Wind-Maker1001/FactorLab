@@ -5,7 +5,12 @@ from __future__ import annotations
 from importlib import import_module
 from numbers import Integral, Real
 from pathlib import Path
+from time import perf_counter
 from typing import Optional, Sequence, Type
+
+from factorlab.compute import ComputeConfig
+from .tree_compute import (fit_native, predict_native, prediction_compute,
+                           resolve_tree_compute, stage_receipt, tree_parameters)
 
 import numpy as np
 import pandas as pd
@@ -101,6 +106,7 @@ class XGBoostResearchModel(ResearchModel):
         gamma: float = 0.0,
         random_seed: int = 42,
         n_jobs: int = 1,
+        compute: ComputeConfig | None = None,
     ) -> None:
         self.requested_feature_names = _feature_names(feature_names)
         self.n_estimators = _positive_integer("n_estimators", n_estimators)
@@ -120,6 +126,10 @@ class XGBoostResearchModel(ResearchModel):
             "random_seed", random_seed, minimum=0
         )
         self.n_jobs = _positive_integer("n_jobs", n_jobs)
+        if compute is not None:
+            if not isinstance(compute, ComputeConfig):
+                raise TypeError("compute must be a ComputeConfig or None")
+            self.compute = compute
 
     @property
     def is_fitted(self) -> bool:
@@ -131,6 +141,7 @@ class XGBoostResearchModel(ResearchModel):
     def fit(
         self, X: pd.DataFrame, y: Optional[pd.Series] = None
     ) -> "XGBoostResearchModel":
+        started = perf_counter()
         if not isinstance(X, pd.DataFrame):
             raise ModelInputError("X must be a pandas DataFrame")
         names = self.requested_feature_names or tuple(str(column) for column in X.columns)
@@ -145,12 +156,19 @@ class XGBoostResearchModel(ResearchModel):
                 % ", ".join(all_missing)
             )
 
-        regressor_class = _xgboost_regressor_class()
+        config = getattr(self, "compute", None)
+        regressor_class = _xgboost_regressor_class() if config is None else None
         imputer = SimpleImputer(strategy="median")
         imputed = imputer.fit_transform(values)
         training_frame = pd.DataFrame(
             imputed, index=selected.index, columns=list(names), dtype=float
         )
+        preprocessing_seconds = perf_counter() - started
+        started = perf_counter()
+        resolved = resolve_tree_compute("xgboost", config) if config is not None else None
+        resolution_seconds = perf_counter() - started
+        if config is not None:
+            regressor_class = _xgboost_regressor_class()
         estimator = regressor_class(
             objective="reg:squarederror",
             n_estimators=self.n_estimators,
@@ -168,17 +186,27 @@ class XGBoostResearchModel(ResearchModel):
             n_jobs=self.n_jobs,
             tree_method="hist",
             verbosity=0,
+            **tree_parameters("xgboost", resolved),
         )
-        estimator.fit(training_frame, target, verbose=False)
+        started = perf_counter()
+        proof = fit_native("xgboost", estimator, training_frame, target, resolved)
+        native_seconds = perf_counter() - started
+        receipt = (stage_receipt(resolved, "fit", preprocessing_seconds, native_seconds, proof)
+                   if resolved is not None else None)
 
         # Publish fitted state only after every training operation succeeds.
         self.feature_names_ = tuple(selected.columns)
         self.imputer_ = imputer
         self.estimator_ = estimator
+        if receipt is not None:
+            receipt["resolution_seconds"] = resolution_seconds
+            self.compute_ = receipt
+            self.compute_records_ = [receipt]
         return self
 
-    def predict(self, X: pd.DataFrame) -> pd.Series:
+    def predict(self, X: pd.DataFrame, *, compute: ComputeConfig | None = None) -> pd.Series:
         self._require_fitted()
+        started = perf_counter()
         selected, values = validate_feature_frame(
             X, self.feature_names_, allow_nan=True
         )
@@ -189,11 +217,20 @@ class XGBoostResearchModel(ResearchModel):
             columns=list(self.feature_names_),
             dtype=float,
         )
-        prediction = np.asarray(self.estimator_.predict(prediction_frame), dtype=float)
+        preprocessing_seconds = perf_counter() - started
+        resolved = prediction_compute("xgboost", self, compute)
+        started = perf_counter()
+        native_resolved = resolved if compute is not None or getattr(self, "compute", None) is not None else None
+        prediction, proof = predict_native("xgboost", self.estimator_, prediction_frame, native_resolved)
+        native_seconds = perf_counter() - started
+        prediction = np.asarray(prediction, dtype=float)
         if prediction.ndim != 1 or len(prediction) != len(X):
             raise RuntimeError("XGBoost returned an invalid prediction shape")
         if not np.isfinite(prediction).all():
             raise RuntimeError("XGBoost returned non-finite predictions")
+        if resolved is not None:
+            receipt = stage_receipt(resolved, "predict", preprocessing_seconds, native_seconds, proof)
+            self.__dict__.setdefault("compute_records_", []).append(receipt)
         return pd.Series(prediction, index=X.index, name="score", dtype=float)
 
     @property

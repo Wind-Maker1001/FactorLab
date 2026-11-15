@@ -11,6 +11,7 @@ import pandas as pd
 from factorlab.backtest import AShareExecutionBacktester, ExecutionBacktestConfig
 from factorlab.backtest.fees import FeeSchedule
 from factorlab.backtest.capacity import ResearchExecutionScenario
+from factorlab.compute import ComputeConfig
 from factorlab.data.hub import DataHub
 from factorlab.dataset import DatasetBuilder
 from factorlab.dataset.identity import file_hash, frame_hash
@@ -65,6 +66,7 @@ class ResearchPipelineConfig:
     execution_mode: str = 'batch'
     sale_restrictions: tuple[SaleRestriction, ...] = ()
     research_scenario: ResearchExecutionScenario | None = None
+    compute: ComputeConfig | None = None
 
     def __post_init__(self):
         if self.execution_mode not in {'batch', 'incremental_feedback'}:
@@ -242,6 +244,8 @@ class ResearchPipeline:
             directory = output / model
             directory.mkdir()
             runner_options = dict(options)
+            if model in {'lightgbm', 'xgboost'} and c.compute is not None:
+                runner_options['compute'] = c.compute
             runner_options.setdefault('target_col', 'EXCESS_RET%d' % c.builder.options.holding_days)
             runner = WalkForwardRunner(c.splitter, model_name=model,
                 feature_names=c.builder.factor_names, top_k=c.top_k,
@@ -323,8 +327,14 @@ class ResearchPipeline:
                     **({} if c.research_scenario is None else dict(
                         research_scenario=asdict(c.research_scenario),
                         research_source=file_hash(Path(__file__).resolve().parents[1] / 'backtest/capacity.py'))))))
+            if c.compute is not None:
+                definition['parameters']['compute'] = asdict(c.compute)
+            run_provenance = dict(provenance)
+            if walk.compute_records:
+                run_provenance['environment'] = dict(provenance['environment'],
+                    compute=list(walk.compute_records))
             tracker.create_experiment(experiment_id, definition)
-            tracker.append_run(experiment_id, experiment_id, **provenance, command=command,
+            tracker.append_run(experiment_id, experiment_id, **run_provenance, command=command,
                 status='SUCCEEDED', qualification=c.source_kind,
                 prediction_metrics={k: v.value for k, v in pred_eval.metrics.items()},
                 portfolio_metrics={k: v.value for k, v in port_eval.metrics.items()}, artifacts=artifacts,
