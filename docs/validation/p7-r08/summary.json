@@ -1,0 +1,109 @@
+[
+  {
+    "window": "R04B",
+    "orders": 124,
+    "statuses": {
+      "CANCELED": 100,
+      "FILLED": 17,
+      "SUBMITTED": 7
+    },
+    "residual_lots": [
+      {
+        "window": "R04B",
+        "buy_time": "2026-08-10T14:59:59.999999+00:00",
+        "quantity": "0.10",
+        "execution_price": "219.891856",
+        "age_hours": 33.0,
+        "end_close": 218.32,
+        "net_contribution": -0.1659812742399997
+      }
+    ],
+    "by_status": {
+      "CANCELED": {
+        "count": 100,
+        "median_distance_bps": 1079.900839408142,
+        "median_lifetime_hours": 100.0,
+        "max_lifetime_hours": 100.0
+      },
+      "FILLED": {
+        "count": 17,
+        "median_distance_bps": 334.4688758129455,
+        "median_lifetime_hours": 26.0,
+        "max_lifetime_hours": 95.0
+      },
+      "SUBMITTED": {
+        "count": 7,
+        "median_distance_bps": 1543.281194454319,
+        "median_lifetime_hours": 49.0,
+        "max_lifetime_hours": 49.0
+      }
+    }
+  },
+  {
+    "window": "R07",
+    "orders": 118,
+    "statuses": {
+      "CANCELED": 100,
+      "FILLED": 12,
+      "SUBMITTED": 6
+    },
+    "residual_lots": [
+      {
+        "window": "R07",
+        "buy_time": "2026-10-14T17:59:59.999999+00:00",
+        "quantity": "0.10",
+        "execution_price": "221.072564",
+        "age_hours": 630.0,
+        "end_close": 180.35,
+        "net_contribution": -4.08109930256
+      },
+      {
+        "window": "R07",
+        "buy_time": "2026-10-29T22:59:59.999999+00:00",
+        "quantity": "0.10",
+        "execution_price": "209.165424",
+        "age_hours": 265.0,
+        "end_close": 180.35,
+        "net_contribution": -2.889909016960001
+      },
+      {
+        "window": "R07",
+        "buy_time": "2026-11-05T01:59:59.999999+00:00",
+        "quantity": "0.10",
+        "execution_price": "199.31952",
+        "age_hours": 118.0,
+        "end_close": 180.35,
+        "net_contribution": -1.9049247808000018
+      },
+      {
+        "window": "R07",
+        "buy_time": "2026-11-05T15:59:59.999999+00:00",
+        "quantity": "0.10",
+        "execution_price": "184.160430",
+        "age_hours": 104.0,
+        "end_close": 180.35,
+        "net_contribution": -0.38840941719999966
+      }
+    ],
+    "by_status": {
+      "CANCELED": {
+        "count": 100,
+        "median_distance_bps": 1328.6136760962902,
+        "median_lifetime_hours": 100.0,
+        "max_lifetime_hours": 100.0
+      },
+      "FILLED": {
+        "count": 12,
+        "median_distance_bps": 226.4092278994667,
+        "median_lifetime_hours": 60.5,
+        "max_lifetime_hours": 97.0
+      },
+      "SUBMITTED": {
+        "count": 6,
+        "median_distance_bps": 756.3380281690147,
+        "median_lifetime_hours": 4.0,
+        "max_lifetime_hours": 4.0
+      }
+    }
+  }
+]
