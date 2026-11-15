@@ -351,7 +351,9 @@ class FuturesAdapter:
         return self.facts
 
     def read_account(self):
-        facts = self.read_facts()
+        return self._account_snapshot(self.read_facts())
+
+    def _account_snapshot(self, facts):
         records = [decode(json.loads(row[0])).snapshot for row in self.db.execute('SELECT payload FROM futures_orders')]
         known = {o.intent.client_order_id for o in records if o.status not in TERMINAL}
         actual = {o['clientOrderId'] for o in facts.open_orders}
@@ -360,6 +362,8 @@ class FuturesAdapter:
     def reconcile(self):
         # Any failure leaves the durable global risk gate closed.
         self.disconnect()
+        # TODO: replace lifetime order polling with an authoritative incremental
+        # reconciliation contract; CANCELED may still advance to FILLED.
         keys = [row[0] for row in self.db.execute('SELECT id FROM futures_orders')]
         for key in keys:
             order = self.order(key)
@@ -374,4 +378,4 @@ class FuturesAdapter:
             raise DataQualityError('account incomplete, hedge mode or unmanaged open orders: reconciliation blocked')
         with self.store.transaction():
             self.db.execute('UPDATE futures_meta SET reconciled=1')
-        return self.read_account()
+        return self._account_snapshot(facts)

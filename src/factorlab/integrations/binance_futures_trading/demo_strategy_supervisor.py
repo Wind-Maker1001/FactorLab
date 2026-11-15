@@ -12,13 +12,16 @@ from .demo_credentials import DemoCredentialStore
 from .demo_market_feed import DemoMarketFeed, FeedPaused, INTERVALS, SOURCE
 from .demo_runtime import DemoRuntime, MAX_NOTIONAL, MAX_QUANTITY, operator_lock, state_root
 from .demo_supervisor import DemoSupervisor
-from .protocol import Environment, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked
+from .protocol import Environment, ReadOnlyNetworkTransport, SafetyBlocked
 from .strategy_runtime import DemoStrategyRuntime
 
 
-class MarketClient(FuturesClient):
+from .observability import ObservedClient, RequestCounts, worker_metrics
+
+
+class MarketClient(ObservedClient):
     def __init__(self, requests):
-        super().__init__(environment=Environment.DEMO,
+        super().__init__(environment=Environment.DEMO, request_counts=requests, request_source='feed',
             transport=ReadOnlyNetworkTransport(permit_account_read=True, environment=Environment.DEMO))
         self.requests = requests
 
@@ -176,12 +179,13 @@ def run_worker(args, root, store, runtime, requests):
                     checkpoint = runner.gateway.state.runtime
                     payload.update(mode=mode, reason=consumer.reason or payload['reason'],
                         strategy={key: value for key, value in checkpoint.items() if key != 'bars'},
-                        retained_bars=len(checkpoint['bars']), account=session.status(), requests=requests)
+                        retained_bars=len(checkpoint['bars']), account=session.status(), requests=requests,
+                        metrics=worker_metrics(session, feed, runtime, requests))
                     control.report(payload)
                     print(json.dumps(payload, default=str), flush=True)
 
                 supervisor = DemoSupervisor(feed, poll_seconds=args.poll_seconds, report=report,
-                    before_poll=consumer.before_poll, on_pause=consumer.disconnect)
+                    before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests)
                 consumer.supervisor = supervisor
                 signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
                 signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())
@@ -191,7 +195,8 @@ def run_worker(args, root, store, runtime, requests):
                     runner.pause()
                     control.report(dict(mode=mode, status='EXITED', desired=control.desired(),
                         watermarks=feed.watermarks(), strategy=runner.gateway.state.runtime,
-                        account=session.status(), requests=requests))
+                        account=session.status(), requests=requests,
+                        metrics=worker_metrics(session, feed, runtime, requests)))
 
 
 def main(argv=None):
@@ -214,7 +219,7 @@ def main(argv=None):
                 control.request(dict(pause='PAUSED', resume='RUNNING', stop='STOPPED')[args.command])
             print(json.dumps(control.snapshot(), default=str))
         return 0
-    requests = dict(GET=0, POST=0, DELETE=0)
+    requests = RequestCounts()
     with operator_lock(root), closing(DemoRuntime(root)) as runtime:
         run_worker(args, root, DemoCredentialStore(), runtime, requests)
     return 0

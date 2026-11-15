@@ -9,16 +9,18 @@ from time import monotonic
 from factorlab.errors import DataQualityError
 from .demo_market_feed import DemoMarketFeed, FeedPaused, INTERVALS, SOURCE
 from .protocol import Environment, ExchangeError, FuturesClient, ReadOnlyNetworkTransport
+from .observability import RequestCounts
 
 
 class DemoSupervisor:
     def __init__(self, feed, *, poll_seconds=2, max_backoff=60, report=print,
-                 before_poll=None, on_pause=None):
+                 before_poll=None, on_pause=None, request_counts=None):
         if poll_seconds <= 0 or max_backoff < poll_seconds:
             raise ValueError('invalid polling bounds')
         self.feed, self.poll_seconds, self.max_backoff = feed, poll_seconds, max_backoff
         self.report, self.stopped = report, Event()
         self.before_poll, self.on_pause = before_poll, on_pause
+        self.request_counts = request_counts
 
     def stop(self):
         self.stopped.set()
@@ -28,17 +30,22 @@ class DemoSupervisor:
             raise ValueError('positive duration required')
         deadline = monotonic() + seconds if seconds is not None else None
         backoff = self.poll_seconds
+        recovering = True
         try:
             while not self.stopped.is_set() and (deadline is None or monotonic() < deadline):
                 delay = self.poll_seconds
+                if isinstance(self.request_counts, RequestCounts):
+                    self.request_counts.phase = 'recovery' if recovering else 'poll'
                 try:
                     if self.before_poll is not None:
                         self.before_poll()
                     if self.stopped.is_set():
                         break
                     result = self.feed.poll()
+                    recovering = False
                     backoff = self.poll_seconds
                 except (DataQualityError, FeedPaused, OSError) as error:
+                    recovering = True
                     self.feed.pause(str(error) if isinstance(error, FeedPaused) else type(error).__name__)
                     if self.on_pause is not None:
                         self.on_pause()
