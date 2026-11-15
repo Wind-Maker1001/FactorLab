@@ -1,0 +1,1340 @@
+{
+  "schema": "CI_PERF_07_DIAGNOSIS_V1",
+  "measurement_commit": "bdd4e6f5eef14bd3f383c5af73ec695bcb34b901",
+  "decision": "NOT_WORTH_OPTIMIZING",
+  "implementation_changed": false,
+  "runs": [
+    {
+      "measurement": {
+        "command": [
+          "python",
+          "-m",
+          "pytest",
+          "tests/model_readiness/test_comparison_contract.py",
+          "-q",
+          "--durations=20",
+          "--junitxml=<output>/tests.xml",
+          "--basetemp=<output>/tmp",
+          "-o",
+          "cache_dir=<output>/pytest-cache",
+          "-p",
+          "ci_p07_resources"
+        ],
+        "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+        "elapsed_seconds": 199.58710309999879,
+        "exit_code": 0,
+        "disk_bytes": 27713781,
+        "disk_files": 395
+      },
+      "resources": {
+        "peak_wset": 571834368,
+        "peak_pagefile": 2291810304,
+        "cpu": {
+          "user": 152.609375,
+          "system": 48.203125,
+          "children_user": 0.0,
+          "children_system": 0.0
+        },
+        "io": {
+          "read_count": 83402,
+          "write_count": 11059,
+          "read_bytes": 7760257657,
+          "write_bytes": 35727906,
+          "other_count": 1251542,
+          "other_bytes": 53372788
+        },
+        "subprocess_count": 0,
+        "subprocess_commands": [],
+        "exitstatus": 0
+      },
+      "junit_seconds": 193.709,
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "62",
+          "time": "197.551",
+          "timestamp": "2026-11-15T17:04:43.336622+00:00"
+        }
+      ]
+    },
+    {
+      "measurement": {
+        "command": [
+          "python",
+          "-m",
+          "pytest",
+          "tests/model_readiness/test_comparison_contract.py",
+          "-q",
+          "--durations=20",
+          "--junitxml=<output>/tests.xml",
+          "--basetemp=<output>/tmp",
+          "-o",
+          "cache_dir=<output>/pytest-cache",
+          "-p",
+          "ci_p07_resources"
+        ],
+        "python": "3.14.0 (main, Oct 14 2025, 21:24:05) [MSC v.1944 64 bit (AMD64)]",
+        "elapsed_seconds": 197.19418269999733,
+        "exit_code": 0,
+        "disk_bytes": 27713761,
+        "disk_files": 395
+      },
+      "resources": {
+        "peak_wset": 572866560,
+        "peak_pagefile": 2291023872,
+        "cpu": {
+          "user": 142.625,
+          "system": 47.5625,
+          "children_user": 0.0,
+          "children_system": 0.0
+        },
+        "io": {
+          "read_count": 83398,
+          "write_count": 11059,
+          "read_bytes": 7760259517,
+          "write_bytes": 35728384,
+          "other_count": 1251533,
+          "other_bytes": 53373264
+        },
+        "subprocess_count": 0,
+        "subprocess_commands": [],
+        "exitstatus": 0
+      },
+      "junit_seconds": 190.742,
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "62",
+          "time": "195.096",
+          "timestamp": "2026-11-15T17:08:21.003433+00:00"
+        }
+      ]
+    }
+  ],
+  "node_identity_format": "JUnit classname::name (parameter IDs retained)",
+  "nodes": [
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_benchmark_sha256-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_benchmark_sha256-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_benchmark_sha256-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_benchmark_sha256-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_stock_bars_sha256-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_stock_bars_sha256-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_stock_bars_sha256-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[backtest_stock_bars_sha256-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[bar_data_version-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[bar_data_version-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[bar_data_version-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[bar_data_version-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[config-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[config-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[config-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[config-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[dataset_sha256-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[dataset_sha256-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[dataset_sha256-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[dataset_sha256-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[execution_bars_sha256-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[execution_bars_sha256-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[execution_bars_sha256-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[execution_bars_sha256-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[git_commit-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[git_commit-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[git_commit-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[git_commit-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[package_versions-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[package_versions-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[package_versions-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[package_versions-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[security_data_manifest_sha256-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[security_data_manifest_sha256-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[security_data_manifest_sha256-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[security_data_manifest_sha256-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[universe_version-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[universe_version-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[universe_version-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_changed_version_or_input_fails_before_output[universe_version-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_offline_comparison_does_not_authorize_formal_market_consumption",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[fold-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[fold-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[fold-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[fold-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_exit-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_exit-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_exit-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_exit-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_value-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_value-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_value-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[label_value-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[missing_date-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[missing_date-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[missing_date-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[missing_date-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[security_set-factor_score]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[security_set-lightgbm]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[security_set-ridge]",
+    "tests.model_readiness.test_comparison_contract::test_resealed_oos_identity_mismatch_is_rejected[security_set-xgboost]",
+    "tests.model_readiness.test_comparison_contract::test_unsealed_prediction_bytes_rejected"
+  ],
+  "hosted_node_identity_match": true,
+  "43735048156": {
+    "extended-3.13-shard-0": {
+      "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+      "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 3123,
+        "passed": 3123,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "576.913"
+      ],
+      "junit_seconds": 563.5690000000002,
+      "receipt_timing": {
+        "elapsed_seconds": 581.9296320000001
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb"
+      }
+    },
+    "extended-3.13-shard-1": {
+      "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+      "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2304,
+        "passed": 2304,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "626.002"
+      ],
+      "junit_seconds": 605.677,
+      "receipt_timing": {
+        "elapsed_seconds": 630.8284879
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb"
+      }
+    },
+    "extended-3.13-shard-2": {
+      "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+      "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2384,
+        "passed": 2384,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "601.980"
+      ],
+      "junit_seconds": 587.144,
+      "receipt_timing": {
+        "elapsed_seconds": 605.7956935
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb"
+      }
+    },
+    "extended-3.14-shard-0": {
+      "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+      "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 3123,
+        "passed": 3123,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "807.740"
+      ],
+      "junit_seconds": 790.383,
+      "receipt_timing": {
+        "elapsed_seconds": 812.6848416
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb"
+      }
+    },
+    "extended-3.14-shard-1": {
+      "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+      "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2304,
+        "passed": 2304,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "442.666"
+      ],
+      "junit_seconds": 427.24600000000004,
+      "receipt_timing": {
+        "elapsed_seconds": 446.43453889999995
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb"
+      }
+    },
+    "extended-3.14-shard-2": {
+      "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+      "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2384,
+        "passed": 2384,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "1031.555"
+      ],
+      "junit_seconds": 1011.133,
+      "receipt_timing": {
+        "elapsed_seconds": 1036.0695292999999
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb"
+      }
+    },
+    "shard2_modules": {
+      "tests.model_readiness.test_comparison_contract": {
+        "seconds": 160.91100000000003,
+        "nodes": 62
+      },
+      "tests.research.test_cli_phase2": {
+        "seconds": 154.573,
+        "nodes": 45
+      },
+      "tests.research.test_cli_compute_receipts": {
+        "seconds": 81.69699999999999,
+        "nodes": 6
+      },
+      "tests.market_admission.test_admission": {
+        "seconds": 75.27900000000001,
+        "nodes": 54
+      },
+      "tests.model_readiness.test_readiness": {
+        "seconds": 63.117,
+        "nodes": 7
+      },
+      "tests.research.test_partitioned_walk_forward": {
+        "seconds": 59.474000000000004,
+        "nodes": 23
+      },
+      "tests.research.test_research_workflow": {
+        "seconds": 39.311,
+        "nodes": 18
+      },
+      "tests.security.test_pr_identity": {
+        "seconds": 34.985,
+        "nodes": 31
+      },
+      "tests.research.test_walk_forward_factor_selection": {
+        "seconds": 31.882000000000005,
+        "nodes": 27
+      },
+      "tests.security.test_pr_risk": {
+        "seconds": 27.89800000000003,
+        "nodes": 81
+      },
+      "tests.research.test_market_data_qualification": {
+        "seconds": 24.310000000000006,
+        "nodes": 32
+      },
+      "tests.research.test_signal_propagation": {
+        "seconds": 24.239,
+        "nodes": 7
+      },
+      "tests.cross_market.test_p2_research_contracts": {
+        "seconds": 21.967,
+        "nodes": 45
+      },
+      "tests.research.test_walk_forward_stage_diagnostics": {
+        "seconds": 18.546000000000006,
+        "nodes": 22
+      },
+      "tests.research.test_csmar_rejection_coordinates": {
+        "seconds": 17.793000000000003,
+        "nodes": 64
+      },
+      "tests.market_structure.test_publication_scope_audit": {
+        "seconds": 16.518000000000004,
+        "nodes": 42
+      },
+      "tests.research.test_cli_download_contract": {
+        "seconds": 14.859,
+        "nodes": 23
+      },
+      "tests.research.test_local_cli_pipeline": {
+        "seconds": 11.523,
+        "nodes": 7
+      },
+      "tests.research.test_forward_evaluation_synthetic_example": {
+        "seconds": 11.085999999999999,
+        "nodes": 15
+      },
+      "tests.research.test_cache_generation_publication": {
+        "seconds": 10.390999999999998,
+        "nodes": 44
+      },
+      "tests.research.test_browser_notice_observations": {
+        "seconds": 7.632000000000001,
+        "nodes": 67
+      },
+      "tests.research.test_p4_01_pipeline_inputs": {
+        "seconds": 5.83,
+        "nodes": 40
+      },
+      "tests.integrations.test_demo_grid_supervisor": {
+        "seconds": 5.573999999999999,
+        "nodes": 22
+      },
+      "tests.research.test_strategy_robustness": {
+        "seconds": 5.122,
+        "nodes": 3
+      },
+      "tests.research.test_csmar_local_prepare": {
+        "seconds": 4.951999999999999,
+        "nodes": 8
+      },
+      "tests.research.test_datahub": {
+        "seconds": 4.9209999999999985,
+        "nodes": 18
+      },
+      "tests.minute_data.test_yhh30m": {
+        "seconds": 4.849,
+        "nodes": 23
+      },
+      "tests.research.test_benchmark_refetch": {
+        "seconds": 4.731000000000001,
+        "nodes": 28
+      },
+      "tests.market_structure.test_c01_publication_safety": {
+        "seconds": 4.465999999999999,
+        "nodes": 18
+      },
+      "tests.market_admission.test_p1_review": {
+        "seconds": 4.227,
+        "nodes": 8
+      },
+      "tests.minute_data.test_yhh30m_release_review": {
+        "seconds": 3.4910000000000005,
+        "nodes": 8
+      },
+      "tests.research.test_tree_models_phase3": {
+        "seconds": 3.155,
+        "nodes": 5
+      },
+      "tests.research.test_real_data_readiness": {
+        "seconds": 2.866,
+        "nodes": 11
+      },
+      "tests.research.test_portfolio_dividend_execution": {
+        "seconds": 2.826999999999999,
+        "nodes": 22
+      },
+      "tests.integrations.test_demo_signal_expiration": {
+        "seconds": 2.7860000000000005,
+        "nodes": 22
+      },
+      "tests.research.test_oos_execution": {
+        "seconds": 2.762,
+        "nodes": 12
+      },
+      "tests.market_structure.test_minute_gate_compatibility": {
+        "seconds": 2.597,
+        "nodes": 7
+      },
+      "tests.research.test_grid_paper": {
+        "seconds": 2.536,
+        "nodes": 15
+      },
+      "tests.research.test_factor_registry_v2": {
+        "seconds": 2.4379999999999997,
+        "nodes": 42
+      },
+      "tests.research.test_grid_lifecycle": {
+        "seconds": 2.278,
+        "nodes": 3
+      },
+      "tests.research.test_tdx_reference": {
+        "seconds": 2.181,
+        "nodes": 9
+      },
+      "tests.research.test_grid_experiment": {
+        "seconds": 2.129,
+        "nodes": 1
+      },
+      "tests.research.test_cli_reproducibility": {
+        "seconds": 2.0789999999999997,
+        "nodes": 18
+      },
+      "tests.research.test_forward_full_predictions": {
+        "seconds": 1.533,
+        "nodes": 58
+      },
+      "tests.research.test_download_repair_concurrency": {
+        "seconds": 1.495,
+        "nodes": 3
+      },
+      "tests.migration.test_independent_boundary": {
+        "seconds": 1.4889999999999999,
+        "nodes": 7
+      },
+      "tests.research.test_exploratory_publication": {
+        "seconds": 1.147,
+        "nodes": 6
+      },
+      "tests.research.test_schema_numeric_integrity": {
+        "seconds": 1.1360000000000006,
+        "nodes": 84
+      },
+      "tests.research.test_data_cache": {
+        "seconds": 1.055,
+        "nodes": 13
+      },
+      "tests.integrations.test_binance_demo_network": {
+        "seconds": 1.0080000000000002,
+        "nodes": 63
+      },
+      "tests.research.status_candidate.test_integration": {
+        "seconds": 0.9590000000000003,
+        "nodes": 31
+      },
+      "tests.integrations.test_binance_demo_execution": {
+        "seconds": 0.911,
+        "nodes": 26
+      },
+      "tests.research.test_d06_evidence_binding": {
+        "seconds": 0.898,
+        "nodes": 3
+      },
+      "tests.research.test_exploratory_real": {
+        "seconds": 0.895,
+        "nodes": 10
+      },
+      "tests.integrations.test_binance_demo_strategy": {
+        "seconds": 0.795,
+        "nodes": 12
+      },
+      "tests.research.test_akshare_provider": {
+        "seconds": 0.7769999999999999,
+        "nodes": 28
+      },
+      "tests.research.test_cli_phase4": {
+        "seconds": 0.7230000000000001,
+        "nodes": 8
+      },
+      "tests.research.test_console": {
+        "seconds": 0.7230000000000001,
+        "nodes": 15
+      },
+      "tests.research.test_akshare_failure_contract": {
+        "seconds": 0.6470000000000002,
+        "nodes": 128
+      },
+      "tests.market_structure.test_review_calendar": {
+        "seconds": 0.6000000000000001,
+        "nodes": 28
+      },
+      "tests.integrations.test_dual_market_trading": {
+        "seconds": 0.551,
+        "nodes": 12
+      },
+      "tests.research.test_p9_02_recovery": {
+        "seconds": 0.55,
+        "nodes": 13
+      },
+      "tests.research.test_real_hfq_evidence_pilot": {
+        "seconds": 0.5200000000000002,
+        "nodes": 53
+      },
+      "tests.cross_market.test_valuation_remediation": {
+        "seconds": 0.4730000000000002,
+        "nodes": 34
+      },
+      "tests.research.test_pairs_statistics": {
+        "seconds": 0.459,
+        "nodes": 9
+      },
+      "tests.research.test_pit_event_evidence": {
+        "seconds": 0.3920000000000001,
+        "nodes": 36
+      },
+      "tests.research.test_risk_exposures": {
+        "seconds": 0.38900000000000007,
+        "nodes": 18
+      },
+      "tests.research.test_pit_snapshot_failure": {
+        "seconds": 0.378,
+        "nodes": 6
+      },
+      "tests.research.test_config": {
+        "seconds": 0.3610000000000002,
+        "nodes": 50
+      },
+      "tests.research.test_p9_market_evidence": {
+        "seconds": 0.3280000000000002,
+        "nodes": 57
+      },
+      "tests.research.test_comparison_snapshot": {
+        "seconds": 0.32700000000000007,
+        "nodes": 16
+      },
+      "tests.research.test_factors_phase1": {
+        "seconds": 0.2610000000000001,
+        "nodes": 19
+      },
+      "tests.market_structure.test_review_calendar_red": {
+        "seconds": 0.251,
+        "nodes": 2
+      },
+      "tests.research.test_tdx_day": {
+        "seconds": 0.24400000000000013,
+        "nodes": 42
+      },
+      "tests.research.test_binance_model_study": {
+        "seconds": 0.237,
+        "nodes": 7
+      },
+      "tests.research.test_evidence_consumption_study": {
+        "seconds": 0.20400000000000001,
+        "nodes": 16
+      },
+      "tests.research.test_data_calendar": {
+        "seconds": 0.19300000000000003,
+        "nodes": 6
+      },
+      "tests.research.status_candidate.test_toctou": {
+        "seconds": 0.167,
+        "nodes": 14
+      },
+      "tests.research.test_p4_04_allocation": {
+        "seconds": 0.114,
+        "nodes": 4
+      },
+      "tests.research.test_factor_discovery_generator": {
+        "seconds": 0.11200000000000003,
+        "nodes": 18
+      },
+      "tests.research.test_config_roots": {
+        "seconds": 0.103,
+        "nodes": 13
+      },
+      "tests.research.test_p9_d06": {
+        "seconds": 0.09,
+        "nodes": 10
+      },
+      "tests.research.test_market_regime_phase3": {
+        "seconds": 0.07600000000000001,
+        "nodes": 14
+      },
+      "tests.research.test_model_factory_positional_compat": {
+        "seconds": 0.07200000000000005,
+        "nodes": 60
+      },
+      "tests.integrations.test_m05_time_semantics": {
+        "seconds": 0.071,
+        "nodes": 11
+      },
+      "tests.research.test_grid_weekend": {
+        "seconds": 0.063,
+        "nodes": 6
+      },
+      "tests.evidence.test_tri_source_market": {
+        "seconds": 0.05500000000000002,
+        "nodes": 12
+      },
+      "tests.research.test_models_phase2": {
+        "seconds": 0.053000000000000005,
+        "nodes": 16
+      },
+      "tests.research.test_notice_pdf": {
+        "seconds": 0.05200000000000003,
+        "nodes": 48
+      },
+      "tests.research.test_csv_fixtures": {
+        "seconds": 0.052,
+        "nodes": 1
+      },
+      "tests.integrations.test_binance_rejection_evidence": {
+        "seconds": 0.04100000000000001,
+        "nodes": 14
+      },
+      "tests.research.test_grid": {
+        "seconds": 0.040000000000000015,
+        "nodes": 30
+      },
+      "tests.evidence.test_p3_d05.AuditTests": {
+        "seconds": 0.039,
+        "nodes": 9
+      },
+      "tests.research.test_binance_client": {
+        "seconds": 0.03400000000000001,
+        "nodes": 16
+      },
+      "tests.research.test_tdx_quality_audit": {
+        "seconds": 0.033000000000000015,
+        "nodes": 29
+      },
+      "tests.integrations.test_binance_equity_trading_core": {
+        "seconds": 0.031,
+        "nodes": 10
+      },
+      "tests.evidence.test_dq02_finalize": {
+        "seconds": 0.028,
+        "nodes": 3
+      },
+      "tests.research.test_grid_funding_benchmark": {
+        "seconds": 0.019,
+        "nodes": 3
+      },
+      "tests.market_structure.test_review_provenance_red": {
+        "seconds": 0.019,
+        "nodes": 2
+      },
+      "tests.evidence.test_dq02b_columnar": {
+        "seconds": 0.018000000000000002,
+        "nodes": 3
+      },
+      "tests.integrations.test_binance_environments": {
+        "seconds": 0.016,
+        "nodes": 9
+      },
+      "tests.research.test_source_coverage": {
+        "seconds": 0.015000000000000006,
+        "nodes": 26
+      },
+      "tests.evidence.test_p4_d02_evidence": {
+        "seconds": 0.011,
+        "nodes": 7
+      },
+      "tests.research.test_pairs_account": {
+        "seconds": 0.008,
+        "nodes": 8
+      },
+      "tests.research.test_forward_policy_phase4": {
+        "seconds": 0.004,
+        "nodes": 4
+      }
+    }
+  },
+  "43735547182": {
+    "extended-3.13-shard-0": {
+      "subject_sha": "31346cca2d233ce65bf64728009884c53788b86c",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+      "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 3130,
+        "passed": 3130,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "734.766"
+      ],
+      "junit_seconds": 712.4,
+      "receipt_timing": {
+        "elapsed_seconds": 742.1840654
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb",
+        "tools/migration/verify_pit_archive.py": "d911195f9346b1c4d582b18c780e8426c88d4b7afe0c2a4df2c2a2b4c7066520"
+      }
+    },
+    "extended-3.13-shard-1": {
+      "subject_sha": "31346cca2d233ce65bf64728009884c53788b86c",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+      "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2304,
+        "passed": 2304,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "435.494"
+      ],
+      "junit_seconds": 423.748,
+      "receipt_timing": {
+        "elapsed_seconds": 438.1857907
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb",
+        "tools/migration/verify_pit_archive.py": "d911195f9346b1c4d582b18c780e8426c88d4b7afe0c2a4df2c2a2b4c7066520"
+      }
+    },
+    "extended-3.13-shard-2": {
+      "subject_sha": "31346cca2d233ce65bf64728009884c53788b86c",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+      "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2385,
+        "passed": 2385,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "530.057"
+      ],
+      "junit_seconds": 517.803,
+      "receipt_timing": {
+        "elapsed_seconds": 533.8348496
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb",
+        "tools/migration/verify_pit_archive.py": "d911195f9346b1c4d582b18c780e8426c88d4b7afe0c2a4df2c2a2b4c7066520"
+      }
+    },
+    "extended-3.14-shard-0": {
+      "subject_sha": "31346cca2d233ce65bf64728009884c53788b86c",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+      "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 3130,
+        "passed": 3130,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "808.113"
+      ],
+      "junit_seconds": 780.208,
+      "receipt_timing": {
+        "elapsed_seconds": 813.1003076999999
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb",
+        "tools/migration/verify_pit_archive.py": "d911195f9346b1c4d582b18c780e8426c88d4b7afe0c2a4df2c2a2b4c7066520"
+      }
+    },
+    "extended-3.14-shard-1": {
+      "subject_sha": "31346cca2d233ce65bf64728009884c53788b86c",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+      "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2304,
+        "passed": 2304,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "793.525"
+      ],
+      "junit_seconds": 774.983,
+      "receipt_timing": {
+        "elapsed_seconds": 797.5352990000001
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb",
+        "tools/migration/verify_pit_archive.py": "d911195f9346b1c4d582b18c780e8426c88d4b7afe0c2a4df2c2a2b4c7066520"
+      }
+    },
+    "extended-3.14-shard-2": {
+      "subject_sha": "31346cca2d233ce65bf64728009884c53788b86c",
+      "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+      "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+      "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+      "counts": {
+        "tests": 2385,
+        "passed": 2385,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suite_seconds": [
+        "786.510"
+      ],
+      "junit_seconds": 770.018,
+      "receipt_timing": {
+        "elapsed_seconds": 791.6669552999999
+      },
+      "relevant_source_hashes": {
+        "src/factorlab/cli.py": "a6ed6c34c1e5ab27a473338a7bc87d9aeae783bc5168860527832bf6d9424780",
+        "src/factorlab/integrations/binance_futures_trading/gateway.py": "6b60acf561912f2411b13c756672515041d5de14b0b58985a45ab59035da8fc5",
+        "tests/model_readiness/test_comparison_contract.py": "2f1cb8d02855a9042a10f54f1275bfd5eba35163fa899793ac8381bf4e1015eb",
+        "tools/migration/verify_pit_archive.py": "d911195f9346b1c4d582b18c780e8426c88d4b7afe0c2a4df2c2a2b4c7066520"
+      }
+    },
+    "shard2_modules": {
+      "tests.model_readiness.test_comparison_contract": {
+        "seconds": 125.90400000000004,
+        "nodes": 62
+      },
+      "tests.research.test_cli_phase2": {
+        "seconds": 113.74800000000002,
+        "nodes": 45
+      },
+      "tests.research.test_cli_compute_receipts": {
+        "seconds": 59.652,
+        "nodes": 6
+      },
+      "tests.market_admission.test_admission": {
+        "seconds": 55.394,
+        "nodes": 54
+      },
+      "tests.model_readiness.test_readiness": {
+        "seconds": 45.619,
+        "nodes": 7
+      },
+      "tests.research.test_partitioned_walk_forward": {
+        "seconds": 41.651999999999994,
+        "nodes": 23
+      },
+      "tests.research.test_research_workflow": {
+        "seconds": 33.268,
+        "nodes": 18
+      },
+      "tests.security.test_pr_identity": {
+        "seconds": 30.484000000000005,
+        "nodes": 31
+      },
+      "tests.research.test_walk_forward_factor_selection": {
+        "seconds": 23.975000000000005,
+        "nodes": 27
+      },
+      "tests.security.test_pr_risk": {
+        "seconds": 22.894,
+        "nodes": 81
+      },
+      "tests.research.test_market_data_qualification": {
+        "seconds": 18.986,
+        "nodes": 32
+      },
+      "tests.research.test_signal_propagation": {
+        "seconds": 18.375999999999998,
+        "nodes": 7
+      },
+      "tests.cross_market.test_p2_research_contracts": {
+        "seconds": 15.579,
+        "nodes": 45
+      },
+      "tests.research.test_walk_forward_stage_diagnostics": {
+        "seconds": 15.299999999999997,
+        "nodes": 22
+      },
+      "tests.market_structure.test_publication_scope_audit": {
+        "seconds": 13.826000000000004,
+        "nodes": 42
+      },
+      "tests.research.test_csmar_rejection_coordinates": {
+        "seconds": 12.904999999999996,
+        "nodes": 64
+      },
+      "tests.research.test_cli_download_contract": {
+        "seconds": 11.082,
+        "nodes": 23
+      },
+      "tests.research.test_local_cli_pipeline": {
+        "seconds": 9.453000000000001,
+        "nodes": 7
+      },
+      "tests.research.test_forward_evaluation_synthetic_example": {
+        "seconds": 8.729,
+        "nodes": 15
+      },
+      "tests.research.test_cache_generation_publication": {
+        "seconds": 7.539,
+        "nodes": 44
+      },
+      "tests.research.test_browser_notice_observations": {
+        "seconds": 5.861000000000001,
+        "nodes": 67
+      },
+      "tests.research.test_p4_01_pipeline_inputs": {
+        "seconds": 4.713,
+        "nodes": 40
+      },
+      "tests.integrations.test_demo_grid_supervisor": {
+        "seconds": 4.648000000000001,
+        "nodes": 22
+      },
+      "tests.minute_data.test_yhh30m": {
+        "seconds": 4.215,
+        "nodes": 23
+      },
+      "tests.market_structure.test_c01_publication_safety": {
+        "seconds": 3.8639999999999994,
+        "nodes": 18
+      },
+      "tests.research.test_strategy_robustness": {
+        "seconds": 3.84,
+        "nodes": 3
+      },
+      "tests.research.test_datahub": {
+        "seconds": 3.690999999999999,
+        "nodes": 18
+      },
+      "tests.research.test_csmar_local_prepare": {
+        "seconds": 3.6899999999999995,
+        "nodes": 8
+      },
+      "tests.research.test_benchmark_refetch": {
+        "seconds": 3.4819999999999998,
+        "nodes": 28
+      },
+      "tests.market_admission.test_p1_review": {
+        "seconds": 3.065,
+        "nodes": 8
+      },
+      "tests.minute_data.test_yhh30m_release_review": {
+        "seconds": 2.9059999999999997,
+        "nodes": 8
+      },
+      "tests.research.test_tree_models_phase3": {
+        "seconds": 2.449,
+        "nodes": 5
+      },
+      "tests.market_structure.test_minute_gate_compatibility": {
+        "seconds": 2.243,
+        "nodes": 7
+      },
+      "tests.research.test_real_data_readiness": {
+        "seconds": 2.003,
+        "nodes": 11
+      },
+      "tests.integrations.test_demo_signal_expiration": {
+        "seconds": 1.9600000000000002,
+        "nodes": 22
+      },
+      "tests.research.test_grid_paper": {
+        "seconds": 1.941,
+        "nodes": 15
+      },
+      "tests.research.test_tdx_reference": {
+        "seconds": 1.884,
+        "nodes": 9
+      },
+      "tests.research.test_oos_execution": {
+        "seconds": 1.8659999999999999,
+        "nodes": 12
+      },
+      "tests.research.test_grid_lifecycle": {
+        "seconds": 1.844,
+        "nodes": 3
+      },
+      "tests.research.test_factor_registry_v2": {
+        "seconds": 1.7930000000000004,
+        "nodes": 42
+      },
+      "tests.research.test_grid_experiment": {
+        "seconds": 1.772,
+        "nodes": 1
+      },
+      "tests.research.test_portfolio_dividend_execution": {
+        "seconds": 1.7459999999999998,
+        "nodes": 22
+      },
+      "tests.research.test_cli_reproducibility": {
+        "seconds": 1.6239999999999999,
+        "nodes": 18
+      },
+      "tests.research.test_download_repair_concurrency": {
+        "seconds": 1.1360000000000001,
+        "nodes": 3
+      },
+      "tests.research.test_forward_full_predictions": {
+        "seconds": 1.1350000000000007,
+        "nodes": 58
+      },
+      "tests.migration.test_independent_boundary": {
+        "seconds": 1.0759999999999998,
+        "nodes": 8
+      },
+      "tests.research.test_exploratory_publication": {
+        "seconds": 0.8430000000000001,
+        "nodes": 6
+      },
+      "tests.research.test_schema_numeric_integrity": {
+        "seconds": 0.8360000000000006,
+        "nodes": 84
+      },
+      "tests.research.status_candidate.test_integration": {
+        "seconds": 0.8100000000000002,
+        "nodes": 31
+      },
+      "tests.research.test_data_cache": {
+        "seconds": 0.8099999999999999,
+        "nodes": 13
+      },
+      "tests.integrations.test_binance_demo_network": {
+        "seconds": 0.806,
+        "nodes": 63
+      },
+      "tests.integrations.test_binance_demo_execution": {
+        "seconds": 0.739,
+        "nodes": 26
+      },
+      "tests.research.test_exploratory_real": {
+        "seconds": 0.712,
+        "nodes": 10
+      },
+      "tests.research.test_console": {
+        "seconds": 0.682,
+        "nodes": 15
+      },
+      "tests.research.test_d06_evidence_binding": {
+        "seconds": 0.664,
+        "nodes": 3
+      },
+      "tests.integrations.test_binance_demo_strategy": {
+        "seconds": 0.5810000000000002,
+        "nodes": 12
+      },
+      "tests.research.test_cli_phase4": {
+        "seconds": 0.553,
+        "nodes": 8
+      },
+      "tests.research.test_akshare_provider": {
+        "seconds": 0.535,
+        "nodes": 28
+      },
+      "tests.research.test_akshare_failure_contract": {
+        "seconds": 0.5000000000000002,
+        "nodes": 128
+      },
+      "tests.research.test_p9_02_recovery": {
+        "seconds": 0.4730000000000001,
+        "nodes": 13
+      },
+      "tests.market_structure.test_review_calendar": {
+        "seconds": 0.40400000000000014,
+        "nodes": 28
+      },
+      "tests.research.test_real_hfq_evidence_pilot": {
+        "seconds": 0.3690000000000002,
+        "nodes": 53
+      },
+      "tests.cross_market.test_valuation_remediation": {
+        "seconds": 0.3650000000000002,
+        "nodes": 34
+      },
+      "tests.research.test_pairs_statistics": {
+        "seconds": 0.36,
+        "nodes": 9
+      },
+      "tests.integrations.test_dual_market_trading": {
+        "seconds": 0.3580000000000001,
+        "nodes": 12
+      },
+      "tests.research.test_comparison_snapshot": {
+        "seconds": 0.308,
+        "nodes": 16
+      },
+      "tests.research.test_pit_snapshot_failure": {
+        "seconds": 0.297,
+        "nodes": 6
+      },
+      "tests.research.test_risk_exposures": {
+        "seconds": 0.28700000000000014,
+        "nodes": 18
+      },
+      "tests.research.test_config": {
+        "seconds": 0.2800000000000002,
+        "nodes": 50
+      },
+      "tests.research.test_pit_event_evidence": {
+        "seconds": 0.26200000000000007,
+        "nodes": 36
+      },
+      "tests.research.test_p9_market_evidence": {
+        "seconds": 0.2420000000000001,
+        "nodes": 57
+      },
+      "tests.research.test_factors_phase1": {
+        "seconds": 0.20700000000000005,
+        "nodes": 19
+      },
+      "tests.research.status_candidate.test_toctou": {
+        "seconds": 0.18300000000000002,
+        "nodes": 14
+      },
+      "tests.research.test_binance_model_study": {
+        "seconds": 0.17600000000000002,
+        "nodes": 7
+      },
+      "tests.research.test_tdx_day": {
+        "seconds": 0.16900000000000007,
+        "nodes": 42
+      },
+      "tests.market_structure.test_review_calendar_red": {
+        "seconds": 0.158,
+        "nodes": 2
+      },
+      "tests.research.test_evidence_consumption_study": {
+        "seconds": 0.15600000000000003,
+        "nodes": 16
+      },
+      "tests.research.test_data_calendar": {
+        "seconds": 0.156,
+        "nodes": 6
+      },
+      "tests.research.test_p4_04_allocation": {
+        "seconds": 0.10400000000000001,
+        "nodes": 4
+      },
+      "tests.research.test_factor_discovery_generator": {
+        "seconds": 0.08800000000000002,
+        "nodes": 18
+      },
+      "tests.research.test_config_roots": {
+        "seconds": 0.07600000000000001,
+        "nodes": 13
+      },
+      "tests.research.test_p9_d06": {
+        "seconds": 0.07100000000000001,
+        "nodes": 10
+      },
+      "tests.research.test_market_regime_phase3": {
+        "seconds": 0.06100000000000001,
+        "nodes": 14
+      },
+      "tests.integrations.test_m05_time_semantics": {
+        "seconds": 0.05700000000000001,
+        "nodes": 11
+      },
+      "tests.research.test_grid_weekend": {
+        "seconds": 0.05,
+        "nodes": 6
+      },
+      "tests.research.test_models_phase2": {
+        "seconds": 0.04300000000000001,
+        "nodes": 16
+      },
+      "tests.research.test_notice_pdf": {
+        "seconds": 0.04200000000000003,
+        "nodes": 48
+      },
+      "tests.research.test_model_factory_positional_compat": {
+        "seconds": 0.039000000000000014,
+        "nodes": 60
+      },
+      "tests.research.test_csv_fixtures": {
+        "seconds": 0.038,
+        "nodes": 1
+      },
+      "tests.evidence.test_tri_source_market": {
+        "seconds": 0.034,
+        "nodes": 12
+      },
+      "tests.research.test_grid": {
+        "seconds": 0.032000000000000015,
+        "nodes": 30
+      },
+      "tests.evidence.test_p3_d05.AuditTests": {
+        "seconds": 0.028999999999999998,
+        "nodes": 9
+      },
+      "tests.integrations.test_binance_equity_trading_core": {
+        "seconds": 0.027000000000000003,
+        "nodes": 10
+      },
+      "tests.integrations.test_binance_rejection_evidence": {
+        "seconds": 0.024000000000000004,
+        "nodes": 14
+      },
+      "tests.evidence.test_dq02_finalize": {
+        "seconds": 0.019999999999999997,
+        "nodes": 3
+      },
+      "tests.evidence.test_dq02b_columnar": {
+        "seconds": 0.015,
+        "nodes": 3
+      },
+      "tests.market_structure.test_review_provenance_red": {
+        "seconds": 0.014,
+        "nodes": 2
+      },
+      "tests.research.test_binance_client": {
+        "seconds": 0.013999999999999999,
+        "nodes": 16
+      },
+      "tests.research.test_tdx_quality_audit": {
+        "seconds": 0.009000000000000001,
+        "nodes": 29
+      },
+      "tests.evidence.test_p4_d02_evidence": {
+        "seconds": 0.009000000000000001,
+        "nodes": 7
+      },
+      "tests.research.test_pairs_account": {
+        "seconds": 0.008,
+        "nodes": 8
+      },
+      "tests.integrations.test_binance_environments": {
+        "seconds": 0.008,
+        "nodes": 9
+      },
+      "tests.research.test_source_coverage": {
+        "seconds": 0.007,
+        "nodes": 26
+      },
+      "tests.research.test_grid_funding_benchmark": {
+        "seconds": 0.005,
+        "nodes": 3
+      },
+      "tests.research.test_forward_policy_phase4": {
+        "seconds": 0.001,
+        "nodes": 4
+      }
+    }
+  }
+}
