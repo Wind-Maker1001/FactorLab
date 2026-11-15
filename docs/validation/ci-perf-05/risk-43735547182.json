@@ -1,0 +1,2340 @@
+{
+  "identity.json": {
+    "base": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "event": "pull_request_target",
+    "event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "pr": 173,
+    "pr_head": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+    "repository": "Wind-Maker1001/FactorLab",
+    "risk_sha256": "b76387b85aa29536a2e9f8fccf25e2e09c10e2dbb652e6687030be767293f131",
+    "run_attempt": "1",
+    "run_id": "43735547182",
+    "schema": "FACTORLAB_PR_VALIDATION_IDENTITY_V1",
+    "subject": "31346cca2d233ce65bf64728009884c53788b86c"
+  },
+  "risk.json": {
+    "affected": [
+      ".github/scripts/ci/c01_preservation.py",
+      ".github/scripts/ci/frozen_engineering_migration.py",
+      ".github/scripts/ci/research_checks.py",
+      ".github/scripts/ci/security_admission_revision.py",
+      ".github/workflows/factorlab-full.yml",
+      ".github/workflows/factorlab-pr.yml",
+      ".github/workflows/factorlab.yml",
+      "docs/validation/ci-perf-02/REPORT.md",
+      "examples/research/review_yhh30m_release.py",
+      "examples/research_workflow.py",
+      "src/factorlab/research/workflow.py",
+      "tests/evidence/test_cnrds_duplicates.py",
+      "tests/evidence/test_dq01_asset_coverage.py",
+      "tests/evidence/test_dq03_cross_table_audit.py",
+      "tests/evidence/test_dqc01_evidence_matrix.py",
+      "tests/evidence/test_pit_archive_verifiers.py",
+      "tests/evidence/test_tri_source_assets.py",
+      "tests/evidence/test_tri_source_market.py",
+      "tests/evidence/test_tri_source_semantics.py",
+      "tests/market_admission/test_p1_review.py",
+      "tests/market_admission/test_revision_contract.py",
+      "tests/market_structure/test_c01_publication_safety.py",
+      "tests/market_structure/test_delivery.py",
+      "tests/market_structure/test_minute_gate_compatibility.py",
+      "tests/market_structure/test_publication_scope_audit.py",
+      "tests/migration/test_independent_boundary.py",
+      "tests/minute_data/test_yhh30m_release_review.py",
+      "tests/research/status_candidate/test_preservation.py",
+      "tests/research/test_c01_preservation.py",
+      "tests/research/test_c01_source_reachability.py",
+      "tests/research/test_console.py",
+      "tests/research/test_five_year_frozen_baseline.py",
+      "tests/research/test_research_workflow.py",
+      "tests/security/test_four_shard_contract.py",
+      "tests/security/test_independent_controls.py",
+      "tests/security/test_pr_identity.py",
+      "tests/security/test_pr_risk.py",
+      "tests/security/test_targeted_validation.py",
+      "tests/security/test_validation_v2.py",
+      "tools/ci/current_module_timings.json",
+      "tools/ci/current_validation.py",
+      "tools/ci/integration_checks.py",
+      "tools/ci/run_checks.py",
+      "tools/ci/sharding.py",
+      "tools/data/cnrds_duplicate_audit.py",
+      "tools/data/dq01_asset_coverage.py",
+      "tools/data/dq02_report.py",
+      "tools/data/dq02b_report.py",
+      "tools/data/dq03_cross_table_audit.py",
+      "tools/data/dq03_event_relations.py",
+      "tools/data/dqc01_evidence_matrix.py",
+      "tools/data/p10_d02_corporate_actions.py",
+      "tools/data/p10_d02_regression.py",
+      "tools/data/p10_d02_targeted_evidence.py",
+      "tools/data/p10_g01_validate.py",
+      "tools/data/tri_source_assets_audit.py",
+      "tools/data/tri_source_market_audit.py",
+      "tools/data/tri_source_semantics_audit.py",
+      "tools/migration/bind_final_head.py",
+      "tools/migration/compare_test_inventory.py",
+      "tools/migration/finalize_validation.py",
+      "tools/migration/verify_pit_archive.py",
+      "tools/research/workflow.py",
+      "tools/security/acceptance_report.py",
+      "tools/security/fixed_validator.py",
+      "tools/security/seal_review_material.py"
+    ],
+    "base": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "current": true,
+    "decisions": [
+      {
+        "after": [
+          "100644",
+          "blob",
+          "e4b783d946ccd84c497bb124cb5d620a2588ccb0"
+        ],
+        "before": null,
+        "consumers": [
+          "examples/research_workflow.py",
+          "src/factorlab/research/workflow.py",
+          "tests/evidence/test_cnrds_duplicates.py",
+          "tests/evidence/test_dq01_asset_coverage.py",
+          "tests/evidence/test_dq03_cross_table_audit.py",
+          "tests/evidence/test_dqc01_evidence_matrix.py",
+          "tests/evidence/test_tri_source_assets.py",
+          "tests/evidence/test_tri_source_market.py",
+          "tests/evidence/test_tri_source_semantics.py",
+          "tests/research/test_console.py",
+          "tests/research/test_research_workflow.py",
+          "tools/data/cnrds_duplicate_audit.py",
+          "tools/data/dq01_asset_coverage.py",
+          "tools/data/dq02_report.py",
+          "tools/data/dq02b_report.py",
+          "tools/data/dq03_cross_table_audit.py",
+          "tools/data/dq03_event_relations.py",
+          "tools/data/dqc01_evidence_matrix.py",
+          "tools/data/p10_d02_corporate_actions.py",
+          "tools/data/p10_d02_regression.py",
+          "tools/data/p10_d02_targeted_evidence.py",
+          "tools/data/p10_g01_validate.py",
+          "tools/data/tri_source_assets_audit.py",
+          "tools/data/tri_source_market_audit.py",
+          "tools/data/tri_source_semantics_audit.py",
+          "tools/research/workflow.py"
+        ],
+        "path": "docs/validation/ci-perf-02/REPORT.md",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "e984b4e740189fa4a8c9a7840346dd584c3d22a1"
+        ],
+        "before": [
+          "100644",
+          "blob",
+          "e98ce82c9f33252a5ec9b5b5c9255d4c480d7eb5"
+        ],
+        "consumers": [
+          ".github/scripts/ci/c01_preservation.py",
+          ".github/scripts/ci/frozen_engineering_migration.py",
+          ".github/scripts/ci/research_checks.py",
+          ".github/scripts/ci/security_admission_revision.py",
+          ".github/workflows/factorlab-full.yml",
+          ".github/workflows/factorlab-pr.yml",
+          ".github/workflows/factorlab.yml",
+          "examples/research/review_yhh30m_release.py",
+          "tests/market_admission/test_p1_review.py",
+          "tests/market_admission/test_revision_contract.py",
+          "tests/market_structure/test_c01_publication_safety.py",
+          "tests/market_structure/test_delivery.py",
+          "tests/market_structure/test_minute_gate_compatibility.py",
+          "tests/market_structure/test_publication_scope_audit.py",
+          "tests/migration/test_independent_boundary.py",
+          "tests/minute_data/test_yhh30m_release_review.py",
+          "tests/research/status_candidate/test_preservation.py",
+          "tests/research/test_c01_preservation.py",
+          "tests/research/test_c01_source_reachability.py",
+          "tests/research/test_five_year_frozen_baseline.py",
+          "tests/security/test_four_shard_contract.py",
+          "tests/security/test_independent_controls.py",
+          "tests/security/test_pr_identity.py",
+          "tests/security/test_pr_risk.py",
+          "tests/security/test_targeted_validation.py",
+          "tests/security/test_validation_v2.py",
+          "tools/ci/current_module_timings.json",
+          "tools/ci/current_validation.py",
+          "tools/ci/integration_checks.py",
+          "tools/ci/run_checks.py",
+          "tools/ci/sharding.py",
+          "tools/migration/bind_final_head.py",
+          "tools/migration/compare_test_inventory.py",
+          "tools/migration/finalize_validation.py",
+          "tools/security/acceptance_report.py",
+          "tools/security/fixed_validator.py",
+          "tools/security/seal_review_material.py"
+        ],
+        "path": "tests/evidence/test_pit_archive_verifiers.py",
+        "rules": [
+          "unresolved-dynamic-loading"
+        ],
+        "tests": [
+          "tests/evidence/test_pit_archive_verifiers.py",
+          "tests/migration/test_independent_boundary.py"
+        ]
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "605ef61ad5731349f4091461df97feef2116fe98"
+        ],
+        "before": [
+          "100644",
+          "blob",
+          "eca2ee22b350b9b66d8fa4fdc217474f11f5e699"
+        ],
+        "consumers": [
+          ".github/workflows/factorlab-full.yml",
+          ".github/workflows/factorlab-pr.yml",
+          ".github/workflows/factorlab.yml",
+          "tests/security/test_four_shard_contract.py",
+          "tests/security/test_independent_controls.py",
+          "tests/security/test_pr_identity.py",
+          "tests/security/test_pr_risk.py",
+          "tests/security/test_targeted_validation.py",
+          "tests/security/test_validation_v2.py",
+          "tools/ci/current_module_timings.json",
+          "tools/ci/current_validation.py",
+          "tools/ci/integration_checks.py",
+          "tools/ci/sharding.py",
+          "tools/security/acceptance_report.py",
+          "tools/security/fixed_validator.py",
+          "tools/security/seal_review_material.py"
+        ],
+        "path": "tests/migration/test_independent_boundary.py",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": [
+          "tests/migration/test_independent_boundary.py"
+        ]
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "812119551a8baa4a9365508e63a8b87d47b428e4"
+        ],
+        "before": null,
+        "consumers": [
+          ".github/scripts/ci/c01_preservation.py",
+          ".github/scripts/ci/frozen_engineering_migration.py",
+          ".github/scripts/ci/research_checks.py",
+          ".github/scripts/ci/security_admission_revision.py",
+          ".github/workflows/factorlab-full.yml",
+          ".github/workflows/factorlab-pr.yml",
+          ".github/workflows/factorlab.yml",
+          "examples/research/review_yhh30m_release.py",
+          "tests/evidence/test_pit_archive_verifiers.py",
+          "tests/market_admission/test_p1_review.py",
+          "tests/market_admission/test_revision_contract.py",
+          "tests/market_structure/test_c01_publication_safety.py",
+          "tests/market_structure/test_delivery.py",
+          "tests/market_structure/test_minute_gate_compatibility.py",
+          "tests/market_structure/test_publication_scope_audit.py",
+          "tests/migration/test_independent_boundary.py",
+          "tests/minute_data/test_yhh30m_release_review.py",
+          "tests/research/status_candidate/test_preservation.py",
+          "tests/research/test_c01_preservation.py",
+          "tests/research/test_c01_source_reachability.py",
+          "tests/research/test_five_year_frozen_baseline.py",
+          "tests/security/test_four_shard_contract.py",
+          "tests/security/test_independent_controls.py",
+          "tests/security/test_pr_identity.py",
+          "tests/security/test_pr_risk.py",
+          "tests/security/test_targeted_validation.py",
+          "tests/security/test_validation_v2.py",
+          "tools/ci/current_module_timings.json",
+          "tools/ci/current_validation.py",
+          "tools/ci/integration_checks.py",
+          "tools/ci/run_checks.py",
+          "tools/ci/sharding.py",
+          "tools/migration/bind_final_head.py",
+          "tools/migration/compare_test_inventory.py",
+          "tools/migration/finalize_validation.py",
+          "tools/security/acceptance_report.py",
+          "tools/security/fixed_validator.py",
+          "tools/security/seal_review_material.py"
+        ],
+        "path": "tools/migration/verify_pit_archive.py",
+        "rules": [
+          "sensitive-or-unclassified",
+          "unresolved-dynamic-loading"
+        ],
+        "tests": [
+          "tests/evidence/test_pit_archive_verifiers.py",
+          "tests/migration/test_independent_boundary.py"
+        ]
+      }
+    ],
+    "files": [
+      "docs/validation/ci-perf-02/REPORT.md",
+      "tests/evidence/test_pit_archive_verifiers.py",
+      "tests/migration/test_independent_boundary.py",
+      "tools/migration/verify_pit_archive.py"
+    ],
+    "head": "31346cca2d233ce65bf64728009884c53788b86c",
+    "locking": true,
+    "package": true,
+    "reasons": {
+      "current": [
+        {
+          "path": "tools/migration/verify_pit_archive.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-02/REPORT.md"
+        },
+        {
+          "path": "examples/research_workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-02/REPORT.md"
+        },
+        {
+          "path": "tools/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-02/REPORT.md"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_p1_review.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_c01_publication_safety.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "examples/research/review_yhh30m_release.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_delivery.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_revision_contract.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/evidence/test_pit_archive_verifiers.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_five_year_frozen_baseline.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_p1_review.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_c01_publication_safety.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "examples/research/review_yhh30m_release.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_delivery.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_revision_contract.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/evidence/test_pit_archive_verifiers.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_five_year_frozen_baseline.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_p1_review.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_c01_publication_safety.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/verify_pit_archive.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "examples/research/review_yhh30m_release.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_delivery.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_revision_contract.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/evidence/test_pit_archive_verifiers.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_five_year_frozen_baseline.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        }
+      ],
+      "locking": [
+        {
+          "path": "tools/migration/verify_pit_archive.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-02/REPORT.md"
+        },
+        {
+          "path": "examples/research_workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-02/REPORT.md"
+        },
+        {
+          "path": "tools/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-02/REPORT.md"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_p1_review.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_c01_publication_safety.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "examples/research/review_yhh30m_release.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_delivery.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_revision_contract.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/evidence/test_pit_archive_verifiers.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_five_year_frozen_baseline.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_p1_review.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_c01_publication_safety.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "examples/research/review_yhh30m_release.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_delivery.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_revision_contract.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/evidence/test_pit_archive_verifiers.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_five_year_frozen_baseline.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_p1_review.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_c01_publication_safety.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/verify_pit_archive.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "examples/research/review_yhh30m_release.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_structure/test_delivery.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/market_admission/test_revision_contract.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/evidence/test_pit_archive_verifiers.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_five_year_frozen_baseline.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tests/research/test_c01_preservation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        }
+      ],
+      "package": [
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        }
+      ],
+      "review": [
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/evidence/test_pit_archive_verifiers.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tests/migration/test_independent_boundary.py"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:tools/migration/verify_pit_archive.py"
+        }
+      ]
+    },
+    "review": true,
+    "schema": "FACTORLAB_PR_RISK_V2",
+    "targeted_tests": [
+      "tests/evidence/test_pit_archive_verifiers.py",
+      "tests/migration/test_independent_boundary.py"
+    ]
+  }
+}
