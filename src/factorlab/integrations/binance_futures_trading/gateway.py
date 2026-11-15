@@ -126,28 +126,29 @@ class FuturesPaperGateway(PaperBroker):
                 quote += delta * event.fill_price
                 qty = event.cumulative_filled_quantity
             booked[event.client_order_id] = qty, quote
-        for key in tuple(self.state.orders):
-            remote, remote_quote = self.adapter._load(key)
-            local = self.state.orders[key]
-            qty, quote = booked.get(key, (ZERO, ZERO))
-            delta = remote.snapshot.cumulative_filled_quantity - qty
-            if delta < 0 or remote_quote < quote:
-                raise ValueError('paper/adapter cumulative execution mismatch')
-            fingerprint = hashlib.sha256(dumps([remote, remote_quote]).encode()).hexdigest()
-            event = OrderEvent(key, remote.snapshot.exchange_order_id, remote.snapshot.status,
-                remote.snapshot.cumulative_filled_quantity, (remote_quote - quote) / delta if delta else None,
-                remote.observed_at, 'binance-rest-recovery', 'recovery:' + fingerprint,
-                remote.snapshot.cumulative_fee)
-            if local.confirmed_status == S.NEW:
-                # The timeout placeholder has a local timestamp, not a confirmed
-                # exchange time; server clock offset must not reject recovery.
-                controller._atomic(lambda: self.state.orders.__setitem__(key, replace(
-                    self.state.orders[key], observed_at=event.event_time)))
-            if local.confirmed_status == S.NEW and event.status not in {S.SUBMITTED, S.REJECTED}:
-                controller.replay(replace(event, event_id=event.event_id + ':accept', status=S.SUBMITTED,
-                                         cumulative_filled_quantity=ZERO, cumulative_fee=ZERO, fill_price=None))
-            existing = controller.store.db.execute('SELECT payload FROM events WHERE id=?', (event.event_id,)).fetchone()
-            controller.replay(decode(json.loads(existing[0])) if existing is not None else event)
+        def replay_confirmed():
+            for key in tuple(self.state.orders):
+                remote, remote_quote = self.adapter._load(key)
+                local = self.state.orders[key]
+                qty, quote = booked.get(key, (ZERO, ZERO))
+                delta = remote.snapshot.cumulative_filled_quantity - qty
+                if delta < 0 or remote_quote < quote:
+                    raise ValueError('paper/adapter cumulative execution mismatch')
+                fingerprint = hashlib.sha256(dumps([remote, remote_quote]).encode()).hexdigest()
+                event = OrderEvent(key, remote.snapshot.exchange_order_id, remote.snapshot.status,
+                    remote.snapshot.cumulative_filled_quantity, (remote_quote - quote) / delta if delta else None,
+                    remote.observed_at, 'binance-rest-recovery', 'recovery:' + fingerprint,
+                    remote.snapshot.cumulative_fee)
+                if local.confirmed_status == S.NEW:
+                    # The timeout placeholder has a local timestamp, not a confirmed
+                    # exchange time; server clock offset must not reject recovery.
+                    self.state.orders[key] = replace(local, observed_at=event.event_time)
+                if local.confirmed_status == S.NEW and event.status not in {S.SUBMITTED, S.REJECTED}:
+                    self.apply(replace(event, event_id=event.event_id + ':accept', status=S.SUBMITTED,
+                                           cumulative_filled_quantity=ZERO, cumulative_fee=ZERO, fill_price=None))
+                existing = controller.store.db.execute('SELECT payload FROM events WHERE id=?', (event.event_id,)).fetchone()
+                self.apply(decode(json.loads(existing[0])) if existing is not None else event)
+        controller._atomic(replay_confirmed)
         return controller.reconcile()
 
     def reconcile(self):
