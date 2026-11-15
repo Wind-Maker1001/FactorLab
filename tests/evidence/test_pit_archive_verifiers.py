@@ -39,8 +39,7 @@ def publication(historical_contracts):
     return module
 
 
-@pytest.fixture
-def migration():
+def load_upstream_migration():
     # Exact immutable upstream bytes, supplied as a private test reference.
     # No financial controller/receipt is re-signed or modified by this loader.
     path = ROOT / "docs/migration/evidence/upstream-verifiers/verify_migration.py"
@@ -51,6 +50,17 @@ def migration():
     module.__file__ = str(path)
     exec(compile(body, str(path), 'exec'), module.__dict__)
     return module
+
+
+@pytest.fixture
+def upstream_migration():
+    return load_upstream_migration()
+
+
+@pytest.fixture
+def migration():
+    load_upstream_migration()
+    return load_module("pit_archive", ROOT / "tools/migration/verify_pit_archive.py")
 
 
 def inject(publication, monkeypatch, tmp_path, payload, kind="md", escape=""):
@@ -500,6 +510,54 @@ def test_bad_receipt_cli_reports_fail(migration, history, capsys):
     write(root, migration.RECEIPT, json.dumps(receipt).encode())
     assert migration.main() == 1
     assert json.loads(capsys.readouterr().out)["migration_consistency"] == "FAIL"
+
+
+@pytest.mark.parametrize("scenario", ["valid", "parent", "tree", "blob", "missing"])
+def test_upstream_reference_agrees(migration, upstream_migration, history, monkeypatch, scenario):
+    root, receipt, manifest = history
+    monkeypatch.setattr(upstream_migration, "ROOT", root)
+    if scenario == "parent":
+        receipt["cherry_pick_commit"] = manifest["private_source_commit"]
+    elif scenario == "tree":
+        write(root, "qbot/research/frozen.txt", b"changed research\n")
+    elif scenario == "blob":
+        receipt["delivery_files"][-1]["git_blob"] = receipt["delivery_files"][0]["git_blob"]
+    elif scenario == "missing":
+        value = receipt["delivery_files"][-1]["git_blob"]
+        target = root / ".git/objects" / value[:2] / value[2:]
+        target.chmod(stat.S_IWRITE | stat.S_IREAD)
+        target.unlink()
+    if scenario == "valid":
+        assert migration.verify_recorded_migration(receipt, manifest) is None
+        assert upstream_migration.verify_recorded_migration(receipt, manifest) is None
+    else:
+        errors = (ValueError,) if scenario != "missing" else ()
+        for verifier in (migration, upstream_migration):
+            with pytest.raises(errors + (verifier.MissingGitObjects,)):
+                verifier.verify_recorded_migration(receipt, manifest)
+
+
+def test_wrong_missing_blob_binding_is_fail_not_not_run(migration, history, capsys):
+    root, receipt, _ = history
+    receipt["delivery_files"][-1]["git_blob"] = "0" * 40
+    write(root, migration.RECEIPT, json.dumps(receipt).encode())
+    assert migration.main() == 1
+    result = json.loads(capsys.readouterr().out)
+    assert result["migration_consistency"] == "FAIL"
+    assert "Git entry mismatch" in result["reason"]
+
+
+def test_object_replacement_and_reverification(migration, history):
+    import zlib
+
+    root, receipt, manifest = history
+    migration.verify_recorded_migration(receipt, manifest)
+    value = receipt["delivery_files"][-1]["git_blob"]
+    target = root / ".git/objects" / value[:2] / value[2:]
+    target.chmod(stat.S_IWRITE | stat.S_IREAD)
+    target.write_bytes(zlib.compress(b"blob 8\0replaced"))
+    with pytest.raises(ValueError, match="Git object SHA mismatch"):
+        migration.verify_recorded_migration(receipt, manifest)
 
 
 def test_missing_git_is_not_run(migration, history, monkeypatch, capsys):

@@ -82,6 +82,13 @@ def test_discovery_failed_git_status_is_unknown(monkeypatch):
     assert receipts.code_evidence()['source_tree_dirty'] is None
 
 
+def test_archive_fixture_supports_direct_zero_argument_loading():
+    from tests.evidence.test_pit_archive_verifiers import migration
+    module = migration.__wrapped__()
+    assert Path(module.__file__).name == 'verify_pit_archive.py'
+    assert callable(module.verify)
+
+
 def test_immutable_archive_verifier_reference_cannot_load_changed_bytes(monkeypatch):
     from tests.evidence.test_pit_archive_verifiers import migration
     monkeypatch.setattr(Path, 'read_bytes', lambda self: b'changed verifier bytes')
