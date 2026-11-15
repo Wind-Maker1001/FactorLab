@@ -39,8 +39,7 @@ def publication(historical_contracts):
     return module
 
 
-@pytest.fixture
-def upstream_migration():
+def load_upstream_migration():
     # Exact immutable upstream bytes, supplied as a private test reference.
     # No financial controller/receipt is re-signed or modified by this loader.
     path = ROOT / "docs/migration/evidence/upstream-verifiers/verify_migration.py"
@@ -54,7 +53,13 @@ def upstream_migration():
 
 
 @pytest.fixture
-def migration(upstream_migration):
+def upstream_migration():
+    return load_upstream_migration()
+
+
+@pytest.fixture
+def migration():
+    load_upstream_migration()
     return load_module("pit_archive", ROOT / "tools/migration/verify_pit_archive.py")
 
 
