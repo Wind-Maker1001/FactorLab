@@ -63,6 +63,7 @@ class MonteCarloInput:
 
     Bootstrap observation and availability timestamps must not exceed ``as_of``.
     Weights are long-only; residual cash earns zero, and rebalancing is costless.
+    Weight sums in (1, 1 + 1e-12] are normalized as absolute roundoff tolerance.
     """
 
     weights: object
@@ -118,8 +119,13 @@ def _vector(value, n, name):
 
 def _prepare(config, inputs):
     w = np.asarray(inputs.weights, dtype=np.float64)
-    if w.ndim != 1 or not len(w) or not np.isfinite(w).all() or (w < 0).any() or w.sum() > 1:
+    if w.ndim != 1 or not len(w) or not np.isfinite(w).all() or (w < 0).any():
         raise ValueError("weights must be nonnegative with sum at most one")
+    total = w.sum()
+    if total > 1 + 1e-12:
+        raise ValueError("weights must be nonnegative with sum at most one")
+    if total > 1:
+        w = w / total
     n = len(w)
     assets = tuple(str(i) for i in range(n)) if inputs.assets is None else tuple(inputs.assets)
     if len(assets) != n or len(set(assets)) != n or any(not isinstance(a, str) or not a for a in assets):
@@ -368,7 +374,7 @@ class MonteCarloRunner:
                 "drawdown": "positive fraction below running peak including initial NAV",
                 "breach": "maximum_drawdown strictly greater than threshold",
                 "threshold": c.drawdown_threshold},
-            "portfolio": {"weights": data["weights"].tolist(), "cash_weight": float(1-data["weights"].sum()),
+            "portfolio": {"weights": data["weights"].tolist(), "cash_weight": float(max(0, 1-data["weights"].sum())),
                 "rebalancing": "each_step", "cash_return": 0, "costs": 0},
             "assumptions": ["RISK_SCENARIO_ONLY", "NOT_EVENT_DRIVEN_EXECUTION",
                 "constant GBM parameters or stationary resampled historical blocks",

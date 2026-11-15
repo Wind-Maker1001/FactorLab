@@ -25,6 +25,15 @@ def cuda():
         compute=ComputeConfig(device='gpu'))).run(gbm())
 
 
+@pytest.mark.parametrize('model', ['gbm', 'moving_block_bootstrap'])
+@pytest.mark.parametrize('weights', [[.05] * 20, [1 + 1e-12], [.3, .4],
+    [1 - 5e-13]])
+def test_real_cuda_effective_portfolio_weights(cuda, model, weights):
+    from tests.research.test_monte_carlo import check_effective_portfolio_weights
+    check_effective_portfolio_weights(model, weights,
+        ComputeConfig(device='gpu', gpu_memory_limit_mb=16))
+
+
 def test_real_cuda_repeatability_and_pool_budget(cuda):
     cfg = replace(config(), batch_size=53,
         compute=ComputeConfig(device='gpu', gpu_memory_limit_mb=16))

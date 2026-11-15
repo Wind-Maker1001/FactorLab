@@ -29,6 +29,45 @@ def test_zero_volatility():
     np.testing.assert_array_equal(result.maximum_drawdowns, 0)
 
 
+@pytest.mark.parametrize('model', ['gbm', 'moving_block_bootstrap'])
+@pytest.mark.parametrize('weights', [[.05] * 20, [1 + 1e-12], [.3, .4],
+    [1 - 5e-13]])
+def test_effective_portfolio_weights(model, weights):
+    check_effective_portfolio_weights(model, weights, ComputeConfig())
+
+
+def check_effective_portfolio_weights(model, weights, compute):
+    raw = np.asarray(weights)
+    effective = raw / raw.sum() if raw.sum() > 1 else raw
+    n = len(raw)
+    cfg = MonteCarloConfig(model=model, n_paths=5, n_steps=3, block_size=3,
+        batch_size=2, dt=1, save_full_paths=True, compute=compute)
+    rates = np.linspace(-.1, .2, n)
+    history = np.tile(np.expm1(rates), (3, 1))
+    data = MonteCarloInput(weights=weights, drift=rates, volatility=np.zeros(n),
+        historical_returns=history,
+        timestamps=['2024-01-01', '2024-01-02', '2024-01-03'],
+        available_at=['2024-01-01', '2024-01-02', '2024-01-03'], as_of='2024-01-03')
+    runner = MonteCarloRunner(cfg)
+    result = runner.run(data)
+    portfolio = result.metadata['portfolio']
+    np.testing.assert_array_equal(portfolio['weights'], effective)
+    if raw.sum() > 1:
+        assert sum(portfolio['weights']) == pytest.approx(1, abs=1e-15)
+        assert portfolio['cash_weight'] == 0
+    else:
+        assert portfolio['cash_weight'] == 1 - raw.sum()
+        assert portfolio['cash_weight'] > 0
+    expected = (1 + np.expm1(rates) @ effective) ** np.arange(4)
+    np.testing.assert_allclose(result.portfolio_paths,
+        np.broadcast_to(expected, (cfg.n_paths, 4)), rtol=1e-14, atol=1e-15)
+    canonical = runner.run(replace(data, weights=portfolio['weights']))
+    assert result.metadata['sample_hash'] == canonical.metadata['sample_hash']
+    changed = runner.run(replace(data, weights=effective * .9))
+    assert result.metadata['sample_hash'] != changed.metadata['sample_hash']
+    np.testing.assert_array_equal(raw, weights)
+
+
 def test_gbm_analytic_moments():
     cfg = MonteCarloConfig(n_paths=40000, n_steps=24, seed=91, dt=1/24)
     values = MonteCarloRunner(cfg).run(gbm()).terminal_values
@@ -264,7 +303,9 @@ print('CPU_ONLY_OK')
     assert 'CPU_ONLY_OK' in completed.stdout
 
 
-@pytest.mark.parametrize('weights', [[-0.1], [1.1], [float('nan')]])
+@pytest.mark.parametrize('weights', [[], [[1.]], [-0.1], [1.1], [1.0001],
+    [np.nextafter(1 + 1e-12, np.inf)], [float('nan')], [float('inf')],
+    [-1e-15, 1.]])
 def test_invalid_portfolio(weights):
     with pytest.raises(ValueError):
         MonteCarloRunner(config()).run(MonteCarloInput(
