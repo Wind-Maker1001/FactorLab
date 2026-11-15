@@ -346,7 +346,8 @@ def test_pr_shards_and_coverage_use_one_trusted_subject():
     jobs = workflow['jobs']
     current = jobs['current']
     assert current['strategy'] == dict(**{'fail-fast': 'false'},
-                                      matrix=dict(python=['3.13', '3.14'], shard=['0', '1', '2']))
+                                      matrix=dict(python=['3.13', '3.14'],
+                                                  shard='${{ fromJSON(needs.risk.outputs.shards) }}'))
     assert current['if'] == "needs.risk.outputs.current == 'true'"
     assert any('--suite current --shard ${{ matrix.shard }}' in step.get('run', '')
                for step in current['steps'])
@@ -369,7 +370,9 @@ def test_pr_shards_and_coverage_use_one_trusted_subject():
     assert coverage['steps'][0]['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
     assert any('test "$RESULT" = success' in step.get('run', '') for step in coverage['steps'])
     aggregate = next(step['run'] for step in coverage['steps'] if '--pr-shards' in step.get('run', ''))
-    assert 'for version in 3.13 3.14' in aggregate and 'for shard in 0 1 2' in aggregate
+    assert 'for version in 3.13 3.14' in aggregate
+    assert 'for ((shard=0; shard<SHARD_COUNT; shard++))' in aggregate
+    assert '--shard-count "$SHARD_COUNT"' in aggregate
     for flag in ('subject-sha', 'pr-head-sha', 'trusted-base-sha', 'event-sha', 'run-id', 'run-attempt'):
         assert '--' + flag in aggregate
     gate = jobs['merge-gate']

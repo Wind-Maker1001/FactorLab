@@ -22,22 +22,24 @@ def module_plan(nodes, weights):
             for module in modules}
 
 
-def partition(nodes, weights):
+def partition(nodes, weights, shard_count=SHARDS):
+    if shard_count not in (3, 4):
+        raise ValueError('shard_count must be 3 or 4')
     if not nodes or len(nodes) != len(set(nodes)):
         raise ValueError('full current inventory must be nonempty and unique')
     modules = {}
     for node in nodes:
         modules.setdefault(node.split('::')[0], []).append(node)
     plan = module_plan(nodes, weights)
-    loads, assignments = [0.0] * SHARDS, {}
+    loads, assignments = [0.0] * shard_count, {}
     for module in sorted(modules, key=lambda m: (-plan[m]['seconds'], m)):
-        shard = min(range(SHARDS), key=lambda i: (loads[i], i))
+        shard = min(range(shard_count), key=lambda i: (loads[i], i))
         assignments[module] = shard
         loads[shard] += plan[module]['seconds']
     shards = [[node for node in nodes if assignments[node.split('::')[0]] == i]
-              for i in range(SHARDS)]
+              for i in range(shard_count)]
     if any(not shard for shard in shards):
-        raise ValueError('empty shard: three nonempty module partitions required')
+        raise ValueError(f'empty shard: {shard_count} nonempty module partitions required')
     return shards
 
 
@@ -54,15 +56,28 @@ def verify_execution(inventory, execution, observed, expected):
         raise ValueError('pytest execution or collection failed')
 
 
-def aggregate_pr(root, output, identity):
+def aggregate_pr(root, output, identity, shard_count=SHARDS):
     """Bind both Python coverage checks to this trusted workflow's exact subject."""
     if not all(identity.values()):
         raise ValueError('complete expected PR validation identity required')
+    if shard_count not in (3, 4):
+        raise ValueError('shard_count must be 3 or 4')
     inputs = None
+    collection = None
     for version in ('3.13', '3.14'):
-        folders = [root / version / str(shard) / 'current' for shard in range(SHARDS)]
+        if {path.name for path in (root / version).iterdir()} != {str(i) for i in range(shard_count)}:
+            raise ValueError('missing or unexpected shard artifacts')
+        folders = [root / version / str(shard) / 'current' for shard in range(shard_count)]
         for shard, folder in enumerate(folders):
             receipt = json.loads((folder / 'receipt.json').read_bytes())
+            inventory = json.loads((folder / 'selection.json').read_bytes())
+            observed_collection = {key: inventory[key] for key in
+                                   ('current', 'historical_collected', 'historical_collection_errors')}
+            if collection is not None and observed_collection != collection:
+                raise ValueError('full collection differs across Python versions')
+            collection = observed_collection
+            if shard_count == 4 and receipt.get('shard_count') != shard_count:
+                raise ValueError('receipt shard count differs from trusted plan')
             if any(receipt.get(key) != value for key, value in identity.items()):
                 raise ValueError('shard differs from expected PR validation identity')
             if receipt['suite'] != 'current' or receipt['shard'] != shard:
@@ -73,12 +88,12 @@ def aggregate_pr(root, output, identity):
             if inputs is not None and receipt['validation_input_sha256'] != inputs:
                 raise ValueError('frozen inputs differ across Python versions')
             inputs = receipt['validation_input_sha256']
-        aggregate(folders, output / version, version)
+        aggregate(folders, output / version, version, shard_count)
 
 
-def aggregate(folders, output, python_version):
-    if len(folders) != SHARDS:
-        raise ValueError('exactly three shard receipts required')
+def aggregate(folders, output, python_version, shard_count=SHARDS):
+    if shard_count not in (3, 4) or len(folders) != shard_count:
+        raise ValueError(f'exactly {shard_count} shard receipts required')
     weights = json.loads(TIMINGS.read_bytes())['module_seconds']
     combined, inventories, receipts, executions = {}, [], [], []
     junit = ET.Element('testsuites')
@@ -86,16 +101,21 @@ def aggregate(folders, output, python_version):
         inventory = json.loads((folder / 'selection.json').read_bytes())
         execution = json.loads((folder / 'execution.json').read_bytes())
         receipt = json.loads((folder / 'receipt.json').read_bytes())
-        if inventory['shard'] != index or inventory['shard_count'] != SHARDS:
+        if inventory['shard'] != index or inventory['shard_count'] != shard_count:
             raise ValueError('missing or repeated shard identity')
         if inventories and any(inventory[k] != inventories[0][k] for k in
                                ('current', 'historical_collected', 'historical_collection_errors')):
             raise ValueError('full collection differs between shards')
-        expected = partition(inventory['current'], weights)[index]
+        expected = partition(inventory['current'], weights, shard_count)[index]
         if inventory['module_plan'] != module_plan(inventory['current'], weights):
             raise ValueError('measured/unmeasured module plan differs')
         observed = outcomes(folder / 'tests.xml', inventory['current'])
         verify_execution(inventory, execution, observed, expected)
+        if shard_count == 4:
+            counts = dict(tests=len(expected), passed=len(expected), failures=0, errors=0, skipped=0)
+            if (receipt.get('shard_count') != shard_count or receipt.get('shard') != index or
+                    receipt.get('counts') != counts):
+                raise ValueError('receipt count or shard identity differs from actual execution')
         if set(combined) & set(observed):
             raise ValueError('actual shard executions overlap')
         if (receipt['status'] != 'PASS' or receipt['exit_code'] != 0 or
@@ -124,7 +144,8 @@ def aggregate(folders, output, python_version):
                    shard_elapsed_seconds=[r['elapsed_seconds'] for r in receipts])
     (output / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
     (output / 'execution.json').write_text(json.dumps(dict(
-        schema='FACTORLAB_THREE_SHARD_COVERAGE_V1', status='PASS', python=python_version,
+        schema=('FACTORLAB_THREE_SHARD_COVERAGE_V1' if shard_count == 3 else
+                'FACTORLAB_FOUR_SHARD_COVERAGE_V1'), shard_count=shard_count, status='PASS', python=python_version,
         subject_sha=receipt['subject_sha'], count=len(combined),
         actual_disjoint=True, actual_union_equals_full_inventory=True,
         shards=[dict(shard=i, count=len(e['completed']), elapsed_seconds=receipts[i]['elapsed_seconds'])
@@ -138,7 +159,8 @@ def aggregate(folders, output, python_version):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     source = parser.add_mutually_exclusive_group(required=True)
-    source.add_argument('--shards', nargs=3, type=Path)
+    source.add_argument('--shards', nargs='+', type=Path)
+    parser.add_argument('--shard-count', type=int, choices=(3, 4), default=SHARDS)
     source.add_argument('--pr-shards', type=Path)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--python', choices=['3.13', '3.14'])
@@ -155,11 +177,11 @@ def main():
                         github_run_id=args.run_id, github_run_attempt=args.run_attempt)
         if args.python is not None or not all(identity.values()):
             parser.error('--pr-shards requires exact PR, subject, base, event and run identity, not --python')
-        aggregate_pr(args.pr_shards, args.output, identity)
+        aggregate_pr(args.pr_shards, args.output, identity, args.shard_count)
     else:
         if args.python is None:
             parser.error('--shards requires --python')
-        aggregate(args.shards, args.output, args.python)
+        aggregate(args.shards, args.output, args.python, args.shard_count)
 
 
 if __name__ == '__main__':
