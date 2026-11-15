@@ -1,0 +1,1023 @@
+{
+  "extended-3.13-shard-0/current/execution.json": {
+    "collection_errors": [],
+    "completed_count": 3123,
+    "exit_code": 0,
+    "schema": "FACTORLAB_ACTUAL_TEST_EXECUTION_V1",
+    "started_count": 3123
+  },
+  "extended-3.13-shard-0/current/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=0",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 3123,
+      "skipped": 0,
+      "tests": 3123
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 581.9296320000001,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": 0,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "extended-3.13-shard-1/current/execution.json": {
+    "collection_errors": [],
+    "completed_count": 2304,
+    "exit_code": 0,
+    "schema": "FACTORLAB_ACTUAL_TEST_EXECUTION_V1",
+    "started_count": 2304
+  },
+  "extended-3.13-shard-1/current/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=1",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2304,
+      "skipped": 0,
+      "tests": 2304
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 630.8284879,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": 1,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "extended-3.13-shard-2/current/execution.json": {
+    "collection_errors": [],
+    "completed_count": 2384,
+    "exit_code": 0,
+    "schema": "FACTORLAB_ACTUAL_TEST_EXECUTION_V1",
+    "started_count": 2384
+  },
+  "extended-3.13-shard-2/current/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=2",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2384,
+      "skipped": 0,
+      "tests": 2384
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 605.7956935,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": 2,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "extended-3.14-shard-0/current/execution.json": {
+    "collection_errors": [],
+    "completed_count": 3123,
+    "exit_code": 0,
+    "schema": "FACTORLAB_ACTUAL_TEST_EXECUTION_V1",
+    "started_count": 3123
+  },
+  "extended-3.14-shard-0/current/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=0",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 3123,
+      "skipped": 0,
+      "tests": 3123
+    },
+    "dependencies_sha256": "11527a500e48b16588a95bb41532eb7f7599788b596ab3c688e63d1836891d49",
+    "elapsed_seconds": 812.6848416,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": 0,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "extended-3.14-shard-1/current/execution.json": {
+    "collection_errors": [],
+    "completed_count": 2304,
+    "exit_code": 0,
+    "schema": "FACTORLAB_ACTUAL_TEST_EXECUTION_V1",
+    "started_count": 2304
+  },
+  "extended-3.14-shard-1/current/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=1",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2304,
+      "skipped": 0,
+      "tests": 2304
+    },
+    "dependencies_sha256": "11527a500e48b16588a95bb41532eb7f7599788b596ab3c688e63d1836891d49",
+    "elapsed_seconds": 446.43453889999995,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": 1,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "extended-3.14-shard-2/current/execution.json": {
+    "collection_errors": [],
+    "completed_count": 2384,
+    "exit_code": 0,
+    "schema": "FACTORLAB_ACTUAL_TEST_EXECUTION_V1",
+    "started_count": 2384
+  },
+  "extended-3.14-shard-2/current/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=2",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2384,
+      "skipped": 0,
+      "tests": 2384
+    },
+    "dependencies_sha256": "11527a500e48b16588a95bb41532eb7f7599788b596ab3c688e63d1836891d49",
+    "elapsed_seconds": 1036.0695292999999,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": 2,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "fast-pr-receipts/configuration/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "tests/research/test_config_roots.py",
+      "tests/research/test_config.py",
+      "tests/research/test_local_cli_pipeline.py::test_relative_import_paths_use_repository_root_from_another_cwd",
+      "tests/research/test_real_factor_label_smoke.py::test_main_from_other_cwd_resolves_repo_relative_config",
+      "-q",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\configuration\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\configuration\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\configuration\\tests.xml"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 65,
+      "skipped": 0,
+      "tests": 65
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 10.001736699999924,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": null,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "configuration",
+    "targets": [
+      "tests/research/test_config_roots.py",
+      "tests/research/test_config.py",
+      "tests/research/test_local_cli_pipeline.py::test_relative_import_paths_use_repository_root_from_another_cwd",
+      "tests/research/test_real_factor_label_smoke.py::test_main_from_other_cwd_resolves_repo_relative_config"
+    ],
+    "trusted_base_sha": null,
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "fast-pr-receipts/core/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "tests/research/test_factors_phase1.py",
+      "tests/research/test_factor_metrics_golden.py",
+      "tests/research/test_models_phase2.py",
+      "tests/research/test_tree_models_phase3.py",
+      "tests/research/test_walk_forward_runner_phase2.py",
+      "tests/research/test_prediction_metrics_phase2.py",
+      "tests/research/test_exploratory_statistical_audit.py",
+      "tests/research/test_portfolio_backtest_phase2.py",
+      "tests/research/test_execution_backtest_phase3.py",
+      "-q",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\core\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\core\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\core\\tests.xml"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 455,
+      "skipped": 0,
+      "tests": 455
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 51.866887800000086,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": null,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "core",
+    "targets": [
+      "tests/research/test_factors_phase1.py",
+      "tests/research/test_factor_metrics_golden.py",
+      "tests/research/test_models_phase2.py",
+      "tests/research/test_tree_models_phase3.py",
+      "tests/research/test_walk_forward_runner_phase2.py",
+      "tests/research/test_prediction_metrics_phase2.py",
+      "tests/research/test_exploratory_statistical_audit.py",
+      "tests/research/test_portfolio_backtest_phase2.py",
+      "tests/research/test_execution_backtest_phase3.py"
+    ],
+    "trusted_base_sha": null,
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "fast-pr-receipts/cross-market/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "tests/cross_market",
+      "-q",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\cross-market\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\cross-market\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\cross-market\\tests.xml"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 277,
+      "skipped": 0,
+      "tests": 277
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 137.02141470000004,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": null,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "cross-market",
+    "targets": [
+      "tests/cross_market"
+    ],
+    "trusted_base_sha": null,
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "fast-pr-receipts/financial-gates/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "tests/security",
+      "tests/research/test_qualification_admission_boundaries.py",
+      "tests/research/test_forward_activation_phase4.py",
+      "tests/research/test_forward_policy_phase4.py",
+      "tests/cross_market/test_exploratory_scenario.py",
+      "-q",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\financial-gates\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\financial-gates\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\financial-gates\\tests.xml"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 415,
+      "skipped": 0,
+      "tests": 415
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 147.13643790000003,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": null,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "financial-gates",
+    "targets": [
+      "tests/security",
+      "tests/research/test_qualification_admission_boundaries.py",
+      "tests/research/test_forward_activation_phase4.py",
+      "tests/research/test_forward_policy_phase4.py",
+      "tests/cross_market/test_exploratory_scenario.py"
+    ],
+    "trusted_base_sha": null,
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "fast-pr-receipts/locking/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "tests/research/test_forward_full_predictions.py",
+      "tests/research/test_forward_signal_recorder_phase4.py",
+      "tests/research/test_signal_lock_native.py",
+      "-q",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\locking\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\locking\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\pr\\locking\\tests.xml"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 99,
+      "skipped": 0,
+      "tests": 99
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 11.857184000000075,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "DECLARED_INCREMENTAL_SCOPE",
+    "shard": null,
+    "shard_count": 3,
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "locking",
+    "targets": [
+      "tests/research/test_forward_full_predictions.py",
+      "tests/research/test_forward_signal_recorder_phase4.py",
+      "tests/research/test_signal_lock_native.py"
+    ],
+    "trusted_base_sha": null,
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "fast-pr-receipts/targeted/receipt.json": {
+    "counts": {
+      "tests": 0
+    },
+    "reason": "trusted plan requires no additional tests",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "targeted",
+    "targets": []
+  },
+  "pr-package/archive-attacks/receipt.json": {
+    "cases": [
+      {
+        "case": "credential",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "legacy_import",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "parent_path",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "windows_drive",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "windows_relative_drive",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "windows_backslash",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "unc_path",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "alternate_stream",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "redundant_separator",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "dot_alias",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "unsafe_directory",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "windows_device",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "windows_trailing_dot",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "windows_trailing_space",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "local_dependency_url",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "unbound_golden",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "duplicate_zip",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "zip_link",
+        "status": "PASS_REJECTED"
+      },
+      {
+        "case": "tar_link",
+        "status": "PASS_REJECTED"
+      }
+    ],
+    "scope": "synthetic archive mutations; not financial certification",
+    "status": "PASS"
+  },
+  "pr-package/packaging/receipt.json": {
+    "cwd_outside_source": true,
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "installer": "pip",
+    "network_data_downloads": false,
+    "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+    "runs": [
+      {
+        "artifact": "factorlab-0.1.0.dev0-py3-none-any.whl",
+        "kind": "wheel",
+        "status": "PASS"
+      },
+      {
+        "artifact": "factorlab-0.1.0.dev0.tar.gz",
+        "kind": "sdist",
+        "status": "PASS"
+      }
+    ],
+    "status": "PASS",
+    "validation_scripts_sha256": {
+      "inspect_distributions.py": "c71f47526cbb5816c1efb6ca69931576814f5bfbce4c08b6102816f321427f3a",
+      "installed_smoke.py": "87607bc39a91beceb14552d49d59ba51e42df46abf56fcf9c00a2f038d3f4285",
+      "packaging_ci.py": "e788dc8f47de539f606873112001400a2419622e373742a292aad9cbc1a97209",
+      "scan_distribution.py": "bdeaba7711a40ecfe42d859346cce6d37f0e939270978ceae7569b36175c9dd7"
+    },
+    "validation_scripts_unchanged": true
+  },
+  "verified-pr-current-coverage/3.13/execution.json": {
+    "actual_disjoint": true,
+    "actual_union_equals_full_inventory": true,
+    "count": 7811,
+    "python": "3.13",
+    "schema": "FACTORLAB_THREE_SHARD_COVERAGE_V1",
+    "shard_count": 3,
+    "shards": [
+      {
+        "count": 3123,
+        "elapsed_seconds": 581.9296320000001,
+        "shard": 0
+      },
+      {
+        "count": 2304,
+        "elapsed_seconds": 630.8284879,
+        "shard": 1
+      },
+      {
+        "count": 2384,
+        "elapsed_seconds": 605.7956935,
+        "shard": 2
+      }
+    ],
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40"
+  },
+  "verified-pr-current-coverage/3.13/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.13.17\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=0",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 7811,
+      "skipped": 0,
+      "tests": 7811
+    },
+    "dependencies_sha256": "da53cba5ce3bceb1649e3194511a8778dae9a1f6d0784ab18d8b0b295f95e791",
+    "elapsed_seconds": 630.8284879,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.13.17 (tags/v3.13.17:64e080d, Oct 21 2026, 14:08:53) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "COMPLETE_NONHISTORICAL_SHARDED",
+    "shard": null,
+    "shard_count": 3,
+    "shard_elapsed_seconds": [
+      581.9296320000001,
+      630.8284879,
+      605.7956935
+    ],
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  },
+  "verified-pr-current-coverage/3.14/execution.json": {
+    "actual_disjoint": true,
+    "actual_union_equals_full_inventory": true,
+    "count": 7811,
+    "python": "3.14",
+    "schema": "FACTORLAB_THREE_SHARD_COVERAGE_V1",
+    "shard_count": 3,
+    "shards": [
+      {
+        "count": 3123,
+        "elapsed_seconds": 812.6848416,
+        "shard": 0
+      },
+      {
+        "count": 2304,
+        "elapsed_seconds": 446.43453889999995,
+        "shard": 1
+      },
+      {
+        "count": 2384,
+        "elapsed_seconds": 1036.0695292999999,
+        "shard": 2
+      }
+    ],
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40"
+  },
+  "verified-pr-current-coverage/3.14/receipt.json": {
+    "command": [
+      "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+      "-u",
+      "-m",
+      "pytest",
+      "-v",
+      "--continue-on-collection-errors",
+      "--basetemp=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tmp",
+      "-o",
+      "cache_dir=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\pytest-cache",
+      "--junitxml=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\tests.xml",
+      "-p",
+      "tools.ci.current_validation",
+      "--current-layer-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\selection.json",
+      "--execution-inventory=D:\\a\\FactorLab\\FactorLab\\candidate\\local-ci\\extended\\current\\execution.json",
+      "--current-shard=0",
+      "--current-shard-count=3",
+      "--durations=30"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 7811,
+      "skipped": 0,
+      "tests": 7811
+    },
+    "dependencies_sha256": "11527a500e48b16588a95bb41532eb7f7599788b596ab3c688e63d1836891d49",
+    "elapsed_seconds": 1036.0695292999999,
+    "environment": {
+      "MPLBACKEND": "Agg",
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "financial_authorization": "BLOCKED",
+    "formal_admission": "FORMAL_ADMISSION_BLOCKED",
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "github_run_attempt": "1",
+    "github_run_id": "43735048156",
+    "hfq": "HFQ_UNVERIFIED",
+    "no_live_money": true,
+    "pit": "PIT_UNVERIFIED",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.14.10 (tags/v3.14.10:b703b2c, Oct 25 2026, 17:36:52) [MSC v.1944 64 bit (AMD64)]",
+    "required_execution_observed": true,
+    "schema": "FACTORLAB_INCREMENTAL_CI_V1",
+    "scope": "COMPLETE_NONHISTORICAL_SHARDED",
+    "shard": null,
+    "shard_count": 3,
+    "shard_elapsed_seconds": [
+      812.6848416,
+      446.43453889999995,
+      1036.0695292999999
+    ],
+    "status": "PASS",
+    "subject_sha": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "suite": "current",
+    "targets": [],
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "validation_inputs_reference": "validation-inputs-43735048156.json",
+    "validation_inputs_unchanged": true
+  }
+}

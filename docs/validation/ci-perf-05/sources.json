@@ -1,0 +1,24 @@
+{
+  "analysis_subject_sha": "bdd4e6f5eef14bd3f383c5af73ec695bcb34b901",
+  "final_merge_time": "2026-11-15T16:47:29Z",
+  "postmerge_run_available": false,
+  "previous_weights_source": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/42508208514",
+  "primary_run": "43735547182",
+  "schema": "FACTORLAB_CI_PERF_05_SOURCES_V1",
+  "sources": [
+    {
+      "attempt": 1,
+      "evidence_status": "PREMERGE",
+      "run_id": "43735048156",
+      "source": "sources-43735048156.json",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735048156"
+    },
+    {
+      "attempt": 1,
+      "evidence_status": "PREMERGE",
+      "run_id": "43735547182",
+      "source": "sources-43735547182.json",
+      "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182"
+    }
+  ]
+}

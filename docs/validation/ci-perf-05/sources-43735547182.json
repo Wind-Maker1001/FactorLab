@@ -1,0 +1,2620 @@
+{
+  "artifacts": {
+    "extended-3.13-shard-0": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170537700/zip",
+      "created_at": "2026-11-15T16:42:27Z",
+      "digest": "sha256:b605f43cf9970d1d5dca680e0691bdd75f744b1593b52bea0536d613d9bc799b",
+      "expired": false,
+      "expires_at": "2026-11-29T16:42:25Z",
+      "id": 14170537700,
+      "name": "extended-3.13-shard-0",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDUzNzcwMA==",
+      "size_in_bytes": 445464,
+      "updated_at": "2026-11-15T16:42:27Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170537700",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "extended-3.13-shard-1": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169703923/zip",
+      "created_at": "2026-11-15T16:36:57Z",
+      "digest": "sha256:37f1f19711bef746d57ab97b482a50f9615c231bef2afd0405e466933cec98d3",
+      "expired": false,
+      "expires_at": "2026-11-29T16:36:57Z",
+      "id": 14169703923,
+      "name": "extended-3.13-shard-1",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE2OTcwMzkyMw==",
+      "size_in_bytes": 415738,
+      "updated_at": "2026-11-15T16:36:57Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169703923",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "extended-3.13-shard-2": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170113376/zip",
+      "created_at": "2026-11-15T16:38:45Z",
+      "digest": "sha256:7b00e248f59da99b30c1123e216df5c6aceebb222dfbea5762c6c5811b32aec9",
+      "expired": false,
+      "expires_at": "2026-11-29T16:38:45Z",
+      "id": 14170113376,
+      "name": "extended-3.13-shard-2",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDExMzM3Ng==",
+      "size_in_bytes": 425616,
+      "updated_at": "2026-11-15T16:38:45Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170113376",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "extended-3.14-shard-0": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170598689/zip",
+      "created_at": "2026-11-15T16:43:48Z",
+      "digest": "sha256:9ac8902157405594dfe2ff4397d499cdc8265c926fe84d79ed2cc44068347956",
+      "expired": false,
+      "expires_at": "2026-11-29T16:43:48Z",
+      "id": 14170598689,
+      "name": "extended-3.14-shard-0",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDU5ODY4OQ==",
+      "size_in_bytes": 445584,
+      "updated_at": "2026-11-15T16:43:48Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170598689",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "extended-3.14-shard-1": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170459798/zip",
+      "created_at": "2026-11-15T16:43:34Z",
+      "digest": "sha256:33c6790254632935cc1b22c4b88312f3ca7647464243843f674f4d9f8a0a3401",
+      "expired": false,
+      "expires_at": "2026-11-29T16:43:33Z",
+      "id": 14170459798,
+      "name": "extended-3.14-shard-1",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDQ1OTc5OA==",
+      "size_in_bytes": 416763,
+      "updated_at": "2026-11-15T16:43:34Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170459798",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "extended-3.14-shard-2": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170514601/zip",
+      "created_at": "2026-11-15T16:43:22Z",
+      "digest": "sha256:b022969ee853454150651b27a0890a9deb8a1bb946ce84f23c904e0d08691924",
+      "expired": false,
+      "expires_at": "2026-11-29T16:43:21Z",
+      "id": 14170514601,
+      "name": "extended-3.14-shard-2",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDUxNDYwMQ==",
+      "size_in_bytes": 426213,
+      "updated_at": "2026-11-15T16:43:22Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170514601",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "fast-pr-receipts": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170706103/zip",
+      "created_at": "2026-11-15T16:37:27Z",
+      "digest": "sha256:305c79998a13fbeddb195b095538e3260b05aef2a8354fae0eb4d440332d0d1f",
+      "expired": false,
+      "expires_at": "2026-11-29T16:37:25Z",
+      "id": 14170706103,
+      "name": "fast-pr-receipts",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDcwNjEwMw==",
+      "size_in_bytes": 724173,
+      "updated_at": "2026-11-15T16:37:27Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170706103",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "pr-lock-ubuntu-latest": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169503590/zip",
+      "created_at": "2026-11-15T16:29:46Z",
+      "digest": "sha256:964d19866e7288737c8fb2df1b29d26708153e069c539118e2713de5fb630342",
+      "expired": false,
+      "expires_at": "2026-11-29T16:29:45Z",
+      "id": 14169503590,
+      "name": "pr-lock-ubuntu-latest",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE2OTUwMzU5MA==",
+      "size_in_bytes": 13274,
+      "updated_at": "2026-11-15T16:29:46Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169503590",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "pr-lock-windows-latest": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170062425/zip",
+      "created_at": "2026-11-15T16:30:36Z",
+      "digest": "sha256:741866a1eb78c9c81821a599b19753dfdb05b182569c63ee33e5e62caaa1857a",
+      "expired": false,
+      "expires_at": "2026-11-29T16:30:35Z",
+      "id": 14170062425,
+      "name": "pr-lock-windows-latest",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDA2MjQyNQ==",
+      "size_in_bytes": 13001,
+      "updated_at": "2026-11-15T16:30:36Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170062425",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "pr-package": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169459001/zip",
+      "created_at": "2026-11-15T16:33:33Z",
+      "digest": "sha256:1136b48f90a829aa7e2c1c57c043732e414df1dbbad87d0b347777a29c6c7c87",
+      "expired": false,
+      "expires_at": "2026-11-29T16:33:32Z",
+      "id": 14169459001,
+      "name": "pr-package",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE2OTQ1OTAwMQ==",
+      "size_in_bytes": 22400,
+      "updated_at": "2026-11-15T16:33:33Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169459001",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "pr-risk": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169827580/zip",
+      "created_at": "2026-11-15T16:28:10Z",
+      "digest": "sha256:b8ee56e22a165d309c53e8963980dd2ae5c343da1b26f774b9bc43bce0d451f4",
+      "expired": false,
+      "expires_at": "2026-11-29T16:28:09Z",
+      "id": 14169827580,
+      "name": "pr-risk",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE2OTgyNzU4MA==",
+      "size_in_bytes": 3664,
+      "updated_at": "2026-11-15T16:28:10Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14169827580",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    },
+    "verified-pr-current-coverage": {
+      "archive_download_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170069188/zip",
+      "created_at": "2026-11-15T16:44:06Z",
+      "digest": "sha256:54f72f0b1f965806158e437871f3e43c4f9d711ae446e5f12b5143b67db3bebd",
+      "expired": false,
+      "expires_at": "2026-11-29T16:44:05Z",
+      "id": 14170069188,
+      "name": "verified-pr-current-coverage",
+      "node_id": "MDg6QXJ0aWZhY3QxNDE3MDA2OTE4OA==",
+      "size_in_bytes": 1040210,
+      "updated_at": "2026-11-15T16:44:06Z",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/artifacts/14170069188",
+      "workflow_run": {
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_repository_id": 1433370212,
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "id": 43735547182,
+        "repository_id": 1433370212
+      }
+    }
+  },
+  "evidence_temporal_status": "BEFORE_FINAL_MERGE",
+  "identity": {
+    "github_event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "github_pr_head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+    "github_run_attempt": "1",
+    "github_run_id": "43735547182",
+    "subject_sha": "31346cca2d233ce65bf64728009884c53788b86c",
+    "trusted_base_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe"
+  },
+  "jobs": {
+    "jobs": [
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877317709",
+        "completed_at": "2026-11-15T16:28:12Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:27:30Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877317709",
+        "id": 132877317709,
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "name": "Trusted risk selection",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8Br2TQ",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004942,
+        "runner_name": "GitHub Actions 1000004942",
+        "started_at": "2026-11-15T16:27:32Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:27:33Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:27:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:27:33Z",
+            "conclusion": "success",
+            "name": "Select trusted shard trial configuration",
+            "number": 2,
+            "started_at": "2026-11-15T16:27:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:27:35Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:27:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:27:37Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 4,
+            "started_at": "2026-11-15T16:27:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:27:37Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:27:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:27:39Z",
+            "conclusion": "success",
+            "name": "Construct immutable event merge",
+            "number": 6,
+            "started_at": "2026-11-15T16:27:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:27:39Z",
+            "conclusion": "success",
+            "name": "Bind candidate to event before risk selection",
+            "number": 7,
+            "started_at": "2026-11-15T16:27:39Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:09Z",
+            "conclusion": "success",
+            "name": "Select conservative extensions from trusted base",
+            "number": 8,
+            "started_at": "2026-11-15T16:27:39Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:09Z",
+            "conclusion": "success",
+            "name": "Seal trusted risk plan",
+            "number": 9,
+            "started_at": "2026-11-15T16:28:09Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:10Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:28:09Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:10Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:28:10Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:10Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:28:10Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:11Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:28:10Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:11Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:28:11Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877317709",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517245",
+        "completed_at": "2026-11-15T16:30:40Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517245",
+        "id": 132877517245,
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "name": "CI control review",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4BvQ",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004953,
+        "runner_name": "GitHub Actions 1000004953",
+        "started_at": "2026-11-15T16:30:35Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:30:36Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:30:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:37Z",
+            "conclusion": "success",
+            "name": "Run printf '%s\\n' 'Control changes approved for this exact workflow run.'",
+            "number": 2,
+            "started_at": "2026-11-15T16:30:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:37Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 3,
+            "started_at": "2026-11-15T16:30:37Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517245",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517270",
+        "completed_at": "2026-11-15T16:29:49Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517270",
+        "id": 132877517270,
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "name": "Extended lock ubuntu-latest",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4B1g",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004945,
+        "runner_name": "GitHub Actions 1000004945",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:17Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:20Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:17Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:22Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:20Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:23Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:22Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:23Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:26Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:26Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:26Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:04Z",
+            "conclusion": "success",
+            "name": "Run python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:26Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:45Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/lock_acceptance.py --output local-ci/locks --thread-rounds 100 --process-rounds 12",
+            "number": 9,
+            "started_at": "2026-11-15T16:29:04Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:46Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:29:45Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:46Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:29:46Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:47Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:29:46Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:47Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:29:47Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:47Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:29:47Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517270",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517295",
+        "completed_at": "2026-11-15T16:33:38Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517295",
+        "id": 132877517295,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended package Python 3.14",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4B7w",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004943,
+        "runner_name": "GitHub Actions 1000004943",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:17Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:27Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:17Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:34Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:35Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:35Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:41Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:42Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:41Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:04Z",
+            "conclusion": "success",
+            "name": "Run python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/cross-market.txt",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:42Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:16Z",
+            "conclusion": "success",
+            "name": "Run python -m build --outdir local-ci/distributions",
+            "number": 9,
+            "started_at": "2026-11-15T16:30:04Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:21Z",
+            "conclusion": "success",
+            "name": "Run python tools/migration/inspect_distributions.py local-ci/distributions",
+            "number": 10,
+            "started_at": "2026-11-15T16:30:16Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:31:22Z",
+            "conclusion": "success",
+            "name": "Run python tools/migration/check_distribution_rejections.py local-ci/distributions local-ci/archive-attacks",
+            "number": 11,
+            "started_at": "2026-11-15T16:30:21Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:33:32Z",
+            "conclusion": "success",
+            "name": "Run python tools/migration/packaging_ci.py local-ci/distributions local-ci/packaging",
+            "number": 12,
+            "started_at": "2026-11-15T16:31:22Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:33:33Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 13,
+            "started_at": "2026-11-15T16:33:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:33:33Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 24,
+            "started_at": "2026-11-15T16:33:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:33:35Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 25,
+            "started_at": "2026-11-15T16:33:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:33:36Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 26,
+            "started_at": "2026-11-15T16:33:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:33:36Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 27,
+            "started_at": "2026-11-15T16:33:36Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517295",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517332",
+        "completed_at": "2026-11-15T16:37:34Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517332",
+        "id": 132877517332,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Fast Python 3.13",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4CFA",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004944,
+        "runner_name": "GitHub Actions 1000004944",
+        "started_at": "2026-11-15T16:28:15Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:18Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:16Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:30Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:18Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:37Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:30Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:38Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:38Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:38Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:42Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:38Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:43Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:42Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:44Z",
+            "conclusion": "success",
+            "name": "Run actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:43Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:06Z",
+            "conclusion": "success",
+            "name": "Install controlled test dependencies",
+            "number": 9,
+            "started_at": "2026-11-15T16:28:44Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:14Z",
+            "conclusion": "success",
+            "name": "Install package and check dependency compatibility",
+            "number": 10,
+            "started_at": "2026-11-15T16:30:06Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:35:23Z",
+            "conclusion": "success",
+            "name": "Core, cross-market and financial gates",
+            "number": 11,
+            "started_at": "2026-11-15T16:30:14Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:35:35Z",
+            "conclusion": "success",
+            "name": "Configuration and import compatibility",
+            "number": 12,
+            "started_at": "2026-11-15T16:35:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:35:48Z",
+            "conclusion": "success",
+            "name": "Basic locking contracts",
+            "number": 13,
+            "started_at": "2026-11-15T16:35:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:35:57Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 14,
+            "started_at": "2026-11-15T16:35:48Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:35:58Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 15,
+            "started_at": "2026-11-15T16:35:57Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:25Z",
+            "conclusion": "success",
+            "name": "Trusted targeted test execution",
+            "number": 16,
+            "started_at": "2026-11-15T16:35:58Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:27Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 17,
+            "started_at": "2026-11-15T16:37:25Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:29Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 31,
+            "started_at": "2026-11-15T16:37:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:29Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 32,
+            "started_at": "2026-11-15T16:37:29Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:31Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 33,
+            "started_at": "2026-11-15T16:37:29Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:33Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 34,
+            "started_at": "2026-11-15T16:37:31Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:33Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 35,
+            "started_at": "2026-11-15T16:37:33Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517332",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517396",
+        "completed_at": "2026-11-15T16:30:40Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517396",
+        "id": 132877517396,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended lock windows-latest",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4CVA",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004946,
+        "runner_name": "GitHub Actions 1000004946",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:16Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:26Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:16Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:33Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:26Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:34Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:34Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:41Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:42Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:41Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:50Z",
+            "conclusion": "success",
+            "name": "Run python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:42Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:35Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/lock_acceptance.py --output local-ci/locks --thread-rounds 100 --process-rounds 12",
+            "number": 9,
+            "started_at": "2026-11-15T16:29:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:36Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:30:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:36Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:30:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:37Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:30:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:39Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:30:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:39Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:30:39Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517396",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517429",
+        "completed_at": "2026-11-15T16:43:27Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517429",
+        "id": 132877517429,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended software Python 3.14 shard 2",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4CdQ",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004947,
+        "runner_name": "GitHub Actions 1000004947",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:17Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:27Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:17Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:33Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:34Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:34Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:40Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:41Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:40Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:08Z",
+            "conclusion": "success",
+            "name": "Install dependencies and package",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:41Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:21Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/integration_checks.py --suite current --shard 2 --shard-count 3 --output local-ci/extended",
+            "number": 9,
+            "started_at": "2026-11-15T16:30:08Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:23Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:43:21Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:23Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:43:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:24Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:43:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:26Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:43:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:26Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:43:26Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517429",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517588",
+        "completed_at": "2026-11-15T16:38:50Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517588",
+        "id": 132877517588,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended software Python 3.13 shard 2",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4DFA",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004948,
+        "runner_name": "GitHub Actions 1000004948",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:16Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:23Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:16Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:28Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:29Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:28Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:29Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:29Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:32Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:29Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:33Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:50Z",
+            "conclusion": "success",
+            "name": "Install dependencies and package",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:38:44Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/integration_checks.py --suite current --shard 2 --shard-count 3 --output local-ci/extended",
+            "number": 9,
+            "started_at": "2026-11-15T16:29:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:38:46Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:38:44Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:38:46Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:38:46Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:38:47Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:38:46Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:38:48Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:38:47Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:38:48Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:38:48Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517588",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517601",
+        "completed_at": "2026-11-15T16:42:32Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517601",
+        "id": 132877517601,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended software Python 3.13 shard 0",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4DIQ",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004952,
+        "runner_name": "GitHub Actions 1000004952",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:17Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:27Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:17Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:34Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:35Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:35Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:38Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:39Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:38Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:01Z",
+            "conclusion": "success",
+            "name": "Install dependencies and package",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:39Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:42:25Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/integration_checks.py --suite current --shard 0 --shard-count 3 --output local-ci/extended",
+            "number": 9,
+            "started_at": "2026-11-15T16:30:01Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:42:27Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:42:25Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:42:27Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:42:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:42:29Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:42:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:42:30Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:42:29Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:42:30Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:42:30Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517601",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517611",
+        "completed_at": "2026-11-15T16:37:01Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517611",
+        "id": 132877517611,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended software Python 3.13 shard 1",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4DKw",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004950,
+        "runner_name": "GitHub Actions 1000004950",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:15Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:14Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:22Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:27Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:22Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:27Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:27Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:30Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:31Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:30Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:29:38Z",
+            "conclusion": "success",
+            "name": "Install dependencies and package",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:31Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:36:57Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/integration_checks.py --suite current --shard 1 --shard-count 3 --output local-ci/extended",
+            "number": 9,
+            "started_at": "2026-11-15T16:29:38Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:36:58Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:36:57Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:36:58Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:36:58Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:36:59Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:36:58Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:00Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:36:59Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:37:00Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:37:00Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517611",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517750",
+        "completed_at": "2026-11-15T16:43:40Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517750",
+        "id": 132877517750,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended software Python 3.14 shard 1",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4Dtg",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004951,
+        "runner_name": "GitHub Actions 1000004951",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:17Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:16Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:27Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:17Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:34Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:35Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:35Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:39Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:40Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:39Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:14Z",
+            "conclusion": "success",
+            "name": "Install dependencies and package",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:40Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:33Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/integration_checks.py --suite current --shard 1 --shard-count 3 --output local-ci/extended",
+            "number": 9,
+            "started_at": "2026-11-15T16:30:14Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:35Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:43:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:35Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:43:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:36Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:43:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:38Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:43:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:38Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:43:38Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517750",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132877517795",
+        "completed_at": "2026-11-15T16:43:53Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:28:13Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132877517795",
+        "id": 132877517795,
+        "labels": [
+          "windows-latest"
+        ],
+        "name": "Extended software Python 3.14 shard 0",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8B4D4w",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004949,
+        "runner_name": "GitHub Actions 1000004949",
+        "started_at": "2026-11-15T16:28:14Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:28:16Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:28:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:26Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:28:16Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:32Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 3,
+            "started_at": "2026-11-15T16:28:26Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:33Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "number": 4,
+            "started_at": "2026-11-15T16:28:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:33Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 5,
+            "started_at": "2026-11-15T16:28:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:36Z",
+            "conclusion": "success",
+            "name": "Reconstruct pinned event merge before verification",
+            "number": 6,
+            "started_at": "2026-11-15T16:28:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:28:37Z",
+            "conclusion": "success",
+            "name": "Verify trusted validation identity before candidate execution",
+            "number": 7,
+            "started_at": "2026-11-15T16:28:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:30:13Z",
+            "conclusion": "success",
+            "name": "Install dependencies and package",
+            "number": 8,
+            "started_at": "2026-11-15T16:28:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:47Z",
+            "conclusion": "success",
+            "name": "Run python tools/ci/integration_checks.py --suite current --shard 0 --shard-count 3 --output local-ci/extended",
+            "number": 9,
+            "started_at": "2026-11-15T16:30:13Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:48Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 10,
+            "started_at": "2026-11-15T16:43:47Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:49Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 18,
+            "started_at": "2026-11-15T16:43:48Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:50Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 19,
+            "started_at": "2026-11-15T16:43:49Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 20,
+            "started_at": "2026-11-15T16:43:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "started_at": "2026-11-15T16:43:52Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132877517795",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132882029633",
+        "completed_at": "2026-11-15T16:44:09Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:43:53Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132882029633",
+        "id": 132882029633,
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "name": "Verify PR actual sharded coverage",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8GLcQQ",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004957,
+        "runner_name": "GitHub Actions 1000004957",
+        "started_at": "2026-11-15T16:43:55Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:43:56Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:43:55Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:59Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 2,
+            "started_at": "2026-11-15T16:43:56Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:59Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 3,
+            "started_at": "2026-11-15T16:43:59Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:43:59Z",
+            "conclusion": "success",
+            "name": "Require all shard executions to succeed",
+            "number": 4,
+            "started_at": "2026-11-15T16:43:59Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:05Z",
+            "conclusion": "success",
+            "name": "Verify exact artifacts, actual coverage and trusted PR identity",
+            "number": 5,
+            "started_at": "2026-11-15T16:43:59Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:07Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "number": 6,
+            "started_at": "2026-11-15T16:44:05Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:07Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+            "number": 11,
+            "started_at": "2026-11-15T16:44:07Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:07Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+            "number": 12,
+            "started_at": "2026-11-15T16:44:07Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:07Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "started_at": "2026-11-15T16:44:07Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132882029633",
+        "workflow_name": "FactorLab PR validation"
+      },
+      {
+        "check_run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-runs/132882103854",
+        "completed_at": "2026-11-15T16:44:19Z",
+        "conclusion": "success",
+        "created_at": "2026-11-15T16:44:09Z",
+        "head_branch": "perf/ci-p02-pit-verification",
+        "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+        "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182/job/132882103854",
+        "id": 132882103854,
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "name": "FactorLab merge gate",
+        "node_id": "CR_kwDOVW9-ZM8AAAAe8GP-Lg",
+        "run_attempt": 1,
+        "run_id": 43735547182,
+        "run_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions",
+        "runner_id": 1000004958,
+        "runner_name": "GitHub Actions 1000004958",
+        "started_at": "2026-11-15T16:44:13Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-11-15T16:44:15Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-11-15T16:44:14Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:15Z",
+            "conclusion": "success",
+            "name": "Require the protected status publisher App",
+            "number": 2,
+            "started_at": "2026-11-15T16:44:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:16Z",
+            "conclusion": "success",
+            "name": "Run actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349",
+            "number": 3,
+            "started_at": "2026-11-15T16:44:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:17Z",
+            "conclusion": "success",
+            "name": "Reject missing, failed or cancelled mandatory checks",
+            "number": 4,
+            "started_at": "2026-11-15T16:44:16Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:17Z",
+            "conclusion": "success",
+            "name": "Post Run actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349",
+            "number": 8,
+            "started_at": "2026-11-15T16:44:17Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-11-15T16:44:17Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-11-15T16:44:17Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/jobs/132882103854",
+        "workflow_name": "FactorLab PR validation"
+      }
+    ],
+    "total_count": 14
+  },
+  "last_merge_time": "2026-11-15T16:47:29Z",
+  "protected_app_status": {
+    "avatar_url": "https://avatars.githubusercontent.com/u/88176063?v=4",
+    "context": "FactorLab trusted merge gate",
+    "created_at": "2026-11-15T16:44:16Z",
+    "creator": {
+      "avatar_url": "https://avatars.githubusercontent.com/u/88176063?v=4",
+      "events_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/events{/privacy}",
+      "followers_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/followers",
+      "following_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/following{/other_user}",
+      "gists_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/gists{/gist_id}",
+      "gravatar_id": "",
+      "html_url": "https://github.com/apps/factorlab-ci-gate",
+      "id": 354189164,
+      "login": "factorlab-ci-gate[bot]",
+      "node_id": "BOT_kgDOFRx_bA",
+      "organizations_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/orgs",
+      "received_events_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/received_events",
+      "repos_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/repos",
+      "site_admin": false,
+      "starred_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D/subscriptions",
+      "type": "Bot",
+      "url": "https://api.github.com/users/factorlab-ci-gate%5Bbot%5D",
+      "user_view_type": "public"
+    },
+    "description": "Mandatory Fast and risk extensions passed",
+    "id": 58968742105,
+    "node_id": "SC_kwDOVW9-ZM8AAAANus-Y2Q",
+    "state": "success",
+    "target_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+    "updated_at": "2026-11-15T16:44:16Z",
+    "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/statuses/cfdaafaee9cc1c2fad045696bc18133c59c28361"
+  },
+  "protected_status_e2e_seconds": 1024.0,
+  "run": {
+    "actor": {
+      "avatar_url": "https://avatars.githubusercontent.com/u/88176063?v=4",
+      "events_url": "https://api.github.com/users/Wind-Maker1001/events{/privacy}",
+      "followers_url": "https://api.github.com/users/Wind-Maker1001/followers",
+      "following_url": "https://api.github.com/users/Wind-Maker1001/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Wind-Maker1001/gists{/gist_id}",
+      "gravatar_id": "",
+      "html_url": "https://github.com/Wind-Maker1001",
+      "id": 88176063,
+      "login": "Wind-Maker1001",
+      "node_id": "MDQ6VXNlcjg4MTc2MDYz",
+      "organizations_url": "https://api.github.com/users/Wind-Maker1001/orgs",
+      "received_events_url": "https://api.github.com/users/Wind-Maker1001/received_events",
+      "repos_url": "https://api.github.com/users/Wind-Maker1001/repos",
+      "site_admin": false,
+      "starred_url": "https://api.github.com/users/Wind-Maker1001/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Wind-Maker1001/subscriptions",
+      "type": "User",
+      "url": "https://api.github.com/users/Wind-Maker1001",
+      "user_view_type": "public"
+    },
+    "artifacts_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182/artifacts",
+    "cancel_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182/cancel",
+    "check_suite_id": 118407820016,
+    "check_suite_node_id": "CS_kwDOVW9-ZM8AAAAbkafy8A",
+    "check_suite_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/check-suites/118407820016",
+    "conclusion": "success",
+    "created_at": "2026-11-15T16:27:12Z",
+    "display_title": "CI-PERF-02: batch historical PIT Git object verification",
+    "event": "pull_request_target",
+    "head_branch": "perf/ci-p02-pit-verification",
+    "head_commit": {
+      "author": {
+        "email": "88176063+Wind-Maker1001@users.noreply.github.com",
+        "name": "Wind-Maker1001"
+      },
+      "committer": {
+        "email": "88176063+Wind-Maker1001@users.noreply.github.com",
+        "name": "Wind-Maker1001"
+      },
+      "id": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+      "message": "Merge main into PIT batch verification and record trusted regressions\n\nCo-Authored-By: Claude Code <noreply@anthropic.com>",
+      "timestamp": "2026-11-15T16:26:51Z",
+      "tree_id": "486e241951e4f3b2f8420e86c8c4dfbfb0e11ffa"
+    },
+    "head_repository": {
+      "archive_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/{archive_format}{/ref}",
+      "assignees_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/assignees{/user}",
+      "blobs_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/blobs{/sha}",
+      "branches_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/branches{/branch}",
+      "collaborators_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/collaborators{/collaborator}",
+      "comments_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/comments{/number}",
+      "commits_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/commits{/sha}",
+      "compare_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/compare/{base}...{head}",
+      "contents_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/contents/{+path}",
+      "contributors_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/contributors",
+      "deployments_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/deployments",
+      "description": "Independent offline factor research framework. Initial research preview; NO LIVE MONEY.",
+      "downloads_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/downloads",
+      "events_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/events",
+      "fork": false,
+      "forks_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/forks",
+      "full_name": "Wind-Maker1001/FactorLab",
+      "git_commits_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/commits{/sha}",
+      "git_refs_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/refs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/tags{/sha}",
+      "hooks_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/hooks",
+      "html_url": "https://github.com/Wind-Maker1001/FactorLab",
+      "id": 1433370212,
+      "issue_comment_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/issues/comments{/number}",
+      "issue_events_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/issues/events{/number}",
+      "issues_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/issues{/number}",
+      "keys_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/keys{/key_id}",
+      "labels_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/labels{/name}",
+      "languages_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/languages",
+      "merges_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/merges",
+      "milestones_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/milestones{/number}",
+      "name": "FactorLab",
+      "node_id": "R_kgDOVW9-ZA",
+      "notifications_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/notifications{?since,all,participating}",
+      "owner": {
+        "avatar_url": "https://avatars.githubusercontent.com/u/88176063?v=4",
+        "events_url": "https://api.github.com/users/Wind-Maker1001/events{/privacy}",
+        "followers_url": "https://api.github.com/users/Wind-Maker1001/followers",
+        "following_url": "https://api.github.com/users/Wind-Maker1001/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Wind-Maker1001/gists{/gist_id}",
+        "gravatar_id": "",
+        "html_url": "https://github.com/Wind-Maker1001",
+        "id": 88176063,
+        "login": "Wind-Maker1001",
+        "node_id": "MDQ6VXNlcjg4MTc2MDYz",
+        "organizations_url": "https://api.github.com/users/Wind-Maker1001/orgs",
+        "received_events_url": "https://api.github.com/users/Wind-Maker1001/received_events",
+        "repos_url": "https://api.github.com/users/Wind-Maker1001/repos",
+        "site_admin": false,
+        "starred_url": "https://api.github.com/users/Wind-Maker1001/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Wind-Maker1001/subscriptions",
+        "type": "User",
+        "url": "https://api.github.com/users/Wind-Maker1001",
+        "user_view_type": "public"
+      },
+      "private": false,
+      "pulls_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/pulls{/number}",
+      "releases_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/releases{/id}",
+      "stargazers_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/stargazers",
+      "statuses_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/statuses/{sha}",
+      "subscribers_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/subscribers",
+      "subscription_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/subscription",
+      "tags_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/tags",
+      "teams_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/teams",
+      "trees_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/trees{/sha}",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab"
+    },
+    "head_sha": "cfdaafaee9cc1c2fad045696bc18133c59c28361",
+    "html_url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+    "id": 43735547182,
+    "jobs_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182/jobs",
+    "logs_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182/logs",
+    "name": "FactorLab PR validation",
+    "node_id": "WFR_kwLOVW9-ZM8AAAAKLtd9Lg",
+    "path": ".github/workflows/factorlab-pr.yml",
+    "previous_attempt_url": null,
+    "pull_requests": [],
+    "referenced_workflows": [],
+    "repository": {
+      "archive_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/{archive_format}{/ref}",
+      "assignees_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/assignees{/user}",
+      "blobs_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/blobs{/sha}",
+      "branches_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/branches{/branch}",
+      "collaborators_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/collaborators{/collaborator}",
+      "comments_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/comments{/number}",
+      "commits_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/commits{/sha}",
+      "compare_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/compare/{base}...{head}",
+      "contents_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/contents/{+path}",
+      "contributors_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/contributors",
+      "deployments_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/deployments",
+      "description": "Independent offline factor research framework. Initial research preview; NO LIVE MONEY.",
+      "downloads_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/downloads",
+      "events_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/events",
+      "fork": false,
+      "forks_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/forks",
+      "full_name": "Wind-Maker1001/FactorLab",
+      "git_commits_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/commits{/sha}",
+      "git_refs_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/refs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/tags{/sha}",
+      "hooks_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/hooks",
+      "html_url": "https://github.com/Wind-Maker1001/FactorLab",
+      "id": 1433370212,
+      "issue_comment_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/issues/comments{/number}",
+      "issue_events_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/issues/events{/number}",
+      "issues_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/issues{/number}",
+      "keys_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/keys{/key_id}",
+      "labels_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/labels{/name}",
+      "languages_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/languages",
+      "merges_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/merges",
+      "milestones_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/milestones{/number}",
+      "name": "FactorLab",
+      "node_id": "R_kgDOVW9-ZA",
+      "notifications_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/notifications{?since,all,participating}",
+      "owner": {
+        "avatar_url": "https://avatars.githubusercontent.com/u/88176063?v=4",
+        "events_url": "https://api.github.com/users/Wind-Maker1001/events{/privacy}",
+        "followers_url": "https://api.github.com/users/Wind-Maker1001/followers",
+        "following_url": "https://api.github.com/users/Wind-Maker1001/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Wind-Maker1001/gists{/gist_id}",
+        "gravatar_id": "",
+        "html_url": "https://github.com/Wind-Maker1001",
+        "id": 88176063,
+        "login": "Wind-Maker1001",
+        "node_id": "MDQ6VXNlcjg4MTc2MDYz",
+        "organizations_url": "https://api.github.com/users/Wind-Maker1001/orgs",
+        "received_events_url": "https://api.github.com/users/Wind-Maker1001/received_events",
+        "repos_url": "https://api.github.com/users/Wind-Maker1001/repos",
+        "site_admin": false,
+        "starred_url": "https://api.github.com/users/Wind-Maker1001/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Wind-Maker1001/subscriptions",
+        "type": "User",
+        "url": "https://api.github.com/users/Wind-Maker1001",
+        "user_view_type": "public"
+      },
+      "private": false,
+      "pulls_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/pulls{/number}",
+      "releases_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/releases{/id}",
+      "stargazers_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/stargazers",
+      "statuses_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/statuses/{sha}",
+      "subscribers_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/subscribers",
+      "subscription_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/subscription",
+      "tags_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/tags",
+      "teams_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/teams",
+      "trees_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/git/trees{/sha}",
+      "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab"
+    },
+    "rerun_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182/rerun",
+    "run_attempt": 1,
+    "run_number": 267,
+    "run_started_at": "2026-11-15T16:27:12Z",
+    "status": "completed",
+    "triggering_actor": {
+      "avatar_url": "https://avatars.githubusercontent.com/u/88176063?v=4",
+      "events_url": "https://api.github.com/users/Wind-Maker1001/events{/privacy}",
+      "followers_url": "https://api.github.com/users/Wind-Maker1001/followers",
+      "following_url": "https://api.github.com/users/Wind-Maker1001/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Wind-Maker1001/gists{/gist_id}",
+      "gravatar_id": "",
+      "html_url": "https://github.com/Wind-Maker1001",
+      "id": 88176063,
+      "login": "Wind-Maker1001",
+      "node_id": "MDQ6VXNlcjg4MTc2MDYz",
+      "organizations_url": "https://api.github.com/users/Wind-Maker1001/orgs",
+      "received_events_url": "https://api.github.com/users/Wind-Maker1001/received_events",
+      "repos_url": "https://api.github.com/users/Wind-Maker1001/repos",
+      "site_admin": false,
+      "starred_url": "https://api.github.com/users/Wind-Maker1001/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Wind-Maker1001/subscriptions",
+      "type": "User",
+      "url": "https://api.github.com/users/Wind-Maker1001",
+      "user_view_type": "public"
+    },
+    "updated_at": "2026-11-15T16:44:19Z",
+    "url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs/43735547182",
+    "workflow_id": 411350592,
+    "workflow_url": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/workflows/411350592"
+  },
+  "source_files": [
+    {
+      "bytes": 472904,
+      "path": "extended-3.13-shard-0/current/tests.xml",
+      "sha256": "423db98547df847dfc474d56a7142a887e6bbaa484004ec92389d6ae6889e0a8"
+    },
+    {
+      "bytes": 1356440,
+      "path": "extended-3.13-shard-0/current/selection.json",
+      "sha256": "0bbe6a46c357f390eb9c3c9ad272afb68063ff21d938070b56cea79ec70e75a3"
+    },
+    {
+      "bytes": 742901,
+      "path": "extended-3.13-shard-0/current/execution.json",
+      "sha256": "4df91de8024413dbd0db18b07234409916ed596ee1419174e2d3ffa40f0fa69f"
+    },
+    {
+      "bytes": 308647,
+      "path": "extended-3.13-shard-0/current/receipt.json",
+      "sha256": "42cd2945c42751e80f1691a9150f94d93e6d17c66774eabb5ccc8398af61ed74"
+    },
+    {
+      "bytes": 1583,
+      "path": "extended-3.13-shard-0/current/dependencies.txt",
+      "sha256": "de44acdd34623ac2767b0ec95b457e7b2f753f47c2236cdda5b8d543fab30a51"
+    },
+    {
+      "bytes": 400672,
+      "path": "extended-3.13-shard-0/current/tests.log",
+      "sha256": "4654b980c064430b92834f58e454f91a8cd3aeeb57cee1b55667e088ec1a672d"
+    },
+    {
+      "bytes": 335072,
+      "path": "extended-3.13-shard-1/current/tests.xml",
+      "sha256": "38342949795dffcd50fcd71f637ba1144e60e2ea2881a6832fcb80c7ba304aba"
+    },
+    {
+      "bytes": 1245927,
+      "path": "extended-3.13-shard-1/current/selection.json",
+      "sha256": "65be7145cc80c217ce82b4d4c24073954477b5f9ef6e249f2a0c943f7df0b948"
+    },
+    {
+      "bytes": 521875,
+      "path": "extended-3.13-shard-1/current/execution.json",
+      "sha256": "9dfb358436180813876fbdd26afc468b10bc103e474b98be26da765d63925382"
+    },
+    {
+      "bytes": 308647,
+      "path": "extended-3.13-shard-1/current/receipt.json",
+      "sha256": "13aa308cefcbcfd1078887db3ee8dd022de3751e68de0c4827ac1d083922d00a"
+    },
+    {
+      "bytes": 1583,
+      "path": "extended-3.13-shard-1/current/dependencies.txt",
+      "sha256": "de44acdd34623ac2767b0ec95b457e7b2f753f47c2236cdda5b8d543fab30a51"
+    },
+    {
+      "bytes": 282041,
+      "path": "extended-3.13-shard-1/current/tests.log",
+      "sha256": "8ad2226bbb5a125dad5f74d1ccef1d4513e42ef2ccfd5656e6337b5cbefb3ce5"
+    },
+    {
+      "bytes": 369744,
+      "path": "extended-3.13-shard-2/current/tests.xml",
+      "sha256": "8d40f2dc261ebd260f9c62af9ac105497319580df50b50b190a81212ce5f5aed"
+    },
+    {
+      "bytes": 1278077,
+      "path": "extended-3.13-shard-2/current/selection.json",
+      "sha256": "521d81ae01189b53a31ad4a1385d706ad457dcad18238f266cbc0a1c6cf68ea7"
+    },
+    {
+      "bytes": 586175,
+      "path": "extended-3.13-shard-2/current/execution.json",
+      "sha256": "054665e1dec2092d2556c5871a2a22bd0c4ca848d7ffe2ddf9e05f105f76b832"
+    },
+    {
+      "bytes": 308647,
+      "path": "extended-3.13-shard-2/current/receipt.json",
+      "sha256": "830055d70f246dec7a9d76d399261c930d06730b88d573676566e644669b7ed6"
+    },
+    {
+      "bytes": 1583,
+      "path": "extended-3.13-shard-2/current/dependencies.txt",
+      "sha256": "de44acdd34623ac2767b0ec95b457e7b2f753f47c2236cdda5b8d543fab30a51"
+    },
+    {
+      "bytes": 313345,
+      "path": "extended-3.13-shard-2/current/tests.log",
+      "sha256": "a1c772a641446f2b084c0b9d6c7ea4a657fb5f78d80d4ce518c764d9fd490e16"
+    },
+    {
+      "bytes": 472905,
+      "path": "extended-3.14-shard-0/current/tests.xml",
+      "sha256": "9a97213802e210becf9f54973cdfd0f142cc0d8c8baf5f66ae726cb2f2ecc529"
+    },
+    {
+      "bytes": 1356440,
+      "path": "extended-3.14-shard-0/current/selection.json",
+      "sha256": "0bbe6a46c357f390eb9c3c9ad272afb68063ff21d938070b56cea79ec70e75a3"
+    },
+    {
+      "bytes": 742901,
+      "path": "extended-3.14-shard-0/current/execution.json",
+      "sha256": "4df91de8024413dbd0db18b07234409916ed596ee1419174e2d3ffa40f0fa69f"
+    },
+    {
+      "bytes": 308653,
+      "path": "extended-3.14-shard-0/current/receipt.json",
+      "sha256": "d71c451e3f99265d95e0336fb3689730cd5c1b1abc9ce2f240514bc7e934c1fe"
+    },
+    {
+      "bytes": 1560,
+      "path": "extended-3.14-shard-0/current/dependencies.txt",
+      "sha256": "db0814ce29f08071f48ae95fa8a5ded42da0e05478de541409694bfccd35b1bc"
+    },
+    {
+      "bytes": 400746,
+      "path": "extended-3.14-shard-0/current/tests.log",
+      "sha256": "6885df61ad37de74d7c742fd5c09433868d1065925d4f0749090d9a5280d6c0b"
+    },
+    {
+      "bytes": 335078,
+      "path": "extended-3.14-shard-1/current/tests.xml",
+      "sha256": "50060021f765a4f95b4899c8728b4da30eb53ccb168ac3481868f6ca22a175d0"
+    },
+    {
+      "bytes": 1245927,
+      "path": "extended-3.14-shard-1/current/selection.json",
+      "sha256": "65be7145cc80c217ce82b4d4c24073954477b5f9ef6e249f2a0c943f7df0b948"
+    },
+    {
+      "bytes": 521875,
+      "path": "extended-3.14-shard-1/current/execution.json",
+      "sha256": "9dfb358436180813876fbdd26afc468b10bc103e474b98be26da765d63925382"
+    },
+    {
+      "bytes": 308653,
+      "path": "extended-3.14-shard-1/current/receipt.json",
+      "sha256": "f5a3b78217d81d2a8b4afb8edd0af2e9c630a69c126f24fff0f9de463c6a4644"
+    },
+    {
+      "bytes": 1560,
+      "path": "extended-3.14-shard-1/current/dependencies.txt",
+      "sha256": "db0814ce29f08071f48ae95fa8a5ded42da0e05478de541409694bfccd35b1bc"
+    },
+    {
+      "bytes": 282207,
+      "path": "extended-3.14-shard-1/current/tests.log",
+      "sha256": "15a88ae2c69c57e066f825e5f2b2e9daca30531ebe24b31eee96aa0aaa38dde4"
+    },
+    {
+      "bytes": 369746,
+      "path": "extended-3.14-shard-2/current/tests.xml",
+      "sha256": "4b937c1f4fabec4cd40bdcadc6f784fd4fd29ebd19e879c6c5a0f90fb52f07f5"
+    },
+    {
+      "bytes": 1278077,
+      "path": "extended-3.14-shard-2/current/selection.json",
+      "sha256": "521d81ae01189b53a31ad4a1385d706ad457dcad18238f266cbc0a1c6cf68ea7"
+    },
+    {
+      "bytes": 586175,
+      "path": "extended-3.14-shard-2/current/execution.json",
+      "sha256": "054665e1dec2092d2556c5871a2a22bd0c4ca848d7ffe2ddf9e05f105f76b832"
+    },
+    {
+      "bytes": 308653,
+      "path": "extended-3.14-shard-2/current/receipt.json",
+      "sha256": "38c6bf08a664372a77c64614d85db8209e4ed42dee063fa8d7327383a08db4ea"
+    },
+    {
+      "bytes": 1560,
+      "path": "extended-3.14-shard-2/current/dependencies.txt",
+      "sha256": "db0814ce29f08071f48ae95fa8a5ded42da0e05478de541409694bfccd35b1bc"
+    },
+    {
+      "bytes": 313385,
+      "path": "extended-3.14-shard-2/current/tests.log",
+      "sha256": "d6a768139df7ea0a6901594f2eef54bd5a30bfb7d0d5c4f8b58011e80b670333"
+    },
+    {
+      "bytes": 14642,
+      "path": "run.json",
+      "sha256": "f3cdd47abb69e80f76b843de56d063f5ccc67f7052259c536b5f057a53c67d66"
+    },
+    {
+      "bytes": 70977,
+      "path": "jobs.json",
+      "sha256": "01e5e4fda884d640fcb8a6ecb3deb97a35c8e18baa9ca48ce2f518bef1c03b7e"
+    },
+    {
+      "bytes": 10884,
+      "path": "artifacts.json",
+      "sha256": "5d0d0f76e6e881bc05abc75eaa5403992fc9d6ece7316918fbc4a65aa585b3f7"
+    },
+    {
+      "bytes": 548,
+      "path": "verified-pr-current-coverage/3.13/execution.json",
+      "sha256": "cc98fc08719851a12c6dad7e67dec906d6601e7545d9021be505e2aee85a6242"
+    },
+    {
+      "bytes": 306143,
+      "path": "verified-pr-current-coverage/3.13/receipt.json",
+      "sha256": "a19e3bfeecef41d4ed0179ee9a0e0b94f87b380d1920648f426880171e413923"
+    },
+    {
+      "bytes": 1344029,
+      "path": "verified-pr-current-coverage/3.13/selection.json",
+      "sha256": "282332b347fb300801125e622cf0c993f7e7b27f41b0351c3d9ba42398f12648"
+    },
+    {
+      "bytes": 996058,
+      "path": "verified-pr-current-coverage/3.13/tests.log",
+      "sha256": "18e7912338c7ab04e508d503dab972f978d067a2517ac2eb40e2270463d89975"
+    },
+    {
+      "bytes": 1177535,
+      "path": "verified-pr-current-coverage/3.13/tests.xml",
+      "sha256": "6f11108e10bdb5af658ca9ee1843a82d6126bd5cda624279e74f3439302b6922"
+    },
+    {
+      "bytes": 566,
+      "path": "verified-pr-current-coverage/3.14/execution.json",
+      "sha256": "f1786c0a8070f482b2c0b5bb2ff557e49a24c88face6b2fdec068bc6d868ca26"
+    },
+    {
+      "bytes": 306167,
+      "path": "verified-pr-current-coverage/3.14/receipt.json",
+      "sha256": "e87971b80feaf902eab7610af8bcd652e604f1e8c98c344e3d6802001f1ca613"
+    },
+    {
+      "bytes": 1344029,
+      "path": "verified-pr-current-coverage/3.14/selection.json",
+      "sha256": "282332b347fb300801125e622cf0c993f7e7b27f41b0351c3d9ba42398f12648"
+    },
+    {
+      "bytes": 996338,
+      "path": "verified-pr-current-coverage/3.14/tests.log",
+      "sha256": "96ff8f428bb9b57d641b89f32ac80acd04bcff54f43e5d3ba5a457ec1f7df358"
+    },
+    {
+      "bytes": 1177544,
+      "path": "verified-pr-current-coverage/3.14/tests.xml",
+      "sha256": "496f41a799773c92d3384b2533f733ed2062922c610bf1eda052e63b0a438750"
+    }
+  ]
+}

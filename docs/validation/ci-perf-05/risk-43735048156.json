@@ -1,0 +1,2875 @@
+{
+  "identity.json": {
+    "base": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "event": "pull_request_target",
+    "event_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "pr": 175,
+    "pr_head": "0c5dfe89962fdf056f7f4eb66ab3a7fc8cd66f64",
+    "repository": "Wind-Maker1001/FactorLab",
+    "risk_sha256": "0abc5918b43fdbd147e5a5102d2c9bfe2a25fa7930e386c4afd5d5cf560998e6",
+    "run_attempt": "1",
+    "run_id": "43735048156",
+    "schema": "FACTORLAB_PR_VALIDATION_IDENTITY_V1",
+    "subject": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40"
+  },
+  "risk.json": {
+    "affected": [
+      ".github/scripts/ci/benchmark.py",
+      ".github/scripts/ci/c01_preservation.py",
+      ".github/scripts/ci/frozen_engineering_migration.py",
+      ".github/scripts/ci/research_checks.py",
+      ".github/scripts/ci/security_admission_revision.py",
+      ".github/scripts/ci/test_actual_failures.py",
+      ".github/scripts/ci/test_ci_contracts.py",
+      ".github/scripts/ci/test_execution_evidence.py",
+      ".github/scripts/ci/test_parallel_execution.py",
+      ".github/scripts/ci/test_trigger_policy.py",
+      ".github/scripts/ci/validate_fixture_equivalence.py",
+      ".github/workflows/factorlab-full.yml",
+      ".github/workflows/factorlab-pr.yml",
+      ".github/workflows/factorlab.yml",
+      "LICENSE_ISSUES.json",
+      "MANIFEST.in",
+      "docs/validation/ci-perf-03/README.md",
+      "docs/validation/ci-perf-03/RESULTS.md",
+      "docs/validation/ci-perf-03/candidate_module_timings.json",
+      "docs/validation/ci-perf-03/collection.py",
+      "docs/validation/ci-perf-03/fetch.py",
+      "docs/validation/ci-perf-03/module-timings.csv",
+      "docs/validation/ci-perf-03/previous_module_timings.json",
+      "docs/validation/ci-perf-03/profile.py",
+      "docs/validation/ci-perf-03/provenance-43717685960.json",
+      "docs/validation/ci-perf-03/provenance-43721499381.json",
+      "docs/validation/ci-perf-03/report.py",
+      "docs/validation/ci-perf-03/run-43717685960.json",
+      "docs/validation/ci-perf-03/run-43721499381.json",
+      "docs/validation/ci-perf-03/source-metadata-43717685960.json",
+      "docs/validation/ci-perf-03/source-metadata-43721499381.json",
+      "docs/validation/ci-perf-03/target-inventory.json",
+      "docs/validation/ci-perf-03/test_profile.py",
+      "docs/validation/ci-risk-selection/benchmark.py",
+      "docs/validation/p2-data-02/reproduce.py",
+      "docs/validation/p7-r04b-e04/compare.py",
+      "docs/validation/p7-r04b-e04/measure.py",
+      "examples/custom_strategy/run.py",
+      "examples/monte_carlo.py",
+      "examples/research/accept_yhh30m.py",
+      "examples/research/alpha_robustness_synthetic.py",
+      "examples/research/audit_official_coverage.py",
+      "examples/research/audit_tdx_local.py",
+      "examples/research/audit_tdx_quality.py",
+      "examples/research/baostock_source_probe.py",
+      "examples/research/benchmark_factor_evaluation.py",
+      "examples/research/collect_exchange_article.py",
+      "examples/research/collect_official_notices.py",
+      "examples/research/csmar_source_binding_pilot.py",
+      "examples/research/diagnose_market_regime.py",
+      "examples/research/download_cached_notice_attachments.py",
+      "examples/research/execution_capacity_synthetic.py",
+      "examples/research/five_year_supplier_probe.py",
+      "examples/research/forward_evaluation_synthetic_demo.py",
+      "examples/research/grid_empirical_demo.py",
+      "examples/research/grid_empirical_evidence.py",
+      "examples/research/grid_independent_demo.py",
+      "examples/research/grid_lifecycle_demo.py",
+      "examples/research/grid_lifecycle_evidence.py",
+      "examples/research/grid_paper_demo.py",
+      "examples/research/grid_synthetic_demo.py",
+      "examples/research/phase2_synthetic_demo.py",
+      "examples/research/phase3_synthetic_demo.py",
+      "examples/research/phase4_synthetic_demo.py",
+      "examples/research/real_factor_label_smoke.py",
+      "examples/research/real_hfq_evidence_pilot.py",
+      "examples/research/refetch_benchmark.py",
+      "examples/research/research_pipeline_synthetic.py",
+      "examples/research/return_attribution_synthetic.py",
+      "examples/research/review_browser_notices.py",
+      "examples/research/review_cached_workbook_notices.py",
+      "examples/research/review_pdf_notices.py",
+      "examples/research/review_tdx_quality.py",
+      "examples/research/review_yhh30m_release.py",
+      "examples/research/scale_factor_pipeline.py",
+      "examples/research/signal_propagation_synthetic.py",
+      "examples/research/summarize_five_year_pilot.py",
+      "examples/research/verify_tdx_samples.py",
+      "examples/research_workflow.py",
+      "examples/strategy_paper_evidence.py",
+      "pyproject.toml",
+      "src/factorlab/_identity.py",
+      "src/factorlab/application/research_pipeline.py",
+      "src/factorlab/cli.py",
+      "src/factorlab/config/__init__.py",
+      "src/factorlab/config/loader.py",
+      "src/factorlab/data/admission.py",
+      "src/factorlab/data/assemble.py",
+      "src/factorlab/data/csmar/__main__.py",
+      "src/factorlab/data/csmar/binding.py",
+      "src/factorlab/data/csmar/catalog.py",
+      "src/factorlab/data/csmar/fingerprint.py",
+      "src/factorlab/data/csmar/local_cli.py",
+      "src/factorlab/data/csmar/prepare.py",
+      "src/factorlab/data/governed_adapter.py",
+      "src/factorlab/data/hub/adapters.py",
+      "src/factorlab/data/market_qualification.py",
+      "src/factorlab/data/providers/local.py",
+      "src/factorlab/data/research_input.py",
+      "src/factorlab/data/tdx_staging.py",
+      "src/factorlab/demo.py",
+      "src/factorlab/diagnostics/model_readiness/__main__.py",
+      "src/factorlab/diagnostics/model_readiness/runner.py",
+      "src/factorlab/diagnostics/pipeline_preflight.py",
+      "src/factorlab/engineering/yhh30m/__main__.py",
+      "src/factorlab/engineering/yhh30m/conversion.py",
+      "src/factorlab/engineering/yhh30m/normalize.py",
+      "src/factorlab/engineering/yhh30m/provider.py",
+      "src/factorlab/engineering/yhh30m/source.py",
+      "src/factorlab/engineering/yhh30m/storage.py",
+      "src/factorlab/engineering/yhh30m/validation.py",
+      "src/factorlab/experiments/grid_empirical.py",
+      "src/factorlab/experiments/grid_exposure_benchmark.py",
+      "src/factorlab/experiments/grid_independent.py",
+      "src/factorlab/experiments/grid_lifecycle.py",
+      "src/factorlab/experiments/grid_monte_carlo.py",
+      "src/factorlab/experiments/grid_paper.py",
+      "src/factorlab/experiments/grid_synthetic.py",
+      "src/factorlab/experiments/grid_temporal_stability.py",
+      "src/factorlab/experiments/grid_weekend.py",
+      "src/factorlab/experiments/provenance.py",
+      "src/factorlab/exploratory/__main__.py",
+      "src/factorlab/exploratory/factor_discovery/__main__.py",
+      "src/factorlab/exploratory/factor_discovery/private_inputs.py",
+      "src/factorlab/exploratory/factor_discovery/publication.py",
+      "src/factorlab/exploratory/factor_discovery/receipts.py",
+      "src/factorlab/exploratory/factor_discovery/runner.py",
+      "src/factorlab/exploratory/five_year.py",
+      "src/factorlab/exploratory/market_structure/__main__.py",
+      "src/factorlab/exploratory/market_structure/runner.py",
+      "src/factorlab/exploratory/publication.py",
+      "src/factorlab/exploratory/report.py",
+      "src/factorlab/exploratory/runner.py",
+      "src/factorlab/exploratory/statistical_audit/__main__.py",
+      "src/factorlab/exploratory/statistical_audit/delivery.py",
+      "src/factorlab/exploratory/statistical_audit/inputs.py",
+      "src/factorlab/exploratory/statistical_audit/quintiles.py",
+      "src/factorlab/exploratory/statistical_audit/report.py",
+      "src/factorlab/forward/activation.py",
+      "src/factorlab/forward/contract.py",
+      "src/factorlab/forward/evidence.py",
+      "src/factorlab/forward/integrity.py",
+      "src/factorlab/forward/model_bundle.py",
+      "src/factorlab/forward/signal_recorder.py",
+      "src/factorlab/reports/forward.py",
+      "src/factorlab/reproducibility.py",
+      "src/factorlab/research/binance_model_evidence.py",
+      "src/factorlab/research/binance_model_study.py",
+      "src/factorlab/research/workflow.py",
+      "src/factorlab/strategies/dual_ma_cli.py",
+      "src/factorlab/strategies/exploratory_real.py",
+      "src/factorlab/strategies/real_comparison.py",
+      "src/factorlab/strategies/real_total_return.py",
+      "src/factorlab/strategies/risk_comparison.py",
+      "src/factorlab/strategies/robustness.py",
+      "src/factorlab/strategies/robustness_real.py",
+      "src/factorlab/strategies/technical_cli.py",
+      "src/factorlab/trading/frozen_strategy.py",
+      "src/factorlab/trading/realtime_service.py",
+      "src/factorlab/trading/strategy_config.py",
+      "src/factorlab/trading/strategy_replay.py",
+      "tests/conftest.py",
+      "tests/cross_market/test_contracts.py",
+      "tests/evidence/test_p3_d05.py",
+      "tests/evidence/test_p4_d01_evidence.py",
+      "tests/evidence/test_pit_archive_verifiers.py",
+      "tests/integrations/test_binance_demo_strategy.py",
+      "tests/integrations/test_binance_equity.py",
+      "tests/market_admission/test_admission.py",
+      "tests/market_admission/test_p1_review.py",
+      "tests/market_admission/test_revision_contract.py",
+      "tests/market_structure/test_c01_publication_safety.py",
+      "tests/market_structure/test_delivery.py",
+      "tests/market_structure/test_minute_gate_compatibility.py",
+      "tests/market_structure/test_publication_scope_audit.py",
+      "tests/market_structure/verify_corrections.py",
+      "tests/market_structure/verify_delivery.py",
+      "tests/migration/test_independent_boundary.py",
+      "tests/minute_data/test_yhh30m.py",
+      "tests/minute_data/test_yhh30m_release_review.py",
+      "tests/minute_data/test_yhh30m_review.py",
+      "tests/model_readiness/test_cli_source.py",
+      "tests/model_readiness/test_comparison_contract.py",
+      "tests/model_readiness/test_readiness.py",
+      "tests/research/market_data_fixture.py",
+      "tests/research/status_candidate/test_integration.py",
+      "tests/research/status_candidate/test_preservation.py",
+      "tests/research/test_adjustment_foundation.py",
+      "tests/research/test_baostock_source_probe.py",
+      "tests/research/test_benchmark_refetch.py",
+      "tests/research/test_binance_model_study.py",
+      "tests/research/test_browser_notice_observations.py",
+      "tests/research/test_c01_preservation.py",
+      "tests/research/test_c01_source_reachability.py",
+      "tests/research/test_cached_notice_attachments.py",
+      "tests/research/test_candidate_preflight.py",
+      "tests/research/test_capacity_pipeline.py",
+      "tests/research/test_cli_compute_receipts.py",
+      "tests/research/test_cli_download_contract.py",
+      "tests/research/test_cli_forward_evaluation.py",
+      "tests/research/test_cli_model_inference.py",
+      "tests/research/test_cli_phase2.py",
+      "tests/research/test_cli_phase4.py",
+      "tests/research/test_cli_reproducibility.py",
+      "tests/research/test_cli_stage_diagnostics.py",
+      "tests/research/test_comparison_snapshot.py",
+      "tests/research/test_compute.py",
+      "tests/research/test_compute_public_plumbing.py",
+      "tests/research/test_config.py",
+      "tests/research/test_config_local_provider.py",
+      "tests/research/test_config_roots.py",
+      "tests/research/test_corporate_action_ledger.py",
+      "tests/research/test_csmar_date_precheck_traceability.py",
+      "tests/research/test_csmar_local_prepare.py",
+      "tests/research/test_csmar_rejection_coordinates.py",
+      "tests/research/test_csmar_security_fixes.py",
+      "tests/research/test_csmar_source_binding.py",
+      "tests/research/test_custom_strategy.py",
+      "tests/research/test_custom_strategy_rejections.py",
+      "tests/research/test_d06_evidence_binding.py",
+      "tests/research/test_d06_readiness_integration.py",
+      "tests/research/test_d07_git_receipt.py",
+      "tests/research/test_data_governance.py",
+      "tests/research/test_datahub.py",
+      "tests/research/test_dividend_execution.py",
+      "tests/research/test_download_repair_concurrency.py",
+      "tests/research/test_dual_ma.py",
+      "tests/research/test_execution_risk_integration.py",
+      "tests/research/test_experiment_tracker.py",
+      "tests/research/test_exploratory_delivery.py",
+      "tests/research/test_exploratory_publication.py",
+      "tests/research/test_exploratory_real.py",
+      "tests/research/test_exploratory_safety.py",
+      "tests/research/test_exploratory_statistical_audit.py",
+      "tests/research/test_exploratory_statistical_delivery.py",
+      "tests/research/test_factor_discovery_delivery.py",
+      "tests/research/test_factor_discovery_integration.py",
+      "tests/research/test_factor_evaluation_service.py",
+      "tests/research/test_factor_performance_diagnostic.py",
+      "tests/research/test_five_year_frozen_baseline.py",
+      "tests/research/test_five_year_pilot.py",
+      "tests/research/test_five_year_supplier_probe.py",
+      "tests/research/test_forward_activation_phase4.py",
+      "tests/research/test_forward_contract_phase4.py",
+      "tests/research/test_forward_evaluation_report.py",
+      "tests/research/test_forward_evaluation_synthetic_example.py",
+      "tests/research/test_forward_evidence.py",
+      "tests/research/test_forward_full_predictions.py",
+      "tests/research/test_forward_model_bundle_phase4.py",
+      "tests/research/test_forward_signal_recorder_phase4.py",
+      "tests/research/test_forward_temporal_read_validation.py",
+      "tests/research/test_grid_empirical.py",
+      "tests/research/test_grid_experiment.py",
+      "tests/research/test_grid_exposure_benchmark.py",
+      "tests/research/test_grid_independent.py",
+      "tests/research/test_grid_inventory_risk.py",
+      "tests/research/test_grid_lifecycle.py",
+      "tests/research/test_grid_monte_carlo.py",
+      "tests/research/test_grid_p2_regressions.py",
+      "tests/research/test_grid_paper_experiment.py",
+      "tests/research/test_grid_temporal_stability.py",
+      "tests/research/test_grid_weekend.py",
+      "tests/research/test_local_admission_boundaries.py",
+      "tests/research/test_local_cli_pipeline.py",
+      "tests/research/test_local_market_provider.py",
+      "tests/research/test_market_data_qualification.py",
+      "tests/research/test_market_regime_diagnostic.py",
+      "tests/research/test_multisecurity_input.py",
+      "tests/research/test_p4_01_pipeline_inputs.py",
+      "tests/research/test_p4_02_pipeline_cli.py",
+      "tests/research/test_p4_03_controlled_inputs.py",
+      "tests/research/test_p4_04_allocation.py",
+      "tests/research/test_p5_d01_data_quality.py",
+      "tests/research/test_p8_data_evidence.py",
+      "tests/research/test_pdf_notice_example.py",
+      "tests/research/test_phase1_file_pipeline.py",
+      "tests/research/test_phase2_synthetic_example.py",
+      "tests/research/test_phase3_synthetic_example.py",
+      "tests/research/test_phase4_synthetic_example.py",
+      "tests/research/test_pipeline_feedback.py",
+      "tests/research/test_pit_generation_publication.py",
+      "tests/research/test_pit_snapshot_failure.py",
+      "tests/research/test_portfolio_backtest_phase2.py",
+      "tests/research/test_portfolio_dividend_execution.py",
+      "tests/research/test_qualification_admission_boundaries.py",
+      "tests/research/test_real_comparison.py",
+      "tests/research/test_real_data_readiness.py",
+      "tests/research/test_real_factor_label_smoke.py",
+      "tests/research/test_real_hfq_evidence_pilot.py",
+      "tests/research/test_real_total_return.py",
+      "tests/research/test_research_pipeline.py",
+      "tests/research/test_research_workflow.py",
+      "tests/research/test_return_attribution.py",
+      "tests/research/test_risk_comparison.py",
+      "tests/research/test_run_manifest_atomic_write.py",
+      "tests/research/test_scale_factor_pipeline.py",
+      "tests/research/test_signal_lock_native.py",
+      "tests/research/test_signal_propagation.py",
+      "tests/research/test_source_coverage_cli.py",
+      "tests/research/test_strategy_robustness.py",
+      "tests/research/test_tdx_audit_preservation.py",
+      "tests/research/test_tdx_quality_audit.py",
+      "tests/research/test_tdx_reference.py",
+      "tests/research/test_tdx_staging.py",
+      "tests/research/test_technical_strategies.py",
+      "tests/research/test_validation_phase2.py",
+      "tests/research/test_workbook_notice_example.py",
+      "tests/research/workflow_fixtures.py",
+      "tests/security/test_four_shard_contract.py",
+      "tests/security/test_independent_controls.py",
+      "tests/security/test_pr_identity.py",
+      "tests/security/test_pr_risk.py",
+      "tests/security/test_targeted_validation.py",
+      "tests/security/test_validation_v2.py",
+      "tests/test_grid_fifo.py",
+      "tests/trading/test_frozen_strategy.py",
+      "tests/trading/test_realtime.py",
+      "tests/trading/test_simulation.py",
+      "tests/trading/test_stock_phases.py",
+      "tests/trading/test_strategy_pipeline.py",
+      "tests/trading/test_strategy_replay.py",
+      "tools/benchmark_monte_carlo.py",
+      "tools/ci/current_module_timings.json",
+      "tools/ci/current_validation.py",
+      "tools/ci/integration_checks.py",
+      "tools/ci/lock_acceptance.py",
+      "tools/ci/lock_diagnostics.py",
+      "tools/ci/pr_risk.py",
+      "tools/ci/run_checks.py",
+      "tools/ci/sharding.py",
+      "tools/ci/windows_lock_probe.py",
+      "tools/data/audit_p3_d05.py",
+      "tools/data/audit_p3_d07.py",
+      "tools/data/audit_p4_01_pipeline_inputs.py",
+      "tools/data/audit_p4_03_controlled_inputs.py",
+      "tools/data/candidate_preflight.py",
+      "tools/data/d06_readiness_adapter.py",
+      "tools/evidence/audit_p4_d01.py",
+      "tools/migration/behavior_probe.py",
+      "tools/migration/bind_final_head.py",
+      "tools/migration/compare_test_inventory.py",
+      "tools/migration/extract.py",
+      "tools/migration/finalize_validation.py",
+      "tools/migration/installed_smoke.py",
+      "tools/migration/packaging_ci.py",
+      "tools/migration/port_layout.py",
+      "tools/migration/rename_namespace.py",
+      "tools/p7_r04a_inventory.py",
+      "tools/research/audit_p4_04_allocation.py",
+      "tools/research/benchmark_grid_scenario_generation.py",
+      "tools/research/gpu_model_benchmark.py",
+      "tools/research/p8_data_evidence.py",
+      "tools/research/pipeline_config.py",
+      "tools/research/prepare_multisecurity_input.py",
+      "tools/research/prepare_real_pairs.py",
+      "tools/research/publish_grid_exposure_benchmark.py",
+      "tools/research/publish_grid_inventory_risk.py",
+      "tools/research/publish_grid_temporal_stability.py",
+      "tools/research/publish_risk_comparison.py",
+      "tools/research/run_exploratory_real.py",
+      "tools/research/run_grid_inventory_risk.py",
+      "tools/research/run_grid_monte_carlo.py",
+      "tools/research/run_p8_e02.py",
+      "tools/research/run_pipeline.py",
+      "tools/research/run_real_strategy_comparison.py",
+      "tools/research/run_real_total_return.py",
+      "tools/research/run_risk_matched_comparison.py",
+      "tools/research/run_shared_portfolio.py",
+      "tools/research/run_strategy_robustness.py",
+      "tools/research/summarize_strategy_robustness.py",
+      "tools/research/verify_multisecurity_input.py",
+      "tools/research/workflow.py",
+      "tools/security/acceptance_report.py",
+      "tools/security/fixed_validator.py",
+      "tools/security/seal_review_material.py"
+    ],
+    "base": "27180431626e6395dfb7907bab5e81f74cbb20fe",
+    "current": true,
+    "decisions": [
+      {
+        "after": [
+          "100644",
+          "blob",
+          "4fb3542f69a64bab296602b799d8902d96c2eeae"
+        ],
+        "before": null,
+        "consumers": [
+          ".github/scripts/ci/benchmark.py",
+          ".github/scripts/ci/c01_preservation.py",
+          ".github/scripts/ci/frozen_engineering_migration.py",
+          ".github/scripts/ci/research_checks.py",
+          ".github/scripts/ci/security_admission_revision.py",
+          ".github/scripts/ci/test_actual_failures.py",
+          ".github/scripts/ci/test_ci_contracts.py",
+          ".github/scripts/ci/test_execution_evidence.py",
+          ".github/scripts/ci/test_parallel_execution.py",
+          ".github/scripts/ci/test_trigger_policy.py",
+          ".github/scripts/ci/validate_fixture_equivalence.py",
+          ".github/workflows/factorlab-full.yml",
+          ".github/workflows/factorlab-pr.yml",
+          ".github/workflows/factorlab.yml",
+          "LICENSE_ISSUES.json",
+          "MANIFEST.in",
+          "docs/validation/ci-perf-03/collection.py",
+          "docs/validation/ci-perf-03/profile.py",
+          "docs/validation/ci-perf-03/test_profile.py",
+          "docs/validation/ci-risk-selection/benchmark.py",
+          "docs/validation/p2-data-02/reproduce.py",
+          "docs/validation/p7-r04b-e04/compare.py",
+          "docs/validation/p7-r04b-e04/measure.py",
+          "examples/custom_strategy/run.py",
+          "examples/monte_carlo.py",
+          "examples/research/accept_yhh30m.py",
+          "examples/research/alpha_robustness_synthetic.py",
+          "examples/research/audit_official_coverage.py",
+          "examples/research/audit_tdx_local.py",
+          "examples/research/audit_tdx_quality.py",
+          "examples/research/baostock_source_probe.py",
+          "examples/research/benchmark_factor_evaluation.py",
+          "examples/research/collect_exchange_article.py",
+          "examples/research/collect_official_notices.py",
+          "examples/research/csmar_source_binding_pilot.py",
+          "examples/research/diagnose_market_regime.py",
+          "examples/research/download_cached_notice_attachments.py",
+          "examples/research/execution_capacity_synthetic.py",
+          "examples/research/five_year_supplier_probe.py",
+          "examples/research/forward_evaluation_synthetic_demo.py",
+          "examples/research/grid_empirical_demo.py",
+          "examples/research/grid_empirical_evidence.py",
+          "examples/research/grid_independent_demo.py",
+          "examples/research/grid_lifecycle_demo.py",
+          "examples/research/grid_lifecycle_evidence.py",
+          "examples/research/grid_paper_demo.py",
+          "examples/research/grid_synthetic_demo.py",
+          "examples/research/phase2_synthetic_demo.py",
+          "examples/research/phase3_synthetic_demo.py",
+          "examples/research/phase4_synthetic_demo.py",
+          "examples/research/real_factor_label_smoke.py",
+          "examples/research/real_hfq_evidence_pilot.py",
+          "examples/research/refetch_benchmark.py",
+          "examples/research/research_pipeline_synthetic.py",
+          "examples/research/return_attribution_synthetic.py",
+          "examples/research/review_browser_notices.py",
+          "examples/research/review_cached_workbook_notices.py",
+          "examples/research/review_pdf_notices.py",
+          "examples/research/review_tdx_quality.py",
+          "examples/research/review_yhh30m_release.py",
+          "examples/research/scale_factor_pipeline.py",
+          "examples/research/signal_propagation_synthetic.py",
+          "examples/research/summarize_five_year_pilot.py",
+          "examples/research/verify_tdx_samples.py",
+          "examples/research_workflow.py",
+          "examples/strategy_paper_evidence.py",
+          "pyproject.toml",
+          "src/factorlab/_identity.py",
+          "src/factorlab/application/research_pipeline.py",
+          "src/factorlab/cli.py",
+          "src/factorlab/config/__init__.py",
+          "src/factorlab/config/loader.py",
+          "src/factorlab/data/admission.py",
+          "src/factorlab/data/assemble.py",
+          "src/factorlab/data/csmar/__main__.py",
+          "src/factorlab/data/csmar/binding.py",
+          "src/factorlab/data/csmar/catalog.py",
+          "src/factorlab/data/csmar/fingerprint.py",
+          "src/factorlab/data/csmar/local_cli.py",
+          "src/factorlab/data/csmar/prepare.py",
+          "src/factorlab/data/governed_adapter.py",
+          "src/factorlab/data/hub/adapters.py",
+          "src/factorlab/data/market_qualification.py",
+          "src/factorlab/data/providers/local.py",
+          "src/factorlab/data/research_input.py",
+          "src/factorlab/data/tdx_staging.py",
+          "src/factorlab/demo.py",
+          "src/factorlab/diagnostics/model_readiness/__main__.py",
+          "src/factorlab/diagnostics/model_readiness/runner.py",
+          "src/factorlab/diagnostics/pipeline_preflight.py",
+          "src/factorlab/engineering/yhh30m/__main__.py",
+          "src/factorlab/engineering/yhh30m/conversion.py",
+          "src/factorlab/engineering/yhh30m/normalize.py",
+          "src/factorlab/engineering/yhh30m/provider.py",
+          "src/factorlab/engineering/yhh30m/source.py",
+          "src/factorlab/engineering/yhh30m/storage.py",
+          "src/factorlab/engineering/yhh30m/validation.py",
+          "src/factorlab/experiments/grid_empirical.py",
+          "src/factorlab/experiments/grid_exposure_benchmark.py",
+          "src/factorlab/experiments/grid_independent.py",
+          "src/factorlab/experiments/grid_lifecycle.py",
+          "src/factorlab/experiments/grid_monte_carlo.py",
+          "src/factorlab/experiments/grid_paper.py",
+          "src/factorlab/experiments/grid_synthetic.py",
+          "src/factorlab/experiments/grid_temporal_stability.py",
+          "src/factorlab/experiments/grid_weekend.py",
+          "src/factorlab/experiments/provenance.py",
+          "src/factorlab/exploratory/__main__.py",
+          "src/factorlab/exploratory/factor_discovery/__main__.py",
+          "src/factorlab/exploratory/factor_discovery/private_inputs.py",
+          "src/factorlab/exploratory/factor_discovery/publication.py",
+          "src/factorlab/exploratory/factor_discovery/receipts.py",
+          "src/factorlab/exploratory/factor_discovery/runner.py",
+          "src/factorlab/exploratory/five_year.py",
+          "src/factorlab/exploratory/market_structure/__main__.py",
+          "src/factorlab/exploratory/market_structure/runner.py",
+          "src/factorlab/exploratory/publication.py",
+          "src/factorlab/exploratory/report.py",
+          "src/factorlab/exploratory/runner.py",
+          "src/factorlab/exploratory/statistical_audit/__main__.py",
+          "src/factorlab/exploratory/statistical_audit/delivery.py",
+          "src/factorlab/exploratory/statistical_audit/inputs.py",
+          "src/factorlab/exploratory/statistical_audit/quintiles.py",
+          "src/factorlab/exploratory/statistical_audit/report.py",
+          "src/factorlab/forward/activation.py",
+          "src/factorlab/forward/contract.py",
+          "src/factorlab/forward/evidence.py",
+          "src/factorlab/forward/integrity.py",
+          "src/factorlab/forward/model_bundle.py",
+          "src/factorlab/forward/signal_recorder.py",
+          "src/factorlab/reports/forward.py",
+          "src/factorlab/reproducibility.py",
+          "src/factorlab/research/binance_model_evidence.py",
+          "src/factorlab/research/binance_model_study.py",
+          "src/factorlab/research/workflow.py",
+          "src/factorlab/strategies/dual_ma_cli.py",
+          "src/factorlab/strategies/exploratory_real.py",
+          "src/factorlab/strategies/real_comparison.py",
+          "src/factorlab/strategies/real_total_return.py",
+          "src/factorlab/strategies/risk_comparison.py",
+          "src/factorlab/strategies/robustness.py",
+          "src/factorlab/strategies/robustness_real.py",
+          "src/factorlab/strategies/technical_cli.py",
+          "src/factorlab/trading/frozen_strategy.py",
+          "src/factorlab/trading/realtime_service.py",
+          "src/factorlab/trading/strategy_config.py",
+          "src/factorlab/trading/strategy_replay.py",
+          "tests/conftest.py",
+          "tests/cross_market/test_contracts.py",
+          "tests/evidence/test_p3_d05.py",
+          "tests/evidence/test_p4_d01_evidence.py",
+          "tests/evidence/test_pit_archive_verifiers.py",
+          "tests/integrations/test_binance_demo_strategy.py",
+          "tests/integrations/test_binance_equity.py",
+          "tests/market_admission/test_admission.py",
+          "tests/market_admission/test_p1_review.py",
+          "tests/market_admission/test_revision_contract.py",
+          "tests/market_structure/test_c01_publication_safety.py",
+          "tests/market_structure/test_delivery.py",
+          "tests/market_structure/test_minute_gate_compatibility.py",
+          "tests/market_structure/test_publication_scope_audit.py",
+          "tests/market_structure/verify_corrections.py",
+          "tests/market_structure/verify_delivery.py",
+          "tests/migration/test_independent_boundary.py",
+          "tests/minute_data/test_yhh30m.py",
+          "tests/minute_data/test_yhh30m_release_review.py",
+          "tests/minute_data/test_yhh30m_review.py",
+          "tests/model_readiness/test_cli_source.py",
+          "tests/model_readiness/test_comparison_contract.py",
+          "tests/model_readiness/test_readiness.py",
+          "tests/research/market_data_fixture.py",
+          "tests/research/status_candidate/test_integration.py",
+          "tests/research/status_candidate/test_preservation.py",
+          "tests/research/test_adjustment_foundation.py",
+          "tests/research/test_baostock_source_probe.py",
+          "tests/research/test_benchmark_refetch.py",
+          "tests/research/test_binance_model_study.py",
+          "tests/research/test_browser_notice_observations.py",
+          "tests/research/test_c01_preservation.py",
+          "tests/research/test_c01_source_reachability.py",
+          "tests/research/test_cached_notice_attachments.py",
+          "tests/research/test_candidate_preflight.py",
+          "tests/research/test_capacity_pipeline.py",
+          "tests/research/test_cli_compute_receipts.py",
+          "tests/research/test_cli_download_contract.py",
+          "tests/research/test_cli_forward_evaluation.py",
+          "tests/research/test_cli_model_inference.py",
+          "tests/research/test_cli_phase2.py",
+          "tests/research/test_cli_phase4.py",
+          "tests/research/test_cli_reproducibility.py",
+          "tests/research/test_cli_stage_diagnostics.py",
+          "tests/research/test_comparison_snapshot.py",
+          "tests/research/test_compute.py",
+          "tests/research/test_compute_public_plumbing.py",
+          "tests/research/test_config.py",
+          "tests/research/test_config_local_provider.py",
+          "tests/research/test_config_roots.py",
+          "tests/research/test_corporate_action_ledger.py",
+          "tests/research/test_csmar_date_precheck_traceability.py",
+          "tests/research/test_csmar_local_prepare.py",
+          "tests/research/test_csmar_rejection_coordinates.py",
+          "tests/research/test_csmar_security_fixes.py",
+          "tests/research/test_csmar_source_binding.py",
+          "tests/research/test_custom_strategy.py",
+          "tests/research/test_custom_strategy_rejections.py",
+          "tests/research/test_d06_evidence_binding.py",
+          "tests/research/test_d06_readiness_integration.py",
+          "tests/research/test_d07_git_receipt.py",
+          "tests/research/test_data_governance.py",
+          "tests/research/test_datahub.py",
+          "tests/research/test_dividend_execution.py",
+          "tests/research/test_download_repair_concurrency.py",
+          "tests/research/test_dual_ma.py",
+          "tests/research/test_execution_risk_integration.py",
+          "tests/research/test_experiment_tracker.py",
+          "tests/research/test_exploratory_delivery.py",
+          "tests/research/test_exploratory_publication.py",
+          "tests/research/test_exploratory_real.py",
+          "tests/research/test_exploratory_safety.py",
+          "tests/research/test_exploratory_statistical_audit.py",
+          "tests/research/test_exploratory_statistical_delivery.py",
+          "tests/research/test_factor_discovery_delivery.py",
+          "tests/research/test_factor_discovery_integration.py",
+          "tests/research/test_factor_evaluation_service.py",
+          "tests/research/test_factor_performance_diagnostic.py",
+          "tests/research/test_five_year_frozen_baseline.py",
+          "tests/research/test_five_year_pilot.py",
+          "tests/research/test_five_year_supplier_probe.py",
+          "tests/research/test_forward_activation_phase4.py",
+          "tests/research/test_forward_contract_phase4.py",
+          "tests/research/test_forward_evaluation_report.py",
+          "tests/research/test_forward_evaluation_synthetic_example.py",
+          "tests/research/test_forward_evidence.py",
+          "tests/research/test_forward_full_predictions.py",
+          "tests/research/test_forward_model_bundle_phase4.py",
+          "tests/research/test_forward_signal_recorder_phase4.py",
+          "tests/research/test_forward_temporal_read_validation.py",
+          "tests/research/test_grid_empirical.py",
+          "tests/research/test_grid_experiment.py",
+          "tests/research/test_grid_exposure_benchmark.py",
+          "tests/research/test_grid_independent.py",
+          "tests/research/test_grid_inventory_risk.py",
+          "tests/research/test_grid_lifecycle.py",
+          "tests/research/test_grid_monte_carlo.py",
+          "tests/research/test_grid_p2_regressions.py",
+          "tests/research/test_grid_paper_experiment.py",
+          "tests/research/test_grid_temporal_stability.py",
+          "tests/research/test_grid_weekend.py",
+          "tests/research/test_local_admission_boundaries.py",
+          "tests/research/test_local_cli_pipeline.py",
+          "tests/research/test_local_market_provider.py",
+          "tests/research/test_market_data_qualification.py",
+          "tests/research/test_market_regime_diagnostic.py",
+          "tests/research/test_multisecurity_input.py",
+          "tests/research/test_p4_01_pipeline_inputs.py",
+          "tests/research/test_p4_02_pipeline_cli.py",
+          "tests/research/test_p4_03_controlled_inputs.py",
+          "tests/research/test_p4_04_allocation.py",
+          "tests/research/test_p5_d01_data_quality.py",
+          "tests/research/test_p8_data_evidence.py",
+          "tests/research/test_pdf_notice_example.py",
+          "tests/research/test_phase1_file_pipeline.py",
+          "tests/research/test_phase2_synthetic_example.py",
+          "tests/research/test_phase3_synthetic_example.py",
+          "tests/research/test_phase4_synthetic_example.py",
+          "tests/research/test_pipeline_feedback.py",
+          "tests/research/test_pit_generation_publication.py",
+          "tests/research/test_pit_snapshot_failure.py",
+          "tests/research/test_portfolio_backtest_phase2.py",
+          "tests/research/test_portfolio_dividend_execution.py",
+          "tests/research/test_qualification_admission_boundaries.py",
+          "tests/research/test_real_comparison.py",
+          "tests/research/test_real_data_readiness.py",
+          "tests/research/test_real_factor_label_smoke.py",
+          "tests/research/test_real_hfq_evidence_pilot.py",
+          "tests/research/test_real_total_return.py",
+          "tests/research/test_research_pipeline.py",
+          "tests/research/test_research_workflow.py",
+          "tests/research/test_return_attribution.py",
+          "tests/research/test_risk_comparison.py",
+          "tests/research/test_run_manifest_atomic_write.py",
+          "tests/research/test_scale_factor_pipeline.py",
+          "tests/research/test_signal_lock_native.py",
+          "tests/research/test_signal_propagation.py",
+          "tests/research/test_source_coverage_cli.py",
+          "tests/research/test_strategy_robustness.py",
+          "tests/research/test_tdx_audit_preservation.py",
+          "tests/research/test_tdx_quality_audit.py",
+          "tests/research/test_tdx_reference.py",
+          "tests/research/test_tdx_staging.py",
+          "tests/research/test_technical_strategies.py",
+          "tests/research/test_validation_phase2.py",
+          "tests/research/test_workbook_notice_example.py",
+          "tests/research/workflow_fixtures.py",
+          "tests/security/test_four_shard_contract.py",
+          "tests/security/test_independent_controls.py",
+          "tests/security/test_pr_identity.py",
+          "tests/security/test_pr_risk.py",
+          "tests/security/test_targeted_validation.py",
+          "tests/security/test_validation_v2.py",
+          "tests/test_grid_fifo.py",
+          "tests/trading/test_frozen_strategy.py",
+          "tests/trading/test_realtime.py",
+          "tests/trading/test_simulation.py",
+          "tests/trading/test_stock_phases.py",
+          "tests/trading/test_strategy_pipeline.py",
+          "tests/trading/test_strategy_replay.py",
+          "tools/benchmark_monte_carlo.py",
+          "tools/ci/current_module_timings.json",
+          "tools/ci/current_validation.py",
+          "tools/ci/integration_checks.py",
+          "tools/ci/lock_acceptance.py",
+          "tools/ci/lock_diagnostics.py",
+          "tools/ci/pr_risk.py",
+          "tools/ci/run_checks.py",
+          "tools/ci/sharding.py",
+          "tools/ci/windows_lock_probe.py",
+          "tools/data/audit_p3_d05.py",
+          "tools/data/audit_p3_d07.py",
+          "tools/data/audit_p4_01_pipeline_inputs.py",
+          "tools/data/audit_p4_03_controlled_inputs.py",
+          "tools/data/candidate_preflight.py",
+          "tools/data/d06_readiness_adapter.py",
+          "tools/evidence/audit_p4_d01.py",
+          "tools/migration/behavior_probe.py",
+          "tools/migration/bind_final_head.py",
+          "tools/migration/compare_test_inventory.py",
+          "tools/migration/extract.py",
+          "tools/migration/finalize_validation.py",
+          "tools/migration/installed_smoke.py",
+          "tools/migration/packaging_ci.py",
+          "tools/migration/port_layout.py",
+          "tools/migration/rename_namespace.py",
+          "tools/p7_r04a_inventory.py",
+          "tools/research/audit_p4_04_allocation.py",
+          "tools/research/benchmark_grid_scenario_generation.py",
+          "tools/research/gpu_model_benchmark.py",
+          "tools/research/p8_data_evidence.py",
+          "tools/research/pipeline_config.py",
+          "tools/research/prepare_multisecurity_input.py",
+          "tools/research/prepare_real_pairs.py",
+          "tools/research/publish_grid_exposure_benchmark.py",
+          "tools/research/publish_grid_inventory_risk.py",
+          "tools/research/publish_grid_temporal_stability.py",
+          "tools/research/publish_risk_comparison.py",
+          "tools/research/run_exploratory_real.py",
+          "tools/research/run_grid_inventory_risk.py",
+          "tools/research/run_grid_monte_carlo.py",
+          "tools/research/run_p8_e02.py",
+          "tools/research/run_pipeline.py",
+          "tools/research/run_real_strategy_comparison.py",
+          "tools/research/run_real_total_return.py",
+          "tools/research/run_risk_matched_comparison.py",
+          "tools/research/run_shared_portfolio.py",
+          "tools/research/run_strategy_robustness.py",
+          "tools/research/summarize_strategy_robustness.py",
+          "tools/research/verify_multisecurity_input.py",
+          "tools/research/workflow.py",
+          "tools/security/acceptance_report.py",
+          "tools/security/fixed_validator.py",
+          "tools/security/seal_review_material.py"
+        ],
+        "path": "docs/validation/ci-perf-03/README.md",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "6bc0471db0d8d5101881050b52deb335462e65ca"
+        ],
+        "before": null,
+        "consumers": [
+          "docs/validation/ci-perf-03/report.py"
+        ],
+        "path": "docs/validation/ci-perf-03/RESULTS.md",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "b868cc73ef9dc60a78c4345bfe03d43e431f34a7"
+        ],
+        "before": null,
+        "consumers": [
+          "docs/validation/ci-perf-03/profile.py",
+          "docs/validation/ci-perf-03/test_profile.py"
+        ],
+        "path": "docs/validation/ci-perf-03/candidate_module_timings.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "88b3f9b0a16c0d657f119b1982d155fc8e41b7c2"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/collection.py",
+        "rules": [
+          "affected-consumer:docs/validation/ci-perf-03/README.md",
+          "affected-consumer:docs/validation/ci-perf-03/target-inventory.json",
+          "no-proven-test-consumer",
+          "sensitive-or-unclassified"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "c61af0e0f6c1594873b398eabf407a9a6aa4c0b0"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/fetch.py",
+        "rules": [
+          "no-proven-test-consumer",
+          "sensitive-or-unclassified"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "8d60d327bc63556dd890782d6b2ba8b31ef880b1"
+        ],
+        "before": null,
+        "consumers": [
+          "docs/validation/ci-perf-03/profile.py",
+          "docs/validation/ci-perf-03/report.py",
+          "docs/validation/ci-perf-03/test_profile.py"
+        ],
+        "path": "docs/validation/ci-perf-03/module-timings.csv",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "6467aa49cb9e9ecacefcc63caf794356ba6e575b"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/previous_module_timings.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "475407b2d3cf3cdbc8c3d46d5b2e2ab226402fe5"
+        ],
+        "before": null,
+        "consumers": [
+          "docs/validation/ci-perf-03/test_profile.py"
+        ],
+        "path": "docs/validation/ci-perf-03/profile.py",
+        "rules": [
+          "affected-consumer:docs/validation/ci-perf-03/README.md",
+          "affected-consumer:docs/validation/ci-perf-03/candidate_module_timings.json",
+          "affected-consumer:docs/validation/ci-perf-03/module-timings.csv",
+          "affected-consumer:docs/validation/ci-perf-03/target-inventory.json",
+          "no-proven-test-consumer",
+          "sensitive-or-unclassified"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "04799490ed87fa3c34c2e4086d313a3ae3a82249"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/provenance-43717685960.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "30cb13372b9f8babe81d4d5f590e3e421613dcb0"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/provenance-43721499381.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "b17bef17f35cb1860c1d79467b66d98f0779be7b"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/report.py",
+        "rules": [
+          "affected-consumer:docs/validation/ci-perf-03/RESULTS.md",
+          "affected-consumer:docs/validation/ci-perf-03/module-timings.csv",
+          "no-proven-test-consumer",
+          "sensitive-or-unclassified"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "010198419dbcaafc6fadba77808439f3cfa3a657"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/run-43717685960.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "874ed1f098521e85393c53380d5b798017bf374d"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/run-43721499381.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "dcd8a28076c8165bf145073840948bf546be3b83"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/source-metadata-43717685960.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "1870d748a965aa55a853188766543e91958a3a88"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/source-metadata-43721499381.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "21dad63aea21424ace911b72a54999589ecd7b34"
+        ],
+        "before": null,
+        "consumers": [
+          "docs/validation/ci-perf-03/collection.py",
+          "docs/validation/ci-perf-03/profile.py",
+          "docs/validation/ci-perf-03/test_profile.py"
+        ],
+        "path": "docs/validation/ci-perf-03/target-inventory.json",
+        "rules": [
+          "covered-code-or-isolated-research-or-inert-evidence"
+        ],
+        "tests": []
+      },
+      {
+        "after": [
+          "100644",
+          "blob",
+          "39180a7d952c89bbdaa6b6225a37b11866d36a23"
+        ],
+        "before": null,
+        "consumers": [],
+        "path": "docs/validation/ci-perf-03/test_profile.py",
+        "rules": [
+          "affected-consumer:docs/validation/ci-perf-03/README.md",
+          "affected-consumer:docs/validation/ci-perf-03/candidate_module_timings.json",
+          "affected-consumer:docs/validation/ci-perf-03/module-timings.csv",
+          "affected-consumer:docs/validation/ci-perf-03/profile.py",
+          "affected-consumer:docs/validation/ci-perf-03/target-inventory.json",
+          "no-proven-test-consumer",
+          "sensitive-or-unclassified",
+          "unresolved-dynamic-loading"
+        ],
+        "tests": []
+      }
+    ],
+    "files": [
+      "docs/validation/ci-perf-03/README.md",
+      "docs/validation/ci-perf-03/RESULTS.md",
+      "docs/validation/ci-perf-03/candidate_module_timings.json",
+      "docs/validation/ci-perf-03/collection.py",
+      "docs/validation/ci-perf-03/fetch.py",
+      "docs/validation/ci-perf-03/module-timings.csv",
+      "docs/validation/ci-perf-03/previous_module_timings.json",
+      "docs/validation/ci-perf-03/profile.py",
+      "docs/validation/ci-perf-03/provenance-43717685960.json",
+      "docs/validation/ci-perf-03/provenance-43721499381.json",
+      "docs/validation/ci-perf-03/report.py",
+      "docs/validation/ci-perf-03/run-43717685960.json",
+      "docs/validation/ci-perf-03/run-43721499381.json",
+      "docs/validation/ci-perf-03/source-metadata-43717685960.json",
+      "docs/validation/ci-perf-03/source-metadata-43721499381.json",
+      "docs/validation/ci-perf-03/target-inventory.json",
+      "docs/validation/ci-perf-03/test_profile.py"
+    ],
+    "head": "847e807d7a3257a8eef0d6d5ed2804d0df0b2c40",
+    "locking": true,
+    "package": true,
+    "reasons": {
+      "current": [
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/fetch.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_synthetic.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/market_qualification.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_empirical.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_grid_inventory_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-risk-selection/benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/integrity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/p7-r04b-e04/compare.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/conftest.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/providers/local.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/validate_fixture_equivalence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/signal_recorder.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "LICENSE_ISSUES.json",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/technical_cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "MANIFEST.in",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_diagnostics.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_parallel_execution.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_p8_e02.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_risk_matched_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_real_strategy_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/p2-data-02/reproduce.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_lifecycle.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/inputs.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/rename_namespace.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/port_layout.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/publication.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_ci_contracts.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/tdx_staging.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/market_structure/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/config/loader.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/model_bundle.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/exploratory_real.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/summarize_strategy_robustness.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/hub/adapters.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/publication.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/quintiles.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/five_year.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/prepare_real_pairs.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/research/binance_model_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/diagnostics/model_readiness/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/activation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/private_inputs.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/custom_strategy/run.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/research/binance_model_study.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_temporal_stability.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/delivery.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_grid_monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/installed_smoke.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_shared_portfolio.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/risk_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/diagnostics/model_readiness/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/pipeline_config.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/benchmark_monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/governed_adapter.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_exploratory_real.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/p7-r04b-e04/measure.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_exposure_benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/source.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/fingerprint.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/frozen_strategy.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/diagnostics/pipeline_preflight.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/robustness_real.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/reports/forward.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_execution_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_weekend.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/local_cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/strategy_config.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/provenance.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/application/research_pipeline.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/real_total_return.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/benchmark_grid_scenario_generation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/real_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_grid_exposure_benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/verify_multisecurity_input.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/behavior_probe.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_actual_failures.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "pyproject.toml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/config/__init__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/dual_ma_cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/storage.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/market_structure/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/strategy_replay.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_paper.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/research_input.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/strategy_paper_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/extract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/conversion.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_grid_temporal_stability.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/evidence/audit_p4_d01.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/binding.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/robustness.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/prepare_multisecurity_input.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/p8_data_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/provider.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_independent.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/receipts.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_pipeline.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_risk_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/normalize.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/research_workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/p7_r04a_inventory.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/assemble.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_strategy_robustness.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/audit_p4_04_allocation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/windows_lock_probe.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/packaging_ci.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_acceptance.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_real_total_return.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/contract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/reproducibility.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/catalog.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/realtime_service.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_grid_inventory_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_trigger_policy.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/admission.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/gpu_model_benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/prepare.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/_identity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/RESULTS.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/candidate_module_timings.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/candidate_module_timings.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/fetch.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/module-timings.csv"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/module-timings.csv"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/module-timings.csv"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/profile.py"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/target-inventory.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/target-inventory.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/target-inventory.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "no-proven-test-consumer"
+        }
+      ],
+      "locking": [
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/fetch.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "sensitive-or-unclassified"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/compute/backend.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/models/tree_compute.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": "src/factorlab/strategies/custom.py",
+          "rule": "unresolved-formal-loader"
+        },
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_synthetic.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/market_qualification.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_empirical.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_grid_inventory_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-risk-selection/benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/integrity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/p7-r04b-e04/compare.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/conftest.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/providers/local.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/validate_fixture_equivalence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/signal_recorder.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "LICENSE_ISSUES.json",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/technical_cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_diagnostics.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_parallel_execution.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_p8_e02.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_risk_matched_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_real_strategy_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/p2-data-02/reproduce.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_lifecycle.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/inputs.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/rename_namespace.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/port_layout.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/publication.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_ci_contracts.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/security/acceptance_report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/tdx_staging.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/market_structure/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/config/loader.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/model_bundle.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/exploratory_real.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/summarize_strategy_robustness.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/hub/adapters.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/publication.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/quintiles.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/five_year.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/prepare_real_pairs.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/research/binance_model_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/diagnostics/model_readiness/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/activation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/private_inputs.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/custom_strategy/run.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/research/binance_model_study.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_temporal_stability.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/delivery.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_grid_monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/installed_smoke.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_shared_portfolio.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/risk_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/diagnostics/model_readiness/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/pipeline_config.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/benchmark_monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/governed_adapter.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/finalize_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_exploratory_real.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/p7-r04b-e04/measure.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_exposure_benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/source.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/fingerprint.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/frozen_strategy.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/diagnostics/pipeline_preflight.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/robustness_real.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/reports/forward.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_execution_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_weekend.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/local_cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/strategy_config.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/provenance.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/application/research_pipeline.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/real_total_return.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/benchmark_grid_scenario_generation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/real_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_grid_exposure_benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/verify_multisecurity_input.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/behavior_probe.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_actual_failures.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/bind_final_head.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/runner.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/config/__init__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/statistical_audit/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/dual_ma_cli.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/storage.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/compare_test_inventory.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/market_structure/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/strategy_replay.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_paper.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/research_input.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/strategy_paper_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/extract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/conversion.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_grid_temporal_stability.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/security/fixed_validator.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/evidence/audit_p4_d01.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/binding.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/strategies/robustness.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/prepare_multisecurity_input.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/__main__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/p8_data_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/provider.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_independent.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/exploratory/factor_discovery/receipts.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_pipeline.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_risk_comparison.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/engineering/yhh30m/normalize.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "examples/research_workflow.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/experiments/grid_monte_carlo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/p7_r04a_inventory.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/assemble.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_strategy_robustness.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/audit_p4_04_allocation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/windows_lock_probe.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/migration/packaging_ci.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_acceptance.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/run_real_total_return.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/forward/contract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/reproducibility.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/catalog.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/trading/realtime_service.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/publish_grid_inventory_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_trigger_policy.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/admission.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/research/gpu_model_benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/data/csmar/prepare.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/security/seal_review_material.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/_identity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/RESULTS.md"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/candidate_module_timings.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/candidate_module_timings.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/fetch.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/module-timings.csv"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/module-timings.csv"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/module-timings.csv"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/profile.py"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/report.py",
+          "rule": "no-proven-test-consumer"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/collection.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/target-inventory.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/target-inventory.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/target-inventory.json"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "unresolved-dynamic-loading"
+        },
+        {
+          "path": "docs/validation/ci-perf-03/test_profile.py",
+          "rule": "no-proven-test-consumer"
+        }
+      ],
+      "package": [
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/conftest.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/validate_fixture_equivalence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "MANIFEST.in",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_diagnostics.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_parallel_execution.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_ci_contracts.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_execution_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_actual_failures.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "pyproject.toml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/config/__init__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/windows_lock_probe.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_acceptance.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_trigger_policy.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        }
+      ],
+      "review": [
+        {
+          "path": ".github/workflows/factorlab-pr.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/conftest.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_module_timings.json",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/validate_fixture_equivalence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "MANIFEST.in",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_diagnostics.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_parallel_execution.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/run_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_ci_contracts.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/c01_preservation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/demo.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_independent_controls.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/current_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_four_shard_contract.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/security_admission_revision.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_execution_evidence.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_targeted_validation.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/benchmark.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_actual_failures.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "pyproject.toml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "src/factorlab/config/__init__.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/sharding.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/integration_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/frozen_engineering_migration.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/workflows/factorlab-full.yml",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/research_checks.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/windows_lock_probe.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/lock_acceptance.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_validation_v2.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": ".github/scripts/ci/test_trigger_policy.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tools/ci/pr_risk.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        },
+        {
+          "path": "tests/security/test_pr_identity.py",
+          "rule": "affected-consumer:docs/validation/ci-perf-03/README.md"
+        }
+      ]
+    },
+    "review": true,
+    "schema": "FACTORLAB_PR_RISK_V2",
+    "targeted_tests": []
+  }
+}

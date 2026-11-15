@@ -1,0 +1,14 @@
+{
+  "repository": "Wind-Maker1001/FactorLab",
+  "analysis_base": "bdd4e6f5eef14bd3f383c5af73ec695bcb34b901",
+  "latest_eligible_run_query": "https://api.github.com/repos/Wind-Maker1001/FactorLab/actions/runs?created=%3E2026-11-15T16%3A47%3A29Z&per_page=10",
+  "postmerge_run_count_at_acquisition": 0,
+  "pull_requests": [
+    {"pr": 172, "item": "CI-PERF-01", "merged_at": "2026-11-15T15:09:21Z", "merge_sha": "89fca87a58034f9d7007d346ddf3501dc9c96ab8"},
+    {"pr": 173, "item": "CI-PERF-02", "merged_at": "2026-11-15T16:47:29Z", "merge_sha": "bdd4e6f5eef14bd3f383c5af73ec695bcb34b901"},
+    {"pr": 175, "item": "CI-PERF-03", "merged_at": "2026-11-15T16:47:02Z", "merge_sha": "28d8e524a93f2832d6f1438a049370a1279ad92f"},
+    {"pr": 174, "item": "CI-PERF-04", "merged_at": "2026-11-15T15:32:59Z", "merge_sha": "c0a1e41ceebd5f841cf4fdb0b0b79a45b474d107"},
+    {"pr": 176, "item": "targeted historical isolation", "merged_at": "2026-11-15T16:01:10Z", "merge_sha": "c77de9970a9c8703ec72d4e225419ec43086a478"},
+    {"pr": 177, "item": "trusted risk selection", "merged_at": "2026-11-15T16:06:41Z", "merge_sha": "27180431626e6395dfb7907bab5e81f74cbb20fe"}
+  ]
+}
