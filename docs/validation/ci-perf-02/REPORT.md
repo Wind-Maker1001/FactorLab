@@ -78,6 +78,32 @@ independent historical root expects `.github/workflows/market-admission.yml`,
 which is absent from this main revision. These errors remain errors, not skips or
 passes; no replacement trust root is introduced.
 
+## Fixture compatibility and targeted layering
+
+The fixture compatibility repair retains zero-argument direct loading while
+checking the immutable upstream bytes before loading the optimized verifier.
+After synchronization with main containing #172, local CPython 3.12.7 execution
+of the migration boundary and archive modules produced **48 passed, 75 setup
+errors** in 115.48 seconds. Direct loading and changed-byte refusal passed;
+the errors retain the missing historical workflow cause above.
+
+In [Actions #43726620179](https://github.com/Wind-Maker1001/FactorLab/actions/runs/43726620179),
+the trusted targeted observer collected 115 archive cases without applying the
+historical/current partition: 40 passed and 75 failed at setup. Comparing its
+execution inventory against the unchanged matrix found exactly 75 historical
+setup errors and zero errors outside that matrix.
+
+The independent controller deployment is [#176](https://github.com/Wind-Maker1001/FactorLab/pull/176).
+Its 34 targeted security regressions passed. A local replay of the original
+risk plan's selected archive file on the repaired branch, with the replay subject
+explicitly rebound rather than presented as the original trusted identity,
+produced **40 passed, 75 exact historical nodes isolated**, exit 0, in 95.01 seconds.
+The V2 inventory and receipt record history as `BLOCKED`, not passed. The
+controller checks all current setup/call/teardown phases, exact historical
+coverage and actual process status. This local replay is not trusted Actions
+integration evidence. Deployment requires formal control review and merge to
+main before dependent PR validation can use it.
+
 ## Reproduction
 
 Run with a configured Python 3.13 environment from the repository root:
