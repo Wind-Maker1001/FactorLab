@@ -1,0 +1,533 @@
+{
+  "deterministic_stresses_in_probability_distribution": false,
+  "distributions": {
+    "gbm-0.01": {
+      "confidence": 0.95,
+      "cvar": 0.0,
+      "loss_probability": 0.0,
+      "paths": 16,
+      "quantiles": {
+        "completed_cycle_net": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "fees": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "inventory_mean_age_hours": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "max_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "maximum_drawdown": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "residual_inventory_loss": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "slippage": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "terminal_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "terminal_nav": {
+          "0.01": 1000.0,
+          "0.05": 1000.0,
+          "0.5": 1000.0,
+          "0.95": 1000.0,
+          "0.99": 1000.0
+        }
+      },
+      "var": 0.0
+    },
+    "gbm-0.10": {
+      "confidence": 0.95,
+      "cvar": 0.0011810928813626997,
+      "loss_probability": 0.1875,
+      "paths": 16,
+      "quantiles": {
+        "completed_cycle_net": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "fees": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.009890781931375107,
+          "0.99": 0.014446155301671785
+        },
+        "inventory_mean_age_hours": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 151.7500000002778,
+          "0.99": 153.5500000002778
+        },
+        "max_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.125,
+          "0.99": 0.18499999999999997
+        },
+        "maximum_drawdown": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0016295837436902751,
+          "0.99": 0.002081938049474135
+        },
+        "residual_inventory_loss": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 1.1009142421816374,
+          "0.99": 1.1650571535265142
+        },
+        "slippage": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.014827276531143973,
+          "0.99": 0.021656239208982287
+        },
+        "terminal_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.125,
+          "0.99": 0.18499999999999997
+        },
+        "terminal_nav": {
+          "0.01": 998.8349428464735,
+          "0.05": 998.8990857578184,
+          "0.5": 1000.0,
+          "0.95": 1000.6711218075562,
+          "0.99": 1000.7507703904388
+        }
+      },
+      "var": 0.0011009142421816442
+    },
+    "gbm-cash": {
+      "cvar": 0.0,
+      "maximum_drawdown_quantiles": {
+        "0.01": 0.0,
+        "0.05": 0.0,
+        "0.5": 0.0,
+        "0.95": 0.0,
+        "0.99": 0.0
+      },
+      "terminal_quantiles": {
+        "0.01": 1000.0,
+        "0.05": 1000.0,
+        "0.5": 1000.0,
+        "0.95": 1000.0,
+        "0.99": 1000.0
+      },
+      "var": 0.0
+    },
+    "gbm-fixed_holding": {
+      "cvar": 0.08062942724640187,
+      "maximum_drawdown_quantiles": {
+        "0.01": 0.02663787043528703,
+        "0.05": 0.031007936684771115,
+        "0.5": 0.057893331352948385,
+        "0.95": 0.09730894132826695,
+        "0.99": 0.09907688421726475
+      },
+      "terminal_quantiles": {
+        "0.01": 920.0926767842848,
+        "0.05": 922.9810929070311,
+        "0.5": 1011.1895376813095,
+        "0.95": 1092.4941319849306,
+        "0.99": 1129.7880917744255
+      },
+      "var": 0.07701890709296888
+    },
+    "moving_block_bootstrap-0.01": {
+      "confidence": 0.95,
+      "cvar": 0.0,
+      "loss_probability": 0.0,
+      "paths": 16,
+      "quantiles": {
+        "completed_cycle_net": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "fees": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "inventory_mean_age_hours": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "max_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "maximum_drawdown": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "residual_inventory_loss": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "slippage": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "terminal_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.0,
+          "0.99": 0.0
+        },
+        "terminal_nav": {
+          "0.01": 1000.0,
+          "0.05": 1000.0,
+          "0.5": 1000.0,
+          "0.95": 1000.0,
+          "0.99": 1000.0
+        }
+      },
+      "var": 0.0
+    },
+    "moving_block_bootstrap-0.10": {
+      "confidence": 0.95,
+      "cvar": 0.0019554154691802106,
+      "loss_probability": 0.25,
+      "paths": 16,
+      "quantiles": {
+        "completed_cycle_net": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 1.0893633954215747,
+          "0.99": 1.0977069017969165
+        },
+        "fees": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0038615027618857994,
+          "0.95": 0.018445071356659237,
+          "0.99": 0.023248620096803174
+        },
+        "inventory_mean_age_hours": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 18.5,
+          "0.95": 151.6250000002778,
+          "0.99": 159.1250000002778
+        },
+        "max_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.05,
+          "0.95": 0.2,
+          "0.99": 0.2
+        },
+        "maximum_drawdown": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.00016066110739535,
+          "0.95": 0.001721120392807125,
+          "0.99": 0.0024586367403751047
+        },
+        "residual_inventory_loss": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 1.2201799271801568,
+          "0.99": 1.8083683607802614
+        },
+        "slippage": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.005788780874304116,
+          "0.95": 0.027666215842678837,
+          "0.99": 0.03486721435187503
+        },
+        "terminal_inventory": {
+          "0.01": 0.0,
+          "0.05": 0.0,
+          "0.5": 0.0,
+          "0.95": 0.2,
+          "0.99": 0.2
+        },
+        "terminal_nav": {
+          "0.01": 998.1916316392197,
+          "0.05": 998.7798200728198,
+          "0.5": 1000.0,
+          "0.95": 1001.076766942351,
+          "0.99": 1001.0951876111828
+        }
+      },
+      "var": 0.0012201799271801539
+    },
+    "moving_block_bootstrap-cash": {
+      "cvar": 0.0,
+      "maximum_drawdown_quantiles": {
+        "0.01": 0.0,
+        "0.05": 0.0,
+        "0.5": 0.0,
+        "0.95": 0.0,
+        "0.99": 0.0
+      },
+      "terminal_quantiles": {
+        "0.01": 1000.0,
+        "0.05": 1000.0,
+        "0.5": 1000.0,
+        "0.95": 1000.0,
+        "0.99": 1000.0
+      },
+      "var": 0.0
+    },
+    "moving_block_bootstrap-fixed_holding": {
+      "cvar": 0.09337915863688329,
+      "maximum_drawdown_quantiles": {
+        "0.01": 0.02405535552689907,
+        "0.05": 0.025797455961522442,
+        "0.5": 0.04724953970746565,
+        "0.95": 0.09550074154090835,
+        "0.99": 0.10775750429169542
+      },
+      "terminal_quantiles": {
+        "0.01": 909.4807871289031,
+        "0.05": 920.9205701920484,
+        "0.5": 982.7785332289056,
+        "0.95": 1065.7654597046908,
+        "0.99": 1123.7650883913022
+      },
+      "var": 0.07907942980795163
+    }
+  },
+  "evidence": [
+    "SIMULATED_PRICE_PATHS",
+    "SYNTHETIC_PAPER_EXECUTION",
+    "NO LIVE MONEY"
+  ],
+  "exchange_execution_evidence": false,
+  "funding": "NOT_SIMULATED",
+  "performance": {
+    "full_asset_path_batch_bytes": 10816,
+    "generation_seconds": 0.0024947000019892585,
+    "generation_timing_scope": "Runner.run including generation, host transfer and fixed-weight reference reduction",
+    "grid_seconds": 598.5819201999948,
+    "grid_timing_scope": "sequential CPU Paper accounts, SQLite, exports, FIFO and lifecycle evaluation",
+    "process_peak_rss_bytes": 175206400,
+    "total_seconds": 598.8818467000001
+  },
+  "risk_definition": {
+    "cvar": "fractional worst (1-confidence)*n losses",
+    "drawdown": "positive fraction below running peak including initial equity, hourly",
+    "loss": "1-terminal_nav/1000; negative means gain",
+    "var": "linear quantile"
+  },
+  "tails": {
+    "deterministic-0.01": {
+      "completed_cycle_net": 0.0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "exit_triggers": 0,
+      "fees": 0.0,
+      "fills": 0,
+      "final_state": "PAUSED",
+      "grid_cycles": 0,
+      "inventory_max_age_hours": 0,
+      "inventory_mean_age_hours": 0,
+      "max_inventory": 0.0,
+      "maximum_drawdown": 0.0,
+      "normal_sell_net": 0.0,
+      "path_id": "continuous_decline",
+      "position_hours": 0,
+      "reconciliation_residual": 0.0,
+      "residual_inventory_loss": 0.0,
+      "residual_inventory_pnl": 0.0,
+      "risk_exit_net": 0.0,
+      "slippage": 0.0,
+      "terminal_inventory": 0.0,
+      "terminal_nav": 1000.0
+    },
+    "deterministic-0.10": {
+      "completed_cycle_net": 0.0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "exit_triggers": 0,
+      "fees": 0.03621908985142857,
+      "fills": 5,
+      "final_state": "PAUSED",
+      "grid_cycles": 0,
+      "inventory_max_age_hours": 159.0000000002778,
+      "inventory_mean_age_hours": 120.0000000002778,
+      "max_inventory": 0.5,
+      "maximum_drawdown": 0.0292819437184228,
+      "normal_sell_net": 0.0,
+      "path_id": "continuous_decline",
+      "position_hours": 60.0000000001389,
+      "reconciliation_residual": 0.0,
+      "residual_inventory_loss": 29.281943718422855,
+      "residual_inventory_pnl": -29.281943718422855,
+      "risk_exit_net": 0.0,
+      "slippage": 0.054296057142857145,
+      "terminal_inventory": 0.5,
+      "terminal_nav": 970.7180562815771
+    },
+    "gbm-0.01": {
+      "completed_cycle_net": 0.0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "exit_triggers": 0,
+      "fees": 0.0,
+      "fills": 0,
+      "final_state": "RUNNING",
+      "grid_cycles": 0,
+      "inventory_max_age_hours": 0,
+      "inventory_mean_age_hours": 0,
+      "max_inventory": 0.0,
+      "maximum_drawdown": 0.0,
+      "normal_sell_net": 0.0,
+      "path_id": 0,
+      "position_hours": 0,
+      "reconciliation_residual": 0.0,
+      "residual_inventory_loss": 0.0,
+      "residual_inventory_pnl": 0.0,
+      "risk_exit_net": 0.0,
+      "slippage": 0.0,
+      "terminal_inventory": 0.0,
+      "terminal_nav": 1000.0
+    },
+    "gbm-0.10": {
+      "completed_cycle_net": 0.0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "exit_triggers": 0,
+      "fees": 0.007983810941627253,
+      "fills": 1,
+      "final_state": "RUNNING",
+      "grid_cycles": 0,
+      "inventory_max_age_hours": 145.0000000002778,
+      "inventory_mean_age_hours": 145.0000000002778,
+      "max_inventory": 0.1,
+      "maximum_drawdown": 0.0014056142108507,
+      "normal_sell_net": 0.0,
+      "path_id": 0,
+      "position_hours": 14.50000000002778,
+      "reconciliation_residual": 0.0,
+      "residual_inventory_loss": 1.1810928813627333,
+      "residual_inventory_pnl": -1.1810928813627333,
+      "risk_exit_net": 0.0,
+      "slippage": 0.01196853529126612,
+      "terminal_inventory": 0.1,
+      "terminal_nav": 998.8189071186373
+    },
+    "moving_block_bootstrap-0.01": {
+      "completed_cycle_net": 0.0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "exit_triggers": 0,
+      "fees": 0.0,
+      "fills": 0,
+      "final_state": "RUNNING",
+      "grid_cycles": 0,
+      "inventory_max_age_hours": 0,
+      "inventory_mean_age_hours": 0,
+      "max_inventory": 0.0,
+      "maximum_drawdown": 0.0,
+      "normal_sell_net": 0.0,
+      "path_id": 0,
+      "position_hours": 0,
+      "reconciliation_residual": 0.0,
+      "residual_inventory_loss": 0.0,
+      "residual_inventory_pnl": 0.0,
+      "risk_exit_net": 0.0,
+      "slippage": 0.0,
+      "terminal_inventory": 0.0,
+      "terminal_nav": 1000.0
+    },
+    "moving_block_bootstrap-0.10": {
+      "completed_cycle_net": 0.0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "exit_triggers": 0,
+      "fees": 0.015596639749703378,
+      "fills": 2,
+      "final_state": "RUNNING",
+      "grid_cycles": 0,
+      "inventory_max_age_hours": 155.0000000002778,
+      "inventory_mean_age_hours": 148.5000000002778,
+      "max_inventory": 0.2,
+      "maximum_drawdown": 0.0026430158272671,
+      "normal_sell_net": 0.0,
+      "path_id": 5,
+      "position_hours": 29.70000000005556,
+      "reconciliation_residual": 0.0,
+      "residual_inventory_loss": 1.9554154691802879,
+      "residual_inventory_pnl": -1.9554154691802879,
+      "risk_exit_net": 0.0,
+      "slippage": 0.023380931065915517,
+      "terminal_inventory": 0.2,
+      "terminal_nav": 998.0445845308197
+    }
+  }
+}
