@@ -17,18 +17,19 @@ from .adapter import FuturesAdapter, STATUS
 from .demo_preflight import BOOK, DEMO, SYMBOL, _book, _positions
 from .execution import DemoExecutionGateway, DemoFuturesAdapter, observe_demo_rules
 from .network import DemoNetworkTransport
-from .protocol import ExchangeError, FuturesClient, SafetyBlocked, rejection_message
+from .protocol import ExchangeError, SafetyBlocked, rejection_message
 from .rules import symbol_row
+from .observability import ObservedClient
 
 
 def _new_request_counts():
     return dict(GET=0, POST=0, DELETE=0)
 
 
-def _demo_client(credential, transport):
+def _demo_client(credential, transport, request_counts=None):
     if credential is None or credential.environment is not DEMO:
         raise SafetyBlocked('Demo credentials required')
-    return FuturesClient(credential, environment=DEMO, transport=transport)
+    return ObservedClient(credential, environment=DEMO, transport=transport, request_counts=request_counts)
 
 
 def _read_account(client, *, expected_id=None):
@@ -47,7 +48,7 @@ def observe_demo_account(credential, *, request_counts=None):
     def observe(request, response):
         requests[request.method] += 1
 
-    client = _demo_client(credential, DemoNetworkTransport(observe_response=observe))
+    client = _demo_client(credential, DemoNetworkTransport(observe_response=observe), requests)
     return _read_account(client), requests
 
 
@@ -84,6 +85,8 @@ class DemoSession:
         if (authorization is None) != (write_guard is None):
             raise SafetyBlocked('Demo writes require authorization and a persistent guard')
         self.requests = _new_request_counts() if request_counts is None else request_counts
+        self.last_reconciled_at = None
+        self.last_recovery_seconds = None
         self.receipts = []
         self.receipt_error = False
         self.write_uncertain = False
@@ -93,7 +96,7 @@ class DemoSession:
         self._order_quote_at = None
         transport = DemoNetworkTransport(authorization=authorization, observe_response=self._observe_response,
             write_guard=self._admit_write if write_guard is not None else None)
-        self.client = _demo_client(credential, transport)
+        self.client = _demo_client(credential, transport, self.requests)
         facts = _read_account(self.client, expected_id=account_id)
         if authorization is not None and demo_account_configuration(facts) != configuration:
             raise SafetyBlocked('persisted Demo account configuration mismatch')
@@ -174,8 +177,16 @@ class DemoSession:
         if self.gateway.state.quotes.get(SYMBOL) is None and self._protocol_ids():
             book = self._fresh_book()
             self.controller.quote(Quote(SYMBOL, book['askPrice'], book['time_utc']))
-        self.gateway.recover(self.controller)
-        return self.status()
+        from time import perf_counter
+        started = perf_counter()
+        try:
+            self.gateway.recover(self.controller)
+            result = self.status()
+            if result['reconciled']:
+                self.last_reconciled_at = self._now()
+            return result
+        finally:
+            self.last_recovery_seconds = perf_counter() - started
 
     def _require_absent(self, client_order_id):
         try:

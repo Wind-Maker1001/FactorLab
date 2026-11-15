@@ -90,8 +90,16 @@ class DemoStrategyRuntime:
 
     def recover(self):
         """Query existing identities before permitting any new strategy order."""
-        result = self.gateway.recover(self.controller)
+        from time import perf_counter
+        started = perf_counter()
+        try:
+            result = self.gateway.recover(self.controller)
+        finally:
+            if self.session is not None:
+                self.session.last_recovery_seconds = perf_counter() - started
         if result.reconciled:
+            if self.session is not None:
+                self.session.last_reconciled_at = self.session._now()
             def recovered():
                 runtime = self.gateway.state.runtime
                 if runtime.get('enabled', True) and runtime['status'] != 'STOPPED':

@@ -77,6 +77,34 @@ The supervisor explicitly enables continuous capacity for its protocol/controlle
 
 Database/disk use grows with retained history. Recovery replays the deployment's history; routine bridge event projection uses incremental journal cursors. Operational storage must have space for the intended deployment lifetime.
 
+## Runtime metrics
+
+Grid and strategy workers add `observed.metrics` without changing existing fields or commands:
+
+- `api.endpoints`: process-local request counts, last/maximum/total duration in seconds, error categories and error rate, grouped by phase, source, method and endpoint. `initialization` covers session construction; `recovery` covers the first poll and polls after a failed iteration; `poll` covers subsequent healthy iterations, including their account reconciliation. `source` distinguishes signed session work from public feed work. Counts represent client request attempts, including locally blocked attempts; the existing `requests` counters retain their previous meanings. Durations include signing/transport/response parsing, not downstream account-shape validation. Individual samples are not retained.
+- `api.observed_weight_headers`: latest `X-MBX-USED-WEIGHT*` headers by source. These are Binance's cumulative weight counters, not per-request charges or worker-exclusive totals. Missing headers mean no weight observation. Do not sum cumulative values or equate GET count with request weight.
+- `last_valid_market_at`, `last_reconciled_at`, `last_recovery_seconds`, `unknown_count`: accepted market watermark, most recent successful account reconciliation, latest recovery duration and unresolved order count. Existing effective state/reason and feed reason remain authoritative.
+- `journals`: controller/protocol SQLite database and sidecar bytes, allocated bytes, indexed event high-water marks, transaction counts and last transaction duration. High-water mark is not a payload-byte count. Counters reset on process start; persisted status is the last worker observation.
+- `campaign`: current authorization expiry, POST budget/consumption and existing campaign limits. Reporting grants no authority.
+
+Request aggregates contain no signed query, credential, response body or account identifier. Metrics are included in the existing control report, not a new journal, database or service.
+
+## Offline performance analysis (2026-11-15)
+
+The reproducible HTTP-stubbed benchmark is `tests/integrations/test_demo_observability.py`. Run with `PYTHONPATH=src python -m pytest tests/integrations/test_demo_observability.py -q -s`. Measurements below used Windows and CPython 3.12.7 with the existing test dependencies. The available CPython 3.13 runtime returned `No module named pytest`; it did not execute tests. Measurements are local fixture costs, not Binance network latency.
+
+Twenty idle Grid recoveries originally issued **500 GETs**: 80 each to `/fapi/v3/account`, `/fapi/v3/positionRisk`, `/fapi/v1/positionSide/dual`, `/fapi/v1/openOrders`, `/fapi/v1/symbolConfig` and `/fapi/v1/apiTradingStatus`, plus 20 book queries. Returning the already validated facts from each adapter reconciliation reduces this to **260 GETs (48% fewer)**: 40 for each account endpoint and the unchanged 20 book queries. Each adapter reconciliation fetches the six account endpoints once instead of twice; the outer recovery still reconciles before and after execution-delta replay. No cache survives a reconciliation or replaces submission-time account/quote freshness checks.
+
+In the first before/after local runs, twenty iterations took 3.059 s versus 2.827 s. Both added zero journal events and committed 40 controller transactions. Peak traced Python allocations were approximately 1.25 MB versus 0.72 MB; these single-run allocation/timing observations are not steady-state RSS or exchange-latency guarantees. Request-count reduction is the deterministic improvement. Restart recovery preserved the economic account state and issued no POST.
+
+Session construction in this fixture issues 9 GETs: one time synchronization, one of each of the six account endpoints, exchange rules and leverage brackets. Credential binding is a separate 7-GET preflight. Neither is part of the 20-poll comparison. Public feed requests are measured separately in normal worker output. The previous mixed **184 GET** observation has no endpoint/phase attribution; it cannot be retroactively treated as 184 steady-state polling requests. The new instrumentation supplies that attribution for subsequent runs.
+
+At 100 versus 1,000 synthetic retained events, recovery measured 0.130 versus 0.134 s and 100 primary-key event lookups took 0.0048 versus 0.0093 s. No index or database migration is justified by this sample. Idle event growth is zero; disk growth is driven by retained trading/source history, not these idle recoveries. The final run occupied 114,688 SQLite bytes in the idle fixture, 126,976/233,472 bytes for 100/1,000 synthetic input events, and 258,048/1,552,384 bytes for 100/1,000 retained canceled orders. These totals include the runtime and nested controller/protocol databases; journal-sidecar bytes are reported separately in status.
+
+Historical order polling is a real remaining scaling cost: isolated adapter reconciliation of 100 versus 1,000 canceled orders issued 100 versus 1,000 order GETs plus six account GETs and took 3.10 versus 33.50 s locally. Recovery scans/deserializes retained protocol orders and controller execution events; order lookup uses the existing primary key, while full reconciliation is linear in lifetime history and retains per-confirmation durability. **TODO:** define an authoritative incremental reconciliation/retention contract before replacing lifetime polling. In particular, the existing order state machine permits canceled orders to advance to filled; skipping them or deleting history would silently change economic recovery semantics. This change therefore retains those reads and transactions rather than introducing a terminal-order cache or weakening commit durability.
+
+Official endpoint references are available through Binance's [published connector](https://github.com/binance/binance-futures-connector-python/blob/main/binance/um_futures/account.py). Its retrieved docstrings do not specify request weights; no numerical weight table is inferred from them. Actual response weight headers are captured when supplied, with error classification and cooldown behavior unchanged.
+
 ## Focused validation
 
 Offline tests cover consecutive closed bars, ATR, historical suppression, source replay/restart, unchanged LIMIT prices, partial-fill inventory, GET-only confirmation, reduce-only reversal, pause/resume/stop, disconnect/reconciliation, UNKNOWN, authorization loss, preview/execution lock isolation, CLI controls and explicit storage capacity beyond the ordinary lifetime limits.

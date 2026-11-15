@@ -20,6 +20,7 @@ from .demo_runtime import (MAX_NOTIONAL, MAX_QUANTITY, open_grid_session, restor
 from .demo_strategy_supervisor import MarketClient, StrategyControl
 from .demo_supervisor import DemoSupervisor
 from .protocol import SafetyBlocked
+from .observability import RequestCounts, worker_metrics
 
 
 def grid_factory(settings, *, new_deployment=False):
@@ -204,7 +205,7 @@ def run(args, *, root=None, credentials=None):
     settings = json.loads(args.config.read_text(encoding='utf-8')) if args.config is not None else None
     configuration = dict(mode=mode, interval=args.interval, source=SOURCE, max_backfill=args.max_backfill,
                          settings=settings)
-    requests = dict(GET=0, POST=0, DELETE=0)
+    requests = RequestCounts()
     with closing(StrategyControl(path, configuration)) as control:
         control.request('RUNNING')
         consumer = None
@@ -230,11 +231,12 @@ def run(args, *, root=None, credentials=None):
                 def report(raw):
                     payload = json.loads(raw)
                     payload['feed_reason'] = payload['reason']
-                    payload.update(consumer.status(), mode=mode, requests=requests)
+                    payload.update(consumer.status(), mode=mode, requests=requests,
+                        metrics=worker_metrics(bridge.session, feed, bridge.runtime, requests))
                     control.report(payload)
                     print(json.dumps(payload, default=str), flush=True)
                 supervisor = DemoSupervisor(feed, poll_seconds=args.poll_seconds, report=report,
-                    before_poll=consumer.before_poll, on_pause=consumer.disconnect)
+                    before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests)
                 consumer.supervisor = supervisor
                 signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
                 signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())
@@ -243,7 +245,8 @@ def run(args, *, root=None, credentials=None):
                 finally:
                     consumer.running = False
                     payload = dict(mode=mode, status='EXITED', desired=control.desired(),
-                                   watermarks=feed.watermarks(), requests=requests, **consumer.status())
+                                   watermarks=feed.watermarks(), requests=requests, **consumer.status(),
+                                   metrics=worker_metrics(bridge.session, feed, bridge.runtime, requests))
                     control.report(payload)
                     print(json.dumps(payload, default=str), flush=True)
     return 0
