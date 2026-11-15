@@ -69,7 +69,7 @@ jobs:
         run: python -I trusted/tools/ci/pr_risk.py --repository candidate --base "$BASE" --head HEAD --output risk.json --github-output "$GITHUB_OUTPUT"
       - name: Seal trusted risk plan
         id: seal
-        run: python -I trusted/tools/ci/pr_identity.py seal --repository candidate --identity identity.json --risk-plan risk.json
+        run: python -I trusted/tools/ci/pr_identity.py seal --repository candidate --identity identity.json --risk-plan risk.json --shard-count ${{ steps.shards.outputs.count }}
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: pr-risk
@@ -226,7 +226,20 @@ jobs:
           python -m pip install --no-deps .
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m pip check
-      - run: python tools/ci/integration_checks.py --suite current --shard ${{ matrix.shard }} --shard-count ${{ needs.risk.outputs.shard_count }} --output local-ci/extended
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: pr-risk
+          path: trusted-risk
+      - name: Execute current shards with the sealed base-side plan
+        env:
+          VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
+          RISK_SHA256: ${{ needs.risk.outputs.risk_sha256 }}
+        run: python -I ../trusted/tools/ci/integration_checks.py --repository . --identity ../trusted-risk/identity.json --risk-plan ../trusted-risk/risk.json --suite current --shard ${{ matrix.shard }} --shard-count ${{ needs.risk.outputs.shard_count }} --output local-ci/extended
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ !cancelled() }}
         with:
@@ -257,6 +270,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.14'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: pr-risk
+          path: trusted-risk
       - name: Require all shard executions to succeed
         env:
           RESULT: ${{ needs.current.result }}
@@ -266,11 +283,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SHARD_COUNT: ${{ needs.risk.outputs.shard_count }}
           SUBJECT_SHA: ${{ needs.risk.outputs.subject }}
+          VALIDATION_SUBJECT: ${{ needs.risk.outputs.subject }}
+          RISK_SHA256: ${{ needs.risk.outputs.risk_sha256 }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           TRUSTED_BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=100" > shard-artifacts.json
+          python -m tools.ci.sharding --verify-artifacts shard-artifacts.json --run-id "$GITHUB_RUN_ID" --shard-count "$SHARD_COUNT"
           for version in 3.13 3.14; do
             for ((shard=0; shard<SHARD_COUNT; shard++)); do
               gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" \
@@ -278,6 +299,7 @@ jobs:
             done
           done
           python -m tools.ci.sharding --pr-shards local-ci/shards --shard-count "$SHARD_COUNT" --output local-ci/verified-current \
+            --risk-plan trusted-risk/risk.json --identity trusted-risk/identity.json --artifact-manifest shard-artifacts.json \
             --subject-sha "$SUBJECT_SHA" --pr-head-sha "$PR_HEAD_SHA" \
             --trusted-base-sha "$TRUSTED_BASE_SHA" --event-sha "$GITHUB_SHA" \
             --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"

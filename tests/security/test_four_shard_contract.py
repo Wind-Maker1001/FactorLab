@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from tools.ci import sharding
-from tests.security.test_validation_v2 import shard_count, shard_receipts, pr_shard_receipts
+from tests.security.test_validation_v2 import shard_count, shard_receipts, pr_shard_receipts, timings_v1
 
 
 @pytest.mark.parametrize('attack', ['extra', 'count', 'counts', 'collection', 'skipped', 'missing_end'])
@@ -65,7 +65,7 @@ def test_committed_synthetic_receipts_replay(tmp_path, monkeypatch):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(contents, encoding='utf-8')
     timings = tmp_path / 'timings.json'
-    timings.write_text(json.dumps(dict(module_seconds={
+    timings.write_text(json.dumps(timings_v1({
         f'tests/{module}.py': float(4-i) for i, module in enumerate('abcd')})))
     monkeypatch.setattr(sharding, 'TIMINGS', timings)
     output = tmp_path / 'verified'

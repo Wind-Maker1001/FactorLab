@@ -10,6 +10,12 @@ from tools.ci import sharding, validation_layers, current_validation
 from tools.ci.validation_v2 import compare, comparison_pass, outcomes
 
 
+def timings_v1(weights):
+    return dict(schema='FACTORLAB_MEASURED_MODULE_TIMINGS_V1', module_seconds=weights,
+                source_run='https://example.test/runs/1', source_artifact='extended-3.13',
+                subject_sha='measured', python='3.13.0', test_count=4)
+
+
 @pytest.fixture
 def evidence():
     nodes = ['software-%04d' % i for i in range(4157)]
@@ -143,7 +149,7 @@ def shard_receipts(tmp_path, monkeypatch, shard_count):
     nodes = [f'tests/{m}.py::test_node' for m in 'abcd'[:shard_count]]
     weights = {n.split('::')[0]: float(shard_count - i) for i, n in enumerate(nodes)}
     timings = tmp_path / 'timings.json'
-    timings.write_text(json.dumps(dict(module_seconds=weights)))
+    timings.write_text(json.dumps(timings_v1(weights)))
     monkeypatch.setattr(sharding, 'TIMINGS', timings)
     folders = []
     for i, node in enumerate(nodes):
@@ -361,11 +367,12 @@ def test_collection_partitions_full_inventory_before_sharding(tmp_path, monkeypa
     nodes = [f'tests/{module}.py::test_{i}' for i, module in enumerate('abcd'[:count])]
     monkeypatch.setattr(validation_layers, 'historical_nodes', lambda: {'old.py::test_old', 'broken.py'})
     weights = tmp_path / 'weights.json'
-    weights.write_text(json.dumps(dict(module_seconds={n.split('::')[0]: i+1 for i, n in enumerate(nodes)})))
+    weights.write_text(json.dumps(timings_v1({n.split('::')[0]: i+1 for i, n in enumerate(nodes)})))
     monkeypatch.setattr(sharding, 'TIMINGS', weights)
     inventory = tmp_path / 'selection.json'
     deselected = []
-    options = {'--historical-only': False, '--current-shard': 1, '--current-shard-count': count, '--current-layer-inventory': inventory}
+    options = {'--historical-only': False, '--current-shard': 1, '--current-shard-count': count,
+               '--current-layer-inventory': inventory}
     config = SimpleNamespace(getoption=options.__getitem__, hook=SimpleNamespace(
         pytest_deselected=lambda items: deselected.extend(item.nodeid for item in items)))
     items = [SimpleNamespace(nodeid=n) for n in [*nodes, 'old.py::test_old']]

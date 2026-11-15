@@ -1,10 +1,19 @@
 """Bind a trusted PR risk plan to its event, immutable subject and run attempt."""
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
 import subprocess
+import sys
+
+_source = Path(__file__).with_name('sharding.py')
+_spec = importlib.util.spec_from_file_location(
+    '_factorlab_trusted_sharding', _source, submodule_search_locations=[str(_source.parent)])
+sharding = importlib.util.module_from_spec(_spec)
+sys.modules[_spec.name] = sharding
+_spec.loader.exec_module(sharding)
 
 
 SCHEMA = 'FACTORLAB_PR_VALIDATION_IDENTITY_V1'
@@ -39,29 +48,38 @@ def issue(repository, expected):
     return dict(schema=SCHEMA, **expected, subject=subject(repository, expected))
 
 
-def validate(repository, expected, identity, raw_plan, pinned_subject, pinned_digest):
+def validate(repository, expected, identity, raw_plan, pinned_subject, pinned_digest,
+             checkout=True, shard_count=None):
     if (identity.get('schema') != SCHEMA or
             any(identity.get(key) != value for key, value in expected.items())):
         raise ValueError('validation identity event or run mismatch')
-    if identity.get('subject') != pinned_subject or subject(repository, expected) != pinned_subject:
+    if (identity.get('subject') != pinned_subject or
+            (checkout and subject(repository, expected) != pinned_subject)):
         raise ValueError('validation identity checkout mismatch')
     digest = hashlib.sha256(raw_plan).hexdigest()
     if digest != pinned_digest or identity.get('risk_sha256') != digest:
         raise ValueError('risk plan issuer digest mismatch')
-    plan = json.loads(raw_plan)
+    plan = sharding.read_json(raw_plan)
     if (plan.get('schema') != 'FACTORLAB_PR_RISK_V2' or
             plan.get('head') != pinned_subject or
             (expected['pr'] is not None and plan.get('base') != expected['base'])):
         raise ValueError('risk plan schema or event subject mismatch')
+    if shard_count is not None:
+        issued = {key: value for key, value in identity.items() if key != 'risk_sha256'}
+        sharding.verify_spec(plan, repository, issued, shard_count)
+    return plan
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['issue', 'seal', 'verify'])
+    parser.add_argument('action', choices=['issue', 'seal', 'verify', 'verify-aggregate'])
     parser.add_argument('--repository', type=Path, required=True)
     parser.add_argument('--identity', type=Path, required=True)
     parser.add_argument('--risk-plan', type=Path)
+    parser.add_argument('--shard-count', type=int, choices=(3, 4))
     args = parser.parse_args()
+    if args.action == 'verify-aggregate' and args.shard_count is None:
+        parser.error('verify-aggregate requires --shard-count')
     expected = event_identity(json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text(encoding='utf-8')),
                               os.environ)
     if args.action == 'issue':
@@ -73,17 +91,24 @@ def main():
         identity = json.loads(args.identity.read_text(encoding='utf-8'))
         if identity != issue(args.repository, expected):
             raise ValueError('validation identity changed before sealing')
+        if args.shard_count is not None:
+            plan = sharding.read_json(args.risk_plan.read_bytes())
+            plan['sharding'] = sharding.build_spec(
+                sharding.base_weights(args.repository, expected['base']), identity, args.shard_count)
+            args.risk_plan.write_text(json.dumps(plan, indent=2, allow_nan=False) + '\n', encoding='utf-8')
         raw = args.risk_plan.read_bytes()
         digest = hashlib.sha256(raw).hexdigest()
         identity['risk_sha256'] = digest
-        validate(args.repository, expected, identity, raw, identity['subject'], digest)
+        validate(args.repository, expected, identity, raw, identity['subject'], digest,
+                 shard_count=args.shard_count)
         args.identity.write_text(json.dumps(identity, indent=2) + '\n', encoding='utf-8')
         with Path(os.environ['GITHUB_OUTPUT']).open('a', encoding='utf-8') as stream:
             stream.write(f'risk_sha256={digest}\n')
     else:
         identity = json.loads(args.identity.read_text(encoding='utf-8'))
         validate(args.repository, expected, identity, args.risk_plan.read_bytes(),
-                 os.environ['VALIDATION_SUBJECT'], os.environ['RISK_SHA256'])
+                 os.environ['VALIDATION_SUBJECT'], os.environ['RISK_SHA256'],
+                 checkout=args.action != 'verify-aggregate', shard_count=args.shard_count)
         print(json.dumps(dict(status='PASS', checkout=str(args.repository.resolve()), **identity)))
 
 
