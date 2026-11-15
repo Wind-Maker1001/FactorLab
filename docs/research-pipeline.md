@@ -64,4 +64,11 @@ python -m examples.research.research_pipeline_synthetic --output research/p307b-
 
 The generated prices are software fixtures, not historical strategy evidence.
 
+## Offline risk scenarios
+
+The [Monte Carlo risk engine](research/monte_carlo.md) performs GBM and historical
+moving-block bootstrap research independently of historical execution. It records
+compact results through the same ExperimentTracker; simulated paths are not
+historical tests and do not enter the pipeline's financial admission flow.
+
 NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
