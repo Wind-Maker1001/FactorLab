@@ -66,7 +66,7 @@ def summary(path):
     return counts
 
 
-def run(suite, output, shard=None, risk_plan=None, shard_count=3):
+def run(suite, output, shard=None, risk_plan=None, shard_count=3, shard_plan=None):
     output.mkdir(parents=True, exist_ok=False)
     before = validation_inputs()
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -95,8 +95,13 @@ def run(suite, output, shard=None, risk_plan=None, shard_count=3):
         command = [sys.executable, '-I', '-u', str(Path(__file__).with_name('targeted_validation.py')),
                    '--execution-inventory='+str(output/'execution.json'),
                    *['--target-file='+target for target in targets], *command[4:]]
+    if shard_plan is not None:
+        command = [sys.executable, '-I', '-u', str(Path(__file__).with_name('current_execution.py')),
+                   *command[4:], '--trusted-shard-plan='+str(shard_plan)]
     if suite in ('current', 'historical'):
-        command += ['-p', 'tools.ci.current_validation',
+        if shard_plan is None:
+            command += ['-p', 'tools.ci.current_validation']
+        command += [
                     '--current-layer-inventory='+str(output/'selection.json'),
                     '--execution-inventory='+str(output/'execution.json')]
     if suite == 'historical':
@@ -162,6 +167,12 @@ def run(suite, output, shard=None, risk_plan=None, shard_count=3):
         else:
             receipt.update(historical_status='NOT_VERIFIED', historical_blocked=None,
                            historical_matrix_sha256=None)
+    if shard_plan is not None:
+        from pr_identity import sharding
+        spec = risk_plan['sharding']
+        inventory = json.loads((output/'selection.json').read_bytes())
+        receipt['sharding'] = sharding.binding(spec, f'{sys.version_info.major}.{sys.version_info.minor}',
+                                      inventory['current'])
     (output/'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n', encoding='utf-8')
     print(suite, receipt['status'], json.dumps(receipt['counts']), 'exit', code, flush=True)
     if suite == 'targeted':
@@ -174,6 +185,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repository', type=Path)
     parser.add_argument('--risk-plan', type=Path)
+    parser.add_argument('--identity', type=Path)
     parser.add_argument('--suite', choices=[*SUITES, 'incremental', 'targeted'], required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--shard', type=int, choices=range(4))
@@ -185,14 +197,27 @@ def main():
         parser.error('--shard requires --suite current')
     if args.suite == 'targeted' and (args.repository is None or args.risk_plan is None):
         parser.error('--suite targeted requires --repository and --risk-plan')
-    if args.risk_plan is not None and args.suite != 'targeted':
-        parser.error('--risk-plan requires --suite targeted')
+    if args.risk_plan is not None and args.suite not in ('targeted', 'current'):
+        parser.error('--risk-plan requires --suite targeted or current')
+    if args.suite == 'current' and args.risk_plan is not None and (
+            args.repository is None or args.identity is None or args.shard is None):
+        parser.error('trusted current execution requires --repository, --identity and --shard')
     if args.repository is not None:
         ROOT = args.repository.resolve()
+    shard_plan = None
     risk_plan = json.loads(args.risk_plan.read_text(encoding='utf-8')) if args.risk_plan else None
+    if args.suite == 'current' and args.risk_plan is not None:
+        import pr_identity
+        expected = pr_identity.event_identity(
+            json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_bytes()), os.environ)
+        risk_plan = pr_identity.validate(ROOT, expected, json.loads(args.identity.read_bytes()),
+                             args.risk_plan.read_bytes(), os.environ['VALIDATION_SUBJECT'],
+                             os.environ['RISK_SHA256'], shard_count=args.shard_count)
+        shard_plan = args.risk_plan.resolve()
     output = args.output.resolve()
     selected = ['core', 'cross-market', 'financial-gates'] if args.suite == 'incremental' else [args.suite]
-    codes = [run(suite, output/suite, args.shard, risk_plan, args.shard_count) for suite in selected]
+    codes = [run(suite, output/suite, args.shard, risk_plan, args.shard_count, shard_plan)
+             for suite in selected]
     return max(codes)
 
 
