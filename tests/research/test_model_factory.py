@@ -97,7 +97,7 @@ def test_descriptor_defaults_match_original_constructor_signature(model_id):
     signature = inspect.signature(CLASSES[model_id])
     for name, value in registration.parameter_defaults.items():
         assert signature.parameters[name].default == value
-    expected_keys = set(signature.parameters) - {"feature_names", "random_seed", "n_jobs", "weights"}
+    expected_keys = set(signature.parameters) - {"feature_names", "random_seed", "n_jobs", "weights", "compute"}
     assert set(registration.parameter_defaults) == expected_keys
 
 

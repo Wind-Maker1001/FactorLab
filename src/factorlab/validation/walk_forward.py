@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_bool_dtype, is_complex_dtype, is_numeric_dtype
 
+from factorlab.compute import ComputeConfig
 from factorlab.metrics.prediction import (
     PredictionEvaluation,
     PredictionMetricError,
@@ -74,6 +75,7 @@ class WalkForwardResult:
     factor_quality: pd.DataFrame = field(default_factory=pd.DataFrame)
     factor_redundancy: pd.DataFrame = field(default_factory=pd.DataFrame)
     resource_usage: pd.DataFrame = field(default_factory=pd.DataFrame)
+    compute_records: tuple[dict, ...] = ()
 
     @property
     def validation_candidate_metrics(self) -> pd.DataFrame:
@@ -315,7 +317,11 @@ class WalkForwardRunner:
         model_directory: Optional[Path] = None,
         factor_selector: Optional[TrainFactorSelector] = None,
         dynamic_factor_score_weighting: Optional[str] = None,
+        compute: ComputeConfig | None = None,
     ) -> None:
+        if compute is not None and not isinstance(compute, ComputeConfig):
+            raise WalkForwardRunError("compute must be ComputeConfig")
+        self.compute = compute
         if not isinstance(splitter, ExpandingWalkForwardSplitter):
             raise WalkForwardRunError(
                 "splitter must be an ExpandingWalkForwardSplitter"
@@ -464,6 +470,7 @@ class WalkForwardRunner:
                          n_jobs=self.lightgbm_n_jobs, **candidate),
                 ),
                 constructor_type=LightGBMResearchModel,
+                    **({"compute": self.compute} if self.compute is not None else {}),
             )
         for candidate in self.xgboost_candidates:
             create_legacy_model(
@@ -473,6 +480,7 @@ class WalkForwardRunner:
                          n_jobs=self.xgboost_n_jobs, **candidate),
                 ),
                 constructor_type=XGBoostResearchModel,
+                    **({"compute": self.compute} if self.compute is not None else {}),
             )
 
     @staticmethod
@@ -586,6 +594,8 @@ class WalkForwardRunner:
         diagnostic_summary_parts: List[pd.DataFrame] = []
         diagnostic_audit_rows: List[dict] = []
         selection_rows, quality_parts, redundancy_parts = [], [], []
+        compute_records: list[dict] = []
+        self._compute_records = compute_records
 
         fold_frames = (source.fold_frames(prepared, folds) if source is not None
                        else self._fold_frames(prepared, folds))
@@ -635,7 +645,11 @@ class WalkForwardRunner:
             candidate_rows.extend(rows)
 
             # This is the sole Test predict call for the selected fold model.
+            prediction_record_start = len(getattr(selected_model, "compute_records_", ()))
             test_scores = selected_model.predict(test.loc[:, execution.feature_names])
+            compute_records.extend(dict(record, fold=fold.fold, model_name=self.model_name,
+                candidate=str(selected_validation["candidate"]), evaluation_stage="HISTORICAL_TEST")
+                for record in getattr(selected_model, "compute_records_", ())[prediction_record_start:])
             prediction_frame = self._prediction_frame(
                 test,
                 test_scores,
@@ -652,7 +666,11 @@ class WalkForwardRunner:
             # Only the already-selected model receives this extra diagnostic
             # call. Test has already been predicted exactly once; Validation
             # reuses the candidate-selection snapshot, never a second predict.
+            prediction_record_start = len(getattr(selected_model, "compute_records_", ()))
             train_scores = selected_model.predict(train.loc[:, execution.feature_names])
+            compute_records.extend(dict(record, fold=fold.fold, model_name=self.model_name,
+                candidate=str(selected_validation["candidate"]), evaluation_stage="TRAIN_IN_SAMPLE")
+                for record in getattr(selected_model, "compute_records_", ())[prediction_record_start:])
             train_prediction_frame = self._prediction_frame(
                 train, train_scores, fold.fold, selected_alpha, selected_parameters,
                 entry_date_col=entry_date_col, exit_date_col=exit_date_col,
@@ -877,6 +895,7 @@ class WalkForwardRunner:
         )
         predictions.reset_index(drop=True, inplace=True)
         return WalkForwardResult(
+            compute_records=tuple(compute_records),
             factor_selection=pd.DataFrame(selection_rows),
             factor_quality=pd.concat(quality_parts, ignore_index=True) if quality_parts else pd.DataFrame(),
             factor_redundancy=pd.concat(redundancy_parts, ignore_index=True) if redundancy_parts else pd.DataFrame(),
@@ -1046,6 +1065,7 @@ class WalkForwardRunner:
                              n_jobs=self.lightgbm_n_jobs, **parameters),
                     ),
                     constructor_type=LightGBMResearchModel,
+                    **({"compute": self.compute} if self.compute is not None else {}),
                 )
             else:
                 model = create_legacy_model(
@@ -1055,12 +1075,19 @@ class WalkForwardRunner:
                              n_jobs=self.xgboost_n_jobs, **parameters),
                     ),
                     constructor_type=XGBoostResearchModel,
+                    **({"compute": self.compute} if self.compute is not None else {}),
                 )
             model.fit(
                 train.loc[:, self.feature_names],
                 train[self.target_col],
             )
             validation_scores = model.predict(validation.loc[:, self.feature_names])
+            for record in getattr(model, "compute_records_", ()):
+                self._compute_records.append(dict(record, fold=fold_number,
+                    candidate=candidate_name, model_name=self.model_name,
+                    parameters=dict(parameters), random_seed=self.random_seed,
+                    feature_names=list(self.feature_names),
+                    evaluation_stage="VALIDATION_SELECTION" if record.get("stage") == "predict" else "TRAIN"))
             validation_frame = self._prediction_frame(
                 validation,
                 validation_scores,

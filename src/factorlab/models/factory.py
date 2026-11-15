@@ -16,6 +16,8 @@ from types import MappingProxyType
 
 import numpy as np
 
+from factorlab.compute import ComputeConfig
+
 from .base import ModelInputError, ResearchModel
 from .factor_score import FactorScoreModel
 from .lightgbm import LightGBMResearchModel
@@ -541,11 +543,14 @@ def _legacy_registration(model_id, implementation_version, profile_id, catalog):
 
 def create_legacy_model(request: LegacyModelRequest, *,
                         constructor_type: type[ResearchModel] | None = None,
-                        catalog: ModelCatalogSnapshot = DEFAULT_CATALOG) -> ResearchModel:
+                        catalog: ModelCatalogSnapshot = DEFAULT_CATALOG,
+                        compute: ComputeConfig | None = None) -> ResearchModel:
     """One original construction, original errors; no strict validation or fit.
 
     A trusted Python caller may supply its current module-level original class
     or subclass (including a Spy). Arbitrary callables and import strings fail.
+    ``compute`` is tree-only execution policy, outside legacy call provenance and
+    model hyperparameters. Omission preserves the original constructor call.
     """
     if type(request) is not LegacyModelRequest:
         raise InvalidModelSpec("expected LegacyModelRequest")
@@ -556,6 +561,14 @@ def create_legacy_model(request: LegacyModelRequest, *,
     if not isinstance(constructor, type) or not issubclass(constructor, original):
         raise InvalidModelSpec("constructor_type must be the registered original class or its subclass")
     args, kwargs = request._construction_arguments()
+    if "compute" in kwargs:
+        raise InvalidModelSpec("compute belongs to the factory execution argument")
+    if compute is not None:
+        if not isinstance(compute, ComputeConfig):
+            raise InvalidModelSpec("compute must be ComputeConfig")
+        if descriptor.model_id not in ("xgboost", "lightgbm"):
+            raise InvalidModelSpec("compute is supported only by native tree models")
+        kwargs["compute"] = compute
     model = constructor(*args, **kwargs)
     if not isinstance(model, original):
         raise InvalidModelSpec("legacy constructor did not return an original model instance")
@@ -569,6 +582,9 @@ class LegacyEffectiveSpec:
     explicit_arguments/defaults_used are None when provenance was not supplied;
     model state cannot reveal which values were explicitly passed. strict_spec
     is absent when the old successful input cannot be expressed faithfully.
+    defaults_used records constructor defaults omitted by the request, including
+    compute; these names do not enter parameter identity or describe a separately
+    supplied factory execution policy.
     """
 
     original_model_id: str

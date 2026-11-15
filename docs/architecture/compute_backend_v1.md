@@ -129,11 +129,11 @@ this module adds no competing batching policy, memory pool, allocator, tensor
 abstraction, scheduler or resource monitor. GPU budget enforcement and GPU-aware
 chunk planning belong to implemented GPU consumers.
 
-Existing models, `fit/predict`, model factory, Walk-Forward splits/selection,
-factor-discovery budgets, random seeds, trading and risk gates are unchanged.
-Accepting a compute config does not redirect those existing CPU workflows.
-There are no built-in GPU capability registrations, GPU algorithms, model GPU
-training or Monte Carlo engine in V1, and no new dependencies.
+V1 itself does not register model implementations or redirect execution. The
+[native tree-model consumer](gpu_model_acceleration.md) connects optional compute
+policy to XGBoost/LightGBM and Walk-Forward. Omitted policy retains legacy CPU
+behavior. Splits/selection, factor-discovery budgets, random seeds, trading and
+risk gates remain independent of device policy. Monte Carlo is not changed.
 
 ## Parallel consumer contracts
 

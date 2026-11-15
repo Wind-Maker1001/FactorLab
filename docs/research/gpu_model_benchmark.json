@@ -1,0 +1,1896 @@
+{
+  "seed": 42,
+  "gpu_memory_limit_enforced": false,
+  "cases": [
+    {
+      "size": "small",
+      "model": "xgboost",
+      "dataset_sha256": "d68f00032dee61810954e3a50c2c1d6a686a2c6908e45e219a77da7196157e75",
+      "rows": 2768,
+      "features": 8,
+      "n_estimators": 40,
+      "n_jobs": 4,
+      "cpu": {
+        "elapsed_seconds": 0.3921636999994007,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.0011472000005596783,
+            "native_seconds": 0.03611529999943741,
+            "execution": {
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 3.3600000278966036e-05,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0006700000003547757,
+            "native_seconds": 0.0035671999994519865,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0004453999999896041,
+            "native_seconds": 0.008733599999686703,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0005029999992984813,
+            "native_seconds": 0.007830900000044494,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 1956,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          0.4744715000006181,
+          0.3921636999994007,
+          0.36042970000016794
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 3.6100000215810724e-05,
+        "trial_device_memory_peaks_mib": [
+          1960,
+          1956,
+          1956
+        ]
+      },
+      "gpu": {
+        "elapsed_seconds": 0.7070612999996229,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.001981800000066869,
+            "native_seconds": 0.12057559999993828,
+            "execution": {
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 0.032657100000506034,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0009743000000526081,
+            "native_seconds": 0.003673299999718438,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0007791000007273396,
+            "native_seconds": 0.004516699999840057,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0008345999995071907,
+            "native_seconds": 0.0040636000003360095,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 1981,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          0.6728915000003326,
+          0.7206027000001995,
+          0.7070612999996229
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 0.07123289999981353,
+        "trial_device_memory_peaks_mib": [
+          1992,
+          1960,
+          1981
+        ]
+      },
+      "gpu_runtime": "GPU_RUNTIME_VERIFIED",
+      "performance": "PERFORMANCE_VERIFIED",
+      "prediction_max_abs_difference": 0.004484544973820448,
+      "prediction_mean_abs_difference": 0.0009080800107777908,
+      "cpu_rank_ic": 0.9371657754010694,
+      "gpu_rank_ic": 0.9353609625668448,
+      "rank_ic_difference": -0.0018048128342246228,
+      "end_to_end_speedup": 0.5546388976452393
+    },
+    {
+      "size": "small",
+      "model": "lightgbm",
+      "dataset_sha256": "d68f00032dee61810954e3a50c2c1d6a686a2c6908e45e219a77da7196157e75",
+      "rows": 2768,
+      "features": 8,
+      "n_estimators": 40,
+      "n_jobs": 4,
+      "cpu": {
+        "elapsed_seconds": 0.5565830999994432,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.0019311000005473034,
+            "native_seconds": 0.012315200000557525,
+            "execution": {
+              "native_method": "estimator.fit"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 3.980000019510044e-05,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0011162999999214662,
+            "native_seconds": 0.0011295000003883615,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0007872000005590962,
+            "native_seconds": 0.0010658000001058099,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0008218000002671033,
+            "native_seconds": 0.0012275999997655163,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 1973,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          0.7283250000000407,
+          0.545029799999611,
+          0.5565830999994432
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 4.0299999454873614e-05,
+        "trial_device_memory_peaks_mib": [
+          1973,
+          1973,
+          1973
+        ]
+      },
+      "gpu": {
+        "elapsed_seconds": 0.8877925999995568,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "lightgbm-opencl",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.002012099999774364,
+            "native_seconds": 0.20443259999956354,
+            "execution": {
+              "native_trainer_logs": [
+                "[LightGBM] [Warning] feature_fraction is set=0.8, colsample_bytree=1.0 will be ignored. Current value: feature_fraction=0.8",
+                "[LightGBM] [Warning] bagging_fraction is set=0.8, subsample=1.0 will be ignored. Current value: bagging_fraction=0.8",
+                "[LightGBM] [Warning] bagging_freq is set=1, subsample_freq=0 will be ignored. Current value: bagging_freq=1",
+                "[LightGBM] [Warning] feature_fraction is set=0.8, colsample_bytree=1.0 will be ignored. Current value: feature_fraction=0.8",
+                "[LightGBM] [Warning] bagging_fraction is set=0.8, subsample=1.0 will be ignored. Current value: bagging_fraction=0.8",
+                "[LightGBM] [Warning] bagging_freq is set=1, subsample_freq=0 will be ignored. Current value: bagging_freq=1",
+                "[LightGBM] [Info] This is the GPU trainer!!",
+                "[LightGBM] [Info] Total Bins 2040",
+                "[LightGBM] [Info] Number of data points in the train set: 944, number of used features: 8",
+                "[LightGBM] [Info] Using GPU Device: NVIDIA GeForce RTX 2070, Vendor: NVIDIA Corporation",
+                "[LightGBM] [Info] Compiling OpenCL Kernel with 256 bins...",
+                "[LightGBM] [Info] GPU programs have been built",
+                "[LightGBM] [Info] Size of histogram bin entry: 8",
+                "[LightGBM] [Info] 8 dense feature groups (0.01 MB) transferred to GPU in 0.000828 secs. 0 sparse feature groups",
+                "[LightGBM] [Info] Start training from score 0.000193",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf"
+              ]
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 0.13931899999988673,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0010272999998051091,
+            "native_seconds": 0.0010092000002259738,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 40,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0007988999996086932,
+            "native_seconds": 0.001041800000166404,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.0008372000002054847,
+            "native_seconds": 0.0011948999999731313,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 1991,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          0.9705705999995189,
+          0.8877925999995568,
+          0.8692574999995486
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 0.21343069999966247,
+        "trial_device_memory_peaks_mib": [
+          2073,
+          1991,
+          1985
+        ]
+      },
+      "gpu_runtime": "GPU_RUNTIME_VERIFIED",
+      "performance": "PERFORMANCE_VERIFIED",
+      "prediction_max_abs_difference": 0.0002490170729036014,
+      "prediction_mean_abs_difference": 3.0880509222724674e-06,
+      "cpu_rank_ic": 0.9382352941176471,
+      "gpu_rank_ic": 0.9382352941176471,
+      "rank_ic_difference": 0.0,
+      "end_to_end_speedup": 0.6269291949490468
+    },
+    {
+      "size": "medium",
+      "model": "xgboost",
+      "dataset_sha256": "b2c900083b472f1fc6a23d09f94ba9a63d9ea3a4de2d0310cd312ce31fa6795d",
+      "rows": 88576,
+      "features": 32,
+      "n_estimators": 160,
+      "n_jobs": 4,
+      "cpu": {
+        "elapsed_seconds": 6.461941100000331,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.07739120000042021,
+            "native_seconds": 0.5541614000003392,
+            "execution": {
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 6.649999977526022e-05,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.008965699999862409,
+            "native_seconds": 0.02532089999931486,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.012508400000115216,
+            "native_seconds": 0.028571600000759645,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "xgboost-cpu",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.013448499999867636,
+            "native_seconds": 0.03608139999960258,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cpu"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 1980,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          6.461941100000331,
+          6.462560500000109,
+          6.4477947999994285
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 6.649999977526022e-05,
+        "trial_device_memory_peaks_mib": [
+          1980,
+          1980,
+          1973
+        ]
+      },
+      "gpu": {
+        "elapsed_seconds": 6.6556626999999935,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.09506370000053721,
+            "native_seconds": 0.7627687000003789,
+            "execution": {
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 0.052223099999537226,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.009536700000353449,
+            "native_seconds": 0.014735400000063237,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "xgboost",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.01043539999955101,
+            "native_seconds": 0.01657480000085343,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "xgboost-cuda",
+            "backend_version": "2.1.4",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "2.1.4",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.013193700000556419,
+            "native_seconds": 0.01856820000011794,
+            "execution": {
+              "native_method": "Booster.predict(DMatrix)",
+              "native_device": "cuda:0"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "xgboost",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 2006,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          6.6556626999999935,
+          6.637569699999403,
+          6.817960199999106
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 0.052223099999537226,
+        "trial_device_memory_peaks_mib": [
+          2006,
+          2007,
+          1999
+        ]
+      },
+      "gpu_runtime": "GPU_RUNTIME_VERIFIED",
+      "performance": "PERFORMANCE_VERIFIED",
+      "prediction_max_abs_difference": 0.003759808838367462,
+      "prediction_mean_abs_difference": 0.00028523695615289104,
+      "cpu_rank_ic": 0.9673746473775764,
+      "gpu_rank_ic": 0.9673307301013793,
+      "rank_ic_difference": -4.3917276197125155e-05,
+      "end_to_end_speedup": 0.9708937173153828
+    },
+    {
+      "size": "medium",
+      "model": "lightgbm",
+      "dataset_sha256": "b2c900083b472f1fc6a23d09f94ba9a63d9ea3a4de2d0310cd312ce31fa6795d",
+      "rows": 88576,
+      "features": 32,
+      "n_estimators": 160,
+      "n_jobs": 4,
+      "cpu": {
+        "elapsed_seconds": 6.526742399999421,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.10643100000015693,
+            "native_seconds": 0.33273709999957646,
+            "execution": {
+              "native_method": "estimator.fit"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 7.329999971261714e-05,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.009127199999966251,
+            "native_seconds": 0.03388190000077884,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.009821699999520206,
+            "native_seconds": 0.04220970000005764,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.014720699999998033,
+            "native_seconds": 0.051674999999704596,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 1967,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          6.508735599999454,
+          6.526742399999421,
+          6.600095199999487
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 5.710000004910398e-05,
+        "trial_device_memory_peaks_mib": [
+          1975,
+          1967,
+          1984
+        ]
+      },
+      "gpu": {
+        "elapsed_seconds": 7.229034699999829,
+        "compute_records": [
+          {
+            "requested": {
+              "device": "gpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "gpu",
+            "backend": "lightgbm-opencl",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "fit",
+            "executed": true,
+            "preprocessing_seconds": 0.10230349999983446,
+            "native_seconds": 0.8169407000004867,
+            "execution": {
+              "native_trainer_logs": [
+                "[LightGBM] [Warning] feature_fraction is set=0.8, colsample_bytree=1.0 will be ignored. Current value: feature_fraction=0.8",
+                "[LightGBM] [Warning] bagging_fraction is set=0.8, subsample=1.0 will be ignored. Current value: bagging_fraction=0.8",
+                "[LightGBM] [Warning] bagging_freq is set=1, subsample_freq=0 will be ignored. Current value: bagging_freq=1",
+                "[LightGBM] [Warning] feature_fraction is set=0.8, colsample_bytree=1.0 will be ignored. Current value: feature_fraction=0.8",
+                "[LightGBM] [Warning] bagging_fraction is set=0.8, subsample=1.0 will be ignored. Current value: bagging_fraction=0.8",
+                "[LightGBM] [Warning] bagging_freq is set=1, subsample_freq=0 will be ignored. Current value: bagging_freq=1",
+                "[LightGBM] [Info] This is the GPU trainer!!",
+                "[LightGBM] [Info] Total Bins 8160",
+                "[LightGBM] [Info] Number of data points in the train set: 30208, number of used features: 32",
+                "[LightGBM] [Info] Using GPU Device: NVIDIA GeForce RTX 2070, Vendor: NVIDIA Corporation",
+                "[LightGBM] [Info] Compiling OpenCL Kernel with 256 bins...",
+                "[LightGBM] [Info] GPU programs have been built",
+                "[LightGBM] [Info] Size of histogram bin entry: 8",
+                "[LightGBM] [Info] 32 dense feature groups (0.92 MB) transferred to GPU in 0.002390 secs. 0 sparse feature groups",
+                "[LightGBM] [Info] Start training from score -0.000008",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf",
+                "[LightGBM] [Warning] No further splits with positive gain, best gain: -inf"
+              ]
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "resolution_seconds": 0.17633400000067923,
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "TRAIN"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.008468799999718613,
+            "native_seconds": 0.033480999999483174,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "candidate": "candidate_0",
+            "model_name": "lightgbm",
+            "parameters": {
+              "n_estimators": 160,
+              "max_depth": 5,
+              "num_leaves": 31,
+              "min_child_samples": 20
+            },
+            "random_seed": 42,
+            "feature_names": [
+              "feature_00",
+              "feature_01",
+              "feature_02",
+              "feature_03",
+              "feature_04",
+              "feature_05",
+              "feature_06",
+              "feature_07",
+              "feature_08",
+              "feature_09",
+              "feature_10",
+              "feature_11",
+              "feature_12",
+              "feature_13",
+              "feature_14",
+              "feature_15",
+              "feature_16",
+              "feature_17",
+              "feature_18",
+              "feature_19",
+              "feature_20",
+              "feature_21",
+              "feature_22",
+              "feature_23",
+              "feature_24",
+              "feature_25",
+              "feature_26",
+              "feature_27",
+              "feature_28",
+              "feature_29",
+              "feature_30",
+              "feature_31"
+            ],
+            "evaluation_stage": "VALIDATION_SELECTION"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.009915399999954388,
+            "native_seconds": 0.04356550000011339,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "HISTORICAL_TEST"
+          },
+          {
+            "requested": {
+              "device": "cpu",
+              "allow_fallback": false,
+              "gpu_memory_limit_mb": null
+            },
+            "device": "cpu",
+            "backend": "lightgbm-cpu",
+            "backend_version": "4.6.0",
+            "probe": {
+              "available": true,
+              "reason": null,
+              "version": "4.6.0",
+              "driver_visible": null,
+              "runtime_available": true
+            },
+            "fallback": false,
+            "fallback_reason": null,
+            "gpu_memory_limit_mb": null,
+            "gpu_memory_limit_enforced": false,
+            "stage": "predict",
+            "executed": true,
+            "preprocessing_seconds": 0.013521799999580253,
+            "native_seconds": 0.052150999999867054,
+            "execution": {
+              "native_method": "estimator.predict"
+            },
+            "transfer_sync_timing": "included in native_seconds; native host-array API, not independently measurable",
+            "fold": 0,
+            "model_name": "lightgbm",
+            "candidate": "candidate_0",
+            "evaluation_stage": "TRAIN_IN_SAMPLE"
+          }
+        ],
+        "device_used_memory_peak_mib": 2079,
+        "memory_measurement": "whole-device memory.used sampled at approximately 100ms; includes other processes",
+        "trial_elapsed_seconds": [
+          7.2570488000001205,
+          7.229034699999829,
+          7.10595640000065
+        ],
+        "aggregation": "median of three complete Walk-Forward executions; stage receipts from median trial",
+        "cold_first_trial_resolution_seconds": 0.1512777999996615,
+        "trial_device_memory_peaks_mib": [
+          2086,
+          2079,
+          2066
+        ]
+      },
+      "gpu_runtime": "GPU_RUNTIME_VERIFIED",
+      "performance": "PERFORMANCE_VERIFIED",
+      "prediction_max_abs_difference": 0.00012436694175022717,
+      "prediction_mean_abs_difference": 2.3297937437464887e-08,
+      "cpu_rank_ic": 0.9672815296660602,
+      "gpu_rank_ic": 0.9672813935231136,
+      "rank_ic_difference": -1.3614294658292891e-07,
+      "end_to_end_speedup": 0.9028511649002839
+    }
+  ],
+  "splitter": {
+    "initial_train_months": 3,
+    "validation_months": 2,
+    "test_months": 2,
+    "step_months": 8,
+    "purge_days": 5,
+    "embargo_days": 5
+  },
+  "environment": {
+    "python_version": "3.13.9",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "package_versions": {
+      "numpy": "2.3.4",
+      "pandas": "2.3.3",
+      "pyarrow": "22.0.0",
+      "scipy": "1.16.3",
+      "scikit-learn": "1.7.2",
+      "matplotlib": "3.10.7",
+      "akshare": "1.18.88",
+      "baostock": "0.8.9",
+      "lightgbm": "4.6.0",
+      "xgboost": "2.1.4",
+      "PyYAML": "6.0.3",
+      "pytest": "8.4.2",
+      "tzdata": "2026.4"
+    }
+  },
+  "base_commit": "3b3baf21a0f6f39d619cef1a51a693650676f666",
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 2070",
+    "memory_total_mib": 8192,
+    "driver_version": "617.42"
+  }
+}

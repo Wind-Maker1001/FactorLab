@@ -1810,6 +1810,8 @@ def command_walk_forward(
     else:
         raise FactorLabError("Unsupported model: %s" % model_name)
 
+    if model_name in {"lightgbm", "xgboost"}:
+        runner_options["compute"] = config.compute
     runner = WalkForwardRunner(
         _walk_forward_splitter(config), **runner_options
     )
@@ -1921,6 +1923,8 @@ def command_walk_forward(
     run.payload["backtest_benchmark_sha256"] = backtest_benchmark_sha256
     run.payload["execution_bars_sha256"] = execution_bars_sha256
     run.payload["hyperparameters"] = _model_hyperparameters(config, model_name)
+    if walk_forward.compute_records:
+        run.payload.setdefault("environment", {})["compute"] = list(walk_forward.compute_records)
     run.payload["walk_forward_folds"] = int(len(walk_forward.fold_summary))
     run.payload["out_of_sample_prediction_rows"] = int(
         len(walk_forward.predictions)

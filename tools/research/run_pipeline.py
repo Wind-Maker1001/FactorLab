@@ -97,7 +97,11 @@ def run(config_path, output):
     definition['parameters'] = dict(config_sha256=identity(document), configuration=document,
                                     data_identity=data_identity, run_ids=list(result.run_ids))
     tracker.create_experiment(workflow_id, definition)
-    tracker.append_run(workflow_id, workflow_id, **provenance, command=command,
+    workflow_provenance = dict(provenance)
+    compute_records = [record for walk in result.walk_forward.values() for record in walk.compute_records]
+    if compute_records:
+        workflow_provenance['environment'] = dict(provenance['environment'], compute=compute_records)
+    tracker.append_run(workflow_id, workflow_id, **workflow_provenance, command=command,
         status='SUCCEEDED', qualification='SYNTHETIC', artifacts=artifacts,
         validation=dict(config_sha256=identity(document), dataset_identity=result.dataset.identity_hash))
     manifest = dict(schema_version=1, workflow_run_id=workflow_id, config_sha256=identity(document),
