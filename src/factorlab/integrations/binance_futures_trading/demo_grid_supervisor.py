@@ -225,7 +225,7 @@ def run(args, *, root=None, credentials=None):
             consumer = GridConsumer(bridge, control, authority=authority)
             client = MarketClient(requests)
             initial_bars = max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1)
-            with closing(DemoMarketFeed(client, consumer, state_path=path, consumer_id='grid-' + mode,
+            with closing(DemoMarketFeed(client, consumer, state_path=path, consumer_id='grid-' + mode + ':' + bridge.grid.deployment_id,
                     interval=args.interval, max_backfill=args.max_backfill, initial_bars=initial_bars)) as feed:
                 def report(raw):
                     payload = json.loads(raw)

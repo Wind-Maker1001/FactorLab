@@ -488,14 +488,26 @@ def test_worker_end_to_end_persists_status_and_control(deployment, monkeypatch, 
     monkeypatch.setattr(module, 'DemoMarketFeed', lambda *args, **kwargs: DemoMarketFeed(
         *args, clock=lambda: market.at, **kwargs))
     args = parse_args(['grid-supervisor', 'start', '--seconds', '.01', '--poll-seconds', '.001', '--interval', '1h'])
-    assert module.run(args, root=root, credentials=store) == 0
     path = root / 'grid-preview' / 'grid-supervisor.sqlite3'
+    with closing(DemoMarketFeed(FuturesClient(environment=Environment.DEMO, transport=market),
+            SimpleNamespace(), state_path=path, consumer_id='grid-dry-run', interval='1h')) as legacy:
+        legacy._ack('bar', int((NOW - timedelta(days=2)).timestamp() * 1000))
+        old_watermarks = legacy.watermarks()
+    assert module.run(args, root=root, credentials=store) == 0
     with closing(StrategyControl(path)) as control:
         observed = control.snapshot()['observed']
         assert observed['status'] == 'EXITED'
         assert observed['requests']['GET'] > 0
         assert observed['requests']['POST'] == observed['requests']['DELETE'] == 0
         assert observed['watermarks'][0] is not None
+        cursors = control.db.execute('SELECT id, bar, quote FROM cursor ORDER BY id').fetchall()
+        assert len(cursors) == 2
+        assert any(row[0].endswith(':grid-dry-run') and tuple(row[1:]) == old_watermarks for row in cursors)
+        assert any(row[0].endswith(':' + observed['deployment']['deployment_id']) for row in cursors)
+    assert module.run(args, root=root, credentials=store) == 0
+    with closing(StrategyControl(path)) as control:
+        assert control.db.execute('SELECT id, bar, quote FROM cursor ORDER BY id').fetchall() == cursors
+        assert control.snapshot()['observed']['watermarks'] == observed['watermarks']
     capsys.readouterr()
     args.action = 'pause'
     module.run(args, root=root, credentials=store)
