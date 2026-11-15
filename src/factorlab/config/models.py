@@ -8,6 +8,7 @@ import math
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
+from factorlab.compute.config import ComputeConfig
 from factorlab.errors import ConfigurationError, PointInTimeUniverseRequiredError
 
 
@@ -406,6 +407,7 @@ class ResearchConfig:
     portfolio: PortfolioConfig = field(default_factory=PortfolioConfig)
     backtest: BacktestConfig = field(default_factory=BacktestConfig)
     fees: FeesConfig = field(default_factory=FeesConfig)
+    compute: ComputeConfig = field(default_factory=ComputeConfig)
     config_path: Optional[Path] = field(default=None, init=False, repr=False)
     repo_root: Optional[Path] = field(default=None, init=False, repr=False)
 
