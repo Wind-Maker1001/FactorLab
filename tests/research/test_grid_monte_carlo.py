@@ -66,15 +66,29 @@ def test_atr_rejected_without_ohlc(tmp_path, setup):
             slippage=0, scenario='CLOSE_ONLY_SCENARIO', synthetic_capacity='.1', interval='1h')
 
 
-def test_close_only_rejects_fabricated_bar_fields_and_inconsistent_price():
+@pytest.mark.parametrize('field', ['high', 'low', 'volume'])
+def test_close_only_rejects_fabricated_bar_fields_and_inconsistent_price(field):
     bars = close_bars([100., 90.], '2026-11-15T00:00:00Z')
-    bars[0]['high'] = 101.
+    bars[0][field] = 101.
     with pytest.raises(ValueError, match='must not supply'):
         _bars(bars, None, None, '1h', close_only=True)
-    del bars[0]['high']
+    del bars[0][field]
     bars[0]['close'] = 99.
     with pytest.raises(ValueError, match='equal close'):
         _bars(bars, None, None, '1h', close_only=True)
+
+
+def test_ordinary_bars_require_observed_ohlc_and_volume():
+    with pytest.raises(ValueError, match='OHLC'):
+        _bars(close_bars([100., 90.], '2026-11-15T00:00:00Z'), None, None, '1h')
+
+
+def test_capacity_cannot_be_silently_ignored(tmp_path, setup):
+    config, rules = setup
+    with pytest.raises(ValueError, match='requires CLOSE_ONLY_SCENARIO'):
+        run_experiment(tmp_path/'invalid', bars=[], config=config, rules=rules,
+            capital=1000, fee_rate=0, slippage=0, synthetic_capacity=100)
+    assert not (tmp_path/'invalid').exists()
 
 
 def test_tail_fractional_boundary_and_negative_losses():

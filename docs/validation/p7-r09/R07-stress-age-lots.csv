@@ -1,0 +1,2 @@
+completed_grid_cycle,endowed,event_id,fee,order_id,price,quantity,remaining,risk_contaminated,slippage
+False,False,paper:20,0E-12,research-00000013,221.155068,0.10,0.00,True,0E-8

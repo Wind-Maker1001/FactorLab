@@ -1,0 +1,32 @@
+{
+  "accounts": 16,
+  "checks": [
+    {
+      "check": "disabled_rule_matches_original_hourly_and_fills",
+      "cost": "base",
+      "passed": true,
+      "window": "R04B"
+    },
+    {
+      "check": "disabled_rule_matches_original_hourly_and_fills",
+      "cost": "stress",
+      "passed": true,
+      "window": "R04B"
+    },
+    {
+      "check": "disabled_rule_matches_original_hourly_and_fills",
+      "cost": "base",
+      "passed": true,
+      "window": "R07"
+    },
+    {
+      "check": "disabled_rule_matches_original_hourly_and_fills",
+      "cost": "stress",
+      "passed": true,
+      "window": "R07"
+    }
+  ],
+  "max_cash_equity_residual": 2.0866641747829817e-13,
+  "max_fifo_residual": 9.999999999999999e-26,
+  "max_reported_equity_difference": 9.999999999999999e-26
+}

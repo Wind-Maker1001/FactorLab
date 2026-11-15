@@ -1,0 +1,8 @@
+completed_grid_cycle,endowed,event_id,fee,order_id,price,quantity,remaining,risk_contaminated,slippage
+True,False,paper:20,0E-12,research-00000013,221.022534,0.10,0.00,False,0E-8
+True,False,paper:36,0E-12,research-00000020,210.035946,0.10,0.00,False,0E-8
+True,False,paper:70,0E-12,research-00000038,220.592276,0.10,0.00,False,0E-8
+True,False,paper:145,0E-12,research-00000076,230.868438,0.10,0.00,False,0E-8
+False,False,paper:163,0E-12,research-00000084,221.072564,0.10,0.00,True,0E-8
+False,False,paper:198,0E-12,research-00000101,209.165424,0.10,0.00,True,0E-8
+False,False,paper:214,0E-11,research-00000108,199.31952,0.10,0.00,True,0E-7

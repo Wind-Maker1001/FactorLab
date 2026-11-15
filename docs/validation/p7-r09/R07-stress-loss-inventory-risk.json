@@ -1,0 +1,15 @@
+{
+  "events": [
+    {
+      "age_hours": 525.0,
+      "buy_blocked": true,
+      "equity": "994.6126164108800000000000000",
+      "exit_reason": "LOSS_BUDGET",
+      "realized_net": "0.441118010880",
+      "remaining_budget": "-0.414320507065600000000000000",
+      "time": "2026-11-05T14:59:59.999999",
+      "unrealized": "-5.82850160"
+    }
+  ],
+  "rule": "loss"
+}
