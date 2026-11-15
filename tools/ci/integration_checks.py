@@ -66,7 +66,7 @@ def summary(path):
     return counts
 
 
-def run(suite, output, shard=None, risk_plan=None):
+def run(suite, output, shard=None, risk_plan=None, shard_count=3):
     output.mkdir(parents=True, exist_ok=False)
     before = validation_inputs()
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -102,7 +102,7 @@ def run(suite, output, shard=None, risk_plan=None):
     if suite == 'historical':
         command += ['--historical-only']
     if shard is not None:
-        command += ['--current-shard='+str(shard), '--durations=30']
+        command += ['--current-shard='+str(shard), '--current-shard-count='+str(shard_count), '--durations=30']
     env = dict(os.environ, MPLBACKEND='Agg', PYTHONUTF8='1', PYTHONHASHSEED='0', TZ='UTC')
     env.pop('PYTHONPATH', None)
     dependencies = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze', '--all'], text=True)
@@ -121,10 +121,18 @@ def run(suite, output, shard=None, risk_plan=None):
     after = validation_inputs()
     unchanged = before == after
     observed = True
+    execution = None
+    evidence_error = None
     if suite == 'targeted':
-        from targeted_validation import evidence_passed
-        observed = evidence_passed(output/'execution.json', targets, actual_exit_code=code)
-    receipt = dict(schema='FACTORLAB_INCREMENTAL_CI_V1', suite=suite, shard=shard,
+        from targeted_validation import execution_passed
+        try:
+            execution = json.loads((output/'execution.json').read_text(encoding='utf-8'))
+            observed = execution_passed(execution, targets, actual_exit_code=code)
+        except (OSError, UnicodeError, ValueError, KeyError, TypeError, AttributeError) as error:
+            observed = False
+            execution = None
+            evidence_error = dict(type=type(error).__name__, message=str(error))
+    receipt = dict(schema='FACTORLAB_INCREMENTAL_CI_V1', suite=suite, shard=shard, shard_count=shard_count,
                    scope='FULL_PROJECT_REGRESSION' if suite == 'legacy' else 'DECLARED_INCREMENTAL_SCOPE',
                    status='PASS' if (code == 0 or suite == 'targeted') and unchanged and observed else 'FAIL',
                    exit_code=code, subject_sha=head,
@@ -143,11 +151,17 @@ def run(suite, output, shard=None, risk_plan=None):
                    financial_authorization='BLOCKED', formal_admission='FORMAL_ADMISSION_BLOCKED',
                    pit='PIT_UNVERIFIED', hfq='HFQ_UNVERIFIED', no_live_money=True)
     if suite == 'targeted':
-        execution = json.loads((output/'execution.json').read_text(encoding='utf-8'))
-        receipt.update(historical_status=execution['historical_status'],
-                       historical_blocked=execution['historical_collected']
-                       + execution['historical_collection_errors'],
-                       historical_matrix_sha256=execution['historical_matrix_sha256'])
+        receipt.update(execution_evidence_status='UNAVAILABLE' if evidence_error else
+                       ('VERIFIED' if observed else 'REJECTED'),
+                       execution_evidence_error=evidence_error)
+        if observed:
+            receipt.update(historical_status=execution['historical_status'],
+                           historical_blocked=execution['historical_collected']
+                           + execution['historical_collection_errors'],
+                           historical_matrix_sha256=execution['historical_matrix_sha256'])
+        else:
+            receipt.update(historical_status='NOT_VERIFIED', historical_blocked=None,
+                           historical_matrix_sha256=None)
     (output/'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n', encoding='utf-8')
     print(suite, receipt['status'], json.dumps(receipt['counts']), 'exit', code, flush=True)
     if suite == 'targeted':
@@ -162,8 +176,11 @@ def main():
     parser.add_argument('--risk-plan', type=Path)
     parser.add_argument('--suite', choices=[*SUITES, 'incremental', 'targeted'], required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--shard', type=int, choices=range(3))
+    parser.add_argument('--shard', type=int, choices=range(4))
+    parser.add_argument('--shard-count', type=int, choices=(3, 4), default=3)
     args = parser.parse_args()
+    if args.shard is not None and args.shard >= args.shard_count:
+        parser.error('--shard must be less than --shard-count')
     if args.shard is not None and args.suite != 'current':
         parser.error('--shard requires --suite current')
     if args.suite == 'targeted' and (args.repository is None or args.risk_plan is None):
@@ -175,7 +192,7 @@ def main():
     risk_plan = json.loads(args.risk_plan.read_text(encoding='utf-8')) if args.risk_plan else None
     output = args.output.resolve()
     selected = ['core', 'cross-market', 'financial-gates'] if args.suite == 'incremental' else [args.suite]
-    codes = [run(suite, output/suite, args.shard, risk_plan) for suite in selected]
+    codes = [run(suite, output/suite, args.shard, risk_plan, args.shard_count) for suite in selected]
     return max(codes)
 
 

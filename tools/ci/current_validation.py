@@ -8,7 +8,8 @@ from tools.ci import validation_layers
 
 def pytest_addoption(parser):
     validation_layers.pytest_addoption(parser)
-    parser.addoption('--current-shard', type=int, choices=range(3))
+    parser.addoption('--current-shard', type=int, choices=range(4))
+    parser.addoption('--current-shard-count', type=int, choices=(3, 4), default=3)
     parser.addoption('--historical-only', action='store_true')
     parser.addoption('--execution-inventory', type=Path)
 
@@ -42,14 +43,17 @@ def pytest_collection_modifyitems(config, items):
         validation_layers.pytest_collection_modifyitems(config, items)
         inventory = json.loads(destination.read_bytes())
         shard = config.getoption('--current-shard')
+        shard_count = config.getoption('--current-shard-count')
+        if shard is not None and shard >= shard_count:
+            raise pytest.UsageError('current shard must be less than shard count')
         if shard is not None:
             from tools.ci.sharding import TIMINGS, module_plan, partition
             weights = json.loads(TIMINGS.read_bytes())['module_seconds']
             inventory['module_plan'] = module_plan(inventory['current'], weights)
-            nodes = set(partition(inventory['current'], weights)[shard])
+            nodes = set(partition(inventory['current'], weights, shard_count)[shard])
             config.hook.pytest_deselected(items=[item for item in items if item.nodeid not in nodes])
             items[:] = [item for item in items if item.nodeid in nodes]
-        inventory.update(shard=shard, shard_count=3)
+        inventory.update(shard=shard, shard_count=shard_count)
     inventory['selected'] = [item.nodeid for item in items]
     destination.write_text(json.dumps(inventory, indent=2) + '\n', encoding='utf-8')
 

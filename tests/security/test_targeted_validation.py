@@ -206,6 +206,49 @@ def test_runner_rejects_failure_after_observer_finish(repository, tmp_path, hist
     assert receipt['status'] == 'FAIL'
 
 
+@pytest.mark.parametrize('failure', ['import', 'missing', 'json', 'schema', 'unreadable', 'identity'])
+def test_runner_preserves_receipt_when_evidence_unavailable(
+        repository, tmp_path, historical_controller, failure):
+    output = tmp_path / 'result'
+    evidence = output / 'targeted/execution.json'
+    (repository / 'tests/test_one.py').write_text(
+        'def test_historical():\n    pass\ndef test_current():\n    pass\n', encoding='utf-8')
+    if failure == 'identity':
+        trusted = historical_controller.parents[1]
+        matrix = trusted / 'docs/ci/CI_BASELINE_FAILURE_MATRIX.csv'
+        matrix.write_text(matrix.read_text(encoding='utf-8').replace(
+            'tests/test_one.py::test_historical', 'tests/test_one.py'), encoding='utf-8')
+        (trusted / 'tests').mkdir()
+        (trusted / 'tests/test_one.py').write_text('different trusted bytes', encoding='utf-8')
+    elif failure == 'import':
+        (repository / 'conftest.py').write_text('raise RuntimeError("early import failure")\n', encoding='utf-8')
+    else:
+        action = {
+            'missing': 'p.unlink()',
+            'json': 'p.write_text("{", encoding="utf-8")',
+            'schema': 'p.write_text("{}", encoding="utf-8")',
+            'unreadable': 'p.unlink(); p.mkdir()',
+        }[failure]
+        (repository / 'conftest.py').write_text(
+            'from pathlib import Path\ndef pytest_unconfigure(config):\n'
+            f'    p = Path({str(evidence)!r})\n    {action}\n', encoding='utf-8')
+    risk = tmp_path / 'risk.json'
+    risk.write_text(json.dumps(plan(repository)), encoding='utf-8')
+    result = subprocess.run([sys.executable, '-I', str(historical_controller / 'integration_checks.py'),
+                             '--repository', str(repository), '--risk-plan', str(risk),
+                             '--suite', 'targeted', '--output', str(output)], capture_output=True, text=True)
+    assert result.returncode != 0, result.stdout + result.stderr
+    receipt = json.loads((output / 'targeted/receipt.json').read_text(encoding='utf-8'))
+    assert receipt['status'] == 'FAIL'
+    assert receipt['exit_code'] == ({'import': 4, 'identity': 1}.get(failure, 0))
+    assert receipt['execution_evidence_status'] == 'UNAVAILABLE'
+    assert receipt['execution_evidence_error']['type']
+    assert receipt['required_execution_observed'] is False
+    assert receipt['historical_status'] == 'NOT_VERIFIED'
+    assert receipt['historical_blocked'] is None
+    assert receipt['historical_matrix_sha256'] is None
+
+
 def test_runner_records_history_without_claiming_historical_pass(repository, tmp_path, historical_controller):
     (repository / 'tests/test_one.py').write_text(
         'def test_historical():\n    assert False\ndef test_current():\n    pass\n', encoding='utf-8')

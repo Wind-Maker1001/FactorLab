@@ -1,0 +1,1048 @@
+{
+  "databaseId": 43721499381,
+  "headSha": "8ff6c4933e0136e91e4ff923efbdb2562af87aac",
+  "event": "pull_request_target",
+  "createdAt": "2026-11-15T13:55:03Z",
+  "updatedAt": "2026-11-15T14:18:28Z",
+  "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/43721499381",
+  "kind": "EXISTING_THREE_SHARD_REFERENCE_NOT_P04_ACCEPTANCE",
+  "workflow_envelope_seconds": 1405.0,
+  "jobs": [
+    {
+      "name": "Trusted risk selection",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:55:06Z",
+      "completedAt": "2026-11-15T13:57:05Z",
+      "elapsed_seconds": 119.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Construct immutable event merge",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Bind candidate to event before risk selection",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Select conservative extensions from trusted base",
+          "conclusion": "success",
+          "seconds": 104.0
+        },
+        {
+          "name": "Seal trusted risk plan",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended package Python 3.14",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T14:02:14Z",
+      "elapsed_seconds": 307.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 10.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 6.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 5.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt -r requirements/cross-market.txt",
+          "conclusion": "success",
+          "seconds": 69.0
+        },
+        {
+          "name": "Run python -m build --outdir local-ci/distributions",
+          "conclusion": "success",
+          "seconds": 13.0
+        },
+        {
+          "name": "Run python tools/migration/inspect_distributions.py local-ci/distributions",
+          "conclusion": "success",
+          "seconds": 4.0
+        },
+        {
+          "name": "Run python tools/migration/check_distribution_rejections.py local-ci/distributions local-ci/archive-attacks",
+          "conclusion": "success",
+          "seconds": 63.0
+        },
+        {
+          "name": "Run python tools/migration/packaging_ci.py local-ci/distributions local-ci/packaging",
+          "conclusion": "success",
+          "seconds": 130.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "CI control review",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T14:00:01Z",
+      "completedAt": "2026-11-15T14:00:03Z",
+      "elapsed_seconds": 2.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Run printf '%s\\n' 'Control changes approved for this exact workflow run.'",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended lock ubuntu-latest",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T13:58:48Z",
+      "elapsed_seconds": 101.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 4.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Run python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt",
+          "conclusion": "success",
+          "seconds": 43.0
+        },
+        {
+          "name": "Run python tools/ci/lock_acceptance.py --output local-ci/locks --thread-rounds 100 --process-rounds 12",
+          "conclusion": "success",
+          "seconds": 40.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended software Python 3.13 shard 1",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:08Z",
+      "completedAt": "2026-11-15T14:11:31Z",
+      "elapsed_seconds": 863.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 10.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 6.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Install dependencies and package",
+          "conclusion": "success",
+          "seconds": 85.0
+        },
+        {
+          "name": "Run python tools/ci/integration_checks.py --suite current --shard 1 --output local-ci/extended",
+          "conclusion": "success",
+          "seconds": 750.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Fast Python 3.13",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T14:05:13Z",
+      "elapsed_seconds": 486.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 10.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 6.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Install controlled test dependencies",
+          "conclusion": "success",
+          "seconds": 78.0
+        },
+        {
+          "name": "Install package and check dependency compatibility",
+          "conclusion": "success",
+          "seconds": 8.0
+        },
+        {
+          "name": "Core, cross-market and financial gates",
+          "conclusion": "success",
+          "seconds": 307.0
+        },
+        {
+          "name": "Configuration and import compatibility",
+          "conclusion": "success",
+          "seconds": 11.0
+        },
+        {
+          "name": "Basic locking contracts",
+          "conclusion": "success",
+          "seconds": 13.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 7.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Trusted targeted test execution",
+          "conclusion": "success",
+          "seconds": 30.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended lock windows-latest",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T13:58:53Z",
+      "elapsed_seconds": 106.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 8.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 4.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 6.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt",
+          "conclusion": "success",
+          "seconds": 53.0
+        },
+        {
+          "name": "Run python tools/ci/lock_acceptance.py --output local-ci/locks --thread-rounds 100 --process-rounds 12",
+          "conclusion": "success",
+          "seconds": 28.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended software Python 3.14 shard 0",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T14:12:26Z",
+      "elapsed_seconds": 919.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 9.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 6.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Install dependencies and package",
+          "conclusion": "success",
+          "seconds": 83.0
+        },
+        {
+          "name": "Run python tools/ci/integration_checks.py --suite current --shard 0 --output local-ci/extended",
+          "conclusion": "success",
+          "seconds": 805.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended software Python 3.14 shard 1",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T14:12:48Z",
+      "elapsed_seconds": 941.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 10.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 6.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 4.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Install dependencies and package",
+          "conclusion": "success",
+          "seconds": 86.0
+        },
+        {
+          "name": "Run python tools/ci/integration_checks.py --suite current --shard 1 --output local-ci/extended",
+          "conclusion": "success",
+          "seconds": 824.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended software Python 3.13 shard 2",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T14:11:20Z",
+      "elapsed_seconds": 853.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 7.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 5.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Install dependencies and package",
+          "conclusion": "success",
+          "seconds": 94.0
+        },
+        {
+          "name": "Run python tools/ci/integration_checks.py --suite current --shard 2 --output local-ci/extended",
+          "conclusion": "success",
+          "seconds": 738.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended software Python 3.13 shard 0",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T14:15:11Z",
+      "elapsed_seconds": 1084.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 9.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 6.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Install dependencies and package",
+          "conclusion": "success",
+          "seconds": 82.0
+        },
+        {
+          "name": "Run python tools/ci/integration_checks.py --suite current --shard 0 --output local-ci/extended",
+          "conclusion": "success",
+          "seconds": 975.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Extended software Python 3.14 shard 2",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T13:57:07Z",
+      "completedAt": "2026-11-15T14:18:00Z",
+      "elapsed_seconds": 1253.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 10.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 7.0
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Reconstruct pinned event merge before verification",
+          "conclusion": "success",
+          "seconds": 3.0
+        },
+        {
+          "name": "Verify trusted validation identity before candidate execution",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Install dependencies and package",
+          "conclusion": "success",
+          "seconds": 89.0
+        },
+        {
+          "name": "Run python tools/ci/integration_checks.py --suite current --shard 2 --output local-ci/extended",
+          "conclusion": "success",
+          "seconds": 1135.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "Verify PR actual six-shard coverage",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T14:18:01Z",
+      "completedAt": "2026-11-15T14:18:16Z",
+      "elapsed_seconds": 15.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Require all six executions to succeed",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Verify exact artifacts, actual coverage and trusted PR identity",
+          "conclusion": "success",
+          "seconds": 7.0
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success",
+          "seconds": 2.0
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Post Run actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "name": "FactorLab merge gate",
+      "conclusion": "success",
+      "startedAt": "2026-11-15T14:18:20Z",
+      "completedAt": "2026-11-15T14:18:27Z",
+      "elapsed_seconds": 7.0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Require the protected status publisher App",
+          "conclusion": "success",
+          "seconds": 0.0
+        },
+        {
+          "name": "Run actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Reject missing, failed or cancelled mandatory checks",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Post Run actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349",
+          "conclusion": "success",
+          "seconds": 1.0
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "seconds": 0.0
+        }
+      ]
+    }
+  ]
+}

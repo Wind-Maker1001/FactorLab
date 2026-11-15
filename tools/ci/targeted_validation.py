@@ -118,6 +118,10 @@ def evidence_passed(path, targets, actual_exit_code=None):
     if not path.exists():
         return False
     evidence = json.loads(path.read_text(encoding='utf-8'))
+    return execution_passed(evidence, targets, actual_exit_code)
+
+
+def execution_passed(evidence, targets, actual_exit_code=None):
     nodes = evidence['collected']
     historical = historical_scope(targets)
     blocked_files = {node for node in historical if '::' not in node}
