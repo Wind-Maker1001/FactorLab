@@ -64,7 +64,8 @@ def grid_factory(settings, *, new_deployment=False):
 class GridConsumer:
     """Bars advance Grid; GET reports alone advance economic state."""
     def __init__(self, bridge, control, *, authority=lambda: True,
-                 clock=lambda: datetime.now(timezone.utc)):
+                 clock=lambda: datetime.now(timezone.utc), proposal_observer=None):
+        self.proposal_observer = proposal_observer
         self.bridge, self.control, self.authority, self.clock = bridge, control, authority, clock
         self.supervisor = None
         self.eligible_after = clock()
@@ -137,7 +138,12 @@ class GridConsumer:
             live = False
         elif live:
             event['reseed_withdrawn'] = True
+        if self.proposal_observer is not None:
+            self.proposal_observer.begin(identity, bar, live, self.clock())
         self.bridge.observe(event, dispatch=False, source_id=identity)
+        if self.proposal_observer is not None:
+            self.proposal_observer.capture(identity, self.bridge.grid, self.clock(),
+                                          eligible=event.get('reseed_withdrawn', False))
         if not live:
             self.bridge.withdraw_unsubmitted()
         else:

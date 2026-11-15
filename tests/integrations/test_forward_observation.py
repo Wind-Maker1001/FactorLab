@@ -1,0 +1,232 @@
+from datetime import timedelta
+from decimal import Decimal as D
+import json
+
+import pytest
+
+from factorlab.integrations.binance_futures_trading.fake import NOW
+from factorlab.integrations.binance_futures_trading.forward_observation import (
+    ObservationFull, ShadowConsumer, ShadowEvidence, main)
+from test_binance_demo_grid_bridge import bridge
+from test_demo_grid_supervisor import Control, bar
+from test_demo_market_feed import make
+from test_binance_demo_grid_network import network_grid
+from test_binance_demo_network import wired
+
+
+def setup(tmp_path, *, window=180, **kwargs):
+    b, fake = bridge()
+    b.preview = True
+    clock = [NOW]
+    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture', window=window,
+                              clock=lambda: clock[0], **kwargs)
+    consumer = ShadowConsumer(b, Control(), evidence, clock=lambda: clock[0])
+    consumer.before_poll()
+    clock[0] = NOW + timedelta(minutes=1)
+    consumer.closed_bar(bar(1))
+    return b, fake, clock, evidence, consumer
+
+
+def book(at, bid='144', ask='146', **kwargs):
+    return dict(time=int(at.timestamp() * 1000), symbol='NVDAUSDT',
+                bidPrice=bid, askPrice=ask, bidQty='.08', askQty='.08', **kwargs)
+
+
+def test_original_proposal_baseline_and_forward_touch(tmp_path):
+    b, fake, clock, evidence, consumer = setup(tmp_path)
+    proposal = next(iter(evidence.proposals.values()))
+    assert proposal['limit'] == '145.0'
+    assert proposal['quantity'] == '.04' or D(proposal['quantity']) == D('.04')
+    assert proposal['source'].endswith(str(int(clock[0].timestamp())))
+    consumer.observe_book(book(clock[0], '143', '144'), clock[0])
+    assert proposal['first_touch'] is None
+    clock[0] += timedelta(seconds=1)
+    consumer.observe_book(book(clock[0]), clock[0])
+    assert proposal['first_touch'] == clock[0].isoformat()
+    assert proposal['first_potential'] is None
+    first = proposal['first_touch']
+    clock[0] += timedelta(seconds=1)
+    consumer.observe_book(book(clock[0], '143', '144'), clock[0])
+    assert proposal['first_touch'] == first
+    assert proposal['first_potential'] == clock[0].isoformat()
+    assert evidence.rows[-1]['updates'][0]['target_covered_at_top']
+    assert evidence.summary()['confirmed_exchange_fills'] == 0
+    assert b.account().inventory == 0
+    assert all(method == 'GET' for method, _, _ in fake.calls)
+
+
+def test_replay_history_and_restart_identity(tmp_path):
+    b, fake, clock, evidence, consumer = setup(tmp_path)
+    expected = set(evidence.proposals)
+    assert not consumer.closed_bar(bar(1))
+    with pytest.raises(ValueError, match='observation time regression'):
+        consumer.closed_bar(bar(0))
+    assert set(evidence.proposals) == expected
+    restored = ShadowEvidence(evidence.path, version='fixture', clock=lambda: clock[0])
+    assert set(restored.proposals) == expected
+    assert restored.rows[-1]['kind'] == 'resume'
+    assert all(method == 'GET' for method, _, _ in fake.calls)
+
+
+@pytest.mark.parametrize('offset,reason', [(6, 'STALE'), (-1, 'FUTURE')])
+def test_reject_stale_future_book(tmp_path, offset, reason):
+    _, _, clock, evidence, consumer = setup(tmp_path)
+    market = clock[0] + timedelta(seconds=1)
+    consumer.observe_book(book(market, '143', '144'), market + timedelta(seconds=offset))
+    assert reason in evidence.rows[-1]['reason']
+    assert evidence.summary()['price_touched'] == 0
+
+
+def test_market_time_ordering_and_no_touch_right_censor(tmp_path):
+    _, _, clock, evidence, consumer = setup(tmp_path, window=10)
+    clock[0] += timedelta(seconds=1)
+    raw = book(clock[0], '149', '151')
+    consumer.observe_book(raw, clock[0])
+    consumer.observe_book(raw, clock[0])
+    assert evidence.rows[-1]['reason'] == 'NONINCREASING_BOOK'
+    consumer.observe_book(book(clock[0] - timedelta(seconds=1)), clock[0])
+    assert evidence.rows[-1]['reason'] == 'NONINCREASING_BOOK'
+    clock[0] += timedelta(seconds=10)
+    consumer.observe_book(book(clock[0], '143', '144'), clock[0])
+    proposal = next(iter(evidence.proposals.values()))
+    assert proposal['status'] == 'ENDED'
+    assert proposal['reason'] == 'WINDOW_END'
+    assert proposal['right_censored']
+    assert proposal['first_touch'] is None
+
+
+def test_touch_survives_restart_without_inventing_gap_touch(tmp_path):
+    _, _, clock, evidence, consumer = setup(tmp_path)
+    clock[0] += timedelta(seconds=1)
+    consumer.observe_book(book(clock[0]), clock[0])
+    first = next(iter(evidence.proposals.values()))['first_touch']
+    clock[0] += timedelta(seconds=20)
+    restored = ShadowEvidence(evidence.path, version='fixture', clock=lambda: clock[0])
+    restored.book(book(clock[0], '143', '144'), clock[0])
+    proposal = next(iter(restored.proposals.values()))
+    assert proposal['first_touch'] == first
+    assert proposal['first_potential'] == clock[0].isoformat()
+    restored.end('RUN_END')
+    assert not proposal['right_censored']
+
+
+def test_capture_crash_recovered_from_committed_source(tmp_path):
+    b, _, clock, evidence, consumer = setup(tmp_path)
+    # Simulate a crash after Grid source commit but before evidence capture.
+    rows = [r for r in evidence.rows if r['kind'] != 'capture']
+    import csv
+    with evidence.path.open('w', newline='', encoding='utf-8') as stream:
+        writer = csv.writer(stream)
+        writer.writerow(['event'])
+        writer.writerows([[json.dumps(row)] for row in rows])
+    restored = ShadowEvidence(evidence.path, version='fixture', clock=lambda: clock[0])
+    restored.recover(b)
+    assert set(restored.proposals) == set(evidence.proposals)
+    restored.recover(b)
+    assert len(restored.proposals) == 1
+
+
+def test_uncommitted_live_begin_not_promoted_on_historical_replay(tmp_path):
+    b, _, clock, evidence, consumer = setup(tmp_path)
+    clock[0] += timedelta(minutes=2)
+    old = bar(2)
+    identity = f'{old.source}:{old.interval_seconds}:{int(old.closed_at.timestamp())}'
+    evidence.begin(identity, old, True, old.closed_at)
+    consumer.closed_bar(old)
+    assert len(evidence.proposals) == 1
+    assert identity not in evidence.pending
+
+
+def test_actual_preview_restart_preserves_identity_and_censoring(tmp_path):
+    protocol, paper = tmp_path / 'protocol.db', tmp_path / 'paper.db'
+    b, fake = bridge(protocol, paper)
+    b.preview = True
+    at = [NOW]
+    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture', clock=lambda: at[0])
+    consumer = ShadowConsumer(b, Control(), evidence, clock=lambda: at[0])
+    consumer.before_poll()
+    at[0] += timedelta(minutes=1)
+    consumer.closed_bar(bar(1))
+    original = dict(next(iter(evidence.proposals.values())))
+    b.gateway.adapter.store.close()
+    b.controller.store.close()
+    b, fake = bridge(protocol, paper, fake)
+    b.preview = True
+    restored = ShadowEvidence(evidence.path, version='fixture', clock=lambda: at[0])
+    consumer = ShadowConsumer(b, Control(), restored, clock=lambda: at[0])
+    consumer.before_poll()
+    recovered = next(iter(restored.proposals.values()))
+    assert recovered['id'] == original['id']
+    assert recovered['proposed_at'] == original['proposed_at']
+    assert recovered['deadline'] == original['deadline']
+    assert recovered['right_censored']
+    assert recovered['reason'].startswith('STRATEGY_INVALIDATED')
+    assert all(method == 'GET' for method, _, _ in fake.calls)
+
+
+def test_corrupt_tail_is_not_silently_discarded(tmp_path):
+    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture')
+    with evidence.path.open('ab') as stream:
+        stream.write(b'"{partial')
+    import csv
+    with pytest.raises(csv.Error):
+        ShadowEvidence(evidence.path, version='fixture')
+
+
+def test_file_budget_and_binding(tmp_path):
+    _, _, _, evidence, _ = setup(tmp_path, max_bytes=65536)
+    with pytest.raises(ObservationFull):
+        evidence.append(dict(kind='large', data='x' * 60000))
+    evidence.end('FILE_LIMIT')
+    assert evidence.path.stat().st_size <= 65536
+    assert evidence.summary()['right_censored'] == 1
+    with pytest.raises(ValueError, match='binding differs'):
+        ShadowEvidence(evidence.path, version='different', max_bytes=65536)
+
+
+def test_same_response_book_hook_and_zero_writes(tmp_path):
+    class Consumer:
+        def closed_bar(self, value):
+            pass
+        def quote(self, value):
+            self.quote_value = value
+        def observe_book(self, raw, received):
+            self.raw, self.received = raw, received
+    consumer = Consumer()
+    feed, transport, _ = make(tmp_path, consumer=consumer)
+    try:
+        feed.poll()
+        assert D(consumer.raw['bidPrice']) < consumer.quote_value.price < D(consumer.raw['askPrice'])
+        assert consumer.received == consumer.quote_value.observed_at
+        assert all(r.method == 'GET' for r in transport.requests)
+    finally:
+        feed.close()
+
+
+def test_preview_composition_has_zero_writes_and_separate_journals(network_grid):
+    from factorlab.integrations.binance_futures_trading.demo_runtime import open_grid_session
+    root, credentials, factory, _, fake, requests = network_grid
+    at = [NOW]
+    evidence = ShadowEvidence(root / 'evidence.csv', version='fixture', clock=lambda: at[0])
+    with open_grid_session(root / 'research', credentials, factory, preview=True,
+                           continuous=True) as b:
+        consumer = ShadowConsumer(b, Control(), evidence, clock=lambda: at[0])
+        consumer.before_poll()
+        at[0] += timedelta(minutes=1)
+        consumer.closed_bar(bar(1))
+        at[0] += timedelta(seconds=1)
+        consumer.observe_book(book(at[0], '143', '144'), at[0])
+        assert len(evidence.proposals) == 1
+        assert b.account().inventory == 0
+        assert b.preview
+    assert all(request.get_method() == 'GET' for request in requests)
+    assert (root / 'research' / 'grid-preview').is_dir()
+    assert not (root / 'research' / 'runtime.sqlite3').exists()
+
+
+def test_cli_has_no_execute_and_duration_is_bounded(tmp_path):
+    with pytest.raises(SystemExit):
+        main(['--output', str(tmp_path), '--version', 'fixture', '--execute'])
+    with pytest.raises(SystemExit):
+        main(['--output', str(tmp_path), '--version', 'fixture', '--seconds', '3601'])
+    assert not list(tmp_path.iterdir())

@@ -1,0 +1,18 @@
+{
+  "engineering": "SEE_OFFLINE_TESTS",
+  "real_observation": "RUN",
+  "requests": {
+    "GET": 206,
+    "POST": 0,
+    "DELETE": 0
+  },
+  "feed_reason": "STOPPED",
+  "proposals": 1,
+  "price_touched": 0,
+  "potential_conditions": 0,
+  "not_touched": 1,
+  "right_censored": 1,
+  "confirmed_exchange_fills": 0,
+  "books": 10,
+  "rejected_books": 0
+}
