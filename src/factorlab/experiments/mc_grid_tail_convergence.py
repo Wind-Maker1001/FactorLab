@@ -39,6 +39,9 @@ def account_metrics(prices, *, start, config, rules, capacity, output):
         inventory_cap=bool((inventory >= float(config.max_inventory * rules.quantity_unit)).any()),
         risk_exit=bool(metrics['exit_triggers']),
         incomplete_exit=bool(pending_exit or (metrics['final_state'] == 'EXITING' and metrics['terminal_inventory'])),
+        loss=bool(metrics['terminal_nav'] < 1000), zero_fills=not bool(metrics['fills']),
+        capital_utilization_mean=float(exposure.mean()/float(config.initial_cash)),
+        capital_utilization_peak=float(exposure.max()/float(config.initial_cash)),
         inventory_mean=float(inventory.mean()), holding_hours=int(inventory.ne(0).sum()),
         exposure_mean=float(exposure.mean()), exposure_peak=float(exposure.max()),
         exposure_initial_capital_mean=float(exposure.mean()/1000),
@@ -67,7 +70,7 @@ def grouped_statistics(rows, *, resamples=999, bootstrap_seed=0):
         output[group] = result | dict(statistics=statistics,
             events={key: wilson_interval(sum(bool(r[key]) for r in sample), n)
                     for key in ('traded', 'ever_inventory', 'has_terminal_inventory',
-                                'inventory_cap', 'risk_exit', 'incomplete_exit')},
+                                'inventory_cap', 'risk_exit', 'incomplete_exit', 'loss', 'zero_fills')},
             participation_counts={key: sum(r['participation_class'] == key for r in sample)
                 for key in ('zero_fills', 'traded_flat', 'traded_terminal_inventory')},
             distributions={key: {str(q): float(np.quantile([r[key] for r in sample], q))
@@ -76,7 +79,9 @@ def grouped_statistics(rows, *, resamples=999, bootstrap_seed=0):
                     'residual_inventory_loss', 'exit_triggers', 'exit_orders_unfilled',
                     'fills', 'position_hours', 'holding_hours', 'exposure_mean', 'exposure_peak',
                     'exposure_initial_capital_mean', 'exposure_initial_capital_peak',
-                    'exposure_nav_mean', 'exposure_nav_peak')})
+                    'exposure_nav_mean', 'exposure_nav_peak', 'maximum_drawdown',
+                    'fees', 'slippage', 'capital_utilization_mean', 'capital_utilization_peak',
+                    'reconciliation_residual')})
     return output
 
 
@@ -95,13 +100,21 @@ def batches(model, inputs, generator, *, seed, begin, end, batch_size, steps):
                 yield offset, paths[:, :, 0], generator.receipt(plan)
 
 
-def seed_dispersion(cells):
+def seed_dispersion(cells, expected_seeds=None):
     output = []
     for model in MODELS:
         for size in sorted({c['n_paths'] for c in cells}):
             samples = [c for c in cells if c['model'] == model and c['n_paths'] == size]
+            if not samples:
+                continue
+            complete = expected_seeds is None or sorted(c['seed'] for c in samples) == sorted(expected_seeds)
             for group in GROUPS:
                 eligible = [c for c in samples if c['groups'][group]['n']]
+                if not complete or len(eligible) != len(samples):
+                    output.append(dict(model=model, n_paths=size, group=group,
+                        status='INSUFFICIENT_DATA', seeds=[c['seed'] for c in eligible],
+                        metrics={}, reason='incomplete planned seed group or empty conditional seed'))
+                    continue
                 metrics = {}
                 for confidence in ('.95', '.99'):
                     for name in ('var', 'cvar'):
@@ -111,6 +124,27 @@ def seed_dispersion(cells):
                 output.append(dict(model=model, n_paths=size, group=group,
                     seeds=[c['seed'] for c in eligible], metrics=metrics,
                     meaning='descriptive seed dispersion; not market prediction interval'))
+    return output
+
+
+def convergence_differences(cells):
+    output = []
+    for model in MODELS:
+        sizes = sorted({c['n_paths'] for c in cells if c['model'] == model})
+        for lower, upper in zip(sizes, sizes[1:]):
+            for current in (c for c in cells if c['model'] == model and c['n_paths'] == upper):
+                previous = next(c for c in cells if c['model'] == model and
+                    c['seed'] == current['seed'] and c['n_paths'] == lower)
+                for group in GROUPS:
+                    a, b = previous['groups'][group], current['groups'][group]
+                    if not a['n'] or not b['n']:
+                        continue
+                    output.append(dict(model=model, seed=current['seed'], group=group,
+                        lower=lower, upper=upper, status='CONVERGENCE_NOT_ESTABLISHED',
+                        differences={confidence: {name:
+                            b['statistics']['tails'][confidence][name] -
+                            a['statistics']['tails'][confidence][name]
+                            for name in ('var', 'cvar')} for confidence in ('0.95', '0.99')}))
     return output
 
 
@@ -131,7 +165,9 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
     write(output/'definition.json', definition | dict(dataset=receipt, code=code, command=list(command)))
     settings = definition['experiment']
     models, rejection = scenario_models(inputs, receipt, threshold_as_of=definition['threshold_as_of'])
-    active = [m for m in MODELS if m in ('gbm', 'moving_block_bootstrap') or m in models]
+    active = [m for m in definition['models'] if m in ('gbm', 'moving_block_bootstrap') or m in models]
+    per_model = settings.get('admission_unit', 'all_models') == 'model_all_seeds'
+    completed_by_model = dict.fromkeys(active, 0)
     rows, deterministic, cells, decisions, generation = [], [], [], [], []
     tails = {}
     execution_seconds = statistics_seconds = generation_seconds = 0.
@@ -152,20 +188,33 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
             return row
         for name, prices in stress_paths(config.initial_price, settings['steps']).items():
             deterministic.append(execute(prices, dict(model='deterministic_'+name, seed=None, path_id=0)))
-        for size in settings['sizes']:
-            accounts = (size-completed)*len(active)*len(settings['seeds'])
+        schedule = ([(model, size) for model in active for size in settings['sizes']]
+                    if per_model else [(None, size) for size in settings['sizes']])
+        rejected_models = set()
+        for selected_model, size in schedule:
+            if selected_model in rejected_models:
+                continue
+            selected = [selected_model] if per_model else active
+            begin = completed_by_model[selected_model] if per_model else completed
+            accounts = (size-begin)*len(selected)*len(settings['seeds'])
             elapsed = perf_counter()-started
             measured = execution_seconds/(len(rows)+len(deterministic))
-            projected = accounts*measured*settings['cost_safety_factor'] + statistics_seconds
+            projected = (accounts*measured + generation_seconds + statistics_seconds)*settings['cost_safety_factor']
             admitted = elapsed+projected <= settings['budget_seconds']
-            decisions.append(dict(size=size, additional_accounts=accounts, elapsed_seconds=elapsed,
+            decisions.append(dict(model=selected_model, size=size, begin=begin,
+                additional_accounts=accounts, elapsed_seconds=elapsed,
                 projected_additional_seconds=projected, admitted=admitted))
+            write(output/'decisions.json', decisions)
             if not admitted:
+                if per_model:
+                    rejected_models.add(selected_model)
+                    continue
                 break
-            for model in active:
+            pending_cells = []
+            for model in selected:
                 for seed in settings['seeds']:
                     iterator = iter(batches(model, inputs, models.get(model), seed=seed,
-                        begin=completed, end=size, batch_size=settings['batch_size'], steps=settings['steps']))
+                        begin=begin, end=size, batch_size=settings['batch_size'], steps=settings['steps']))
                     while True:
                         before = perf_counter()
                         batch = next(iterator, None)
@@ -175,13 +224,19 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
                         offset, paths, metadata = batch
                         generation.append(dict(model=model, seed=seed, begin=offset, metadata=metadata))
                         for i, prices in enumerate(paths):
-                            rows.append(execute(prices, dict(model=model, seed=seed, path_id=offset+i)))
+                            row = execute(prices, dict(model=model, seed=seed, path_id=offset+i))
+                            pd.DataFrame([row]).to_csv(output/'paths.csv', mode='a',
+                                header=not rows, index=False)
+                            rows.append(row)
                     before = perf_counter()
                     sample = [r for r in rows if r['model']==model and r['seed']==seed]
-                    cells.append(dict(model=model, seed=seed, n_paths=size,
+                    pending_cells.append(dict(model=model, seed=seed, n_paths=size,
                         groups=grouped_statistics(sample, resamples=settings['resamples'], bootstrap_seed=seed)))
                     statistics_seconds += perf_counter()-before
-            completed = size
+            cells.extend(pending_cells)
+            for model in selected:
+                completed_by_model[model] = size
+            completed = min(completed_by_model.values())
             pd.DataFrame(rows).to_csv(output/'paths.csv', index=False)
             write(output/'groups.json', cells)
     result = dict(engineering_status='ENGINEERING_VALID',
@@ -194,7 +249,9 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
         historical_calibration_rejection=rejection, decisions=decisions,
         deterministic_in_probability_distribution=False, deterministic=deterministic,
         cash_benchmark=dict(initial_nav=1000, terminal_nav=1000, exposure=0),
-        seed_dispersion=seed_dispersion(cells),
+        completed_paths_per_seed_by_model=completed_by_model,
+        seed_dispersion=seed_dispersion(cells, settings['seeds']),
+        convergence=convergence_differences(cells),
         performance=dict(total_seconds=perf_counter()-started, cpu_seconds=process_time()-cpu,
             execution_seconds=execution_seconds, generation_seconds=generation_seconds,
             statistics_seconds=statistics_seconds, accounts=len(rows)+len(deterministic),
