@@ -37,6 +37,7 @@ def _read_account(client, *, expected_id=None):
         adapter = FuturesAdapter(client, store, account_id=DEMO.account_id)
         if expected_id is not None and adapter.account_id != expected_id:
             raise SafetyBlocked('persisted Demo account binding mismatch')
+        # TODO: diagnose constructor-time CLOCK_SKEW before the session recovery path is available.
         client.sync_time()
         return adapter.read_facts()
 
