@@ -1,0 +1,6522 @@
+{
+  "map": [
+    [
+      "label",
+      "OFFLINE_INTERCEPTED_HTTP_NO_LIVE_MONEY"
+    ],
+    [
+      "exchange_messages",
+      [
+        {
+          "map": [
+            [
+              "e",
+              "ORDER_TRADE_UPDATE"
+            ],
+            [
+              "E",
+              1794398400001
+            ],
+            [
+              "T",
+              1794398400001
+            ],
+            [
+              "o",
+              {
+                "map": [
+                  [
+                    "s",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "c",
+                    "fl-33826ce96bf14a5a-g-00000001"
+                  ],
+                  [
+                    "S",
+                    "BUY"
+                  ],
+                  [
+                    "o",
+                    "LIMIT"
+                  ],
+                  [
+                    "ps",
+                    "BOTH"
+                  ],
+                  [
+                    "q",
+                    "0.04"
+                  ],
+                  [
+                    "i",
+                    1
+                  ],
+                  [
+                    "x",
+                    "TRADE"
+                  ],
+                  [
+                    "X",
+                    "PARTIALLY_FILLED"
+                  ],
+                  [
+                    "l",
+                    "0.01"
+                  ],
+                  [
+                    "z",
+                    "0.01"
+                  ],
+                  [
+                    "L",
+                    "146"
+                  ],
+                  [
+                    "N",
+                    "USDT"
+                  ],
+                  [
+                    "n",
+                    "0.00146"
+                  ],
+                  [
+                    "t",
+                    1
+                  ],
+                  [
+                    "T",
+                    1794398400001
+                  ]
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "e",
+              "ORDER_TRADE_UPDATE"
+            ],
+            [
+              "E",
+              1794398400002
+            ],
+            [
+              "T",
+              1794398400002
+            ],
+            [
+              "o",
+              {
+                "map": [
+                  [
+                    "s",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "c",
+                    "fl-33826ce96bf14a5a-g-00000001"
+                  ],
+                  [
+                    "S",
+                    "BUY"
+                  ],
+                  [
+                    "o",
+                    "LIMIT"
+                  ],
+                  [
+                    "ps",
+                    "BOTH"
+                  ],
+                  [
+                    "q",
+                    "0.04"
+                  ],
+                  [
+                    "i",
+                    1
+                  ],
+                  [
+                    "x",
+                    "TRADE"
+                  ],
+                  [
+                    "X",
+                    "PARTIALLY_FILLED"
+                  ],
+                  [
+                    "l",
+                    "0.02"
+                  ],
+                  [
+                    "z",
+                    "0.03"
+                  ],
+                  [
+                    "L",
+                    "146"
+                  ],
+                  [
+                    "N",
+                    "USDT"
+                  ],
+                  [
+                    "n",
+                    "0.00292"
+                  ],
+                  [
+                    "t",
+                    2
+                  ],
+                  [
+                    "T",
+                    1794398400002
+                  ]
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "e",
+              "ORDER_TRADE_UPDATE"
+            ],
+            [
+              "E",
+              1794398400003
+            ],
+            [
+              "T",
+              1794398400003
+            ],
+            [
+              "o",
+              {
+                "map": [
+                  [
+                    "s",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "c",
+                    "fl-33826ce96bf14a5a-g-00000001"
+                  ],
+                  [
+                    "S",
+                    "BUY"
+                  ],
+                  [
+                    "o",
+                    "LIMIT"
+                  ],
+                  [
+                    "ps",
+                    "BOTH"
+                  ],
+                  [
+                    "q",
+                    "0.04"
+                  ],
+                  [
+                    "i",
+                    1
+                  ],
+                  [
+                    "x",
+                    "TRADE"
+                  ],
+                  [
+                    "X",
+                    "FILLED"
+                  ],
+                  [
+                    "l",
+                    "0.01"
+                  ],
+                  [
+                    "z",
+                    "0.04"
+                  ],
+                  [
+                    "L",
+                    "146"
+                  ],
+                  [
+                    "N",
+                    "USDT"
+                  ],
+                  [
+                    "n",
+                    "0.00146"
+                  ],
+                  [
+                    "t",
+                    3
+                  ],
+                  [
+                    "T",
+                    1794398400003
+                  ]
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "e",
+              "ORDER_TRADE_UPDATE"
+            ],
+            [
+              "E",
+              1794398400001
+            ],
+            [
+              "T",
+              1794398400001
+            ],
+            [
+              "o",
+              {
+                "map": [
+                  [
+                    "s",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "c",
+                    "fl-33826ce96bf14a5a-g-00000002"
+                  ],
+                  [
+                    "S",
+                    "SELL"
+                  ],
+                  [
+                    "o",
+                    "LIMIT"
+                  ],
+                  [
+                    "ps",
+                    "BOTH"
+                  ],
+                  [
+                    "q",
+                    "0.04"
+                  ],
+                  [
+                    "i",
+                    2
+                  ],
+                  [
+                    "x",
+                    "TRADE"
+                  ],
+                  [
+                    "X",
+                    "PARTIALLY_FILLED"
+                  ],
+                  [
+                    "l",
+                    "0.02"
+                  ],
+                  [
+                    "z",
+                    "0.02"
+                  ],
+                  [
+                    "L",
+                    "154"
+                  ],
+                  [
+                    "N",
+                    "USDT"
+                  ],
+                  [
+                    "n",
+                    "0.00308"
+                  ],
+                  [
+                    "t",
+                    4
+                  ],
+                  [
+                    "T",
+                    1794398400001
+                  ]
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "e",
+              "ORDER_TRADE_UPDATE"
+            ],
+            [
+              "E",
+              1794398400002
+            ],
+            [
+              "T",
+              1794398400002
+            ],
+            [
+              "o",
+              {
+                "map": [
+                  [
+                    "s",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "c",
+                    "fl-33826ce96bf14a5a-g-00000002"
+                  ],
+                  [
+                    "S",
+                    "SELL"
+                  ],
+                  [
+                    "o",
+                    "LIMIT"
+                  ],
+                  [
+                    "ps",
+                    "BOTH"
+                  ],
+                  [
+                    "q",
+                    "0.04"
+                  ],
+                  [
+                    "i",
+                    2
+                  ],
+                  [
+                    "x",
+                    "TRADE"
+                  ],
+                  [
+                    "X",
+                    "FILLED"
+                  ],
+                  [
+                    "l",
+                    "0.02"
+                  ],
+                  [
+                    "z",
+                    "0.04"
+                  ],
+                  [
+                    "L",
+                    "154"
+                  ],
+                  [
+                    "N",
+                    "USDT"
+                  ],
+                  [
+                    "n",
+                    "0.00308"
+                  ],
+                  [
+                    "t",
+                    5
+                  ],
+                  [
+                    "T",
+                    1794398400002
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    ],
+    [
+      "checkpoints",
+      [
+        {
+          "map": [
+            [
+              "label",
+              "BUY_ACK"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "1000"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "6.04200"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    []
+                  ],
+                  [
+                    "open_orders",
+                    [
+                      {
+                        "map": [
+                          [
+                            "intent",
+                            {
+                              "map": [
+                                [
+                                  "market",
+                                  {
+                                    "enum": "Market",
+                                    "value": "BINANCE_USDM"
+                                  }
+                                ],
+                                [
+                                  "instrument_id",
+                                  "NVDAUSDT"
+                                ],
+                                [
+                                  "side",
+                                  {
+                                    "enum": "Side",
+                                    "value": "BUY"
+                                  }
+                                ],
+                                [
+                                  "order_type",
+                                  {
+                                    "enum": "OrderType",
+                                    "value": "LIMIT"
+                                  }
+                                ],
+                                [
+                                  "quantity",
+                                  {
+                                    "decimal": "0.04"
+                                  }
+                                ],
+                                [
+                                  "limit_price",
+                                  {
+                                    "decimal": "146.0"
+                                  }
+                                ],
+                                [
+                                  "client_order_id",
+                                  "fl-33826ce96bf14a5a-g-00000001"
+                                ],
+                                [
+                                  "time_in_force",
+                                  "GTC"
+                                ],
+                                [
+                                  "position_side",
+                                  null
+                                ],
+                                [
+                                  "reduce_only",
+                                  false
+                                ]
+                              ]
+                            }
+                          ],
+                          [
+                            "status",
+                            {
+                              "enum": "OrderStatus",
+                              "value": "SUBMITTED"
+                            }
+                          ],
+                          [
+                            "cumulative_filled_quantity",
+                            {
+                              "decimal": "0"
+                            }
+                          ],
+                          [
+                            "cumulative_fee",
+                            {
+                              "decimal": "0"
+                            }
+                          ],
+                          [
+                            "exchange_order_id",
+                            "1"
+                          ],
+                          [
+                            "reconcile_required",
+                            false
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:01.127075+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "993.95800"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "6.00"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "0"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "SUBMITTED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          null
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "rest:3b4eac3e77f14da29a2ab2a0326e431c3e01998f0042cf78bc496e6c48bae69d"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0"
+                        ],
+                        [
+                          "cumQuote",
+                          "0"
+                        ],
+                        [
+                          "status",
+                          "NEW"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400000
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              []
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "label",
+              "BUY_FILL_1"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "999.99854"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "5.99150"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    [
+                      {
+                        "map": [
+                          [
+                            "instrument_id",
+                            "NVDAUSDT"
+                          ],
+                          [
+                            "quantity",
+                            {
+                              "decimal": "0.01"
+                            }
+                          ],
+                          [
+                            "entry_price",
+                            {
+                              "decimal": "146"
+                            }
+                          ],
+                          [
+                            "mark_price",
+                            {
+                              "decimal": "150"
+                            }
+                          ],
+                          [
+                            "quote_currency",
+                            "USDT"
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "open_orders",
+                    [
+                      {
+                        "map": [
+                          [
+                            "intent",
+                            {
+                              "map": [
+                                [
+                                  "market",
+                                  {
+                                    "enum": "Market",
+                                    "value": "BINANCE_USDM"
+                                  }
+                                ],
+                                [
+                                  "instrument_id",
+                                  "NVDAUSDT"
+                                ],
+                                [
+                                  "side",
+                                  {
+                                    "enum": "Side",
+                                    "value": "BUY"
+                                  }
+                                ],
+                                [
+                                  "order_type",
+                                  {
+                                    "enum": "OrderType",
+                                    "value": "LIMIT"
+                                  }
+                                ],
+                                [
+                                  "quantity",
+                                  {
+                                    "decimal": "0.04"
+                                  }
+                                ],
+                                [
+                                  "limit_price",
+                                  {
+                                    "decimal": "146.0"
+                                  }
+                                ],
+                                [
+                                  "client_order_id",
+                                  "fl-33826ce96bf14a5a-g-00000001"
+                                ],
+                                [
+                                  "time_in_force",
+                                  "GTC"
+                                ],
+                                [
+                                  "position_side",
+                                  null
+                                ],
+                                [
+                                  "reduce_only",
+                                  false
+                                ]
+                              ]
+                            }
+                          ],
+                          [
+                            "status",
+                            {
+                              "enum": "OrderStatus",
+                              "value": "PARTIALLY_FILLED"
+                            }
+                          ],
+                          [
+                            "cumulative_filled_quantity",
+                            {
+                              "decimal": "0.01"
+                            }
+                          ],
+                          [
+                            "cumulative_fee",
+                            {
+                              "decimal": "0.00146"
+                            }
+                          ],
+                          [
+                            "exchange_order_id",
+                            "1"
+                          ],
+                          [
+                            "reconcile_required",
+                            false
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:01.516831+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0.04"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000.03854"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0.00146"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0.01"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "994.00704"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000.03854"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "6.00"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "1.46"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.01"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00146"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "146"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.001000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:954fc1e2d65edc8d04593494ea619aabc87a9fc0501a8c0a562752d3ca4e0872"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.01"
+                        ],
+                        [
+                          "cumQuote",
+                          "1.46"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400001
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              [
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      1
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "label",
+              "BUY_FILL_2"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "999.99562"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "5.89050"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    [
+                      {
+                        "map": [
+                          [
+                            "instrument_id",
+                            "NVDAUSDT"
+                          ],
+                          [
+                            "quantity",
+                            {
+                              "decimal": "0.03"
+                            }
+                          ],
+                          [
+                            "entry_price",
+                            {
+                              "decimal": "146"
+                            }
+                          ],
+                          [
+                            "mark_price",
+                            {
+                              "decimal": "150"
+                            }
+                          ],
+                          [
+                            "quote_currency",
+                            "USDT"
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "open_orders",
+                    [
+                      {
+                        "map": [
+                          [
+                            "intent",
+                            {
+                              "map": [
+                                [
+                                  "market",
+                                  {
+                                    "enum": "Market",
+                                    "value": "BINANCE_USDM"
+                                  }
+                                ],
+                                [
+                                  "instrument_id",
+                                  "NVDAUSDT"
+                                ],
+                                [
+                                  "side",
+                                  {
+                                    "enum": "Side",
+                                    "value": "BUY"
+                                  }
+                                ],
+                                [
+                                  "order_type",
+                                  {
+                                    "enum": "OrderType",
+                                    "value": "LIMIT"
+                                  }
+                                ],
+                                [
+                                  "quantity",
+                                  {
+                                    "decimal": "0.04"
+                                  }
+                                ],
+                                [
+                                  "limit_price",
+                                  {
+                                    "decimal": "146.0"
+                                  }
+                                ],
+                                [
+                                  "client_order_id",
+                                  "fl-33826ce96bf14a5a-g-00000001"
+                                ],
+                                [
+                                  "time_in_force",
+                                  "GTC"
+                                ],
+                                [
+                                  "position_side",
+                                  null
+                                ],
+                                [
+                                  "reduce_only",
+                                  false
+                                ]
+                              ]
+                            }
+                          ],
+                          [
+                            "status",
+                            {
+                              "enum": "OrderStatus",
+                              "value": "PARTIALLY_FILLED"
+                            }
+                          ],
+                          [
+                            "cumulative_filled_quantity",
+                            {
+                              "decimal": "0.03"
+                            }
+                          ],
+                          [
+                            "cumulative_fee",
+                            {
+                              "decimal": "0.00438"
+                            }
+                          ],
+                          [
+                            "exchange_order_id",
+                            "1"
+                          ],
+                          [
+                            "reconcile_required",
+                            false
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:02.091396+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0.12"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000.11562"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0.00438"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0.03"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "994.10512"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000.11562"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "6.00"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "4.38"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.03"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00438"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "146"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.002000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:c32e0ed76e5d2538950656cc54b6e2ef0015241ed9657f7f618fcbf6499f3fea"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.03"
+                        ],
+                        [
+                          "cumQuote",
+                          "4.38"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400002
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              [
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      1
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      2
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "2.92"
+                    ],
+                    [
+                      "commission",
+                      "0.00292"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "label",
+              "BUY_FILL_3"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "999.99416"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "5.84000"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    [
+                      {
+                        "map": [
+                          [
+                            "instrument_id",
+                            "NVDAUSDT"
+                          ],
+                          [
+                            "quantity",
+                            {
+                              "decimal": "0.04"
+                            }
+                          ],
+                          [
+                            "entry_price",
+                            {
+                              "decimal": "146"
+                            }
+                          ],
+                          [
+                            "mark_price",
+                            {
+                              "decimal": "150"
+                            }
+                          ],
+                          [
+                            "quote_currency",
+                            "USDT"
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "open_orders",
+                    []
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:02.645179+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0.16"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000.15416"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0.00584"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0.04"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "994.15416"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000.15416"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "6.00"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "5.84"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00584"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "146"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.003000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:6140e434ce417e03171a11279b6bd706e4f946d4e8061c51475018d9b2cafe76"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.04"
+                        ],
+                        [
+                          "cumQuote",
+                          "5.84"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400003
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              [
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      1
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      2
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "2.92"
+                    ],
+                    [
+                      "commission",
+                      "0.00292"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      3
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "label",
+              "SELL_PARTIAL"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "1000.15108"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "2.920000"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    [
+                      {
+                        "map": [
+                          [
+                            "instrument_id",
+                            "NVDAUSDT"
+                          ],
+                          [
+                            "quantity",
+                            {
+                              "decimal": "0.02"
+                            }
+                          ],
+                          [
+                            "entry_price",
+                            {
+                              "decimal": "146"
+                            }
+                          ],
+                          [
+                            "mark_price",
+                            {
+                              "decimal": "150"
+                            }
+                          ],
+                          [
+                            "quote_currency",
+                            "USDT"
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "open_orders",
+                    [
+                      {
+                        "map": [
+                          [
+                            "intent",
+                            {
+                              "map": [
+                                [
+                                  "market",
+                                  {
+                                    "enum": "Market",
+                                    "value": "BINANCE_USDM"
+                                  }
+                                ],
+                                [
+                                  "instrument_id",
+                                  "NVDAUSDT"
+                                ],
+                                [
+                                  "side",
+                                  {
+                                    "enum": "Side",
+                                    "value": "SELL"
+                                  }
+                                ],
+                                [
+                                  "order_type",
+                                  {
+                                    "enum": "OrderType",
+                                    "value": "LIMIT"
+                                  }
+                                ],
+                                [
+                                  "quantity",
+                                  {
+                                    "decimal": "0.04"
+                                  }
+                                ],
+                                [
+                                  "limit_price",
+                                  {
+                                    "decimal": "154.0"
+                                  }
+                                ],
+                                [
+                                  "client_order_id",
+                                  "fl-33826ce96bf14a5a-g-00000002"
+                                ],
+                                [
+                                  "time_in_force",
+                                  "GTC"
+                                ],
+                                [
+                                  "position_side",
+                                  null
+                                ],
+                                [
+                                  "reduce_only",
+                                  true
+                                ]
+                              ]
+                            }
+                          ],
+                          [
+                            "status",
+                            {
+                              "enum": "OrderStatus",
+                              "value": "PARTIALLY_FILLED"
+                            }
+                          ],
+                          [
+                            "cumulative_filled_quantity",
+                            {
+                              "decimal": "0.02"
+                            }
+                          ],
+                          [
+                            "cumulative_fee",
+                            {
+                              "decimal": "0.00308"
+                            }
+                          ],
+                          [
+                            "exchange_order_id",
+                            "2"
+                          ],
+                          [
+                            "reconcile_required",
+                            false
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:03.686920+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0.16"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0.08"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000.23108"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0.00892"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0.02"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "997.231080"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000.23108"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "3.00"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "8.92"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00584"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "146"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.003000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:6140e434ce417e03171a11279b6bd706e4f946d4e8061c51475018d9b2cafe76"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "2"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "154.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.02"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00308"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "154"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.001000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          true
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:23543f70d178d538a300ad883f19d851f275b007370da63505454ed09ad9afdc"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.04"
+                        ],
+                        [
+                          "cumQuote",
+                          "5.84"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400003
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000002"
+                        ],
+                        [
+                          "orderId",
+                          2
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.02"
+                        ],
+                        [
+                          "cumQuote",
+                          "3.08"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400001
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              [
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      1
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      2
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "2.92"
+                    ],
+                    [
+                      "commission",
+                      "0.00292"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      3
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      4
+                    ],
+                    [
+                      "orderId",
+                      2
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "3.08"
+                    ],
+                    [
+                      "commission",
+                      "0.00308"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "label",
+              "RESTART_SELL_PARTIAL"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "1000.15108"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "2.920000"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    [
+                      {
+                        "map": [
+                          [
+                            "instrument_id",
+                            "NVDAUSDT"
+                          ],
+                          [
+                            "quantity",
+                            {
+                              "decimal": "0.02"
+                            }
+                          ],
+                          [
+                            "entry_price",
+                            {
+                              "decimal": "146"
+                            }
+                          ],
+                          [
+                            "mark_price",
+                            {
+                              "decimal": "150"
+                            }
+                          ],
+                          [
+                            "quote_currency",
+                            "USDT"
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "open_orders",
+                    [
+                      {
+                        "map": [
+                          [
+                            "intent",
+                            {
+                              "map": [
+                                [
+                                  "market",
+                                  {
+                                    "enum": "Market",
+                                    "value": "BINANCE_USDM"
+                                  }
+                                ],
+                                [
+                                  "instrument_id",
+                                  "NVDAUSDT"
+                                ],
+                                [
+                                  "side",
+                                  {
+                                    "enum": "Side",
+                                    "value": "SELL"
+                                  }
+                                ],
+                                [
+                                  "order_type",
+                                  {
+                                    "enum": "OrderType",
+                                    "value": "LIMIT"
+                                  }
+                                ],
+                                [
+                                  "quantity",
+                                  {
+                                    "decimal": "0.04"
+                                  }
+                                ],
+                                [
+                                  "limit_price",
+                                  {
+                                    "decimal": "154.0"
+                                  }
+                                ],
+                                [
+                                  "client_order_id",
+                                  "fl-33826ce96bf14a5a-g-00000002"
+                                ],
+                                [
+                                  "time_in_force",
+                                  "GTC"
+                                ],
+                                [
+                                  "position_side",
+                                  null
+                                ],
+                                [
+                                  "reduce_only",
+                                  true
+                                ]
+                              ]
+                            }
+                          ],
+                          [
+                            "status",
+                            {
+                              "enum": "OrderStatus",
+                              "value": "PARTIALLY_FILLED"
+                            }
+                          ],
+                          [
+                            "cumulative_filled_quantity",
+                            {
+                              "decimal": "0.02"
+                            }
+                          ],
+                          [
+                            "cumulative_fee",
+                            {
+                              "decimal": "0.00308"
+                            }
+                          ],
+                          [
+                            "exchange_order_id",
+                            "2"
+                          ],
+                          [
+                            "reconcile_required",
+                            false
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:00.364213+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0.16"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0.08"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000.23108"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0.00892"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0.02"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "997.231080"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000.23108"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "3.00"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "8.92"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00584"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "146"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.003000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:6140e434ce417e03171a11279b6bd706e4f946d4e8061c51475018d9b2cafe76"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "2"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "154.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.02"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00308"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "154"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.001000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          true
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:23543f70d178d538a300ad883f19d851f275b007370da63505454ed09ad9afdc"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.04"
+                        ],
+                        [
+                          "cumQuote",
+                          "5.84"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400003
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000002"
+                        ],
+                        [
+                          "orderId",
+                          2
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.02"
+                        ],
+                        [
+                          "cumQuote",
+                          "3.08"
+                        ],
+                        [
+                          "status",
+                          "PARTIALLY_FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400001
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              [
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      1
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      2
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "2.92"
+                    ],
+                    [
+                      "commission",
+                      "0.00292"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      3
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      4
+                    ],
+                    [
+                      "orderId",
+                      2
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "3.08"
+                    ],
+                    [
+                      "commission",
+                      "0.00308"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "label",
+              "SELL_FILLED"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "1000.30800"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "0.00000"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    []
+                  ],
+                  [
+                    "open_orders",
+                    []
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:00.694930+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0.32"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000.30800"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0.012"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "1000.30800"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000.30800"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "0"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "12.00"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00584"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "146"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.003000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:6140e434ce417e03171a11279b6bd706e4f946d4e8061c51475018d9b2cafe76"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "2"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "154.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00616"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "154"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.002000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          true
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:33e9c25126cdc2abab1dfdec4bd441a79eb8c3f96bd08b2676f6e692d1016034"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.04"
+                        ],
+                        [
+                          "cumQuote",
+                          "5.84"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400003
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000002"
+                        ],
+                        [
+                          "orderId",
+                          2
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.04"
+                        ],
+                        [
+                          "cumQuote",
+                          "6.16"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400002
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              [
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      1
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      2
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "2.92"
+                    ],
+                    [
+                      "commission",
+                      "0.00292"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      3
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      4
+                    ],
+                    [
+                      "orderId",
+                      2
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "3.08"
+                    ],
+                    [
+                      "commission",
+                      "0.00308"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      5
+                    ],
+                    [
+                      "orderId",
+                      2
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "3.08"
+                    ],
+                    [
+                      "commission",
+                      "0.00308"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "label",
+              "RESTART_COMPLETE"
+            ],
+            [
+              "account",
+              {
+                "map": [
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "assets",
+                    [
+                      {
+                        "map": [
+                          [
+                            "currency",
+                            "USDT"
+                          ],
+                          [
+                            "total",
+                            {
+                              "decimal": "1000.30800"
+                            }
+                          ],
+                          [
+                            "reserved",
+                            {
+                              "decimal": "0.00000"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ],
+                  [
+                    "positions",
+                    []
+                  ],
+                  [
+                    "open_orders",
+                    []
+                  ],
+                  [
+                    "observed_at",
+                    {
+                      "utc": "2026-11-11T12:00:00.607382+00:00"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "realized_gross",
+              {
+                "decimal": "0.32"
+              }
+            ],
+            [
+              "unrealized",
+              {
+                "decimal": "0"
+              }
+            ],
+            [
+              "equity",
+              {
+                "decimal": "1000.30800"
+              }
+            ],
+            [
+              "actual_fees",
+              {
+                "decimal": "0.012"
+              }
+            ],
+            [
+              "grid",
+              {
+                "map": [
+                  [
+                    "inventory",
+                    {
+                      "decimal": "0"
+                    }
+                  ],
+                  [
+                    "available",
+                    {
+                      "decimal": "1000.30800"
+                    }
+                  ],
+                  [
+                    "equity",
+                    {
+                      "decimal": "1000.30800"
+                    }
+                  ],
+                  [
+                    "committed",
+                    {
+                      "decimal": "0"
+                    }
+                  ],
+                  [
+                    "turnover",
+                    {
+                      "decimal": "12.00"
+                    }
+                  ],
+                  [
+                    "account_id",
+                    "DEMO:FactorLab-Demo:c48a01f49fd0f2cc404bc3cbbc80e91457a3d41bb429a695243de4c61794155c"
+                  ],
+                  [
+                    "instrument_id",
+                    "NVDAUSDT"
+                  ],
+                  [
+                    "market",
+                    {
+                      "enum": "Market",
+                      "value": "BINANCE_USDM"
+                    }
+                  ],
+                  [
+                    "reconciled",
+                    true
+                  ]
+                ]
+              }
+            ],
+            [
+              "orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "1"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "146.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00584"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "146"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.003000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          false
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:6140e434ce417e03171a11279b6bd706e4f946d4e8061c51475018d9b2cafe76"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "order_id",
+                          "2"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "limit_price",
+                          {
+                            "decimal": "154.0"
+                          }
+                        ],
+                        [
+                          "filled_quantity",
+                          {
+                            "decimal": "0.04"
+                          }
+                        ],
+                        [
+                          "fee_usdt",
+                          {
+                            "decimal": "0.00616"
+                          }
+                        ],
+                        [
+                          "average_fill_price",
+                          {
+                            "decimal": "154"
+                          }
+                        ],
+                        [
+                          "exchange_updated_at",
+                          {
+                            "utc": "2026-11-11T12:00:00.002000+00:00"
+                          }
+                        ],
+                        [
+                          "reduce_only",
+                          true
+                        ],
+                        [
+                          "reconcile_required",
+                          false
+                        ],
+                        [
+                          "event_id",
+                          "recovery:33e9c25126cdc2abab1dfdec4bd441a79eb8c3f96bd08b2676f6e692d1016034"
+                        ],
+                        [
+                          "rejection",
+                          null
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_orders",
+              {
+                "map": [
+                  [
+                    "fl-33826ce96bf14a5a-g-00000001",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000001"
+                        ],
+                        [
+                          "orderId",
+                          1
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "BUY"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.04"
+                        ],
+                        [
+                          "cumQuote",
+                          "5.84"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400003
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    "fl-33826ce96bf14a5a-g-00000002",
+                    {
+                      "map": [
+                        [
+                          "clientOrderId",
+                          "fl-33826ce96bf14a5a-g-00000002"
+                        ],
+                        [
+                          "orderId",
+                          2
+                        ],
+                        [
+                          "symbol",
+                          "NVDAUSDT"
+                        ],
+                        [
+                          "side",
+                          "SELL"
+                        ],
+                        [
+                          "type",
+                          "LIMIT"
+                        ],
+                        [
+                          "positionSide",
+                          "BOTH"
+                        ],
+                        [
+                          "origQty",
+                          "0.04"
+                        ],
+                        [
+                          "executedQty",
+                          "0.04"
+                        ],
+                        [
+                          "cumQuote",
+                          "6.16"
+                        ],
+                        [
+                          "status",
+                          "FILLED"
+                        ],
+                        [
+                          "updateTime",
+                          1794398400002
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              "exchange_trades",
+              [
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      1
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      2
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "2.92"
+                    ],
+                    [
+                      "commission",
+                      "0.00292"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      3
+                    ],
+                    [
+                      "orderId",
+                      1
+                    ],
+                    [
+                      "qty",
+                      "0.01"
+                    ],
+                    [
+                      "quoteQty",
+                      "1.46"
+                    ],
+                    [
+                      "commission",
+                      "0.00146"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      4
+                    ],
+                    [
+                      "orderId",
+                      2
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "3.08"
+                    ],
+                    [
+                      "commission",
+                      "0.00308"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                },
+                {
+                  "map": [
+                    [
+                      "symbol",
+                      "NVDAUSDT"
+                    ],
+                    [
+                      "id",
+                      5
+                    ],
+                    [
+                      "orderId",
+                      2
+                    ],
+                    [
+                      "qty",
+                      "0.02"
+                    ],
+                    [
+                      "quoteQty",
+                      "3.08"
+                    ],
+                    [
+                      "commission",
+                      "0.00308"
+                    ],
+                    [
+                      "commissionAsset",
+                      "USDT"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        }
+      ]
+    ],
+    [
+      "order_events_before_restart",
+      [
+        [
+          4,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0"
+              },
+              "event_id": "rest:3b4eac3e77f14da29a2ab2a0326e431c3e01998f0042cf78bc496e6c48bae69d",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": null,
+              "source": "binance-rest",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "SUBMITTED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          6,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0.00146"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "event_id": "recovery:954fc1e2d65edc8d04593494ea619aabc87a9fc0501a8c0a562752d3ca4e0872",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.001000+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": {
+                "decimal": "146"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "PARTIALLY_FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          8,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0.00438"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.03"
+              },
+              "event_id": "recovery:c32e0ed76e5d2538950656cc54b6e2ef0015241ed9657f7f618fcbf6499f3fea",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.002000+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": {
+                "decimal": "146"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "PARTIALLY_FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          10,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0.00584"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.04"
+              },
+              "event_id": "recovery:6140e434ce417e03171a11279b6bd706e4f946d4e8061c51475018d9b2cafe76",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.003000+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": {
+                "decimal": "146"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          12,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000002",
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0"
+              },
+              "event_id": "rest:4d9ed89211ef163bfc2f88223b1d6c5741611c1c62fbc706dfa2618c26ff35db",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00+00:00"
+              },
+              "exchange_order_id": "2",
+              "fill_price": null,
+              "source": "binance-rest",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "SUBMITTED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          14,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000002",
+              "cumulative_fee": {
+                "decimal": "0.00308"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.02"
+              },
+              "event_id": "recovery:23543f70d178d538a300ad883f19d851f275b007370da63505454ed09ad9afdc",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.001000+00:00"
+              },
+              "exchange_order_id": "2",
+              "fill_price": {
+                "decimal": "154"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "PARTIALLY_FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ]
+      ]
+    ],
+    [
+      "order_events_final",
+      [
+        [
+          4,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0"
+              },
+              "event_id": "rest:3b4eac3e77f14da29a2ab2a0326e431c3e01998f0042cf78bc496e6c48bae69d",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": null,
+              "source": "binance-rest",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "SUBMITTED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          6,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0.00146"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "event_id": "recovery:954fc1e2d65edc8d04593494ea619aabc87a9fc0501a8c0a562752d3ca4e0872",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.001000+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": {
+                "decimal": "146"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "PARTIALLY_FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          8,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0.00438"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.03"
+              },
+              "event_id": "recovery:c32e0ed76e5d2538950656cc54b6e2ef0015241ed9657f7f618fcbf6499f3fea",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.002000+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": {
+                "decimal": "146"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "PARTIALLY_FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          10,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000001",
+              "cumulative_fee": {
+                "decimal": "0.00584"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.04"
+              },
+              "event_id": "recovery:6140e434ce417e03171a11279b6bd706e4f946d4e8061c51475018d9b2cafe76",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.003000+00:00"
+              },
+              "exchange_order_id": "1",
+              "fill_price": {
+                "decimal": "146"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          12,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000002",
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0"
+              },
+              "event_id": "rest:4d9ed89211ef163bfc2f88223b1d6c5741611c1c62fbc706dfa2618c26ff35db",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00+00:00"
+              },
+              "exchange_order_id": "2",
+              "fill_price": null,
+              "source": "binance-rest",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "SUBMITTED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          14,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000002",
+              "cumulative_fee": {
+                "decimal": "0.00308"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.02"
+              },
+              "event_id": "recovery:23543f70d178d538a300ad883f19d851f275b007370da63505454ed09ad9afdc",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.001000+00:00"
+              },
+              "exchange_order_id": "2",
+              "fill_price": {
+                "decimal": "154"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "PARTIALLY_FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ],
+        [
+          16,
+          {
+            "fields": {
+              "client_order_id": "fl-33826ce96bf14a5a-g-00000002",
+              "cumulative_fee": {
+                "decimal": "0.00616"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.04"
+              },
+              "event_id": "recovery:33e9c25126cdc2abab1dfdec4bd441a79eb8c3f96bd08b2676f6e692d1016034",
+              "event_time": {
+                "utc": "2026-11-11T12:00:00.002000+00:00"
+              },
+              "exchange_order_id": "2",
+              "fill_price": {
+                "decimal": "154"
+              },
+              "source": "binance-rest-recovery",
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderEvent"
+          }
+        ]
+      ]
+    ],
+    [
+      "execution_deltas",
+      [
+        [
+          "fl-33826ce96bf14a5a-g-00000001",
+          {
+            "decimal": "0.01"
+          },
+          {
+            "decimal": "146"
+          },
+          {
+            "decimal": "0.00146"
+          }
+        ],
+        [
+          "fl-33826ce96bf14a5a-g-00000001",
+          {
+            "decimal": "0.02"
+          },
+          {
+            "decimal": "146"
+          },
+          {
+            "decimal": "0.00292"
+          }
+        ],
+        [
+          "fl-33826ce96bf14a5a-g-00000001",
+          {
+            "decimal": "0.01"
+          },
+          {
+            "decimal": "146"
+          },
+          {
+            "decimal": "0.00146"
+          }
+        ],
+        [
+          "fl-33826ce96bf14a5a-g-00000002",
+          {
+            "decimal": "0.02"
+          },
+          {
+            "decimal": "154"
+          },
+          {
+            "decimal": "0.00308"
+          }
+        ],
+        [
+          "fl-33826ce96bf14a5a-g-00000002",
+          {
+            "decimal": "0.02"
+          },
+          {
+            "decimal": "154"
+          },
+          {
+            "decimal": "0.00308"
+          }
+        ]
+      ]
+    ],
+    [
+      "fifo_pairs",
+      [
+        {
+          "map": [
+            [
+              "buy_fill",
+              1
+            ],
+            [
+              "sell_fill",
+              1
+            ],
+            [
+              "quantity",
+              {
+                "decimal": "0.01"
+              }
+            ],
+            [
+              "buy_fee",
+              {
+                "decimal": "0.00146"
+              }
+            ],
+            [
+              "sell_fee",
+              {
+                "decimal": "0.00154"
+              }
+            ],
+            [
+              "gross",
+              {
+                "decimal": "0.08"
+              }
+            ],
+            [
+              "net",
+              {
+                "decimal": "0.07700"
+              }
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "buy_fill",
+              2
+            ],
+            [
+              "sell_fill",
+              1
+            ],
+            [
+              "quantity",
+              {
+                "decimal": "0.01"
+              }
+            ],
+            [
+              "buy_fee",
+              {
+                "decimal": "0.00146"
+              }
+            ],
+            [
+              "sell_fee",
+              {
+                "decimal": "0.00154"
+              }
+            ],
+            [
+              "gross",
+              {
+                "decimal": "0.08"
+              }
+            ],
+            [
+              "net",
+              {
+                "decimal": "0.07700"
+              }
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "buy_fill",
+              2
+            ],
+            [
+              "sell_fill",
+              2
+            ],
+            [
+              "quantity",
+              {
+                "decimal": "0.01"
+              }
+            ],
+            [
+              "buy_fee",
+              {
+                "decimal": "0.00146"
+              }
+            ],
+            [
+              "sell_fee",
+              {
+                "decimal": "0.00154"
+              }
+            ],
+            [
+              "gross",
+              {
+                "decimal": "0.08"
+              }
+            ],
+            [
+              "net",
+              {
+                "decimal": "0.07700"
+              }
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "buy_fill",
+              3
+            ],
+            [
+              "sell_fill",
+              2
+            ],
+            [
+              "quantity",
+              {
+                "decimal": "0.01"
+              }
+            ],
+            [
+              "buy_fee",
+              {
+                "decimal": "0.00146"
+              }
+            ],
+            [
+              "sell_fee",
+              {
+                "decimal": "0.00154"
+              }
+            ],
+            [
+              "gross",
+              {
+                "decimal": "0.08"
+              }
+            ],
+            [
+              "net",
+              {
+                "decimal": "0.07700"
+              }
+            ]
+          ]
+        }
+      ]
+    ],
+    [
+      "funding",
+      {
+        "map": [
+          [
+            "authoritative_settlements",
+            []
+          ],
+          [
+            "booked_cashflow",
+            "0"
+          ]
+        ]
+      }
+    ],
+    [
+      "local_assumed_fee_rate",
+      ".007"
+    ],
+    [
+      "local_assumed_fee_booked",
+      "0"
+    ],
+    [
+      "limit_slippage",
+      "0"
+    ],
+    [
+      "gross_price_difference",
+      ".32"
+    ],
+    [
+      "http_requests",
+      [
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/time"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/time"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/exchangeInfo"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/leverageBracket"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/premiumIndex"
+        ],
+        [
+          "POST",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/premiumIndex"
+        ],
+        [
+          "POST",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/time"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/exchangeInfo"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/leverageBracket"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/time"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/exchangeInfo"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/leverageBracket"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/order"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/userTrades"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/account"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v3/positionRisk"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/positionSide/dual"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/openOrders"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/symbolConfig"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/apiTradingStatus"
+        ],
+        [
+          "GET",
+          "https://demo-fapi.binance.com/fapi/v1/ticker/bookTicker"
+        ]
+      ]
+    ],
+    [
+      "write_parameters",
+      [
+        {
+          "map": [
+            [
+              "newClientOrderId",
+              [
+                "fl-33826ce96bf14a5a-g-00000001"
+              ]
+            ],
+            [
+              "newOrderRespType",
+              [
+                "RESULT"
+              ]
+            ],
+            [
+              "positionSide",
+              [
+                "BOTH"
+              ]
+            ],
+            [
+              "price",
+              [
+                "146.0"
+              ]
+            ],
+            [
+              "quantity",
+              [
+                "0.04"
+              ]
+            ],
+            [
+              "recvWindow",
+              [
+                "5000"
+              ]
+            ],
+            [
+              "reduceOnly",
+              [
+                "false"
+              ]
+            ],
+            [
+              "side",
+              [
+                "BUY"
+              ]
+            ],
+            [
+              "symbol",
+              [
+                "NVDAUSDT"
+              ]
+            ],
+            [
+              "timeInForce",
+              [
+                "GTC"
+              ]
+            ],
+            [
+              "type",
+              [
+                "LIMIT"
+              ]
+            ]
+          ]
+        },
+        {
+          "map": [
+            [
+              "newClientOrderId",
+              [
+                "fl-33826ce96bf14a5a-g-00000002"
+              ]
+            ],
+            [
+              "newOrderRespType",
+              [
+                "RESULT"
+              ]
+            ],
+            [
+              "positionSide",
+              [
+                "BOTH"
+              ]
+            ],
+            [
+              "price",
+              [
+                "154.0"
+              ]
+            ],
+            [
+              "quantity",
+              [
+                "0.04"
+              ]
+            ],
+            [
+              "recvWindow",
+              [
+                "5000"
+              ]
+            ],
+            [
+              "reduceOnly",
+              [
+                "true"
+              ]
+            ],
+            [
+              "side",
+              [
+                "SELL"
+              ]
+            ],
+            [
+              "symbol",
+              [
+                "NVDAUSDT"
+              ]
+            ],
+            [
+              "timeInForce",
+              [
+                "GTC"
+              ]
+            ],
+            [
+              "type",
+              [
+                "LIMIT"
+              ]
+            ]
+          ]
+        }
+      ]
+    ]
+  ]
+}
