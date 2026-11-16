@@ -86,6 +86,30 @@ def test_strategy_bootstrap_must_fit_backfill(tmp_path, initial_bars):
         make(tmp_path, initial_bars=initial_bars)
 
 
+def test_continuous_catchup_pages_without_quotes_or_skipped_bars(tmp_path):
+    class PagedTransport(Transport):
+        def __call__(self, request, timeout):
+            if request.path.endswith('/klines'):
+                params = parse_qs(request.query)
+                start, end = int(params['startTime'][0]), int(params['endTime'][0])
+                self.rows = [bar(t) for t in range(start, end + 1, 60000)]
+            return super().__call__(request, timeout)
+
+    transport = PagedTransport()
+    feed, _, consumer = make(tmp_path, transport, max_backfill=2, catch_up=True)
+    assert feed.poll() == dict(bars=1, quotes=1)
+    transport.time += 300000
+    assert feed.poll() == dict(bars=2, quotes=0)
+    assert feed.reason == 'CATCHING_UP'
+    feed.close()
+    feed, _, _ = make(tmp_path, transport, consumer, max_backfill=2, catch_up=True)
+    assert feed.poll() == dict(bars=2, quotes=0)
+    assert feed.poll() == dict(bars=1, quotes=1)
+    assert [b.opened_at.timestamp() for b in consumer.bars] == [120, 180, 240, 300, 360, 420]
+    assert len(consumer.quotes) == 2
+    feed.close()
+
+
 def test_complete_precision_duplicate_restart(tmp_path):
     feed, transport, consumer = make(tmp_path)
     assert feed.poll() == dict(bars=1, quotes=1)

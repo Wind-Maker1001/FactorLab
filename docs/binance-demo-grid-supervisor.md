@@ -61,7 +61,7 @@ The unchanged admission limits are at most **0.04 NVDA**, **7 USDT committed/not
 
 ## Configuration and market timing
 
-Options include `--interval` (default `1m`), `--max-backfill` (default 120), `--poll-seconds` and optional positive `--seconds`. An ATR history window must fit the backfill bound.
+Options include `--interval` (default `1m`), `--max-backfill` (default 120), `--poll-seconds` and optional positive `--seconds`. An ATR history window must fit the backfill bound. After a long outage, the continuous Grid worker replays at most `max-backfill` consecutive historical bars per poll, acknowledging each without submitting a quote while still behind. It resumes live quote processing only after the cursor catches up; no cursor reset or skipped history is required.
 
 `--config path.json` accepts the existing `GridConfig` fields. On first deployment without this option, the worker fixes a one-level arithmetic range approximately 1% below/above the observed ask, rounded to the exchange tick, with a 0.04 quantity unit, maximum inventory of one unit, 7 USDT commitment and pause-on-breakout. Subsequent starts restore the original deployment, not a range derived from a new quote. Restart with the same interval, backfill and configuration arguments; conflicts are rejected.
 

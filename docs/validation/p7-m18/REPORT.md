@@ -55,6 +55,8 @@ Tests use intercepted HTTP and isolated temporary account stores. The lifecycle/
 
 Initial regression run: **56 passed, 6 failed**. All six failures occurred in new lifecycle tests that attempted Grid decisions before calling the bridge's existing required `recover()`; the tests were corrected to exercise that contract. A later run passed 35 tests and hit one pre-existing synthetic-clock issue: fixed exchange timestamps became stale as the wall clock advanced during the multi-fill fee test. The shared intercepted-HTTP fixture now uses its fixed exchange NOW for the session clock, without changing production freshness checks; the subsequent complete group passed. The first attempted CPython 3.13 invocation stopped before collection because that local interpreter lacks pytest; executed runs use the existing CPython 3.12.7 test environment.
 
+The follow-up feed/Grid/lifecycle group passed **73 tests in 50.32 seconds**, including restart between historical catch-up pages, exact consecutive bar delivery and suppression of quotes while behind.
+
 Coverage includes missing-window startup, expiry and POST-window exhaustion, unchanged global loss/count/notional budgets, historical consumption migration, scoped old-window cancellation, partial fills across windows, reserved-ID replay refusal, UNKNOWN GET-only recovery, restart, two independent concurrent processes selecting the same unique window, STOP blocking an already minted capability and restart, production credential rejection, automatic clock resynchronization after CLOCK_SKEW, and unchanged authoritative fee/FIFO/equity posting.
 
 Targeted commands:
@@ -64,4 +66,10 @@ python -m pytest tests/integrations/test_demo_continuous_campaign.py tests/integ
 python -m pytest tests/integrations/test_binance_demo_fill_closed_loop.py tests/integrations/test_binance_demo_fill_faults.py tests/integrations/test_demo_reconciliation_m14.py -q
 ```
 
-TODO: Record completed lifecycle/fee regression results and actual Demo startup, renewal, independent-process recovery and STOP evidence.
+The real worker produced three reports and reached **126 GET, 0 POST, 0 DELETE** before termination. A recovery-phase CLOCK_SKEW on `/fapi/v2/account` was followed by time synchronization and successful GET reconciliation. The last account observation at **2026-11-16 15:21:29 UTC** retained wallet **4999.97114760 USDT**, zero positions/open orders/UNKNOWN and the unchanged historical consumption. The worker then exposed `BACKFILL_LIMIT`: its retained market cursor was older than the 120-bar per-poll bound. Continuous Grid catch-up now replays consecutive bounded pages, persists each acknowledged bar, and delivers no quote while behind; it does not skip history or turn old bars into live orders.
+
+Account-wide STOP returned `DEMO_STOPPED`, `enabled=false`, durable authorization state `STOPPED`, no active window and unchanged **4 POST / 25.5692000 USDT** cumulative consumption. The worker control was also set STOPPED and its background process terminated. No exchange cancellation or liquidation was necessary in the last reconciled flat account state.
+
+The observation ended before the original three-hour window expired. Natural-expiry renewal is therefore not claimed as a real-exchange observation; expiry, budget-window rotation, concurrent creation and STOP/restart behavior are established by the intercepted-HTTP tests. Actual evidence establishes automatic missing-window creation, independent-process recovery, a transient clock-error recovery, preserved account/budget state and persistent STOP.
+
+TODO: Cover constructor-phase CLOCK_SKEW with an explicit bounded startup-recovery contract; the existing recovery handler only resynchronizes an already constructed session. Preserve the failed startup diagnostic rather than enlarging recvWindow or retrying writes.
