@@ -1,6 +1,7 @@
 """Compose authenticated Demo sessions over the existing controller and journals."""
 
 from contextlib import closing
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 import json
@@ -88,6 +89,7 @@ class DemoSession:
         self.last_reconciled_at = None
         self.last_recovery_seconds = None
         self.receipts = []
+        self._recovered_receipt_count = 0
         self.receipt_error = False
         self.write_uncertain = False
         self.configuration = configuration
@@ -114,6 +116,25 @@ class DemoSession:
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
 
+    def refresh_authorization(self, authorization, *, write_guard, receipt_sink):
+        """Install a fresh window capability only after successful GET recovery."""
+        status = self.status()
+        if (not status['reconciled'] or status['unknown']
+                or self.last_reconciled_at is None
+                or not timedelta(0) <= self._now() - self.last_reconciled_at <= timedelta(seconds=5)):
+            raise SafetyBlocked('fresh GET reconciliation required before renewing Demo capability')
+        if (authorization.plan.account_id != self.adapter.account_id
+                or demo_account_configuration(self.adapter.facts) != self.configuration):
+            raise SafetyBlocked('renewed Demo capability account or configuration mismatch')
+        old = self.client.transport
+        if old.authorization is not None:
+            old.authorization.revoke()
+        self._write_guard, self._receipt_sink = write_guard, receipt_sink
+        self.client.transport = replace(old, authorization=authorization, write_guard=self._admit_write)
+        self.write_uncertain = False
+        self.receipt_error = False
+        self._recovered_receipt_count = len(self.receipts)
+
     def _now(self):
         return datetime.now(timezone.utc) + timedelta(milliseconds=self.client.offset_ms)
 
@@ -124,7 +145,7 @@ class DemoSession:
     def _admit_write(self, method, params, plan):
         if self.receipt_error or self.write_uncertain:
             raise SafetyBlocked('previous Demo write requires GET-only recovery')
-        if any(receipt['http_status'] == 400 for receipt in self.receipts):
+        if any(receipt['http_status'] == 400 for receipt in self.receipts[self._recovered_receipt_count:]):
             raise SafetyBlocked('Demo HTTP 400 stopped further writes')
         now = self._now()
         if not timedelta(0) <= now - self.adapter.facts.observed_at <= timedelta(seconds=5):
@@ -185,6 +206,10 @@ class DemoSession:
             if result['reconciled']:
                 self.last_reconciled_at = self._now()
             return result
+        except ExchangeError as error:
+            if error.category == 'CLOCK_SKEW':
+                self.client.sync_time()
+            raise
         finally:
             self.last_recovery_seconds = perf_counter() - started
 

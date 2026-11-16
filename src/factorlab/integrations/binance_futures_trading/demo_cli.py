@@ -18,7 +18,7 @@ from factorlab.trading.storage import PaperStore
 from .demo_credentials import DemoCredentialStore, DemoCredentialStoreError
 from .demo_runtime import (
     DEMO_LIMITS, MAX_QUANTITY, SMOKE_CAMPAIGN, DemoRuntime, bind_account, journal_id, now, operator_lock, private_binding,
-    state_root,
+    saved_grid_deployment, state_root,
 )
 from .demo_session import DEMO, SYMBOL, DemoSession, demo_account_configuration, observe_demo_account
 from .preflight import demo_credential_dialog
@@ -173,6 +173,22 @@ def run_command(args, root, store, runtime, requests, smoke_id):
         runtime.save_tradfi(account_id, receipt)
         status = 'DEMO_TRADFI_SIGNED' if receipt['success'] else 'DEMO_TRADFI_NOT_CONFIRMED'
         return dict(status=status, agreement=receipt)
+    if command == 'start-continuous':
+        binding, _ = load_bound_credential(store)
+        epoch = runtime.stop_epoch()
+        with open_session(root, store, runtime, requests) as (session, _):
+            account = recover(session)
+            saved = saved_grid_deployment(session.controller.store)
+            prefix = None
+            if saved is not None:
+                from factorlab.trading.storage import decode
+                prefix = decode(json.loads(saved))['deployment']['deployment_id'].removesuffix('-g')
+            runtime.start_continuous(binding, opening_equity=equity(account), stop_epoch=epoch,
+                total_orders=args.total_orders, total_notional=args.total_notional,
+                seconds=args.window_seconds, orders=args.window_orders, prefix=prefix)
+            campaign = runtime.ensure_window(binding, facts=session.adapter.facts,
+                reconciled=account['reconciled'] and not account['unknown'], stop_epoch=epoch)
+            return dict(status='DEMO_CONTINUOUS_RUNNING', campaign=campaign['id'], account=account)
     if command in {'status', 'recover', 'enable-demo', 'smoke-test'}:
         started_at = now()
         stop_epoch = runtime.stop_epoch()
@@ -208,6 +224,13 @@ def run_command(args, root, store, runtime, requests, smoke_id):
         finally:
             runtime.stop()
 
+    if runtime.continuous_authorization() is not None:
+        epoch = runtime.stop_epoch()
+        binding, _ = load_bound_credential(store)
+        with open_session(root, store, runtime, requests) as (session, _):
+            account = recover(session)
+            runtime.ensure_window(binding, facts=session.adapter.facts,
+                reconciled=account['reconciled'] and not account['unknown'], stop_epoch=epoch)
     campaign = runtime.active_campaign()
     if campaign is None or campaign['smoke']:
         raise SafetyBlocked('no persistent Demo authorization; run enable-demo')
@@ -223,12 +246,14 @@ def run_command(args, root, store, runtime, requests, smoke_id):
             client_id = campaign['prefix'] + '-' + uuid4().hex[:12]
             account = submit(session, expect, client_id, side, args.quantity)
             if account['orders'][client_id]['status'] == OrderStatus.REJECTED:
-                runtime.stop()
+                if not campaign.get('authorization'):
+                    runtime.stop()
                 return dict(status='DEMO_ORDER_REJECTED_DIAGNOSED', account=account)
             return dict(status='DEMO_ORDER_ACCEPTED', account=account)
 
         result = run_operation(session, operate)
-        if (session.receipt_error or session.write_uncertain or any(receipt['http_status'] == 400 for receipt in session.receipts)
+        if not campaign.get('authorization') and (session.receipt_error or session.write_uncertain
+                or any(receipt['http_status'] == 400 for receipt in session.receipts)
                 or result['status'] == 'DEMO_BLOCKED' and result['account']['unknown']):
             runtime.stop()
         result['write_receipts'] = session.receipts
@@ -264,6 +289,11 @@ def parse_args(argv):
     enable.add_argument('--seconds', type=int, required=True)
     enable.add_argument('--orders', type=int, required=True)
     enable.add_argument('--max-loss', type=parse_decimal, required=True)
+    continuous = commands.add_parser('start-continuous', help='record continuous Demo permission and recover its window')
+    continuous.add_argument('--total-orders', type=int, default=100)
+    continuous.add_argument('--total-notional', type=parse_decimal, default=Decimal('700'))
+    continuous.add_argument('--window-seconds', type=int, default=10800)
+    continuous.add_argument('--window-orders', type=int, default=4)
     commands.add_parser('stop', aliases=['disable-demo', 'kill'])
     for name in ('buy-limit', 'reduce-limit'):
         commands.add_parser(name).add_argument('quantity', type=parse_decimal)

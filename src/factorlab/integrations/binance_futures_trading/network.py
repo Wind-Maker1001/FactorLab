@@ -95,8 +95,13 @@ class DemoExecutionPlan:
 
 
 class DemoNetworkAuthorization:
-    """Independent process-local approval; never restore this from durable data."""
-    def __init__(self, plan):
+    """Process-local capability constructed from a validated execution plan.
+
+    Persistent runtimes mint fresh capabilities after account reconciliation;
+    capabilities themselves are never serialized or revived after revocation.
+    """
+    def __init__(self, plan, *, cancellation_ids=()):
+        self.cancellation_ids = frozenset(cancellation_ids)
         if type(plan) is not DemoExecutionPlan:
             raise ValueError('validated execution plan required')
         self._plan = plan

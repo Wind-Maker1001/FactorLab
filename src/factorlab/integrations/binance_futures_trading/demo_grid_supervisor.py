@@ -64,7 +64,8 @@ def grid_factory(settings, *, new_deployment=False):
 class GridConsumer:
     """Bars advance Grid; GET reports alone advance economic state."""
     def __init__(self, bridge, control, *, authority=lambda: True,
-                 clock=lambda: datetime.now(timezone.utc), proposal_observer=None):
+                 clock=lambda: datetime.now(timezone.utc), proposal_observer=None, ensure_campaign=None):
+        self.ensure_campaign = ensure_campaign
         self.proposal_observer = proposal_observer
         self.bridge, self.control, self.authority, self.clock = bridge, control, authority, clock
         self.supervisor = None
@@ -91,6 +92,8 @@ class GridConsumer:
             return
         try:
             self.bridge.recover()
+            if desired == 'RUNNING' and self.ensure_campaign is not None:
+                self.ensure_campaign()
         except SafetyBlocked as error:
             raise FeedPaused(str(error)) from error
         allowed = desired == 'RUNNING' and self.authority()
@@ -229,11 +232,12 @@ def run(args, *, root=None, credentials=None):
                     and bridge.grid.deployment_id == campaign['prefix'] + '-g'
                     and bridge.runtime.post_count(campaign['id']) < campaign['orders']
                     and not bridge.session.receipt_error and not bridge.session.write_uncertain)
-            consumer = GridConsumer(bridge, control, authority=authority)
+            consumer = GridConsumer(bridge, control, authority=authority, ensure_campaign=bridge.ensure_campaign)
             client = MarketClient(requests)
             initial_bars = max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1)
             with closing(DemoMarketFeed(client, consumer, state_path=path, consumer_id='grid-' + mode + ':' + bridge.grid.deployment_id,
-                    interval=args.interval, max_backfill=args.max_backfill, initial_bars=initial_bars)) as feed:
+                    interval=args.interval, max_backfill=args.max_backfill, initial_bars=initial_bars,
+                    catch_up=True)) as feed:
                 def report(raw):
                     payload = json.loads(raw)
                     payload['feed_reason'] = payload['reason']

@@ -13,7 +13,7 @@ from factorlab.integrations.binance_futures_trading.demo_runtime import (
     DemoRuntime, bind_account, now, open_grid_session,
 )
 from factorlab.integrations.binance_futures_trading.demo_session import (
-    demo_account_configuration, observe_demo_account,
+    DemoSession, demo_account_configuration, observe_demo_account,
 )
 from factorlab.integrations.binance_futures_trading.fake import MS, NOW
 from factorlab.integrations.binance_futures_trading.protocol import Credentials, Environment, SafetyBlocked
@@ -26,6 +26,7 @@ from factorlab.trading.paper import Quote
 
 @pytest.fixture
 def network_grid(tmp_path, monkeypatch, wired):
+    monkeypatch.setattr(DemoSession, '_now', lambda _: NOW)
     original = NetworkFixture.__call__
 
     def market(self, request, timeout):
