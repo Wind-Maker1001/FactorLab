@@ -1,0 +1,107 @@
+{
+  "conclusion": "INSUFFICIENT_EVIDENCE",
+  "delivery": "M15_INSUFFICIENT_VALID_SAMPLES",
+  "proposals": 1,
+  "valid_books": 71,
+  "rejected_books": 0,
+  "forward_pairs": 68,
+  "proposals_with_forward_books": 1,
+  "classifications": {
+    "NOT_TOUCHED": 1,
+    "PRICE_TOUCHED": 0,
+    "POTENTIAL_BOOK_CONDITION": 0,
+    "RIGHT_CENSORED": 1
+  },
+  "touch_fraction": 0.0,
+  "potential_fraction": 0.0,
+  "censor_fraction": 1.0,
+  "baseline_proposals": 1,
+  "baselines": {
+    "preview-g:preview-g-00000002": {
+      "distance_ask_bps": "-100.3512293025589563472152530",
+      "distance_bid_bps": "-97.24574941966246314072401000",
+      "first_potential": null,
+      "first_touch": null,
+      "forward": false,
+      "id": "preview-g:preview-g-00000002",
+      "max_deviation_bps": "0",
+      "opposite_top_quantity": "0.06",
+      "target_covered_at_top": true,
+      "waiting_seconds": null,
+      "market_at": "2026-11-16T10:41:01.871000+00:00",
+      "received_at": "2026-11-16T10:41:04.013121+00:00",
+      "age_seconds": 2.142121,
+      "bid": "159.39000",
+      "ask": "159.44000"
+    }
+  },
+  "baseline_bid_distance_bps": {
+    "n": 1,
+    "minimum": -97.24574941966246,
+    "median": -97.24574941966246,
+    "maximum": -97.24574941966246,
+    "mean": -97.24574941966246
+  },
+  "baseline_ask_distance_bps": {
+    "n": 1,
+    "minimum": -100.35122930255896,
+    "median": -100.35122930255896,
+    "maximum": -100.35122930255896,
+    "mean": -100.35122930255896
+  },
+  "spread": {
+    "n": 71,
+    "minimum": 0.02,
+    "median": 0.16,
+    "maximum": 0.42,
+    "mean": 0.15014084507042252
+  },
+  "quote_age_seconds": {
+    "n": 71,
+    "minimum": 2.057953,
+    "median": 2.623512,
+    "maximum": 4.635219,
+    "mean": 2.8339850422535213
+  },
+  "sampling_gap_seconds": {
+    "n": 70,
+    "minimum": 15.42,
+    "median": 18.3975,
+    "maximum": 28.668,
+    "mean": 18.8876
+  },
+  "first_observed_touch_seconds": {
+    "n": 0
+  },
+  "potential_pairs": 0,
+  "potential_quantity_covered": 0,
+  "potential_quantity_unknown": 0,
+  "utc_hours": {
+    "10": {
+      "books": 63,
+      "spread": {
+        "n": 63,
+        "minimum": 0.02,
+        "median": 0.18,
+        "maximum": 0.42,
+        "mean": 0.16063492063492063
+      }
+    },
+    "11": {
+      "books": 8,
+      "spread": {
+        "n": 8,
+        "minimum": 0.02,
+        "median": 0.05,
+        "maximum": 0.21,
+        "mean": 0.0675
+      }
+    }
+  },
+  "end_reasons": {
+    "DATA_INTERRUPTION": 1
+  },
+  "request_reservations": 1322,
+  "process_gaps": 0,
+  "evidence_bytes": 482882
+}
