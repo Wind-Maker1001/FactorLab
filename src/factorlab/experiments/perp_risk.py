@@ -5,6 +5,9 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import json
 from pathlib import Path
+import re
+
+from factorlab.trading.contracts import utc, decimal_value
 
 from factorlab.research.perp_risk import D, Frame, Funding, Rules, Tier, evaluate
 
@@ -41,6 +44,107 @@ def monte_carlo_frames(result, *, path_id, asset_id, rule, budget, contracts, st
                         contracts=contracts, start=start, step=step)
 
 
+def paper_time(value):
+    # datetime.fromisoformat silently truncates sub-microsecond precision.
+    if not re.fullmatch(r'\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)', value):
+        raise ValueError('Paper timestamps require explicit UTC and microsecond precision or coarser')
+    time = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    utc(time)
+    return time
+
+
+def unique_export_fields(pairs):
+    fields = {}
+    for key, value in pairs:
+        if key in fields:
+            raise ValueError('duplicate Paper export field')
+        fields[key] = value
+    return fields
+
+
+def paper_execution_times(directory, daily, symbol):
+    """Validate a complete hourly grid_paper export, without replaying its costs.
+
+    Cumulative quantities/fees and final orders are Decimal evidence. Float-only
+    inventory must match the exact inventory trajectory; ambiguous rounding is
+    deliberately unsupported rather than used to infer a pre-fill position.
+    """
+    required = ('trades.csv', 'result.json', 'manifest.json')
+    if any(not (directory/name).is_file() for name in required):
+        return None
+    try:
+        result = json.loads((directory/'result.json').read_text(encoding='utf-8'),
+                            object_pairs_hook=unique_export_fields)
+        manifest = json.loads((directory/'manifest.json').read_text(encoding='utf-8'),
+                              object_pairs_hook=unique_export_fields)
+        with (directory/'trades.csv').open(newline='', encoding='utf-8') as stream:
+            reader = csv.DictReader(stream)
+            fields = reader.fieldnames or []
+            if (len(fields) != len(set(fields)) or not {
+                    'execution_date', 'event_time', 'order_id', 'event_id', 'side',
+                    'executed_shares', 'fee', 'cumulative_filled_quantity',
+                    'cumulative_fee'}.issubset(fields)):
+                raise ValueError('complete unambiguous Paper trade columns required')
+            trades = list(reader)
+        starts = [paper_time(row['date']) for row in daily]
+        if (not starts or any(t.minute or t.second or t.microsecond for t in starts)
+                or any(b-a != timedelta(hours=1) for a, b in zip(starts, starts[1:]))
+                or result['execution']['interval'] != '1h'
+                or result['instrument_id'] != symbol
+                or result['funding'] != 'NOT_SIMULATED'
+                or manifest['window']['bars'] != len(daily)
+                or paper_time(manifest['window']['start']) != starts[0]
+                or paper_time(manifest['window']['end']) != starts[-1]
+                or result['fills'] != len(trades)):
+            raise ValueError('incomplete or mismatched Paper execution export')
+        orders = result['orders']
+        totals = {key: (D(0), D(0)) for key in orders}
+        quantities = {time: D(0) for time in starts}
+        fees = {time: D(0) for time in starts}
+        events, times = set(), []
+        for trade in trades:
+            key, identity = trade['order_id'], trade['event_id']
+            if not key or not identity or identity in events:
+                raise ValueError('missing or duplicate Paper fill identity')
+            events.add(identity)
+            order = orders[key]
+            intent = order['intent']
+            start = paper_time(trade['execution_date'])
+            time = paper_time(trade['event_time'])
+            if (start not in quantities or time != start+timedelta(hours=1, microseconds=-1)
+                    or (times and time < times[-1])
+                    or intent['client_order_id'] != key or intent['instrument_id'] != symbol
+                    or trade['side'] != intent['side'] or trade['side'] not in ('BUY', 'SELL')):
+                raise ValueError('Paper fill time or order identity mismatch')
+            quantity, fee = D(trade['cumulative_filled_quantity']), D(trade['cumulative_fee'])
+            decimal_value(quantity, 'cumulative fill', positive=True)
+            decimal_value(fee, 'cumulative fee')
+            previous_quantity, previous_fee = totals[key]
+            delta, cost = quantity-previous_quantity, fee-previous_fee
+            if (delta <= 0 or cost < 0 or quantity > D(intent['quantity'])
+                    or D(trade['executed_shares']) != D(str(float(delta)))
+                    or D(trade['fee']) != D(str(float(cost)))):
+                raise ValueError('inconsistent Paper cumulative execution history')
+            totals[key] = quantity, fee
+            quantities[start] += delta if trade['side'] == 'BUY' else -delta
+            fees[start] += cost
+            times.append(time)
+        for key, order in orders.items():
+            if totals[key] != (D(order['cumulative_filled_quantity']), D(order['cumulative_fee'])):
+                raise ValueError('missing Paper execution history for final order')
+        inventory = D(str(result['config']['initial_inventory'])) * D(str(result['rules']['quantity_unit']))
+        for row, start in zip(daily, starts):
+            inventory += quantities[start]
+            if D(row['inventory']) != inventory or D(row['fee']) != D(str(float(fees[start]))):
+                raise ValueError('Paper inventory or fee history incomplete or insufficiently precise')
+        if (D(str(result['final']['inventory'])) != inventory
+                or D(str(result['final']['equity'])) != D(daily[-1]['equity'])):
+            raise ValueError('Paper final observation mismatch')
+        return tuple(times)
+    except (KeyError, TypeError, ArithmeticError) as error:
+        raise ValueError('incomplete or invalid Paper execution export') from error
+
+
 def paper_frames(directory, *, symbol, mark_prices):
     """Read saved hourly NAV; supplied marks must cover exact completed-bar observations.
 
@@ -49,10 +153,15 @@ def paper_frames(directory, *, symbol, mark_prices):
     """
     directory = Path(directory)
     with (directory/'daily.csv').open(newline='', encoding='utf-8') as stream:
-        daily = list(csv.DictReader(stream))
+        reader = csv.DictReader(stream)
+        fields = reader.fieldnames or []
+        if len(fields) != len(set(fields)):
+            raise ValueError('duplicate Paper daily column')
+        daily = list(reader)
+    fill_times = paper_execution_times(directory, daily, symbol)
     frames = []
     for row in daily:
-        time = datetime.fromisoformat(row['date'].replace('Z', '+00:00')) + timedelta(hours=1, microseconds=-1)
+        time = paper_time(row['date']) + timedelta(hours=1, microseconds=-1)
         mark = D(str(mark_prices[time]))
         quantity = D(row['inventory'])
         reference = D(row['close'])
@@ -63,7 +172,7 @@ def paper_frames(directory, *, symbol, mark_prices):
         entry = reference-unrealized/quantity if quantity else reference
         from factorlab.trading.contracts import Position
         frames.append(Frame(time, (Position(symbol, quantity, entry, mark, 'USDT'),),
-                            D(row['equity']), quantity*(mark-reference)))
+                            D(row['equity']), quantity*(mark-reference), fill_times, symbol))
     return tuple(frames)
 
 

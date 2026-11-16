@@ -97,11 +97,18 @@ class Funding:
 
 @dataclass(frozen=True)
 class Frame:
-    """Positions are base quantities strictly before any same-time fill."""
+    """Positions value the observed NAV; synthetic positions precede same-time fills.
+
+    paper_fill_times is complete, validated execution evidence for this observation's
+    symbol. None means unavailable, not an empty execution history. Paper funding
+    is supported only when no fill coincides with the observation.
+    """
     time: datetime
     positions: tuple[Position, ...]
     original_equity: Decimal
     valuation_adjustment: Decimal = ZERO
+    paper_fill_times: tuple[datetime, ...] | None = None
+    paper_symbol: str | None = None
 
 
 def evaluate(*, frames, rules, funding=(), mode, budget, order_margin,
@@ -161,6 +168,14 @@ def evaluate(*, frames, rules, funding=(), mode, budget, order_margin,
             rule = rules[event.symbol]
             if not rule.valid_from <= event.time < rule.valid_until:
                 raise ValueError('settlement outside rule interval')
+            if equity_basis == 'PAPER_NAV':
+                if (frame.paper_fill_times is None or frame.paper_symbol != event.symbol
+                        or set(positions) != {frame.paper_symbol}):
+                    raise ValueError('Paper funding requires complete validated execution history for its symbol')
+                for fill_time in frame.paper_fill_times:
+                    utc(fill_time)
+                if event.time in frame.paper_fill_times:
+                    raise ValueError('Paper funding conflicts with same-time fill; pre-fill position unavailable')
             quantity = positions[event.symbol].quantity if event.symbol in positions else ZERO
             amount = cashflow(quantity, event.mark, event.rate)
             flow += amount
