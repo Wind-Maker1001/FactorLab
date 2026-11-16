@@ -362,8 +362,9 @@ class FuturesAdapter:
     def reconcile(self):
         # Any failure leaves the durable global risk gate closed.
         self.disconnect()
-        # TODO: replace lifetime order polling with an authoritative incremental
-        # reconciliation contract; CANCELED may still advance to FILLED.
+        # TODO: replace lifetime polling only with a contract proving history
+        # coverage and visibility of late fills/commission corrections. Neither
+        # terminal status nor a forward-only trade ID proves that completeness.
         keys = [row[0] for row in self.db.execute('SELECT id FROM futures_orders')]
         for key in keys:
             order = self.order(key)
