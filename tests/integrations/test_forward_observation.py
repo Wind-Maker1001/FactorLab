@@ -294,6 +294,65 @@ def test_preview_composition_has_zero_writes_and_separate_journals(network_grid)
     assert not (root / 'research' / 'runtime.sqlite3').exists()
 
 
+def test_disconnect_stops_and_preserves_interruption_reason(tmp_path):
+    from types import SimpleNamespace
+    _, _, _, evidence, consumer = setup(tmp_path)
+    stopped = []
+    consumer.supervisor = SimpleNamespace(feed=SimpleNamespace(reason='STALE_OR_FUTURE_QUOTE'),
+                                          stop=lambda: stopped.append(True))
+    consumer.disconnect()
+    assert stopped == [True]
+    assert next(r for r in evidence.rows if r['kind'] == 'interruption')['reason'] == 'STALE_OR_FUTURE_QUOTE'
+    assert evidence.summary()['right_censored'] == 1
+
+
+def test_request_admission_is_durable_and_get_only(tmp_path):
+    from factorlab.integrations.binance_futures_trading.forward_observation import BoundedRequests, utcnow
+    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture')
+    deadline = utcnow() + timedelta(minutes=1)
+    counts = BoundedRequests(evidence, maximum=1, deadline=deadline)
+    with pytest.raises(ValueError, match='GET only'):
+        counts.before_request('feed', 'POST', '/fapi/v1/order')
+    counts.before_request('session', 'GET', '/fapi/v2/account')
+    restored = ShadowEvidence(evidence.path, version='fixture')
+    resumed = BoundedRequests(restored, maximum=1, deadline=deadline)
+    with pytest.raises(ObservationFull, match='request budget'):
+        resumed.before_request('feed', 'GET', '/fapi/v1/ticker/bookTicker')
+    expired = BoundedRequests(restored, maximum=2, deadline=utcnow() - timedelta(seconds=1))
+    with pytest.raises(ObservationFull, match='deadline'):
+        expired.before_request('feed', 'GET', '/fapi/v1/time')
+    assert sum(r['kind'] == 'request' for r in restored.rows) == 1
+
+
+def test_api_interruption_blocks_further_requests_after_restart(tmp_path):
+    from factorlab.integrations.binance_futures_trading.forward_observation import BoundedRequests, utcnow
+    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture')
+    deadline = utcnow() + timedelta(minutes=1)
+    counts = BoundedRequests(evidence, maximum=10, deadline=deadline)
+    counts.before_request('feed', 'GET', '/fapi/v1/time')
+    counts.record('feed', 'GET', '/fapi/v1/time', .2, 'RATE_LIMIT', {})
+    restored = ShadowEvidence(evidence.path, version='fixture')
+    resumed = BoundedRequests(restored, maximum=10, deadline=deadline)
+    with pytest.raises(ObservationFull, match='interruption'):
+        resumed.before_request('feed', 'GET', '/fapi/v1/time')
+    assert resumed.used == 1
+
+
+def test_raw_unknown_quantity_and_baseline_are_preserved(tmp_path):
+    _, _, clock, evidence, consumer = setup(tmp_path)
+    raw = book(clock[0])
+    del raw['askQty']
+    consumer.observe_book(raw, clock[0])
+    baseline = evidence.rows[-1]
+    assert baseline['raw'] == raw
+    assert not baseline['updates'][0]['forward']
+    assert baseline['updates'][0]['target_covered_at_top'] is None
+    clock[0] += timedelta(seconds=1)
+    consumer.observe_book(book(clock[0], '143', '144'), clock[0])
+    assert baseline['bid'] == '144'
+    assert evidence.rows[-1]['updates'][0]['forward']
+
+
 def test_cli_has_no_execute_and_duration_is_bounded(tmp_path):
     with pytest.raises(SystemExit):
         main(['--output', str(tmp_path), '--version', 'fixture', '--execute'])
