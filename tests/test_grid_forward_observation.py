@@ -12,8 +12,21 @@ from factorlab.experiments.grid_forward_observation import normalize, describe, 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def events(identity='window-a'):
+def events(identity='window-a', *, offset_minutes=0):
+    from datetime import timedelta
+    from factorlab.experiments.grid_forward import utc
+
     fixture = json.loads((ROOT / 'docs/validation/p7-r12/synthetic-shadow.json').read_text())
+    if offset_minutes:
+        def shift(value):
+            if isinstance(value, dict):
+                return {k: shift(v) for k, v in value.items()}
+            if isinstance(value, list):
+                return [shift(v) for v in value]
+            if isinstance(value, str) and value.startswith('2026-'):
+                return (utc(value) + timedelta(minutes=offset_minutes)).isoformat()
+            return value
+        fixture = shift(fixture)
     data = fixture['source']['payload']
     binding = data['binding']
     deployment = {'map': [['account_id', binding['account']]]}
@@ -52,7 +65,7 @@ def evaluated(rows):
     evidence = normalize(rows)
     record = json.loads((ROOT / 'docs/validation/p7-r11/protocol.json').read_text())
     return dict(evidence=evidence, description=describe(evidence),
-                evaluation=evaluate(record, evidence, evaluated_at='2026-11-15T12:31:00Z'))
+                evaluation=evaluate(record, evidence, evaluated_at='2026-11-16T14:00:00Z'))
 
 
 def test_r12_reads_normalized_original_proposal():
@@ -66,17 +79,94 @@ def test_r12_reads_normalized_original_proposal():
     assert window['description']['confirmed_exchange_fills'] == 0
 
 
-def test_independent_windows_do_not_count_quotes_as_proposals():
+def test_rewrapped_source_proposals_rejected_before_aggregation():
     a, b = evaluated(events()), evaluated(events('window-b'))
+    assert a['evaluation']['engineering_status'] == b['evaluation']['engineering_status'] == 'VALID_ENGINEERING_OBSERVATION'
+    assert a['description']['counts']['forward_quote_pairs'] == 3
+    # Rejection must precede any access to the counts being aggregated.
+    b.pop('description')
+    with pytest.raises(ValueError, match='duplicate source'):
+        summarize([a, b])
+
+
+def test_independent_windows_do_not_count_quotes_as_proposals():
+    a, b = evaluated(events()), evaluated(events('window-b', offset_minutes=10))
+    assert a['evaluation']['engineering_status'] == b['evaluation']['engineering_status'] == 'VALID_ENGINEERING_OBSERVATION'
+    assert a['evidence']['source']['payload']['proposals'][0]['id'] == b['evidence']['source']['payload']['proposals'][0]['id']
     result = summarize([a, b])
     assert result['counts']['observation_windows'] == 2
     assert result['counts']['independent_proposals'] == 2
+    assert result['counts']['forward_quote_pairs'] == 6
+    assert result['counts']['captured_books'] == 2 * a['description']['counts']['captured_books']
+    assert result['counts']['qualified_books'] == result['counts']['captured_books']
     assert result['counts']['qualified_forward_quote_pairs'] == 6
     with pytest.raises(ValueError, match='duplicate'):
         summarize([a, deepcopy(a)])
     b['evidence']['source']['payload']['strategy_definition_sha256'] = 'different'
     with pytest.raises(ValueError, match='incompatible'):
         summarize([a, b])
+
+
+@pytest.mark.parametrize('field,value', [
+    ('id', 'renamed'), ('source', 'renamed-bar'), ('limit', '10000'),
+    ('quantity', '2'), ('proposed_at', '2026-11-15T12:29:02Z'),
+    ('captured_at', '2026-11-15T12:29:03Z')])
+def test_single_proposal_edit_does_not_create_independent_market_sample(field, value):
+    rows = events('window-b')
+    proposal = next(e for e in rows if e['kind'] == 'capture')['proposals'][0]
+    proposal[field] = value
+    if field == 'source':
+        next(e for e in rows if e['kind'] == 'begin')['source'] = value
+    with pytest.raises(ValueError, match='duplicate source'):
+        summarize([evaluated(events()), evaluated(rows)])
+
+
+def test_quote_reuse_rejected_even_with_independent_proposal_and_bars():
+    a = evaluated(events())
+    b = evaluated(events('window-b', offset_minutes=10))
+    b['evidence']['source']['payload']['books'] = deepcopy(a['evidence']['source']['payload']['books'])
+    with pytest.raises(ValueError, match='duplicate source quote'):
+        summarize([a, b])
+
+
+def test_bar_reuse_rejected_without_shared_quotes():
+    a = evaluated(events())
+    b = evaluated(events('window-b'))
+    b['evidence']['source']['payload']['books'] = []
+    b['evidence']['source']['payload']['proposals'][0]['id'] = 'renamed'
+    with pytest.raises(ValueError, match='duplicate source Bar slice'):
+        summarize([a, b])
+
+
+def test_same_window_id_rejected_even_for_distinct_sources():
+    with pytest.raises(ValueError, match='duplicate observation window'):
+        summarize([evaluated(events()), evaluated(events(offset_minutes=10))])
+
+
+def test_identical_evidence_rejected():
+    a = evaluated(events())
+    with pytest.raises(ValueError, match='duplicate observation window'):
+        summarize([a, deepcopy(a)])
+
+
+def test_frozen_r13_sources_and_rejections_unchanged():
+    from factorlab.experiments.grid_forward_observation import read_events
+
+    root = ROOT / 'docs/validation/p7-r13'
+    windows = []
+    for index, name in enumerate(('window-a', 'window-b'), 1):
+        frozen = json.loads((root / f'normalized/window-{index}.json').read_text())
+        evidence = normalize(read_events(root / name / 'events.csv'))
+        assert evidence == frozen['evidence']
+        current = evaluated(read_events(root / name / 'events.csv'))
+        assert current['description'] == frozen['description']
+        assert current['evaluation']['issues'] == frozen['evaluation']['issues']
+        assert current['evaluation']['sample_status'] == 'INSUFFICIENT_SAMPLE'
+        assert current['description']['confirmed_exchange_fills'] == 0
+        windows.append(current)
+    summary = summarize(windows)
+    assert summary['counts'] == json.loads((root / 'normalized/summary.json').read_text())['counts']
+    assert summary['counts']['qualified_forward_quote_pairs'] == 0
 
 
 @pytest.mark.parametrize('kind', ['resume', 'interruption', 'rejected_book'])

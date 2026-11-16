@@ -184,6 +184,30 @@ def describe(evidence):
         descriptive_only=True, proposals=observations, confirmed_exchange_fills=0)
 
 
+def _source_identities(evidence):
+    """Identify source records, not experiment labels or session start times.
+
+    Bar slices and quote market times are separate reuse guards: editing one
+    proposal field must not turn the same market observation into a new sample.
+    Shared market records are rejected even when their receipt times differ.
+    """
+    data = evidence['source']['payload']
+    binding = data['binding']
+    strategy = tuple(binding[k] for k in ('account', 'instrument', 'strategy', 'version',
+                                         'interval_seconds'))
+    bars = {b['id']: b for b in data['bars']}
+    proposals = {
+        (strategy, data['strategy_definition_sha256'], p['id'], p['bar_id'],
+         utc(p['market_at']), utc(p['decision_at']), utc(p['captured_at']),
+         utc(p['deadline']), p['side'], D(p['price']), D(p['quantity']),
+         json_hash(bars[p['bar_id']]))
+        for p in data['proposals']}
+    slices = {(binding['instrument'], binding['interval_seconds'], utc(b['closed_at']))
+              for b in data['bars']}
+    quotes = {(binding['instrument'], utc(b['market_at'])) for b in data['books']}
+    return proposals, slices, quotes
+
+
 def summarize(windows):
     identities = [w['evidence']['source']['payload']['observation_id'] for w in windows]
     if len(set(identities)) != len(identities):
@@ -192,6 +216,14 @@ def summarize(windows):
     versions = {w['evidence']['source']['payload']['binding']['version'] for w in windows}
     if len(definitions) != 1 or len(versions) != 1:
         raise ValueError('incompatible strategy definitions')
+    seen_sources = (set(), set(), set())
+    for window in windows:
+        sources = _source_identities(window['evidence'])
+        for kind, seen, current in zip(('proposal', 'Bar slice', 'quote'), seen_sources, sources):
+            if seen.intersection(current):
+                raise ValueError('duplicate source ' + kind + ' across observation windows')
+        for seen, current in zip(seen_sources, sources):
+            seen.update(current)
     counts = Counter()
     qualified_books = qualified_pairs = 0
     for window in windows:
