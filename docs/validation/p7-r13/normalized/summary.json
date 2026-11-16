@@ -1,0 +1,50 @@
+{
+  "counts": {
+    "observation_windows": 2,
+    "independent_proposals": 2,
+    "input_proposal_records": 2,
+    "captured_books": 58,
+    "forward_quote_pairs": 50,
+    "touched_proposals": 0,
+    "right_censored_proposals": 2,
+    "qualified_books": 0,
+    "qualified_forward_quote_pairs": 0
+  },
+  "windows": [
+    {
+      "observation_id": "p7-r13-window-a",
+      "evidence_hash": "5744bbc6a38964e6b4d0c22d61626479d45058211e7ed354dda61f920de17ee9",
+      "engineering_status": "INVALID_EVIDENCE",
+      "sample_status": "INSUFFICIENT_SAMPLE",
+      "issues": [
+        {
+          "code": "TERMINAL_OBSERVATION_INTERRUPTION",
+          "identity": null
+        },
+        {
+          "code": "INVALID_TERMINATION_TIME",
+          "identity": null
+        }
+      ]
+    },
+    {
+      "observation_id": "p7-r13-window-b",
+      "evidence_hash": "1d588737f42c4fd639b3864b740c1a0d86d59abdf8cbbaeb0934ce4b78f0103c",
+      "engineering_status": "INVALID_EVIDENCE",
+      "sample_status": "INSUFFICIENT_SAMPLE",
+      "issues": [
+        {
+          "code": "TERMINAL_OBSERVATION_INTERRUPTION",
+          "identity": null
+        },
+        {
+          "code": "INVALID_TERMINATION_TIME",
+          "identity": null
+        }
+      ]
+    }
+  ],
+  "receipt_status": "UNVERIFIED_RECEIPT",
+  "economic_status": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+  "confirmed_exchange_fills": 0
+}

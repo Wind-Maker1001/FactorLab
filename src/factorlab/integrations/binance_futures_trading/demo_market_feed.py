@@ -114,6 +114,7 @@ class DemoMarketFeed:
             interval=self.interval, startTime=start, endTime=server, limit=self.max_backfill + 1), signed=False)
         if not isinstance(rows, list) or len(rows) > self.max_backfill + 1:
             raise FeedPaused('INVALID_KLINES')
+        bars_received_at = self.clock()
         bars, previous = [], None
         for row in rows:
             if not isinstance(row, list) or len(row) < 7:
@@ -161,7 +162,11 @@ class DemoMarketFeed:
         if (self.clock() - server_at).total_seconds() > self.max_quote_age:
             raise FeedPaused('STALE_POLL')
         book_received_at = self.clock()
+        raw_by_open = {row[0]: row for row in rows}
         for bar in bars:
+            if hasattr(self.consumer, 'observe_bar_receipt'):
+                self.consumer.observe_bar_receipt(bar,
+                    raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.clock())
             self.consumer.closed_bar(bar)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
         delivered = 0
