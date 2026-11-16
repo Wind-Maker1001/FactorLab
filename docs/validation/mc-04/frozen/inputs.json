@@ -1,0 +1,575 @@
+{
+  "unlevered": {
+    "rule": {
+      "version": "mc-perp-risk/v1",
+      "symbol": "SYNTHUSDT",
+      "contract_unit_base": "1",
+      "tiers": [
+        {
+          "floor": "0",
+          "cap": "1000000",
+          "initial_rate": "1",
+          "maintenance_rate": "0.05",
+          "deduction": "0"
+        }
+      ],
+      "valid_from": "2026-01-01T00:00:00+00:00",
+      "valid_until": "2027-01-01T00:00:00+00:00",
+      "source": "MC-04 synthetic arithmetic, not Binance rules",
+      "fee_rate": "0.0004",
+      "exit_cost_rate": "0.001"
+    },
+    "frames": [
+      {
+        "time": "2026-01-01T00:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T08:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T16:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "90",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "900",
+        "valuation_adjustment": "0"
+      }
+    ],
+    "funding": [],
+    "mode": "CROSS",
+    "budget": "1000",
+    "isolated_collateral": null,
+    "portfolio_complete": true,
+    "order_margin": "0"
+  },
+  "positive_funding": {
+    "rule": {
+      "version": "mc-perp-risk/v1",
+      "symbol": "SYNTHUSDT",
+      "contract_unit_base": "1",
+      "tiers": [
+        {
+          "floor": "0",
+          "cap": "1000000",
+          "initial_rate": "0.1",
+          "maintenance_rate": "0.05",
+          "deduction": "0"
+        }
+      ],
+      "valid_from": "2026-01-01T00:00:00+00:00",
+      "valid_until": "2027-01-01T00:00:00+00:00",
+      "source": "MC-04 synthetic arithmetic, not Binance rules",
+      "fee_rate": "0.0004",
+      "exit_cost_rate": "0.001"
+    },
+    "frames": [
+      {
+        "time": "2026-01-01T00:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T08:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T16:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      }
+    ],
+    "funding": [
+      {
+        "event_id": "positive_funding-1",
+        "time": "2026-01-01T08:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "0.01",
+        "mark": "100",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      },
+      {
+        "event_id": "positive_funding-2",
+        "time": "2026-01-01T16:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "0.01",
+        "mark": "100",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      }
+    ],
+    "mode": "CROSS",
+    "budget": "1000",
+    "isolated_collateral": null,
+    "portfolio_complete": true,
+    "order_margin": "0"
+  },
+  "negative_funding": {
+    "rule": {
+      "version": "mc-perp-risk/v1",
+      "symbol": "SYNTHUSDT",
+      "contract_unit_base": "1",
+      "tiers": [
+        {
+          "floor": "0",
+          "cap": "1000000",
+          "initial_rate": "0.1",
+          "maintenance_rate": "0.05",
+          "deduction": "0"
+        }
+      ],
+      "valid_from": "2026-01-01T00:00:00+00:00",
+      "valid_until": "2027-01-01T00:00:00+00:00",
+      "source": "MC-04 synthetic arithmetic, not Binance rules",
+      "fee_rate": "0.0004",
+      "exit_cost_rate": "0.001"
+    },
+    "frames": [
+      {
+        "time": "2026-01-01T00:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T08:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T16:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      }
+    ],
+    "funding": [
+      {
+        "event_id": "negative_funding-1",
+        "time": "2026-01-01T08:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "-0.01",
+        "mark": "100",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      },
+      {
+        "event_id": "negative_funding-2",
+        "time": "2026-01-01T16:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "-0.01",
+        "mark": "100",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      }
+    ],
+    "mode": "CROSS",
+    "budget": "1000",
+    "isolated_collateral": null,
+    "portfolio_complete": true,
+    "order_margin": "0"
+  },
+  "mark_crash": {
+    "rule": {
+      "version": "mc-perp-risk/v1",
+      "symbol": "SYNTHUSDT",
+      "contract_unit_base": "1",
+      "tiers": [
+        {
+          "floor": "0",
+          "cap": "1000000",
+          "initial_rate": "0.1",
+          "maintenance_rate": "0.05",
+          "deduction": "0"
+        }
+      ],
+      "valid_from": "2026-01-01T00:00:00+00:00",
+      "valid_until": "2027-01-01T00:00:00+00:00",
+      "source": "MC-04 synthetic arithmetic, not Binance rules",
+      "fee_rate": "0.0004",
+      "exit_cost_rate": "0.001"
+    },
+    "frames": [
+      {
+        "time": "2026-01-01T00:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "50",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T08:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "50",
+            "entry_price": "100",
+            "mark_price": "85",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "250",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T16:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "50",
+            "entry_price": "100",
+            "mark_price": "79",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "-50",
+        "valuation_adjustment": "0"
+      }
+    ],
+    "funding": [
+      {
+        "event_id": "mark_crash-1",
+        "time": "2026-01-01T08:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "0.01",
+        "mark": "85",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      },
+      {
+        "event_id": "mark_crash-2",
+        "time": "2026-01-01T16:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "0.01",
+        "mark": "79",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      }
+    ],
+    "mode": "CROSS",
+    "budget": "1000",
+    "isolated_collateral": null,
+    "portfolio_complete": true,
+    "order_margin": "0"
+  },
+  "isolated_crash": {
+    "rule": {
+      "version": "mc-perp-risk/v1",
+      "symbol": "SYNTHUSDT",
+      "contract_unit_base": "1",
+      "tiers": [
+        {
+          "floor": "0",
+          "cap": "1000000",
+          "initial_rate": "0.1",
+          "maintenance_rate": "0.05",
+          "deduction": "0"
+        }
+      ],
+      "valid_from": "2026-01-01T00:00:00+00:00",
+      "valid_until": "2027-01-01T00:00:00+00:00",
+      "source": "MC-04 synthetic arithmetic, not Binance rules",
+      "fee_rate": "0.0004",
+      "exit_cost_rate": "0.001"
+    },
+    "frames": [
+      {
+        "time": "2026-01-01T00:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T08:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "90",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "900",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T16:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "80",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "800",
+        "valuation_adjustment": "0"
+      }
+    ],
+    "funding": [],
+    "mode": "ISOLATED",
+    "budget": "1000",
+    "isolated_collateral": "100",
+    "portfolio_complete": true,
+    "order_margin": "0"
+  },
+  "same_exposure_small_budget": {
+    "rule": {
+      "version": "mc-perp-risk/v1",
+      "symbol": "SYNTHUSDT",
+      "contract_unit_base": "1",
+      "tiers": [
+        {
+          "floor": "0",
+          "cap": "1000000",
+          "initial_rate": "0.1",
+          "maintenance_rate": "0.05",
+          "deduction": "0"
+        }
+      ],
+      "valid_from": "2026-01-01T00:00:00+00:00",
+      "valid_until": "2027-01-01T00:00:00+00:00",
+      "source": "MC-04 synthetic arithmetic, not Binance rules",
+      "fee_rate": "0.0004",
+      "exit_cost_rate": "0.001"
+    },
+    "frames": [
+      {
+        "time": "2026-01-01T00:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "200",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T08:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "90",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "100",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T16:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "10",
+            "entry_price": "100",
+            "mark_price": "80",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "0",
+        "valuation_adjustment": "0"
+      }
+    ],
+    "funding": [],
+    "mode": "CROSS",
+    "budget": "200",
+    "isolated_collateral": null,
+    "portfolio_complete": true,
+    "order_margin": "0"
+  },
+  "short_positive": {
+    "rule": {
+      "version": "mc-perp-risk/v1",
+      "symbol": "SYNTHUSDT",
+      "contract_unit_base": "1",
+      "tiers": [
+        {
+          "floor": "0",
+          "cap": "1000000",
+          "initial_rate": "0.1",
+          "maintenance_rate": "0.05",
+          "deduction": "0"
+        }
+      ],
+      "valid_from": "2026-01-01T00:00:00+00:00",
+      "valid_until": "2027-01-01T00:00:00+00:00",
+      "source": "MC-04 synthetic arithmetic, not Binance rules",
+      "fee_rate": "0.0004",
+      "exit_cost_rate": "0.001"
+    },
+    "frames": [
+      {
+        "time": "2026-01-01T00:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "-10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T08:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "-10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      },
+      {
+        "time": "2026-01-01T16:00:00+00:00",
+        "positions": [
+          {
+            "instrument_id": "SYNTHUSDT",
+            "quantity": "-10",
+            "entry_price": "100",
+            "mark_price": "100",
+            "quote_currency": "USDT"
+          }
+        ],
+        "original_equity": "1000",
+        "valuation_adjustment": "0"
+      }
+    ],
+    "funding": [
+      {
+        "event_id": "short_positive-1",
+        "time": "2026-01-01T08:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "0.01",
+        "mark": "100",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      },
+      {
+        "event_id": "short_positive-2",
+        "time": "2026-01-01T16:00:00+00:00",
+        "symbol": "SYNTHUSDT",
+        "rate": "0.01",
+        "mark": "100",
+        "kind": "ASSUMED_SETTLEMENT",
+        "source": "independent frozen funding scenario"
+      }
+    ],
+    "mode": "CROSS",
+    "budget": "1000",
+    "isolated_collateral": null,
+    "portfolio_complete": true,
+    "order_margin": "0"
+  }
+}

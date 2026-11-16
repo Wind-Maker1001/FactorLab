@@ -1,0 +1,4 @@
+time,original_equity,valuation_adjustment,unrealized_pnl,funding,cumulative_funding,equity,risk_equity,external_balance,notional,initial_margin,maintenance_margin,order_margin,available_margin,margin_utilization,maintenance_utilization,equity_loss,hypothetical_exit_cost,events
+2026-01-01 00:00:00+00:00,1000,0,0,0,0,1000,1000,0,1000,100.0,50.00,0,900.0,0.1,0.05,0,1.4000,[]
+2026-01-01 08:00:00+00:00,1000,0,0,-10.00,-10.00,990.00,990.00,0,1000,100.0,50.00,0,890.00,0.1010101010101010101010101010,0.05050505050505050505050505051,10.00,1.4000,[]
+2026-01-01 16:00:00+00:00,1000,0,0,-10.00,-20.00,980.00,980.00,0,1000,100.0,50.00,0,880.00,0.1020408163265306122448979592,0.05102040816326530612244897959,20.00,1.4000,[]
