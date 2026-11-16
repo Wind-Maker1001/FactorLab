@@ -73,6 +73,37 @@ def test_r13_quote_gap_and_rejected_book_stop_instead_of_retry(tmp_path):
         consumer.observe_book(book(clock[0] - timedelta(seconds=6)), clock[0])
 
 
+def test_deadline_effective_end_is_separate_from_late_receipt(tmp_path, monkeypatch):
+    from contextlib import contextmanager
+    from factorlab.integrations.binance_futures_trading import forward_observation as observation
+
+    _, _, _, captured, _ = setup(tmp_path / 'fixture')
+    proposal = dict(next(iter(captured.proposals.values())))
+    clock = [NOW]
+    monkeypatch.setattr(observation, 'utcnow', lambda: clock[0])
+    monkeypatch.setattr(observation, 'DemoCredentialStore', lambda: None)
+
+    @contextmanager
+    def expired(*args, request_counts, **kwargs):
+        request_counts.evidence.append(dict(kind='capture', source=proposal['source'], proposals=[proposal]))
+        clock[0] = NOW + timedelta(seconds=601)
+        request_counts.before_request('feed', 'GET', '/fapi/v1/time')
+        yield
+
+    monkeypatch.setattr(observation, 'open_grid_session', expired)
+    output = tmp_path / 'deadline'
+    main(['--output', str(output), '--version', 'fixture', '--experiment-id', 'deadline-test',
+          '--seconds', '600', '--window-seconds', '600', '--max-requests', '600'])
+    from factorlab.experiments.grid_forward_observation import read_events
+    rows = read_events(output / 'events.csv')
+    terminal = next(e for e in rows if e['kind'] == 'end')
+    assert terminal['reason'] == 'DEADLINE'
+    assert terminal['at'] == (NOW + timedelta(seconds=600)).isoformat()
+    receipt = next(e for e in rows if e['kind'] == 'window_end')
+    assert receipt['at'] == clock[0].isoformat()
+    assert json.loads((output / 'summary.json').read_text())['termination'] == 'DEADLINE'
+
+
 def test_r13_restart_refused_before_network_and_retains_gap(tmp_path):
     output = tmp_path / 'window'
     evidence = ShadowEvidence(output / 'events.csv', version='fixture', window=600,

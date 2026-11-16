@@ -34,6 +34,10 @@ class ObservationFull(ValueError):
     """The configured evidence budget has been exhausted."""
 
 
+class ObservationDeadline(ObservationFull):
+    """The frozen window ended; receipt time may be later than effective end."""
+
+
 class BoundedRequests(RequestCounts):
     """Durably reserve every GET before dispatch, including Preview recovery."""
     def __init__(self, evidence, *, maximum, deadline):
@@ -52,7 +56,7 @@ class BoundedRequests(RequestCounts):
         if self.used >= self.maximum:
             raise ObservationFull('HTTP request budget exhausted')
         if utcnow() >= self.deadline:
-            raise ObservationFull('absolute experiment deadline reached')
+            raise ObservationDeadline('absolute experiment deadline reached')
         self.evidence.append(dict(kind='request', source=source, method=method,
                                   endpoint=path, at=utcnow().isoformat()))
         self.used += 1
@@ -395,10 +399,13 @@ def main(argv=None):
                     signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())
                     remaining = (deadline - utcnow()).total_seconds()
                     if remaining <= 0:
-                        raise ObservationFull('absolute experiment deadline reached')
+                        raise ObservationDeadline('absolute experiment deadline reached')
                     supervisor.run(seconds=remaining)
                     result.update(real_observation='RUN' if evidence.summary()['books'] else 'NOT_RUN',
                                   feed_reason=feed.reason)
+    except ObservationDeadline as error:
+        result.update(termination='DEADLINE', reason=str(error))
+        evidence.end('DEADLINE', at=deadline)
     except ObservationFull as error:
         result.update(termination='CAPACITY_LIMIT', reason=str(error))
         evidence.end('CAPACITY_LIMIT')
@@ -407,7 +414,7 @@ def main(argv=None):
         evidence.end('ERROR:' + type(error).__name__)
         raise
     finally:
-        evidence.end('RUN_END')
+        evidence.end('RUN_END', at=min(utcnow(), deadline))
         if args.experiment_id:
             evidence.append(dict(kind='window_end', at=utcnow().isoformat(),
                 reason=result.get('reason') or result.get('feed_reason') or 'RUN_END'), terminal=True)
