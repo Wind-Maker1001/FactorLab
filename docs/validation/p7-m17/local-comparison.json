@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-11-16T13:19:02.711933+00:00",
+  "source": "EXISTING_LOCAL_SQLITE_MODE_RO",
+  "active_campaign_present": false,
+  "expires_at": null,
+  "controller_snapshot_present": true,
+  "local_wallet_usdt": "4999.97114760",
+  "exchange_wallet_usdt": "4999.97114760",
+  "exchange_minus_local_wallet_usdt": "0E-8",
+  "local_positions": [],
+  "local_order_count": 7,
+  "local_confirmation_count": 7,
+  "mutations": 0
+}

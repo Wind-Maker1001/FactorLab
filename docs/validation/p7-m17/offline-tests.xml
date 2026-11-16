@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="82" time="37.264" timestamp="2026-11-16T21:16:46.573735+08:00" hostname="Desktop"><testcase classname="tests.integrations.test_binance_demo_fill_closed_loop" name="test_partial_buy_sell_fees_fifo_equity_and_restart" time="3.957" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_fill_history_fault_blocks_projection_until_authoritative_repair[missing-incomplete account trades]" time="1.658" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_fill_history_fault_blocks_projection_until_authoritative_repair[non_usdt-non-USDT commission]" time="1.756" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_fill_history_fault_blocks_projection_until_authoritative_repair[notional-trade notional does not match]" time="2.143" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_fill_history_fault_blocks_projection_until_authoritative_repair[identity-order response identity mismatch]" time="1.815" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_duplicate_trade_message_before_and_after_restart" time="1.908" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_cumulative_regression_retains_confirmed_partial_fill" time="1.501" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_lost_ack_and_failed_get_never_duplicate_post" time="1.665" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_partial_fill_during_cancel_is_booked_before_risk_release" time="1.707" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_interrupted_grid_confirmation_replays_once_after_restart" time="1.922" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_protocol_commit_survives_controller_rollback[accepted_before_controller_commit]" time="1.639" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_protocol_commit_survives_controller_rollback[fill_before_controller_commit]" time="1.651" /><testcase classname="tests.integrations.test_binance_demo_fill_faults" name="test_excess_reduce_only_sell_is_blocked_before_post" time="1.246" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_http_request_contract[None-BUY]" time="0.007" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_http_request_contract[None-SELL]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_http_request_contract[100.01-BUY]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_http_request_contract[100.01-SELL]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_default_and_invalid_capabilities" time="0.002" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_wrong_environment_host_account_and_no_direct_dispatch" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change0]" time="0.001" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change1]" time="0.000" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change2]" time="0.001" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change3]" time="0.001" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change4]" time="0.001" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change5]" time="0.000" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change6]" time="0.000" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change7]" time="0.000" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_plan_rejects_missing_or_invalid_limits[change8]" time="0.001" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[mode]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[margin]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[brackets]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[canTrade]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[locked]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[kill]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[quantity]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[notional]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[count]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[open]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[loss]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[occupied]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[expired]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[symbol]" time="0.008" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_admission_rejects[prefix]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_confirmed_fee_triggers_loss_limit_before_rest" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_unknown_submit_cancel_and_duplicate_recovery" time="0.015" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_http_uncertainty_does_not_retry[response0]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_http_uncertainty_does_not_retry[response1]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_capability_cannot_restore" time="1.229" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_redirect_does_not_follow_or_fallback" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_recovery_without_network_capability_and_changed_key_rejection" time="1.267" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_shared_controller_cannot_be_bypassed_and_margin_tracks_fills" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_network_path_exchange_filters[0.001-None]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_network_path_exchange_filters[0.01-None]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_network_path_exchange_filters[2-100.001]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_network_path_exchange_filters[2-104]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_cancel_http_timeout_query_only_recovery" time="0.009" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_preflight_retains_only_public_rules_and_conclusions" time="0.001" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_concrete_lock_admission_through_controller[indicators0-False]" time="0.007" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_concrete_lock_admission_through_controller[indicators1-False]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_concrete_lock_admission_through_controller[indicators2-False]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_concrete_lock_admission_through_controller[indicators3-False]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_concrete_lock_admission_through_controller[indicators4-False]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_concrete_lock_admission_through_controller[indicators5-True]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_concrete_lock_admission_through_controller[indicators6-True]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_failed_observation_disconnects_without_retry[response0-RATE_LIMIT]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_failed_observation_disconnects_without_retry[response1-AUTH]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_failed_observation_disconnects_without_retry[response2-SIGNATURE]" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_failed_observation_disconnects_without_retry[response3-EXCHANGE_REJECTED]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_failed_observation_disconnects_without_retry[response4-DataQualityError]" time="0.005" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_failed_observation_disconnects_without_retry[response5-MALFORMED_RESPONSE]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_failed_observation_disconnects_without_retry[response6-CONFLICTING_FIELDS]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_demo_refresh_uses_v2_can_trade_when_v3_omits_it[True]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_demo_refresh_uses_v2_can_trade_when_v3_omits_it[False]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_demo_refresh_uses_v2_can_trade_when_v3_omits_it[None]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_demo_refresh_uses_v2_can_trade_when_v3_omits_it[true]" time="0.004" /><testcase classname="tests.integrations.test_binance_demo_network" name="test_empty_live_shape_observation_refreshes_and_admits" time="0.006" /><testcase classname="tests.integrations.test_binance_demo_runtime" name="test_current_user_credential_available_in_independent_process" time="0.240"><failure message="subprocess.CalledProcessError: Command '['D:\\Environments\\factorlab-py314\\Scripts\\python.exe', '-c', &quot;\nimport sys\nfrom factorlab.integrations.binance_futures_trading.demo_credentials import DemoCredentialStore\nfrom factorlab.integrations.binance_futures_trading.protocol import Credentials, Environment\nstore = DemoCredentialStore(namespace=sys.argv[1])\nassert store.read() == Credentials('synthetic-demo-key', 'synthetic-demo-secret', Environment.DEMO)\nassert store.read_config() == {'account_id': 'test-binding'}\n&quot;, 'FactorLab-test-3974231caa7e4ea88e0b68ded9d167eb']' returned non-zero exit status 1.">def test_current_user_credential_available_in_independent_process():
+        if os.name != 'nt':
+            pytest.skip('Windows Credential Manager')
+        namespace = 'FactorLab-test-' + uuid4().hex
+        store = DemoCredentialStore(namespace=namespace)
+        try:
+            store.write(Credentials('synthetic-demo-key', 'synthetic-demo-secret', Environment.DEMO))
+            store.write_config({'account_id': 'test-binding'})
+&gt;           subprocess.run([sys.executable, '-c', '''
+    import sys
+    from factorlab.integrations.binance_futures_trading.demo_credentials import DemoCredentialStore
+    from factorlab.integrations.binance_futures_trading.protocol import Credentials, Environment
+    store = DemoCredentialStore(namespace=sys.argv[1])
+    assert store.read() == Credentials('synthetic-demo-key', 'synthetic-demo-secret', Environment.DEMO)
+    assert store.read_config() == {'account_id': 'test-binding'}
+    ''', namespace], check=True)
+
+tests\integrations\test_binance_demo_runtime.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['D:\\Environments\\factorlab-py314\\Scripts\\python.exe', '-c', "\nimport sys\nfrom factorlab.integrations.binance_f...\nassert store.read_config() == {'account_id': 'test-binding'}\n", 'FactorLab-test-3974231caa7e4ea88e0b68ded9d167eb'],)
+kwargs = {}
+process = &lt;Popen: returncode: 1 args: ['D:\\Environments\\factorlab-py314\\Scripts\\py...&gt;
+stdout = None, stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output &amp; stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+&gt;               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['D:\\Environments\\factorlab-py314\\Scripts\\python.exe', '-c', "\nimport sys\nfrom factorlab.integrations.binance_futures_trading.demo_credentials import DemoCredentialStore\nfrom factorlab.integrations.binance_futures_trading.protocol import Credentials, Environment\nstore = DemoCredentialStore(namespace=sys.argv[1])\nassert store.read() == Credentials('synthetic-demo-key', 'synthetic-demo-secret', Environment.DEMO)\nassert store.read_config() == {'account_id': 'test-binding'}\n", 'FactorLab-test-3974231caa7e4ea88e0b68ded9d167eb']' returned non-zero exit status 1.
+
+..\..\FactorLab-independent-candidate\local-runtimes\cpython-3.14.0-windows-x86_64-none\Lib\subprocess.py:577: CalledProcessError</failure></testcase><testcase classname="tests.integrations.test_binance_demo_runtime" name="test_demo_smoke_lifecycle_and_reopen[False-1]" time="1.249" /><testcase classname="tests.integrations.test_binance_demo_runtime" name="test_demo_smoke_lifecycle_and_reopen[False-2]" time="1.894" /><testcase classname="tests.integrations.test_binance_demo_runtime" name="test_demo_smoke_lifecycle_and_reopen[True-2]" time="1.306" /><testcase classname="tests.integrations.test_binance_demo_runtime" name="test_stopped_campaign_cannot_dispatch_with_a_running_capability" time="0.824" /><testcase classname="tests.integrations.test_binance_demo_runtime" name="test_separate_smoke_approval_preserves_consumed_budget" time="0.226" /></testsuite></testsuites>
