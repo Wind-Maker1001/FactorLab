@@ -101,8 +101,135 @@ class DemoRuntime:
 
     def stop(self):
         with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            authorization = self.continuous_authorization()
+            if authorization is not None:
+                authorization['state'] = 'STOPPED'
+                self._set('continuous', json.dumps(authorization))
+            self._set('continuous_window', '')
             self._set('active', '')
             self._set('stop_epoch', uuid4().hex)
+
+    def continuous_authorization(self):
+        value = self._get('continuous')
+        return json.loads(value) if value is not None else None
+
+    def _continuous_campaigns(self, authorization):
+        return [campaign for (payload,) in self.db.execute('SELECT payload FROM campaigns ORDER BY rowid')
+                if (campaign := json.loads(payload))['journal_id'] == authorization['journal_id']
+                and not campaign['smoke']]
+
+    def consumption(self, authorization):
+        campaigns = {campaign['id'] for campaign in self._continuous_campaigns(authorization)}
+        count, notional = 0, Decimal(0)
+        for campaign, payload in self.db.execute("SELECT campaign, parameters FROM dispatches WHERE method='POST'"):
+            if campaign in campaigns:
+                params = json.loads(payload)
+                count += 1
+                notional += Decimal(params['quantity']) * Decimal(params['price'])
+        return dict(posts=count, submitted_notional=str(notional))
+
+    def start_continuous(self, binding, *, opening_equity, stop_epoch, total_orders=100,
+                         total_notional=Decimal('700'), seconds=10800, orders=4,
+                         max_loss=Decimal('1'), prefix=None):
+        """Record continuous permission once; subsequent starts never reset it."""
+        if (type(total_orders) is not int or total_orders <= 0 or total_notional <= 0
+                or seconds <= 0 or not 1 <= orders <= 1000 or not 0 < max_loss <= Decimal('1')):
+            raise SafetyBlocked('invalid continuous Demo risk budget')
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            if self.stop_epoch() != stop_epoch:
+                raise SafetyBlocked('Demo was stopped during account preflight')
+            saved = self.continuous_authorization()
+            if saved is not None:
+                self._validate_continuous(binding, saved)
+                if saved['state'] != 'RUNNING':
+                    raise SafetyBlocked('continuous Demo explicitly stopped')
+                if (saved['total_orders'], Decimal(saved['total_notional']), saved['seconds'], saved['orders'],
+                        Decimal(saved['max_loss'])) != (total_orders, total_notional, seconds, orders, max_loss):
+                    raise SafetyBlocked('continuous Demo policy is frozen')
+                return saved
+            history = self._continuous_campaigns(dict(journal_id=journal_id(binding['account_id'])))
+            if history:
+                opening_equity = Decimal(history[-1]['opening_equity'])
+                prefix = prefix or history[-1]['prefix']
+            authorization = dict(version=1, id='continuous-' + uuid4().hex, state='RUNNING',
+                journal_id=journal_id(binding['account_id']), account_id=binding['account_id'],
+                account_configuration=binding['configuration'], policy=LIMIT_POLICY,
+                prefix=prefix or 'fl-' + uuid4().hex[:16], opening_equity=str(opening_equity),
+                max_loss=str(max_loss), total_orders=total_orders, total_notional=str(total_notional),
+                seconds=seconds, orders=orders, stop_epoch=stop_epoch)
+            consumed = self.consumption(authorization)
+            if consumed['posts'] > total_orders or Decimal(consumed['submitted_notional']) > total_notional:
+                raise SafetyBlocked('historical Demo consumption exceeds continuous budget')
+            self._set('continuous', json.dumps(authorization))
+            self._set('continuous_schema', '1')
+            self._set('active', '')
+            return authorization
+
+    def _validate_continuous(self, binding, authorization):
+        if (authorization['account_id'] != binding['account_id']
+                or authorization['journal_id'] != journal_id(binding['account_id'])
+                or authorization['account_configuration'] != binding['configuration']
+                or authorization['policy'] != LIMIT_POLICY):
+            raise SafetyBlocked('continuous Demo account or frozen policy mismatch')
+
+    def halt(self, reason):
+        """Latch risk protection without presenting another approval workflow."""
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            authorization = self.continuous_authorization()
+            if authorization is not None:
+                if authorization['state'] == 'RUNNING':
+                    authorization['state'] = 'HALTED'
+                    self._set('continuous', json.dumps(authorization))
+                self._set('continuous_diagnostic', json.dumps(dict(reason=reason, observed_at=now().isoformat())))
+            self._set('active', '')
+            self._set('continuous_window', '')
+            self._set('stop_epoch', uuid4().hex)
+
+    def ensure_window(self, binding, *, facts, reconciled, stop_epoch):
+        """Select or create one window after GET reconciliation, never across STOP."""
+        from .demo_session import demo_account_configuration
+        if (not reconciled or facts.account_id != binding['account_id'] or facts.can_trade is not True
+                or demo_account_configuration(facts) != binding['configuration']):
+            raise SafetyBlocked('fresh bound Demo account reconciliation required')
+        authorization = self.continuous_authorization()
+        if authorization is not None and authorization['state'] == 'RUNNING':
+            funds = facts.usdt()
+            loss = Decimal(authorization['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit'])
+            if loss >= Decimal(authorization['max_loss']):
+                self.halt('global Demo loss budget exhausted')
+                raise SafetyBlocked('global Demo loss budget exhausted')
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            authorization = self.continuous_authorization()
+            if authorization is None or authorization['state'] != 'RUNNING':
+                raise SafetyBlocked('continuous Demo is not RUNNING')
+            self._validate_continuous(binding, authorization)
+            if stop_epoch != self.stop_epoch() or authorization['stop_epoch'] != stop_epoch:
+                raise SafetyBlocked('continuous Demo stopped during recovery')
+            funds = facts.usdt()
+            loss = Decimal(authorization['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit'])
+            self._set('continuous_account', json.dumps(dict(loss=str(loss),
+                exposure=str(sum((abs(p.quantity) * p.mark_price for p in facts.shared().positions), Decimal(0))),
+                observed_at=facts.observed_at.isoformat())))
+            if loss >= Decimal(authorization['max_loss']):
+                raise SafetyBlocked('global Demo loss budget exhausted')
+            key = self._get('continuous_window')
+            campaign = self.campaign(key) if key else None
+            if (campaign is None or now() >= datetime.fromisoformat(campaign['expires_at'])
+                    or self.post_count(campaign['id']) >= campaign['orders']):
+                campaign = dict(id='window-' + uuid4().hex, authorization=authorization['id'],
+                    journal_id=authorization['journal_id'], prefix=authorization['prefix'],
+                    expires_at=(now() + timedelta(seconds=authorization['seconds'])).isoformat(),
+                    seconds=authorization['seconds'], orders=authorization['orders'],
+                    opening_equity=authorization['opening_equity'], max_loss=authorization['max_loss'],
+                    smoke=False, policy=LIMIT_POLICY, account_configuration=binding['configuration'])
+                self.db.execute('INSERT INTO campaigns VALUES (?,?)', (campaign['id'], json.dumps(campaign)))
+                self._set('continuous_window', campaign['id'])
+            self._set('continuous_recovery', '')
+            return campaign
 
     def stop_epoch(self):
         return self._get('stop_epoch')
@@ -119,6 +246,8 @@ class DemoRuntime:
             self.db.execute('BEGIN IMMEDIATE')
             if stop_epoch != self.stop_epoch():
                 raise SafetyBlocked('Demo was stopped during account preflight')
+            if self.continuous_authorization() is not None:
+                raise SafetyBlocked('continuous Demo policy cannot be replaced by another campaign')
             active = self.active_campaign()
             if active is not None:
                 raise SafetyBlocked('an existing Demo campaign is active; stop it before enabling another')
@@ -135,7 +264,8 @@ class DemoRuntime:
         return config
 
     def active_campaign(self):
-        key = self._get('active')
+        authorization = self.continuous_authorization()
+        key = (self._get('continuous_window') if authorization['state'] == 'RUNNING' else None) if authorization else self._get('active')
         if key:
             campaign = self.campaign(key)
             if now() < datetime.fromisoformat(campaign['expires_at']):
@@ -164,14 +294,32 @@ class DemoRuntime:
     def report(self, smoke_id):
         campaign = self.active_campaign()
         smoke = self.campaign(smoke_id)
-        return dict(enabled=campaign is not None, expires_at=campaign['expires_at'] if campaign else None,
-            authorization_kind=('SMOKE' if campaign['smoke'] else 'PERSISTENT') if campaign else None,
+        authorization = self.continuous_authorization()
+        result = dict(enabled=campaign is not None, expires_at=campaign['expires_at'] if campaign else None,
+            authorization_kind='CONTINUOUS' if authorization else (
+                ('SMOKE' if campaign['smoke'] else 'PERSISTENT') if campaign else None),
             policy=campaign['policy'] if campaign else None,
             post_budget=campaign['orders'] if campaign else None,
             posts_consumed=self.post_count(campaign['id']) if campaign else None,
             limits=dict(symbol=SYMBOL, max_quantity=str(MAX_QUANTITY), max_notional_usdt=str(MAX_NOTIONAL),
                 max_open_orders=1, max_loss_usdt=campaign['max_loss']) if campaign else None,
             smoke_started=smoke is not None)
+        if authorization is not None:
+            result['USER_DEMO_AUTHORIZATION'] = dict(state=authorization['state'], id=authorization['id'],
+                max_loss=authorization['max_loss'], opening_equity=authorization['opening_equity'],
+                total_orders=authorization['total_orders'], total_notional=authorization['total_notional'],
+                consumed=self.consumption(authorization))
+            result['CAMPAIGN_WINDOW'] = dict(id=campaign['id'], expires_at=campaign['expires_at'],
+                orders=campaign['orders'], consumed=self.post_count(campaign['id'])) if campaign else None
+            receipts = [json.loads(value) for (value,) in self.db.execute(
+                'SELECT receipt FROM dispatches WHERE receipt IS NOT NULL')]
+            result['EXCHANGE_WRITE_CAPABILITY'] = dict(historical_success=any(
+                receipt['http_status'] == 200 for receipt in receipts), current='EXCHANGE_RESPONSE_AUTHORITATIVE')
+            account = self._get('continuous_account')
+            result['ACCOUNT_EXECUTION_STATE'] = dict(account=json.loads(account) if account else None,
+                recovery_required=bool(self._get('continuous_recovery')),
+                diagnostic=self._get('continuous_diagnostic'))
+        return result
 
     def post_count(self, campaign):
         return self.db.execute("SELECT count(*) FROM dispatches WHERE campaign = ? AND method = 'POST'",
@@ -190,21 +338,40 @@ class DemoRuntime:
             raise SafetyBlocked('persisted Demo execution policy is unsupported')
         if campaign['account_configuration'] != binding['configuration']:
             raise SafetyBlocked('Demo account configuration differs from the enabled campaign')
+        continuous = self.continuous_authorization() if campaign.get('authorization') else None
         plan = DemoExecutionPlan(account_id=binding['account_id'], order_types=frozenset({'LIMIT'}),
-            max_quantity=MAX_QUANTITY, max_notional=MAX_NOTIONAL, max_orders=campaign['orders'], max_open_orders=1,
+            max_quantity=MAX_QUANTITY, max_notional=MAX_NOTIONAL,
+            max_orders=continuous['total_orders'] if continuous else campaign['orders'], max_open_orders=1,
             max_seconds=campaign['seconds'], max_loss=Decimal(campaign['max_loss']), max_margin=MAX_NOTIONAL,
             expires_at=datetime.fromisoformat(campaign['expires_at']), client_id_prefix=campaign['prefix'],
             cleanup='CANCEL_KNOWN_THEN_STOP', recovery='GET_RECONCILE_NO_RESUBMIT')
-        return DemoNetworkAuthorization(plan)
+        cancellation_ids = ()
+        if campaign.get('authorization'):
+            authorization = self.continuous_authorization()
+            owners = {item['id'] for item in self._continuous_campaigns(authorization)}
+            cancellation_ids = [client_id for owner, client_id in self.db.execute(
+                "SELECT campaign, client_id FROM dispatches WHERE method='POST'") if owner in owners]
+        return DemoNetworkAuthorization(plan, cancellation_ids=cancellation_ids)
 
     def reserve(self, campaign, method, params, plan, *, expected, facts):
         """Consume each admitted POST/DELETE exactly once, including unknown responses."""
         client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
-        if params['symbol'] != SYMBOL or not client_id.startswith(campaign['prefix'] + '-'):
+        continuous = campaign.get('authorization') is not None
+        if continuous and method == 'POST':
+            funds = facts.usdt()
+            if Decimal(campaign['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit']) >= plan.max_loss:
+                self.halt('global Demo loss budget exhausted')
+                raise SafetyBlocked('global Demo loss budget exhausted')
+        if params['symbol'] != SYMBOL or (method == 'POST' and not client_id.startswith(campaign['prefix'] + '-')):
             raise SafetyBlocked('order is outside the active Demo campaign')
         with self.db:
             self.db.execute('BEGIN IMMEDIATE')
-            if self._get('active') != campaign['id'] or now() >= plan.expires_at:
+            authorization = self.continuous_authorization() if continuous else None
+            active = self._get('continuous_window') if continuous else self._get('active')
+            if (active != campaign['id'] or now() >= plan.expires_at
+                    or continuous and (authorization is None or authorization['state'] != 'RUNNING'
+                        or authorization['id'] != campaign['authorization']
+                        or authorization['stop_epoch'] != self.stop_epoch())):
                 raise SafetyBlocked('Demo authorization stopped or expired')
             if method == 'POST':
                 actual = (client_id, params['side'], Decimal(params['quantity']), params['reduceOnly'])
@@ -221,6 +388,14 @@ class DemoRuntime:
                     (0, 'BUY', 'false'), (1, 'SELL', 'true'),
                 }:
                     raise SafetyBlocked('Demo smoke permits only one entry and one confirmed reduction')
+                if continuous:
+                    if self.db.execute("SELECT 1 FROM dispatches WHERE method='POST' AND client_id=?", (client_id,)).fetchone():
+                        raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
+                    consumed = self.consumption(authorization)
+                    notional = Decimal(params['quantity']) * Decimal(params['price'])
+                    if (consumed['posts'] >= authorization['total_orders']
+                            or Decimal(consumed['submitted_notional']) + notional > Decimal(authorization['total_notional'])):
+                        raise SafetyBlocked('global Demo trading budget exhausted')
                 funds = facts.usdt()
                 if Decimal(campaign['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit']) >= plan.max_loss:
                     raise SafetyBlocked('persistent Demo loss budget exhausted')
@@ -229,9 +404,14 @@ class DemoRuntime:
                 if ((params['side'] == 'BUY' and not 0 <= position <= MAX_QUANTITY - quantity)
                     or (params['side'] == 'SELL' and not 0 < quantity <= position)):
                     raise SafetyBlocked('Demo position exceeds the authorized net quantity or reduction')
-            elif not self.db.execute("SELECT 1 FROM dispatches WHERE campaign=? AND method='POST' AND client_id=?",
-                    (campaign['id'], client_id)).fetchone():
-                raise SafetyBlocked('Demo cancellation requires an order from this campaign')
+            else:
+                owners = {c['id'] for c in self._continuous_campaigns(authorization)} if continuous else {campaign['id']}
+                origins = [owner for (owner,) in self.db.execute(
+                    "SELECT campaign FROM dispatches WHERE method='POST' AND client_id=?", (client_id,)) if owner in owners]
+                if len(origins) != 1:
+                    raise SafetyBlocked('Demo cancellation requires a known owned order')
+                if self.db.execute("SELECT 1 FROM dispatches WHERE method='DELETE' AND client_id=?", (client_id,)).fetchone():
+                    raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
 
             inserted = self.db.execute('INSERT OR IGNORE INTO dispatches VALUES (?, ?, ?, ?, NULL)',
                 (campaign['id'], method, client_id, json.dumps(params))).rowcount
@@ -243,8 +423,11 @@ class DemoRuntime:
             self.db.execute('UPDATE dispatches SET receipt=? WHERE campaign=? AND method=? AND client_id=?',
                 (json.dumps(receipt), campaign['id'], receipt['method'], receipt['client_order_id']))
             if receipt['http_status'] != 200:
-                self._set('active', '')
-                self._set('stop_epoch', uuid4().hex)
+                if campaign.get('authorization'):
+                    self._set('continuous_recovery', json.dumps(receipt))
+                else:
+                    self._set('active', '')
+                    self._set('stop_epoch', uuid4().hex)
 
 
 DEMO_LIMITS = RiskLimits(MAX_NOTIONAL, MAX_NOTIONAL, MAX_NOTIONAL, orders_per_minute=20)
@@ -269,9 +452,10 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
             raise SafetyBlocked('saved Demo credential missing; run setup')
         campaign = dict(id='grid-preview', prefix='preview') if preview else runtime.active_campaign()
         writes = not read_only and not preview
-        if writes and (campaign is None or campaign['smoke']):
-            raise SafetyBlocked('no persistent Demo authorization; run enable-demo')
-        authorization = runtime.authority(binding, campaign) if writes else None
+        automatic = writes and continuous and runtime.continuous_authorization() is not None
+        if writes and not automatic and (campaign is None or campaign['smoke']):
+            raise SafetyBlocked('no persistent Demo authorization; run start-continuous')
+        authorization = runtime.authority(binding, campaign) if writes and not automatic else None
         expected = None
 
         def expect(intent):
@@ -295,8 +479,31 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
             session = DemoSession(credential, protocol_store=protocol_store, controller_store=controller_store,
                 account_id=binding['account_id'], configuration=binding['configuration'],
                 authorization=authorization, limits=DEMO_LIMITS,
-                write_guard=guard if writes else None, receipt_sink=record if writes else None,
+                write_guard=guard if writes and not automatic else None,
+                receipt_sink=record if writes and not automatic else None,
                 request_counts=request_counts, get_confirmed_writes=continuous)
+
+            def ensure_campaign():
+                nonlocal campaign
+                if not automatic:
+                    return campaign
+                epoch = runtime.stop_epoch()
+                status = session.status()
+                recovery_required = bool(runtime._get('continuous_recovery'))
+                selected = runtime.ensure_window(binding, facts=session.adapter.facts,
+                    reconciled=status['reconciled'] and not status['unknown'], stop_epoch=epoch)
+                if (campaign is None or selected['id'] != campaign['id']
+                        or not session.client.transport.permitted()
+                        or session.write_uncertain or session.receipt_error
+                        or recovery_required):
+                    session.refresh_authorization(runtime.authority(binding, selected),
+                        write_guard=guard, receipt_sink=record)
+                campaign = selected
+                return campaign
+
+            if automatic:
+                session.recover()
+                ensure_campaign()
             key = 'demo-grid:deployment'
             saved = saved_grid_deployment(controller_store)
             if new_deployment:
@@ -311,7 +518,8 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
                 saved = None
             if saved is not None:
                 deployment = decode(json.loads(saved))
-                if (writes or preview) and deployment['campaign'] != campaign['id']:
+                if ((writes or preview) and deployment['campaign'] != campaign['id']
+                        and not (automatic and deployment['deployment']['deployment_id'] == campaign['prefix'] + '-g')):
                     raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
                 if grid_factory is None or read_only:
                     grid = restore_grid(deployment['deployment'])
@@ -334,6 +542,7 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
             with controller_store.transaction():
                 controller_store.record_metadata(key + ':' + deployment['campaign'], deployment)
             bridge.runtime = runtime
+            bridge.ensure_campaign = ensure_campaign
             yield bridge
 
 

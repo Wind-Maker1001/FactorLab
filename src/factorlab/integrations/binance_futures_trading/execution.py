@@ -117,7 +117,8 @@ class DemoFuturesAdapter(FuturesAdapter):
             order = self.order(client_order_id)
             plan = transport.authorization.plan
             if (plan.account_id != self.account_id or order.intent.instrument_id != plan.symbol
-                    or not client_order_id.startswith(plan.client_id_prefix)):
+                    or not (client_order_id.startswith(plan.client_id_prefix)
+                            or client_order_id in transport.authorization.cancellation_ids)):
                 raise SafetyBlocked('cancel outside approved identity scope')
             params = dict(symbol=plan.symbol, origClientOrderId=client_order_id)
             transport._admission['request'] = ('DELETE', params, self.account_id)
