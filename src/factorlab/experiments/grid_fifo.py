@@ -49,6 +49,16 @@ def attribution(directory):
         state = store.load()
     finally:
         store.close()
+    return attribute_events(result, rows, closes, events, state)
+
+
+def attribute_events(result, rows, closes, events, state):
+    """Attribute exported authoritative fills without opening a research account.
+
+    ``closes`` supplies each fill's explicit reference price, keyed by its export
+    timestamp. Using execution prices as references attributes execution P/L only;
+    it does not establish market slippage.
+    """
     if len(rows) != len(events) or len({r['event_id'] for r in rows}) != len(rows):
         raise ValueError('fill log differs from authoritative Paper events')
     by_id = {row['event_id']: row for row in rows}

@@ -155,6 +155,15 @@ class DemoSession:
             code=code if type(code) is int else None,
             message=rejection_message(payload, credentials=self.client.credentials, request=request),
             **_order_observables(payload))
+        business_fields = {'symbol', 'side', 'type', 'timeInForce', 'quantity', 'price',
+                           'positionSide', 'reduceOnly', 'newClientOrderId', 'origClientOrderId',
+                           'newOrderRespType'}
+        receipt['request_parameters'] = {key: values[0] for key, values in parse_qs(request.query).items()
+                                         if key in business_fields}
+        ack_fields = {'clientOrderId', 'orderId', 'symbol', 'side', 'type', 'timeInForce',
+                      'origQty', 'executedQty', 'cumQuote', 'avgPrice', 'price', 'status',
+                      'positionSide', 'reduceOnly', 'updateTime'}
+        receipt['acknowledgement'] = {key: value for key, value in payload.items() if key in ack_fields}
         self.receipts.append(receipt)
         if self._receipt_sink is not None:
             try:
