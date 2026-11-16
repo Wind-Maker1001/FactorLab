@@ -40,14 +40,15 @@ class BoundedRequests(RequestCounts):
         super().__init__()
         self.evidence, self.maximum, self.deadline = evidence, maximum, deadline
         self.used = sum(r['kind'] == 'request' for r in evidence.rows)
-        self.failed = any(r['kind'] == 'request_result' and r['error'] is not None
+        self.failed = any(r['kind'] == 'interruption' or
+                          (r['kind'] == 'request_result' and r['error'] is not None)
                           for r in evidence.rows)
 
     def before_request(self, source, method, path):
         if method != 'GET':
             raise ValueError('observation permits GET only')
         if self.failed:
-            raise ObservationFull('request after API interruption prohibited')
+            raise ObservationFull('request after interruption prohibited')
         if self.used >= self.maximum:
             raise ObservationFull('HTTP request budget exhausted')
         if utcnow() >= self.deadline:

@@ -338,6 +338,55 @@ def test_api_interruption_blocks_further_requests_after_restart(tmp_path):
     assert resumed.used == 1
 
 
+@pytest.mark.parametrize('reason', ['STALE_POLL', 'CLOCK_SKEW'])
+def test_data_interruption_restart_blocks_requests_and_sampling(network_grid, monkeypatch, reason):
+    from types import SimpleNamespace
+    from factorlab.integrations.binance_futures_trading import forward_observation as observation
+
+    root, credentials, factory, _, _, transport_requests = network_grid
+    output = root / 'observation'
+    evidence = ShadowEvidence(output / 'events.csv', version='fixture',
+                              max_bytes=5 * 1024 * 1024 - 65536)
+    started = observation.utcnow()
+    deadline = started + timedelta(seconds=180)
+    experiment = dict(kind='experiment', started_at=started.isoformat(),
+        deadline=deadline.isoformat(), parameters=dict(seconds=180, sample_seconds=5,
+            window_seconds=180, max_bytes=5 * 1024 * 1024, max_proposals=20,
+            max_requests=1500, settings=None, version='fixture', symbol='NVDAUSDT'))
+    evidence.append(experiment)
+    counts = observation.BoundedRequests(evidence, maximum=1500, deadline=deadline)
+    counts.before_request('feed', 'GET', '/fapi/v1/time')
+    counts.record('feed', 'GET', '/fapi/v1/time', .2, None, {})
+    with observation.open_grid_session(root / 'preview-state', credentials, factory,
+                                       preview=True, continuous=True) as b:
+        consumer = ShadowConsumer(b, Control(), evidence)
+        consumer.supervisor = SimpleNamespace(feed=SimpleNamespace(reason=reason), stop=lambda: None)
+        consumer.disconnect()
+    reserved = counts.used
+    sent = len(transport_requests)
+    books = evidence.summary()['books']
+    monkeypatch.setattr(observation, 'DemoCredentialStore', lambda: credentials)
+    monkeypatch.setattr(observation, 'grid_factory', lambda settings: factory)
+    assert main(['--output', str(output), '--version', 'fixture']) == 0
+    summary = json.loads((output / 'summary.json').read_text())
+    restored = ShadowEvidence(evidence.path, version='fixture',
+                              max_bytes=5 * 1024 * 1024 - 65536)
+    assert summary['experiment'] == experiment
+    assert observation.utcnow() < observation.instant(summary['experiment']['deadline'])
+    assert summary['reserved_requests'] == reserved
+    assert sum(r['kind'] == 'request' for r in restored.rows) == reserved
+    assert len(transport_requests) == sent
+    assert summary['run_books'] == 0
+    assert summary['books'] == books
+    assert summary['confirmed_exchange_fills'] == 0
+    assert summary['no_live_money'] is True
+    assert 'interruption' in summary['reason']
+    assert any(r['kind'] == 'interruption' and r['reason'] == reason for r in restored.rows)
+    assert all(r['error'] is None for r in restored.rows if r['kind'] == 'request_result')
+    assert all(request.get_method() == 'GET' for request in transport_requests)
+    assert not (output / 'preview-state' / 'runtime.sqlite3').exists()
+
+
 def test_raw_unknown_quantity_and_baseline_are_preserved(tmp_path):
     _, _, clock, evidence, consumer = setup(tmp_path)
     raw = book(clock[0])
