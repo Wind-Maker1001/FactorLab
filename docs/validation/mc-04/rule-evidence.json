@@ -1,0 +1,15 @@
+{
+  "schema": "mc-perp-risk-evidence/v1",
+  "safety": "NO LIVE MONEY",
+  "authoritative_liquidation": "BLOCKED_RULE_EVIDENCE",
+  "matrix": [
+    {"feature": "contract_unit", "source": "synthetic input contract_unit_base; shared Position.quantity is base quantity", "status": "SCENARIO_ASSUMPTION_ONLY", "scope": "linear USDT one-way"},
+    {"feature": "initial_margin", "source": "synthetic current mark notional times supplied tier rate", "status": "SCENARIO_ASSUMPTION_ONLY", "scope": "not exchange order admission"},
+    {"feature": "maintenance_tiers", "source": "integrations/binance_futures_trading/rules.py RuleObservation stores current observed brackets", "status": "BLOCKED_RULE_EVIDENCE", "missing": "applicable historical tier snapshots and account coefficients; synthetic tier arithmetic only"},
+    {"feature": "mark_price", "source": "frozen synthetic path or MonteCarloRunner.asset_paths", "status": "SCENARIO_ASSUMPTION_ONLY", "missing": "exchange mark path and tradable prices"},
+    {"feature": "funding", "source": "experiments/grid_funding.py cashflow; independent event rate and settlement mark", "status": "SCENARIO_ASSUMPTION_ONLY", "missing": "exchange-account income confirmation and independently established complete settlement schedule"},
+    {"feature": "liquidation", "source": "scenario risk equity <= supplied maintenance requirement", "status": "BLOCKED_RULE_EVIDENCE", "missing": "verified exchange liquidation formula, historical tier applicability, mark evidence, liquidation execution and fees"},
+    {"feature": "account_facts", "source": "integrations/binance_futures_trading/account.py AccountFacts", "status": "EXISTING_READ_ONLY_SEMANTICS", "scope": "reported wallet, margin and available balances remain distinct; no account fetched by MC-04"},
+    {"feature": "paper_nav", "source": "experiments/grid_paper.py daily.csv; trading/paper.py realized PnL and execution fees", "status": "EXISTING_PAPER_EXPORT_SEMANTICS", "scope": "hourly completed-bar equity already contains costs; float export precision retained"}
+  ]
+}

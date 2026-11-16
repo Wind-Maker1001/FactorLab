@@ -1,0 +1,4 @@
+time,original_equity,valuation_adjustment,unrealized_pnl,funding,cumulative_funding,equity,risk_equity,external_balance,notional,initial_margin,maintenance_margin,order_margin,available_margin,margin_utilization,maintenance_utilization,equity_loss,hypothetical_exit_cost,events
+2026-01-01 00:00:00+00:00,1000,0,0,0,0,1000,100,900,1000,100.0,50.00,0,0.0,1.0,0.50,0,1.4000,[]
+2026-01-01 08:00:00+00:00,900,0,-100,0,0,900,0,900,900,90.0,45.00,0,-90.0,,,100,1.2600,"['INSUFFICIENT_MARGIN', 'SCENARIO_LIQUIDATION_THRESHOLD']"
+2026-01-01 16:00:00+00:00,800,0,-200,0,0,800,-100,900,800,80.0,40.00,0,-180.0,,,200,1.1200,"['INSUFFICIENT_MARGIN', 'SCENARIO_LIQUIDATION_THRESHOLD', 'NEGATIVE_RISK_EQUITY']"
