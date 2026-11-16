@@ -93,7 +93,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    interval='1d', buy_hold=False, reference_budget=None,
                    account_id='research-grid', max_exit_quantity=None,
                    scenario=None, synthetic_capacity=None, inventory_risk=None,
-                   research_wal=False):
+                   research_wal=False, grid_factory=None):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -102,6 +102,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     fee assumption; Paper always charges proportional fee_rate, never minima.
     Orders consume a shared bar-volume budget at close, only on later bars.
     """
+    if grid_factory is not None and (inventory_risk is not None or no_trade or buy_hold):
+        raise ValueError('research Grid factory requires a dedicated strategy arm')
     if scenario not in {None, 'CLOSE_ONLY_SCENARIO'}:
         raise ValueError('unknown execution scenario')
     close_only = scenario == 'CLOSE_ONLY_SCENARIO'
@@ -152,7 +154,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     try:
         controller = TradingController(broker, store, clock=lambda: now[0], initialize_state=initialize,
             limits=RiskLimits(capital, capital, capital, 1000))
-        grid_type, risk_options = GridExecution, {}
+        grid_type, risk_options = grid_factory or GridExecution, {}
         if inventory_risk is not None:
             from factorlab.experiments.grid_inventory_risk import InventoryRiskGrid
             if interval != '1h' or inventory:
@@ -363,6 +365,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             account_id=account_id, reference_budget=reference_budget,
             max_exit_quantity=max_exit_quantity,
             **({'inventory_risk': inventory_risk} if inventory_risk is not None else {}),
+            **({'research_grid': grid.deployment()} if grid_factory is not None else {}),
             market=market.value, instrument_id=instrument_id,
             fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
         return result

@@ -1,0 +1,170 @@
+{
+  "costs": {
+    "fee_rate": ".0004",
+    "funding": "NOT_SIMULATED",
+    "initial_equity": 1000,
+    "slippage": ".0006"
+  },
+  "dataset": {
+    "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+    "as_of": "2026-11-14T00:00:00+00:00",
+    "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+    "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+    "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+    "drift": -1.2254443425042917e-05,
+    "dt": 1,
+    "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+    "initial_price": 204.34,
+    "observations": [
+      "2026-05-14T02:00:00+00:00",
+      "2026-08-12T00:00:00+00:00"
+    ],
+    "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+    "returns": 2159,
+    "source": "BINANCE_USDM_PUBLIC_DATA",
+    "time_unit": "hour",
+    "volatility": 0.004451385931577554
+  },
+  "factors": [],
+  "label": {},
+  "model": "p7-r14/regime-risk-budget",
+  "parameters": {
+    "budget_exit": "EXISTING_FULL_POSITION_RISK_EXIT; NO_AUTO_RESTART",
+    "calibration_plan": {
+      "batch_size": 4,
+      "max_batch_bytes": 67108864,
+      "n_paths": 2,
+      "n_steps": 168,
+      "seed": 10714
+    },
+    "capacity": "0.10",
+    "grid": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "expiry_reseed_interval": 100,
+      "expiry_reseed_limit": 0,
+      "fee_bps": 4,
+      "initial_cash": 1000,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "max_seconds": 1800,
+    "models": [
+      "regime_historical",
+      "regime_high_persistence",
+      "jump_down"
+    ],
+    "observable_state": {
+      "decision_lag_bars": 1,
+      "latent_generator_labels_used": false,
+      "lookback": 24,
+      "seed_available_at_max": "2026-11-13T17:12:50.891167+00:00",
+      "seed_kind": "historical returns rebased to frozen initial price",
+      "seed_observations": [
+        "2026-08-11T01:00:00+00:00",
+        "2026-08-12T00:00:00+00:00"
+      ],
+      "seed_prices": [
+        204.36807896665448,
+        204.81734243312567,
+        205.18236899963355,
+        205.13557072187612,
+        205.24788658849397,
+        205.4070007328692,
+        205.19172865518505,
+        205.00453554415537,
+        205.06069347746424,
+        205.2666058995969,
+        205.54739556614143,
+        205.8937028215463,
+        206.0340976548186,
+        206.97942286551847,
+        206.0434573103701,
+        205.91242213264934,
+        204.74246518871382,
+        204.06856998900696,
+        204.04985067790398,
+        203.4976310003664,
+        203.76906101135947,
+        203.94689446683768,
+        204.1528068889703,
+        204.42423689996335,
+        204.34
+      ],
+      "threshold_available_at_max": "2026-11-13T17:12:50.891167+00:00",
+      "threshold_observation_end": "2026-06-28T00:00:00+00:00",
+      "volatility_quantile": 0.5,
+      "volatility_threshold": 0.0038256662792907365
+    },
+    "plan": {
+      "batch_size": 4,
+      "max_batch_bytes": 67108864,
+      "n_paths": 16,
+      "n_steps": 168,
+      "seed": 714
+    },
+    "policy": {
+      "high_down": [
+        0.5,
+        0.25,
+        true
+      ],
+      "high_up": [
+        0.75,
+        0.5,
+        false
+      ],
+      "low_down": [
+        0.75,
+        0.75,
+        false
+      ],
+      "low_up": [
+        1.0,
+        1.0,
+        false
+      ]
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "start": "2026-11-15T00:00:00Z",
+    "static_control": true,
+    "static_rule": "clip(mean_exposure_B/mean_exposure_A,0,1); no search",
+    "version": 1,
+    "zero_baseline_exposure_rule": "static_scale=0; exposure matching unavailable"
+  },
+  "walk_forward": {
+    "mode": "FROZEN_SYNTHETIC_ONLY"
+  },
+  "windows": {
+    "test": null,
+    "train": [
+      "2026-05-14T02:00:00+00:00",
+      "2026-08-12T00:00:00+00:00"
+    ],
+    "validation": null
+  }
+}

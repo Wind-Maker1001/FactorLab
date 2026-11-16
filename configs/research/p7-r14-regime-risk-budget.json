@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "baseline_config": "configs/grid_paper_nvda_hourly.json",
+  "baseline_rules": "configs/grid_paper_nvda_rules.json",
+  "baseline_mode": "geometric",
+  "as_of": "2026-11-14T00:00:00Z",
+  "threshold_as_of": "2026-06-28T00:00:00Z",
+  "start": "2026-11-15T00:00:00Z",
+  "lookback": 24,
+  "decision_lag_bars": 1,
+  "policy": {
+    "low_up": [1.0, 1.0, false],
+    "low_down": [0.75, 0.75, false],
+    "high_up": [0.75, 0.5, false],
+    "high_down": [0.5, 0.25, true]
+  },
+  "models": ["regime_historical", "regime_high_persistence", "jump_down"],
+  "paths": 16,
+  "steps": 168,
+  "batch_size": 4,
+  "seed": 714,
+  "calibration_seed": 10714,
+  "calibration_paths": 2,
+  "capacity": "0.10",
+  "max_seconds": 1800,
+  "max_batch_bytes": 67108864,
+  "static_control": "clip(mean_calibration_exposure_B / mean_calibration_exposure_A, 0, 1); no search",
+  "budget_reduction_exit": "EXISTING_FULL_POSITION_RISK_EXIT; NO_AUTO_RESTART",
+  "qualification": "FINANCIAL_NOT_ESTABLISHED"
+}

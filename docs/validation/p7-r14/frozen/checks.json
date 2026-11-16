@@ -1,0 +1,27 @@
+{
+  "accounts": 174,
+  "maximum_fifo_residual": 1e-24,
+  "maximum_nav_difference": 1.1368683772161603e-13,
+  "maximum_fee_difference": 2.983724378680108e-16,
+  "maximum_slippage_difference": 3.0531133177191805e-16,
+  "maximum_inventory_difference": 0.0,
+  "fill_counts_equal": true,
+  "paired_paths": 54,
+  "paired_price_identity_equal": true,
+  "tests": [
+    {
+      "file": "p7-r14-targeted.xml",
+      "tests": 134,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 239.94
+    },
+    {
+      "file": "p7-r14-new-final.xml",
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 7.81
+    }
+  ]
+}
