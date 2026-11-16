@@ -1,0 +1,108 @@
+{
+  "inventory_nodes": 7937,
+  "inventory_modules": 317,
+  "inventory_sha256": "26c6edbcb1180221494e21c5aa2282700c5a662ac27394c713cf13b4f3c438a5",
+  "weights_sha256": "75a5bac467d1bc23cf9f1e4e6b83d3b00beb87301994051d2442f6e032fbc5d3",
+  "versions": {
+    "3.13": {
+      "3": {
+        "nodes": [
+          3057,
+          2263,
+          2617
+        ],
+        "modeled_seconds": [
+          613.686,
+          613.6859999999999,
+          613.687
+        ],
+        "assignments_sha256": "b768e927dd299bef8476dac12f8c4d591b99be804a4917babf38bace6b791380",
+        "unmeasured_modules": {
+          "tests/security/test_trusted_shard_plan.py": {
+            "seconds": 93.55399999999999,
+            "status": "UNMEASURED"
+          },
+          "tests/security/test_v2_weight_activation.py": {
+            "seconds": 93.55399999999999,
+            "status": "UNMEASURED"
+          }
+        }
+      },
+      "4": {
+        "nodes": [
+          1867,
+          1635,
+          1765,
+          2670
+        ],
+        "modeled_seconds": [
+          460.265,
+          460.26399999999995,
+          460.265,
+          460.26500000000004
+        ],
+        "assignments_sha256": "2e080d95230004d90b796385e1d85e1e64370b88a5719bc43a9b9cd642dd1d53",
+        "unmeasured_modules": {
+          "tests/security/test_trusted_shard_plan.py": {
+            "seconds": 93.55399999999999,
+            "status": "UNMEASURED"
+          },
+          "tests/security/test_v2_weight_activation.py": {
+            "seconds": 93.55399999999999,
+            "status": "UNMEASURED"
+          }
+        }
+      }
+    },
+    "3.14": {
+      "3": {
+        "nodes": [
+          2457,
+          2049,
+          3431
+        ],
+        "modeled_seconds": [
+          900.3530000000001,
+          900.3530000000001,
+          900.353
+        ],
+        "assignments_sha256": "b318edacd66a746f59c391ea4716585ed809a91f42c03f5adacd91b96c15884a",
+        "unmeasured_modules": {
+          "tests/security/test_trusted_shard_plan.py": {
+            "seconds": 187.925,
+            "status": "UNMEASURED"
+          },
+          "tests/security/test_v2_weight_activation.py": {
+            "seconds": 187.925,
+            "status": "UNMEASURED"
+          }
+        }
+      },
+      "4": {
+        "nodes": [
+          1699,
+          2276,
+          1947,
+          2015
+        ],
+        "modeled_seconds": [
+          675.264,
+          675.264,
+          675.266,
+          675.265
+        ],
+        "assignments_sha256": "853e1bb4c4f2e98c81d1ccace88309ddff8f85e144db55ca62ea321e3685930c",
+        "unmeasured_modules": {
+          "tests/security/test_trusted_shard_plan.py": {
+            "seconds": 187.925,
+            "status": "UNMEASURED"
+          },
+          "tests/security/test_v2_weight_activation.py": {
+            "seconds": 187.925,
+            "status": "UNMEASURED"
+          }
+        }
+      }
+    }
+  }
+}

@@ -134,8 +134,8 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
-    old = p03.load((args.normalized/'previous_module_timings.json') if args.normalized else
-                   ROOT / 'tools/ci/current_module_timings.json')
+    old = p03.load((args.normalized if args.normalized else Path(__file__).resolve().parent)
+                   / 'previous_module_timings.json')
     if args.normalized:
         target = p03.load(args.normalized/'target-inventory.json')
         runids = [s['run_id'] for s in p03.load(args.normalized/'sources.json')['sources']]

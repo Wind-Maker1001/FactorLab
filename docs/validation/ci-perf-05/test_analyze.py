@@ -2,6 +2,8 @@
 import importlib.util
 from pathlib import Path
 import unittest
+from unittest import mock
+import tempfile
 
 
 HERE = Path(__file__).resolve().parent
@@ -36,6 +38,19 @@ def synthetic_source():
             ]),
         },
     )
+
+
+class ArchivedBaselineTests(unittest.TestCase):
+    def test_raw_replay_uses_archived_v1_after_production_v2_activation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = ['analyze.py', '--evidence', 'unused-evidence',
+                    '--target', str(HERE / 'target-inventory.json'), '--output', directory]
+            with mock.patch('sys.argv', args), mock.patch.object(
+                    analyze.p03, 'read_run', side_effect=RuntimeError('captured baseline')) as read_run:
+                with self.assertRaisesRegex(RuntimeError, 'captured baseline'):
+                    analyze.main()
+            expected = analyze.p03.load(HERE / 'previous_module_timings.json')['module_seconds']
+            self.assertEqual(read_run.call_args.args[1], expected)
 
 
 class MatchingWeightsTests(unittest.TestCase):
