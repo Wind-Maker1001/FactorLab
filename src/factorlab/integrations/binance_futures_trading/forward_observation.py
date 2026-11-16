@@ -15,7 +15,7 @@ import signal
 from factorlab.trading.storage import decode, dumps
 from .demo_credentials import DemoCredentialStore
 from .demo_grid_supervisor import GridConsumer, grid_factory
-from .demo_market_feed import DemoMarketFeed, SOURCE, timestamp
+from .demo_market_feed import DemoMarketFeed, FeedPaused, SOURCE, timestamp
 from .demo_runtime import open_grid_session
 from .demo_strategy_supervisor import MarketClient, StrategyControl
 from .demo_supervisor import DemoSupervisor
@@ -131,8 +131,11 @@ class ShadowEvidence:
     def begin(self, identity, bar, live, at):
         if live and identity not in self.pending and not any(
                 row['kind'] == 'capture' and row['source'] == identity for row in self.rows):
+            receipt = getattr(self, 'bar_receipt', None)
             self.append(dict(kind='begin', source=identity, at=at.isoformat(),
-                             market_at=bar.closed_at.isoformat()))
+                             market_at=bar.closed_at.isoformat(),
+                             bar_receipt=({k: v for k, v in receipt.items() if k != 'raw'}
+                                          if receipt is not None else None), live=live))
 
     def capture(self, identity, grid, at, *, eligible=True):
         pending = self.pending.get(identity)
@@ -246,13 +249,34 @@ class ShadowConsumer(GridConsumer):
         self.evidence.end('WINDOW_END', ids=[k for k, p in self.evidence.proposals.items()
             if self.clock() >= instant(p['deadline'])])
 
+    def observe_bar_receipt(self, bar, raw, received_at, known_at):
+        self.evidence.bar_receipt = dict(opened_at=bar.opened_at.isoformat(),
+            closed_at=bar.closed_at.isoformat(), received_at=received_at.isoformat(),
+            known_at=known_at.isoformat(), completed_bar=bar.complete,
+            interval_seconds=bar.interval_seconds, raw=raw,
+            sha256=hashlib.sha256(json.dumps(raw, sort_keys=True, separators=(',', ':')).encode()).hexdigest())
+        self.evidence.append(dict(kind='bar_receipt', **self.evidence.bar_receipt))
+
     def closed_bar(self, bar):
-        accepted = super().closed_bar(bar)
-        self._end_inactive()
-        return accepted
+        running = self.running
+        if getattr(self.evidence, 'prospective_start', None) is not None:
+            self.running = running and bar.opened_at >= self.evidence.prospective_start
+        try:
+            accepted = super().closed_bar(bar)
+            self._end_inactive()
+            return accepted
+        finally:
+            self.running = running
+            self.evidence.bar_receipt = None
 
     def observe_book(self, raw, received_at):
+        previous = self.evidence.last_market
         self.evidence.book(raw, received_at, market_status=self.market_status)
+        if getattr(self.evidence, 'prospective_start', None) is not None:
+            if self.evidence.rows[-1]['kind'] == 'rejected_book':
+                raise FeedPaused(self.evidence.rows[-1]['reason'])
+            if previous is not None and (timestamp(raw['time']) - previous).total_seconds() > self.evidence.max_quote_gap:
+                raise FeedPaused('R13_QUOTE_GAP')
 
     def _end_inactive(self):
         active = {self.bridge.grid.deployment_id + ':' + order.intent.client_order_id
@@ -274,6 +298,8 @@ def main(argv=None):
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--version', required=True, help='source commit identity')
     parser.add_argument('--config', type=Path)
+    parser.add_argument('--experiment-id', help='independent R13 window identity; existing output cannot restart')
+    parser.add_argument('--max-quote-gap-seconds', type=float, default=30)
     parser.add_argument('--seconds', type=float, default=180)
     parser.add_argument('--sample-seconds', type=float, default=5)
     parser.add_argument('--window-seconds', type=float, default=180)
@@ -284,19 +310,42 @@ def main(argv=None):
     if (not math.isfinite(args.seconds) or not 0 < args.seconds <= 3600
             or not math.isfinite(args.sample_seconds) or not 1 <= args.sample_seconds <= 60):
         parser.error('duration must be within 3600 seconds and sampling within 1..60 seconds')
+    if not math.isfinite(args.max_quote_gap_seconds) or args.max_quote_gap_seconds <= 0:
+        parser.error('max quote gap must be finite and positive')
     if not 1 <= args.max_requests <= 1500:
         parser.error('max requests must be within 1..1500')
     if not 131072 <= args.max_bytes <= 5 * 1024 * 1024 or not 1 <= args.max_proposals <= 20:
         parser.error('research budget must be 128 KiB..5 MiB and proposals 1..20')
-    # Keep 64 KiB outside the event stream for the retained summary and analysis.
+    if args.experiment_id and args.max_bytes < 393216:
+        parser.error('R13 requires at least 384 KiB for raw and normalized evidence')
+    # R13 retains a normalized envelope and analysis beside the raw stream.
+    event_budget = args.max_bytes // 3 - 65536 if args.experiment_id else args.max_bytes - 65536
     evidence = ShadowEvidence(args.output / 'events.csv', version=args.version,
-        window=args.window_seconds, max_bytes=args.max_bytes - 65536, max_proposals=args.max_proposals)
+        window=args.window_seconds, max_bytes=event_budget, max_proposals=args.max_proposals)
     settings = json.loads(args.config.read_text(encoding='utf-8')) if args.config else None
     parameters = dict(seconds=args.seconds, sample_seconds=args.sample_seconds,
                       window_seconds=args.window_seconds, max_bytes=args.max_bytes,
                       max_proposals=args.max_proposals, max_requests=args.max_requests,
                       settings=settings, version=args.version, symbol='NVDAUSDT')
+    if args.experiment_id:
+        parameters.update(experiment_id=args.experiment_id,
+            max_quote_gap_seconds=args.max_quote_gap_seconds,
+            strategy_definition=dict(factory='P7_M13_GRID_FACTORY', settings=settings,
+                default_range_multipliers=['0.99', '1.01'], levels=1, initial_inventory=0,
+                quantity=1, max_inventory=1, max_cash_committed=7, breakout='pause'),
+            market='BINANCE_USDM_DEMO', interval_seconds=60,
+            interruption_rule='STOP_WITHOUT_RETRY', restart_rule='REFUSE',
+            limit_rule='ORIGINAL_LEGAL_PROPOSAL_LIMIT_IMMUTABLE',
+            termination=['ABSOLUTE_DEADLINE', 'REQUEST_BUDGET', 'BYTE_BUDGET',
+                         'PROPOSAL_BUDGET', 'DATA_INTERRUPTION', 'SIGNAL'],
+            minimum_request_interval_seconds=0,
+            minimum_poll_delay_seconds=args.sample_seconds)
+        parameters['strategy_definition_sha256'] = hashlib.sha256(json.dumps(
+            parameters['strategy_definition'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     experiments = [r for r in evidence.rows if r['kind'] == 'experiment']
+    if args.experiment_id and experiments:
+        evidence.end('PROCESS_RESTART')
+        raise ObservationFull('R13 experiment restart prohibited')
     if experiments:
         experiment = experiments[0]
         if experiment['parameters'] != parameters:
@@ -307,6 +356,9 @@ def main(argv=None):
                           deadline=(start + timedelta(seconds=args.seconds)).isoformat())
         evidence.append(experiment)
     deadline = instant(experiment['deadline'])
+    if args.experiment_id:
+        evidence.prospective_start = instant(experiment['started_at'])
+        evidence.max_quote_gap = args.max_quote_gap_seconds
     initial_books = evidence.summary()['books']
     requests = BoundedRequests(evidence, maximum=args.max_requests, deadline=deadline)
     result = dict(engineering='SEE_OFFLINE_TESTS', real_observation='NOT_RUN', requests=requests,
@@ -318,6 +370,12 @@ def main(argv=None):
     try:
         with open_grid_session(args.output / 'preview-state', DemoCredentialStore(), grid_factory(settings),
                                preview=True, continuous=True, request_counts=requests) as bridge:
+            if args.experiment_id:
+                deployment = json.loads(dumps(bridge.grid.deployment()))
+                evidence.append(dict(kind='strategy_binding', at=utcnow().isoformat(),
+                    deployment_config=deployment,
+                    configuration_hash=hashlib.sha256(dumps(bridge.grid.deployment()).encode()).hexdigest(),
+                    version=args.version, instrument='NVDAUSDT', interval_seconds=60))
             path = args.output / 'feed.sqlite3'
             with closing(StrategyControl(path, dict(source=SOURCE, mode='SHADOW_GET_ONLY'))) as control:
                 consumer = ShadowConsumer(bridge, control, evidence)
@@ -325,7 +383,7 @@ def main(argv=None):
                 info = client.request('GET', '/fapi/v1/exchangeInfo', signed=False)
                 symbol = next(s for s in info['symbols'] if s['symbol'] == 'NVDAUSDT')
                 evidence.append(dict(kind='market_status', status=symbol['status'],
-                    received_at=utcnow().isoformat(), source='/fapi/v1/exchangeInfo'))
+                    instrument=symbol, received_at=utcnow().isoformat(), source='/fapi/v1/exchangeInfo'))
                 consumer.market_status = symbol['status']
                 with closing(DemoMarketFeed(client, consumer, state_path=path,
                         consumer_id='shadow:' + bridge.grid.deployment_id,
@@ -350,6 +408,9 @@ def main(argv=None):
         raise
     finally:
         evidence.end('RUN_END')
+        if args.experiment_id:
+            evidence.append(dict(kind='window_end', at=utcnow().isoformat(),
+                reason=result.get('reason') or result.get('feed_reason') or 'RUN_END'), terminal=True)
         result.update(evidence.summary())
         result['run_books'] = result['books'] - initial_books
         result['real_observation'] = 'RUN' if result['run_books'] else 'REAL_OBSERVATION_NOT_RUN'
