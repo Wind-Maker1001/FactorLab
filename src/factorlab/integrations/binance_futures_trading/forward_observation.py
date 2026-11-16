@@ -34,6 +34,37 @@ class ObservationFull(ValueError):
     """The configured evidence budget has been exhausted."""
 
 
+class BoundedRequests(RequestCounts):
+    """Durably reserve every GET before dispatch, including Preview recovery."""
+    def __init__(self, evidence, *, maximum, deadline):
+        super().__init__()
+        self.evidence, self.maximum, self.deadline = evidence, maximum, deadline
+        self.used = sum(r['kind'] == 'request' for r in evidence.rows)
+        self.failed = any(r['kind'] == 'interruption' or
+                          (r['kind'] == 'request_result' and r['error'] is not None)
+                          for r in evidence.rows)
+
+    def before_request(self, source, method, path):
+        if method != 'GET':
+            raise ValueError('observation permits GET only')
+        if self.failed:
+            raise ObservationFull('request after interruption prohibited')
+        if self.used >= self.maximum:
+            raise ObservationFull('HTTP request budget exhausted')
+        if utcnow() >= self.deadline:
+            raise ObservationFull('absolute experiment deadline reached')
+        self.evidence.append(dict(kind='request', source=source, method=method,
+                                  endpoint=path, at=utcnow().isoformat()))
+        self.used += 1
+
+    def record(self, source, method, path, seconds, error, weights):
+        super().record(source, method, path, seconds, error, weights)
+        if error is not None:
+            self.failed = True
+        self.evidence.append(dict(kind='request_result', source=source, method=method,
+                                  endpoint=path, seconds=seconds, error=error))
+
+
 class ShadowEvidence:
     """One bounded replayable CSV; each row is an indivisible observation batch."""
     def __init__(self, path, *, version, window=180, max_bytes=5 * 1024 * 1024,
@@ -156,7 +187,7 @@ class ShadowEvidence:
             reason = 'INVALID_BOOK'
         if reason:
             self.append(dict(kind='rejected_book', reason=reason, market_at=at.isoformat(),
-                             received_at=received_at.isoformat()))
+                             received_at=received_at.isoformat(), raw=raw))
             return
         self.end('WINDOW_END', ids=[k for k, p in self.proposals.items()
             if received_at >= instant(p['deadline'])], at=received_at)
@@ -182,7 +213,7 @@ class ShadowEvidence:
                 opposite_top_quantity=raw.get('askQty' if buy else 'bidQty'),
                 target_covered_at_top=(D(raw['askQty' if buy else 'bidQty']) >= D(p['quantity'])
                     if raw.get('askQty' if buy else 'bidQty') is not None else None)))
-        self.append(dict(kind='book', market_at=at.isoformat(), received_at=received_at.isoformat(),
+        self.append(dict(kind='book', raw=raw, market_at=at.isoformat(), received_at=received_at.isoformat(),
             bid=str(bid), ask=str(ask), spread=str(ask - bid), age_seconds=age,
             bid_quantity=raw.get('bidQty'), ask_quantity=raw.get('askQty'),
             depth_scope='TOP_OF_BOOK_ONLY', market_status=market_status,
@@ -231,8 +262,11 @@ class ShadowConsumer(GridConsumer):
                           ids=set(self.evidence.proposals) - active)
 
     def disconnect(self):
+        self.evidence.append(dict(kind='interruption', at=self.clock().isoformat(),
+                                  reason=self.supervisor.feed.reason))
         self.evidence.end('DATA_INTERRUPTION')
         super().disconnect()
+        self.supervisor.stop()
 
 
 def main(argv=None):
@@ -245,14 +279,36 @@ def main(argv=None):
     parser.add_argument('--window-seconds', type=float, default=180)
     parser.add_argument('--max-bytes', type=int, default=5 * 1024 * 1024)
     parser.add_argument('--max-proposals', type=int, default=20)
+    parser.add_argument('--max-requests', type=int, default=1500)
     args = parser.parse_args(argv)
     if (not math.isfinite(args.seconds) or not 0 < args.seconds <= 3600
             or not math.isfinite(args.sample_seconds) or not 1 <= args.sample_seconds <= 60):
         parser.error('duration must be within 3600 seconds and sampling within 1..60 seconds')
+    if not 1 <= args.max_requests <= 1500:
+        parser.error('max requests must be within 1..1500')
+    if not 131072 <= args.max_bytes <= 5 * 1024 * 1024 or not 1 <= args.max_proposals <= 20:
+        parser.error('research budget must be 128 KiB..5 MiB and proposals 1..20')
+    # Keep 64 KiB outside the event stream for the retained summary and analysis.
     evidence = ShadowEvidence(args.output / 'events.csv', version=args.version,
-        window=args.window_seconds, max_bytes=args.max_bytes, max_proposals=args.max_proposals)
+        window=args.window_seconds, max_bytes=args.max_bytes - 65536, max_proposals=args.max_proposals)
+    settings = json.loads(args.config.read_text(encoding='utf-8')) if args.config else None
+    parameters = dict(seconds=args.seconds, sample_seconds=args.sample_seconds,
+                      window_seconds=args.window_seconds, max_bytes=args.max_bytes,
+                      max_proposals=args.max_proposals, max_requests=args.max_requests,
+                      settings=settings, version=args.version, symbol='NVDAUSDT')
+    experiments = [r for r in evidence.rows if r['kind'] == 'experiment']
+    if experiments:
+        experiment = experiments[0]
+        if experiment['parameters'] != parameters:
+            raise ValueError('experiment parameters differ')
+    else:
+        start = utcnow()
+        experiment = dict(kind='experiment', parameters=parameters, started_at=start.isoformat(),
+                          deadline=(start + timedelta(seconds=args.seconds)).isoformat())
+        evidence.append(experiment)
+    deadline = instant(experiment['deadline'])
     initial_books = evidence.summary()['books']
-    requests = RequestCounts()
+    requests = BoundedRequests(evidence, maximum=args.max_requests, deadline=deadline)
     result = dict(engineering='SEE_OFFLINE_TESTS', real_observation='NOT_RUN', requests=requests,
                   source=SOURCE, version=args.version, no_live_money=True,
                   parameters=dict(seconds=args.seconds, sample_seconds=args.sample_seconds,
@@ -279,7 +335,10 @@ def main(argv=None):
                     consumer.supervisor = supervisor
                     signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
                     signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())
-                    supervisor.run(seconds=args.seconds)
+                    remaining = (deadline - utcnow()).total_seconds()
+                    if remaining <= 0:
+                        raise ObservationFull('absolute experiment deadline reached')
+                    supervisor.run(seconds=remaining)
                     result.update(real_observation='RUN' if evidence.summary()['books'] else 'NOT_RUN',
                                   feed_reason=feed.reason)
     except ObservationFull as error:
@@ -293,7 +352,9 @@ def main(argv=None):
         evidence.end('RUN_END')
         result.update(evidence.summary())
         result['run_books'] = result['books'] - initial_books
-        result['real_observation'] = 'RUN' if result['run_books'] else 'NOT_RUN'
+        result['real_observation'] = 'RUN' if result['run_books'] else 'REAL_OBSERVATION_NOT_RUN'
+        result.update(api=requests.snapshot(), reserved_requests=requests.used,
+                      experiment=experiment, ended_at=utcnow().isoformat())
         (args.output / 'summary.json').write_text(json.dumps(result, indent=2, default=str) + '\n', encoding='utf-8')
         print(json.dumps(result, default=str))
     return 0

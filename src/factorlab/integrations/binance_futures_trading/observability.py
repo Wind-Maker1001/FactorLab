@@ -13,6 +13,9 @@ class RequestCounts(dict):
         self.endpoints = {}
         self.weight_headers = {}
 
+    def before_request(self, source, method, path):
+        """Optional admission hook, before a network request is dispatched."""
+
     def record(self, source, method, path, seconds, error, weights):
         key = (self.phase, source, method, path)
         row = self.endpoints.setdefault(key, dict(count=0, errors={}, total_seconds=0.,
@@ -47,6 +50,8 @@ class ObservedClient(FuturesClient):
         return super()._parse_response(request, response, **kwargs)
 
     def request(self, method, path, params=None, *, signed=True):
+        if isinstance(self.request_counts, RequestCounts):
+            self.request_counts.before_request(self.request_source, method, path)
         started = perf_counter()
         error = None
         self._observed_weights = {}
