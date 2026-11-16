@@ -1,0 +1,83 @@
+{
+  "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+  "kind": "FORWARD_SHADOW",
+  "window": [
+    "2026-11-15T12:28:00Z",
+    "2026-11-15T12:30:00Z"
+  ],
+  "max_quote_gap_seconds": 25,
+  "source": {
+    "format": "NORMALIZED_V1",
+    "name": "SYNTHETIC_ENGINEERING_ONLY",
+    "sha256": "3e378f26c7d68b135c91ad3152f1238d4ff5fc8d5f785d1f12b49a08ba54a9ea",
+    "payload": {
+      "binding": {
+        "account": "SYNTHETIC_ACCOUNT",
+        "instrument": "NVDAUSDT",
+        "strategy": "synthetic-grid-v1",
+        "version": "synthetic-code-v1",
+        "interval_seconds": 60,
+        "session_started_at": "2026-11-15T12:28:00Z",
+        "prior_bar_ids": []
+      },
+      "bars": [
+        {
+          "id": "synthetic-bar-1",
+          "opened_at": "2026-11-15T12:28:00Z",
+          "closed_at": "2026-11-15T12:29:00Z",
+          "received_at": "2026-11-15T12:29:01Z",
+          "known_at": "2026-11-15T12:29:01Z",
+          "decision_at": "2026-11-15T12:29:02Z",
+          "completed_bar": true,
+          "live": true
+        }
+      ],
+      "proposals": [
+        {
+          "id": "synthetic-p-1",
+          "bar_id": "synthetic-bar-1",
+          "market_at": "2026-11-15T12:29:00Z",
+          "decision_at": "2026-11-15T12:29:02Z",
+          "captured_at": "2026-11-15T12:29:03Z",
+          "deadline": "2026-11-15T12:30:00Z",
+          "side": "BUY",
+          "price": "100",
+          "quantity": "1",
+          "account": "SYNTHETIC_ACCOUNT",
+          "strategy": "synthetic-grid-v1",
+          "version": "synthetic-code-v1",
+          "replay": false
+        }
+      ],
+      "books": [
+        {
+          "market_at": "2026-11-15T12:29:10Z",
+          "received_at": "2026-11-15T12:29:11Z",
+          "bid": "101",
+          "ask": "102",
+          "bid_quantity": "3",
+          "ask_quantity": "4"
+        },
+        {
+          "market_at": "2026-11-15T12:29:30Z",
+          "received_at": "2026-11-15T12:29:31Z",
+          "bid": "101",
+          "ask": "102",
+          "bid_quantity": "3",
+          "ask_quantity": "4"
+        },
+        {
+          "market_at": "2026-11-15T12:29:50Z",
+          "received_at": "2026-11-15T12:29:51Z",
+          "bid": "101",
+          "ask": "102",
+          "bid_quantity": "3",
+          "ask_quantity": "4"
+        }
+      ],
+      "fills": [],
+      "gaps": [],
+      "ends": []
+    }
+  }
+}

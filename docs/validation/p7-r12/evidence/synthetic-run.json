@@ -1,0 +1,195 @@
+{
+  "experiment_id": "r12-e0a59e06ccc7aefbe0894e01ad07308e14e5fb2e4f79a5c94ef87a0ad437cc1c",
+  "id": "r12-e0a59e06ccc7aefbe0894e01ad07308e14e5fb2e4f79a5c94ef87a0ad437cc1c-evaluation",
+  "kind": "runs",
+  "payload": {
+    "definition_hash": "862e2c39da33f4789acecd9cbfc4cbb86fc03aea27a4903815ef0f0cfd4f4f57",
+    "run": {
+      "artifacts": {},
+      "code": {
+        "adapter_sha256": "8a8a44ae824e872d1a31bcac438d6343150fa598a1a173c54f6e2f6adb7cb32b",
+        "commit": "d9b608d01bd307b95e07030104a7620aa36b8d84",
+        "tree": "85ab9d008f34767aab09d191b53da1e5107b5c61"
+      },
+      "command": [
+        "python",
+        "tools/reproduce_p7_r12.py",
+        "--commit",
+        "d9b608d01bd307b95e07030104a7620aa36b8d84",
+        "--tree",
+        "85ab9d008f34767aab09d191b53da1e5107b5c61",
+        "--output",
+        "<new-output-directory>"
+      ],
+      "environment": {
+        "evidence_origin": "SYNTHETIC_ENGINEERING_ONLY",
+        "python": "3.13.9"
+      },
+      "portfolio_metrics": {},
+      "prediction_metrics": {},
+      "qualification": "UNKNOWN",
+      "status": "SUCCEEDED",
+      "test_status": "NOT_RUN",
+      "timestamp": "2026-11-15T12:31:00Z",
+      "validation": {
+        "result": {
+          "activation": {
+            "accounting": {
+              "boundary": "Future approved adapter must supply result.json, trades.csv, daily.csv and authoritative PaperStore fills for FIFO. Paper end filtering is inclusive: prefilter bars by [start,end). Historical defaults and post-hoc funding overlays are not executable cash",
+              "cash": "Same capital; zero trading, funding and assumed interest",
+              "controls": "factorlab.experiments.grid_exposure_benchmark",
+              "costs": "Slippage embedded in fills, not deducted twice",
+              "cycles": "Normal SELL exhausts BUY lot; risk exits separately attributed",
+              "fifo": "factorlab.experiments.grid_fifo.attribution",
+              "fixed_hold": "Quantity frozen before start, never fitted to future inventory",
+              "funding": "factorlab.experiments.grid_funding.cashflow / drawdown",
+              "lagged": "Previously known Grid exposure; execution on later observations",
+              "paper": "factorlab.experiments.grid_paper.run_experiment",
+              "residual": "Mark remaining FIFO lots at common end; no fabricated liquidation"
+            },
+            "active": false,
+            "controls": [
+              "grid_original",
+              "fixed_hold",
+              "lagged_exposure",
+              "cash"
+            ],
+            "metrics": [
+              "complete_cycles",
+              "cycle_net_contribution",
+              "fees",
+              "funding",
+              "funding_adjusted_profit",
+              "inventory_age_hours",
+              "max_committed",
+              "max_drawdown",
+              "max_notional",
+              "mean_notional",
+              "net_profit",
+              "realized_pnl",
+              "residual_inventory",
+              "slippage",
+              "terminal_nav",
+              "unrealized_pnl"
+            ],
+            "r09": "NEW_SEPARATELY_FROZEN_VERSION_REQUIRED",
+            "required_fields": [
+              "accounting",
+              "approval_receipt",
+              "approved_immutable_version",
+              "benchmark_parameters",
+              "capital",
+              "common_termination_at",
+              "costs",
+              "data_source",
+              "end",
+              "external_receipt_verification",
+              "failure_conditions",
+              "fifo_complete_cycle_and_risk_exit_attribution",
+              "fixed_hold_quantity_before_start",
+              "initial_inventory_and_mark",
+              "interval",
+              "inventory_age",
+              "lagged_target_known_at",
+              "minimum_bars",
+              "minimum_duration",
+              "missing_data_policy",
+              "notional_budget",
+              "observed_funding_settlements",
+              "order_timeout",
+              "original_grid_identity",
+              "primary_metric",
+              "residual_mark_at_common_end",
+              "risk_exit",
+              "risk_version",
+              "start",
+              "strategy_commit",
+              "strategy_parameters"
+            ],
+            "shared": [
+              "capital",
+              "notional_budget",
+              "fee_and_slippage_schedule",
+              "UTC_half_open_window",
+              "valuation_clock",
+              "termination_at",
+              "economic_failure_conditions"
+            ],
+            "status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL"
+          },
+          "diagnostics": {
+            "declared_interruptions": 0,
+            "input_bars": 1,
+            "input_books": 3,
+            "input_proposals": 1,
+            "quote_gaps": 0
+          },
+          "engineering_metrics": {
+            "bar_coverage": {
+              "covered_seconds": 60.0,
+              "ratio": 0.5,
+              "window_seconds": 120.0
+            },
+            "book_candidates": 0,
+            "coverage": {
+              "denominator": 1,
+              "meaning": "proposals with complete sampled quote coverage",
+              "numerator": 1,
+              "ratio": 1.0
+            },
+            "duration_seconds": [
+              57.0
+            ],
+            "interruptions": 0,
+            "observable_touches": 0,
+            "quote_distances": [
+              {
+                "ask_bps": "-196.0784313725490196078431370",
+                "bid_bps": "-99.00990099009900990099009900",
+                "market_at": "2026-11-15T12:29:10Z",
+                "proposal": "synthetic-p-1"
+              },
+              {
+                "ask_bps": "-196.0784313725490196078431370",
+                "bid_bps": "-99.00990099009900990099009900",
+                "market_at": "2026-11-15T12:29:30Z",
+                "proposal": "synthetic-p-1"
+              },
+              {
+                "ask_bps": "-196.0784313725490196078431370",
+                "bid_bps": "-99.00990099009900990099009900",
+                "market_at": "2026-11-15T12:29:50Z",
+                "proposal": "synthetic-p-1"
+              }
+            ],
+            "right_censored_ratio": 1.0,
+            "sampled_absolute_midpoint_deviation_bps": {
+              "max": "150.000",
+              "min": "150.000"
+            },
+            "valid_bars": 1,
+            "valid_forward_proposals": 1
+          },
+          "engineering_status": "VALID_ENGINEERING_OBSERVATION",
+          "evaluated_at": "2026-11-15T12:31:00Z",
+          "evidence_hash": "a83ed1796236c425b64f64e82ef921406ad6fd2a89a7c0b88505063b1f9f6a14",
+          "financial_admission": "NOT_FINANCIALLY_ADMITTED",
+          "financial_conclusion": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+          "financial_status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+          "issues": [],
+          "kind": "FORWARD_SHADOW",
+          "metrics": null,
+          "protocol_id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+          "protocol_record_hash": "c5e3bc5116660ac735b9dbe8c6db4850108d7ec3585bc38cadf7cbdda66ebbb1",
+          "receipt_status": "UNVERIFIED_RECEIPT",
+          "safety": "NO LIVE MONEY",
+          "sample_status": "NOT_ASSESSED",
+          "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+          "source_hash": "3e378f26c7d68b135c91ad3152f1238d4ff5fc8d5f785d1f12b49a08ba54a9ea"
+        }
+      }
+    }
+  },
+  "schema": "FACTORLAB_EXPERIMENT_V1",
+  "sha256": "06d568752c6f871a6d5e8529ded1a9eca8470a4c8297a49d0d188cc4b6f9553d"
+}

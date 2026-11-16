@@ -1,0 +1,40 @@
+{
+  "experiment_id": "r12-e0a59e06ccc7aefbe0894e01ad07308e14e5fb2e4f79a5c94ef87a0ad437cc1c",
+  "id": "r12-e0a59e06ccc7aefbe0894e01ad07308e14e5fb2e4f79a5c94ef87a0ad437cc1c",
+  "kind": "experiments",
+  "payload": {
+    "costs": null,
+    "dataset": {
+      "kind": "FORWARD_SHADOW",
+      "source_hash": "3e378f26c7d68b135c91ad3152f1238d4ff5fc8d5f785d1f12b49a08ba54a9ea"
+    },
+    "factors": [],
+    "label": {},
+    "model": "P7_R12_FORWARD_EVIDENCE_V1",
+    "parameters": {
+      "adapter_code": {
+        "adapter_sha256": "8a8a44ae824e872d1a31bcac438d6343150fa598a1a173c54f6e2f6adb7cb32b",
+        "commit": "d9b608d01bd307b95e07030104a7620aa36b8d84",
+        "tree": "85ab9d008f34767aab09d191b53da1e5107b5c61"
+      },
+      "evaluated_at": "2026-11-15T12:31:00Z",
+      "evidence_hash": "a83ed1796236c425b64f64e82ef921406ad6fd2a89a7c0b88505063b1f9f6a14",
+      "protocol_hash": "c5e3bc5116660ac735b9dbe8c6db4850108d7ec3585bc38cadf7cbdda66ebbb1",
+      "protocol_id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+      "schema": "P7_R12_FORWARD_EVIDENCE_V1"
+    },
+    "walk_forward": {
+      "status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL"
+    },
+    "windows": {
+      "test": [
+        "2026-11-15T12:28:00Z",
+        "2026-11-15T12:30:00Z"
+      ],
+      "train": null,
+      "validation": null
+    }
+  },
+  "schema": "FACTORLAB_EXPERIMENT_V1",
+  "sha256": "862e2c39da33f4789acecd9cbfc4cbb86fc03aea27a4903815ef0f0cfd4f4f57"
+}

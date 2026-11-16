@@ -1,0 +1,187 @@
+{
+  "experiment_id": "r12-a5be5d2a1160e46a03e0e5ebc790a0e174eb4b3c7a7dc3a335aa9faf254f4224",
+  "id": "r12-a5be5d2a1160e46a03e0e5ebc790a0e174eb4b3c7a7dc3a335aa9faf254f4224-evaluation",
+  "kind": "runs",
+  "payload": {
+    "definition_hash": "fe3b5e061829a96234b3568ebbc4f010656ed3a6ed590b0a938e2e2714aa2749",
+    "run": {
+      "artifacts": {},
+      "code": {
+        "adapter_sha256": "8a8a44ae824e872d1a31bcac438d6343150fa598a1a173c54f6e2f6adb7cb32b",
+        "commit": "d9b608d01bd307b95e07030104a7620aa36b8d84",
+        "tree": "85ab9d008f34767aab09d191b53da1e5107b5c61"
+      },
+      "command": [
+        "python",
+        "tools/reproduce_p7_r12.py",
+        "--commit",
+        "d9b608d01bd307b95e07030104a7620aa36b8d84",
+        "--tree",
+        "85ab9d008f34767aab09d191b53da1e5107b5c61",
+        "--output",
+        "<new-output-directory>"
+      ],
+      "environment": {
+        "evidence_origin": "REAL_SHADOW",
+        "python": "3.13.9"
+      },
+      "portfolio_metrics": {},
+      "prediction_metrics": {},
+      "qualification": "UNKNOWN",
+      "status": "SUCCEEDED",
+      "test_status": "NOT_RUN",
+      "timestamp": "2026-11-15T12:31:00Z",
+      "validation": {
+        "result": {
+          "activation": {
+            "accounting": {
+              "boundary": "Future approved adapter must supply result.json, trades.csv, daily.csv and authoritative PaperStore fills for FIFO. Paper end filtering is inclusive: prefilter bars by [start,end). Historical defaults and post-hoc funding overlays are not executable cash",
+              "cash": "Same capital; zero trading, funding and assumed interest",
+              "controls": "factorlab.experiments.grid_exposure_benchmark",
+              "costs": "Slippage embedded in fills, not deducted twice",
+              "cycles": "Normal SELL exhausts BUY lot; risk exits separately attributed",
+              "fifo": "factorlab.experiments.grid_fifo.attribution",
+              "fixed_hold": "Quantity frozen before start, never fitted to future inventory",
+              "funding": "factorlab.experiments.grid_funding.cashflow / drawdown",
+              "lagged": "Previously known Grid exposure; execution on later observations",
+              "paper": "factorlab.experiments.grid_paper.run_experiment",
+              "residual": "Mark remaining FIFO lots at common end; no fabricated liquidation"
+            },
+            "active": false,
+            "controls": [
+              "grid_original",
+              "fixed_hold",
+              "lagged_exposure",
+              "cash"
+            ],
+            "metrics": [
+              "complete_cycles",
+              "cycle_net_contribution",
+              "fees",
+              "funding",
+              "funding_adjusted_profit",
+              "inventory_age_hours",
+              "max_committed",
+              "max_drawdown",
+              "max_notional",
+              "mean_notional",
+              "net_profit",
+              "realized_pnl",
+              "residual_inventory",
+              "slippage",
+              "terminal_nav",
+              "unrealized_pnl"
+            ],
+            "r09": "NEW_SEPARATELY_FROZEN_VERSION_REQUIRED",
+            "required_fields": [
+              "accounting",
+              "approval_receipt",
+              "approved_immutable_version",
+              "benchmark_parameters",
+              "capital",
+              "common_termination_at",
+              "costs",
+              "data_source",
+              "end",
+              "external_receipt_verification",
+              "failure_conditions",
+              "fifo_complete_cycle_and_risk_exit_attribution",
+              "fixed_hold_quantity_before_start",
+              "initial_inventory_and_mark",
+              "interval",
+              "inventory_age",
+              "lagged_target_known_at",
+              "minimum_bars",
+              "minimum_duration",
+              "missing_data_policy",
+              "notional_budget",
+              "observed_funding_settlements",
+              "order_timeout",
+              "original_grid_identity",
+              "primary_metric",
+              "residual_mark_at_common_end",
+              "risk_exit",
+              "risk_version",
+              "start",
+              "strategy_commit",
+              "strategy_parameters"
+            ],
+            "shared": [
+              "capital",
+              "notional_budget",
+              "fee_and_slippage_schedule",
+              "UTC_half_open_window",
+              "valuation_clock",
+              "termination_at",
+              "economic_failure_conditions"
+            ],
+            "status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL"
+          },
+          "diagnostics": {
+            "declared_interruptions": 0,
+            "input_bars": 3,
+            "input_books": 10,
+            "input_proposals": 1,
+            "quote_gaps": 0
+          },
+          "engineering_metrics": null,
+          "engineering_status": "INVALID_TIMELINE",
+          "evaluated_at": "2026-11-15T12:31:00Z",
+          "evidence_hash": "f7ae0af3ddb1e609b974d24a007e796abf5372bd3a953623362128cc95b7a394",
+          "financial_admission": "NOT_FINANCIALLY_ADMITTED",
+          "financial_conclusion": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+          "financial_status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+          "issues": [
+            {
+              "code": "M13_BAR_KNOWLEDGE_NOT_PUBLISHED",
+              "identity": null
+            },
+            {
+              "code": "MISSING_BAR_RECEIPT",
+              "identity": "BINANCE_USDM_DEMO_REST:60:1794745620"
+            },
+            {
+              "code": "MISSING_BAR_RECEIPT",
+              "identity": "BINANCE_USDM_DEMO_REST:60:1794745680"
+            },
+            {
+              "code": "MISSING_BAR_RECEIPT",
+              "identity": "BINANCE_USDM_DEMO_REST:60:1794745740"
+            },
+            {
+              "code": "INVALID_TIMELINE",
+              "identity": "2026-11-15T12:26:41.779000+00:00"
+            },
+            {
+              "code": "INVALID_TIMELINE",
+              "identity": "2026-11-15T12:26:59.158000+00:00"
+            },
+            {
+              "code": "INVALID_TIMELINE",
+              "identity": "2026-11-15T12:27:16.399000+00:00"
+            },
+            {
+              "code": "INVALID_TIMELINE",
+              "identity": "2026-11-15T12:27:37.623000+00:00"
+            },
+            {
+              "code": "INVALID_TIMELINE",
+              "identity": "preview-g:preview-g-00000002"
+            }
+          ],
+          "kind": "FORWARD_SHADOW",
+          "metrics": null,
+          "protocol_id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+          "protocol_record_hash": "c5e3bc5116660ac735b9dbe8c6db4850108d7ec3585bc38cadf7cbdda66ebbb1",
+          "receipt_status": "UNVERIFIED_RECEIPT",
+          "safety": "NO LIVE MONEY",
+          "sample_status": "INSUFFICIENT_SAMPLE",
+          "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+          "source_hash": "f0a967c6cf4a018ed7023e4376a796b97be4e9424ff1d8f73b34da5e434a8a98"
+        }
+      }
+    }
+  },
+  "schema": "FACTORLAB_EXPERIMENT_V1",
+  "sha256": "bb4fe758425b338f3d7c4a12a26b636f674785ee97789390e0438ea0953e4e9d"
+}

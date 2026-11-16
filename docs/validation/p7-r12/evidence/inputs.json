@@ -1,0 +1,13 @@
+{
+  "code": {
+    "adapter_sha256": "8a8a44ae824e872d1a31bcac438d6343150fa598a1a173c54f6e2f6adb7cb32b",
+    "commit": "d9b608d01bd307b95e07030104a7620aa36b8d84",
+    "tree": "85ab9d008f34767aab09d191b53da1e5107b5c61"
+  },
+  "inputs": {
+    "docs\\validation\\p7-m13\\real\\events.csv": "1d8054d4fe4abdc55d2940539d55a475155d2233fc42d7572cb88be9ba4d75ad",
+    "docs\\validation\\p7-m13\\real\\summary.json": "69c5d834ad09944163b8bfc92042560fd8294d3c024a7d76a64d202a5c5188a1",
+    "docs\\validation\\p7-r11\\protocol.json": "9674b3b22761f70a728ef96fd523cf55c1d6c3bd17476c36a75a2ea66878fe01",
+    "docs\\validation\\p7-r12\\synthetic-shadow.json": "58e0ba6b5ca24ffefc7ed8066a5f73ea4fdad87ee01996a6c2fafbcc304fe771"
+  }
+}
