@@ -1,0 +1,611 @@
+{
+  "evidence": {
+    "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+    "kind": "FORWARD_SHADOW",
+    "window": [
+      "2026-11-16T13:28:55.435416+00:00",
+      "2026-11-16T13:38:55.435416+00:00"
+    ],
+    "max_quote_gap_seconds": 30.0,
+    "source": {
+      "format": "NORMALIZED_V1",
+      "name": "p7-r13-window-a",
+      "payload": {
+        "binding": {
+          "account": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+          "instrument": "NVDAUSDT",
+          "strategy": "43eb7a00c11ba983b2a9efda527a67c246678fe37a8824887e042a66fb9bc940",
+          "version": "59a54ccce228f5e0e4a6ed66f3330f69da26aff9",
+          "interval_seconds": 60,
+          "session_started_at": "2026-11-16T13:28:55.435416+00:00",
+          "prior_bar_ids": [
+            "BINANCE_USDM_DEMO_REST:60:1794835740"
+          ]
+        },
+        "bars": [
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794835800",
+            "opened_at": "2026-11-16T13:29:00+00:00",
+            "closed_at": "2026-11-16T13:30:00+00:00",
+            "received_at": "2026-11-16T13:30:22.540915+00:00",
+            "known_at": "2026-11-16T13:30:24.048494+00:00",
+            "decision_at": "2026-11-16T13:30:24.052724+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "a791abae373a2a76688e7d922b2b8b04f4d35852c8398a313ed1bba119a25152"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794835860",
+            "opened_at": "2026-11-16T13:30:00+00:00",
+            "closed_at": "2026-11-16T13:31:00+00:00",
+            "received_at": "2026-11-16T13:31:19.217574+00:00",
+            "known_at": "2026-11-16T13:31:19.757091+00:00",
+            "decision_at": "2026-11-16T13:31:19.759147+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "b48035148b3a76504e1a9ac4e94de9e0a55d049aa811d7a9b5125345a6b3365b"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794835920",
+            "opened_at": "2026-11-16T13:31:00+00:00",
+            "closed_at": "2026-11-16T13:32:00+00:00",
+            "received_at": "2026-11-16T13:32:13.918355+00:00",
+            "known_at": "2026-11-16T13:32:14.426597+00:00",
+            "decision_at": "2026-11-16T13:32:14.429105+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "f8c94fbec8bc8e6e3917490099f6cb5192fb22f8aea268c03dd654a9bf397179"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794835980",
+            "opened_at": "2026-11-16T13:32:00+00:00",
+            "closed_at": "2026-11-16T13:33:00+00:00",
+            "received_at": "2026-11-16T13:33:09.047238+00:00",
+            "known_at": "2026-11-16T13:33:09.601591+00:00",
+            "decision_at": "2026-11-16T13:33:09.603579+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "3fd468f4cdff1cb9752cd9d8b3e5170a3b83c6396462a768c83c183a4badf58a"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836040",
+            "opened_at": "2026-11-16T13:33:00+00:00",
+            "closed_at": "2026-11-16T13:34:00+00:00",
+            "received_at": "2026-11-16T13:34:06.914646+00:00",
+            "known_at": "2026-11-16T13:34:07.469762+00:00",
+            "decision_at": "2026-11-16T13:34:07.472264+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "b2fe581567546a6545b6ea801e0dacc314e40a61f71454d367b9c9efd4fd0724"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836100",
+            "opened_at": "2026-11-16T13:34:00+00:00",
+            "closed_at": "2026-11-16T13:35:00+00:00",
+            "received_at": "2026-11-16T13:35:08.051338+00:00",
+            "known_at": "2026-11-16T13:35:09.771350+00:00",
+            "decision_at": "2026-11-16T13:35:09.773401+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "85cd27d13a2fbbd804913377bb8de00364d8648b961bafcd8a1db0138e8a808a"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836160",
+            "opened_at": "2026-11-16T13:35:00+00:00",
+            "closed_at": "2026-11-16T13:36:00+00:00",
+            "received_at": "2026-11-16T13:36:04.857536+00:00",
+            "known_at": "2026-11-16T13:36:05.377503+00:00",
+            "decision_at": "2026-11-16T13:36:05.379504+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "3dd9c6fd95a943927563732e6dd9379ed07ae73de3afd8d0013908fcebc6413b"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836220",
+            "opened_at": "2026-11-16T13:36:00+00:00",
+            "closed_at": "2026-11-16T13:37:00+00:00",
+            "received_at": "2026-11-16T13:37:07.267705+00:00",
+            "known_at": "2026-11-16T13:37:07.809178+00:00",
+            "decision_at": "2026-11-16T13:37:07.812693+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "17847d9c95149de1851196e20d987949496bffce52eb25a88d461221fc18ba18"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836280",
+            "opened_at": "2026-11-16T13:37:00+00:00",
+            "closed_at": "2026-11-16T13:38:00+00:00",
+            "received_at": "2026-11-16T13:38:05.033541+00:00",
+            "known_at": "2026-11-16T13:38:05.586500+00:00",
+            "decision_at": "2026-11-16T13:38:05.588500+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "78db047ce93798c07b4be30d8f8a49c06612f36dcb4812c6404f86bf3fa1940f"
+          }
+        ],
+        "proposals": [
+          {
+            "id": "preview-g:preview-g-00000002",
+            "bar_id": "BINANCE_USDM_DEMO_REST:60:1794835800",
+            "market_at": "2026-11-16T13:30:00+00:00",
+            "decision_at": "2026-11-16T13:30:24.052724+00:00",
+            "captured_at": "2026-11-16T13:30:24.065235+00:00",
+            "deadline": "2026-11-16T13:40:24.052724+00:00",
+            "side": "BUY",
+            "price": "155.14000",
+            "quantity": "0.04",
+            "account": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+            "strategy": "43eb7a00c11ba983b2a9efda527a67c246678fe37a8824887e042a66fb9bc940",
+            "version": "59a54ccce228f5e0e4a6ed66f3330f69da26aff9",
+            "replay": false
+          }
+        ],
+        "books": [
+          {
+            "market_at": "2026-11-16T13:29:39.023000+00:00",
+            "received_at": "2026-11-16T13:29:42.795824+00:00",
+            "bid": "156.42000",
+            "ask": "156.45000",
+            "bid_quantity": "548.44",
+            "ask_quantity": "80.71"
+          },
+          {
+            "market_at": "2026-11-16T13:29:58.051000+00:00",
+            "received_at": "2026-11-16T13:30:00.803209+00:00",
+            "bid": "156.42000",
+            "ask": "156.48000",
+            "bid_quantity": "791.15",
+            "ask_quantity": "38.74"
+          },
+          {
+            "market_at": "2026-11-16T13:30:20.819000+00:00",
+            "received_at": "2026-11-16T13:30:24.048494+00:00",
+            "bid": "156.59000",
+            "ask": "156.68000",
+            "bid_quantity": "143.75",
+            "ask_quantity": "510.73"
+          },
+          {
+            "market_at": "2026-11-16T13:30:39.111000+00:00",
+            "received_at": "2026-11-16T13:30:42.429409+00:00",
+            "bid": "156.77000",
+            "ask": "156.84000",
+            "bid_quantity": "73.75",
+            "ask_quantity": "58.98"
+          },
+          {
+            "market_at": "2026-11-16T13:30:59.080000+00:00",
+            "received_at": "2026-11-16T13:31:01.627129+00:00",
+            "bid": "156.83000",
+            "ask": "156.88000",
+            "bid_quantity": "249.77",
+            "ask_quantity": "43.77"
+          },
+          {
+            "market_at": "2026-11-16T13:31:17.646000+00:00",
+            "received_at": "2026-11-16T13:31:19.757091+00:00",
+            "bid": "156.86000",
+            "ask": "156.89000",
+            "bid_quantity": "278.15",
+            "ask_quantity": "788.61"
+          },
+          {
+            "market_at": "2026-11-16T13:31:35.471000+00:00",
+            "received_at": "2026-11-16T13:31:37.925001+00:00",
+            "bid": "156.87000",
+            "ask": "156.90000",
+            "bid_quantity": "270.21",
+            "ask_quantity": "36.19"
+          },
+          {
+            "market_at": "2026-11-16T13:31:53.979000+00:00",
+            "received_at": "2026-11-16T13:31:56.283085+00:00",
+            "bid": "156.90000",
+            "ask": "156.91000",
+            "bid_quantity": "142.61",
+            "ask_quantity": "1340.15"
+          },
+          {
+            "market_at": "2026-11-16T13:32:11.383000+00:00",
+            "received_at": "2026-11-16T13:32:14.426597+00:00",
+            "bid": "156.87000",
+            "ask": "156.91000",
+            "bid_quantity": "374.31",
+            "ask_quantity": "77.45"
+          },
+          {
+            "market_at": "2026-11-16T13:32:30.199000+00:00",
+            "received_at": "2026-11-16T13:32:32.983955+00:00",
+            "bid": "156.87000",
+            "ask": "156.93000",
+            "bid_quantity": "310.68",
+            "ask_quantity": "489.94"
+          },
+          {
+            "market_at": "2026-11-16T13:32:50.007000+00:00",
+            "received_at": "2026-11-16T13:32:52.252342+00:00",
+            "bid": "156.94000",
+            "ask": "156.98000",
+            "bid_quantity": "354.65",
+            "ask_quantity": "996.43"
+          },
+          {
+            "market_at": "2026-11-16T13:33:07.311000+00:00",
+            "received_at": "2026-11-16T13:33:09.601591+00:00",
+            "bid": "156.97000",
+            "ask": "157.00000",
+            "bid_quantity": "83.41",
+            "ask_quantity": "882.73"
+          },
+          {
+            "market_at": "2026-11-16T13:33:25.179000+00:00",
+            "received_at": "2026-11-16T13:33:27.818080+00:00",
+            "bid": "157.03000",
+            "ask": "157.06000",
+            "bid_quantity": "71.50",
+            "ask_quantity": "3592.98"
+          },
+          {
+            "market_at": "2026-11-16T13:33:46.894000+00:00",
+            "received_at": "2026-11-16T13:33:49.394683+00:00",
+            "bid": "157.06000",
+            "ask": "157.11000",
+            "bid_quantity": "172.83",
+            "ask_quantity": "882.77"
+          },
+          {
+            "market_at": "2026-11-16T13:34:05.359000+00:00",
+            "received_at": "2026-11-16T13:34:07.469762+00:00",
+            "bid": "157.06000",
+            "ask": "157.13000",
+            "bid_quantity": "172.83",
+            "ask_quantity": "955.17"
+          },
+          {
+            "market_at": "2026-11-16T13:34:21.371000+00:00",
+            "received_at": "2026-11-16T13:34:24.315302+00:00",
+            "bid": "157.13000",
+            "ask": "157.14000",
+            "bid_quantity": "163.21",
+            "ask_quantity": "0.08"
+          },
+          {
+            "market_at": "2026-11-16T13:34:46.899000+00:00",
+            "received_at": "2026-11-16T13:34:49.192227+00:00",
+            "bid": "157.14000",
+            "ask": "157.17000",
+            "bid_quantity": "192.50",
+            "ask_quantity": "1995.50"
+          },
+          {
+            "market_at": "2026-11-16T13:35:07.131000+00:00",
+            "received_at": "2026-11-16T13:35:09.771350+00:00",
+            "bid": "157.18000",
+            "ask": "157.21000",
+            "bid_quantity": "185.55",
+            "ask_quantity": "2918.20"
+          },
+          {
+            "market_at": "2026-11-16T13:35:23.787000+00:00",
+            "received_at": "2026-11-16T13:35:26.069526+00:00",
+            "bid": "157.19000",
+            "ask": "157.22000",
+            "bid_quantity": "177.11",
+            "ask_quantity": "788.68"
+          },
+          {
+            "market_at": "2026-11-16T13:35:43.071000+00:00",
+            "received_at": "2026-11-16T13:35:46.065791+00:00",
+            "bid": "157.23000",
+            "ask": "157.25000",
+            "bid_quantity": "190.79",
+            "ask_quantity": "2524.94"
+          },
+          {
+            "market_at": "2026-11-16T13:36:03.121000+00:00",
+            "received_at": "2026-11-16T13:36:05.377503+00:00",
+            "bid": "157.26000",
+            "ask": "157.29000",
+            "bid_quantity": "179.25",
+            "ask_quantity": "266.92"
+          },
+          {
+            "market_at": "2026-11-16T13:36:21.585000+00:00",
+            "received_at": "2026-11-16T13:36:25.007125+00:00",
+            "bid": "157.30000",
+            "ask": "157.35000",
+            "bid_quantity": "273.56",
+            "ask_quantity": "2068.61"
+          },
+          {
+            "market_at": "2026-11-16T13:36:43.923000+00:00",
+            "received_at": "2026-11-16T13:36:46.055134+00:00",
+            "bid": "157.31000",
+            "ask": "157.36000",
+            "bid_quantity": "114.60",
+            "ask_quantity": "3756.09"
+          },
+          {
+            "market_at": "2026-11-16T13:37:05.587000+00:00",
+            "received_at": "2026-11-16T13:37:07.809178+00:00",
+            "bid": "157.32000",
+            "ask": "157.36000",
+            "bid_quantity": "134.74",
+            "ask_quantity": "41.34"
+          },
+          {
+            "market_at": "2026-11-16T13:37:23.195000+00:00",
+            "received_at": "2026-11-16T13:37:25.402835+00:00",
+            "bid": "157.38000",
+            "ask": "157.39000",
+            "bid_quantity": "135.94",
+            "ask_quantity": "3442.19"
+          },
+          {
+            "market_at": "2026-11-16T13:37:39.827000+00:00",
+            "received_at": "2026-11-16T13:37:42.952972+00:00",
+            "bid": "157.32000",
+            "ask": "157.39000",
+            "bid_quantity": "396.15",
+            "ask_quantity": "3042.99"
+          },
+          {
+            "market_at": "2026-11-16T13:38:03.387000+00:00",
+            "received_at": "2026-11-16T13:38:05.586500+00:00",
+            "bid": "157.29000",
+            "ask": "157.39000",
+            "bid_quantity": "496.27",
+            "ask_quantity": "3042.99"
+          },
+          {
+            "market_at": "2026-11-16T13:38:23.419000+00:00",
+            "received_at": "2026-11-16T13:38:25.625909+00:00",
+            "bid": "157.31000",
+            "ask": "157.39000",
+            "bid_quantity": "171.77",
+            "ask_quantity": "3042.99"
+          },
+          {
+            "market_at": "2026-11-16T13:38:45.367000+00:00",
+            "received_at": "2026-11-16T13:38:47.620615+00:00",
+            "bid": "157.25000",
+            "ask": "157.39000",
+            "bid_quantity": "908.93",
+            "ask_quantity": "3042.99"
+          }
+        ],
+        "fills": [],
+        "gaps": [],
+        "ends": [
+          {
+            "at": "2026-11-16T13:38:55.786124+00:00",
+            "ids": [
+              "preview-g:preview-g-00000002"
+            ],
+            "reason": "CAPACITY_LIMIT",
+            "original_reason": "CAPACITY_LIMIT"
+          }
+        ],
+        "observation_id": "p7-r13-window-a",
+        "observation_manifest": {
+          "deadline": "2026-11-16T13:38:55.435416+00:00",
+          "kind": "experiment",
+          "parameters": {
+            "experiment_id": "p7-r13-window-a",
+            "interruption_rule": "STOP_WITHOUT_RETRY",
+            "interval_seconds": 60,
+            "limit_rule": "ORIGINAL_LEGAL_PROPOSAL_LIMIT_IMMUTABLE",
+            "market": "BINANCE_USDM_DEMO",
+            "max_bytes": 5242880,
+            "max_proposals": 20,
+            "max_quote_gap_seconds": 30.0,
+            "max_requests": 600,
+            "minimum_poll_delay_seconds": 5.0,
+            "minimum_request_interval_seconds": 0,
+            "restart_rule": "REFUSE",
+            "sample_seconds": 5.0,
+            "seconds": 600.0,
+            "settings": null,
+            "strategy_definition": {
+              "breakout": "pause",
+              "default_range_multipliers": [
+                "0.99",
+                "1.01"
+              ],
+              "factory": "P7_M13_GRID_FACTORY",
+              "initial_inventory": 0,
+              "levels": 1,
+              "max_cash_committed": 7,
+              "max_inventory": 1,
+              "quantity": 1,
+              "settings": null
+            },
+            "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774",
+            "symbol": "NVDAUSDT",
+            "termination": [
+              "ABSOLUTE_DEADLINE",
+              "REQUEST_BUDGET",
+              "BYTE_BUDGET",
+              "PROPOSAL_BUDGET",
+              "DATA_INTERRUPTION",
+              "SIGNAL"
+            ],
+            "version": "59a54ccce228f5e0e4a6ed66f3330f69da26aff9",
+            "window_seconds": 600.0
+          },
+          "started_at": "2026-11-16T13:28:55.435416+00:00"
+        },
+        "window_ends": [
+          {
+            "at": "2026-11-16T13:38:55.788136+00:00",
+            "kind": "window_end",
+            "reason": "absolute experiment deadline reached"
+          }
+        ],
+        "original_events_sha256": "ba28f39ffe07b66e4ee4c76e12ae10c712a777caf4ccd06dfe4bd55d3266ecdf",
+        "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774"
+      },
+      "sha256": "173da363ccbbb329073522cb01b39bf96ca9e532a5a060cb7c857fba3b8d60c5"
+    }
+  },
+  "evaluation": {
+    "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+    "protocol_id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+    "protocol_record_hash": "c5e3bc5116660ac735b9dbe8c6db4850108d7ec3585bc38cadf7cbdda66ebbb1",
+    "evidence_hash": "5744bbc6a38964e6b4d0c22d61626479d45058211e7ed354dda61f920de17ee9",
+    "source_hash": "173da363ccbbb329073522cb01b39bf96ca9e532a5a060cb7c857fba3b8d60c5",
+    "evaluated_at": "2026-11-16T13:49:21Z",
+    "kind": "FORWARD_SHADOW",
+    "engineering_status": "INVALID_EVIDENCE",
+    "sample_status": "INSUFFICIENT_SAMPLE",
+    "receipt_status": "UNVERIFIED_RECEIPT",
+    "financial_admission": "NOT_FINANCIALLY_ADMITTED",
+    "financial_status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+    "financial_conclusion": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+    "metrics": null,
+    "engineering_metrics": null,
+    "issues": [
+      {
+        "code": "TERMINAL_OBSERVATION_INTERRUPTION",
+        "identity": null
+      },
+      {
+        "code": "INVALID_TERMINATION_TIME",
+        "identity": null
+      }
+    ],
+    "diagnostics": {
+      "input_bars": 9,
+      "input_proposals": 1,
+      "input_books": 29,
+      "quote_gaps": 0,
+      "declared_interruptions": 0
+    },
+    "activation": {
+      "active": false,
+      "status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+      "required_fields": [
+        "accounting",
+        "approval_receipt",
+        "approved_immutable_version",
+        "benchmark_parameters",
+        "capital",
+        "common_termination_at",
+        "costs",
+        "data_source",
+        "end",
+        "external_receipt_verification",
+        "failure_conditions",
+        "fifo_complete_cycle_and_risk_exit_attribution",
+        "fixed_hold_quantity_before_start",
+        "initial_inventory_and_mark",
+        "interval",
+        "inventory_age",
+        "lagged_target_known_at",
+        "minimum_bars",
+        "minimum_duration",
+        "missing_data_policy",
+        "notional_budget",
+        "observed_funding_settlements",
+        "order_timeout",
+        "original_grid_identity",
+        "primary_metric",
+        "residual_mark_at_common_end",
+        "risk_exit",
+        "risk_version",
+        "start",
+        "strategy_commit",
+        "strategy_parameters"
+      ],
+      "controls": [
+        "grid_original",
+        "fixed_hold",
+        "lagged_exposure",
+        "cash"
+      ],
+      "metrics": [
+        "complete_cycles",
+        "cycle_net_contribution",
+        "fees",
+        "funding",
+        "funding_adjusted_profit",
+        "inventory_age_hours",
+        "max_committed",
+        "max_drawdown",
+        "max_notional",
+        "mean_notional",
+        "net_profit",
+        "realized_pnl",
+        "residual_inventory",
+        "slippage",
+        "terminal_nav",
+        "unrealized_pnl"
+      ],
+      "r09": "NEW_SEPARATELY_FROZEN_VERSION_REQUIRED",
+      "shared": [
+        "capital",
+        "notional_budget",
+        "fee_and_slippage_schedule",
+        "UTC_half_open_window",
+        "valuation_clock",
+        "termination_at",
+        "economic_failure_conditions"
+      ],
+      "accounting": {
+        "paper": "factorlab.experiments.grid_paper.run_experiment",
+        "fifo": "factorlab.experiments.grid_fifo.attribution",
+        "funding": "factorlab.experiments.grid_funding.cashflow / drawdown",
+        "controls": "factorlab.experiments.grid_exposure_benchmark",
+        "boundary": "Future approved adapter must supply result.json, trades.csv, daily.csv and authoritative PaperStore fills for FIFO. Paper end filtering is inclusive: prefilter bars by [start,end). Historical defaults and post-hoc funding overlays are not executable cash",
+        "residual": "Mark remaining FIFO lots at common end; no fabricated liquidation",
+        "costs": "Slippage embedded in fills, not deducted twice",
+        "cash": "Same capital; zero trading, funding and assumed interest",
+        "fixed_hold": "Quantity frozen before start, never fitted to future inventory",
+        "lagged": "Previously known Grid exposure; execution on later observations",
+        "cycles": "Normal SELL exhausts BUY lot; risk exits separately attributed"
+      }
+    },
+    "safety": "NO LIVE MONEY"
+  },
+  "description": {
+    "observation_id": "p7-r13-window-a",
+    "raw_content_sha256": "ba28f39ffe07b66e4ee4c76e12ae10c712a777caf4ccd06dfe4bd55d3266ecdf",
+    "counts": {
+      "observation_windows": 1,
+      "independent_proposals": 1,
+      "input_proposal_records": 1,
+      "captured_books": 29,
+      "forward_quote_pairs": 26,
+      "touched_proposals": 0,
+      "right_censored_proposals": 1
+    },
+    "right_censored_ratio": 1.0,
+    "descriptive_only": true,
+    "proposals": [
+      {
+        "id": "preview-g:preview-g-00000002",
+        "original_limit": "155.14000",
+        "side": "BUY",
+        "quantity": "0.04",
+        "forward_pairs": 26,
+        "baseline_distance": {
+          "bid_bps": "-92.59850565170189667283990000",
+          "ask_bps": "-98.28950727597651263722236400"
+        },
+        "first_forward_distance": {
+          "bid_bps": "-103.9739746124896344963959940",
+          "ask_bps": "-108.3907166539148176485590410"
+        },
+        "minimum_absolute_midpoint_distance_bps": "107.3224184607451334278716000",
+        "minimum_opposite_book_distance_bps": "109.5784452752352713677968287",
+        "midpoint_touch": false,
+        "potential_opposite_book_crossing": false,
+        "crossing_top_quantity_coverage": [],
+        "first_touch_delay_seconds": null,
+        "right_censored": true,
+        "observation_stop": "2026-11-16T13:38:55.435416+00:00"
+      }
+    ],
+    "confirmed_exchange_fills": 0
+  }
+}

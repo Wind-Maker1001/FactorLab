@@ -1,0 +1,601 @@
+{
+  "evidence": {
+    "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+    "kind": "FORWARD_SHADOW",
+    "window": [
+      "2026-11-16T13:39:11.239329+00:00",
+      "2026-11-16T13:49:11.239329+00:00"
+    ],
+    "max_quote_gap_seconds": 30.0,
+    "source": {
+      "format": "NORMALIZED_V1",
+      "name": "p7-r13-window-b",
+      "payload": {
+        "binding": {
+          "account": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+          "instrument": "NVDAUSDT",
+          "strategy": "f10b5e1c850094f7815459c6b43bb77f34b1542ecda2d966040e65e9614d165b",
+          "version": "59a54ccce228f5e0e4a6ed66f3330f69da26aff9",
+          "interval_seconds": 60,
+          "session_started_at": "2026-11-16T13:39:11.239329+00:00",
+          "prior_bar_ids": [
+            "BINANCE_USDM_DEMO_REST:60:1794836340",
+            "BINANCE_USDM_DEMO_REST:60:1794836400"
+          ]
+        },
+        "bars": [
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836460",
+            "opened_at": "2026-11-16T13:40:00+00:00",
+            "closed_at": "2026-11-16T13:41:00+00:00",
+            "received_at": "2026-11-16T13:41:07.610690+00:00",
+            "known_at": "2026-11-16T13:41:08.143957+00:00",
+            "decision_at": "2026-11-16T13:41:08.146904+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "2413c04864d467bcb3d97d267f8c233c20343eaeb070f50734bdab02a78df286"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836520",
+            "opened_at": "2026-11-16T13:41:00+00:00",
+            "closed_at": "2026-11-16T13:42:00+00:00",
+            "received_at": "2026-11-16T13:42:05.807604+00:00",
+            "known_at": "2026-11-16T13:42:06.356973+00:00",
+            "decision_at": "2026-11-16T13:42:06.359976+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "636d69777b2338f8f83ab17670c9d351eb8298f716ba98f00aad29a08f078a1e"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836580",
+            "opened_at": "2026-11-16T13:42:00+00:00",
+            "closed_at": "2026-11-16T13:43:00+00:00",
+            "received_at": "2026-11-16T13:43:04.934037+00:00",
+            "known_at": "2026-11-16T13:43:05.486175+00:00",
+            "decision_at": "2026-11-16T13:43:05.489364+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "1663383435866432408ea84c766899d9492a7c621a33a5e909bfdd1895534738"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836640",
+            "opened_at": "2026-11-16T13:43:00+00:00",
+            "closed_at": "2026-11-16T13:44:00+00:00",
+            "received_at": "2026-11-16T13:44:03.490591+00:00",
+            "known_at": "2026-11-16T13:44:04.011564+00:00",
+            "decision_at": "2026-11-16T13:44:04.013578+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "afeef785596da76ecc96788939851b1d80cb495eac809edc7503e5e2ff70826a"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836700",
+            "opened_at": "2026-11-16T13:44:00+00:00",
+            "closed_at": "2026-11-16T13:45:00+00:00",
+            "received_at": "2026-11-16T13:45:20.762591+00:00",
+            "known_at": "2026-11-16T13:45:21.309296+00:00",
+            "decision_at": "2026-11-16T13:45:21.311298+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "765e5d69e5da0b229e67750aa58d9a987efcc0b2fdbd22ce20318b025c795986"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836760",
+            "opened_at": "2026-11-16T13:45:00+00:00",
+            "closed_at": "2026-11-16T13:46:00+00:00",
+            "received_at": "2026-11-16T13:46:18.529434+00:00",
+            "known_at": "2026-11-16T13:46:19.110676+00:00",
+            "decision_at": "2026-11-16T13:46:19.117698+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "ed7c0625fbb1e6c3bafda66be14d927b423b9c92a3fc60f1a32f43b95a8750db"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836820",
+            "opened_at": "2026-11-16T13:46:00+00:00",
+            "closed_at": "2026-11-16T13:47:00+00:00",
+            "received_at": "2026-11-16T13:47:03.336177+00:00",
+            "known_at": "2026-11-16T13:47:03.939690+00:00",
+            "decision_at": "2026-11-16T13:47:03.945691+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "cdebcf223c2e93fb084f4dab8213f7bfa702e182c6513f828470b85f40699007"
+          },
+          {
+            "id": "BINANCE_USDM_DEMO_REST:60:1794836880",
+            "opened_at": "2026-11-16T13:47:00+00:00",
+            "closed_at": "2026-11-16T13:48:00+00:00",
+            "received_at": "2026-11-16T13:48:08.172140+00:00",
+            "known_at": "2026-11-16T13:48:08.715975+00:00",
+            "decision_at": "2026-11-16T13:48:08.719482+00:00",
+            "completed_bar": true,
+            "live": true,
+            "raw_sha256": "b6002871cae82a738be53ebf88f8e6b1e8f1f6e0c0c1e7424218164def4882fe"
+          }
+        ],
+        "proposals": [
+          {
+            "id": "preview-g:preview-g-00000002",
+            "bar_id": "BINANCE_USDM_DEMO_REST:60:1794836460",
+            "market_at": "2026-11-16T13:41:00+00:00",
+            "decision_at": "2026-11-16T13:41:08.146904+00:00",
+            "captured_at": "2026-11-16T13:41:08.157240+00:00",
+            "deadline": "2026-11-16T13:51:08.146904+00:00",
+            "side": "BUY",
+            "price": "155.81000",
+            "quantity": "0.04",
+            "account": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+            "strategy": "f10b5e1c850094f7815459c6b43bb77f34b1542ecda2d966040e65e9614d165b",
+            "version": "59a54ccce228f5e0e4a6ed66f3330f69da26aff9",
+            "replay": false
+          }
+        ],
+        "books": [
+          {
+            "market_at": "2026-11-16T13:39:49.535000+00:00",
+            "received_at": "2026-11-16T13:39:53.130378+00:00",
+            "bid": "157.17000",
+            "ask": "157.39000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "3042.99"
+          },
+          {
+            "market_at": "2026-11-16T13:40:08.603000+00:00",
+            "received_at": "2026-11-16T13:40:11.205328+00:00",
+            "bid": "157.17000",
+            "ask": "157.39000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "3042.99"
+          },
+          {
+            "market_at": "2026-11-16T13:40:31.471000+00:00",
+            "received_at": "2026-11-16T13:40:33.656645+00:00",
+            "bid": "157.17000",
+            "ask": "157.39000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "3042.80"
+          },
+          {
+            "market_at": "2026-11-16T13:40:47.319000+00:00",
+            "received_at": "2026-11-16T13:40:50.452478+00:00",
+            "bid": "157.17000",
+            "ask": "157.41000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "195.49"
+          },
+          {
+            "market_at": "2026-11-16T13:41:04.307000+00:00",
+            "received_at": "2026-11-16T13:41:08.143957+00:00",
+            "bid": "157.17000",
+            "ask": "157.45000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "1135.65"
+          },
+          {
+            "market_at": "2026-11-16T13:41:22.159000+00:00",
+            "received_at": "2026-11-16T13:41:24.517639+00:00",
+            "bid": "157.17000",
+            "ask": "157.48000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "767.85"
+          },
+          {
+            "market_at": "2026-11-16T13:41:45.579000+00:00",
+            "received_at": "2026-11-16T13:41:48.788744+00:00",
+            "bid": "157.17000",
+            "ask": "157.54000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "358.20"
+          },
+          {
+            "market_at": "2026-11-16T13:42:03.903000+00:00",
+            "received_at": "2026-11-16T13:42:06.356973+00:00",
+            "bid": "157.17000",
+            "ask": "157.58000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "1753.73"
+          },
+          {
+            "market_at": "2026-11-16T13:42:24.419000+00:00",
+            "received_at": "2026-11-16T13:42:26.950844+00:00",
+            "bid": "157.17000",
+            "ask": "157.61000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "1039.86"
+          },
+          {
+            "market_at": "2026-11-16T13:42:43.279000+00:00",
+            "received_at": "2026-11-16T13:42:45.753807+00:00",
+            "bid": "157.17000",
+            "ask": "157.62000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "979.29"
+          },
+          {
+            "market_at": "2026-11-16T13:43:03.271000+00:00",
+            "received_at": "2026-11-16T13:43:05.486175+00:00",
+            "bid": "157.17000",
+            "ask": "157.62000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "979.29"
+          },
+          {
+            "market_at": "2026-11-16T13:43:20.735000+00:00",
+            "received_at": "2026-11-16T13:43:24.236022+00:00",
+            "bid": "157.17000",
+            "ask": "157.62000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "979.29"
+          },
+          {
+            "market_at": "2026-11-16T13:43:41.187000+00:00",
+            "received_at": "2026-11-16T13:43:44.630323+00:00",
+            "bid": "157.17000",
+            "ask": "157.62000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "979.29"
+          },
+          {
+            "market_at": "2026-11-16T13:44:00.463000+00:00",
+            "received_at": "2026-11-16T13:44:04.011564+00:00",
+            "bid": "157.17000",
+            "ask": "157.64000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "181.59"
+          },
+          {
+            "market_at": "2026-11-16T13:44:18.383000+00:00",
+            "received_at": "2026-11-16T13:44:22.381966+00:00",
+            "bid": "157.17000",
+            "ask": "157.67000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "634.94"
+          },
+          {
+            "market_at": "2026-11-16T13:44:38.938000+00:00",
+            "received_at": "2026-11-16T13:44:42.386898+00:00",
+            "bid": "157.17000",
+            "ask": "157.69000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "0.22"
+          },
+          {
+            "market_at": "2026-11-16T13:44:57.663000+00:00",
+            "received_at": "2026-11-16T13:45:00.990362+00:00",
+            "bid": "157.17000",
+            "ask": "157.72000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "0.81"
+          },
+          {
+            "market_at": "2026-11-16T13:45:19.099000+00:00",
+            "received_at": "2026-11-16T13:45:21.309296+00:00",
+            "bid": "157.17000",
+            "ask": "157.75000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "853.40"
+          },
+          {
+            "market_at": "2026-11-16T13:45:37.367000+00:00",
+            "received_at": "2026-11-16T13:45:39.592221+00:00",
+            "bid": "157.17000",
+            "ask": "157.79000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "601.76"
+          },
+          {
+            "market_at": "2026-11-16T13:45:53.922000+00:00",
+            "received_at": "2026-11-16T13:45:56.871197+00:00",
+            "bid": "157.17000",
+            "ask": "157.84000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "513.29"
+          },
+          {
+            "market_at": "2026-11-16T13:46:16.995000+00:00",
+            "received_at": "2026-11-16T13:46:19.110676+00:00",
+            "bid": "157.17000",
+            "ask": "157.86000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "1015.79"
+          },
+          {
+            "market_at": "2026-11-16T13:46:35.271000+00:00",
+            "received_at": "2026-11-16T13:46:38.895155+00:00",
+            "bid": "157.17000",
+            "ask": "157.86000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "1015.79"
+          },
+          {
+            "market_at": "2026-11-16T13:47:01.623000+00:00",
+            "received_at": "2026-11-16T13:47:03.939690+00:00",
+            "bid": "157.17000",
+            "ask": "157.86000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "375.27"
+          },
+          {
+            "market_at": "2026-11-16T13:47:22.155000+00:00",
+            "received_at": "2026-11-16T13:47:24.255948+00:00",
+            "bid": "157.17000",
+            "ask": "157.86000",
+            "bid_quantity": "911.55",
+            "ask_quantity": "315.14"
+          },
+          {
+            "market_at": "2026-11-16T13:47:47.739000+00:00",
+            "received_at": "2026-11-16T13:47:49.958640+00:00",
+            "bid": "157.63000",
+            "ask": "157.67000",
+            "bid_quantity": "0.10",
+            "ask_quantity": "0.10"
+          },
+          {
+            "market_at": "2026-11-16T13:48:06.547000+00:00",
+            "received_at": "2026-11-16T13:48:08.715975+00:00",
+            "bid": "157.63000",
+            "ask": "157.69000",
+            "bid_quantity": "0.10",
+            "ask_quantity": "0.10"
+          },
+          {
+            "market_at": "2026-11-16T13:48:23.487000+00:00",
+            "received_at": "2026-11-16T13:48:26.944049+00:00",
+            "bid": "157.54000",
+            "ask": "157.69000",
+            "bid_quantity": "0.02",
+            "ask_quantity": "0.10"
+          },
+          {
+            "market_at": "2026-11-16T13:48:43.040000+00:00",
+            "received_at": "2026-11-16T13:48:45.241631+00:00",
+            "bid": "157.60000",
+            "ask": "157.86000",
+            "bid_quantity": "421.61",
+            "ask_quantity": "311.80"
+          },
+          {
+            "market_at": "2026-11-16T13:49:00.383000+00:00",
+            "received_at": "2026-11-16T13:49:02.872849+00:00",
+            "bid": "157.50000",
+            "ask": "157.86000",
+            "bid_quantity": "78.54",
+            "ask_quantity": "306.58"
+          }
+        ],
+        "fills": [],
+        "gaps": [],
+        "ends": [
+          {
+            "at": "2026-11-16T13:49:12.146227+00:00",
+            "ids": [
+              "preview-g:preview-g-00000002"
+            ],
+            "reason": "CAPACITY_LIMIT",
+            "original_reason": "CAPACITY_LIMIT"
+          }
+        ],
+        "observation_id": "p7-r13-window-b",
+        "observation_manifest": {
+          "deadline": "2026-11-16T13:49:11.239329+00:00",
+          "kind": "experiment",
+          "parameters": {
+            "experiment_id": "p7-r13-window-b",
+            "interruption_rule": "STOP_WITHOUT_RETRY",
+            "interval_seconds": 60,
+            "limit_rule": "ORIGINAL_LEGAL_PROPOSAL_LIMIT_IMMUTABLE",
+            "market": "BINANCE_USDM_DEMO",
+            "max_bytes": 5242880,
+            "max_proposals": 20,
+            "max_quote_gap_seconds": 30.0,
+            "max_requests": 600,
+            "minimum_poll_delay_seconds": 5.0,
+            "minimum_request_interval_seconds": 0,
+            "restart_rule": "REFUSE",
+            "sample_seconds": 5.0,
+            "seconds": 600.0,
+            "settings": null,
+            "strategy_definition": {
+              "breakout": "pause",
+              "default_range_multipliers": [
+                "0.99",
+                "1.01"
+              ],
+              "factory": "P7_M13_GRID_FACTORY",
+              "initial_inventory": 0,
+              "levels": 1,
+              "max_cash_committed": 7,
+              "max_inventory": 1,
+              "quantity": 1,
+              "settings": null
+            },
+            "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774",
+            "symbol": "NVDAUSDT",
+            "termination": [
+              "ABSOLUTE_DEADLINE",
+              "REQUEST_BUDGET",
+              "BYTE_BUDGET",
+              "PROPOSAL_BUDGET",
+              "DATA_INTERRUPTION",
+              "SIGNAL"
+            ],
+            "version": "59a54ccce228f5e0e4a6ed66f3330f69da26aff9",
+            "window_seconds": 600.0
+          },
+          "started_at": "2026-11-16T13:39:11.239329+00:00"
+        },
+        "window_ends": [
+          {
+            "at": "2026-11-16T13:49:12.148737+00:00",
+            "kind": "window_end",
+            "reason": "absolute experiment deadline reached"
+          }
+        ],
+        "original_events_sha256": "b21c88dde1d30c78a3ba2c1799b3cc478d46ae246360211581b18dc23d52dd46",
+        "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774"
+      },
+      "sha256": "b6d67a717dd6ea423c38cc10d22195d46a806c0d59aec26017b3cd25ea0c93b7"
+    }
+  },
+  "evaluation": {
+    "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+    "protocol_id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+    "protocol_record_hash": "c5e3bc5116660ac735b9dbe8c6db4850108d7ec3585bc38cadf7cbdda66ebbb1",
+    "evidence_hash": "1d588737f42c4fd639b3864b740c1a0d86d59abdf8cbbaeb0934ce4b78f0103c",
+    "source_hash": "b6d67a717dd6ea423c38cc10d22195d46a806c0d59aec26017b3cd25ea0c93b7",
+    "evaluated_at": "2026-11-16T13:49:21Z",
+    "kind": "FORWARD_SHADOW",
+    "engineering_status": "INVALID_EVIDENCE",
+    "sample_status": "INSUFFICIENT_SAMPLE",
+    "receipt_status": "UNVERIFIED_RECEIPT",
+    "financial_admission": "NOT_FINANCIALLY_ADMITTED",
+    "financial_status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+    "financial_conclusion": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+    "metrics": null,
+    "engineering_metrics": null,
+    "issues": [
+      {
+        "code": "TERMINAL_OBSERVATION_INTERRUPTION",
+        "identity": null
+      },
+      {
+        "code": "INVALID_TERMINATION_TIME",
+        "identity": null
+      }
+    ],
+    "diagnostics": {
+      "input_bars": 8,
+      "input_proposals": 1,
+      "input_books": 29,
+      "quote_gaps": 0,
+      "declared_interruptions": 0
+    },
+    "activation": {
+      "active": false,
+      "status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+      "required_fields": [
+        "accounting",
+        "approval_receipt",
+        "approved_immutable_version",
+        "benchmark_parameters",
+        "capital",
+        "common_termination_at",
+        "costs",
+        "data_source",
+        "end",
+        "external_receipt_verification",
+        "failure_conditions",
+        "fifo_complete_cycle_and_risk_exit_attribution",
+        "fixed_hold_quantity_before_start",
+        "initial_inventory_and_mark",
+        "interval",
+        "inventory_age",
+        "lagged_target_known_at",
+        "minimum_bars",
+        "minimum_duration",
+        "missing_data_policy",
+        "notional_budget",
+        "observed_funding_settlements",
+        "order_timeout",
+        "original_grid_identity",
+        "primary_metric",
+        "residual_mark_at_common_end",
+        "risk_exit",
+        "risk_version",
+        "start",
+        "strategy_commit",
+        "strategy_parameters"
+      ],
+      "controls": [
+        "grid_original",
+        "fixed_hold",
+        "lagged_exposure",
+        "cash"
+      ],
+      "metrics": [
+        "complete_cycles",
+        "cycle_net_contribution",
+        "fees",
+        "funding",
+        "funding_adjusted_profit",
+        "inventory_age_hours",
+        "max_committed",
+        "max_drawdown",
+        "max_notional",
+        "mean_notional",
+        "net_profit",
+        "realized_pnl",
+        "residual_inventory",
+        "slippage",
+        "terminal_nav",
+        "unrealized_pnl"
+      ],
+      "r09": "NEW_SEPARATELY_FROZEN_VERSION_REQUIRED",
+      "shared": [
+        "capital",
+        "notional_budget",
+        "fee_and_slippage_schedule",
+        "UTC_half_open_window",
+        "valuation_clock",
+        "termination_at",
+        "economic_failure_conditions"
+      ],
+      "accounting": {
+        "paper": "factorlab.experiments.grid_paper.run_experiment",
+        "fifo": "factorlab.experiments.grid_fifo.attribution",
+        "funding": "factorlab.experiments.grid_funding.cashflow / drawdown",
+        "controls": "factorlab.experiments.grid_exposure_benchmark",
+        "boundary": "Future approved adapter must supply result.json, trades.csv, daily.csv and authoritative PaperStore fills for FIFO. Paper end filtering is inclusive: prefilter bars by [start,end). Historical defaults and post-hoc funding overlays are not executable cash",
+        "residual": "Mark remaining FIFO lots at common end; no fabricated liquidation",
+        "costs": "Slippage embedded in fills, not deducted twice",
+        "cash": "Same capital; zero trading, funding and assumed interest",
+        "fixed_hold": "Quantity frozen before start, never fitted to future inventory",
+        "lagged": "Previously known Grid exposure; execution on later observations",
+        "cycles": "Normal SELL exhausts BUY lot; risk exits separately attributed"
+      }
+    },
+    "safety": "NO LIVE MONEY"
+  },
+  "description": {
+    "observation_id": "p7-r13-window-b",
+    "raw_content_sha256": "b21c88dde1d30c78a3ba2c1799b3cc478d46ae246360211581b18dc23d52dd46",
+    "counts": {
+      "observation_windows": 1,
+      "independent_proposals": 1,
+      "input_proposal_records": 1,
+      "captured_books": 29,
+      "forward_quote_pairs": 24,
+      "touched_proposals": 0,
+      "right_censored_proposals": 1
+    },
+    "right_censored_ratio": 1.0,
+    "descriptive_only": true,
+    "proposals": [
+      {
+        "id": "preview-g:preview-g-00000002",
+        "original_limit": "155.81000",
+        "side": "BUY",
+        "quantity": "0.04",
+        "forward_pairs": 24,
+        "baseline_distance": {
+          "bid_bps": "-86.53050836673665457784564500",
+          "ask_bps": "-104.1600508097808828199428390"
+        },
+        "first_forward_distance": {
+          "bid_bps": "-86.53050836673665457784564500",
+          "ask_bps": "-106.0452120904241808483616970"
+        },
+        "minimum_absolute_midpoint_distance_bps": "97.23381041011488351196971000",
+        "minimum_opposite_book_distance_bps": "107.1818240164302676336563764",
+        "midpoint_touch": false,
+        "potential_opposite_book_crossing": false,
+        "crossing_top_quantity_coverage": [],
+        "first_touch_delay_seconds": null,
+        "right_censored": true,
+        "observation_stop": "2026-11-16T13:49:11.239329+00:00"
+      }
+    ],
+    "confirmed_exchange_fills": 0
+  }
+}
