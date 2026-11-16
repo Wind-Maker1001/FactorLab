@@ -1,0 +1,42 @@
+{
+  "counts": {
+    "observation_windows": 1,
+    "independent_proposals": 1,
+    "input_proposal_records": 1,
+    "captured_books": 2,
+    "forward_quote_pairs": 0,
+    "touched_proposals": 0,
+    "right_censored_proposals": 1,
+    "qualified_books": 0,
+    "qualified_forward_quote_pairs": 0
+  },
+  "windows": [
+    {
+      "observation_id": "p7-r13-f01-valid-forward-window-a",
+      "evidence_hash": "36874cc7e451ca6a94e87be0f799b146d38732df41ae4231600e6439ef0f7633",
+      "engineering_status": "INVALID_EVIDENCE",
+      "sample_status": "INSUFFICIENT_SAMPLE",
+      "issues": [
+        {
+          "code": "DECLARED_OBSERVATION_GAP",
+          "identity": null
+        },
+        {
+          "code": "QUOTE_GAP",
+          "identity": null
+        },
+        {
+          "code": "TERMINAL_OBSERVATION_INTERRUPTION",
+          "identity": null
+        },
+        {
+          "code": "MISSING_FORWARD_QUOTE",
+          "identity": "preview-g:preview-g-00000002"
+        }
+      ]
+    }
+  ],
+  "receipt_status": "UNVERIFIED_RECEIPT",
+  "economic_status": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+  "confirmed_exchange_fills": 0
+}
