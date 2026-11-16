@@ -223,6 +223,26 @@ class FuturesClient:
             raise DataQualityError('account read failed; reconciliation required') from None
         return self._parse_response(request, response)
 
+    def write_outcome_unknown(self, request, response):
+        """Classify persisted write evidence using the live parser without changing cooldowns."""
+        from copy import copy
+        from urllib.parse import parse_qs
+        try:
+            payload = FuturesClient._parse_response(copy(self), request, response)
+        except OutcomeUnknown:
+            return True
+        except ExchangeError:
+            return False
+        params = parse_qs(request.query)
+        identity = params['newClientOrderId' if request.method == 'POST' else 'origClientOrderId'][0]
+        # A successful HTTP response alone does not confirm an order ACK.
+        return not (isinstance(payload, dict)
+                    and payload.get('clientOrderId') == identity
+                    and payload.get('symbol') == params['symbol'][0]
+                    and type(payload.get('orderId')) is int and payload['orderId'] > 0
+                    and payload.get('status') in {'NEW', 'PARTIALLY_FILLED', 'FILLED',
+                        'CANCELED', 'REJECTED', 'EXPIRED', 'EXPIRED_IN_MATCH'})
+
     def _parse_response(self, request, response, *, operation='order', observe_diagnostics=None):
         method = request.method
         if not isinstance(response, Response) or len(response.body) > 2 * 1024 * 1024:

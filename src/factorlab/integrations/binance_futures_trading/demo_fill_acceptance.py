@@ -13,6 +13,9 @@ from factorlab.trading.storage import dumps, decode
 from .demo_cli import open_session, recover
 from .demo_credentials import DemoCredentialStore
 from .demo_runtime import DemoRuntime, operator_lock, state_root
+from .protocol import FuturesClient, SignedRequest
+from factorlab.integrations.binance.client import Response
+from urllib.parse import urlencode
 
 ZERO = Decimal(0)
 
@@ -80,6 +83,21 @@ def fifo_evidence(session, opening_wallet):
             fill_price=e.fill_price, event_time=e.event_time) for e in events])
 
 
+def _unknown_dispatch(dispatch):
+    receipt = dispatch['receipt']
+    if receipt is None or receipt['http_status'] is None:
+        return True
+    if 'outcome_unknown' in receipt:
+        return receipt['outcome_unknown']
+    # Legacy receipts lack the raw body; reconstruct only the saved response facts.
+    payload = dict(receipt.get('acknowledgement', {}))
+    if receipt.get('code') is not None:
+        payload['code'] = receipt['code']
+    request = SignedRequest('POST', '/fapi/v1/order', urlencode(dispatch['parameters']), {})
+    return FuturesClient().write_outcome_unknown(request,
+        Response(receipt['http_status'], {}, json.dumps(payload).encode()))
+
+
 def capture(session, runtime, opening_wallet):
     account = recover(session)
     mapping = receipt_mapping(session.adapter)
@@ -105,15 +123,22 @@ def capture(session, runtime, opening_wallet):
                        receipt=json.loads(r) if r is not None else None)
                   for c, m, i, p, r in runtime.db.execute(
                       'SELECT campaign,method,client_id,parameters,receipt FROM dispatches ORDER BY rowid')]
-    history = [json.loads(row[0]) for row in session.adapter.db.execute(
-        'SELECT payload FROM futures_receipts ORDER BY rowid')]
+    history = [dict(json.loads(payload), observed_at=observed_at)
+               for observed_at, payload in session.adapter.db.execute(
+                   'SELECT observed_at,payload FROM futures_receipts ORDER BY rowid')]
     queries = [receipt['order'] for receipt in history if receipt.get('source') == 'GET']
     observed = {row['status'] for row in queries}
     observed.update(d['receipt']['status'] for d in dispatches
                     if d['receipt'] is not None and d['receipt'].get('status') is not None)
-    unknown = [d['client_order_id'] for d in dispatches if d['method'] == 'POST'
-               and (d['receipt'] is None or d['receipt']['http_status'] is None)]
-    queried = {row['clientOrderId'] for row in queries}
+    unknown = [d for d in dispatches if d['method'] == 'POST' and _unknown_dispatch(d)]
+    unknown_queried = bool(unknown) and all(
+        d['receipt'] is not None and d['receipt'].get('observed_at') is not None
+        and any(receipt.get('source') == 'GET'
+                and receipt['order']['clientOrderId'] == d['client_order_id']
+                and receipt['order']['symbol'] == d['parameters']['symbol']
+                and datetime.fromisoformat(receipt['observed_at']) >
+                    datetime.fromisoformat(d['receipt']['observed_at']) for receipt in history)
+        for d in unknown)
     completed_get = any(row['status'] == 'FILLED' for row in queries)
     race = any(d['method'] == 'DELETE' and d['receipt'] is not None
                and d['receipt'].get('status') == 'FILLED' for d in dispatches)
@@ -122,13 +147,13 @@ def capture(session, runtime, opening_wallet):
                 and any(row['clientOrderId'] == d['client_order_id'] and row['status'] == 'FILLED'
                         for row in queries) for d in dispatches)
     lifecycle = dict(status_observations=sorted(observed),
-        unknown_ack_queried=bool(unknown) and set(unknown) <= queried,
+        unknown_ack_queried=unknown_queried,
         completed_order_get=completed_get, cancel_fill_race_observed=race)
     lifecycle_ok = ({'NEW', 'PARTIALLY_FILLED', 'FILLED', 'CANCELED'} <= observed
                     and lifecycle['unknown_ack_queried'] and completed_get and race)
     statuses = dict(DEMO_ORDER_ACK_VERIFIED=any(
         d['method'] == 'POST' and d['receipt'] is not None and d['receipt']['http_status'] == 200
-        and d['receipt'].get('order_id') is not None for d in dispatches),
+        and d['receipt'].get('order_id') is not None and not _unknown_dispatch(d) for d in dispatches),
         DEMO_TRADE_RECEIPT_VERIFIED=bool(filled), DEMO_FEE_RECONCILED=fee_ok,
         DEMO_POSITION_RECONCILED=position_ok, DEMO_ACCOUNT_RECONCILED=account_ok,
         DEMO_RESTART_RECOVERY_VERIFIED=False, DEMO_LIFECYCLE_VERIFIED=lifecycle_ok)

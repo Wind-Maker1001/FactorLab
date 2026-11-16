@@ -6,11 +6,83 @@ import pytest
 from factorlab.errors import DataQualityError
 from test_demo_reconciliation_m14 import adapter_at, historical
 from factorlab.integrations.binance_futures_trading.fake import FakeTransport
-from factorlab.integrations.binance_futures_trading.demo_fill_acceptance import receipt_mapping, fifo_evidence, capture, compare_recovery
+from factorlab.integrations.binance_futures_trading.demo_fill_acceptance import receipt_mapping, fifo_evidence, capture, compare_recovery, _unknown_dispatch
 from test_binance_demo_grid_network import network_grid, observe
-from test_binance_demo_network import wired
+from test_binance_demo_network import NetworkFixture, wired
+from factorlab.integrations.binance.client import Response
 from factorlab.integrations.binance_futures_trading.demo_runtime import open_grid_session
 from decimal import Decimal as D
+
+
+@pytest.mark.parametrize(('status', 'body', 'unknown'), [
+    (None, None, True), (408, {}, True), (500, {}, True), (503, {}, True),
+    (400, {'code': -1006}, True), (400, {'code': -1007}, True),
+    (400, {'code': -4116}, True), (200, b'not-json', True),
+    (200, {}, True), (200, [], True), (200, b'null', True),
+    (200, {'orderId': 1, 'clientOrderId': 'wrong', 'symbol': 'NVDAUSDT', 'status': 'NEW'}, True),
+    (400, {'code': -1021}, False), (400, {'code': -2019}, False),
+    (400, {}, False), (200, None, False),
+])
+def test_unknown_dispatch_requires_its_own_later_get(
+        network_grid, monkeypatch, status, body, unknown):
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    original = NetworkFixture.__call__
+    post_seen, query_enabled = False, False
+
+    def response(self, request, timeout):
+        nonlocal post_seen
+        if post_seen and unknown and not query_enabled and request.method == 'GET' and request.path == '/fapi/v1/order':
+            raise TimeoutError('recovery not yet available')
+        actual = original(self, request, timeout)
+        if request.method != 'POST':
+            return actual
+        post_seen = True
+        if status == 400 and not unknown:
+            fake.orders.clear()
+        if status is None:
+            raise TimeoutError('lost ACK')
+        if body is None:
+            return actual
+        return Response(status, {}, body if isinstance(body, bytes) else json.dumps(body).encode())
+
+    monkeypatch.setattr(NetworkFixture, '__call__', response)
+    with open_grid_session(root, store, factory) as bridge:
+        bridge.recover()
+        observe(bridge)
+        campaign = bridge.runtime.campaign(bridge.runtime.db.execute('SELECT campaign FROM dispatches').fetchone()[0])
+        receipt, = bridge.runtime.receipts(campaign['id'])
+        assert receipt['outcome_unknown'] is unknown
+        assert bridge.account().inventory == bridge.account().turnover == 0
+        # Export without generating any new GET evidence.
+        monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_fill_acceptance.recover',
+                            lambda session: session.status())
+        before = capture(bridge.session, bridge.runtime, D('1000'))
+        assert not before['lifecycle']['unknown_ack_queried']
+        assert not before['statuses']['DEMO_LIFECYCLE_VERIFIED']
+        key = receipt['client_order_id']
+        query_enabled = True
+        bridge.recover()
+        after = capture(bridge.session, bridge.runtime, D('1000'))
+        assert after['lifecycle']['unknown_ack_queried'] is unknown
+        events = list(bridge.controller.store.order_events())
+        bridge.recover()
+        assert list(bridge.controller.store.order_events()) == events
+        assert len([r for r in requests if r.get_method() == 'POST']) == 1
+        bridge.runtime.db.execute("UPDATE dispatches SET client_id='unrelated'")
+        assert not capture(bridge.session, bridge.runtime, D('1000'))['lifecycle']['unknown_ack_queried']
+        bridge.runtime.db.execute('UPDATE dispatches SET client_id=?', (key,))
+        # Neither pre-dispatch GETs nor legacy receipts establish recovery.
+        saved = dict(receipt)
+        saved['observed_at'] = '2099-01-01T00:00:00+00:00'
+        bridge.runtime.record_receipt(campaign, saved)
+        assert not capture(bridge.session, bridge.runtime, D('1000'))['lifecycle']['unknown_ack_queried']
+        saved.pop('observed_at')
+        saved.pop('outcome_unknown')
+        parameters = json.loads(bridge.runtime.db.execute('SELECT parameters FROM dispatches').fetchone()[0])
+        assert _unknown_dispatch(dict(receipt=saved, parameters=parameters)) is unknown
+        bridge.runtime.record_receipt(campaign, saved)
+        assert not capture(bridge.session, bridge.runtime, D('1000'))['lifecycle']['unknown_ack_queried']
 
 
 def test_actual_trade_receipts_survive_restart_and_repeated_get(tmp_path):

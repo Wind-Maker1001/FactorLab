@@ -153,6 +153,8 @@ class DemoSession:
                 payload = body
         code = payload.get('code')
         receipt = dict(method=method, http_status=status, client_order_id=client_id,
+            observed_at=self._now().isoformat(),
+            outcome_unknown=self.client.write_outcome_unknown(request, response),
             code=code if type(code) is int else None,
             message=rejection_message(payload, credentials=self.client.credentials, request=request),
             **_order_observables(payload))

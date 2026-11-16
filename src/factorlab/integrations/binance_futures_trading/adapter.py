@@ -237,7 +237,8 @@ class FuturesAdapter:
     def _apply(self, event, quote, *, rejection=None, receipt=None):
         with self.store.transaction():
             if receipt is not None:
-                self.db.execute('INSERT OR IGNORE INTO futures_receipts VALUES (?,?,?,?)', receipt)
+                self.db.execute('''INSERT INTO futures_receipts VALUES (?,?,?,?)
+                    ON CONFLICT(id) DO UPDATE SET observed_at=excluded.observed_at''', receipt)
             if rejection is not None:
                 self.db.execute('INSERT INTO futures_rejections VALUES(?,?)',
                                 (event.client_order_id, json.dumps(rejection)))
