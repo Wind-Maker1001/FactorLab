@@ -77,9 +77,46 @@ def test_partial_seed_group_never_publishes_formal_statistics(tmp_path, monkeypa
     assert not (tmp_path/'run/groups.json').exists()
     assert len(pd.read_csv(tmp_path/'run/paths.csv')) == 16
     cells = [dict(model='gbm', seed=1729, n_paths=8,
-        groups={g: dict(n=0) for g in study.GROUPS})]
+        groups={g: dict(n=8) for g in study.GROUPS})]
     assert all(item['status'] == 'INSUFFICIENT_DATA'
         for item in study.seed_dispersion(cells, [1729, 2718, 31415]))
+
+
+def test_next_model_can_enter_after_larger_extension_is_rejected(tmp_path, monkeypatch):
+    run, definition, clock, calls = harness(tmp_path, monkeypatch, budget=.9)
+    definition['experiment']['sizes'] = [8, 16, 32]
+    result = run()
+    assert result['completed_paths_per_seed_by_model'] == {'gbm': 16, 'moving_block_bootstrap': 8}
+    assert result['decisions'][2]['size'] == 32
+    assert not result['decisions'][2]['admitted']
+    assert result['decisions'][3]['model'] == 'moving_block_bootstrap'
+    assert result['decisions'][3]['admitted']
+
+
+@pytest.mark.parametrize('model', study.MODELS)
+def test_nested_stream_prefix_for_every_model(model):
+    from tests.research.test_mc_regime_jump import study_input
+    inputs, receipt, threshold, config = study_input()
+    generators, rejection = study.scenario_models(inputs, receipt,
+        threshold_as_of=threshold, regime_config=config)
+    def collect(begin, end):
+        return np.concatenate([paths for _, paths, _ in study.batches(model, inputs,
+            generators.get(model), seed=1729, begin=begin, end=end, batch_size=8, steps=24)])
+    full = collect(0, 32)
+    np.testing.assert_array_equal(collect(0, 16), full[:16])
+    np.testing.assert_array_equal(collect(16, 32), full[16:])
+
+
+def test_original_mc05_evidence_remains_frozen():
+    import subprocess
+    root = Path(__file__).resolve().parents[2]
+    names = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', '07821df', '--',
+        'configs/mc05_grid_tail.json', 'docs/validation/mc-05'], cwd=root, text=True).splitlines()
+    assert names
+    for name in names:
+        frozen = subprocess.check_output(['git', 'cat-file', '--filters',
+            f'07821df:{name}'], cwd=root)
+        assert (root/name).read_bytes() == frozen, name
 
 
 def test_simulation_cannot_start_before_calibration(tmp_path, monkeypatch):
