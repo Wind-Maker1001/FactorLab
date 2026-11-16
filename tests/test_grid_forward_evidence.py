@@ -125,6 +125,35 @@ def test_gaps_missing_quotes_and_restart_replay(record):
         assert result['engineering_metrics'] is None
 
 
+@pytest.mark.parametrize('received_at,max_gap,valid', [
+    ('2026-11-15T00:02:01Z', 25, False),
+    ('2026-11-15T00:02:01Z', '39.999999', False),
+    ('2026-11-15T00:02:01Z', 40, True),
+    ('2026-11-15T00:02:01Z', '40.000001', True),
+    ('2026-11-15T00:01:31Z', 25, True),
+])
+def test_proposal_quote_gaps_after_receipt_filtering(record, received_at, max_gap, valid):
+    evidence = sample()
+    evidence['max_quote_gap_seconds'] = max_gap
+    evidence['source']['payload']['books'][1]['received_at'] = received_at
+    result = evaluate(record, seal(evidence), evaluated_at=NOW)
+    if valid:
+        assert result['issues'] == []
+        assert result['engineering_status'] == 'VALID_ENGINEERING_OBSERVATION'
+        assert result['engineering_metrics']['coverage']['ratio'] == 1
+        assert result['diagnostics']['quote_gaps'] == 0
+    else:
+        assert result['issues'] == [{'code': 'PROPOSAL_QUOTE_GAP', 'identity': 'p-1'}]
+        assert result['engineering_status'] == 'INVALID_EVIDENCE'
+        assert result['engineering_metrics'] is None
+        assert result['sample_status'] == 'INSUFFICIENT_SAMPLE'
+        assert result['diagnostics']['quote_gaps'] == 1
+    assert result['metrics'] is None
+    assert result['financial_admission'] == 'NOT_FINANCIALLY_ADMITTED'
+    assert result['activation']['active'] is False
+    assert result['safety'] == 'NO LIVE MONEY'
+
+
 def test_interruption_end_cannot_hide_a_gap(record):
     evidence = sample()
     evidence['source']['payload']['ends'] = [dict(

@@ -323,6 +323,13 @@ def evaluate(record, evidence, *, evaluated_at):
         if not eligible:
             issue('MISSING_FORWARD_QUOTE', identity)
         else:
+            internal_gaps = sum(
+                Decimal(str((utc(current['market_at']) - utc(previous['market_at']))
+                            .total_seconds())) > max_gap
+                for previous, current in zip(eligible, eligible[1:]))
+            if internal_gaps:
+                issue('PROPOSAL_QUOTE_GAP', identity)
+                quote_gaps += internal_gaps
             edges = [(utc(eligible[0]['market_at']) - captured).total_seconds(),
                      (stop - utc(eligible[-1]['market_at'])).total_seconds()]
             if any(Decimal(str(x)) > max_gap for x in edges):
