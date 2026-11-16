@@ -1,0 +1,8 @@
+{
+  "python": "3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26340-SP0",
+  "numpy": "1.26.4",
+  "pandas": "2.2.2",
+  "sqlite": "3.45.3",
+  "baseline": "1e16a01615c325bc97e7982c1122636f4c477ae8"
+}

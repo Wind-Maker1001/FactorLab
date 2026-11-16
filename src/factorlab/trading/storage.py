@@ -64,8 +64,11 @@ class PaperStore:
     snapshot. Explicit continuous capacity persists in the journal and removes
     these lifetime limits on subsequent opens without deleting history;
     per-event size and identity checks remain unchanged.
+    research_wal selects file-backed WAL with FULL commit synchronization for
+    disposable research accounts; it does not relax transaction durability.
     """
-    def __init__(self, path, *, max_orders=1000, max_events=10000, continuous_capacity=False):
+    def __init__(self, path, *, max_orders=1000, max_events=10000, continuous_capacity=False,
+                 research_wal=False):
         if type(continuous_capacity) is not bool:
             raise ValueError("continuous_capacity must be a bool")
         if not 1 <= max_orders <= 1000 or not 1 <= max_events <= 10000:
@@ -77,6 +80,8 @@ class PaperStore:
         self.last_transaction = None
         self.last_transaction_times = None
         self.db = sqlite3.connect(path, isolation_level=None)
+        if research_wal:
+            self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("PRAGMA synchronous=FULL")
         self.db.execute("CREATE TABLE IF NOT EXISTS snapshot (id INTEGER PRIMARY KEY CHECK(id=1), version INTEGER NOT NULL, payload TEXT NOT NULL)")
         self.db.execute("CREATE TABLE IF NOT EXISTS events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)")

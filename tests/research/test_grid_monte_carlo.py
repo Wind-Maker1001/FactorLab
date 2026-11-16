@@ -58,6 +58,33 @@ def test_close_only_account_capacity_and_replay(tmp_path, setup):
     assert outputs[2]['max_inventory'] < outputs[0]['max_inventory']
 
 
+@pytest.mark.parametrize('capacity', ['.10', '.01'])
+@pytest.mark.parametrize('prices', [
+    [100., 89., 88., 95., 105., 110., 95.],
+    [100., 89., 88., 70., 69.],
+])
+def test_research_wal_preserves_authority(tmp_path, setup, capacity, prices):
+    import sqlite3
+    from contextlib import closing
+
+    config, rules = setup
+    config = replace(config, breakout='exit', quantity=20)
+    receipts = []
+    for name, wal in [('delete', False), ('wal', True), ('repeat', True)]:
+        directory = tmp_path/name
+        metrics = evaluate_path(np.array(prices), start='2026-11-15T00:00:00Z',
+            config=config, rules=rules, capacity=capacity, output=directory,
+            research_wal=wal)
+        with closing(sqlite3.connect(directory/'paper.sqlite')) as db:
+            assert db.execute('PRAGMA journal_mode').fetchone()[0] == ('wal' if wal else 'delete')
+            assert db.execute('PRAGMA synchronous').fetchone()[0] == 2
+            authority = (db.execute('SELECT * FROM snapshot ORDER BY id').fetchall(),
+                         db.execute('SELECT * FROM events ORDER BY rowid').fetchall())
+        receipts.append((metrics, authority, [(directory/f).read_bytes() for f in
+            ('daily.csv', 'trades.csv', 'result.json', 'evaluation.json')]))
+    assert receipts[0] == receipts[1] == receipts[2]
+
+
 def test_atr_rejected_without_ohlc(tmp_path, setup):
     config, rules = setup
     with pytest.raises(ValueError, match='ATR'):
