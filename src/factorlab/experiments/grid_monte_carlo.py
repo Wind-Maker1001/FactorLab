@@ -87,13 +87,13 @@ def close_bars(prices, start):
                  close=float(p), completed_bar=True) for i, (t, p) in enumerate(zip(dates, prices))]
 
 
-def evaluate_path(prices, *, start, config, rules, capacity, output):
+def evaluate_path(prices, *, start, config, rules, capacity, output, research_wal=True):
     """Persist one auditable temporary account; aggregate before disposal."""
     output = Path(output)
     run_experiment(output, bars=close_bars(prices, start), config=config, rules=rules,
         capital=1000, fee_rate=D('.0004'), slippage=D('.0006'), interval='1h',
         market=Market.BINANCE_USDM, instrument_id='BINANCE:USDM:NVDAUSDT',
-        scenario=SCENARIO, synthetic_capacity=capacity)
+        scenario=SCENARIO, synthetic_capacity=capacity, research_wal=research_wal)
     result = json.loads((output / 'result.json').read_text())
     nav = pd.read_csv(output / 'daily.csv')
     fifo = attribution(output)['summary']

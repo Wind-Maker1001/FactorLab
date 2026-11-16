@@ -138,6 +138,28 @@ def test_invalid_events_rollback_journal_and_account(change):
     assert c.store.db.execute("SELECT count(*) FROM events").fetchone()[0] == 1
 
 
+def test_research_wal_rollback_and_reopen(tmp_path):
+    path = tmp_path/'research.sqlite'
+    broker = PaperBroker(Market.BINANCE_EQUITY, 'test', (Instrument('TEST', 'USD'),),
+                         {'USD': D('10000')})
+    with closing(PaperStore(path, research_wal=True)) as store:
+        c = TradingController(broker, store, limits=LIMITS, clock=lambda: NOW)
+        c.quote(Quote('TEST', D('100'), NOW))
+        accepted = c.submit(intent())
+        before = store.load()
+        cursor = store.event_cursor()
+        with pytest.raises(ValueError):
+            c.replay(replace(accepted, event_id='bad', status=S.FILLED,
+                cumulative_filled_quantity=D('3'), fill_price=D('100')))
+        assert store.load() == before
+        assert store.event_cursor() == cursor
+        c.fill('one', D('1'))
+        final = store.load()
+    with closing(PaperStore(path)) as store:
+        assert store.load() == final
+        assert len(list(store.order_events())) == 2
+
+
 def test_fill_regression_fee_and_rejection_rules():
     c = controller()
     c.submit(intent())

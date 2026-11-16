@@ -92,7 +92,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    market=Market.BINANCE_EQUITY, instrument_id=SYMBOL, data_identity=None,
                    interval='1d', buy_hold=False, reference_budget=None,
                    account_id='research-grid', max_exit_quantity=None,
-                   scenario=None, synthetic_capacity=None, inventory_risk=None):
+                   scenario=None, synthetic_capacity=None, inventory_risk=None,
+                   research_wal=False):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -147,7 +148,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             state.positions[instrument_id] = Position(instrument_id, inventory, D(config.initial_price),
                                                       D(config.initial_price), currency)
 
-    store = PaperStore(output / 'paper.sqlite')
+    store = PaperStore(output / 'paper.sqlite', research_wal=research_wal)
     try:
         controller = TradingController(broker, store, clock=lambda: now[0], initialize_state=initialize,
             limits=RiskLimits(capital, capital, capital, 1000))
