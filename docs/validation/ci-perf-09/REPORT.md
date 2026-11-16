@@ -5,9 +5,14 @@ NO LIVE MONEY / PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED.
 ## Measurement identity and migration
 
 Baseline: `adcc6cf4ec35130b57d540e09abfa57272f63b54` (#181).
-The production timing file is an exact byte copy of P05's
-`candidate_module_timings.json`, SHA-256
-`75a5bac467d1bc23cf9f1e4e6b83d3b00beb87301994051d2442f6e032fbc5d3`.
+The committed production timing Git blob is byte-identical to P05's committed
+`candidate_module_timings.json`, raw Git blob SHA-256
+`6582ca1311d11a3d8c76831dfd274f9dfe855de7f317804885552d25e8b05002`.
+Windows CRLF checkout bytes have SHA-256
+`75a5bac467d1bc23cf9f1e4e6b83d3b00beb87301994051d2442f6e032fbc5d3`;
+that checkout digest is not the trusted base-blob digest. The production
+regression pins the actual Git blob and accounts for checkout line endings
+without changing trusted parsing or hashing.
 The candidate's historical status and analysis target remain unchanged; deployment
 does not turn an earlier observation into a measurement of the deployment tree.
 
@@ -90,7 +95,9 @@ the two runtimes. These are local targeted tests, not hosted executions.
 The first activation-only invocation was **9 passed / 1 failed** because a new
 V1 replay assertion treated P05's `baseline` observation list as an assignment
 map. The assertion now uses `shared["3"].existing_v1.assignments`; the subsequent
-102-test run passed.
+102-test run passed. After pinning the committed LF Git blob rather than
+Windows CRLF checkout bytes, the ten activation tests were rerun on both Python
+versions: **10 passed in 1.21 seconds** each (20 additional successful executions).
 
 New regression coverage includes exact production provenance and bytes,
 version-specific three/four-shard P05 replay, full 7,819-node-per-version

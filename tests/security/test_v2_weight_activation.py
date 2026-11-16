@@ -1,5 +1,6 @@
 """Production V2 provenance, archived assignments and complete receipt replay."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -13,7 +14,7 @@ from tests.security.test_validation_v2 import shard_count, shard_receipts, pr_sh
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / 'docs/validation/ci-perf-05'
 WEIGHTS = ROOT / sharding.WEIGHTS_PATH
-SHA256 = '75a5bac467d1bc23cf9f1e4e6b83d3b00beb87301994051d2442f6e032fbc5d3'
+SHA256 = '6582ca1311d11a3d8c76831dfd274f9dfe855de7f317804885552d25e8b05002'
 
 
 def read(name):
@@ -25,7 +26,9 @@ def test_production_v2_provenance():
     assert raw == (EVIDENCE / 'candidate_module_timings.json').read_bytes()
     loaded = sharding.load_weights(raw)
     assert loaded['schema'] == 'FACTORLAB_MEASURED_MODULE_TIMINGS_V2'
-    assert loaded['sha256'] == SHA256
+    blob = sharding.base_weights(ROOT, 'HEAD')
+    assert hashlib.sha256(blob).hexdigest() == SHA256
+    assert raw.replace(b'\r\n', b'\n') == blob
     source = read('sources-43735547182.json')
     target = read('target-inventory.json')
     analysis = read('analysis-43735547182.json')
