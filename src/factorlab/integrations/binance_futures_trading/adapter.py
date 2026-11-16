@@ -45,6 +45,9 @@ class FuturesAdapter:
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_orders (id TEXT PRIMARY KEY, payload TEXT NOT NULL, quote TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_rejections (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
+        self.db.execute('''CREATE TABLE IF NOT EXISTS futures_receipts (
+            id TEXT PRIMARY KEY, client_id TEXT NOT NULL, observed_at TEXT NOT NULL, payload TEXT NOT NULL
+        )''')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_meta (id INTEGER PRIMARY KEY CHECK(id=1), account TEXT NOT NULL, reconciled INTEGER NOT NULL)')
         with store.transaction():
             row = self.db.execute('SELECT account FROM futures_meta WHERE id=1').fetchone()
@@ -178,7 +181,7 @@ class FuturesAdapter:
                 return self.query_order(client_order_id)
             except ExchangeError:
                 raise OutcomeUnknown('order readback unconfirmed; reconcile without resubmitting') from None
-        return self._rest_order(row, client_order_id)
+        return self._rest_order(row, client_order_id, source='WRITE_ACK')
 
     def _validate_network_identity(self):
         from .network import DemoNetworkTransport
@@ -201,7 +204,7 @@ class FuturesAdapter:
             self._uncertain(client_order_id)
             raise
 
-    def _rest_order(self, row, expected_id):
+    def _rest_order(self, row, expected_id, *, source='GET'):
         record, previous_quote = self._load(expected_id)
         intent = record.snapshot.intent
         if (not isinstance(row, dict) or row['clientOrderId'] != expected_id or row['symbol'] != intent.instrument_id
@@ -213,6 +216,7 @@ class FuturesAdapter:
         if delta < 0 or delta_quote < 0 or (delta == 0 and delta_quote != 0):
             raise DataQualityError('cumulative execution regression')
         fee = record.snapshot.cumulative_fee
+        matching = []
         if filled:
             trades = self.user_trades(intent.instrument_id, order_id=row['orderId'])
             matching = [t for t in trades if str(t['orderId']) == str(row['orderId'])]
@@ -226,10 +230,15 @@ class FuturesAdapter:
         event = OrderEvent(expected_id, str(row['orderId']), STATUS[row['status']], filled,
                            delta_quote / delta if delta else None, instant(row['updateTime']),
                            'binance-rest', 'rest:' + hashlib.sha256(json.dumps(row, sort_keys=True).encode()).hexdigest(), fee)
-        return self._apply(event, quote)
+        payload = json.dumps(dict(source=source, order=row, trades=matching), sort_keys=True)
+        receipt_id = hashlib.sha256(payload.encode()).hexdigest()
+        return self._apply(event, quote, receipt=(receipt_id, expected_id, self.clock().isoformat(), payload))
 
-    def _apply(self, event, quote, *, rejection=None):
+    def _apply(self, event, quote, *, rejection=None, receipt=None):
         with self.store.transaction():
+            if receipt is not None:
+                self.db.execute('''INSERT INTO futures_receipts VALUES (?,?,?,?)
+                    ON CONFLICT(id) DO UPDATE SET observed_at=excluded.observed_at''', receipt)
             if rejection is not None:
                 self.db.execute('INSERT INTO futures_rejections VALUES(?,?)',
                                 (event.client_order_id, json.dumps(rejection)))
