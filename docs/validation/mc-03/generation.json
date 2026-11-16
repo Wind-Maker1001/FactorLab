@@ -1,0 +1,1115 @@
+{
+  "gbm": [
+    {
+      "begin": 0,
+      "metadata": {
+        "assets": [
+          "BINANCE:USDM:NVDAUSDT"
+        ],
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ],
+        "compute": {
+          "backend": "numpy",
+          "backend_version": "2.3.5",
+          "device": "cpu",
+          "execution": {
+            "backend": "numpy",
+            "batch_size": 8,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_bytes_per_path": 37376,
+            "planned_persistent_bytes": 68656,
+            "private_pool_limit_bytes": null,
+            "private_pool_limit_enforced": false,
+            "private_pool_peak_bytes": null
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_enforced": false,
+          "gpu_memory_limit_mb": null,
+          "probe": {
+            "available": true,
+            "driver_visible": null,
+            "reason": null,
+            "runtime_available": true,
+            "version": "2.3.5"
+          },
+          "requested": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          }
+        },
+        "config": {
+          "batch_size": 8,
+          "block_size": 24,
+          "compute": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          },
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "dt": 1.0,
+          "initial_value": 1.0,
+          "model": "gbm",
+          "n_paths": 8,
+          "n_steps": 168,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "save_full_paths": true,
+          "seed": 710
+        },
+        "cuda_driver_version": null,
+        "cuda_runtime_version": null,
+        "elapsed_seconds": 0.0006410000059986487,
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "input": {
+          "as_of": null,
+          "correlation_correction": null,
+          "gbm_parameters": {
+            "correlation": [
+              [
+                1.0
+              ]
+            ],
+            "drift": [
+              -1.2254443425042917e-05
+            ],
+            "volatility": [
+              0.004451385931577554
+            ]
+          },
+          "initial_prices": [
+            204.34
+          ],
+          "sample_interval": null
+        },
+        "method_version": 1,
+        "numpy_version": "2.3.5",
+        "portfolio": {
+          "cash_return": 0,
+          "cash_weight": 0.0,
+          "costs": 0,
+          "rebalancing": "each_step",
+          "weights": [
+            1.0
+          ]
+        },
+        "python_version": "3.14.0",
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "confidence": 0.95,
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "dt": 1.0,
+          "horizon_steps": 168,
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "threshold": 0.2,
+          "var_quantile": "linear (Hyndman-Fan type 7)"
+        },
+        "rng": "NumPy RandomState/MT19937",
+        "rng_backend": "numpy",
+        "rng_version": "2.3.5",
+        "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+        "seed": 710
+      }
+    },
+    {
+      "begin": 8,
+      "metadata": {
+        "assets": [
+          "BINANCE:USDM:NVDAUSDT"
+        ],
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ],
+        "compute": {
+          "backend": "numpy",
+          "backend_version": "2.3.5",
+          "device": "cpu",
+          "execution": {
+            "backend": "numpy",
+            "batch_size": 8,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_bytes_per_path": 37376,
+            "planned_persistent_bytes": 68656,
+            "private_pool_limit_bytes": null,
+            "private_pool_limit_enforced": false,
+            "private_pool_peak_bytes": null
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_enforced": false,
+          "gpu_memory_limit_mb": null,
+          "probe": {
+            "available": true,
+            "driver_visible": null,
+            "reason": null,
+            "runtime_available": true,
+            "version": "2.3.5"
+          },
+          "requested": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          }
+        },
+        "config": {
+          "batch_size": 8,
+          "block_size": 24,
+          "compute": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          },
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "dt": 1.0,
+          "initial_value": 1.0,
+          "model": "gbm",
+          "n_paths": 8,
+          "n_steps": 168,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "save_full_paths": true,
+          "seed": 711
+        },
+        "cuda_driver_version": null,
+        "cuda_runtime_version": null,
+        "elapsed_seconds": 0.0011539999977685511,
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "input": {
+          "as_of": null,
+          "correlation_correction": null,
+          "gbm_parameters": {
+            "correlation": [
+              [
+                1.0
+              ]
+            ],
+            "drift": [
+              -1.2254443425042917e-05
+            ],
+            "volatility": [
+              0.004451385931577554
+            ]
+          },
+          "initial_prices": [
+            204.34
+          ],
+          "sample_interval": null
+        },
+        "method_version": 1,
+        "numpy_version": "2.3.5",
+        "portfolio": {
+          "cash_return": 0,
+          "cash_weight": 0.0,
+          "costs": 0,
+          "rebalancing": "each_step",
+          "weights": [
+            1.0
+          ]
+        },
+        "python_version": "3.14.0",
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "confidence": 0.95,
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "dt": 1.0,
+          "horizon_steps": 168,
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "threshold": 0.2,
+          "var_quantile": "linear (Hyndman-Fan type 7)"
+        },
+        "rng": "NumPy RandomState/MT19937",
+        "rng_backend": "numpy",
+        "rng_version": "2.3.5",
+        "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+        "seed": 711
+      }
+    }
+  ],
+  "jump_background": {
+    "calibration": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "market_probability_validated": false,
+      "mode": "PARAMETERIZED_STRESS_ONLY; all event frequencies and sizes are assumptions"
+    },
+    "input": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "sample_hash": "5c02b556b253ab8354ac2e3eafceca01d8e3230e468d04b8917b01513e4b0431",
+      "source": {
+        "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+        "as_of": "2026-11-14T00:00:00+00:00",
+        "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+        "drift": -1.2254443425042917e-05,
+        "dt": 1,
+        "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+        "initial_price": 204.34,
+        "observations": [
+          "2026-05-14T02:00:00+00:00",
+          "2026-08-12T00:00:00+00:00"
+        ],
+        "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+        "returns": 2159,
+        "source": "BINANCE_USDM_PUBLIC_DATA",
+        "time_unit": "hour",
+        "volatility": 0.004451385931577554
+      }
+    },
+    "model": "parameterized_jump_stress",
+    "model_version": 1,
+    "numpy_version": "2.3.5",
+    "output": "SIMULATED_CLOSE_ONLY_PRICES; not historical OHLCV or future market observations",
+    "parameters": {
+      "background": "independent asset Gaussian log increments, no jump compensation; dt=1 step",
+      "event": "one Bernoulli per time step, shared across assets; at most one event per step",
+      "initial_prices": [
+        204.34
+      ],
+      "jump_distribution": "point mass at signed per-asset log sizes",
+      "jump_log_sizes": [
+        0.0
+      ],
+      "jump_probability": 0.0,
+      "log_drift": [
+        -2.2161861780966202e-05
+      ],
+      "volatility": [
+        0.004451385931577554
+      ]
+    },
+    "plan": {
+      "batch_size": 8,
+      "max_batch_bytes": 67108864,
+      "n_paths": 16,
+      "n_steps": 168,
+      "seed": 710
+    },
+    "qualification": "SYNTHETIC_RISK_SCENARIO; NOT_MARKET_STATISTICALLY_VALIDATED",
+    "rng": "PCG64 / SeedSequence([seed, global_path_id]); one stream per path"
+  },
+  "jump_down": {
+    "calibration": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "market_probability_validated": false,
+      "mode": "PARAMETERIZED_STRESS_ONLY; all event frequencies and sizes are assumptions"
+    },
+    "input": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "sample_hash": "5c02b556b253ab8354ac2e3eafceca01d8e3230e468d04b8917b01513e4b0431",
+      "source": {
+        "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+        "as_of": "2026-11-14T00:00:00+00:00",
+        "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+        "drift": -1.2254443425042917e-05,
+        "dt": 1,
+        "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+        "initial_price": 204.34,
+        "observations": [
+          "2026-05-14T02:00:00+00:00",
+          "2026-08-12T00:00:00+00:00"
+        ],
+        "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+        "returns": 2159,
+        "source": "BINANCE_USDM_PUBLIC_DATA",
+        "time_unit": "hour",
+        "volatility": 0.004451385931577554
+      }
+    },
+    "model": "parameterized_jump_stress",
+    "model_version": 1,
+    "numpy_version": "2.3.5",
+    "output": "SIMULATED_CLOSE_ONLY_PRICES; not historical OHLCV or future market observations",
+    "parameters": {
+      "background": "independent asset Gaussian log increments, no jump compensation; dt=1 step",
+      "event": "one Bernoulli per time step, shared across assets; at most one event per step",
+      "initial_prices": [
+        204.34
+      ],
+      "jump_distribution": "point mass at signed per-asset log sizes",
+      "jump_log_sizes": [
+        -0.35667494393873245
+      ],
+      "jump_probability": 0.005952380952380952,
+      "log_drift": [
+        -2.2161861780966202e-05
+      ],
+      "volatility": [
+        0.004451385931577554
+      ]
+    },
+    "plan": {
+      "batch_size": 8,
+      "max_batch_bytes": 67108864,
+      "n_paths": 16,
+      "n_steps": 168,
+      "seed": 710
+    },
+    "qualification": "SYNTHETIC_RISK_SCENARIO; NOT_MARKET_STATISTICALLY_VALIDATED",
+    "rng": "PCG64 / SeedSequence([seed, global_path_id]); one stream per path"
+  },
+  "jump_up": {
+    "calibration": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "market_probability_validated": false,
+      "mode": "PARAMETERIZED_STRESS_ONLY; all event frequencies and sizes are assumptions"
+    },
+    "input": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "sample_hash": "5c02b556b253ab8354ac2e3eafceca01d8e3230e468d04b8917b01513e4b0431",
+      "source": {
+        "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+        "as_of": "2026-11-14T00:00:00+00:00",
+        "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+        "drift": -1.2254443425042917e-05,
+        "dt": 1,
+        "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+        "initial_price": 204.34,
+        "observations": [
+          "2026-05-14T02:00:00+00:00",
+          "2026-08-12T00:00:00+00:00"
+        ],
+        "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+        "returns": 2159,
+        "source": "BINANCE_USDM_PUBLIC_DATA",
+        "time_unit": "hour",
+        "volatility": 0.004451385931577554
+      }
+    },
+    "model": "parameterized_jump_stress",
+    "model_version": 1,
+    "numpy_version": "2.3.5",
+    "output": "SIMULATED_CLOSE_ONLY_PRICES; not historical OHLCV or future market observations",
+    "parameters": {
+      "background": "independent asset Gaussian log increments, no jump compensation; dt=1 step",
+      "event": "one Bernoulli per time step, shared across assets; at most one event per step",
+      "initial_prices": [
+        204.34
+      ],
+      "jump_distribution": "point mass at signed per-asset log sizes",
+      "jump_log_sizes": [
+        0.26236426446749106
+      ],
+      "jump_probability": 0.005952380952380952,
+      "log_drift": [
+        -2.2161861780966202e-05
+      ],
+      "volatility": [
+        0.004451385931577554
+      ]
+    },
+    "plan": {
+      "batch_size": 8,
+      "max_batch_bytes": 67108864,
+      "n_paths": 16,
+      "n_steps": 168,
+      "seed": 710
+    },
+    "qualification": "SYNTHETIC_RISK_SCENARIO; NOT_MARKET_STATISTICALLY_VALIDATED",
+    "rng": "PCG64 / SeedSequence([seed, global_path_id]); one stream per path"
+  },
+  "moving_block_bootstrap": [
+    {
+      "begin": 0,
+      "metadata": {
+        "assets": [
+          "BINANCE:USDM:NVDAUSDT"
+        ],
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ],
+        "compute": {
+          "backend": "numpy",
+          "backend_version": "2.3.5",
+          "device": "cpu",
+          "execution": {
+            "backend": "numpy",
+            "batch_size": 8,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_bytes_per_path": 37376,
+            "planned_persistent_bytes": 138048,
+            "private_pool_limit_bytes": null,
+            "private_pool_limit_enforced": false,
+            "private_pool_peak_bytes": null
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_enforced": false,
+          "gpu_memory_limit_mb": null,
+          "probe": {
+            "available": true,
+            "driver_visible": null,
+            "reason": null,
+            "runtime_available": true,
+            "version": "2.3.5"
+          },
+          "requested": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          }
+        },
+        "config": {
+          "batch_size": 8,
+          "block_size": 24,
+          "compute": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          },
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "dt": 1.0,
+          "initial_value": 1.0,
+          "model": "moving_block_bootstrap",
+          "n_paths": 8,
+          "n_steps": 168,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "save_full_paths": true,
+          "seed": 710
+        },
+        "cuda_driver_version": null,
+        "cuda_runtime_version": null,
+        "elapsed_seconds": 0.0008222000033129007,
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "input": {
+          "as_of": "2026-11-14T00:00:00.000000000",
+          "correlation_correction": null,
+          "initial_prices": [
+            204.34
+          ],
+          "sample_interval": [
+            "2026-05-14T02:00:00.000000000",
+            "2026-08-12T00:00:00.000000000"
+          ]
+        },
+        "method_version": 1,
+        "numpy_version": "2.3.5",
+        "portfolio": {
+          "cash_return": 0,
+          "cash_weight": 0.0,
+          "costs": 0,
+          "rebalancing": "each_step",
+          "weights": [
+            1.0
+          ]
+        },
+        "python_version": "3.14.0",
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "confidence": 0.95,
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "dt": 1.0,
+          "horizon_steps": 168,
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "threshold": 0.2,
+          "var_quantile": "linear (Hyndman-Fan type 7)"
+        },
+        "rng": "NumPy RandomState/MT19937",
+        "rng_backend": "numpy",
+        "rng_version": "2.3.5",
+        "sample_hash": "fecca6b32c7bcc383fc22eda8761ce4dc33465a02857ce9e43eaa2e342520a65",
+        "seed": 710
+      }
+    },
+    {
+      "begin": 8,
+      "metadata": {
+        "assets": [
+          "BINANCE:USDM:NVDAUSDT"
+        ],
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ],
+        "compute": {
+          "backend": "numpy",
+          "backend_version": "2.3.5",
+          "device": "cpu",
+          "execution": {
+            "backend": "numpy",
+            "batch_size": 8,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_bytes_per_path": 37376,
+            "planned_persistent_bytes": 138048,
+            "private_pool_limit_bytes": null,
+            "private_pool_limit_enforced": false,
+            "private_pool_peak_bytes": null
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_enforced": false,
+          "gpu_memory_limit_mb": null,
+          "probe": {
+            "available": true,
+            "driver_visible": null,
+            "reason": null,
+            "runtime_available": true,
+            "version": "2.3.5"
+          },
+          "requested": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          }
+        },
+        "config": {
+          "batch_size": 8,
+          "block_size": 24,
+          "compute": {
+            "allow_fallback": false,
+            "device": "cpu",
+            "gpu_memory_limit_mb": null
+          },
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "dt": 1.0,
+          "initial_value": 1.0,
+          "model": "moving_block_bootstrap",
+          "n_paths": 8,
+          "n_steps": 168,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "save_full_paths": true,
+          "seed": 711
+        },
+        "cuda_driver_version": null,
+        "cuda_runtime_version": null,
+        "elapsed_seconds": 0.0010534000030020252,
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "input": {
+          "as_of": "2026-11-14T00:00:00.000000000",
+          "correlation_correction": null,
+          "initial_prices": [
+            204.34
+          ],
+          "sample_interval": [
+            "2026-05-14T02:00:00.000000000",
+            "2026-08-12T00:00:00.000000000"
+          ]
+        },
+        "method_version": 1,
+        "numpy_version": "2.3.5",
+        "portfolio": {
+          "cash_return": 0,
+          "cash_weight": 0.0,
+          "costs": 0,
+          "rebalancing": "each_step",
+          "weights": [
+            1.0
+          ]
+        },
+        "python_version": "3.14.0",
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "confidence": 0.95,
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "dt": 1.0,
+          "horizon_steps": 168,
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "threshold": 0.2,
+          "var_quantile": "linear (Hyndman-Fan type 7)"
+        },
+        "rng": "NumPy RandomState/MT19937",
+        "rng_backend": "numpy",
+        "rng_version": "2.3.5",
+        "sample_hash": "fecca6b32c7bcc383fc22eda8761ce4dc33465a02857ce9e43eaa2e342520a65",
+        "seed": 711
+      }
+    }
+  ],
+  "regime_down_persistence": {
+    "calibration": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "block_counts": [
+        193,
+        370,
+        216,
+        278
+      ],
+      "features": "strictly preceding lookback log returns; no block returns in its label",
+      "historical_realtime_availability_claim": false,
+      "minimum_support": "engineering thresholds, not evidence of statistical adequacy",
+      "prefix_rows": 1079,
+      "suffix_first_block": 1079,
+      "threshold_available_at": "2026-11-13T17:12:50.891167+00:00",
+      "threshold_observation_cutoff": "2026-06-28T00:00:00+00:00",
+      "transition_counts": [
+        [
+          40,
+          73,
+          25,
+          42
+        ],
+        [
+          71,
+          184,
+          46,
+          62
+        ],
+        [
+          30,
+          57,
+          37,
+          88
+        ],
+        [
+          37,
+          47,
+          108,
+          86
+        ]
+      ],
+      "transition_lag_rows": 24,
+      "volatility_threshold": 0.0038256662792907365
+    },
+    "input": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "availability_max": "2026-11-13T17:12:50.891167+00:00",
+      "cadence_ns": 3600000000000,
+      "count": 2159,
+      "observations": [
+        "2026-05-14T02:00:00+00:00",
+        "2026-08-12T00:00:00+00:00"
+      ],
+      "sample_hash": "e31dfa8553a6e3bf3a4dd20c870a16b518a31504f93ea176e26eff9ef3de85b3",
+      "source": {
+        "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+        "as_of": "2026-11-14T00:00:00+00:00",
+        "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+        "drift": -1.2254443425042917e-05,
+        "dt": 1,
+        "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+        "initial_price": 204.34,
+        "observations": [
+          "2026-05-14T02:00:00+00:00",
+          "2026-08-12T00:00:00+00:00"
+        ],
+        "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+        "returns": 2159,
+        "source": "BINANCE_USDM_PUBLIC_DATA",
+        "time_unit": "hour",
+        "volatility": 0.004451385931577554
+      }
+    },
+    "model": "state_conditional_block_bootstrap",
+    "model_version": 1,
+    "numpy_version": "2.3.5",
+    "output": "SIMULATED_CLOSE_ONLY_PRICES; not historical OHLCV or future market observations",
+    "parameters": {
+      "config": {
+        "block_size": 24,
+        "lookback": 24,
+        "min_blocks_per_state": 20,
+        "min_transitions_per_state": 20,
+        "reference_asset": "BINANCE:USDM:NVDAUSDT",
+        "volatility_quantile": 0.5
+      },
+      "initial_prices": [
+        204.34
+      ],
+      "initial_state": [
+        0.1825922421948912,
+        0.3500473036896878,
+        0.2043519394512772,
+        0.2630085146641438
+      ],
+      "initial_state_source": "pool frequencies",
+      "states": [
+        "low_down",
+        "low_up",
+        "high_down",
+        "high_up"
+      ],
+      "transition": [
+        [
+          0.49,
+          0.01,
+          0.49,
+          0.01
+        ],
+        [
+          0.49,
+          0.01,
+          0.49,
+          0.01
+        ],
+        [
+          0.49,
+          0.01,
+          0.49,
+          0.01
+        ],
+        [
+          0.49,
+          0.01,
+          0.49,
+          0.01
+        ]
+      ],
+      "transition_source": "PARAMETERIZED_STRESS_ASSUMPTION; not estimated market probabilities"
+    },
+    "plan": {
+      "batch_size": 8,
+      "max_batch_bytes": 67108864,
+      "n_paths": 16,
+      "n_steps": 168,
+      "seed": 710
+    },
+    "qualification": "SYNTHETIC_RISK_SCENARIO; NOT_MARKET_STATISTICALLY_VALIDATED",
+    "rng": "PCG64 / SeedSequence([seed, global_path_id]); one stream per path"
+  },
+  "regime_high_persistence": {
+    "calibration": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "block_counts": [
+        193,
+        370,
+        216,
+        278
+      ],
+      "features": "strictly preceding lookback log returns; no block returns in its label",
+      "historical_realtime_availability_claim": false,
+      "minimum_support": "engineering thresholds, not evidence of statistical adequacy",
+      "prefix_rows": 1079,
+      "suffix_first_block": 1079,
+      "threshold_available_at": "2026-11-13T17:12:50.891167+00:00",
+      "threshold_observation_cutoff": "2026-06-28T00:00:00+00:00",
+      "transition_counts": [
+        [
+          40,
+          73,
+          25,
+          42
+        ],
+        [
+          71,
+          184,
+          46,
+          62
+        ],
+        [
+          30,
+          57,
+          37,
+          88
+        ],
+        [
+          37,
+          47,
+          108,
+          86
+        ]
+      ],
+      "transition_lag_rows": 24,
+      "volatility_threshold": 0.0038256662792907365
+    },
+    "input": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "availability_max": "2026-11-13T17:12:50.891167+00:00",
+      "cadence_ns": 3600000000000,
+      "count": 2159,
+      "observations": [
+        "2026-05-14T02:00:00+00:00",
+        "2026-08-12T00:00:00+00:00"
+      ],
+      "sample_hash": "e31dfa8553a6e3bf3a4dd20c870a16b518a31504f93ea176e26eff9ef3de85b3",
+      "source": {
+        "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+        "as_of": "2026-11-14T00:00:00+00:00",
+        "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+        "drift": -1.2254443425042917e-05,
+        "dt": 1,
+        "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+        "initial_price": 204.34,
+        "observations": [
+          "2026-05-14T02:00:00+00:00",
+          "2026-08-12T00:00:00+00:00"
+        ],
+        "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+        "returns": 2159,
+        "source": "BINANCE_USDM_PUBLIC_DATA",
+        "time_unit": "hour",
+        "volatility": 0.004451385931577554
+      }
+    },
+    "model": "state_conditional_block_bootstrap",
+    "model_version": 1,
+    "numpy_version": "2.3.5",
+    "output": "SIMULATED_CLOSE_ONLY_PRICES; not historical OHLCV or future market observations",
+    "parameters": {
+      "config": {
+        "block_size": 24,
+        "lookback": 24,
+        "min_blocks_per_state": 20,
+        "min_transitions_per_state": 20,
+        "reference_asset": "BINANCE:USDM:NVDAUSDT",
+        "volatility_quantile": 0.5
+      },
+      "initial_prices": [
+        204.34
+      ],
+      "initial_state": [
+        0.1825922421948912,
+        0.3500473036896878,
+        0.2043519394512772,
+        0.2630085146641438
+      ],
+      "initial_state_source": "pool frequencies",
+      "states": [
+        "low_down",
+        "low_up",
+        "high_down",
+        "high_up"
+      ],
+      "transition": [
+        [
+          0.2222222222222222,
+          0.40555555555555556,
+          0.1388888888888889,
+          0.23333333333333334
+        ],
+        [
+          0.19559228650137742,
+          0.5068870523415978,
+          0.12672176308539945,
+          0.17079889807162535
+        ],
+        [
+          0.01,
+          0.01,
+          0.49,
+          0.49
+        ],
+        [
+          0.01,
+          0.01,
+          0.49,
+          0.49
+        ]
+      ],
+      "transition_source": "PARAMETERIZED_STRESS_ASSUMPTION; not estimated market probabilities"
+    },
+    "plan": {
+      "batch_size": 8,
+      "max_batch_bytes": 67108864,
+      "n_paths": 16,
+      "n_steps": 168,
+      "seed": 710
+    },
+    "qualification": "SYNTHETIC_RISK_SCENARIO; NOT_MARKET_STATISTICALLY_VALIDATED",
+    "rng": "PCG64 / SeedSequence([seed, global_path_id]); one stream per path"
+  },
+  "regime_historical": {
+    "calibration": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "block_counts": [
+        193,
+        370,
+        216,
+        278
+      ],
+      "features": "strictly preceding lookback log returns; no block returns in its label",
+      "historical_realtime_availability_claim": false,
+      "minimum_support": "engineering thresholds, not evidence of statistical adequacy",
+      "prefix_rows": 1079,
+      "suffix_first_block": 1079,
+      "threshold_available_at": "2026-11-13T17:12:50.891167+00:00",
+      "threshold_observation_cutoff": "2026-06-28T00:00:00+00:00",
+      "transition_counts": [
+        [
+          40,
+          73,
+          25,
+          42
+        ],
+        [
+          71,
+          184,
+          46,
+          62
+        ],
+        [
+          30,
+          57,
+          37,
+          88
+        ],
+        [
+          37,
+          47,
+          108,
+          86
+        ]
+      ],
+      "transition_lag_rows": 24,
+      "volatility_threshold": 0.0038256662792907365
+    },
+    "input": {
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "availability_max": "2026-11-13T17:12:50.891167+00:00",
+      "cadence_ns": 3600000000000,
+      "count": 2159,
+      "observations": [
+        "2026-05-14T02:00:00+00:00",
+        "2026-08-12T00:00:00+00:00"
+      ],
+      "sample_hash": "e31dfa8553a6e3bf3a4dd20c870a16b518a31504f93ea176e26eff9ef3de85b3",
+      "source": {
+        "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+        "as_of": "2026-11-14T00:00:00+00:00",
+        "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+        "drift": -1.2254443425042917e-05,
+        "dt": 1,
+        "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+        "initial_price": 204.34,
+        "observations": [
+          "2026-05-14T02:00:00+00:00",
+          "2026-08-12T00:00:00+00:00"
+        ],
+        "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+        "returns": 2159,
+        "source": "BINANCE_USDM_PUBLIC_DATA",
+        "time_unit": "hour",
+        "volatility": 0.004451385931577554
+      }
+    },
+    "model": "state_conditional_block_bootstrap",
+    "model_version": 1,
+    "numpy_version": "2.3.5",
+    "output": "SIMULATED_CLOSE_ONLY_PRICES; not historical OHLCV or future market observations",
+    "parameters": {
+      "config": {
+        "block_size": 24,
+        "lookback": 24,
+        "min_blocks_per_state": 20,
+        "min_transitions_per_state": 20,
+        "reference_asset": "BINANCE:USDM:NVDAUSDT",
+        "volatility_quantile": 0.5
+      },
+      "initial_prices": [
+        204.34
+      ],
+      "initial_state": [
+        0.1825922421948912,
+        0.3500473036896878,
+        0.2043519394512772,
+        0.2630085146641438
+      ],
+      "initial_state_source": "pool frequencies",
+      "states": [
+        "low_down",
+        "low_up",
+        "high_down",
+        "high_up"
+      ],
+      "transition": [
+        [
+          0.2222222222222222,
+          0.40555555555555556,
+          0.1388888888888889,
+          0.23333333333333334
+        ],
+        [
+          0.19559228650137742,
+          0.5068870523415978,
+          0.12672176308539945,
+          0.17079889807162535
+        ],
+        [
+          0.14150943396226415,
+          0.2688679245283019,
+          0.17452830188679244,
+          0.41509433962264153
+        ],
+        [
+          0.13309352517985612,
+          0.16906474820143885,
+          0.38848920863309355,
+          0.30935251798561153
+        ]
+      ],
+      "transition_source": "HISTORICAL_BLOCK_LAG_ESTIMATE; overlapping pairs, not independent observations"
+    },
+    "plan": {
+      "batch_size": 8,
+      "max_batch_bytes": 67108864,
+      "n_paths": 16,
+      "n_steps": 168,
+      "seed": 710
+    },
+    "qualification": "SYNTHETIC_RISK_SCENARIO; NOT_MARKET_STATISTICALLY_VALIDATED",
+    "rng": "PCG64 / SeedSequence([seed, global_path_id]); one stream per path"
+  }
+}
