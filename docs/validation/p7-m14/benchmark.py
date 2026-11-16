@@ -15,6 +15,7 @@ def main():
     env = dict(os.environ, FACTORLAB_M14_MEASURE='1')
     command = [sys.executable, '-m', 'pytest', '-q', '-s',
         'tests/integrations/test_demo_reconciliation_m14.py',
+        'tests/integrations/measure_demo_reconciliation_m14.py',
         'tests/integrations/test_demo_observability.py::test_historical_orders_measurement',
         'tests/integrations/test_demo_observability.py::test_idle_recovery_measurement']
     result = subprocess.run(command, cwd=root, env=env, text=True, stdout=subprocess.PIPE,
