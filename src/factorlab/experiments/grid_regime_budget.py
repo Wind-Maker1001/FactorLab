@@ -103,6 +103,7 @@ class BudgetGrid(GridExecution):
             self._risk('REGIME_INVENTORY_BUDGET', exit_position=True)
 
     def _observe(self, event, account):
+        self._validate_account(account)
         self._check_observation(event)
         calendar = pd.date_range(end=pd.Timestamp(event['time']), periods=len(self.budget_prices), freq='h')
         frame = pd.DataFrame(dict(date=calendar, symbol=self.instrument_id, close=self.budget_prices))

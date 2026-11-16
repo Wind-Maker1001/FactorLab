@@ -1,4 +1,5 @@
 """Budget policy causality and authoritative Grid lifecycle regressions."""
+from copy import deepcopy
 from dataclasses import replace
 import json
 
@@ -8,7 +9,7 @@ import pytest
 
 from factorlab.experiments.grid_regime_budget import BudgetGrid, RegimeBudgetPolicy, make_budget_factory
 from factorlab.strategies.grid_execution import D
-from factorlab.trading.contracts import OrderStatus as S, Side
+from factorlab.trading.contracts import Market, OrderStatus as S, Side
 from tests.research.test_grid_execution import setup, event, observe, report, make_controller, paper_observe
 
 
@@ -111,6 +112,50 @@ def test_stage_isolation_and_failed_observation_rollback():
     with pytest.raises(ValueError, match='regression'):
         observe(engine, event(1), account)
     assert engine.budget_prices == before and len(engine.budget_events) == 1
+
+
+@pytest.mark.parametrize('policy', ['neutral', 'dynamic'])
+@pytest.mark.parametrize('changes,error', [
+    ({'turnover': D(9)}, 'turnover regression'),
+    ({'account_id': 'other-account'}, 'account deployment mismatch'),
+    ({'instrument_id': 'OTHER'}, 'account deployment mismatch'),
+    ({'market': Market.BINANCE_EQUITY}, 'account deployment mismatch'),
+])
+def test_observe_rejects_invalid_account_atomically(policy, changes, error, monkeypatch):
+    engine, account = budget(policy=policy)
+    account = replace(account, turnover=D(10))
+    engine.observe(event(1, price=90, completed_bar=True, high=101, low=89, close=90), account, delivery=1)
+    before = deepcopy({k: v for k, v in engine.__dict__.items() if k not in {'budget_policy', 'fees'}})
+    policy_before = vars(engine.budget_policy).copy()
+    decisions = []
+    original = RegimeBudgetPolicy.generate_targets
+
+    def spy(self, bars, calendar):
+        decisions.append(True)
+        return original(self, bars, calendar)
+
+    monkeypatch.setattr(RegimeBudgetPolicy, 'generate_targets', spy)
+    with pytest.raises(ValueError, match=error):
+        engine.observe(event(2), replace(account, **changes), delivery=2)
+    assert not decisions
+    assert engine.account is account
+    assert {k: v for k, v in engine.__dict__.items() if k not in {'budget_policy', 'fees'}} == before
+    assert vars(engine.budget_policy) == policy_before
+    # A rejected delivery remains available for a valid observation.
+    engine.observe(event(2), account, delivery=2)
+    assert engine.delivery == 2
+
+
+@pytest.mark.parametrize('policy', ['neutral', 'dynamic'])
+@pytest.mark.parametrize('turnover', [D(10), D(11)])
+def test_observe_accepts_non_decreasing_turnover(policy, turnover):
+    engine, account = budget(policy=policy)
+    account = replace(account, turnover=D(10))
+    engine.observe(event(1), account, delivery=1)
+    updated = replace(account, turnover=turnover)
+    engine.observe(event(2), updated, delivery=2)
+    assert engine.account is updated
+    assert engine.delivery == 2 and engine.sequence == 2
 
 
 def test_cancel_race_fill_remains_authoritative_and_full_exit():
