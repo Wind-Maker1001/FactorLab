@@ -1,13 +1,15 @@
 """Bounded Demo REST events with consumer-acknowledged durable cursors."""
-from contextlib import contextmanager, nullcontext
+from contextlib import AbstractContextManager, contextmanager, nullcontext
 from datetime import datetime, timezone
 from time import perf_counter
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from typing import Protocol
 import sqlite3
 
 from factorlab.trading.paper import Quote
 from factorlab.trading.strategy import ClosedBar
+from .observability import RequestCounts
 from .protocol import Environment, ReadOnlyNetworkTransport
 
 SOURCE = 'BINANCE_USDM_DEMO_REST'
@@ -19,6 +21,14 @@ SYMBOL = 'NVDAUSDT'
 
 class FeedPaused(ValueError):
     """Observed market data cannot safely advance the consumer."""
+
+
+class FeedTimings(Protocol):
+    """Telemetry required when a caller supplies an explicit timings object."""
+
+    def sample(self, name: str, seconds: float, /) -> None: ...
+    def measure(self, name: str, /) -> AbstractContextManager[None]: ...
+    def book_received(self, market_at: datetime, received_at: datetime, /) -> None: ...
 
 
 def timestamp(milliseconds):
@@ -40,7 +50,7 @@ class DemoMarketFeed:
     """
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
                  max_backfill=120, max_quote_age=5, initial_bars=1, catch_up=False,
-                 clock=lambda: datetime.now(timezone.utc), timings=None):
+                 clock=lambda: datetime.now(timezone.utc), timings: FeedTimings | None = None):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -53,7 +63,11 @@ class DemoMarketFeed:
             raise ValueError('quote freshness must be within five seconds')
         if type(initial_bars) is not int or not 1 <= initial_bars <= max_backfill:
             raise ValueError('initial history must fit backfill bound')
-        self.timings = timings if timings is not None else getattr(client, 'request_counts', None)
+        if timings is None:
+            request_counts = getattr(client, 'request_counts', None)
+            if isinstance(request_counts, RequestCounts):
+                timings = request_counts
+        self.timings = timings
         self.commit_seconds = 0.
         self.commit_count = 0
         self.catch_up = catch_up

@@ -1,5 +1,6 @@
 """Offline round boundaries, bounded samples, and durable commit timing."""
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pytest
 
@@ -176,13 +177,15 @@ def test_failed_cursor_commit_rolls_back_acknowledgement(tmp_path):
         db.close()
 
 
-def test_feed_measures_callbacks_cursor_commits_and_book_receipt(tmp_path):
+@pytest.mark.parametrize('explicit', [False, True], ids=['request-counts', 'explicit-timings'])
+def test_feed_measures_callbacks_cursor_commits_and_book_receipt(tmp_path, explicit):
     counts = RequestCounts()
     counts.enable_rounds()
     transport = Transport()
     client = ObservedClient(environment=Environment.DEMO, transport=transport, request_counts=counts)
+    timings = Mock(spec_set=['sample', 'measure', 'book_received'], wraps=counts) if explicit else None
     feed = DemoMarketFeed(client, Consumer(), state_path=tmp_path / 'cursor.sqlite', consumer_id='test',
-        clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc))
+        clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc), timings=timings)
     before = feed.commit_count
     counts.begin_round()
     assert feed.poll() == dict(bars=1, quotes=1)
@@ -192,4 +195,6 @@ def test_feed_measures_callbacks_cursor_commits_and_book_receipt(tmp_path):
     assert summary['operations']['closed_bar_callback']['count'] == 1
     assert summary['operations']['book_market_to_received']['max_seconds'] == 0
     assert {row['classification'] for row in summary['requests']} == {'market_get'}
+    if timings is not None:
+        timings.book_received.assert_called_once()
     feed.close()
