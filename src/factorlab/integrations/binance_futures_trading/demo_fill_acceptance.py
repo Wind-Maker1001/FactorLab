@@ -4,6 +4,7 @@ from contextlib import closing
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import json
+import os
 from pathlib import Path
 
 from factorlab.errors import DataQualityError
@@ -126,6 +127,31 @@ def capture(session, runtime, opening_wallet):
     history = [dict(json.loads(payload), observed_at=observed_at)
                for observed_at, payload in session.adapter.db.execute(
                    'SELECT observed_at,payload FROM futures_receipts ORDER BY rowid')]
+    lifecycle, lifecycle_ok = lifecycle_evidence(dispatches, history)
+    statuses = dict(DEMO_ORDER_ACK_VERIFIED=any(
+        d['method'] == 'POST' and d['receipt'] is not None and d['receipt']['http_status'] == 200
+        and d['receipt'].get('order_id') is not None and not _unknown_dispatch(d) for d in dispatches),
+        DEMO_TRADE_RECEIPT_VERIFIED=bool(filled), DEMO_FEE_RECONCILED=fee_ok,
+        DEMO_POSITION_RECONCILED=position_ok, DEMO_ACCOUNT_RECONCILED=account_ok,
+        DEMO_RESTART_RECOVERY_VERIFIED=False, DEMO_LIFECYCLE_VERIFIED=lifecycle_ok)
+    return dict(observed_at=datetime.now(timezone.utc), source='BINANCE_DEMO_ACTUAL_GET_RECEIPTS',
+        scope='ALL_PERSISTED_ACCOUNT_HISTORY; not proof of a new experiment',
+        opening_wallet=opening_wallet, statuses=statuses, account=account,
+        order_trade_mapping=mapping, dispatches=dispatches, fifo=fifo,
+        wallet=wallet, equity=equity, actual_fees=fees, income=income,
+        funding=dict(events=funding, booking='NOT_SUPPORTED' if funding else 'NO_EVENT_OBSERVED_IN_RESPONSE'),
+        observed_order_statuses=sorted({row['order_query']['status'] for row in mapping}),
+        receipt_history=history, lifecycle=lifecycle,
+        recovery_proof=dict(account_id=session.adapter.account_id, process_id=os.getpid(),
+            protocol_events=session.adapter.db.execute(
+            'SELECT count(*) FROM futures_events').fetchone()[0],
+            economic_events=fifo['economic_events'], state=dumps(session.gateway.state),
+            dispatch_count=len(dispatches)),
+        safety='NO LIVE MONEY')
+
+
+def lifecycle_evidence(dispatches, history):
+    """Evaluate the unchanged M19 contract on an explicitly selected order scope."""
     queries = [receipt['order'] for receipt in history if receipt.get('source') == 'GET']
     observed = {row['status'] for row in queries}
     observed.update(d['receipt']['status'] for d in dispatches
@@ -151,26 +177,71 @@ def capture(session, runtime, opening_wallet):
         completed_order_get=completed_get, cancel_fill_race_observed=race)
     lifecycle_ok = ({'NEW', 'PARTIALLY_FILLED', 'FILLED', 'CANCELED'} <= observed
                     and lifecycle['unknown_ack_queried'] and completed_get and race)
-    statuses = dict(DEMO_ORDER_ACK_VERIFIED=any(
-        d['method'] == 'POST' and d['receipt'] is not None and d['receipt']['http_status'] == 200
-        and d['receipt'].get('order_id') is not None and not _unknown_dispatch(d) for d in dispatches),
-        DEMO_TRADE_RECEIPT_VERIFIED=bool(filled), DEMO_FEE_RECONCILED=fee_ok,
-        DEMO_POSITION_RECONCILED=position_ok, DEMO_ACCOUNT_RECONCILED=account_ok,
-        DEMO_RESTART_RECOVERY_VERIFIED=False, DEMO_LIFECYCLE_VERIFIED=lifecycle_ok)
-    return dict(observed_at=datetime.now(timezone.utc), source='BINANCE_DEMO_ACTUAL_GET_RECEIPTS',
-        scope='ALL_PERSISTED_ACCOUNT_HISTORY; not proof of a new experiment',
-        opening_wallet=opening_wallet, statuses=statuses, account=account,
-        order_trade_mapping=mapping, dispatches=dispatches, fifo=fifo,
-        wallet=wallet, equity=equity, actual_fees=fees, income=income,
-        funding=dict(events=funding, booking='NOT_SUPPORTED' if funding else 'NO_EVENT_OBSERVED_IN_RESPONSE'),
-        observed_order_statuses=sorted({row['order_query']['status'] for row in mapping}),
-        lifecycle=lifecycle,
-        recovery_proof=dict(account_id=session.adapter.account_id,
-            protocol_events=session.adapter.db.execute(
-            'SELECT count(*) FROM futures_events').fetchone()[0],
-            economic_events=fifo['economic_events'], state=dumps(session.gateway.state),
-            dispatch_count=len(dispatches)),
-        safety='NO LIVE MONEY')
+    return lifecycle, lifecycle_ok
+
+
+def experiment_evidence(baseline, current, *, previous_recovery=None):
+    """Select new dispatch identities without treating historical economics as new fills."""
+    if baseline['recovery_proof']['account_id'] != current['recovery_proof']['account_id']:
+        raise DataQualityError('experiment account binding changed')
+    old_dispatches = {(d['campaign'], d['method'], d['client_order_id']): d['parameters']
+                      for d in baseline['dispatches']}
+    all_dispatches = {(d['campaign'], d['method'], d['client_order_id']): d['parameters']
+                      for d in current['dispatches']}
+    if any(all_dispatches.get(key) != params for key, params in old_dispatches.items()):
+        raise DataQualityError('experiment dispatch history changed')
+    old_ids = {d['client_order_id'] for d in baseline['dispatches']}
+    old_ids.update(row['client_order_id'] for row in baseline['order_trade_mapping'])
+    old_ids.update(e['client_order_id'] for e in baseline['fifo']['economic_events'])
+    dispatches = [d for d in current['dispatches'] if d['client_order_id'] not in old_ids]
+    new_ids = {d['client_order_id'] for d in dispatches if d['method'] == 'POST'}
+    if len(new_ids) != sum(d['method'] == 'POST' for d in dispatches):
+        raise DataQualityError('duplicate experiment POST identity')
+    history = [r for r in current['receipt_history']
+               if r['order']['clientOrderId'] in new_ids]
+    mapping = [row for row in current['order_trade_mapping'] if row['client_order_id'] in new_ids]
+    events = [e for e in current['fifo']['economic_events'] if e['client_order_id'] in new_ids]
+    lifecycle, lifecycle_ok = lifecycle_evidence(dispatches, history)
+    filled = [row for row in mapping if row['trade_quantity_sum'] > 0]
+    fees = sum((row['actual_fee'] for row in mapping), ZERO)
+    latest_fees = {}
+    for event in events:
+        latest_fees[event['client_order_id']] = Decimal(str(event['cumulative_fee']))
+    fee_ok = bool(filled) and fees == sum(latest_fees.values(), ZERO)
+    restart_comparison = (compare_recovery(previous_recovery, current)
+                          if previous_recovery is not None else None)
+    if restart_comparison is not None:
+        previous_ids = {d['client_order_id'] for d in previous_recovery['dispatches'] if d['method'] == 'POST'}
+        restart_comparison['experiment_orders_present_before_restart'] = new_ids <= previous_ids
+        restart_comparison['independent_process'] = (
+            previous_recovery['recovery_proof']['process_id'] != current['recovery_proof']['process_id'])
+        restart_comparison['later_capture'] = (
+            datetime.fromisoformat(str(current['observed_at'])) >
+            datetime.fromisoformat(str(previous_recovery['observed_at'])))
+    recovered = bool(new_ids) and restart_comparison is not None and all(restart_comparison.values())
+    account_ok = bool(filled) and fee_ok and current['statuses']['DEMO_ACCOUNT_RECONCILED']
+    statuses = dict(
+        HISTORICAL_DEMO_ACCOUNT_RECONCILED=baseline['statuses']['DEMO_ACCOUNT_RECONCILED'],
+        NEW_DEMO_ACK_VERIFIED=any(d['method'] == 'POST' and d['receipt'] is not None
+            and d['receipt']['http_status'] == 200 and d['receipt'].get('order_id') is not None
+            and not _unknown_dispatch(d) for d in dispatches),
+        NEW_DEMO_FILL_VERIFIED=any(row['order_query']['status'] == 'FILLED'
+                                 and row['trade_quantity_sum'] > 0 for row in mapping),
+        NEW_DEMO_FEE_RECONCILED=fee_ok, NEW_DEMO_ACCOUNT_RECONCILED=account_ok,
+        NEW_DEMO_RESTART_RECOVERY_VERIFIED=recovered,
+        NEW_DEMO_PARTIAL_FILL_VERIFIED='PARTIALLY_FILLED' in lifecycle['status_observations'],
+        NEW_DEMO_UNKNOWN_ACK_RECOVERY_VERIFIED=lifecycle['unknown_ack_queried'],
+        NEW_DEMO_CANCEL_FILL_RACE_VERIFIED=lifecycle['cancel_fill_race_observed'],
+        DEMO_LIFECYCLE_VERIFIED=lifecycle_ok and account_ok and recovered)
+    return dict(scope='NEW_POST_IDENTITIES_AFTER_FROZEN_BASELINE',
+        baseline_observed_at=baseline['observed_at'], observed_at=current['observed_at'],
+        historical_order_ids=sorted(old_ids), new_client_order_ids=sorted(new_ids),
+        statuses=statuses, dispatches=dispatches, order_trade_mapping=mapping,
+        economic_events=events, actual_fees=fees, lifecycle=lifecycle,
+        account_fifo=current['fifo']['attribution'],
+        wallet_change=Decimal(str(current['wallet'])) - Decimal(str(baseline['wallet'])),
+        equity_change=Decimal(str(current['equity'])) - Decimal(str(baseline['equity'])),
+        restart_comparison=restart_comparison, safety='NO LIVE MONEY')
 
 
 def compare_recovery(previous, current):
@@ -201,8 +272,12 @@ def main(argv=None):
                         help='documented initially flat wallet baseline; never inferred from current balance')
     parser.add_argument('--output', required=True, type=Path, help='new private evidence file')
     parser.add_argument('--previous', type=Path, help='earlier private capture from a separate session/process')
+    parser.add_argument('--experiment-baseline', type=Path,
+                        help='private capture frozen before this experiment submitted any order')
     args = parser.parse_args(argv)
     previous = json.loads(args.previous.read_text(encoding='utf-8')) if args.previous else None
+    baseline = (json.loads(args.experiment_baseline.read_text(encoding='utf-8'))
+                if args.experiment_baseline else None)
     if not args.opening_wallet.is_finite() or args.opening_wallet <= 0:
         parser.error('opening wallet must be positive and finite')
     # Reserve the evidence file before any network operation.
@@ -213,6 +288,8 @@ def main(argv=None):
                 report = capture(session, runtime, args.opening_wallet)
         if previous is not None:
             compare_recovery(previous, report)
+        if baseline is not None:
+            report['experiment'] = experiment_evidence(baseline, report, previous_recovery=previous)
         json.dump(report, output, indent=2, default=str)
         output.write('\n')
     print(json.dumps(report['statuses']))

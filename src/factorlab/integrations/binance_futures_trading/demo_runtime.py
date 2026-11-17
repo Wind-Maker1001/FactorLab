@@ -103,7 +103,7 @@ class DemoRuntime:
         with self.db:
             self.db.execute('BEGIN IMMEDIATE')
             authorization = self.continuous_authorization()
-            if authorization is not None:
+            if authorization is not None and authorization['state'] != 'HALTED':
                 authorization['state'] = 'STOPPED'
                 self._set('continuous', json.dumps(authorization))
             self._set('continuous_window', '')
@@ -166,6 +166,38 @@ class DemoRuntime:
             self._set('continuous_schema', '1')
             self._set('active', '')
             return authorization
+
+    def resume_continuous(self, binding, *, facts, reconciled, stop_epoch):
+        """Explicitly resume the same stopped authorization, preserving its STOP audit and budgets."""
+        from .demo_session import demo_account_configuration
+
+        if (not reconciled or facts.account_id != binding['account_id'] or facts.can_trade is not True
+                or demo_account_configuration(facts) != binding['configuration']):
+            raise SafetyBlocked('fresh bound Demo account reconciliation required')
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            saved = self.continuous_authorization()
+            if saved is None or saved['state'] != 'STOPPED':
+                raise SafetyBlocked('explicitly stopped continuous Demo authorization required')
+            self._validate_continuous(binding, saved)
+            if self._get('continuous_diagnostic') is not None:
+                raise SafetyBlocked('continuous Demo risk halt is latched')
+            if self.stop_epoch() != stop_epoch:
+                raise SafetyBlocked('Demo was stopped during account preflight')
+            funds = facts.usdt()
+            loss = Decimal(saved['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit'])
+            consumed = self.consumption(saved)
+            if loss >= Decimal(saved['max_loss']):
+                raise SafetyBlocked('global Demo loss budget exhausted')
+            if (consumed['posts'] >= saved['total_orders']
+                    or Decimal(consumed['submitted_notional']) >= Decimal(saved['total_notional'])):
+                raise SafetyBlocked('global Demo trading budget exhausted')
+            event = dict(action='RESUME_CONTINUOUS', observed_at=now().isoformat(),
+                previous_authorization=saved, stopped_epoch=stop_epoch, consumption=consumed)
+            self._set('continuous_resume:' + uuid4().hex, json.dumps(event))
+            resumed = dict(saved, state='RUNNING', stop_epoch=stop_epoch)
+            self._set('continuous', json.dumps(resumed))
+            return resumed
 
     def _validate_continuous(self, binding, authorization):
         if (authorization['account_id'] != binding['account_id']

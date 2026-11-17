@@ -173,6 +173,16 @@ def run_command(args, root, store, runtime, requests, smoke_id):
         runtime.save_tradfi(account_id, receipt)
         status = 'DEMO_TRADFI_SIGNED' if receipt['success'] else 'DEMO_TRADFI_NOT_CONFIRMED'
         return dict(status=status, agreement=receipt)
+    if command == 'resume-continuous':
+        binding, _ = load_bound_credential(store)
+        epoch = runtime.stop_epoch()
+        with open_session(root, store, runtime, requests) as (session, _):
+            account = recover(session)
+            runtime.resume_continuous(binding, facts=session.adapter.facts,
+                reconciled=account['reconciled'] and not account['unknown'], stop_epoch=epoch)
+            campaign = runtime.ensure_window(binding, facts=session.adapter.facts,
+                reconciled=account['reconciled'] and not account['unknown'], stop_epoch=epoch)
+            return dict(status='DEMO_CONTINUOUS_RUNNING', campaign=campaign['id'], account=account)
     if command == 'start-continuous':
         binding, _ = load_bound_credential(store)
         epoch = runtime.stop_epoch()
@@ -294,6 +304,7 @@ def parse_args(argv):
     continuous.add_argument('--total-notional', type=parse_decimal, default=Decimal('700'))
     continuous.add_argument('--window-seconds', type=int, default=10800)
     continuous.add_argument('--window-orders', type=int, default=4)
+    commands.add_parser('resume-continuous', help='explicitly resume the same stopped Demo authorization without resetting budgets')
     commands.add_parser('stop', aliases=['disable-demo', 'kill'])
     for name in ('buy-limit', 'reduce-limit'):
         commands.add_parser(name).add_argument('quantity', type=parse_decimal)

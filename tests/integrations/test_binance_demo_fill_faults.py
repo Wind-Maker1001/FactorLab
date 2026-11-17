@@ -260,6 +260,42 @@ def test_protocol_commit_survives_controller_rollback(network_grid, monkeypatch,
     assert len(writes(requests)) == 1
 
 
+@pytest.mark.parametrize('lost_response', [False, True])
+def test_full_fill_during_cancel_recovers_without_duplicate_economics(network_grid, monkeypatch, lost_response):
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    original = NetworkFixture.__call__
+
+    def fill_before_cancel(self, request, timeout):
+        if request.method == 'DELETE' and request.path == '/fapi/v1/order':
+            self.trade_update(key, '.04', '146')
+            if lost_response:
+                raise TimeoutError('synthetic cancel ACK lost after fill')
+            from factorlab.integrations.binance.client import Response
+            import json
+            return Response(200, {}, json.dumps(self.orders[key]).encode())
+        return original(self, request, timeout)
+
+    monkeypatch.setattr(NetworkFixture, '__call__', fill_before_cancel)
+    with open_grid_session(root, store, factory) as bridge:
+        bridge.recover()
+        observe(bridge)
+        key = bridge.grid.active[0].intent.client_order_id
+        bridge.observe(dict(id='breakout', time='2026-11-11T12:00:01', price='180', volume=1))
+        bridge.recover()
+        assert bridge.gateway.adapter.order(key).status is S.FILLED
+        assert bridge.account().inventory == D('.04')
+        assert bridge.gateway.adapter.order(key).cumulative_fee == D('.00584')
+        events = list(bridge.controller.store.order_events())
+    with open_grid_session(root, store, factory, read_only=True) as bridge:
+        bridge.recover()
+        bridge.recover()
+        assert bridge.account().inventory == D('.04')
+        assert bridge.account().turnover == D('5.84')
+        assert list(bridge.controller.store.order_events()) == events
+    assert len(writes(requests)) == len(writes(requests, 'DELETE')) == 1
+
+
 def test_excess_reduce_only_sell_is_blocked_before_post(network_grid):
     root, store, factory, enable, fake, requests = network_grid
     enable()
