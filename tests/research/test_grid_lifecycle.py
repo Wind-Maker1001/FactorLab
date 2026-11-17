@@ -54,6 +54,38 @@ def test_reseed_future_prices_do_not_change_past(tmp_path):
                                   pd.read_csv(tmp_path/'changed/daily.csv').iloc[:-1])
 
 
+@pytest.mark.parametrize(('touch_hour', 'close', 'status', 'reverse_order'), [
+    (1, 89, 'FILLED', True),
+    (2, 89, 'FILLED', False),
+    (3, 89, 'CANCELED', False),
+    (2, 90, 'CANCELED', False),
+])
+def test_close_only_paper_matches_before_expiry_confirmation(
+        tmp_path, touch_hour, close, status, reverse_order):
+    settings = inputs()
+    settings['config'] = replace(settings['config'], expiry_reseed_limit=0)
+    settings['slippage'] = D('.001')
+    prices = [100] * 4
+    prices[touch_hour] = close
+    settings['bars'] = [dict(id=bar['id'], time=bar['time'], completed_bar=True,
+                            price=price, close=price)
+                        for bar, price in zip(settings['bars'], prices)]
+    output = tmp_path/'boundary'
+    run_experiment(output, **settings, scenario='CLOSE_ONLY_SCENARIO', synthetic_capacity=1)
+    result = json.loads((output/'result.json').read_text(encoding='utf-8'))
+
+    buy_id, buy = next((key, order) for key, order in result['orders'].items()
+                       if D(order['intent']['limit_price']) == D(90))
+    assert buy['status'] == status
+    assert result['fills'] == (1 if status == 'FILLED' else 0)
+    assert any(order['intent']['side'] == 'SELL' for order in result['orders'].values()) == reverse_order
+    if status == 'CANCELED':
+        assert dict(time=settings['bars'][2]['time'], order_id=buy_id, cause='TTL',
+                    status='CANCELED') in result['lifecycle']
+    else:
+        assert not any(event['order_id'] == buy_id for event in result['lifecycle'])
+
+
 def test_exit_with_zero_liquidity_keeps_actual_inventory(tmp_path):
     settings = inputs()
     settings['config'] = replace(settings['config'], order_ttl=100, breakout='exit')

@@ -45,10 +45,11 @@ def _lag_one_autocorrelation(values):
 
 
 def account_metrics(prices, *, start, config, rules, capacity, output, provenance=None,
-                    accounting_evidence=False, diagnostic=None, latent=None):
+                    accounting_evidence=False, diagnostic=None, latent=None,
+                    account_id='research-grid'):
     metrics = evaluate_path(prices, start=start, config=config, rules=rules,
                             capacity=capacity, output=output, research_wal=True, provenance=provenance,
-                            accounting_evidence=accounting_evidence)
+                            accounting_evidence=accounting_evidence, account_id=account_id)
     nav = pd.read_csv(Path(output) / 'daily.csv')
     inventory = nav.inventory.abs()
     exposure = nav.net_exposure.abs()
