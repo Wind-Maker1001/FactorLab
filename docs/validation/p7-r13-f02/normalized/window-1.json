@@ -1,0 +1,235 @@
+{
+  "evidence": {
+    "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+    "kind": "FORWARD_SHADOW",
+    "window": [
+      "2026-11-17T04:05:22.619813+00:00",
+      "2026-11-17T04:15:22.619813+00:00"
+    ],
+    "max_quote_gap_seconds": 30.0,
+    "source": {
+      "format": "NORMALIZED_V1",
+      "name": "p7-r13-f02-forward-feed-scheduling-a",
+      "payload": {
+        "binding": {
+          "account": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+          "instrument": "NVDAUSDT",
+          "strategy": "63987bc03ceb836354e4e4565764b0f6488661d95076a818974949e11e4423c9",
+          "version": "0f3b29ce717b2d93cb944f3cc2e800cf8015ea45",
+          "interval_seconds": 60,
+          "session_started_at": "2026-11-17T04:05:22.619813+00:00",
+          "prior_bar_ids": []
+        },
+        "bars": [],
+        "proposals": [],
+        "books": [],
+        "fills": [],
+        "gaps": [
+          {
+            "at": "2026-11-17T04:05:53.405100+00:00",
+            "kind": "interruption",
+            "reason": "STALE_POLL"
+          },
+          {
+            "kind": "EARLY_WINDOW_END",
+            "at": "2026-11-17T04:05:53.410985+00:00",
+            "reason": "STOPPED"
+          }
+        ],
+        "ends": [],
+        "observation_id": "p7-r13-f02-forward-feed-scheduling-a",
+        "observation_manifest": {
+          "deadline": "2026-11-17T04:15:22.619813+00:00",
+          "kind": "experiment",
+          "parameters": {
+            "collector_source_sha256": "ea41193e45d966805228dc9f76c734d2101a5ae180039615199fba9cb8d21116",
+            "experiment_id": "p7-r13-f02-forward-feed-scheduling-a",
+            "interruption_rule": "STOP_WITHOUT_RETRY",
+            "interval_seconds": 60,
+            "limit_rule": "ORIGINAL_LEGAL_PROPOSAL_LIMIT_IMMUTABLE",
+            "market": "BINANCE_USDM_DEMO",
+            "max_bytes": 5242880,
+            "max_proposals": 20,
+            "max_quote_gap_seconds": 30.0,
+            "max_requests": 600,
+            "minimum_poll_delay_seconds": 5.0,
+            "minimum_request_interval_seconds": 0,
+            "restart_rule": "REFUSE",
+            "sample_seconds": 5.0,
+            "seconds": 600.0,
+            "settings": null,
+            "strategy_definition": {
+              "breakout": "pause",
+              "default_range_multipliers": [
+                "0.99",
+                "1.01"
+              ],
+              "factory": "P7_M13_GRID_FACTORY",
+              "initial_inventory": 0,
+              "levels": 1,
+              "max_cash_committed": 7,
+              "max_inventory": 1,
+              "quantity": 1,
+              "settings": null
+            },
+            "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774",
+            "symbol": "NVDAUSDT",
+            "termination": [
+              "ABSOLUTE_DEADLINE",
+              "REQUEST_BUDGET",
+              "BYTE_BUDGET",
+              "PROPOSAL_BUDGET",
+              "DATA_INTERRUPTION",
+              "SIGNAL"
+            ],
+            "version": "0f3b29ce717b2d93cb944f3cc2e800cf8015ea45",
+            "window_seconds": 600.0
+          },
+          "started_at": "2026-11-17T04:05:22.619813+00:00"
+        },
+        "window_ends": [
+          {
+            "at": "2026-11-17T04:05:53.410985+00:00",
+            "kind": "window_end",
+            "reason": "STOPPED"
+          }
+        ],
+        "original_events_sha256": "07f329b95b6001218804aee394cd77a886b812b666f3755cd310811d19a9c4a2",
+        "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774"
+      },
+      "sha256": "82df58a6f41f49e77ab89bef7ac391408f8016462175ff4e03c38432d2492607"
+    }
+  },
+  "evaluation": {
+    "schema": "P7_R12_FORWARD_EVIDENCE_V1",
+    "protocol_id": "r11-ef7e1f0cfd0a700bde79b5712f78824f30cd6ee260d0c95eab4b3e1f6ecc7a95",
+    "protocol_record_hash": "c5e3bc5116660ac735b9dbe8c6db4850108d7ec3585bc38cadf7cbdda66ebbb1",
+    "evidence_hash": "cd91eab8ed2b133bbf72b184d659e0f4dd5a2ce4351135029b0eaf678b193b7a",
+    "source_hash": "82df58a6f41f49e77ab89bef7ac391408f8016462175ff4e03c38432d2492607",
+    "evaluated_at": "2026-11-17T04:15:47.936910+00:00",
+    "kind": "FORWARD_SHADOW",
+    "engineering_status": "INVALID_EVIDENCE",
+    "sample_status": "INSUFFICIENT_SAMPLE",
+    "receipt_status": "UNVERIFIED_RECEIPT",
+    "financial_admission": "NOT_FINANCIALLY_ADMITTED",
+    "financial_status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+    "financial_conclusion": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+    "metrics": null,
+    "engineering_metrics": null,
+    "issues": [
+      {
+        "code": "DECLARED_OBSERVATION_GAP",
+        "identity": null
+      }
+    ],
+    "diagnostics": {
+      "input_bars": 0,
+      "input_proposals": 0,
+      "input_books": 0,
+      "quote_gaps": 0,
+      "declared_interruptions": 2
+    },
+    "activation": {
+      "active": false,
+      "status": "FINANCIAL_PROTOCOL_PENDING_APPROVAL",
+      "required_fields": [
+        "accounting",
+        "approval_receipt",
+        "approved_immutable_version",
+        "benchmark_parameters",
+        "capital",
+        "common_termination_at",
+        "costs",
+        "data_source",
+        "end",
+        "external_receipt_verification",
+        "failure_conditions",
+        "fifo_complete_cycle_and_risk_exit_attribution",
+        "fixed_hold_quantity_before_start",
+        "initial_inventory_and_mark",
+        "interval",
+        "inventory_age",
+        "lagged_target_known_at",
+        "minimum_bars",
+        "minimum_duration",
+        "missing_data_policy",
+        "notional_budget",
+        "observed_funding_settlements",
+        "order_timeout",
+        "original_grid_identity",
+        "primary_metric",
+        "residual_mark_at_common_end",
+        "risk_exit",
+        "risk_version",
+        "start",
+        "strategy_commit",
+        "strategy_parameters"
+      ],
+      "controls": [
+        "grid_original",
+        "fixed_hold",
+        "lagged_exposure",
+        "cash"
+      ],
+      "metrics": [
+        "complete_cycles",
+        "cycle_net_contribution",
+        "fees",
+        "funding",
+        "funding_adjusted_profit",
+        "inventory_age_hours",
+        "max_committed",
+        "max_drawdown",
+        "max_notional",
+        "mean_notional",
+        "net_profit",
+        "realized_pnl",
+        "residual_inventory",
+        "slippage",
+        "terminal_nav",
+        "unrealized_pnl"
+      ],
+      "r09": "NEW_SEPARATELY_FROZEN_VERSION_REQUIRED",
+      "shared": [
+        "capital",
+        "notional_budget",
+        "fee_and_slippage_schedule",
+        "UTC_half_open_window",
+        "valuation_clock",
+        "termination_at",
+        "economic_failure_conditions"
+      ],
+      "accounting": {
+        "paper": "factorlab.experiments.grid_paper.run_experiment",
+        "fifo": "factorlab.experiments.grid_fifo.attribution",
+        "funding": "factorlab.experiments.grid_funding.cashflow / drawdown",
+        "controls": "factorlab.experiments.grid_exposure_benchmark",
+        "boundary": "Future approved adapter must supply result.json, trades.csv, daily.csv and authoritative PaperStore fills for FIFO. Paper end filtering is inclusive: prefilter bars by [start,end). Historical defaults and post-hoc funding overlays are not executable cash",
+        "residual": "Mark remaining FIFO lots at common end; no fabricated liquidation",
+        "costs": "Slippage embedded in fills, not deducted twice",
+        "cash": "Same capital; zero trading, funding and assumed interest",
+        "fixed_hold": "Quantity frozen before start, never fitted to future inventory",
+        "lagged": "Previously known Grid exposure; execution on later observations",
+        "cycles": "Normal SELL exhausts BUY lot; risk exits separately attributed"
+      }
+    },
+    "safety": "NO LIVE MONEY"
+  },
+  "description": {
+    "observation_id": "p7-r13-f02-forward-feed-scheduling-a",
+    "raw_content_sha256": "07f329b95b6001218804aee394cd77a886b812b666f3755cd310811d19a9c4a2",
+    "counts": {
+      "observation_windows": 1,
+      "independent_proposals": 0,
+      "input_proposal_records": 0,
+      "captured_books": 0,
+      "forward_quote_pairs": 0,
+      "touched_proposals": 0,
+      "right_censored_proposals": 0
+    },
+    "right_censored_ratio": null,
+    "descriptive_only": true,
+    "proposals": [],
+    "confirmed_exchange_fills": 0
+  }
+}

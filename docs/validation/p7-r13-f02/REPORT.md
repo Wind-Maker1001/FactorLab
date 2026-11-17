@@ -45,7 +45,19 @@ M19 的实际观察及独立恢复结束后释放共享账户网络窗口，F02 
 
 ## R12 独立评价
 
-TODO：冻结截止之后，以实际 UTC 调用原 R12 离线评价器，记录规范化证据、拒绝码、有效窗口/盘口/前瞻配对与独立重放结果。原窗口截止不修改，不使用未来评价时间提前取得结果。
+正式评价使用实际 UTC `2026-11-17T04:15:47.936910Z`，晚于原冻结截止，结果为 **INVALID_EVIDENCE / INSUFFICIENT_SAMPLE**，拒绝码为 `DECLARED_OBSERVATION_GAP`。规范化 gaps 原样包含 `STALE_POLL` 和 `EARLY_WINDOW_END`。有效窗口、有效盘口及合格前瞻配对均为 0；报价触价、潜在 crossing、右删失提案和实际成交均为 0。没有提案时右删失比例不适用，不能称为 0% 或 100%。
+
+独立空目录重放得到相同计数、拒绝码及证据摘要 `cd91eab8ed2b133bbf72b184d659e0f4dd5a2ce4351135029b0eaf678b193b7a`。原始事件规范内容摘要为 `07f329b95b6001218804aee394cd77a886b812b666f3755cd310811d19a9c4a2`。完整结果在 `normalized/window-1.json` 与 `normalized/summary.json`。性能优化只证明 pending 路径减少重复恢复，未建立真实有效采集窗口或研究准入。
+
+```bash
+PYTHONPATH=src python -m factorlab.experiments.grid_forward_observation \
+  --events docs/validation/p7-r13-f02/window-a/events.csv \
+  --protocol docs/validation/p7-r11/protocol.json \
+  --evaluated-at 2026-11-17T04:15:47.936910Z \
+  --output /path/to/new-independent-audit
+```
+
+Draft PR 为 #203。Codex bot 已审查 `8277e43`，未报告问题。CI 已通过可信风险选择、Linux/Windows locking 和 Python 3.14 package；Fast、扩展软件分片及 CI control review 在检查时仍待完成。不自动合并。
 
 ## 复现
 
@@ -71,7 +83,7 @@ PYTHONPATH=src python -m pytest -q \
 
 `REAL_FORWARD_WINDOW_STATUS=INTERRUPTED_STALE_POLL`
 
-`R12_ADMISSION_STATUS=PENDING_FROZEN_CUTOFF`
+`R12_ADMISSION_STATUS=INVALID_EVIDENCE / INSUFFICIENT_SAMPLE`
 
 `FINANCIAL_ADVANTAGE_NOT_ESTABLISHED`
 
