@@ -6,7 +6,8 @@
     {"selection": "receipt/fault/closed-loop/continuous/FIFO", "passed": 55, "seconds": "74.94"},
     {"selection": "continuous including explicit resume/receipt/fill faults including full cancel race", "passed": 55, "seconds": "172.83"},
     {"selection": "receipt and independent-process discrimination", "passed": 21, "seconds": "66.97"},
-    {"selection": "M14 fee conflict/runtime/FIFO", "passed": 24, "seconds": "15.19"}
+    {"selection": "M14 fee conflict/runtime/FIFO", "passed": 24, "seconds": "15.19"},
+    {"selection": "integrated constructor clock recovery/continuous/receipt", "passed": 75, "seconds": "123.84"}
   ],
   "scenarios": {
     "partial_fill_then_fill": "OFFLINE_FAULT_VERIFIED",

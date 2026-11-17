@@ -133,7 +133,9 @@ def test_experiment_excludes_historical_fills_and_requires_new_recovery(network_
         fake.trade_update(bridge.grid.active[0].intent.client_order_id, '.04', '154')
         bridge.recover()
         completed = capture(bridge.session, bridge.runtime, D('1000'))
+        baseline['observed_at'] = datetime.now().astimezone() + timedelta(seconds=20)
         fresh = experiment_evidence(baseline, completed)
+        assert fresh['lifecycle']['completed_order_get']
         assert fresh['statuses']['NEW_DEMO_ACK_VERIFIED']
         assert fresh['statuses']['NEW_DEMO_FILL_VERIFIED']
         assert fresh['statuses']['NEW_DEMO_FEE_RECONCILED']

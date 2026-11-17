@@ -197,10 +197,8 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
     new_ids = {d['client_order_id'] for d in dispatches if d['method'] == 'POST'}
     if len(new_ids) != sum(d['method'] == 'POST' for d in dispatches):
         raise DataQualityError('duplicate experiment POST identity')
-    started_at = datetime.fromisoformat(str(baseline['observed_at']))
     history = [r for r in current['receipt_history']
-               if r['order']['clientOrderId'] in new_ids
-               and datetime.fromisoformat(r['observed_at']) > started_at]
+               if r['order']['clientOrderId'] in new_ids]
     mapping = [row for row in current['order_trade_mapping'] if row['client_order_id'] in new_ids]
     events = [e for e in current['fifo']['economic_events'] if e['client_order_id'] in new_ids]
     lifecycle, lifecycle_ok = lifecycle_evidence(dispatches, history)
