@@ -93,7 +93,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    interval='1d', buy_hold=False, reference_budget=None,
                    account_id='research-grid', max_exit_quantity=None,
                    scenario=None, synthetic_capacity=None, inventory_risk=None,
-                   research_wal=False, grid_factory=None):
+                   research_wal=False, grid_factory=None, provenance=None):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -357,7 +357,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
         _write(output / 'manifest.json', dict(schema_version=SCHEMA_VERSION,
             dataset_id=json_hash(bars), data_identity=data_identity,
             window=dict(start=bars[0]['time'], end=bars[-1]['time'], bars=len(bars)),
-            provenance=capture_provenance(source_context_root()), deterministic=True,
+            provenance=(capture_provenance(source_context_root()) if provenance is None else provenance),
+            deterministic=True,
             config=asdict(config), rules=asdict(rules), capital=capital, fee_rate=fee_rate,
             slippage=slippage, participation=participation, no_trade=no_trade,
             interval=interval, buy_hold=buy_hold, scenario=scenario,

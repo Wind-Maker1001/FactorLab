@@ -1,5 +1,10 @@
 """Participation-conditioned tail uncertainty for complete Grid Paper accounts."""
+from collections import deque
+from concurrent.futures import ProcessPoolExecutor
+from contextlib import ExitStack, closing, contextmanager
+from functools import partial
 import json
+from multiprocessing import get_context
 from pathlib import Path
 import shutil
 import tempfile
@@ -8,8 +13,10 @@ from time import perf_counter, process_time
 import numpy as np
 import pandas as pd
 
+from factorlab._identity import source_context_root
 from factorlab.experiments.grid_monte_carlo import evaluate_path, stress_paths, _peak_rss_bytes
 from factorlab.experiments.mc_regime_jump import scenario_models
+from factorlab.experiments.provenance import capture_provenance
 from factorlab.research.monte_carlo import MonteCarloConfig, MonteCarloRunner
 from factorlab.research.monte_carlo.reliability import summarize_paths, wilson_interval
 from factorlab.research.regime_jump import PathPlan
@@ -32,9 +39,9 @@ def _lag_one_autocorrelation(values):
     return correlation if np.isfinite(correlation) else None
 
 
-def account_metrics(prices, *, start, config, rules, capacity, output):
+def account_metrics(prices, *, start, config, rules, capacity, output, provenance=None):
     metrics = evaluate_path(prices, start=start, config=config, rules=rules,
-                            capacity=capacity, output=output, research_wal=True)
+                            capacity=capacity, output=output, research_wal=True, provenance=provenance)
     nav = pd.read_csv(Path(output) / 'daily.csv')
     inventory = nav.inventory.abs()
     exposure = nav.net_exposure.abs()
@@ -64,6 +71,78 @@ def account_metrics(prices, *, start, config, rules, capacity, output):
         exposure_initial_capital_peak=float(exposure.max()/1000),
         exposure_nav_mean=float((exposure/nav.equity).mean()),
         exposure_nav_peak=float((exposure/nav.equity).max()))
+
+
+def _replay_account(prices, latent, *, start, config, rules, capacity, temporary,
+                    include_path_evidence, provenance):
+    wall, cpu = perf_counter(), process_time()
+    with tempfile.TemporaryDirectory(dir=temporary, prefix='account-') as directory:
+        account = Path(directory)/'paper'
+        row = account_metrics(prices, start=start, config=config, rules=rules,
+                              capacity=capacity, output=account, provenance=provenance)
+        if include_path_evidence:
+            returns = np.diff(prices)/prices[:-1]
+            row.update(price_minimum=float(np.min(prices)),
+                worst_hour_return=float(returns.min()),
+                worst_24h_return=float(np.expm1(np.lib.stride_tricks.sliding_window_view(
+                    np.log1p(returns), 24).sum(axis=1).min())) if len(returns) >= 24 else None,
+                return_autocorrelation_1=_lag_one_autocorrelation(returns),
+                squared_return_autocorrelation_1=_lag_one_autocorrelation(returns**2))
+        if latent is not None:
+            nav = pd.read_csv(account/'daily.csv')
+            for event in latent:
+                if 'step' in event:
+                    step = event['step']
+                    event.update(price_before=float(prices[step-1]), price_after=float(prices[step]),
+                        terminal_price=float(prices[-1]),
+                        subsequent_peak_price=float(np.max(prices[step:])),
+                        nav_before=float(nav.equity.iloc[step-1]), nav_after=float(nav.equity.iloc[step]),
+                        subsequent_minimum_nav=float(nav.equity.iloc[step:].min()))
+                if 'state' in event:
+                    section = nav.iloc[event['begin']+1:event['begin']+event['size']+1]
+                    event.update(inventory_peak=float(section.inventory.max()),
+                        exposure_mean=float(section.net_exposure.abs().mean()),
+                        nav_change=float(section.equity.iloc[-1]-nav.equity.iloc[event['begin']]),
+                        maximum_drawdown=float(section.drawdown.max()),
+                        traded_hours=int(section.turnover.ne(0).sum()),
+                        inventory_hours=int(section.inventory.ne(0).sum()),
+                        fees=float(section.fee.sum()), slippage=float(section.slippage.sum()))
+        before_cleanup = perf_counter()
+    return row, latent, before_cleanup-wall, perf_counter()-before_cleanup, process_time()-cpu
+
+
+def _account_results(executor, jobs, replay, max_workers):
+    if executor is None:
+        for identity, prices, latent in jobs:
+            yield identity, prices, replay(prices, latent)
+        return
+
+    # Consume in submission order so equal-NAV ties and seed prefixes stay frozen.
+    pending = deque()
+    try:
+        for identity, prices, latent in jobs:
+            future = executor.submit(replay, prices, latent)
+            pending.append((identity, prices, future))
+            if len(pending) == max_workers:
+                identity, prices, future = pending.popleft()
+                yield identity, prices, future.result()
+        while pending:
+            identity, prices, future = pending.popleft()
+            yield identity, prices, future.result()
+    finally:
+        for _, _, future in pending:
+            future.cancel()
+
+
+@contextmanager
+def _record_interruption(output, model, size, completed_by_model):
+    try:
+        yield
+    except BaseException as error:
+        write(output/'failure.json', dict(status='ACCOUNT_REPLAY_ABORTED', model=model,
+            size=size, exception_type=type(error).__name__, message=str(error),
+            completed_paths_per_seed_by_model=completed_by_model))
+        raise
 
 
 def grouped_statistics(rows, *, resamples=999, bootstrap_seed=0):
@@ -164,7 +243,10 @@ def convergence_differences(cells):
     return output
 
 
-def run_study(output, *, inputs, receipt, config, rules, definition, code=None, command=()):
+def run_study(output, *, inputs, receipt, config, rules, definition, code=None, command=(), max_workers=1):
+    """Run admitted groups in frozen order. Workers execute only offline Paper accounts."""
+    if type(max_workers) is not int or not 1 <= max_workers <= 8:
+        raise ValueError('max_workers must be an integer in [1, 8]')
     settings = definition['experiment']
     if (not settings['seeds'] or len(set(settings['seeds'])) != len(settings['seeds'])
         or not settings['sizes'] or settings['sizes'] != sorted(set(settings['sizes']))
@@ -182,7 +264,10 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
     started, cpu = perf_counter(), process_time()
-    write(output/'definition.json', definition | dict(dataset=receipt, code=code, command=list(command)))
+    provenance = capture_provenance(source_context_root())
+    write(output/'definition.json', definition | dict(dataset=receipt,
+        code=provenance['code'] if code is None else code, command=list(command),
+        account_replay=dict(max_workers=max_workers)))
     settings = definition['experiment']
     models, rejection = scenario_models(inputs, receipt, threshold_as_of=definition['threshold_as_of'])
     active = [m for m in definition['models'] if m in ('gbm', 'moving_block_bootstrap') or m in models]
@@ -196,54 +281,68 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
     execution_seconds = statistics_seconds = generation_seconds = cleanup_seconds = 0.
     path_evidence = []
     completed = 0
-    with tempfile.TemporaryDirectory(prefix='factorlab-mc05-') as temporary:
-        account = Path(temporary)/'account'
-        def execute(prices, identity, latent=None):
-            nonlocal execution_seconds, cleanup_seconds
-            before = perf_counter()
-            row = identity | account_metrics(prices, start=definition['start'], config=config,
-                rules=rules, capacity=definition['capacity'], output=account)
-            if settings.get('path_evidence', False):
-                returns = np.diff(prices)/prices[:-1]
-                row.update(price_minimum=float(np.min(prices)),
-                    worst_hour_return=float(returns.min()),
-                    worst_24h_return=float(np.expm1(np.lib.stride_tricks.sliding_window_view(
-                        np.log1p(returns), 24).sum(axis=1).min())) if len(returns) >= 24 else None,
-                    return_autocorrelation_1=_lag_one_autocorrelation(returns),
-                    squared_return_autocorrelation_1=_lag_one_autocorrelation(returns**2))
+    worker_cpu_seconds = 0.
+    scratch_per_account = definition.get('resource_planning', {}).get('expected_temporary_disk_bytes', 0)
+    required_disk = max_workers * scratch_per_account
+    with tempfile.TemporaryDirectory(prefix='factorlab-mc05-') as temporary, ExitStack() as stack:
+        executor = (stack.enter_context(ProcessPoolExecutor(max_workers=max_workers, mp_context=get_context('spawn')))
+                    if max_workers > 1 else None)
+        replay = partial(_replay_account, start=definition['start'], config=config, rules=rules,
+            capacity=definition['capacity'], temporary=temporary,
+            include_path_evidence=settings.get('path_evidence', False),
+            provenance=provenance)
+
+        def check_scratch():
+            if executor is not None and shutil.disk_usage(temporary).free < required_disk:
+                raise OSError(f'parallel account scratch requires {required_disk} free bytes in {temporary}')
+
+        def collect(identity, prices, result):
+            nonlocal execution_seconds, cleanup_seconds, worker_cpu_seconds
+            metrics, latent, elapsed, cleanup, cpu_used = result
+            row = identity | metrics
+            execution_seconds += elapsed
+            cleanup_seconds += cleanup
+            worker_cpu_seconds += cpu_used
             if latent is not None:
-                nav = pd.read_csv(account/'daily.csv')
-                for event in latent:
-                    if 'step' in event:
-                        step = event['step']
-                        event.update(price_before=float(prices[step-1]), price_after=float(prices[step]),
-                            terminal_price=float(prices[-1]),
-                            subsequent_peak_price=float(np.max(prices[step:])),
-                            nav_before=float(nav.equity.iloc[step-1]), nav_after=float(nav.equity.iloc[step]),
-                            subsequent_minimum_nav=float(nav.equity.iloc[step:].min()))
-                    if 'state' in event:
-                        section = nav.iloc[event['begin']+1:event['begin']+event['size']+1]
-                        event.update(inventory_peak=float(section.inventory.max()),
-                            exposure_mean=float(section.net_exposure.abs().mean()),
-                            nav_change=float(section.equity.iloc[-1]-nav.equity.iloc[event['begin']]),
-                            maximum_drawdown=float(section.drawdown.max()),
-                            traded_hours=int(section.turnover.ne(0).sum()),
-                            inventory_hours=int(section.inventory.ne(0).sum()),
-                            fees=float(section.fee.sum()), slippage=float(section.slippage.sum()))
                 path_evidence.append(identity | dict(events=latent))
-            elapsed_account = perf_counter()-before
-            execution_seconds += elapsed_account
             key = identity['model']
             if key not in tails or row['terminal_nav'] < tails[key]['terminal_nav']:
                 tails[key] = dict(terminal_nav=row['terminal_nav'], identity=identity,
                     prices=prices.tolist())
-            before = perf_counter()
-            shutil.rmtree(account)
-            cleanup_seconds += perf_counter()-before
             return row
+
         if settings.get('run_deterministic', True):
-            for name, prices in stress_paths(config.initial_price, settings['steps']).items():
-                deterministic.append(execute(prices, dict(model='deterministic_'+name, seed=None, path_id=0)))
+            jobs = ((dict(model='deterministic_'+name, seed=None, path_id=0), prices, None)
+                    for name, prices in stress_paths(config.initial_price, settings['steps']).items())
+            with _record_interruption(output, 'deterministic', None, completed_by_model):
+                check_scratch()
+                with closing(_account_results(executor, jobs, replay, max_workers)) as results:
+                    deterministic.extend(collect(*result) for result in results)
+
+        def stochastic_jobs(selected, begin, size):
+            nonlocal generation_seconds
+            for model in selected:
+                for seed in settings['seeds']:
+                    iterator = iter(batches(model, inputs, models.get(model), seed=seed,
+                        begin=begin, end=size, batch_size=settings['batch_size'], steps=settings['steps'],
+                        block_size=definition.get('bootstrap', {}).get('block_size', 24)))
+                    while True:
+                        before = perf_counter()
+                        batch = next(iterator, None)
+                        generation_seconds += perf_counter()-before
+                        if batch is None:
+                            break
+                        offset, paths, metadata = batch
+                        generation.append(dict(model=model, seed=seed, begin=offset, metadata=metadata))
+                        for i, prices in enumerate(paths):
+                            latent = None
+                            if settings.get('path_evidence', False) and model in models:
+                                before = perf_counter()
+                                latent = models[model].path_evidence(PathPlan(seed=seed,
+                                    n_paths=size, n_steps=settings['steps'], batch_size=settings['batch_size']), offset+i)
+                                generation_seconds += perf_counter()-before
+                            yield dict(model=model, seed=seed, path_id=offset+i), prices, latent
+
         schedule = ([(model, size) for size in settings['sizes'] for model in active]
                     if per_model and settings.get('coverage_first', False) else
                     [(model, size) for model in active for size in settings['sizes']]
@@ -276,35 +375,23 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
                     continue
                 break
             pending_cells = []
-            for model in selected:
-                for seed in settings['seeds']:
-                    iterator = iter(batches(model, inputs, models.get(model), seed=seed,
-                        begin=begin, end=size, batch_size=settings['batch_size'], steps=settings['steps'],
-                        block_size=definition.get('bootstrap', {}).get('block_size', 24)))
-                    while True:
-                        before = perf_counter()
-                        batch = next(iterator, None)
-                        generation_seconds += perf_counter()-before
-                        if batch is None:
-                            break
-                        offset, paths, metadata = batch
-                        generation.append(dict(model=model, seed=seed, begin=offset, metadata=metadata))
-                        for i, prices in enumerate(paths):
-                            latent = None
-                            if settings.get('path_evidence', False) and model in models:
-                                before = perf_counter()
-                                latent = models[model].path_evidence(PathPlan(seed=seed,
-                                    n_paths=size, n_steps=settings['steps'], batch_size=settings['batch_size']), offset+i)
-                                generation_seconds += perf_counter()-before
-                            row = execute(prices, dict(model=model, seed=seed, path_id=offset+i), latent)
-                            pd.DataFrame([row]).to_csv(output/'paths.csv', mode='a',
-                                header=not rows, index=False)
-                            rows.append(row)
-                    before = perf_counter()
-                    sample = [r for r in rows if r['model']==model and r['seed']==seed]
-                    pending_cells.append(dict(model=model, seed=seed, n_paths=size,
-                        groups=grouped_statistics(sample, resamples=settings['resamples'], bootstrap_seed=seed)))
-                    statistics_seconds += perf_counter()-before
+            with _record_interruption(output, selected_model, size, completed_by_model):
+                check_scratch()
+                jobs = stochastic_jobs(selected, begin, size)
+                with closing(_account_results(executor, jobs, replay, max_workers)) as results:
+                    for model in selected:
+                        for seed in settings['seeds']:
+                            for _ in range(size-begin):
+                                row = collect(*next(results))
+                                # Keep a diagnostic prefix if the group is interrupted.
+                                pd.DataFrame([row]).to_csv(output/'paths.csv', mode='a',
+                                    header=not rows, index=False)
+                                rows.append(row)
+                            before = perf_counter()
+                            sample = [r for r in rows if r['model']==model and r['seed']==seed]
+                            pending_cells.append(dict(model=model, seed=seed, n_paths=size,
+                                groups=grouped_statistics(sample, resamples=settings['resamples'], bootstrap_seed=seed)))
+                            statistics_seconds += perf_counter()-before
             cells.extend(pending_cells)
             for model in selected:
                 completed_by_model[model] = size
@@ -317,7 +404,8 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
             for cell in cells for group in cell['groups'].values() if group['n']
             for tail in group['statistics']['tails'].values()) else
             'PRECISION_REPORTED_NOT_CERTIFIED' if cells else 'INSUFFICIENT_DATA'),
-        financial_status='FINANCIAL_NOT_ESTABLISHED', completed_paths_per_seed=completed,
+        financial_status='FINANCIAL_NOT_ESTABLISHED', execution_authorization='NO LIVE MONEY',
+        completed_paths_per_seed=completed,
         historical_calibration_rejection=rejection, decisions=decisions,
         model_execution_status={m: ('CALIBRATION_REJECTED' if m not in active else
             'COMPLETED' if completed_by_model[m] == settings['sizes'][-1] else
@@ -328,6 +416,9 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
         seed_dispersion=seed_dispersion(cells, settings['seeds']),
         convergence=convergence_differences(cells),
         performance=dict(total_seconds=perf_counter()-started, cpu_seconds=process_time()-cpu,
+            max_workers=max_workers, worker_account_cpu_seconds=worker_cpu_seconds if max_workers > 1 else 0.,
+            execution_seconds_scope='sum of account wall times, including overlaps',
+            cpu_seconds_scope='main process; worker account CPU is reported separately',
             execution_seconds=execution_seconds, cleanup_seconds=cleanup_seconds, generation_seconds=generation_seconds,
             statistics_seconds=statistics_seconds, accounts=len(rows)+len(deterministic),
             process_lifetime_peak_rss_bytes=_peak_rss_bytes(),
