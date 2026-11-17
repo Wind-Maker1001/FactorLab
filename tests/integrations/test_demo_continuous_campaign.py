@@ -27,6 +27,122 @@ def initialize(root, store, **limits):
             return authorization, session.adapter.facts, status
 
 
+def test_explicit_resume_retains_stop_audit_identity_and_consumption(network_grid):
+    root, store, factory, _, fake, requests = network_grid
+    authorization, _, _ = initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        observe(bridge)
+        key = bridge.grid.active[0].intent.client_order_id
+        consumed = bridge.runtime.consumption(authorization)
+        bridge.runtime.stop()
+        stopped = bridge.runtime.continuous_authorization()
+        epoch = bridge.runtime.stop_epoch()
+        bridge.recover()
+        resumed = bridge.runtime.resume_continuous(store.config, facts=bridge.session.adapter.facts,
+            reconciled=True, stop_epoch=epoch)
+        assert resumed == dict(authorization, state='RUNNING', stop_epoch=epoch)
+        assert bridge.runtime.consumption(resumed) == consumed
+        audit, = bridge.runtime.db.execute("SELECT value FROM runtime WHERE key LIKE 'continuous_resume:%'")
+        assert json.loads(audit[0])['previous_authorization'] == stopped
+        assert bridge.runtime.stop_epoch() == epoch
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        assert bridge.gateway.adapter.order(key).status is S.SUBMITTED
+        assert bridge.dispatch() is None
+    assert len(writes(requests)) == 1
+    assert parse_args(['resume-continuous']).command == 'resume-continuous'
+
+
+@pytest.mark.parametrize('reason', ['unreconciled', 'stop_race', 'loss', 'halted', 'budget'])
+def test_explicit_resume_rejects_unsafe_state_without_replacing_stop(network_grid, reason):
+    root, store, factory, _, fake, requests = network_grid
+    authorization, facts, _ = initialize(root, store)
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.stop()
+        epoch = runtime.stop_epoch()
+        if reason == 'stop_race':
+            runtime.stop()
+        elif reason == 'loss':
+            authorization['opening_equity'] = '1001'
+            runtime._set('continuous', json.dumps(dict(authorization, state='STOPPED')))
+            runtime.db.commit()
+        elif reason == 'halted':
+            runtime.halt('test risk halt')
+            runtime._set('continuous', json.dumps(dict(authorization, state='HALTED')))
+            runtime.db.commit()
+        elif reason == 'budget':
+            runtime._set('continuous', json.dumps(dict(authorization, state='STOPPED', total_orders=0)))
+            runtime.db.commit()
+        before = runtime.continuous_authorization()
+        with pytest.raises(SafetyBlocked):
+            runtime.resume_continuous(store.config, facts=facts,
+                reconciled=reason != 'unreconciled', stop_epoch=epoch)
+        assert runtime.continuous_authorization() == before
+        assert runtime.db.execute("SELECT count(*) FROM runtime WHERE key LIKE 'continuous_resume:%'").fetchone()[0] == 0
+    assert not writes(requests)
+
+
+def resume_in_process(arguments):
+    root, binding, facts, epoch = arguments
+    with closing(DemoRuntime(root)) as runtime:
+        try:
+            runtime.resume_continuous(binding, facts=facts, reconciled=True, stop_epoch=epoch)
+        except SafetyBlocked as error:
+            return str(error)
+    return None
+
+
+@pytest.mark.parametrize('legacy_stop', [False, True])
+@pytest.mark.parametrize('restart', [False, True])
+def test_risk_halt_stop_cannot_resume_after_equity_recovers(network_grid, legacy_stop, restart):
+    root, store, factory, _, fake, requests = network_grid
+    authorization, _, _ = initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        fake.cash = D('999')
+        bridge.recover()
+        with pytest.raises(SafetyBlocked, match='global Demo loss'):
+            bridge.ensure_campaign()
+        runtime = bridge.runtime
+        assert runtime.continuous_authorization()['state'] == 'HALTED'
+        diagnostic = runtime._get('continuous_diagnostic')
+        halt_epoch = runtime.stop_epoch()
+        runtime.stop()
+        epoch = runtime.stop_epoch()
+        assert epoch != halt_epoch
+        assert runtime._get('continuous_window') == runtime._get('active') == ''
+        if legacy_stop:
+            # Reproduce the persisted state written by STOP before the latch fix.
+            runtime._set('continuous', json.dumps(dict(authorization, state='STOPPED')))
+            runtime.db.commit()
+        else:
+            assert runtime.continuous_authorization()['state'] == 'HALTED'
+        fake.cash = D('1000')
+        bridge.recover()
+        facts = bridge.session.adapter.facts
+        assert facts.usdt()['walletBalance'] + facts.usdt()['unrealizedProfit'] == D('1000')
+        before = runtime.continuous_authorization()
+        campaigns = runtime.db.execute('SELECT * FROM campaigns').fetchall()
+        consumed = runtime.consumption(authorization)
+        if restart:
+            with ProcessPoolExecutor(max_workers=1) as pool:
+                error = pool.submit(resume_in_process, (root, store.config, facts, epoch)).result()
+            assert error is not None
+        else:
+            with pytest.raises(SafetyBlocked):
+                runtime.resume_continuous(store.config, facts=facts, reconciled=True, stop_epoch=epoch)
+        assert runtime.continuous_authorization() == before
+        assert runtime._get('continuous_diagnostic') == diagnostic
+        assert runtime.consumption(authorization) == consumed
+        assert runtime.db.execute('SELECT * FROM campaigns').fetchall() == campaigns
+        assert runtime.db.execute("SELECT count(*) FROM runtime WHERE key LIKE 'continuous_resume:%'").fetchone()[0] == 0
+        with pytest.raises(SafetyBlocked, match='not RUNNING'):
+            runtime.ensure_window(store.config, facts=facts, reconciled=True, stop_epoch=epoch)
+    assert not writes(requests)
+    assert not writes(requests, 'DELETE')
+
+
 def expire(monkeypatch, campaign):
     at = datetime.fromisoformat(campaign['expires_at']) + timedelta(seconds=1)
     monkeypatch.setattr(module, 'now', lambda: at)

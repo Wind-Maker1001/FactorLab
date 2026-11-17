@@ -22,6 +22,16 @@ def write(path, value):
     Path(path).write_text(json.dumps(value, indent=2, allow_nan=False, default=str) + '\n', encoding='utf-8')
 
 
+def _lag_one_autocorrelation(values):
+    if values.size < 3:
+        return None
+    previous, current = values[:-1], values[1:]
+    if np.all(previous == previous[0]) or np.all(current == current[0]):
+        return None
+    correlation = float(np.corrcoef(previous, current)[0, 1])
+    return correlation if np.isfinite(correlation) else None
+
+
 def account_metrics(prices, *, start, config, rules, capacity, output):
     metrics = evaluate_path(prices, start=start, config=config, rules=rules,
                             capacity=capacity, output=output, research_wal=True)
@@ -32,6 +42,12 @@ def account_metrics(prices, *, start, config, rules, capacity, output):
     pending_exit = any(o['purpose'] == 'RISK_EXIT' and
         o['status'] not in ('FILLED', 'REJECTED', 'CANCELED') for o in result['orders'].values())
     return metrics | dict(
+        initial_capital=1000, minimum_nav=float(nav.equity.min()),
+        terminal_mark_unrealized_pnl=float(nav.unrealized.iloc[-1]),
+        terminal_realized_gross_pnl=float(nav.realized_gross.iloc[-1]),
+        fifo_realized_pnl=metrics['normal_sell_net'] + metrics['risk_exit_net'],
+        fifo_unrealized_pnl=metrics['residual_inventory_pnl'],
+        temporary_account_bytes=sum(p.stat().st_size for p in Path(output).iterdir() if p.is_file()),
         participation_class=('zero_fills' if not metrics['fills'] else
             'traded_terminal_inventory' if metrics['terminal_inventory'] else 'traded_flat'),
         traded=bool(metrics['fills']), ever_inventory=bool(inventory.ne(0).any()),
@@ -85,12 +101,12 @@ def grouped_statistics(rows, *, resamples=999, bootstrap_seed=0):
     return output
 
 
-def batches(model, inputs, generator, *, seed, begin, end, batch_size, steps):
+def batches(model, inputs, generator, *, seed, begin, end, batch_size, steps, block_size=24):
     if model in ('gbm', 'moving_block_bootstrap'):
         for offset in range(begin, end, batch_size):
             cfg = MonteCarloConfig(model=model, n_paths=min(batch_size, end-offset),
                 n_steps=steps, seed=seed+offset//batch_size, dt=1., batch_size=batch_size,
-                block_size=24, save_full_paths=True)
+                block_size=block_size, save_full_paths=True)
             result = MonteCarloRunner(cfg).run(inputs)
             yield offset, result.asset_paths[:, :, 0], result.metadata
     else:
@@ -155,6 +171,10 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
         or any(n <= 0 or n % settings['batch_size'] for n in settings['sizes'])
         or settings['budget_seconds'] <= 0 or settings['cost_safety_factor'] < 1):
         raise ValueError('distinct seeds, increasing batch-aligned positive sizes and positive budget required')
+    if settings.get('coverage_first', False) and settings.get('admission_unit') != 'model_all_seeds':
+        raise ValueError('coverage_first requires model_all_seeds admission')
+    if not settings.get('run_deterministic', True) and not settings.get('coverage_first', False):
+        raise ValueError('run_deterministic=False requires coverage_first and frozen model planning costs')
     if pd.Timestamp(definition['start']) <= pd.Timestamp(receipt['as_of']):
         raise ValueError('simulation start must follow calibration cutoff')
     if float(inputs.initial_prices[0]) != config.initial_price or len(inputs.assets) != 1:
@@ -166,29 +186,67 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
     settings = definition['experiment']
     models, rejection = scenario_models(inputs, receipt, threshold_as_of=definition['threshold_as_of'])
     active = [m for m in definition['models'] if m in ('gbm', 'moving_block_bootstrap') or m in models]
+    for model, frozen in definition.get('model_parameters', {}).items():
+        if model in models and models[model].receipt()['parameters'] != frozen:
+            raise ValueError(f'frozen model parameters differ: {model}')
     per_model = settings.get('admission_unit', 'all_models') == 'model_all_seeds'
     completed_by_model = dict.fromkeys(active, 0)
     rows, deterministic, cells, decisions, generation = [], [], [], [], []
     tails = {}
-    execution_seconds = statistics_seconds = generation_seconds = 0.
+    execution_seconds = statistics_seconds = generation_seconds = cleanup_seconds = 0.
+    path_evidence = []
     completed = 0
     with tempfile.TemporaryDirectory(prefix='factorlab-mc05-') as temporary:
         account = Path(temporary)/'account'
-        def execute(prices, identity):
-            nonlocal execution_seconds
+        def execute(prices, identity, latent=None):
+            nonlocal execution_seconds, cleanup_seconds
             before = perf_counter()
             row = identity | account_metrics(prices, start=definition['start'], config=config,
                 rules=rules, capacity=definition['capacity'], output=account)
-            execution_seconds += perf_counter()-before
+            if settings.get('path_evidence', False):
+                returns = np.diff(prices)/prices[:-1]
+                row.update(price_minimum=float(np.min(prices)),
+                    worst_hour_return=float(returns.min()),
+                    worst_24h_return=float(np.expm1(np.lib.stride_tricks.sliding_window_view(
+                        np.log1p(returns), 24).sum(axis=1).min())) if len(returns) >= 24 else None,
+                    return_autocorrelation_1=_lag_one_autocorrelation(returns),
+                    squared_return_autocorrelation_1=_lag_one_autocorrelation(returns**2))
+            if latent is not None:
+                nav = pd.read_csv(account/'daily.csv')
+                for event in latent:
+                    if 'step' in event:
+                        step = event['step']
+                        event.update(price_before=float(prices[step-1]), price_after=float(prices[step]),
+                            terminal_price=float(prices[-1]),
+                            subsequent_peak_price=float(np.max(prices[step:])),
+                            nav_before=float(nav.equity.iloc[step-1]), nav_after=float(nav.equity.iloc[step]),
+                            subsequent_minimum_nav=float(nav.equity.iloc[step:].min()))
+                    if 'state' in event:
+                        section = nav.iloc[event['begin']+1:event['begin']+event['size']+1]
+                        event.update(inventory_peak=float(section.inventory.max()),
+                            exposure_mean=float(section.net_exposure.abs().mean()),
+                            nav_change=float(section.equity.iloc[-1]-nav.equity.iloc[event['begin']]),
+                            maximum_drawdown=float(section.drawdown.max()),
+                            traded_hours=int(section.turnover.ne(0).sum()),
+                            inventory_hours=int(section.inventory.ne(0).sum()),
+                            fees=float(section.fee.sum()), slippage=float(section.slippage.sum()))
+                path_evidence.append(identity | dict(events=latent))
+            elapsed_account = perf_counter()-before
+            execution_seconds += elapsed_account
             key = identity['model']
             if key not in tails or row['terminal_nav'] < tails[key]['terminal_nav']:
                 tails[key] = dict(terminal_nav=row['terminal_nav'], identity=identity,
                     prices=prices.tolist())
+            before = perf_counter()
             shutil.rmtree(account)
+            cleanup_seconds += perf_counter()-before
             return row
-        for name, prices in stress_paths(config.initial_price, settings['steps']).items():
-            deterministic.append(execute(prices, dict(model='deterministic_'+name, seed=None, path_id=0)))
-        schedule = ([(model, size) for model in active for size in settings['sizes']]
+        if settings.get('run_deterministic', True):
+            for name, prices in stress_paths(config.initial_price, settings['steps']).items():
+                deterministic.append(execute(prices, dict(model='deterministic_'+name, seed=None, path_id=0)))
+        schedule = ([(model, size) for size in settings['sizes'] for model in active]
+                    if per_model and settings.get('coverage_first', False) else
+                    [(model, size) for model in active for size in settings['sizes']]
                     if per_model else [(None, size) for size in settings['sizes']])
         rejected_models = set()
         for selected_model, size in schedule:
@@ -198,12 +256,19 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
             begin = completed_by_model[selected_model] if per_model else completed
             accounts = (size-begin)*len(selected)*len(settings['seeds'])
             elapsed = perf_counter()-started
-            measured = execution_seconds/(len(rows)+len(deterministic))
-            projected = (accounts*measured + generation_seconds + statistics_seconds)*settings['cost_safety_factor']
-            admitted = elapsed+projected <= settings['budget_seconds']
+            if settings.get('coverage_first', False):
+                planning = definition['resource_planning']['models'][selected_model]
+                measured = planning['seconds_per_account_including_cleanup']
+                projected = (accounts*measured + planning['group_generation_statistics_seconds']) * settings['cost_safety_factor']
+            else:
+                measured = execution_seconds/(len(rows)+len(deterministic))
+                projected = (accounts*measured + generation_seconds + statistics_seconds)*settings['cost_safety_factor']
+            reserve = definition.get('resource_planning', {}).get('output_reserve_seconds', 0)
+            admitted = elapsed+projected+reserve <= settings['budget_seconds']
             decisions.append(dict(model=selected_model, size=size, begin=begin,
                 additional_accounts=accounts, elapsed_seconds=elapsed,
-                projected_additional_seconds=projected, admitted=admitted))
+                projected_additional_seconds=projected, admitted=admitted,
+                status='RESOURCE_ADMITTED' if admitted else 'RESOURCE_NOT_ADMITTED'))
             write(output/'decisions.json', decisions)
             if not admitted:
                 if per_model:
@@ -214,7 +279,8 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
             for model in selected:
                 for seed in settings['seeds']:
                     iterator = iter(batches(model, inputs, models.get(model), seed=seed,
-                        begin=begin, end=size, batch_size=settings['batch_size'], steps=settings['steps']))
+                        begin=begin, end=size, batch_size=settings['batch_size'], steps=settings['steps'],
+                        block_size=definition.get('bootstrap', {}).get('block_size', 24)))
                     while True:
                         before = perf_counter()
                         batch = next(iterator, None)
@@ -224,7 +290,13 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
                         offset, paths, metadata = batch
                         generation.append(dict(model=model, seed=seed, begin=offset, metadata=metadata))
                         for i, prices in enumerate(paths):
-                            row = execute(prices, dict(model=model, seed=seed, path_id=offset+i))
+                            latent = None
+                            if settings.get('path_evidence', False) and model in models:
+                                before = perf_counter()
+                                latent = models[model].path_evidence(PathPlan(seed=seed,
+                                    n_paths=size, n_steps=settings['steps'], batch_size=settings['batch_size']), offset+i)
+                                generation_seconds += perf_counter()-before
+                            row = execute(prices, dict(model=model, seed=seed, path_id=offset+i), latent)
                             pd.DataFrame([row]).to_csv(output/'paths.csv', mode='a',
                                 header=not rows, index=False)
                             rows.append(row)
@@ -247,21 +319,29 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
             'PRECISION_REPORTED_NOT_CERTIFIED' if cells else 'INSUFFICIENT_DATA'),
         financial_status='FINANCIAL_NOT_ESTABLISHED', completed_paths_per_seed=completed,
         historical_calibration_rejection=rejection, decisions=decisions,
+        model_execution_status={m: ('CALIBRATION_REJECTED' if m not in active else
+            'COMPLETED' if completed_by_model[m] == settings['sizes'][-1] else
+            'RESOURCE_NOT_ADMITTED') for m in definition['models']},
         deterministic_in_probability_distribution=False, deterministic=deterministic,
         cash_benchmark=dict(initial_nav=1000, terminal_nav=1000, exposure=0),
         completed_paths_per_seed_by_model=completed_by_model,
         seed_dispersion=seed_dispersion(cells, settings['seeds']),
         convergence=convergence_differences(cells),
         performance=dict(total_seconds=perf_counter()-started, cpu_seconds=process_time()-cpu,
-            execution_seconds=execution_seconds, generation_seconds=generation_seconds,
+            execution_seconds=execution_seconds, cleanup_seconds=cleanup_seconds, generation_seconds=generation_seconds,
             statistics_seconds=statistics_seconds, accounts=len(rows)+len(deterministic),
             process_lifetime_peak_rss_bytes=_peak_rss_bytes(),
             budget_overrun_seconds=max(0., perf_counter()-started-settings['budget_seconds'])),
         uncertainty='conditional simulation uncertainty; model calibration uncertainty not quantified')
     pd.DataFrame(rows, columns=list(rows[0]) if rows else ['model', 'seed', 'path_id']).to_csv(output/'paths.csv', index=False)
     write(output/'groups.json', cells)
-    write(output/'summary.json', result)
     write(output/'generation.json', generation)
     write(output/'tails.json', tails)
+    if settings.get('path_evidence', False):
+        write(output/'path-evidence.json', path_evidence)
     pd.DataFrame(deterministic).to_csv(output/'deterministic.csv', index=False)
+    result['performance'].update(total_seconds=perf_counter()-started,
+        cpu_seconds=process_time()-cpu,
+        budget_overrun_seconds=max(0., perf_counter()-started-settings['budget_seconds']))
+    write(output/'summary.json', result)
     return result

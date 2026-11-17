@@ -116,6 +116,56 @@ def test_unknown_dispatch_requires_its_own_later_get(
         assert not capture(bridge.session, bridge.runtime, D('1000'))['lifecycle']['unknown_ack_queried']
 
 
+def test_experiment_excludes_historical_fills_and_requires_new_recovery(network_grid, monkeypatch):
+    from factorlab.integrations.binance_futures_trading.demo_fill_acceptance import experiment_evidence
+
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory) as bridge:
+        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: ())
+        bridge.recover()
+        baseline = capture(bridge.session, bridge.runtime, D('1000'))
+        observe(bridge)
+        key = bridge.grid.active[0].intent.client_order_id
+        fake.trade_update(key, '.04', '146')
+        bridge.recover()
+        bridge.dispatch()
+        fake.trade_update(bridge.grid.active[0].intent.client_order_id, '.04', '154')
+        bridge.recover()
+        completed = capture(bridge.session, bridge.runtime, D('1000'))
+        baseline['observed_at'] = datetime.now().astimezone() + timedelta(seconds=20)
+        fresh = experiment_evidence(baseline, completed)
+        assert fresh['lifecycle']['completed_order_get']
+        assert fresh['statuses']['NEW_DEMO_ACK_VERIFIED']
+        assert fresh['statuses']['NEW_DEMO_FILL_VERIFIED']
+        assert fresh['statuses']['NEW_DEMO_FEE_RECONCILED']
+        assert fresh['statuses']['NEW_DEMO_ACCOUNT_RECONCILED']
+        assert fresh['actual_fees'] == D('.012')
+        assert fresh['wallet_change'] == D('.308')
+        assert not fresh['statuses']['NEW_DEMO_RESTART_RECOVERY_VERIFIED']
+        historical = experiment_evidence(completed, completed)
+        assert historical['statuses']['HISTORICAL_DEMO_ACCOUNT_RECONCILED']
+        assert not any(value for name, value in historical['statuses'].items() if name.startswith('NEW_'))
+        assert not historical['statuses']['DEMO_LIFECYCLE_VERIFIED']
+    with open_grid_session(root, store, factory) as bridge:
+        restored = capture(bridge.session, bridge.runtime, D('1000'))
+        same_process = experiment_evidence(baseline, restored, previous_recovery=completed)
+        assert not same_process['statuses']['NEW_DEMO_RESTART_RECOVERY_VERIFIED']
+        monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_fill_acceptance.os.getpid',
+                            lambda: completed['recovery_proof']['process_id'] + 1)
+        restored = capture(bridge.session, bridge.runtime, D('1000'))
+        result = experiment_evidence(baseline, restored, previous_recovery=completed)
+        assert result['statuses']['NEW_DEMO_RESTART_RECOVERY_VERIFIED']
+        wrong_boundary = experiment_evidence(baseline, restored, previous_recovery=baseline)
+        assert not wrong_boundary['statuses']['NEW_DEMO_RESTART_RECOVERY_VERIFIED']
+        assert not wrong_boundary['restart_comparison']['experiment_orders_present_before_restart']
+        assert not result['statuses']['DEMO_LIFECYCLE_VERIFIED']
+        wrong = json.loads(json.dumps(restored, default=str))
+        wrong['recovery_proof']['account_id'] = 'wrong'
+        with pytest.raises(DataQualityError, match='binding changed'):
+            experiment_evidence(baseline, wrong)
+
+
 def test_actual_trade_receipts_survive_restart_and_repeated_get(tmp_path):
     path = tmp_path / 'protocol.sqlite'
     fake = FakeTransport()

@@ -1,0 +1,32 @@
+[
+  {
+    "model": "jump_down",
+    "size": 16,
+    "begin": 0,
+    "additional_accounts": 48,
+    "elapsed_seconds": 0.0643147999944631,
+    "projected_additional_seconds": 140.87374703977255,
+    "admitted": true,
+    "status": "RESOURCE_ADMITTED"
+  },
+  {
+    "model": "regime_historical",
+    "size": 16,
+    "begin": 0,
+    "additional_accounts": 48,
+    "elapsed_seconds": 192.1238161000074,
+    "projected_additional_seconds": 136.50931691973236,
+    "admitted": true,
+    "status": "RESOURCE_ADMITTED"
+  },
+  {
+    "model": "moving_block_bootstrap",
+    "size": 16,
+    "begin": 0,
+    "additional_accounts": 48,
+    "elapsed_seconds": 361.95813330000965,
+    "projected_additional_seconds": 189.56188943954183,
+    "admitted": true,
+    "status": "RESOURCE_ADMITTED"
+  }
+]

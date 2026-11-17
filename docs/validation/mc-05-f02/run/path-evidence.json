@@ -1,0 +1,6210 @@
+[
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 0,
+    "events": [
+      {
+        "step": 100,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2981967773761395
+        ],
+        "price_before": 199.14187839097468,
+        "price_after": 139.75841201415494,
+        "terminal_price": 136.75555961522628,
+        "subsequent_peak_price": 144.10517623334655,
+        "nav_before": 999.9018330436528,
+        "nav_after": 993.9495072105676,
+        "subsequent_minimum_nav": 993.1116479145612
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 1,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 2,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 3,
+    "events": [
+      {
+        "step": 28,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2968324086586697
+        ],
+        "price_before": 203.40310683950986,
+        "price_after": 143.02647270768136,
+        "terminal_price": 70.1707436959313,
+        "subsequent_peak_price": 148.67269764570966,
+        "nav_before": 1000.0,
+        "nav_after": 999.985693920094,
+        "subsequent_minimum_nav": 992.7001210189188
+      },
+      {
+        "step": 155,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30226385108676496
+        ],
+        "price_before": 144.1409119325427,
+        "price_after": 100.57232479265413,
+        "terminal_price": 70.1707436959313,
+        "subsequent_peak_price": 101.84053866990037,
+        "nav_before": 1000.09713784258,
+        "nav_after": 995.7402791285912,
+        "subsequent_minimum_nav": 992.7001210189188
+      },
+      {
+        "step": 166,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3005987068346288
+        ],
+        "price_before": 100.78370354576427,
+        "price_after": 70.48825258990293,
+        "terminal_price": 70.1707436959313,
+        "subsequent_peak_price": 70.76331385077471,
+        "nav_before": 995.761417003902,
+        "nav_after": 992.731871908316,
+        "subsequent_minimum_nav": 992.7001210189188
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 4,
+    "events": [
+      {
+        "step": 19,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29634290065064883
+        ],
+        "price_before": 208.40533658477221,
+        "price_after": 146.64589463016603,
+        "terminal_price": 151.70156478295942,
+        "subsequent_peak_price": 152.48969523170632,
+        "nav_before": 1000.0,
+        "nav_after": 999.9853318910356,
+        "subsequent_minimum_nav": 999.6355169796102
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 5,
+    "events": [
+      {
+        "step": 42,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.302009617897729
+        ],
+        "price_before": 217.07896108347828,
+        "price_after": 151.51902699302113,
+        "terminal_price": 104.36323478813608,
+        "subsequent_peak_price": 156.74529123562854,
+        "nav_before": 1000.0,
+        "nav_after": 999.984844460844,
+        "subsequent_minimum_nav": 995.2692652403556
+      },
+      {
+        "step": 109,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.305539389891177
+        ],
+        "price_before": 155.05806725695032,
+        "price_after": 107.68171998955668,
+        "terminal_price": 104.36323478813608,
+        "subsequent_peak_price": 109.60687422634251,
+        "nav_before": 1000.338748487237,
+        "nav_after": 995.6011137604976,
+        "subsequent_minimum_nav": 995.2692652403556
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 6,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 7,
+    "events": [
+      {
+        "step": 99,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29893144050546805
+        ],
+        "price_before": 207.68514081469752,
+        "price_after": 145.60152249937903,
+        "terminal_price": 104.33380694972922,
+        "subsequent_peak_price": 154.2529534119672,
+        "nav_before": 1001.1420248658102,
+        "nav_after": 1001.1274612191236,
+        "subsequent_minimum_nav": 997.0006896641588
+      },
+      {
+        "step": 159,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3001031273305615
+        ],
+        "price_before": 152.75157841719292,
+        "price_after": 106.9103520295138,
+        "terminal_price": 104.33380694972922,
+        "subsequent_peak_price": 107.3654229861306,
+        "nav_before": 1001.8424668109052,
+        "nav_after": 997.2583441721372,
+        "subsequent_minimum_nav": 997.0006896641588
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 8,
+    "events": [
+      {
+        "step": 21,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29913080421898575
+        ],
+        "price_before": 206.0745801766127,
+        "price_after": 144.43132527929268,
+        "terminal_price": 149.23876967804608,
+        "subsequent_peak_price": 150.22513211411928,
+        "nav_before": 1000.0,
+        "nav_after": 999.9855534011202,
+        "subsequent_minimum_nav": 999.0778586750924
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 9,
+    "events": [
+      {
+        "step": 13,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.300759283461251
+        ],
+        "price_before": 208.28900884042267,
+        "price_after": 145.644155788723,
+        "terminal_price": 79.30711148839642,
+        "subsequent_peak_price": 151.07457759320343,
+        "nav_before": 1000.0,
+        "nav_after": 999.9854320889614,
+        "subsequent_minimum_nav": 993.0142839856916
+      },
+      {
+        "step": 119,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30009785789587956
+        ],
+        "price_before": 151.06120165582843,
+        "price_after": 105.72805862773683,
+        "terminal_price": 79.30711148839642,
+        "subsequent_peak_price": 109.07258724898624,
+        "nav_before": 1000.527136675672,
+        "nav_after": 995.9938223728628,
+        "subsequent_minimum_nav": 993.0142839856916
+      },
+      {
+        "step": 137,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2992293848657273
+        ],
+        "price_before": 109.07258724898624,
+        "price_after": 76.43486406075871,
+        "terminal_price": 79.30711148839642,
+        "subsequent_peak_price": 79.54142947602064,
+        "nav_before": 996.3282752349876,
+        "nav_after": 993.064502916165,
+        "subsequent_minimum_nav": 993.0142839856916
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 10,
+    "events": [
+      {
+        "step": 18,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29765337529373853
+        ],
+        "price_before": 198.67348583087826,
+        "price_after": 139.5376521919446,
+        "terminal_price": 139.75560645216444,
+        "subsequent_peak_price": 147.4083644536538,
+        "nav_before": 999.8808021227744,
+        "nav_after": 993.9532616447584,
+        "subsequent_minimum_nav": 993.7627352213336
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 11,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 12,
+    "events": [
+      {
+        "step": 92,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29936984479269807
+        ],
+        "price_before": 190.88906736656185,
+        "price_after": 133.74263689641134,
+        "terminal_price": 138.37114902519087,
+        "subsequent_peak_price": 140.75297741840905,
+        "nav_before": 999.1883801962828,
+        "nav_after": 987.7457166287398,
+        "subsequent_minimum_nav": 986.8634902279206
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 13,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 14,
+    "events": [
+      {
+        "step": 46,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30051161917510183
+        ],
+        "price_before": 211.38519780378516,
+        "price_after": 147.8614897421206,
+        "terminal_price": 109.37056438922077,
+        "subsequent_peak_price": 157.2345927410157,
+        "nav_before": 1000.0,
+        "nav_after": 999.98521030235,
+        "subsequent_minimum_nav": 996.0329728442658
+      },
+      {
+        "step": 130,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30124015759852646
+        ],
+        "price_before": 155.55589599781166,
+        "price_after": 108.69621337205098,
+        "terminal_price": 109.37056438922077,
+        "subsequent_peak_price": 111.7083405444867,
+        "nav_before": 1000.7546509279192,
+        "nav_after": 996.0686826653432,
+        "subsequent_minimum_nav": 996.0329728442658
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "path_id": 15,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 0,
+    "events": [
+      {
+        "step": 165,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30465343711295095
+        ],
+        "price_before": 204.12630335389233,
+        "price_after": 141.9385234319681,
+        "terminal_price": 141.75615871516428,
+        "subsequent_peak_price": 142.36380953273837,
+        "nav_before": 1000.3950777652526,
+        "nav_after": 994.1762997730602,
+        "subsequent_minimum_nav": 994.1580633013798
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 1,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 2,
+    "events": [
+      {
+        "step": 93,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2984257467976994
+        ],
+        "price_before": 194.24546551357,
+        "price_after": 136.27761740561604,
+        "terminal_price": 90.3919089739191,
+        "subsequent_peak_price": 136.4689800613536,
+        "nav_before": 999.4549444151044,
+        "nav_after": 993.6445285719054,
+        "subsequent_minimum_nav": 984.4005250125196
+      },
+      {
+        "step": 160,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29569503871537023
+        ],
+        "price_before": 128.9768994753223,
+        "price_after": 90.83907019157844,
+        "terminal_price": 90.3919089739191,
+        "subsequent_peak_price": 91.02712728250786,
+        "nav_before": 992.1843849858468,
+        "nav_after": 984.556819129098,
+        "subsequent_minimum_nav": 984.4005250125196
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 3,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 4,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 5,
+    "events": [
+      {
+        "step": 54,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3062649723491153
+        ],
+        "price_before": 211.95670844212847,
+        "price_after": 147.04179299189047,
+        "terminal_price": 99.69530158836592,
+        "subsequent_peak_price": 148.93494362986144,
+        "nav_before": 1000.0,
+        "nav_after": 999.9852922916978,
+        "subsequent_minimum_nav": 995.2435961095346
+      },
+      {
+        "step": 166,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29959507736936075
+        ],
+        "price_before": 143.02490643518263,
+        "price_after": 100.17534852598853,
+        "terminal_price": 99.69530158836592,
+        "subsequent_peak_price": 100.17534852598853,
+        "nav_before": 999.583603636027,
+        "nav_after": 995.2986478451076,
+        "subsequent_minimum_nav": 995.2435961095346
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 6,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 7,
+    "events": [
+      {
+        "step": 44,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30032577675810745
+        ],
+        "price_before": 205.0406062584902,
+        "price_after": 143.46162691695594,
+        "terminal_price": 136.75399578825085,
+        "subsequent_peak_price": 146.22221258814687,
+        "nav_before": 1000.0,
+        "nav_after": 999.9856503942292,
+        "subsequent_minimum_nav": 999.3012845839196
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 8,
+    "events": [
+      {
+        "step": 5,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3044409762614673
+        ],
+        "price_before": 205.9171213417103,
+        "price_after": 143.22751189148903,
+        "terminal_price": 94.22177741992974,
+        "subsequent_peak_price": 147.52047351513352,
+        "nav_before": 1000.0,
+        "nav_after": 999.9856738113506,
+        "subsequent_minimum_nav": 995.0851003641948
+      },
+      {
+        "step": 163,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30023785364938327
+        ],
+        "price_before": 135.38342142754084,
+        "price_after": 94.73619355842604,
+        "terminal_price": 94.22177741992974,
+        "subsequent_peak_price": 94.81431072185981,
+        "nav_before": 999.2012647649558,
+        "nav_after": 995.1365419780444,
+        "subsequent_minimum_nav": 995.0851003641948
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 9,
+    "events": [
+      {
+        "step": 62,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2977553188945991
+        ],
+        "price_before": 192.21057565581827,
+        "price_after": 134.97885440650563,
+        "terminal_price": 134.63163910696687,
+        "subsequent_peak_price": 139.35296629316883,
+        "nav_before": 999.2858020604176,
+        "nav_after": 993.549128810553,
+        "subsequent_minimum_nav": 993.2862439813938
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 10,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 11,
+    "events": [
+      {
+        "step": 121,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3011811594013145
+        ],
+        "price_before": 207.10489930392882,
+        "price_after": 144.72880561387908,
+        "terminal_price": 151.1442101518459,
+        "subsequent_peak_price": 152.60392710242823,
+        "nav_before": 1001.1647359650128,
+        "nav_after": 1001.1502596109602,
+        "subsequent_minimum_nav": 1001.1502596109602
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 12,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 13,
+    "events": [
+      {
+        "step": 55,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29988448909195137
+        ],
+        "price_before": 205.80576823442806,
+        "price_after": 144.08781057527,
+        "terminal_price": 149.75433685357567,
+        "subsequent_peak_price": 150.87440657988535,
+        "nav_before": 1000.0,
+        "nav_after": 999.9855877608352,
+        "subsequent_minimum_nav": 999.9571221485232
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 14,
+    "events": [
+      {
+        "step": 47,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3025226177238294
+        ],
+        "price_before": 201.8562224868562,
+        "price_after": 140.79014965628872,
+        "terminal_price": 99.23800770477975,
+        "subsequent_peak_price": 146.61495323739857,
+        "nav_before": 1000.1853488646676,
+        "nav_after": 994.0646591876816,
+        "subsequent_minimum_nav": 985.7200722409306
+      },
+      {
+        "step": 144,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3025193438323471
+        ],
+        "price_before": 146.22215110941724,
+        "price_after": 101.9871219020421,
+        "terminal_price": 99.23800770477975,
+        "subsequent_peak_price": 101.9871219020421,
+        "nav_before": 995.1510594783072,
+        "nav_after": 986.3040536368322,
+        "subsequent_minimum_nav": 985.7200722409306
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "path_id": 15,
+    "events": [
+      {
+        "step": 30,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3009718311814451
+        ],
+        "price_before": 203.8148384007637,
+        "price_after": 142.47231326533563,
+        "terminal_price": 139.7486385655664,
+        "subsequent_peak_price": 144.69924515645852,
+        "nav_before": 1000.0,
+        "nav_after": 999.985749349338,
+        "subsequent_minimum_nav": 999.5654562766924
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 0,
+    "events": [
+      {
+        "step": 101,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3059714263491301
+        ],
+        "price_before": 204.96801782786508,
+        "price_after": 142.25366105711922,
+        "terminal_price": 142.84838940256515,
+        "subsequent_peak_price": 144.75356509470222,
+        "nav_before": 1000.4719089123098,
+        "nav_after": 994.2004732352352,
+        "subsequent_minimum_nav": 993.8008264227852
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 1,
+    "events": [
+      {
+        "step": 149,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29823935790084377
+        ],
+        "price_before": 193.26087375961055,
+        "price_after": 135.6228748621883,
+        "terminal_price": 132.47596471406268,
+        "subsequent_peak_price": 135.6228748621883,
+        "nav_before": 999.3019721454576,
+        "nav_after": 993.5381722557156,
+        "subsequent_minimum_nav": 993.222009319994
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 2,
+    "events": [
+      {
+        "step": 104,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3000036856677556
+        ],
+        "price_before": 199.4499018982362,
+        "price_after": 139.61419622269304,
+        "terminal_price": 139.03792361062477,
+        "subsequent_peak_price": 141.00137096946304,
+        "nav_before": 999.985069658432,
+        "nav_after": 994.0014990908776,
+        "subsequent_minimum_nav": 993.5272934724142
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 3,
+    "events": [
+      {
+        "step": 16,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3018035521574623
+        ],
+        "price_before": 204.30803739086477,
+        "price_after": 142.6471459719821,
+        "terminal_price": 89.18894610067737,
+        "subsequent_peak_price": 143.71340711353497,
+        "nav_before": 1000.0,
+        "nav_after": 999.9857318618712,
+        "subsequent_minimum_nav": 994.464754118918
+      },
+      {
+        "step": 91,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29524443645088044
+        ],
+        "price_before": 129.3485310891309,
+        "price_after": 91.15909692197124,
+        "terminal_price": 89.18894610067737,
+        "subsequent_peak_price": 92.80450823503149,
+        "nav_before": 998.655870373586,
+        "nav_after": 994.8369269568702,
+        "subsequent_minimum_nav": 994.464754118918
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 4,
+    "events": [
+      {
+        "step": 41,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2986992516046927
+        ],
+        "price_before": 199.52052783723445,
+        "price_after": 139.92389549247932,
+        "terminal_price": 98.63287939158046,
+        "subsequent_peak_price": 146.88456696414767,
+        "nav_before": 999.9290367372776,
+        "nav_after": 993.9553777550794,
+        "subsequent_minimum_nav": 985.5521598753886
+      },
+      {
+        "step": 115,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2988867873737242
+        ],
+        "price_before": 141.44147415674433,
+        "price_after": 99.16648634463132,
+        "terminal_price": 98.63287939158046,
+        "subsequent_peak_price": 100.62305189621435,
+        "nav_before": 994.2588934879324,
+        "nav_after": 985.8038959255098,
+        "subsequent_minimum_nav": 985.5521598753886
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 5,
+    "events": [
+      {
+        "step": 114,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30043923214068863
+        ],
+        "price_before": 203.96689082985336,
+        "price_after": 142.6872347668086,
+        "terminal_price": 96.05191014682043,
+        "subsequent_peak_price": 143.294579490645,
+        "nav_before": 1000.0,
+        "nav_after": 1000.0,
+        "subsequent_minimum_nav": 1000.0
+      },
+      {
+        "step": 132,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29679864965849573
+        ],
+        "price_before": 142.23564201396283,
+        "price_after": 100.02029553090945,
+        "terminal_price": 96.05191014682043,
+        "subsequent_peak_price": 102.58872411599437,
+        "nav_before": 1000.0,
+        "nav_after": 1000.0,
+        "subsequent_minimum_nav": 1000.0
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 6,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 7,
+    "events": [
+      {
+        "step": 52,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29933131426690723
+        ],
+        "price_before": 195.99010110343505,
+        "price_after": 137.32412655683973,
+        "terminal_price": 96.76076770452588,
+        "subsequent_peak_price": 138.3225933854369,
+        "nav_before": 999.5791596807742,
+        "nav_after": 993.69882651768,
+        "subsequent_minimum_nav": 985.2434135753216
+      },
+      {
+        "step": 97,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3045111865305758
+        ],
+        "price_before": 138.3225933854369,
+        "price_after": 96.20181634965114,
+        "terminal_price": 96.76076770452588,
+        "subsequent_peak_price": 98.14749633764558,
+        "nav_before": 993.8985198833992,
+        "nav_after": 985.4743644762424,
+        "subsequent_minimum_nav": 985.2434135753216
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 8,
+    "events": [
+      {
+        "step": 163,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2986443385221743
+        ],
+        "price_before": 222.40207810934726,
+        "price_after": 155.9829566064242,
+        "terminal_price": 157.01643234788312,
+        "subsequent_peak_price": 157.01643234788312,
+        "nav_before": 1000.0,
+        "nav_after": 1000.0,
+        "subsequent_minimum_nav": 1000.0
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 9,
+    "events": [
+      {
+        "step": 114,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2992620766395583
+        ],
+        "price_before": 204.75380318444562,
+        "price_after": 143.47875484362103,
+        "terminal_price": 140.37632580192624,
+        "subsequent_peak_price": 143.47875484362103,
+        "nav_before": 1000.0,
+        "nav_after": 1000.0,
+        "subsequent_minimum_nav": 1000.0
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 10,
+    "events": [
+      {
+        "step": 11,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30039711043893463
+        ],
+        "price_before": 203.67305283457839,
+        "price_after": 142.49025628879448,
+        "terminal_price": 48.14029041087741,
+        "subsequent_peak_price": 150.35299916914528,
+        "nav_before": 1000.0,
+        "nav_after": 999.9857475546048,
+        "subsequent_minimum_nav": 990.513647190762
+      },
+      {
+        "step": 109,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2993421555058232
+        ],
+        "price_before": 150.35299916914528,
+        "price_after": 105.3460083110881,
+        "terminal_price": 48.14029041087741,
+        "subsequent_peak_price": 105.55993639919161,
+        "nav_before": 1000.77202184264,
+        "nav_after": 996.2713227568344,
+        "subsequent_minimum_nav": 990.513647190762
+      },
+      {
+        "step": 125,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30058571033710496
+        ],
+        "price_before": 101.58564438506983,
+        "price_after": 71.05045130753109,
+        "terminal_price": 48.14029041087741,
+        "subsequent_peak_price": 71.05045130753109,
+        "nav_before": 995.8952863642326,
+        "nav_after": 992.8417670564786,
+        "subsequent_minimum_nav": 990.513647190762
+      },
+      {
+        "step": 129,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30105173503978155
+        ],
+        "price_before": 70.9182941965093,
+        "price_after": 49.568218682588515,
+        "terminal_price": 48.14029041087741,
+        "subsequent_peak_price": 49.9923070292794,
+        "nav_before": 992.8285513453764,
+        "nav_after": 990.6935437939844,
+        "subsequent_minimum_nav": 990.513647190762
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 11,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 12,
+    "events": []
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 13,
+    "events": [
+      {
+        "step": 94,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3031297888566285
+        ],
+        "price_before": 206.04341740201616,
+        "price_after": 143.5855197896448,
+        "terminal_price": 137.11030266827902,
+        "subsequent_peak_price": 150.81291450272624,
+        "nav_before": 1000.6946804449866,
+        "nav_after": 994.434528685718,
+        "subsequent_minimum_nav": 993.139485261445
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 14,
+    "events": [
+      {
+        "step": 59,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.3019264046870068
+        ],
+        "price_before": 202.5756463774791,
+        "price_after": 141.41270978958042,
+        "terminal_price": 48.48407720359857,
+        "subsequent_peak_price": 144.64638033783842,
+        "nav_before": 1000.0,
+        "nav_after": 999.985855335116,
+        "subsequent_minimum_nav": 990.59809301402
+      },
+      {
+        "step": 91,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.2984493801488141
+        ],
+        "price_before": 144.39587165980967,
+        "price_after": 101.30101326689179,
+        "terminal_price": 48.48407720359857,
+        "subsequent_peak_price": 102.04626710136608,
+        "nav_before": 1000.2841715221388,
+        "nav_after": 995.9746856828472,
+        "subsequent_minimum_nav": 990.59809301402
+      },
+      {
+        "step": 129,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.30360397308066533
+        ],
+        "price_before": 99.62159597406742,
+        "price_after": 69.37608363170371,
+        "terminal_price": 48.48407720359857,
+        "subsequent_peak_price": 69.5689410429905,
+        "nav_before": 995.8067439535648,
+        "nav_after": 992.7821927193283,
+        "subsequent_minimum_nav": 990.59809301402
+      },
+      {
+        "step": 137,
+        "jump_log_sizes": [
+          -0.35667494393873245
+        ],
+        "total_simple_return": [
+          -0.29566619976498093
+        ],
+        "price_before": 69.39369051583344,
+        "price_after": 48.87632175334976,
+        "terminal_price": 48.48407720359857,
+        "subsequent_peak_price": 48.921627800314496,
+        "nav_before": 992.7839534077414,
+        "nav_after": 990.7322165314928,
+        "subsequent_minimum_nav": 990.59809301402
+      }
+    ]
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "path_id": 15,
+    "events": []
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 0,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1416,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1215,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1649,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1971,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1717,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1337,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1194,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 1,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1855,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1550,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1587,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1463,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1291,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1970,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1793,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 2,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1570,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1255,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1613,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1224,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1749,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1786,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2115,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 3,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1363,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1694,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1898,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1404,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1179,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1880,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1301,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 4,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1278,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2088,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1780,
+        "inventory_peak": 0.2,
+        "exposure_mean": 15.913949166654355,
+        "nav_change": -0.8797839283596431,
+        "maximum_drawdown": 0.0008797839283595,
+        "traded_hours": 2,
+        "inventory_hours": 16,
+        "fees": 0.015452128666539701,
+        "slippage": 0.0231642944231557
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1501,
+        "inventory_peak": 0.2,
+        "exposure_mean": 37.479249740812,
+        "nav_change": -0.7854186055737955,
+        "maximum_drawdown": 0.0017132893873359,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1226,
+        "inventory_peak": 0.2,
+        "exposure_mean": 37.01615180834301,
+        "nav_change": 0.12790187913901718,
+        "maximum_drawdown": 0.0016821307238195,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1098,
+        "inventory_peak": 0.2,
+        "exposure_mean": 37.24260438909993,
+        "nav_change": 0.1285357855759912,
+        "maximum_drawdown": 0.001575669546011,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1130,
+        "inventory_peak": 0.2,
+        "exposure_mean": 37.72242266243533,
+        "nav_change": 0.6338539255211799,
+        "maximum_drawdown": 0.0013743992949432,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 5,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1483,
+        "inventory_peak": 0.1,
+        "exposure_mean": 3.374129740165776,
+        "nav_change": 0.47462843601363147,
+        "maximum_drawdown": 1.999912969215872e-05,
+        "traded_hours": 1,
+        "inventory_hours": 4,
+        "fees": 0.008002531060535,
+        "slippage": 0.0119965986316236
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1852,
+        "inventory_peak": 0.1,
+        "exposure_mean": 15.60106453621629,
+        "nav_change": 0.6378869257997621,
+        "maximum_drawdown": 0.0002519829631691,
+        "traded_hours": 1,
+        "inventory_hours": 18,
+        "fees": 0.0084541198656309,
+        "slippage": 0.0126887930742909
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2037,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1988,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1171,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1384,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1817,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 6,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1778,
+        "inventory_peak": 0.2,
+        "exposure_mean": 12.032206973944378,
+        "nav_change": -0.787521814783986,
+        "maximum_drawdown": 0.0007875218147839,
+        "traded_hours": 2,
+        "inventory_hours": 14,
+        "fees": 0.015503320218339,
+        "slippage": 0.0232410357060849
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1928,
+        "inventory_peak": 0.2,
+        "exposure_mean": 38.09562846681697,
+        "nav_change": 0.06816399929437011,
+        "maximum_drawdown": 0.0009219563689481,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1924,
+        "inventory_peak": 0.2,
+        "exposure_mean": 38.126285363947694,
+        "nav_change": 0.3793495095508206,
+        "maximum_drawdown": 0.0008559236389277,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1084,
+        "inventory_peak": 0.2,
+        "exposure_mean": 38.45919897569793,
+        "nav_change": 0.027803086748349415,
+        "maximum_drawdown": 0.000399586348971,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1081,
+        "inventory_peak": 0.2,
+        "exposure_mean": 38.59281361522576,
+        "nav_change": 0.08570496666925465,
+        "maximum_drawdown": 0.0003248509535048,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1889,
+        "inventory_peak": 0.2,
+        "exposure_mean": 38.554139610755676,
+        "nav_change": -0.048254097958988496,
+        "maximum_drawdown": 0.0004192941208505,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1197,
+        "inventory_peak": 0.2,
+        "exposure_mean": 38.80670161485475,
+        "nav_change": 0.3482107361500084,
+        "maximum_drawdown": 0.0004185716794621,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 7,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1419,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1652,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1114,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1887,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1411,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1899,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1171,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 8,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1319,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1547,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2118,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2104,
+        "inventory_peak": 0.1,
+        "exposure_mean": 0.8327281587782961,
+        "nav_change": -0.019990272324776015,
+        "maximum_drawdown": 1.9990272324873667e-05,
+        "traded_hours": 1,
+        "inventory_hours": 1,
+        "fees": 0.0079989868384662,
+        "slippage": 0.0119912854864074
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1307,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.41574766725036,
+        "nav_change": 0.3097957367311892,
+        "maximum_drawdown": 0.0004784618921615,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1571,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.29485353638002,
+        "nav_change": 0.03511292655264242,
+        "maximum_drawdown": 0.0004009327393728,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1698,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.3603482847583,
+        "nav_change": -0.12915013959104726,
+        "maximum_drawdown": 0.0004705491304632,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 9,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1281,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1849,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1122,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1659,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1095,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1975,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1522,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 10,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1144,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1265,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2118,
+        "inventory_peak": 0.1,
+        "exposure_mean": 15.541955964287615,
+        "nav_change": -0.39309671862918094,
+        "maximum_drawdown": 0.000507627735803,
+        "traded_hours": 1,
+        "inventory_hours": 19,
+        "fees": 0.0079933315709409,
+        "slippage": 0.0119828076718083
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1968,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.050760618708278,
+        "nav_change": 0.998938680451829,
+        "maximum_drawdown": 0.0002951055909277,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2008,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.47860801840088,
+        "nav_change": -0.1831809557802444,
+        "maximum_drawdown": 0.0004032771930843,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1090,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.43418399874541,
+        "nav_change": 0.10434118143598425,
+        "maximum_drawdown": 0.000316989989852,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1116,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.585298518692486,
+        "nav_change": 0.16031588957798704,
+        "maximum_drawdown": 0.0002844264785624,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 11,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1258,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1544,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1534,
+        "inventory_peak": 0.1,
+        "exposure_mean": 15.842876331959237,
+        "nav_change": -0.015071925869392544,
+        "maximum_drawdown": 0.0002900714655956,
+        "traded_hours": 1,
+        "inventory_hours": 19,
+        "fees": 0.0080054667230251,
+        "slippage": 0.0120009994848467
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1753,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.007560450170413,
+        "nav_change": 0.05760610523577725,
+        "maximum_drawdown": 0.000335157084103,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1958,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.21530258923,
+        "nav_change": 0.3206541783964667,
+        "maximum_drawdown": 0.0002790937482933,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1670,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.619389158383257,
+        "nav_change": -0.17732743691010455,
+        "maximum_drawdown": 0.0006444687270134,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1433,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.85760684004189,
+        "nav_change": -0.8137453316619485,
+        "maximum_drawdown": 0.0014575385073591,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 12,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1267,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1190,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.271692631970577,
+        "nav_change": 0.3227565158820198,
+        "maximum_drawdown": 0.0001166573197773,
+        "traded_hours": 1,
+        "inventory_hours": 23,
+        "fees": 0.007972681083867,
+        "slippage": 0.0119518505154912
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1399,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.17897516140977,
+        "nav_change": -0.0317472344942189,
+        "maximum_drawdown": 0.0002173496760957,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1925,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.275092221519547,
+        "nav_change": 0.17342891565022,
+        "maximum_drawdown": 0.0001955309268218,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2013,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.4051571222617,
+        "nav_change": -0.09739655074406528,
+        "maximum_drawdown": 0.0004022937712596,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1548,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.362703674129012,
+        "nav_change": 0.007024462307640533,
+        "maximum_drawdown": 0.0003875310080661,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1948,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.539680871134973,
+        "nav_change": 0.49122703127318346,
+        "maximum_drawdown": 0.0007015826957336,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 13,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1635,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1481,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1766,
+        "inventory_peak": 0.1,
+        "exposure_mean": 1.642819080479457,
+        "nav_change": -0.21601322833703307,
+        "maximum_drawdown": 0.000216013228337,
+        "traded_hours": 1,
+        "inventory_hours": 2,
+        "fees": 0.0079295257580858,
+        "slippage": 0.0118871563433227
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1844,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.910618996039897,
+        "nav_change": 0.608279739810655,
+        "maximum_drawdown": 0.0002707480775899,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1686,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.968902007336236,
+        "nav_change": -0.4554397012748268,
+        "maximum_drawdown": 0.0004906316991511,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2037,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.948607218908027,
+        "nav_change": 0.4126729775327931,
+        "maximum_drawdown": 0.0004825081343977,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2018,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.12098707374769,
+        "nav_change": -0.1107501695657902,
+        "maximum_drawdown": 0.000397026885942,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 14,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1850,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1355,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2037,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1884,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1575,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1975,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1092,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "path_id": 15,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 2114,
+        "inventory_peak": 0.1,
+        "exposure_mean": 10.78194668520578,
+        "nav_change": -0.07362720168282522,
+        "maximum_drawdown": 0.0002027318957873,
+        "traded_hours": 1,
+        "inventory_hours": 13,
+        "fees": 0.007996921353511,
+        "slippage": 0.0119881891167964
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1952,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.42059311129488,
+        "nav_change": 0.7426150937648117,
+        "maximum_drawdown": 0.0002848114673328,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1776,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.101280809610742,
+        "nav_change": -1.306355184369977,
+        "maximum_drawdown": 0.0013637092291796,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1602,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.480444690685772,
+        "nav_change": 0.06778601863356926,
+        "maximum_drawdown": 0.0013789738492144,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1595,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.503829928399984,
+        "nav_change": 0.3106613849591895,
+        "maximum_drawdown": 0.0012959724777752,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1774,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.291225343827502,
+        "nav_change": -1.1949599620943445,
+        "maximum_drawdown": 0.0021796283421252,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1787,
+        "inventory_peak": 0.1,
+        "exposure_mean": 17.504675531427765,
+        "nav_change": -1.1253204423142051,
+        "maximum_drawdown": 0.0035158647626082,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 0,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1948,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1154,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1854,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1148,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1941,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1221,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1602,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 1,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1792,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1507,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1889,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1168,
+        "inventory_peak": 0.1,
+        "exposure_mean": 8.323837452520666,
+        "nav_change": -0.2652581142475583,
+        "maximum_drawdown": 0.0005433881695117,
+        "traded_hours": 1,
+        "inventory_hours": 10,
+        "fees": 0.0079840271338368,
+        "slippage": 0.0119688593851242
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2008,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.589385494902867,
+        "nav_change": -0.17522686868562687,
+        "maximum_drawdown": 0.0008475044994832,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1106,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.665427748311973,
+        "nav_change": 0.18291619339981935,
+        "maximum_drawdown": 0.0007013910949768,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1491,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.558896015877057,
+        "nav_change": -0.11293814272062264,
+        "maximum_drawdown": 0.0010493340266726,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 2,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1773,
+        "inventory_peak": 0.1,
+        "exposure_mean": 7.277494883356518,
+        "nav_change": -0.49519231104784467,
+        "maximum_drawdown": 0.0005481225168329,
+        "traded_hours": 1,
+        "inventory_hours": 9,
+        "fees": 0.007923109800708,
+        "slippage": 0.0118775381781551
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1330,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.16410391374056,
+        "nav_change": 1.0374830299102769,
+        "maximum_drawdown": 0.0004244321812461,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1875,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.471560230430494,
+        "nav_change": 0.21212673728234677,
+        "maximum_drawdown": 0.0002454897350104,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1744,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.61853602682234,
+        "nav_change": 0.062414740127451296,
+        "maximum_drawdown": 9.566722860485848e-05,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1359,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.757618033517222,
+        "nav_change": 0.74414078276493,
+        "maximum_drawdown": 0.0002154629666101,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1808,
+        "inventory_peak": 0.1,
+        "exposure_mean": 21.551104954391743,
+        "nav_change": 0.2228222916504592,
+        "maximum_drawdown": 0.000352752614425,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1385,
+        "inventory_peak": 0.1,
+        "exposure_mean": 21.578629755157237,
+        "nav_change": -0.08618865622122485,
+        "maximum_drawdown": 0.0003050497746627,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 3,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1648,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1973,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1333,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1738,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1356,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1519,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1894,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 4,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1319,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1726,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1392,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1921,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1162,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1579,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1557,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 5,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1466,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1835,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1222,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1755,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1142,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1410,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1367,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 6,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1701,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2024,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1232,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1446,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1362,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1889,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1724,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 7,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1289,
+        "inventory_peak": 0.1,
+        "exposure_mean": 5.914338454138357,
+        "nav_change": 0.6553194358835981,
+        "maximum_drawdown": 2.000354516553097e-05,
+        "traded_hours": 1,
+        "inventory_hours": 7,
+        "fees": 0.0080042978855595,
+        "slippage": 0.0119992472799713
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1327,
+        "inventory_peak": 0.1,
+        "exposure_mean": 6.862459459846693,
+        "nav_change": 0.4766105007755641,
+        "maximum_drawdown": 0.0003123531266375,
+        "traded_hours": 1,
+        "inventory_hours": 8,
+        "fees": 0.0084636570421943,
+        "slippage": 0.0127031074277481
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1824,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1352,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1237,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2021,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1096,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 8,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1558,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1269,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1424,
+        "inventory_peak": 0.1,
+        "exposure_mean": 6.630578280776894,
+        "nav_change": -0.07170007027661995,
+        "maximum_drawdown": 0.0001713473797194,
+        "traded_hours": 1,
+        "inventory_hours": 8,
+        "fees": 0.0079869220249035,
+        "slippage": 0.0119731991178845
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1244,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.96557993845142,
+        "nav_change": 0.11124975155178163,
+        "maximum_drawdown": 7.776823854305012e-05,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1643,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.01694627561852,
+        "nav_change": -0.10102128285438994,
+        "maximum_drawdown": 0.0002156083442201,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1443,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.721374088594235,
+        "nav_change": -0.3688454174607614,
+        "maximum_drawdown": 0.0006361230933783,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1410,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.591832014060845,
+        "nav_change": 0.23087181668859103,
+        "maximum_drawdown": 0.000729600339719,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 9,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1859,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1544,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2029,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1481,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1800,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1868,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1907,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 10,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1715,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1400,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1851,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1915,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1642,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1379,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1653,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 11,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1845,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1649,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1389,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1349,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1906,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1820,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1418,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 12,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1603,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1919,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1799,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1962,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2022,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1729,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1379,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 13,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1442,
+        "inventory_peak": 0.1,
+        "exposure_mean": 4.176785729171676,
+        "nav_change": -0.0072328136477608496,
+        "maximum_drawdown": 0.00014149477862,
+        "traded_hours": 1,
+        "inventory_hours": 5,
+        "fees": 0.008006225757553,
+        "slippage": 0.0120021373539171
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 2116,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.685581856943337,
+        "nav_change": -0.47286894936962653,
+        "maximum_drawdown": 0.0007665596248319,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2098,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.578266931595575,
+        "nav_change": 0.04088773809314716,
+        "maximum_drawdown": 0.0006499634771693,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1561,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.54889518841198,
+        "nav_change": -0.051199669487573374,
+        "maximum_drawdown": 0.0006246107861004,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1935,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.610513154110283,
+        "nav_change": 0.6029652623174115,
+        "maximum_drawdown": 0.0008190895946265,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1132,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.33437407968046,
+        "nav_change": 0.2621087880460209,
+        "maximum_drawdown": 0.0001633469931824,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1351,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.135297298902525,
+        "nav_change": -0.4096508335968565,
+        "maximum_drawdown": 0.0005633575070186,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 14,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1974,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1881,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1524,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1413,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1460,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1157,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1312,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "path_id": 15,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1938,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1595,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1416,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1665,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1897,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1185,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1544,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 0,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1111,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1328,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1343,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1354,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1721,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1384,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1261,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 1,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1540,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1962,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1412,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2081,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2107,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1910,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1126,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 2,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1730,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2007,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1604,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1924,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1641,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1839,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1495,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 3,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1813,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1985,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1161,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1650,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1321,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2132,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1480,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 4,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1283,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1938,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.31994627031053,
+        "nav_change": 0.7284956773172553,
+        "maximum_drawdown": 0.0003761774319043,
+        "traded_hours": 1,
+        "inventory_hours": 23,
+        "fees": 0.0080013177509428,
+        "slippage": 0.0119947797585591
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2062,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.78453053368111,
+        "nav_change": 0.10115613296909487,
+        "maximum_drawdown": 3.2456538058400625e-05,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2050,
+        "inventory_peak": 0.1,
+        "exposure_mean": 1.7461620975394048,
+        "nav_change": 0.2713362048776844,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 1,
+        "inventory_hours": 2,
+        "fees": 0.0084482928012292,
+        "slippage": 0.012680047230182
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1567,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1088,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2038,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 5,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2108,
+        "inventory_peak": 0.1,
+        "exposure_mean": 5.77926970381526,
+        "nav_change": -0.047049315991216645,
+        "maximum_drawdown": 0.0002018249184009,
+        "traded_hours": 1,
+        "inventory_hours": 7,
+        "fees": 0.0079611449069879,
+        "slippage": 0.011934556626506
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1927,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.918475463021903,
+        "nav_change": 0.10791762829603613,
+        "maximum_drawdown": 0.0001920594146556,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2093,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.975502156070156,
+        "nav_change": 0.014205880127974524,
+        "maximum_drawdown": 0.0001522241136719,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1933,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.013881045349933,
+        "nav_change": 0.16317455106218404,
+        "maximum_drawdown": 0.0003760033692025,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1741,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.21234160255222,
+        "nav_change": 0.053432930017834224,
+        "maximum_drawdown": 4.661683060278851e-05,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1810,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.401672776566357,
+        "nav_change": 0.2532188442471579,
+        "maximum_drawdown": 0.0003339412604002,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1676,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.223439912763013,
+        "nav_change": -0.36025437814316774,
+        "maximum_drawdown": 0.0006584594818159,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 6,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1938,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1522,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1947,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1421,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1357,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1374,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2055,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 7,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1419,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1956,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1572,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1572,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1629,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1091,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1129,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 8,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1445,
+        "inventory_peak": 0.1,
+        "exposure_mean": 6.691451835193379,
+        "nav_change": 0.13333029179443656,
+        "maximum_drawdown": 0.0001415288068518,
+        "traded_hours": 1,
+        "inventory_hours": 8,
+        "fees": 0.0080081514420242,
+        "slippage": 0.0120050241485472
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1243,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.210570820327792,
+        "nav_change": 0.10649695632196199,
+        "maximum_drawdown": 5.016657684620124e-05,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1109,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.283876358535625,
+        "nav_change": 0.11245656884159416,
+        "maximum_drawdown": 0.0001426172545732,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1155,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.28446924263519,
+        "nav_change": -0.06253940867156871,
+        "maximum_drawdown": 0.0003446243412679,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1383,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.43763243831594,
+        "nav_change": 0.006800885485176877,
+        "maximum_drawdown": 0.0001825648683777,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1464,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.590653056424248,
+        "nav_change": 0.7074883718747742,
+        "maximum_drawdown": 0.0003251832564439,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1410,
+        "inventory_peak": 0.1,
+        "exposure_mean": 21.082843467060453,
+        "nav_change": 0.24844202260999282,
+        "maximum_drawdown": 0.0001699773465388,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 9,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1813,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1653,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1518,
+        "inventory_peak": 0.1,
+        "exposure_mean": 1.6629309526741534,
+        "nav_change": -0.03280214510039059,
+        "maximum_drawdown": 3.280214510022544e-05,
+        "traded_hours": 1,
+        "inventory_hours": 2,
+        "fees": 0.0079894265072722,
+        "slippage": 0.0119769535887551
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1630,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.237448354355593,
+        "nav_change": 0.3969656172470195,
+        "maximum_drawdown": 6.695292505922072e-05,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1169,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.157096009711136,
+        "nav_change": -0.6344287020790489,
+        "maximum_drawdown": 0.0007011082140889,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1951,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.09527399880674,
+        "nav_change": 0.6429718979679819,
+        "maximum_drawdown": 0.0009814325431214,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1751,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.376105547870853,
+        "nav_change": 0.17018123353579995,
+        "maximum_drawdown": 7.894367380805013e-05,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 10,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1312,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1384,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1899,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2031,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1939,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1538,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 2134,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 11,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1861,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1905,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2118,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1302,
+        "inventory_peak": 0.1,
+        "exposure_mean": 17.776686613940864,
+        "nav_change": 0.32156144019677413,
+        "maximum_drawdown": 0.0002262111469777,
+        "traded_hours": 1,
+        "inventory_hours": 21,
+        "fees": 0.0080082433046246,
+        "slippage": 0.012005161859821
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1773,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.002499380052846,
+        "nav_change": -1.1089270468455652,
+        "maximum_drawdown": 0.0013747776355448,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1475,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.69191179815559,
+        "nav_change": 0.47641628108283385,
+        "maximum_drawdown": 0.0014339114704925,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1394,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.68897186700425,
+        "nav_change": -0.10320929763122422,
+        "maximum_drawdown": 0.0010109779403285,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 12,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2009,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1180,
+        "inventory_peak": 0.1,
+        "exposure_mean": 11.640386444849007,
+        "nav_change": 0.13796063772963407,
+        "maximum_drawdown": 0.0002240322263221,
+        "traded_hours": 1,
+        "inventory_hours": 14,
+        "fees": 0.007987911822377,
+        "slippage": 0.0119746829238112
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1891,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.987464560978026,
+        "nav_change": -0.20021626461118558,
+        "maximum_drawdown": 0.0002001886464579,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1170,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.741205968308623,
+        "nav_change": -0.4915676406424154,
+        "maximum_drawdown": 0.000790991506956,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1701,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.356703650000814,
+        "nav_change": -0.1573731516295993,
+        "maximum_drawdown": 0.0009002489723965,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1886,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.387138889872254,
+        "nav_change": 0.13404521324480356,
+        "maximum_drawdown": 0.0010141453059935,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1133,
+        "inventory_peak": 0.1,
+        "exposure_mean": 19.61987636449365,
+        "nav_change": 0.26960443586676774,
+        "maximum_drawdown": 0.0007655570586235,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 13,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1716,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1623,
+        "inventory_peak": 0.1,
+        "exposure_mean": 15.175406262687423,
+        "nav_change": 0.3129077172658299,
+        "maximum_drawdown": 5.727811802274667e-05,
+        "traded_hours": 1,
+        "inventory_hours": 18,
+        "fees": 0.0080075095598654,
+        "slippage": 0.0120040619026565
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1405,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.30123477962708,
+        "nav_change": 0.18380694097652395,
+        "maximum_drawdown": 0.0002085149423903,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2101,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.519313868299847,
+        "nav_change": -0.23085739396537974,
+        "maximum_drawdown": 0.000319181143467,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1537,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.11178487710171,
+        "nav_change": -0.19332932095619526,
+        "maximum_drawdown": 0.0006768789115917,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2091,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.118460494094908,
+        "nav_change": 0.0017884334520203993,
+        "maximum_drawdown": 0.0005597631562498,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1165,
+        "inventory_peak": 0.1,
+        "exposure_mean": 20.294726714482064,
+        "nav_change": 0.340156613863428,
+        "maximum_drawdown": 0.0004962311280544,
+        "traded_hours": 0,
+        "inventory_hours": 24,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 14,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2004,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1253,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1364,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1126,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 2101,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1735,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "high_down",
+        "historical_start": 1708,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "path_id": 15,
+    "events": [
+      {
+        "begin": 0,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1337,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 24,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 2027,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 48,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1642,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 72,
+        "size": 24,
+        "state": "high_up",
+        "historical_start": 1478,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 96,
+        "size": 24,
+        "state": "low_down",
+        "historical_start": 1459,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 120,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1772,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      },
+      {
+        "begin": 144,
+        "size": 24,
+        "state": "low_up",
+        "historical_start": 1909,
+        "inventory_peak": 0.0,
+        "exposure_mean": 0.0,
+        "nav_change": 0.0,
+        "maximum_drawdown": 0.0,
+        "traded_hours": 0,
+        "inventory_hours": 0,
+        "fees": 0.0,
+        "slippage": 0.0
+      }
+    ]
+  }
+]

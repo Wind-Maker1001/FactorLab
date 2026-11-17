@@ -1,0 +1,46 @@
+{
+  "base_revision": "4926a60c9b81d4f83245f2f04faaf729c7e50836",
+  "clock_recovery_integrated_revision": "3163e9b",
+  "environment": "OFFICIAL_BINANCE_DEMO",
+  "symbol": "NVDAUSDT",
+  "position_mode": "ONE_WAY",
+  "deployment_id": "fl-d7345f8795464a65-g",
+  "strategy": {
+    "mode": "arithmetic",
+    "lower": "159.47",
+    "upper": "162.71",
+    "initial_reference": "161.09",
+    "quantity_unit": "0.04",
+    "breakout": "pause"
+  },
+  "admission": {
+    "order_type": "LIMIT",
+    "time_in_force": "GTC",
+    "maximum_quantity": "0.04",
+    "maximum_order_notional_usdt": "7",
+    "maximum_position_exposure_usdt": "7",
+    "maximum_active_orders": 1,
+    "maximum_loss_usdt": "1",
+    "maximum_cumulative_posts": 100,
+    "maximum_cumulative_submitted_notional_usdt": "700",
+    "historical_continuous_posts": 4,
+    "historical_continuous_submitted_notional_usdt": "25.5692000",
+    "maximum_window_posts": 4,
+    "maximum_window_seconds": 10800
+  },
+  "observation": {
+    "interval": "1m",
+    "poll_seconds": 60,
+    "seconds": 180,
+    "execute": true,
+    "maximum_http_requests": 400,
+    "absolute_process_request_cutoff_seconds": 420,
+    "unfilled_outcome": "RIGHT_CENSORED",
+    "process_exit": "PRESERVE_ORDER_AND_AUTHORIZATION",
+    "new_deployment": false,
+    "reprice": false
+  },
+  "baseline_capture": {"GET": 38, "POST": 0, "DELETE": 0, "historical_account_reconciled": true},
+  "private_evidence": "baseline.json, definition.json and observation-window.json retained outside repository; binding and raw account state omitted",
+  "safety": "NO LIVE MONEY"
+}

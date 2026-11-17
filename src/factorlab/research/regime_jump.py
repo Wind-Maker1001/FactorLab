@@ -97,6 +97,13 @@ class _Generator:
                 paths[i] = self._path(rng, plan.n_steps)
             yield begin, paths
 
+    def path_evidence(self, plan, path_id):
+        """Replay a path's latent events without changing its sampling stream."""
+        rng = np.random.Generator(np.random.PCG64(np.random.SeedSequence([plan.seed, path_id])))
+        evidence = []
+        self._path(rng, plan.n_steps, evidence=evidence)
+        return evidence
+
     def receipt(self, plan=PathPlan()):
         plan.check_memory(len(self.assets))
         return dict(model=self.model, model_version=VERSION, parameters=json.loads(self._parameters),
@@ -216,13 +223,16 @@ class RegimeBootstrap(_Generator):
             features='strictly preceding lookback log returns; no block returns in its label',
             historical_realtime_availability_claim=False), allow_nan=False)
 
-    def _path(self, rng, steps):
+    def _path(self, rng, steps, evidence=None):
         state = rng.choice(4, p=self._initial)
         sampled = np.empty((steps, len(self.assets)))
         for begin in range(0, steps, self._block_size):
             start = rng.choice(self._pools[state])
             size = min(self._block_size, steps - begin)
             sampled[begin:begin + size] = self._returns[start:start + size]
+            if evidence is not None:
+                evidence.append(dict(begin=int(begin), size=int(size), state=STATES[state],
+                    historical_start=int(start)))
             if begin + size < steps:
                 state = rng.choice(4, p=self._transition[state])
         return _prices(self.initial_prices, np.log1p(sampled))
@@ -275,7 +285,11 @@ class JumpStress(_Generator):
             mode='PARAMETERIZED_STRESS_ONLY; all event frequencies and sizes are assumptions',
             market_probability_validated=False))
 
-    def _path(self, rng, steps):
+    def _path(self, rng, steps, evidence=None):
         background = rng.normal(size=(steps, len(self.assets))) * self._vol + self._drift
         events = rng.random(steps) < self._probability
+        if evidence is not None:
+            evidence.extend(dict(step=int(i + 1), jump_log_sizes=self._jump.tolist(),
+                total_simple_return=np.expm1(background[i] + self._jump).tolist())
+                for i in np.flatnonzero(events))
         return _prices(self.initial_prices, background + events[:, None] * self._jump)
