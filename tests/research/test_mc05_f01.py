@@ -108,15 +108,8 @@ def test_nested_stream_prefix_for_every_model(model):
 
 
 def test_original_mc05_evidence_remains_frozen():
-    import subprocess
-    root = Path(__file__).resolve().parents[2]
-    names = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', '07821df', '--',
-        'configs/mc05_grid_tail.json', 'docs/validation/mc-05'], cwd=root, text=True).splitlines()
-    assert names
-    for name in names:
-        frozen = subprocess.check_output(['git', 'cat-file', '--filters',
-            f'07821df:{name}'], cwd=root)
-        assert (root/name).read_bytes() == frozen, name
+    from tests.research.mc05_frozen import verify_frozen
+    verify_frozen(Path(__file__).resolve().parents[2])
 
 
 def test_simulation_cannot_start_before_calibration(tmp_path, monkeypatch):
