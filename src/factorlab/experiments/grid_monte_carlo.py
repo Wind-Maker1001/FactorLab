@@ -88,13 +88,15 @@ def close_bars(prices, start):
 
 
 def evaluate_path(prices, *, start, config, rules, capacity, output, research_wal=True,
-                  grid_factory=None, provenance=None, accounting_evidence=False):
+                  grid_factory=None, provenance=None, accounting_evidence=False,
+                  account_id='research-grid'):
     """Persist one auditable temporary account; aggregate before disposal."""
     output = Path(output)
     run_experiment(output, bars=close_bars(prices, start), config=config, rules=rules,
         capital=1000, fee_rate=D('.0004'), slippage=D('.0006'), interval='1h',
         market=Market.BINANCE_USDM, instrument_id='BINANCE:USDM:NVDAUSDT',
         scenario=SCENARIO, synthetic_capacity=capacity, research_wal=research_wal, provenance=provenance,
+        account_id=account_id,
         **({'grid_factory': grid_factory} if grid_factory is not None else {}))
     result = json.loads((output / 'result.json').read_text())
     nav = pd.read_csv(output / 'daily.csv')

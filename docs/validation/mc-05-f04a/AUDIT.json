@@ -1,0 +1,557 @@
+{
+  "research_id": "MC-05-F04A",
+  "phase": "formal",
+  "workers": 8,
+  "planned_paths": 144,
+  "planned_accounts": 432,
+  "f03_accounts_reused": 0,
+  "f03_path_and_economic_matches": 144,
+  "financial_status": "FINANCIAL_NOT_ESTABLISHED",
+  "execution_authorization": "NO LIVE MONEY",
+  "engineering_status": "ENGINEERING_ACCEPTED",
+  "paired_sample_status": "PAIRED_SAMPLE_VALID",
+  "ttl_sensitivity_status": "TTL_SENSITIVITY_ESTABLISHED",
+  "convergence_status": "STATISTICAL_CONVERGENCE_NOT_ESTABLISHED",
+  "binding": {
+    "definition": {
+      "dataset": {
+        "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+        "as_of": "2026-11-14T00:00:00+00:00",
+        "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+        "drift": -1.2254443425042917e-05,
+        "dt": 1,
+        "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+        "initial_price": 204.34,
+        "observations": [
+          "2026-05-14T02:00:00+00:00",
+          "2026-08-12T00:00:00+00:00"
+        ],
+        "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+        "returns": 2159,
+        "source": "BINANCE_USDM_PUBLIC_DATA",
+        "time_unit": "hour",
+        "volatility": 0.004451385931577554
+      },
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "models": [
+        "jump_down",
+        "regime_historical",
+        "moving_block_bootstrap"
+      ],
+      "model_parameters": {
+        "jump_down": {
+          "log_drift": [
+            -2.2161861780966202e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "jump_probability": 0.005952380952380952,
+          "jump_log_sizes": [
+            -0.35667494393873245
+          ],
+          "initial_prices": [
+            204.34
+          ],
+          "event": "one Bernoulli per time step, shared across assets; at most one event per step",
+          "jump_distribution": "point mass at signed per-asset log sizes",
+          "background": "independent asset Gaussian log increments, no jump compensation; dt=1 step"
+        },
+        "regime_historical": {
+          "config": {
+            "block_size": 24,
+            "lookback": 24,
+            "reference_asset": "BINANCE:USDM:NVDAUSDT",
+            "volatility_quantile": 0.5,
+            "min_blocks_per_state": 20,
+            "min_transitions_per_state": 20
+          },
+          "transition": [
+            [
+              0.2222222222222222,
+              0.40555555555555556,
+              0.1388888888888889,
+              0.23333333333333334
+            ],
+            [
+              0.19559228650137742,
+              0.5068870523415978,
+              0.12672176308539945,
+              0.17079889807162535
+            ],
+            [
+              0.14150943396226415,
+              0.2688679245283019,
+              0.17452830188679244,
+              0.41509433962264153
+            ],
+            [
+              0.13309352517985612,
+              0.16906474820143885,
+              0.38848920863309355,
+              0.30935251798561153
+            ]
+          ],
+          "initial_state": [
+            0.1825922421948912,
+            0.3500473036896878,
+            0.2043519394512772,
+            0.2630085146641438
+          ],
+          "initial_state_source": "pool frequencies",
+          "transition_source": "HISTORICAL_BLOCK_LAG_ESTIMATE; overlapping pairs, not independent observations",
+          "states": [
+            "low_down",
+            "low_up",
+            "high_down",
+            "high_up"
+          ],
+          "initial_prices": [
+            204.34
+          ]
+        }
+      },
+      "model_versions": {
+        "jump_down": 1,
+        "regime_historical": 1,
+        "moving_block_bootstrap": "existing MonteCarloRunner / frozen code receipt"
+      },
+      "bootstrap": {
+        "block_size": 24,
+        "selection": "uniform overlapping contiguous blocks, existing CPU MT19937 Runner",
+        "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83"
+      },
+      "grid": {
+        "atr_multiplier": 1,
+        "atr_window": 72,
+        "breakout": "pause",
+        "budget": null,
+        "center_rule": "last_close",
+        "expiry_reseed_interval": 100,
+        "expiry_reseed_limit": 0,
+        "fee_bps": 4,
+        "initial_cash": 1000,
+        "initial_inventory": 0,
+        "initial_price": 204.34,
+        "levels": 8,
+        "lower": 163.472,
+        "max_cash_committed": 1000,
+        "max_drawdown": 0.2,
+        "max_inventory": 100,
+        "max_turnover": 10,
+        "min_rebuild_interval": 72,
+        "minimum_price": 0.01,
+        "minimum_quantity": 1,
+        "mode": "geometric",
+        "order_ttl": 100,
+        "quantity": 10,
+        "rebuild_threshold": 2,
+        "slippage_bps": 6,
+        "upper": 245.208
+      },
+      "rules": {
+        "min_notional": "5",
+        "min_quantity": "0.01",
+        "quantity_unit": "0.01",
+        "step_size": "0.01",
+        "tick_size": "0.01"
+      },
+      "capacity": "0.10",
+      "costs": {
+        "fee_rate": ".0004",
+        "funding": "NOT_SIMULATED",
+        "slippage": ".0006"
+      },
+      "start": "2026-11-15T00:00:00Z",
+      "threshold_as_of": "2026-06-28T00:00:00Z",
+      "research_id": "MC-05-F04A",
+      "frozen_definition": "configs/mc05_f03_grid_tail.json",
+      "frozen_accounts": "docs/validation/mc-05-f03/run/paths.csv",
+      "experiment": {
+        "order_ttl_hours": [
+          48,
+          100,
+          168
+        ],
+        "baseline_ttl_hours": 100,
+        "paths_per_model_seed": 16,
+        "seeds": [
+          1729,
+          2718,
+          31415
+        ],
+        "steps": 168,
+        "batch_size": 8
+      },
+      "resources": {
+        "max_workers": 8,
+        "pilot_paths_per_model": 3,
+        "pilot_wall_seconds": 120,
+        "formal_wall_seconds": 900,
+        "cost_safety_factor": 1.5,
+        "output_reserve_seconds": 15,
+        "maximum_tree_rss_bytes": 3221225472,
+        "maximum_temporary_bytes": 134217728,
+        "maximum_evidence_bytes": 4194304,
+        "minimum_free_after_bytes": 1073741824
+      },
+      "frozen_f03_definition": "configs/mc05_f03_grid_tail.json",
+      "frozen_execution_account_scratch_bytes": 8388608
+    },
+    "f03_accounts_normalized_csv_sha256": "064de50ff24c9c6ac41437cfde3d4102e0fd8ce7f2f835c9d4409eb817f055d0",
+    "environment": {
+      "python_version": "3.14.0",
+      "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "package_versions": {
+        "numpy": "2.3.4",
+        "pandas": "2.3.3",
+        "pyarrow": "22.0.0",
+        "scipy": "1.16.3",
+        "scikit-learn": "1.7.2",
+        "matplotlib": "3.10.7",
+        "akshare": "1.18.88",
+        "baostock": "0.8.9",
+        "lightgbm": "4.6.0",
+        "xgboost": "2.1.4",
+        "PyYAML": "6.0.3",
+        "pytest": "8.4.2",
+        "tzdata": "2026.4"
+      }
+    }
+  },
+  "execution_provenance": {
+    "code": {
+      "commit": "38df28a447567f7383574500c672aaf5f0b0cee6",
+      "tree": "a430eba5050c316fb0ddfae563a666423fc34b5f",
+      "git_dirty": true,
+      "git_diff_sha256": "1afb02cc59eaecb0c08aee50afce5d06ee0a16c00848ae3df046afd2e0923bc7"
+    },
+    "environment": {
+      "python_version": "3.14.0",
+      "python_executable": "D:\\Environments\\factorlab-py314\\Scripts\\python.exe",
+      "platform": "Windows-11-10.0.26340-SP0",
+      "package_versions": {
+        "numpy": "2.3.4",
+        "pandas": "2.3.3",
+        "pyarrow": "22.0.0",
+        "scipy": "1.16.3",
+        "scikit-learn": "1.7.2",
+        "matplotlib": "3.10.7",
+        "akshare": "1.18.88",
+        "baostock": "0.8.9",
+        "lightgbm": "4.6.0",
+        "xgboost": "2.1.4",
+        "PyYAML": "6.0.3",
+        "pytest": "8.4.2",
+        "tzdata": "2026.4"
+      }
+    }
+  },
+  "admission": {
+    "status": "RESOURCE_ADMITTED",
+    "reasons": [],
+    "estimate": {
+      "wall_seconds": 171.59956079930998,
+      "tree_cpu_seconds": 651.0,
+      "tree_rss_bytes": 2568216576,
+      "temporary_bytes": 67108864,
+      "evidence_bytes": 764008
+    },
+    "available_seconds": 899.9364551999897,
+    "available_memory_bytes": 34497310720,
+    "free_bytes": 110446632960
+  },
+  "serial_parallel_exact_accounts": [
+    "mc05-f04a-jump_down-1729-0-ttl-48",
+    "mc05-f04a-jump_down-1729-0-ttl-100",
+    "mc05-f04a-jump_down-1729-0-ttl-168",
+    "mc05-f04a-regime_historical-1729-0-ttl-48",
+    "mc05-f04a-regime_historical-1729-0-ttl-100",
+    "mc05-f04a-regime_historical-1729-0-ttl-168",
+    "mc05-f04a-moving_block_bootstrap-1729-0-ttl-48",
+    "mc05-f04a-moving_block_bootstrap-1729-0-ttl-100",
+    "mc05-f04a-moving_block_bootstrap-1729-0-ttl-168"
+  ],
+  "baseline_compared_fields": [
+    "terminal_nav",
+    "maximum_drawdown",
+    "terminal_inventory",
+    "max_inventory",
+    "inventory_mean_age_hours",
+    "inventory_max_age_hours",
+    "position_hours",
+    "residual_inventory_pnl",
+    "residual_inventory_loss",
+    "completed_cycle_net",
+    "grid_cycles",
+    "normal_sell_net",
+    "risk_exit_net",
+    "fees",
+    "slippage",
+    "reconciliation_residual",
+    "exit_triggers",
+    "exit_orders_unfilled",
+    "exit_partial_or_unfilled",
+    "final_state",
+    "fills",
+    "terminal_cash",
+    "terminal_price",
+    "valuation_adjustment",
+    "nav_residual",
+    "inventory_residual",
+    "initial_capital",
+    "minimum_nav",
+    "terminal_mark_unrealized_pnl",
+    "terminal_realized_gross_pnl",
+    "fifo_realized_pnl",
+    "fifo_unrealized_pnl",
+    "participation_class",
+    "traded",
+    "ever_inventory",
+    "has_terminal_inventory",
+    "inventory_cap",
+    "risk_exit",
+    "incomplete_exit",
+    "loss",
+    "zero_fills",
+    "capital_utilization_mean",
+    "capital_utilization_peak",
+    "inventory_mean",
+    "holding_hours",
+    "exposure_mean",
+    "exposure_peak",
+    "exposure_initial_capital_mean",
+    "exposure_initial_capital_peak",
+    "exposure_nav_mean",
+    "exposure_nav_peak",
+    "submitted_grid_buy_orders",
+    "submission_rejections",
+    "fill_admission_denials",
+    "collateral_denials",
+    "breakout_pauses",
+    "ttl_cancellations",
+    "active_buy_limit_touch",
+    "buy_limit_touch_after_ttl",
+    "buy_limit_touch_after_breakout",
+    "price_sha256"
+  ],
+  "maximum_absolute_residual": {
+    "reconciliation_residual": 0.0,
+    "nav_residual": 0.0,
+    "inventory_residual": 0.0
+  },
+  "participation_tests": [
+    {
+      "model": "jump_down",
+      "low": 48,
+      "high": 100,
+      "paths": 48,
+      "gained": 6,
+      "lost": 0,
+      "p": 0.03125,
+      "consistent_seeds": true,
+      "seed_net_changes": {
+        "1729": 1,
+        "2718": 3,
+        "31415": 2
+      },
+      "holm_p": 0.125,
+      "supports_direction": false
+    },
+    {
+      "model": "jump_down",
+      "low": 100,
+      "high": 168,
+      "paths": 48,
+      "gained": 4,
+      "lost": 0,
+      "p": 0.125,
+      "consistent_seeds": true,
+      "seed_net_changes": {
+        "1729": 1,
+        "2718": 0,
+        "31415": 3
+      },
+      "holm_p": 0.375,
+      "supports_direction": false
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "low": 48,
+      "high": 100,
+      "paths": 48,
+      "gained": 9,
+      "lost": 0,
+      "p": 0.00390625,
+      "consistent_seeds": true,
+      "seed_net_changes": {
+        "1729": 3,
+        "2718": 2,
+        "31415": 4
+      },
+      "holm_p": 0.0234375,
+      "supports_direction": true
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "low": 100,
+      "high": 168,
+      "paths": 48,
+      "gained": 3,
+      "lost": 0,
+      "p": 0.25,
+      "consistent_seeds": true,
+      "seed_net_changes": {
+        "1729": 2,
+        "2718": 1,
+        "31415": 0
+      },
+      "holm_p": 0.5,
+      "supports_direction": false
+    },
+    {
+      "model": "regime_historical",
+      "low": 48,
+      "high": 100,
+      "paths": 48,
+      "gained": 9,
+      "lost": 0,
+      "p": 0.00390625,
+      "consistent_seeds": true,
+      "seed_net_changes": {
+        "1729": 5,
+        "2718": 2,
+        "31415": 2
+      },
+      "holm_p": 0.0234375,
+      "supports_direction": true
+    },
+    {
+      "model": "regime_historical",
+      "low": 100,
+      "high": 168,
+      "paths": 48,
+      "gained": 2,
+      "lost": 0,
+      "p": 0.5,
+      "consistent_seeds": true,
+      "seed_net_changes": {
+        "1729": 1,
+        "2718": 1,
+        "31415": 0
+      },
+      "holm_p": 0.5,
+      "supports_direction": false
+    }
+  ],
+  "account_csv_normalized_lf_sha256": "efef9d8a52f02a5b432a5a5709b622283f22ea34be22f2746a66ff58f6bb35c6",
+  "complete_paths": 144,
+  "collected_accounts": 432,
+  "resources": {
+    "peak_tree_rss_bytes": 1728573440,
+    "peak_temporary_disk_bytes": 18732168,
+    "groups": [
+      {
+        "model": "jump_down",
+        "size": 16,
+        "peak_tree_rss_bytes": 1715785728,
+        "peak_temporary_disk_bytes": 17747488,
+        "complete": true,
+        "wall_seconds": 8.721178399981,
+        "tree_cpu_seconds": 41.375,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "jump_down",
+        "size": 16,
+        "peak_tree_rss_bytes": 1718435840,
+        "peak_temporary_disk_bytes": 16560928,
+        "complete": true,
+        "wall_seconds": 8.480637900007423,
+        "tree_cpu_seconds": 31.078125,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "jump_down",
+        "size": 16,
+        "peak_tree_rss_bytes": 1722146816,
+        "peak_temporary_disk_bytes": 18530288,
+        "complete": true,
+        "wall_seconds": 7.696082000009483,
+        "tree_cpu_seconds": 30.203125,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "regime_historical",
+        "size": 16,
+        "peak_tree_rss_bytes": 1722781696,
+        "peak_temporary_disk_bytes": 17334789,
+        "complete": true,
+        "wall_seconds": 12.004159600008279,
+        "tree_cpu_seconds": 32.796875,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "regime_historical",
+        "size": 16,
+        "peak_tree_rss_bytes": 1724391424,
+        "peak_temporary_disk_bytes": 18732168,
+        "complete": true,
+        "wall_seconds": 15.421730300004128,
+        "tree_cpu_seconds": 31.828125,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "regime_historical",
+        "size": 16,
+        "peak_tree_rss_bytes": 1726005248,
+        "peak_temporary_disk_bytes": 17644824,
+        "complete": true,
+        "wall_seconds": 15.39363899998716,
+        "tree_cpu_seconds": 32.296875,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "moving_block_bootstrap",
+        "size": 16,
+        "peak_tree_rss_bytes": 1726402560,
+        "peak_temporary_disk_bytes": 18159488,
+        "complete": true,
+        "wall_seconds": 14.478083800000604,
+        "tree_cpu_seconds": 29.484375,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "moving_block_bootstrap",
+        "size": 16,
+        "peak_tree_rss_bytes": 1728016384,
+        "peak_temporary_disk_bytes": 16832848,
+        "complete": true,
+        "wall_seconds": 15.590697800013004,
+        "tree_cpu_seconds": 33.125,
+        "additional_evidence_bytes": 0
+      },
+      {
+        "model": "moving_block_bootstrap",
+        "size": 16,
+        "peak_tree_rss_bytes": 1728573440,
+        "peak_temporary_disk_bytes": 17430248,
+        "complete": true,
+        "wall_seconds": 15.056068299978506,
+        "tree_cpu_seconds": 32.171875,
+        "additional_evidence_bytes": 0
+      }
+    ],
+    "sample_interval_seconds": 0.1,
+    "startup_wall_seconds": 0.07417320000240579,
+    "startup_tree_cpu_seconds": 0.078125,
+    "wall_seconds": 113.57854240000597,
+    "tree_cpu_seconds": 297.734375,
+    "cpu_measurement": "Windows Job user + kernel time, including exited descendants"
+  },
+  "missing_pairs": [],
+  "evidence_bytes_before_audit": 381666
+}

@@ -1,0 +1,22 @@
+{
+  "research_id": "MC-05-F04A",
+  "frozen_definition": "configs/mc05_f03_grid_tail.json",
+  "frozen_accounts": "docs/validation/mc-05-f03/run/paths.csv",
+  "experiment": {
+    "order_ttl_hours": [48, 100, 168],
+    "baseline_ttl_hours": 100,
+    "paths_per_model_seed": 16
+  },
+  "resources": {
+    "max_workers": 8,
+    "pilot_paths_per_model": 3,
+    "pilot_wall_seconds": 120,
+    "formal_wall_seconds": 900,
+    "cost_safety_factor": 1.5,
+    "output_reserve_seconds": 15,
+    "maximum_tree_rss_bytes": 3221225472,
+    "maximum_temporary_bytes": 134217728,
+    "maximum_evidence_bytes": 4194304,
+    "minimum_free_after_bytes": 1073741824
+  }
+}
