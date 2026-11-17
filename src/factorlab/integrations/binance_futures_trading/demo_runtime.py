@@ -103,7 +103,7 @@ class DemoRuntime:
         with self.db:
             self.db.execute('BEGIN IMMEDIATE')
             authorization = self.continuous_authorization()
-            if authorization is not None:
+            if authorization is not None and authorization['state'] != 'HALTED':
                 authorization['state'] = 'STOPPED'
                 self._set('continuous', json.dumps(authorization))
             self._set('continuous_window', '')
@@ -180,6 +180,8 @@ class DemoRuntime:
             if saved is None or saved['state'] != 'STOPPED':
                 raise SafetyBlocked('explicitly stopped continuous Demo authorization required')
             self._validate_continuous(binding, saved)
+            if self._get('continuous_diagnostic') is not None:
+                raise SafetyBlocked('continuous Demo risk halt is latched')
             if self.stop_epoch() != stop_epoch:
                 raise SafetyBlocked('Demo was stopped during account preflight')
             funds = facts.usdt()
