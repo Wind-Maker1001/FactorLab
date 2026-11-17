@@ -18,7 +18,6 @@ from factorlab.research.regime_jump import PathPlan
 
 FROZEN_RUN = Path('docs/validation/mc-05-f02/run')
 KEYS = ['model', 'seed', 'path_id']
-NON_ECONOMIC = ['temporary_account_bytes', 'reconciliation_residual']
 CORRELATIONS = ['return_autocorrelation_1', 'squared_return_autocorrelation_1']
 
 
@@ -30,10 +29,10 @@ def _checkpoint_counts(cells, settings, models):
     counts = dict.fromkeys(models, 0)
     identities = Counter((cell['model'], cell['n_paths'], cell['seed']) for cell in cells)
     for model in models:
-        for size in settings['sizes']:
+        for position, size in enumerate(settings['sizes']):
             found = [identities[model, size, seed] for seed in settings['seeds']]
             if found == [1] * len(found):
-                if counts[model] != settings['sizes'][settings['sizes'].index(size)-1] and size != settings['sizes'][0]:
+                if position and counts[model] != settings['sizes'][position-1]:
                     raise ValueError(f'missing predecessor checkpoint for {model}/{size}')
                 counts[model] = size
             elif any(found):
@@ -96,19 +95,36 @@ def _audit_paths(frame, path_evidence, *, inputs, receipt, config, rules, defini
     prefix = index[index.index.get_level_values('path_id') < first_tier]
     frozen = pd.read_csv(FROZEN_RUN/'paths.csv', float_precision='round_trip').set_index(KEYS)
     common = prefix.index.intersection(frozen.index)
-    left, right = prefix.reindex(common), frozen.reindex(common)
-    fields = [key for key in right if key not in NON_ECONOMIC + CORRELATIONS]
+    left, right = prefix.reindex(index=common, columns=frozen.columns), frozen.reindex(common)
+    fields = [key for key in right if key not in ['temporary_account_bytes', *CORRELATIONS]]
     differences = [key for key in fields if not
         ((left[key] == right[key]) | (left[key].isna() & right[key].isna())).all()]
     correlations = {key: dict(changed=int((left[key] != right[key]).sum()),
                          maximum_absolute_delta=float((left[key] - right[key]).abs().max()))
                     for key in CORRELATIONS if len(common)}
+    frozen_tails = _read(FROZEN_RUN/'tails.json')
+    frozen_prices = {tuple(item['identity'][key] for key in KEYS): price_digest(item['prices'])
+                     for item in frozen_tails.values()}
+    frozen_prices = {key: digest == digests[key] for key, digest in frozen_prices.items() if key in digests}
+    frozen_latent = _read(FROZEN_RUN/'path-evidence.json')
+    frozen_latent_checks = []
+    for row in frozen_latent:
+        pair = tuple(row[key] for key in KEYS)
+        if pair in latent_by_id:
+            expected_events, actual_events = row['events'], latent_by_id[pair]
+            frozen_latent_checks.append(len(expected_events) == len(actual_events) and all(
+                all(value == actual[key] for key, value in expected.items())
+                for expected, actual in zip(expected_events, actual_events)))
     return dict(
         unique_accounts=len(index), price_prefix_digest_comparisons=matches,
         distinct_price_digests=len(set(digests.values())),
         serial_parallel_exact_accounts=serial_accounts,
         f02_prefix_comparison=dict(reused=0, rows=len(common), compared_fields=len(fields),
             field_differences=differences, separately_compared_correlations=correlations,
+            frozen_full_price_paths_compared=len(frozen_prices),
+            frozen_full_price_paths_exact=sum(frozen_prices.values()),
+            frozen_latent_paths_compared=len(frozen_latent_checks),
+            frozen_latent_paths_exact=sum(frozen_latent_checks),
             reason='Frozen summaries do not retain a close-series identity and complete ledger for every account.'),
         maximum_absolute_residual={key: float(index[key].abs().max()) if len(index) else None
             for key in ('reconciliation_residual', 'nav_residual', 'inventory_residual')},
@@ -124,6 +140,8 @@ def _execution_report(definition, actual, calibration, audit, completed, coverag
         f"历史观察 {d['observations'][0]} 至 {d['observations'][1]}，{d['returns']} 条小时收益。",
         f"快照采集 {d['acquired_at']}，校准截止 {d['as_of']}，模拟起点 {definition['start']}。",
         'Jump-down 及 Regime historical 均为冻结 MC-03 v1；Moving-block bootstrap 用冻结 CPU MT19937、24 小时块。',
+        'MC-03 路径流由原种子与全局路径号派生。Bootstrap 保留每八条路径一个批次，'
+        'MT19937 用原种子加批次号，三个种子的批次种子范围互不重叠。',
         'Grid 沿用 F02 几何网格、0 初始库存、4 bps 手续费、6 bps 滑点及 0.10 合成成交容量。Funding 为 NOT_SIMULATED。',
         f"种子 {settings['seeds']}，batch {settings['batch_size']}，预定档位 {settings['sizes']}，8 workers。",
         '', '| 模型 | 已完成档位 | 账户 | 成交 | 参与率 |',
@@ -138,6 +156,11 @@ def _execution_report(definition, actual, calibration, audit, completed, coverag
     for label, measurement in [('预校准', calibration['performance']), ('正式运行', actual)]:
         lines.append(f"| {label} | {measurement['wall_seconds']:.3f} | {measurement['tree_cpu_seconds']:.3f} | "
                      f"{measurement['peak_tree_rss_bytes']/2**20:.2f} | {measurement['peak_temporary_disk_bytes']/2**20:.2f} |")
+    lines.extend(['', '| 预校准模型 | 账户 | 墙钟 s | CPU s | 账户/s |',
+                  '| --- | ---: | ---: | ---: | ---: |'])
+    for model, measurement in calibration['models'].items():
+        lines.append(f"| {model} | {measurement['accounts']} | {measurement['wall_seconds']:.3f} | "
+                     f"{measurement['tree_cpu_seconds']:.3f} | {measurement['accounts_per_second']:.3f} |")
     lines.extend(['',
         '整组计时包含生成、回放、账户清理和组写出。首个组也承担 spawn 工人的冷启动。',
         f"预校准在首组进入前耗时 {calibration['performance']['startup_wall_seconds']:.3f} 秒；"
@@ -165,8 +188,11 @@ def _execution_report(definition, actual, calibration, audit, completed, coverag
         f"F02 复用账户 0。跨次运行比较 {frozen['rows']} 个首档账户、每账户 {frozen['compared_fields']} 列，"
         f"差异列：{', '.join(frozen['field_differences']) or '无'}。"
         '价格一阶自相关和平方收益自相关单列比较，相关系数不进入风险估计。'
+        f"冻结最差路径价格精确对照 {frozen['frozen_full_price_paths_exact']}/{frozen['frozen_full_price_paths_compared']}，"
+        f"冻结隐事件字段精确对照 {frozen['frozen_latent_paths_exact']}/{frozen['frozen_latent_paths_compared']}。"
         'F02 缺少每条路径完整价格身份和逐笔原始账户证据，F03 使用本轮回放和审计。',
-        '', '运行定义、校准、资源、准入、账户身份和审计收据随报告保存。'])
+        '', '运行定义、校准、资源、准入、账户身份和审计收据随报告保存。'
+        '报告生成、前缀复算和三个串行审计账户位于正式资源计量之外。'])
     return '\n'.join(lines) + '\n'
 
 

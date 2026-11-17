@@ -1,0 +1,103 @@
+{
+  "peak_tree_rss_bytes": 1721462784,
+  "peak_temporary_disk_bytes": 18378359,
+  "groups": [
+    {
+      "model": "jump_down",
+      "size": 16,
+      "peak_tree_rss_bytes": 1693507584,
+      "peak_temporary_disk_bytes": 17715899,
+      "complete": true,
+      "wall_seconds": 53.83411310001975,
+      "tree_cpu_seconds": 75.59375,
+      "additional_evidence_bytes": 252155
+    },
+    {
+      "model": "regime_historical",
+      "size": 16,
+      "peak_tree_rss_bytes": 1699115008,
+      "peak_temporary_disk_bytes": 18274848,
+      "complete": true,
+      "wall_seconds": 48.4412518000172,
+      "tree_cpu_seconds": 48.1875,
+      "additional_evidence_bytes": 349701
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 16,
+      "peak_tree_rss_bytes": 1701363712,
+      "peak_temporary_disk_bytes": 17829888,
+      "complete": true,
+      "wall_seconds": 48.25632680000854,
+      "tree_cpu_seconds": 47.46875,
+      "additional_evidence_bytes": 214915
+    },
+    {
+      "model": "jump_down",
+      "size": 32,
+      "peak_tree_rss_bytes": 1702895616,
+      "peak_temporary_disk_bytes": 17427435,
+      "complete": true,
+      "wall_seconds": 52.509981600014726,
+      "tree_cpu_seconds": 49.75,
+      "additional_evidence_bytes": 240965
+    },
+    {
+      "model": "regime_historical",
+      "size": 32,
+      "peak_tree_rss_bytes": 1705869312,
+      "peak_temporary_disk_bytes": 18378359,
+      "complete": true,
+      "wall_seconds": 46.43764739998733,
+      "tree_cpu_seconds": 51.359375,
+      "additional_evidence_bytes": 348187
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 32,
+      "peak_tree_rss_bytes": 1707241472,
+      "peak_temporary_disk_bytes": 18217168,
+      "complete": true,
+      "wall_seconds": 45.65978409998934,
+      "tree_cpu_seconds": 52.671875,
+      "additional_evidence_bytes": 209492
+    },
+    {
+      "model": "jump_down",
+      "size": 64,
+      "peak_tree_rss_bytes": 1713410048,
+      "peak_temporary_disk_bytes": 18075586,
+      "complete": true,
+      "wall_seconds": 92.74301629999536,
+      "tree_cpu_seconds": 104.109375,
+      "additional_evidence_bytes": 336897
+    },
+    {
+      "model": "regime_historical",
+      "size": 64,
+      "peak_tree_rss_bytes": 1716572160,
+      "peak_temporary_disk_bytes": 18250128,
+      "complete": true,
+      "wall_seconds": 90.86248420001357,
+      "tree_cpu_seconds": 103.8125,
+      "additional_evidence_bytes": 536802
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 64,
+      "peak_tree_rss_bytes": 1721462784,
+      "peak_temporary_disk_bytes": 17652728,
+      "complete": true,
+      "wall_seconds": 90.54384269998991,
+      "tree_cpu_seconds": 102.4375,
+      "additional_evidence_bytes": 263043
+    }
+  ],
+  "sample_interval_seconds": 0.1,
+  "startup_wall_seconds": 0.961838599992916,
+  "startup_tree_cpu_seconds": 1.03125,
+  "wall_seconds": 571.568488799996,
+  "tree_cpu_seconds": 642.890625,
+  "cpu_measurement": "Windows Job user + kernel time, including exited descendants",
+  "cli_preparation_wall_seconds": 3.936955500015756
+}

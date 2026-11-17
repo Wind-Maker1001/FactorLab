@@ -429,9 +429,9 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
                             statistics_seconds += perf_counter()-before
                 cells.extend(pending_cells)
                 if diagnostic is not None:
-                    write(output/'generation.json', generation)
-                    write(output/'tails.json', tails)
-                    write(output/'path-evidence.json', path_evidence)
+                    write(output/'generation.json', generation, atomic=True)
+                    write(output/'tails.json', tails, atomic=True)
+                    write(output/'path-evidence.json', path_evidence, atomic=True)
                 else:
                     pd.DataFrame(rows).to_csv(output/'paths.csv', index=False)
                 write(output/'groups.json', cells, atomic=diagnostic is not None)
@@ -467,10 +467,10 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
     if diagnostic is None or not rows:
         pd.DataFrame(rows, columns=list(rows[0]) if rows else ['model', 'seed', 'path_id']).to_csv(output/'paths.csv', index=False)
     write(output/'groups.json', cells, atomic=diagnostic is not None)
-    write(output/'generation.json', generation)
-    write(output/'tails.json', tails)
+    write(output/'generation.json', generation, atomic=diagnostic is not None)
+    write(output/'tails.json', tails, atomic=diagnostic is not None)
     if settings.get('path_evidence', False):
-        write(output/'path-evidence.json', path_evidence)
+        write(output/'path-evidence.json', path_evidence, atomic=diagnostic is not None)
     pd.DataFrame(deterministic).to_csv(output/'deterministic.csv', index=False)
     result['performance'].update(total_seconds=perf_counter()-started,
         cpu_seconds=process_time()-cpu,

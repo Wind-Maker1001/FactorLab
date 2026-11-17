@@ -1,0 +1,2756 @@
+{
+  "engineering_status": "ENGINEERING_VALID",
+  "statistical_status": "STATISTICALLY_UNSTABLE",
+  "financial_status": "FINANCIAL_NOT_ESTABLISHED",
+  "execution_authorization": "NO LIVE MONEY",
+  "completed_paths_per_seed": 64,
+  "historical_calibration_rejection": null,
+  "decisions": [
+    {
+      "model": "jump_down",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 0.9256057000020519,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 106.56219312006142,
+      "projected_tree_cpu_seconds": 257.84999999999997,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 899.074394299998,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 18232102912,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22769881088,
+      "projected_additional_evidence_bytes": 838861,
+      "minimum_output_free_bytes": 1074580685,
+      "output_free_bytes": 110623657984,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "regime_historical",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 54.795829300011974,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 55.97771543995477,
+      "projected_tree_cpu_seconds": 61.762499999999996,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 845.204170699988,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 17714565120,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22767341568,
+      "projected_additional_evidence_bytes": 838861,
+      "minimum_output_free_bytes": 1074580685,
+      "output_free_bytes": 110623313920,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 103.2740072000015,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 56.86210511990357,
+      "projected_tree_cpu_seconds": 61.0875,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 796.7259927999985,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 17885708288,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22762840064,
+      "projected_additional_evidence_bytes": 838861,
+      "minimum_output_free_bytes": 1074580685,
+      "output_free_bytes": 110622830592,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "jump_down",
+      "size": 32,
+      "begin": 16,
+      "additional_accounts": 48,
+      "elapsed_seconds": 151.5349000999995,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 106.56219312006142,
+      "projected_tree_cpu_seconds": 257.84999999999997,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 748.4650999000005,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 17677414400,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22771228672,
+      "projected_additional_evidence_bytes": 838861,
+      "minimum_output_free_bytes": 1074580685,
+      "output_free_bytes": 110622547968,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "regime_historical",
+      "size": 32,
+      "begin": 16,
+      "additional_accounts": 48,
+      "elapsed_seconds": 204.05052839999553,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 55.97771543995477,
+      "projected_tree_cpu_seconds": 61.762499999999996,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 695.9494716000045,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 17655480320,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22769487872,
+      "projected_additional_evidence_bytes": 838861,
+      "minimum_output_free_bytes": 1074580685,
+      "output_free_bytes": 110622298112,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 32,
+      "begin": 16,
+      "additional_accounts": 48,
+      "elapsed_seconds": 250.5246671999921,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 56.86210511990357,
+      "projected_tree_cpu_seconds": 61.0875,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 649.4753328000079,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 17623183360,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22816661504,
+      "projected_additional_evidence_bytes": 838861,
+      "minimum_output_free_bytes": 1074580685,
+      "output_free_bytes": 110621917184,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "jump_down",
+      "size": 64,
+      "begin": 32,
+      "additional_accounts": 96,
+      "elapsed_seconds": 296.19262730001356,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 213.12438624012285,
+      "projected_tree_cpu_seconds": 515.6999999999999,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 603.8073726999864,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 17634959360,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22816124928,
+      "projected_additional_evidence_bytes": 1677722,
+      "minimum_output_free_bytes": 1075419546,
+      "output_free_bytes": 110621712384,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "regime_historical",
+      "size": 64,
+      "begin": 32,
+      "additional_accounts": 96,
+      "elapsed_seconds": 388.97732350000297,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 111.95543087990954,
+      "projected_tree_cpu_seconds": 123.52499999999999,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 511.02267649999703,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 17612447744,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22815301632,
+      "projected_additional_evidence_bytes": 1677722,
+      "minimum_output_free_bytes": 1075419546,
+      "output_free_bytes": 110620987392,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 64,
+      "begin": 32,
+      "additional_accounts": 96,
+      "elapsed_seconds": 479.8443634000141,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "projected_additional_seconds": 113.72421023980714,
+      "projected_tree_cpu_seconds": 122.175,
+      "measured_startup_wall_seconds": 1.8457285999902524,
+      "output_reserve_seconds": 15,
+      "remaining_wall_seconds": 420.1556365999859,
+      "projected_peak_tree_rss_bytes": 2031702836,
+      "available_memory_bytes": 16814682112,
+      "projected_scratch_bytes": 67108864,
+      "minimum_scratch_free_bytes": 1140850688,
+      "scratch_free_bytes": 22814412800,
+      "projected_additional_evidence_bytes": 1677722,
+      "minimum_output_free_bytes": 1075419546,
+      "output_free_bytes": 110620446720,
+      "cost_safety_factor": 1.2,
+      "same_scratch_and_output_volume": false
+    }
+  ],
+  "model_execution_status": {
+    "jump_down": "COMPLETED",
+    "regime_historical": "COMPLETED",
+    "moving_block_bootstrap": "COMPLETED"
+  },
+  "deterministic_in_probability_distribution": false,
+  "deterministic": [],
+  "cash_benchmark": {
+    "initial_nav": 1000,
+    "terminal_nav": 1000,
+    "exposure": 0
+  },
+  "completed_paths_per_seed_by_model": {
+    "jump_down": 64,
+    "regime_historical": 64,
+    "moving_block_bootstrap": 64
+  },
+  "seed_dispersion": [
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.000984484637734151,
+          "maximum": 0.0013792134268591216,
+          "seed_sd": 0.00020962216286395753
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.0009990907343498056,
+          "maximum": 0.0019687435830813057,
+          "seed_sd": 0.0005325564310717239
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.000990570511324007,
+          "maximum": 0.0017440006845296113,
+          "seed_sd": 0.0004342545881246154
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.001000307909067777,
+          "maximum": 0.0021051282539019237,
+          "seed_sd": 0.0005956341902649173
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.000990570511324007,
+          "maximum": 0.0017440006845296113,
+          "seed_sd": 0.0004342545881246154
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.001000307909067777,
+          "maximum": 0.0021051282539019237,
+          "seed_sd": 0.0005956341902649173
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0009917876860419783,
+          "maximum": 0.0017845326020485552,
+          "seed_sd": 0.00044577163972020983
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.0010005513440113712,
+          "maximum": 0.0021051282539019237,
+          "seed_sd": 0.0005972610198463031
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 32,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0010404396308300978,
+          "maximum": 0.0013359524090910343,
+          "seed_sd": 0.00016026834206227765
+        },
+        "cvar.95": {
+          "minimum": 0.0015771097406118426,
+          "maximum": 0.002114596439923039,
+          "seed_sd": 0.00026932844956930967
+        },
+        "var.99": {
+          "minimum": 0.0016281316771467702,
+          "maximum": 0.0021287152940853175,
+          "seed_sd": 0.0002510369690475956
+        },
+        "cvar.99": {
+          "minimum": 0.001871467066774879,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.00016450401657524467
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 32,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.001125761840495188,
+          "maximum": 0.0020657234832074595,
+          "seed_sd": 0.0004730506426241933
+        },
+        "cvar.95": {
+          "minimum": 0.001871467066774878,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.00016450401657524505
+        },
+        "var.99": {
+          "minimum": 0.0017223260215189396,
+          "maximum": 0.0021699857908673613,
+          "seed_sd": 0.00022408776235098855
+        },
+        "cvar.99": {
+          "minimum": 0.001871467066774879,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.00016450401657524467
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 32,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.001125761840495188,
+          "maximum": 0.0020657234832074595,
+          "seed_sd": 0.0004730506426241933
+        },
+        "cvar.95": {
+          "minimum": 0.001871467066774878,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.00016450401657524505
+        },
+        "var.99": {
+          "minimum": 0.0017223260215189396,
+          "maximum": 0.0021699857908673613,
+          "seed_sd": 0.00022408776235098855
+        },
+        "cvar.99": {
+          "minimum": 0.001871467066774879,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.00016450401657524467
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 32,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0012042571274719959,
+          "maximum": 0.0020657234832074595,
+          "seed_sd": 0.00043301459152968863
+        },
+        "cvar.95": {
+          "minimum": 0.0018714670667748787,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.00016450401657524475
+        },
+        "var.99": {
+          "minimum": 0.0017380250789143011,
+          "maximum": 0.0021699857908673613,
+          "seed_sd": 0.00021634933682950245
+        },
+        "cvar.99": {
+          "minimum": 0.001871467066774879,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.00016450401657524467
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 64,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0009990907343498056,
+          "maximum": 0.0019644004560878054,
+          "seed_sd": 0.0005083540446746504
+        },
+        "cvar.95": {
+          "minimum": 0.001399919590048169,
+          "maximum": 0.0037152936770290784,
+          "seed_sd": 0.0012942835709013364
+        },
+        "var.99": {
+          "minimum": 0.001524806987489898,
+          "maximum": 0.004024738673890429,
+          "seed_sd": 0.0013959992879652692
+        },
+        "cvar.99": {
+          "minimum": 0.001871467066774879,
+          "maximum": 0.007138449492398834,
+          "seed_sd": 0.00300804332789847
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 64,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.001168658768489516,
+          "maximum": 0.0021792303197064543,
+          "seed_sd": 0.0005341860302719345
+        },
+        "cvar.95": {
+          "minimum": 0.0016448918515559378,
+          "maximum": 0.00549098345086,
+          "seed_sd": 0.002170586479254471
+        },
+        "var.99": {
+          "minimum": 0.001689883215720843,
+          "maximum": 0.0057051540362600545,
+          "seed_sd": 0.0022735319944955507
+        },
+        "cvar.99": {
+          "minimum": 0.0018714670667748792,
+          "maximum": 0.007138449492398835,
+          "seed_sd": 0.0030080433278984707
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 64,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.001168658768489516,
+          "maximum": 0.0021792303197064543,
+          "seed_sd": 0.0005341860302719345
+        },
+        "cvar.95": {
+          "minimum": 0.0016448918515559378,
+          "maximum": 0.00549098345086,
+          "seed_sd": 0.002170586479254471
+        },
+        "var.99": {
+          "minimum": 0.001689883215720843,
+          "maximum": 0.0057051540362600545,
+          "seed_sd": 0.0022735319944955507
+        },
+        "cvar.99": {
+          "minimum": 0.0018714670667748792,
+          "maximum": 0.007138449492398835,
+          "seed_sd": 0.0030080433278984707
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 64,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0012038635848392598,
+          "maximum": 0.002181099325048219,
+          "seed_sd": 0.0005161021258088791
+        },
+        "cvar.95": {
+          "minimum": 0.0016762156140286023,
+          "maximum": 0.005604601798552333,
+          "seed_sd": 0.0022209920004477796
+        },
+        "var.99": {
+          "minimum": 0.001706390838543936,
+          "maximum": 0.00575457801750621,
+          "seed_sd": 0.002294514904821508
+        },
+        "cvar.99": {
+          "minimum": 0.0018714670667748792,
+          "maximum": 0.007138449492398835,
+          "seed_sd": 0.0030080433278984707
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0002422106348270725,
+          "maximum": 0.0012259832810489202,
+          "seed_sd": 0.0005433765590697253
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.0003448476727687388,
+          "maximum": 0.002308556890692797,
+          "seed_sd": 0.0011186738393098665
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0003362945862736,
+          "maximum": 0.0018574845533411814,
+          "seed_sd": 0.0008653190176836977
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.0003636644630580443,
+          "maximum": 0.00243485714515125,
+          "seed_sd": 0.001183279256669972
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0003362945862736,
+          "maximum": 0.0018574845533411814,
+          "seed_sd": 0.0008653190176836977
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.0003636644630580443,
+          "maximum": 0.00243485714515125,
+          "seed_sd": 0.001183279256669972
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0003448476727687388,
+          "maximum": 0.0019476990208115042,
+          "seed_sd": 0.0009133414359003789
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.00036537508035707205,
+          "maximum": 0.0024529000386453144,
+          "seed_sd": 0.0011928871827543478
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 32,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.00027642298080762784,
+          "maximum": 0.0008855525389762197,
+          "seed_sd": 0.00033121688563034885
+        },
+        "cvar.95": {
+          "minimum": 0.0006882174267218569,
+          "maximum": 0.0019587545038527296,
+          "seed_sd": 0.0007267970005056239
+        },
+        "var.99": {
+          "minimum": 0.0007167195422884149,
+          "maximum": 0.0020662984406562457,
+          "seed_sd": 0.000770465846141174
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366097,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 32,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0005676315531710384,
+          "maximum": 0.0011728565041347482,
+          "seed_sd": 0.0003434200268133898
+        },
+        "cvar.95": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        },
+        "var.99": {
+          "minimum": 0.0007956484777034952,
+          "maximum": 0.002297931535309961,
+          "seed_sd": 0.0008517526661564254
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 32,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0005676315531710384,
+          "maximum": 0.0011728565041347482,
+          "seed_sd": 0.0003434200268133898
+        },
+        "cvar.95": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        },
+        "var.99": {
+          "minimum": 0.0007956484777034952,
+          "maximum": 0.002297931535309961,
+          "seed_sd": 0.0008517526661564254
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 32,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0006334056660169396,
+          "maximum": 0.0014210348198351636,
+          "seed_sd": 0.000451811440944892
+        },
+        "cvar.95": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        },
+        "var.99": {
+          "minimum": 0.000808803300272676,
+          "maximum": 0.002347567198450046,
+          "seed_sd": 0.000873412425251121
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366097,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 64,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.00039816684522395667,
+          "maximum": 0.0009699884502516906,
+          "seed_sd": 0.000321467495386291
+        },
+        "cvar.95": {
+          "minimum": 0.000680724587703872,
+          "maximum": 0.0019100546891497377,
+          "seed_sd": 0.0007055112357555584
+        },
+        "var.99": {
+          "minimum": 0.0007806599658931196,
+          "maximum": 0.0020060396127153835,
+          "seed_sd": 0.0006939428123944825
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366097,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 64,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0005867941291408663,
+          "maximum": 0.0016684691630656778,
+          "seed_sd": 0.0005801335573172232
+        },
+        "cvar.95": {
+          "minimum": 0.0008401124860800689,
+          "maximum": 0.002204585469320511,
+          "seed_sd": 0.0007859722632219331
+        },
+        "var.99": {
+          "minimum": 0.0008440134732187665,
+          "maximum": 0.002278973270043188,
+          "seed_sd": 0.0008261896790456147
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 64,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0005867941291408663,
+          "maximum": 0.0016684691630656778,
+          "seed_sd": 0.0005801335573172232
+        },
+        "cvar.95": {
+          "minimum": 0.0008401124860800689,
+          "maximum": 0.002204585469320511,
+          "seed_sd": 0.0007859722632219331
+        },
+        "var.99": {
+          "minimum": 0.0008440134732187665,
+          "maximum": 0.002278973270043188,
+          "seed_sd": 0.0008261896790456147
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 64,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0006779317779992408,
+          "maximum": 0.0016689819250619298,
+          "seed_sd": 0.000536154032372105
+        },
+        "cvar.95": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.0023433317003513465,
+          "seed_sd": 0.0008504572908209131
+        },
+        "var.99": {
+          "minimum": 0.0008458915679182977,
+          "maximum": 0.0023426577900863385,
+          "seed_sd": 0.0008574959622736971
+        },
+        "cvar.99": {
+          "minimum": 0.0008526527088366098,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0009788359299431272
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0081913416689674,
+          "maximum": 0.014567480180573744,
+          "seed_sd": 0.003614819409130045
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.01033085211989455,
+          "maximum": 0.01533958652766194,
+          "seed_sd": 0.0026617866685178628
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.008726219281699183,
+          "maximum": 0.014760506767345792,
+          "seed_sd": 0.003373798522158211
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.010437827642440905,
+          "maximum": 0.01537819184501635,
+          "seed_sd": 0.002616589839665867
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.008726219281699183,
+          "maximum": 0.014760506767345792,
+          "seed_sd": 0.003373798522158211
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.010437827642440905,
+          "maximum": 0.01537819184501635,
+          "seed_sd": 0.002616589839665867
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.008904511819276447,
+          "maximum": 0.014824848962936475,
+          "seed_sd": 0.0032917122707166297
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.010473486149956364,
+          "maximum": 0.015391060284134488,
+          "seed_sd": 0.0026012294344723683
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 32,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.01435278436955747,
+          "maximum": 0.014824848962936475,
+          "seed_sd": 0.00023722280590133374
+        },
+        "cvar.95": {
+          "minimum": 0.014432317714653519,
+          "maximum": 0.02240857180050424,
+          "seed_sd": 0.004371002989113234
+        },
+        "var.99": {
+          "minimum": 0.014434238850688062,
+          "maximum": 0.02312367150385557,
+          "seed_sd": 0.00477666549884285
+        },
+        "cvar.99": {
+          "minimum": 0.014443401191775895,
+          "maximum": 0.026534147012146403,
+          "seed_sd": 0.006713384943614886
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 32,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.014408294263398758,
+          "maximum": 0.015275244332071254,
+          "seed_sd": 0.0004337726790186149
+        },
+        "cvar.95": {
+          "minimum": 0.014440714288231078,
+          "maximum": 0.024333840232603914,
+          "seed_sd": 0.005464737770788461
+        },
+        "var.99": {
+          "minimum": 0.014437194444587364,
+          "maximum": 0.0238937788766954,
+          "seed_sd": 0.005214166221203452
+        },
+        "cvar.99": {
+          "minimum": 0.014443401191775895,
+          "maximum": 0.026534147012146403,
+          "seed_sd": 0.006713384943614887
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 32,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.014408294263398758,
+          "maximum": 0.015275244332071254,
+          "seed_sd": 0.0004337726790186149
+        },
+        "cvar.95": {
+          "minimum": 0.014440714288231078,
+          "maximum": 0.024333840232603914,
+          "seed_sd": 0.005464737770788461
+        },
+        "var.99": {
+          "minimum": 0.014437194444587364,
+          "maximum": 0.0238937788766954,
+          "seed_sd": 0.005214166221203452
+        },
+        "cvar.99": {
+          "minimum": 0.014443401191775895,
+          "maximum": 0.026534147012146403,
+          "seed_sd": 0.006713384943614887
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 32,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.014408294263398758,
+          "maximum": 0.015403928723252623,
+          "seed_sd": 0.000499491836418594
+        },
+        "cvar.95": {
+          "minimum": 0.014440714288231078,
+          "maximum": 0.025099164329836082,
+          "seed_sd": 0.005900451232945061
+        },
+        "var.99": {
+          "minimum": 0.014437194444587364,
+          "maximum": 0.024113809554649684,
+          "seed_sd": 0.005339277642976396
+        },
+        "cvar.99": {
+          "minimum": 0.014443401191775895,
+          "maximum": 0.026534147012146403,
+          "seed_sd": 0.006713384943614886
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 64,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.014235585055578898,
+          "maximum": 0.0149768949709888,
+          "seed_sd": 0.00038981031535389234
+        },
+        "cvar.95": {
+          "minimum": 0.014649751437041413,
+          "maximum": 0.020303795255298584,
+          "seed_sd": 0.0028953471308438257
+        },
+        "var.99": {
+          "minimum": 0.014697879397238723,
+          "maximum": 0.023133655549353024,
+          "seed_sd": 0.004236518867773338
+        },
+        "cvar.99": {
+          "minimum": 0.015131180125459219,
+          "maximum": 0.026534147012146403,
+          "seed_sd": 0.005941400762350403
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 64,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.014349123555045007,
+          "maximum": 0.015255582173915427,
+          "seed_sd": 0.000504269718539856
+        },
+        "cvar.95": {
+          "minimum": 0.014732863956593364,
+          "maximum": 0.021337097705133423,
+          "seed_sd": 0.003411609632083017
+        },
+        "var.99": {
+          "minimum": 0.01481480181596489,
+          "maximum": 0.023237339983442643,
+          "seed_sd": 0.0043514015268594905
+        },
+        "cvar.99": {
+          "minimum": 0.01513118012545922,
+          "maximum": 0.026534147012146403,
+          "seed_sd": 0.005941400762350401
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 64,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.014349123555045007,
+          "maximum": 0.015255582173915427,
+          "seed_sd": 0.000504269718539856
+        },
+        "cvar.95": {
+          "minimum": 0.014732863956593364,
+          "maximum": 0.021337097705133423,
+          "seed_sd": 0.003411609632083017
+        },
+        "var.99": {
+          "minimum": 0.01481480181596489,
+          "maximum": 0.023237339983442643,
+          "seed_sd": 0.0043514015268594905
+        },
+        "cvar.99": {
+          "minimum": 0.01513118012545922,
+          "maximum": 0.026534147012146403,
+          "seed_sd": 0.005941400762350401
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 64,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.014395058822789308,
+          "maximum": 0.015314452485759132,
+          "seed_sd": 0.0005235802217268559
+        },
+        "cvar.95": {
+          "minimum": 0.014754069165174216,
+          "maximum": 0.021819130733352763,
+          "seed_sd": 0.003659296197481953
+        },
+        "var.99": {
+          "minimum": 0.014835435183975391,
+          "maximum": 0.02327504341402068,
+          "seed_sd": 0.004425229430003272
+        },
+        "cvar.99": {
+          "minimum": 0.01513118012545922,
+          "maximum": 0.0265341470121464,
+          "seed_sd": 0.0059414007623504
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    }
+  ],
+  "convergence": [
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -4.32610177680873e-05,
+          "cvar": -0.00017207144861716706
+        },
+        "0.99": {
+          "var": -2.0649978300027114e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -5.506567248942892e-05,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -1.101313449788574e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -5.506567248942892e-05,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -1.101313449788574e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -7.265473019275122e-05,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -1.4530946038550678e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00023621019013557627,
+          "cvar": -8.145492785929798e-05
+        },
+        "0.99": {
+          "var": 0.00015997171100401181,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00032428768482718534,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": 6.485753696543759e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00032428768482718534,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": 6.485753696543759e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00032428768482718534,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": 6.485753696543759e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 5.595499309594683e-05,
+          "cvar": 0.0005743674821081233
+        },
+        "0.99": {
+          "var": 0.0006290409427969646,
+          "cvar": 0.0008687248082711596
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00013519132917118098,
+          "cvar": 0.0008687248082711587
+        },
+        "0.99": {
+          "var": 0.0007220181124511626,
+          "cvar": 0.0008687248082711596
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00013519132917118098,
+          "cvar": 0.0008687248082711587
+        },
+        "0.99": {
+          "var": 0.0007220181124511626,
+          "cvar": 0.0008687248082711596
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0002124694414300176,
+          "cvar": 0.0008687248082711594
+        },
+        "0.99": {
+          "var": 0.00073747373490293,
+          "cvar": 0.0008687248082711596
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.00013062020003470876,
+          "cvar": -0.00025990725077924153
+        },
+        "0.99": {
+          "var": -0.00014683430281998435,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.00031519539747585355,
+          "cvar": -0.00016282029546570674
+        },
+        "0.99": {
+          "var": -7.800572337311566e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.00031519539747585355,
+          "cvar": -0.00016282029546570674
+        },
+        "0.99": {
+          "var": -7.800572337311566e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.00030721918153817627,
+          "cvar": -0.00014240395747627658
+        },
+        "0.99": {
+          "var": -7.34171514099912e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.000668677821675046,
+          "cvar": 0.0016006972371060395
+        },
+        "0.99": {
+          "var": 0.0018960233798051111,
+          "cvar": 0.004942398124616497
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00011350683649899483,
+          "cvar": 0.0032949320830776632
+        },
+        "0.99": {
+          "var": 0.003535168245392693,
+          "cvar": 0.004942398124616498
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00011350683649899483,
+          "cvar": 0.0032949320830776632
+        },
+        "0.99": {
+          "var": 0.003535168245392693,
+          "cvar": 0.004942398124616498
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00011537584184075945,
+          "cvar": 0.003408550430769996
+        },
+        "0.99": {
+          "var": 0.0035845922266388485,
+          "cvar": 0.004942398124616498
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -4.134889648029221e-05,
+          "cvar": -0.00017719015056367354
+        },
+        "0.99": {
+          "var": -0.0001033246896568721,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.289692799432803e-05,
+          "cvar": -0.00022657521521894024
+        },
+        "0.99": {
+          "var": -3.244280579809658e-05,
+          "cvar": 2.168404344971009e-19
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.289692799432803e-05,
+          "cvar": -0.00022657521521894024
+        },
+        "0.99": {
+          "var": -3.244280579809658e-05,
+          "cvar": 2.168404344971009e-19
+        }
+      }
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -3.9354263273606166e-07,
+          "cvar": -0.00019525145274627647
+        },
+        "0.99": {
+          "var": -3.163424037036511e-05,
+          "cvar": 2.168404344971009e-19
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.00034043074207270045,
+          "cvar": -0.0006204457892510376
+        },
+        "0.99": {
+          "var": -0.0002422584500365514,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0006846280492064333,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -0.000136925609841289,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0006846280492064333,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -0.000136925609841289,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0005266642009763406,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -0.00010533284019526848,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 3.421234598055534e-05,
+          "cvar": 0.0003414209478452138
+        },
+        "0.99": {
+          "var": 0.0004025879859065336,
+          "cvar": 0.0005462735165523425
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0002527217526014917,
+          "cvar": 0.0005462735165523424
+        },
+        "0.99": {
+          "var": 0.00048756316376217195,
+          "cvar": 0.0005462735165523425
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0002527217526014917,
+          "cvar": 0.0005462735165523424
+        },
+        "0.99": {
+          "var": 0.00048756316376217195,
+          "cvar": 0.0005462735165523425
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00029879601776158787,
+          "cvar": 0.0005462735165523424
+        },
+        "0.99": {
+          "var": 0.0004967780167941918,
+          "cvar": 0.0005462735165523425
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 2.132237063108268e-05,
+          "cvar": 0.00027405880352458756
+        },
+        "0.99": {
+          "var": 0.00031855269706445764,
+          "cvar": 0.0004384940856393404
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00018545648592039325,
+          "cvar": 0.00043849408563934045
+        },
+        "0.99": {
+          "var": 0.00038788656569555067,
+          "cvar": 0.00043849408563934045
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00018545648592039325,
+          "cvar": 0.00043849408563934045
+        },
+        "0.99": {
+          "var": 0.00038788656569555067,
+          "cvar": 0.00043849408563934045
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0002459000061085237,
+          "cvar": 0.0004384940856393404
+        },
+        "0.99": {
+          "var": 0.00039997526973317726,
+          "cvar": 0.00043849408563934034
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 8.443591127547088e-05,
+          "cvar": -4.869981470299184e-05
+        },
+        "0.99": {
+          "var": -6.0258827940862236e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0004956126589309297,
+          "cvar": -0.00037461482378325613
+        },
+        "0.99": {
+          "var": -1.8958265266772866e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0004956126589309297,
+          "cvar": -0.00037461482378325613
+        },
+        "0.99": {
+          "var": -1.8958265266772866e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0002479471052267662,
+          "cvar": -0.0002358685927524207
+        },
+        "0.99": {
+          "var": -4.909408363707422e-06,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00015311765432213768,
+          "cvar": -3.120329239549729e-05
+        },
+        "0.99": {
+          "var": 3.322430721784718e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -2.222209734225396e-06,
+          "cvar": -7.666796272642884e-05
+        },
+        "0.99": {
+          "var": 7.33544408482536e-07,
+          "cvar": 1.0842021724855044e-19
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -2.222209734225396e-06,
+          "cvar": -7.666796272642884e-05
+        },
+        "0.99": {
+          "var": 7.33544408482536e-07,
+          "cvar": 1.0842021724855044e-19
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 3.4288087468914105e-05,
+          "cvar": -2.8182294599043154e-05
+        },
+        "0.99": {
+          "var": 7.093214764848383e-06,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.264474126216503e-05,
+          "cvar": 7.339787113438967e-06
+        },
+        "0.99": {
+          "var": 0.0001122691733341023,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0001964768148406842,
+          "cvar": -6.260315665103876e-06
+        },
+        "0.99": {
+          "var": 4.8364995515271306e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0001964768148406842,
+          "cvar": -6.260315665103876e-06
+        },
+        "0.99": {
+          "var": 4.8364995515271306e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "regime_historical",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00018544133822810942,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": 3.708826764562171e-05,
+          "cvar": 1.0842021724855044e-19
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.006356362424050188,
+          "cvar": 0.004456081542113259
+        },
+        "0.99": {
+          "var": 0.005010092006194251,
+          "cvar": 0.004566463376820207
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0061433779697968195,
+          "cvar": 0.004498536093923623
+        },
+        "0.99": {
+          "var": 0.004920777577201009,
+          "cvar": 0.004566463376820205
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0061433779697968195,
+          "cvar": 0.004498536093923623
+        },
+        "0.99": {
+          "var": 0.004920777577201009,
+          "cvar": 0.004566463376820205
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.006072383151712359,
+          "cvar": 0.004517404783617118
+        },
+        "0.99": {
+          "var": 0.00489100610086992,
+          "cvar": 0.004566463376820207
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00025736878236273103,
+          "cvar": 0.006875958686070251
+        },
+        "0.99": {
+          "var": 0.0077840849761936295,
+          "cvar": 0.011001533897712412
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0005147375647254621,
+          "cvar": 0.008801227118169924
+        },
+        "0.99": {
+          "var": 0.008515587031679052,
+          "cvar": 0.011001533897712412
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0005147375647254621,
+          "cvar": 0.008801227118169924
+        },
+        "0.99": {
+          "var": 0.008515587031679052,
+          "cvar": 0.011001533897712412
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0005790797603161483,
+          "cvar": 0.009566551215402092
+        },
+        "0.99": {
+          "var": 0.008722749270515195,
+          "cvar": 0.011001533897712412
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 2.220395753651551e-05,
+          "cvar": 1.8472461870630563e-05
+        },
+        "0.99": {
+          "var": 3.704656605756258e-05,
+          "cvar": 2.95559389930089e-05
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.995890445715946e-05,
+          "cvar": 2.6869035448190068e-05
+        },
+        "0.99": {
+          "var": 3.4451170572734335e-05,
+          "cvar": 2.95559389930089e-05
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.995890445715946e-05,
+          "cvar": 2.6869035448190068e-05
+        },
+        "0.99": {
+          "var": 3.4451170572734335e-05,
+          "cvar": 2.95559389930089e-05
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.995890445715946e-05,
+          "cvar": 2.6869035448190068e-05
+        },
+        "0.99": {
+          "var": 3.4451170572734335e-05,
+          "cvar": 2.95559389930089e-05
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0004291908779712125,
+          "cvar": 0.004981983980558985
+        },
+        "0.99": {
+          "var": 0.007792711423264223,
+          "cvar": 0.008295291471510646
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0003859849224194245,
+          "cvar": 0.005972831878583461
+        },
+        "0.99": {
+          "var": 0.00787873476380073,
+          "cvar": 0.008295291471510648
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0003859849224194245,
+          "cvar": 0.005972831878583461
+        },
+        "0.99": {
+          "var": 0.00787873476380073,
+          "cvar": 0.008295291471510648
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0003375575147703258,
+          "cvar": 0.006435996217109306
+        },
+        "0.99": {
+          "var": 0.007910551163194397,
+          "cvar": 0.008295291471510646
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0005892639073575776,
+          "cvar": -0.0038487719541147776
+        },
+        "0.99": {
+          "var": -0.0035204908472680173,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0009261207770262479,
+          "cvar": -0.004813829674378729
+        },
+        "0.99": {
+          "var": -0.0029704141523823058,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0009261207770262479,
+          "cvar": -0.004813829674378729
+        },
+        "0.99": {
+          "var": -0.0029704141523823058,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0010088699004633158,
+          "cvar": -0.005158773353537281
+        },
+        "0.99": {
+          "var": -0.002750383474428103,
+          "cvar": -3.469446951953614e-18
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.440791507302928e-05,
+          "cvar": 0.0002174337223878938
+        },
+        "0.99": {
+          "var": 0.0002636405465506614,
+          "cvar": 0.0006877789336833234
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 1.1157273954686547e-05,
+          "cvar": 0.0002921496683622859
+        },
+        "0.99": {
+          "var": 0.00037760737137752624,
+          "cvar": 0.0006877789336833251
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 1.1157273954686547e-05,
+          "cvar": 0.0002921496683622859
+        },
+        "0.99": {
+          "var": 0.00037760737137752624,
+          "cvar": 0.0006877789336833251
+        }
+      }
+    },
+    {
+      "model": "jump_down",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 1.2358620648378685e-05,
+          "cvar": 0.00031335487694313796
+        },
+        "0.99": {
+          "var": 0.0003982407393880276,
+          "cvar": 0.0006877789336833251
+        }
+      }
+    }
+  ],
+  "performance": {
+    "total_seconds": 571.4845563000126,
+    "cpu_seconds": 108.515625,
+    "max_workers": 8,
+    "worker_account_cpu_seconds": 502.203125,
+    "execution_seconds_scope": "sum of account wall times, including overlaps",
+    "cpu_seconds_scope": "main process; worker account CPU is reported separately",
+    "execution_seconds": 4387.414516000106,
+    "cleanup_seconds": 4.7502549001947045,
+    "generation_seconds": 0.6185643998906016,
+    "statistics_seconds": 2.7041355998662766,
+    "accounts": 576,
+    "process_lifetime_peak_rss_bytes": 212115456,
+    "budget_overrun_seconds": 0.0
+  },
+  "uncertainty": "conditional simulation uncertainty; model calibration uncertainty not quantified"
+}

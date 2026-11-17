@@ -87,10 +87,13 @@ def _participation_line(model, accounts, rows):
     fifo_net = sum(row['fifo_unrealized_pnl'] for row in rows)
     mark_pnl = sum(row['terminal_mark_unrealized_pnl'] for row in rows)
     average_nav = mean(row['terminal_nav'] for row in rows)
+    median_drawdown = median(row['maximum_drawdown'] for row in rows)
+    traded_drawdown = f"{median(row['maximum_drawdown'] for row in traded):.3%}" if traded else '—'
     max_drawdown = max(row['maximum_drawdown'] for row in rows)
     return (f'| {model} | {accounts} | {len(traded)}/{len(rows)}（{len(traded)/len(rows):.2%}） | '
             f'{ever_inventory} | {terminal_inventory} | {utilization:.3%} | {traded_utilization} | '
-            f'{peak_utilization:.3%} | {average_nav:.4f} | {max_drawdown:.3%} | {fifo_net:.4f} | {mark_pnl:.4f} |')
+            f'{peak_utilization:.3%} | {average_nav:.4f} | {median_drawdown:.3%} / {traded_drawdown} | '
+            f'{max_drawdown:.3%} | {fifo_net:.4f} | {mark_pnl:.4f} |')
 
 
 def _nonparticipation_line(model, rows):
@@ -137,11 +140,16 @@ def _jump_lines(rows, evidence):
     added = sum(event['inventory_after'] > event['inventory_before'] for event in events)
     shock = sum(event['fixed_jump_mark_effect'] for event in events)
     nav_change = sum(event['nav_after'] - event['nav_before'] for event in events)
+    terminal_loss = sum(-row['fifo_unrealized_pnl'] for row in rows if row['fifo_unrealized_pnl'] < 0)
+    loss_after_jump = sum(-row['fifo_unrealized_pnl'] for row, count, _ in tail
+                          if count and row['fifo_unrealized_pnl'] < 0)
     lines.extend([
         '',
         f'共 {len(events)} 次事件，其中 {preheld} 次跳前有库存，{added} 次事件小时的净库存增加。'
         f'保持实际背景收益与跳前库存固定，逐事件剥离乘数 0.7 后，跳跃造成的当小时存量标记冲击合计 {shock:.4f} USDT，'
         f'账户在相同小时的 NAV 变化合计 {nav_change:.4f} USDT。后者还包含背景价格变化与当小时交易成本。',
+        f'期末 FIFO 库存亏损的正值合计 {terminal_loss:.4f} USDT，其中 {loss_after_jump:.4f} USDT '
+        '出现在至少一次跳跃的路径。先看无跳跃组的基线，再用跳前有仓事件区分已有仓位遭打击和跌价时开仓。',
         '',
         '| 最差期末路径（seed/path） | 跳跃次数 | 期末 NAV | FIFO 已实现净盈亏 | FIFO 期末库存净盈亏 | 跳前库存固定跳幅冲击 |',
         '| --- | ---: | ---: | ---: | ---: | ---: |',
@@ -236,7 +244,8 @@ def _research_size_lines(groups, calibration, cost_safety_factor, minimum_tail_s
         f'至少需要 {100 * minimum_tail_support:,} 个有效账户支持 99% 尾部。'
         '下面用二项模型规划更有余量的规模，使实际观测达到目标尾部条数的概率至少为 95%。'
         '条件组用三个种子中最小的单独 95% Wilson 参与率下限，再乘以 5% 或 1% 作为每条独立路径的尾部命中概率。'
-        '成本按每模型同一并行度下的固定账户预校准速率估算，包含三种子和预校准安全系数。墙钟包含一次进程池启动，'
+        '成本按每模型在相同并行度下的固定账户预校准速率估算，包含三种子和预校准安全系数。'
+        'Jump-down 用包含进程池冷启动的首批速率外推，长批次的墙钟和 CPU 估算偏保守。'
         'CPU 是全进程树总时长。证据量按预校准的每账户观测值外推。',
         '',
         '| 模型 | 条件组 | 参与率规划下限 | 95% 尾部每种子原始路径 | 三种子墙钟/CPU（小时） | 99% 尾部每种子原始路径 | 三种子墙钟/CPU（小时） | 99% 证据 MiB |',
@@ -306,8 +315,8 @@ def render_financial_report(rows, path_evidence, *, historical_returns, calibrat
     lines.extend([
         '## 参与率、资金利用与回撤',
         '',
-        '| 模型 | 每种子路径 | 成交账户 | 曾持仓数 | 末持仓数 | 平均利用率 | 成交账户平均利用率 | 利用率峰值 | 期末 NAV 均值 | 最大回撤峰值 | FIFO 期末库存净盈亏合计 | 账务未实现盈亏合计 |',
-        '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+        '| 模型 | 每种子路径 | 成交账户 | 曾持仓数 | 末持仓数 | 平均利用率 | 成交账户平均利用率 | 利用率峰值 | 期末 NAV 均值 | 最大回撤中位数（全部 / 已成交） | 最大回撤峰值 | FIFO 期末库存净盈亏合计 | 账务未实现盈亏合计 |',
+        '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
     ])
     for model, selected in groups.items():
         per_seed = len(selected) // len({row['seed'] for row in selected})

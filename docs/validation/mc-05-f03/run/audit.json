@@ -1,0 +1,58 @@
+{
+  "unique_accounts": 576,
+  "price_prefix_digest_comparisons": 1008,
+  "distinct_price_digests": 576,
+  "serial_parallel_exact_accounts": [
+    {
+      "model": "jump_down",
+      "seed": 1729,
+      "path_id": 0
+    },
+    {
+      "model": "regime_historical",
+      "seed": 1729,
+      "path_id": 0
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "seed": 1729,
+      "path_id": 0
+    }
+  ],
+  "f02_prefix_comparison": {
+    "reused": 0,
+    "rows": 144,
+    "compared_fields": 49,
+    "field_differences": [],
+    "separately_compared_correlations": {
+      "return_autocorrelation_1": {
+        "changed": 122,
+        "maximum_absolute_delta": 2.498001805406602e-16
+      },
+      "squared_return_autocorrelation_1": {
+        "changed": 121,
+        "maximum_absolute_delta": 2.220446049250313e-16
+      }
+    },
+    "frozen_full_price_paths_compared": 3,
+    "frozen_full_price_paths_exact": 3,
+    "frozen_latent_paths_compared": 96,
+    "frozen_latent_paths_exact": 96,
+    "reason": "Frozen summaries do not retain a close-series identity and complete ledger for every account."
+  },
+  "maximum_absolute_residual": {
+    "reconciliation_residual": 0.0,
+    "nav_residual": 0.0,
+    "inventory_residual": 0.0
+  },
+  "engineering_status": "ENGINEERING_ACCEPTED",
+  "statistical_status": "STATISTICALLY_UNSTABLE",
+  "convergence_status": "CONVERGENCE_NOT_ESTABLISHED",
+  "financial_status": "FINANCIAL_NOT_ESTABLISHED",
+  "execution_authorization": "NO LIVE MONEY",
+  "completed_by_model": {
+    "jump_down": 64,
+    "regime_historical": 64,
+    "moving_block_bootstrap": 64
+  }
+}
