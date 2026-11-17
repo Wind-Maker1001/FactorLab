@@ -1,11 +1,15 @@
 """Bounded Demo REST events with consumer-acknowledged durable cursors."""
+from contextlib import AbstractContextManager, contextmanager, nullcontext
 from datetime import datetime, timezone
+from time import perf_counter
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from typing import Protocol
 import sqlite3
 
 from factorlab.trading.paper import Quote
 from factorlab.trading.strategy import ClosedBar
+from .observability import RequestCounts
 from .protocol import Environment, ReadOnlyNetworkTransport
 
 SOURCE = 'BINANCE_USDM_DEMO_REST'
@@ -17,6 +21,14 @@ SYMBOL = 'NVDAUSDT'
 
 class FeedPaused(ValueError):
     """Observed market data cannot safely advance the consumer."""
+
+
+class FeedTimings(Protocol):
+    """Telemetry required when a caller supplies an explicit timings object."""
+
+    def sample(self, name: str, seconds: float, /) -> None: ...
+    def measure(self, name: str, /) -> AbstractContextManager[None]: ...
+    def book_received(self, market_at: datetime, received_at: datetime, /) -> None: ...
 
 
 def timestamp(milliseconds):
@@ -38,7 +50,7 @@ class DemoMarketFeed:
     """
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
                  max_backfill=120, max_quote_age=5, initial_bars=1, catch_up=False,
-                 clock=lambda: datetime.now(timezone.utc)):
+                 clock=lambda: datetime.now(timezone.utc), timings: FeedTimings | None = None):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -51,6 +63,13 @@ class DemoMarketFeed:
             raise ValueError('quote freshness must be within five seconds')
         if type(initial_bars) is not int or not 1 <= initial_bars <= max_backfill:
             raise ValueError('initial history must fit backfill bound')
+        if timings is None:
+            request_counts = getattr(client, 'request_counts', None)
+            if isinstance(request_counts, RequestCounts):
+                timings = request_counts
+        self.timings = timings
+        self.commit_seconds = 0.
+        self.commit_count = 0
         self.catch_up = catch_up
         self.initial_bars = initial_bars
         self.client, self.consumer, self.clock = client, consumer, clock
@@ -63,10 +82,34 @@ class DemoMarketFeed:
         self.db.execute('PRAGMA synchronous=FULL')
         self.db.execute('CREATE TABLE IF NOT EXISTS cursor (id TEXT PRIMARY KEY, bar INTEGER, quote INTEGER)')
         self.identity = f'{SOURCE}:{SYMBOL}:{interval}:{consumer_id}'
-        with self.db:
+        with self._transaction():
             if 'initial_start' not in {row[1] for row in self.db.execute('PRAGMA table_info(cursor)')}:
                 self.db.execute('ALTER TABLE cursor ADD COLUMN initial_start INTEGER')
             self.db.execute('INSERT OR IGNORE INTO cursor (id, bar, quote) VALUES (?, NULL, NULL)', (self.identity,))
+
+    def _measure(self, name):
+        return self.timings.measure(name) if self.timings is not None else nullcontext()
+
+    @contextmanager
+    def _transaction(self):
+        try:
+            yield
+            started = perf_counter()
+            try:
+                self.db.commit()
+            finally:
+                elapsed = perf_counter() - started
+                self.commit_seconds += elapsed
+                self.commit_count += 1
+                if self.timings is not None:
+                    self.timings.sample('cursor_commit', elapsed)
+        except BaseException:
+            self.db.rollback()
+            raise
+
+    def _closed_bar(self, bar):
+        with self._measure('closed_bar_callback'):
+            return self.consumer.closed_bar(bar)
 
     def close(self):
         self.db.close()
@@ -78,7 +121,7 @@ class DemoMarketFeed:
         self.status, self.reason = 'PAUSED', reason
 
     def _ack(self, column, value):
-        with self.db:
+        with self._transaction():
             self.db.execute(f'UPDATE cursor SET {column}=? WHERE id=?', (value, self.identity))
 
     def poll(self):
@@ -104,7 +147,7 @@ class DemoMarketFeed:
             (self.identity,)).fetchone()[0]
         if last_bar is None and initial_start is None:
             initial_start = boundary - width * self.initial_bars
-            with self.db:
+            with self._transaction():
                 self.db.execute('UPDATE cursor SET initial_start=? WHERE id=?',
                     (initial_start, self.identity))
         start = last_bar if last_bar is not None else initial_start
@@ -152,13 +195,16 @@ class DemoMarketFeed:
             raise FeedPaused('BAR_SEQUENCE_GAP')
         if catching_up:
             for bar in bars:
-                self.consumer.closed_bar(bar)
+                self._closed_bar(bar)
                 self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
             self.pause('CATCHING_UP')
             return dict(bars=len(bars), quotes=0)
         raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
+        book_received_at = self.clock()
         try:
             observed = timestamp(raw['time'])
+            if self.timings is not None:
+                self.timings.book_received(observed, book_received_at)
             bid, ask = Decimal(raw['bidPrice']), Decimal(raw['askPrice'])
             symbol = raw['symbol']
         except (KeyError, TypeError, ValueError, InvalidOperation) as error:
@@ -173,13 +219,12 @@ class DemoMarketFeed:
         # Validate the entire batch before advancing even one strategy input.
         if (self.clock() - server_at).total_seconds() > self.max_quote_age:
             raise FeedPaused('STALE_POLL')
-        book_received_at = self.clock()
         raw_by_open = {row[0]: row for row in rows}
         for bar in bars:
             if hasattr(self.consumer, 'observe_bar_receipt'):
                 self.consumer.observe_bar_receipt(bar,
                     raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.clock())
-            self.consumer.closed_bar(bar)
+            self._closed_bar(bar)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
         delivered = 0
         if last_quote is None or raw['time'] > last_quote:

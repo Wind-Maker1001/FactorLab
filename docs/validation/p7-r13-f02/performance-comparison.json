@@ -1,0 +1,40 @@
+{
+  "transport": "INTERCEPTED_HTTP",
+  "virtual_http_seconds_per_request": 0.25,
+  "comparisons": [
+    {
+      "original": {
+        "deterministic_http_seconds": 3.25,
+        "first_round_gets_including_feed": 16,
+        "gets": 13,
+        "http_seconds_per_request": 0.25,
+        "wall_seconds": 0.19826699999975972
+      },
+      "pending": false,
+      "shared": {
+        "deterministic_http_seconds": 3.25,
+        "first_round_gets_including_feed": 16,
+        "gets": 13,
+        "http_seconds_per_request": 0.25,
+        "wall_seconds": 0.19842820000485517
+      }
+    },
+    {
+      "original": {
+        "deterministic_http_seconds": 6.5,
+        "first_round_gets_including_feed": 29,
+        "gets": 26,
+        "http_seconds_per_request": 0.25,
+        "wall_seconds": 0.34679599999799393
+      },
+      "pending": true,
+      "shared": {
+        "deterministic_http_seconds": 3.25,
+        "first_round_gets_including_feed": 16,
+        "gets": 13,
+        "http_seconds_per_request": 0.25,
+        "wall_seconds": 0.19577879999997094
+      }
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="0.946" timestamp="2026-11-17T12:01:52.767070+08:00"><testcase classname="tests.integrations.test_forward_round_telemetry" name="test_failed_cursor_commit_rolls_back_acknowledgement" time="0.278" /></testsuite></testsuites>

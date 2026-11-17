@@ -1,3 +1,4 @@
+from contextlib import closing
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 import json
@@ -7,6 +8,7 @@ import pytest
 
 from factorlab.integrations.binance.client import Response
 from factorlab.integrations.binance_futures_trading.demo_market_feed import DemoMarketFeed, FeedPaused, SOURCE
+from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import MarketClient
 from factorlab.integrations.binance_futures_trading.demo_supervisor import DemoSupervisor
 from factorlab.integrations.binance_futures_trading.protocol import Environment, FuturesClient, OfflineTransport
 
@@ -59,6 +61,20 @@ def make(tmp_path, transport=None, consumer=None, **kwargs):
     feed = DemoMarketFeed(client, consumer, state_path=tmp_path / 'cursor.sqlite', consumer_id='test',
         clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc), **kwargs)
     return feed, transport, consumer
+
+
+def test_market_client_with_plain_request_counts_initializes_and_polls(tmp_path):
+    counts = dict(GET=0, POST=0, DELETE=0)
+    client = MarketClient(counts)
+    transport = Transport()
+    client.transport = transport
+    with closing(DemoMarketFeed(client, Consumer(), state_path=tmp_path / 'cursor.sqlite',
+            consumer_id='test', clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc))) as feed:
+        assert feed.watermarks() == (None, None)
+        assert counts == dict(GET=0, POST=0, DELETE=0)
+        assert feed.poll() == dict(bars=1, quotes=1)
+        assert feed.watermarks() == (180000, 180001)
+        assert counts == dict(GET=3, POST=0, DELETE=0)
 
 
 def test_strategy_bootstrap_range_survives_failed_callback_and_restart(tmp_path):

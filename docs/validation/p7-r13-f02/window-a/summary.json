@@ -1,0 +1,748 @@
+{
+  "engineering": "SEE_OFFLINE_TESTS",
+  "real_observation": "REAL_OBSERVATION_NOT_RUN",
+  "requests": {
+    "GET": 44,
+    "POST": 0,
+    "DELETE": 0
+  },
+  "source": "BINANCE_USDM_DEMO_REST",
+  "version": "0f3b29ce717b2d93cb944f3cc2e800cf8015ea45",
+  "no_live_money": true,
+  "parameters": {
+    "seconds": 600.0,
+    "sample_seconds": 5.0,
+    "window_seconds": 600.0,
+    "max_bytes": 5242880,
+    "max_proposals": 20
+  },
+  "feed_reason": "STOPPED",
+  "proposals": 0,
+  "price_touched": 0,
+  "potential_conditions": 0,
+  "not_touched": 0,
+  "right_censored": 0,
+  "confirmed_exchange_fills": 0,
+  "books": 0,
+  "rejected_books": 0,
+  "run_books": 0,
+  "api": {
+    "round_loop": {
+      "count": 1,
+      "p50_seconds": 12.148512099985965,
+      "p95_seconds": 12.148512099985965,
+      "max_seconds": 12.148512099985965
+    },
+    "round_operations": {
+      "account_get": {
+        "count": 14,
+        "total_seconds": 8.55704460007837,
+        "p50_seconds": 0.5642247000068892,
+        "p95_seconds": 0.8257195000187494,
+        "max_seconds": 0.8257195000187494
+      },
+      "market_get": {
+        "count": 4,
+        "total_seconds": 3.288695799972629,
+        "p50_seconds": 0.567686299997149,
+        "p95_seconds": 1.5688703999912832,
+        "max_seconds": 1.5688703999912832
+      },
+      "grid_recovery": {
+        "count": 1,
+        "total_seconds": 9.416630499996245,
+        "p50_seconds": 9.416630499996245,
+        "p95_seconds": 9.416630499996245,
+        "max_seconds": 9.416630499996245
+      },
+      "cursor_commit": {
+        "count": 1,
+        "total_seconds": 0.0037514000141527504,
+        "p50_seconds": 0.0037514000141527504,
+        "p95_seconds": 0.0037514000141527504,
+        "max_seconds": 0.0037514000141527504
+      },
+      "book_market_to_received": {
+        "count": 1,
+        "total_seconds": 3.6181,
+        "p50_seconds": 3.6181,
+        "p95_seconds": 3.6181,
+        "max_seconds": 3.6181
+      },
+      "controller_commit": {
+        "count": 1,
+        "total_seconds": 0.00543299998389557,
+        "p50_seconds": 0.00543299998389557,
+        "p95_seconds": 0.00543299998389557,
+        "max_seconds": 0.00543299998389557
+      },
+      "protocol_commit": {
+        "count": 1,
+        "total_seconds": 0.021876900020288303,
+        "p50_seconds": 0.021876900020288303,
+        "p95_seconds": 0.021876900020288303,
+        "max_seconds": 0.021876900020288303
+      },
+      "feed_commit": {
+        "count": 1,
+        "total_seconds": 0.0037514000141527504,
+        "p50_seconds": 0.0037514000141527504,
+        "p95_seconds": 0.0037514000141527504,
+        "max_seconds": 0.0037514000141527504
+      },
+      "evidence_fsync": {
+        "count": 1,
+        "total_seconds": 0.1550320001260843,
+        "p50_seconds": 0.1550320001260843,
+        "p95_seconds": 0.1550320001260843,
+        "max_seconds": 0.1550320001260843
+      },
+      "scheduling_wait": {
+        "count": 1,
+        "total_seconds": 0.0,
+        "p50_seconds": 0.0,
+        "p95_seconds": 0.0,
+        "max_seconds": 0.0
+      }
+    },
+    "scope": "PROCESS_SINCE_START",
+    "endpoints": [
+      {
+        "phase": "initialization",
+        "source": "feed",
+        "method": "GET",
+        "endpoint": "/fapi/v1/exchangeInfo",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 0.9670587999862619,
+        "last_seconds": 0.9670587999862619,
+        "max_seconds": 0.9670587999862619,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/apiTradingStatus",
+        "count": 3,
+        "errors": {},
+        "total_seconds": 1.6187224999594036,
+        "last_seconds": 0.5484654999745544,
+        "max_seconds": 0.5526524999877438,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/exchangeInfo",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 1.125229199999012,
+        "last_seconds": 1.125229199999012,
+        "max_seconds": 1.125229199999012,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/leverageBracket",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 0.4957218000199646,
+        "last_seconds": 0.4957218000199646,
+        "max_seconds": 0.4957218000199646,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/openOrders",
+        "count": 3,
+        "errors": {},
+        "total_seconds": 1.8202687000157312,
+        "last_seconds": 0.7210443000076339,
+        "max_seconds": 0.7210443000076339,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/positionSide/dual",
+        "count": 3,
+        "errors": {},
+        "total_seconds": 1.6300133000186179,
+        "last_seconds": 0.5862876000173856,
+        "max_seconds": 0.5862876000173856,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/symbolConfig",
+        "count": 3,
+        "errors": {},
+        "total_seconds": 2.795039299991913,
+        "last_seconds": 1.0721887999970932,
+        "max_seconds": 1.0721887999970932,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/ticker/bookTicker",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 0.5614891999866813,
+        "last_seconds": 0.5614891999866813,
+        "max_seconds": 0.5614891999866813,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/time",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 0.503440500004217,
+        "last_seconds": 0.503440500004217,
+        "max_seconds": 0.503440500004217,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v2/account",
+        "count": 3,
+        "errors": {},
+        "total_seconds": 3.385469800006831,
+        "last_seconds": 0.8181593000190333,
+        "max_seconds": 1.7321098999818787,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v3/account",
+        "count": 3,
+        "errors": {},
+        "total_seconds": 1.5836297000059858,
+        "last_seconds": 0.5466405999904964,
+        "max_seconds": 0.5466405999904964,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "initialization",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v3/positionRisk",
+        "count": 3,
+        "errors": {},
+        "total_seconds": 1.604340999998385,
+        "last_seconds": 0.4811635999940336,
+        "max_seconds": 0.5776688999903854,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "feed",
+        "method": "GET",
+        "endpoint": "/fapi/v1/klines",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 1.5688703999912832,
+        "last_seconds": 1.5688703999912832,
+        "max_seconds": 1.5688703999912832,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "feed",
+        "method": "GET",
+        "endpoint": "/fapi/v1/ticker/bookTicker",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 0.567686299997149,
+        "last_seconds": 0.567686299997149,
+        "max_seconds": 0.567686299997149,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "feed",
+        "method": "GET",
+        "endpoint": "/fapi/v1/time",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 0.5523209999955725,
+        "last_seconds": 0.5523209999955725,
+        "max_seconds": 0.5523209999955725,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/apiTradingStatus",
+        "count": 2,
+        "errors": {},
+        "total_seconds": 1.1834369000280276,
+        "last_seconds": 0.6372406000155024,
+        "max_seconds": 0.6372406000155024,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/openOrders",
+        "count": 2,
+        "errors": {},
+        "total_seconds": 1.1063281999959145,
+        "last_seconds": 0.5675706000183709,
+        "max_seconds": 0.5675706000183709,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/positionSide/dual",
+        "count": 2,
+        "errors": {},
+        "total_seconds": 1.0809717000229284,
+        "last_seconds": 0.591019800020149,
+        "max_seconds": 0.591019800020149,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/symbolConfig",
+        "count": 2,
+        "errors": {},
+        "total_seconds": 1.3932549000310246,
+        "last_seconds": 0.6745379000203684,
+        "max_seconds": 0.7187170000106562,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v1/ticker/bookTicker",
+        "count": 1,
+        "errors": {},
+        "total_seconds": 0.5998180999886245,
+        "last_seconds": 0.5998180999886245,
+        "max_seconds": 0.5998180999886245,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v2/account",
+        "count": 2,
+        "errors": {},
+        "total_seconds": 1.6159958000062034,
+        "last_seconds": 0.790276299987454,
+        "max_seconds": 0.8257195000187494,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v3/account",
+        "count": 2,
+        "errors": {},
+        "total_seconds": 1.074501399998553,
+        "last_seconds": 0.5307229000027291,
+        "max_seconds": 0.543778499995824,
+        "error_rate": 0.0
+      },
+      {
+        "phase": "recovery",
+        "source": "session",
+        "method": "GET",
+        "endpoint": "/fapi/v3/positionRisk",
+        "count": 2,
+        "errors": {},
+        "total_seconds": 1.102555699995719,
+        "last_seconds": 0.5642247000068892,
+        "max_seconds": 0.5642247000068892,
+        "error_rate": 0.0
+      }
+    ],
+    "observed_weight_headers": {
+      "session:x-mbx-used-weight-1m": "4",
+      "feed:x-mbx-used-weight-1m": "2"
+    },
+    "rounds": [
+      {
+        "phase": "recovery",
+        "loop_seconds": 12.148512099985965,
+        "started_at": "2026-11-17T04:05:41.258816+00:00",
+        "ended_at": "2026-11-17T04:05:53.407102+00:00",
+        "within_max_interval": true,
+        "timing_boundary": "ROUND_START_THROUGH_WAIT_EXCLUDES_SUMMARY_SINK",
+        "previous_start_to_start_within_max_interval": null,
+        "book_market_at": "2026-11-17T04:05:49.787000+00:00",
+        "book_received_at": "2026-11-17T04:05:53.405100+00:00",
+        "request_count": 18,
+        "retained_requests": 18,
+        "requests": [
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v3/account",
+            "classification": "account_get",
+            "rtt_seconds": 0.543778499995824,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v3/positionRisk",
+            "classification": "account_get",
+            "rtt_seconds": 0.5383309999888297,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/positionSide/dual",
+            "classification": "account_get",
+            "rtt_seconds": 0.48995190000277944,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/openOrders",
+            "classification": "account_get",
+            "rtt_seconds": 0.5387575999775436,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/symbolConfig",
+            "classification": "account_get",
+            "rtt_seconds": 0.7187170000106562,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v2/account",
+            "classification": "account_get",
+            "rtt_seconds": 0.8257195000187494,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/apiTradingStatus",
+            "classification": "account_get",
+            "rtt_seconds": 0.5461963000125252,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v3/account",
+            "classification": "account_get",
+            "rtt_seconds": 0.5307229000027291,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v3/positionRisk",
+            "classification": "account_get",
+            "rtt_seconds": 0.5642247000068892,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/positionSide/dual",
+            "classification": "account_get",
+            "rtt_seconds": 0.591019800020149,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/openOrders",
+            "classification": "account_get",
+            "rtt_seconds": 0.5675706000183709,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/symbolConfig",
+            "classification": "account_get",
+            "rtt_seconds": 0.6745379000203684,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v2/account",
+            "classification": "account_get",
+            "rtt_seconds": 0.790276299987454,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/apiTradingStatus",
+            "classification": "account_get",
+            "rtt_seconds": 0.6372406000155024,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "session",
+            "method": "GET",
+            "endpoint": "/fapi/v1/ticker/bookTicker",
+            "classification": "market_get",
+            "rtt_seconds": 0.5998180999886245,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "feed",
+            "method": "GET",
+            "endpoint": "/fapi/v1/time",
+            "classification": "market_get",
+            "rtt_seconds": 0.5523209999955725,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "feed",
+            "method": "GET",
+            "endpoint": "/fapi/v1/klines",
+            "classification": "market_get",
+            "rtt_seconds": 1.5688703999912832,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          },
+          {
+            "source": "feed",
+            "method": "GET",
+            "endpoint": "/fapi/v1/ticker/bookTicker",
+            "classification": "market_get",
+            "rtt_seconds": 0.567686299997149,
+            "error": null,
+            "http_status": 200,
+            "http_failure": false,
+            "throttled": false
+          }
+        ],
+        "max_quote_gap_seconds": 30.0,
+        "quote_gap_exceeded": false,
+        "operations": {
+          "account_get": {
+            "count": 14,
+            "total_seconds": 8.55704460007837,
+            "p50_seconds": 0.5642247000068892,
+            "p95_seconds": 0.8257195000187494,
+            "max_seconds": 0.8257195000187494
+          },
+          "market_get": {
+            "count": 4,
+            "total_seconds": 3.288695799972629,
+            "p50_seconds": 0.567686299997149,
+            "p95_seconds": 1.5688703999912832,
+            "max_seconds": 1.5688703999912832
+          },
+          "grid_recovery": {
+            "count": 1,
+            "total_seconds": 9.416630499996245,
+            "p50_seconds": 9.416630499996245,
+            "p95_seconds": 9.416630499996245,
+            "max_seconds": 9.416630499996245
+          },
+          "cursor_commit": {
+            "count": 1,
+            "total_seconds": 0.0037514000141527504,
+            "p50_seconds": 0.0037514000141527504,
+            "p95_seconds": 0.0037514000141527504,
+            "max_seconds": 0.0037514000141527504
+          },
+          "book_market_to_received": {
+            "count": 1,
+            "total_seconds": 3.6181,
+            "p50_seconds": 3.6181,
+            "p95_seconds": 3.6181,
+            "max_seconds": 3.6181
+          },
+          "controller_commit": {
+            "count": 1,
+            "total_seconds": 0.00543299998389557,
+            "p50_seconds": 0.00543299998389557,
+            "p95_seconds": 0.00543299998389557,
+            "max_seconds": 0.00543299998389557
+          },
+          "protocol_commit": {
+            "count": 1,
+            "total_seconds": 0.021876900020288303,
+            "p50_seconds": 0.021876900020288303,
+            "p95_seconds": 0.021876900020288303,
+            "max_seconds": 0.021876900020288303
+          },
+          "feed_commit": {
+            "count": 1,
+            "total_seconds": 0.0037514000141527504,
+            "p50_seconds": 0.0037514000141527504,
+            "p95_seconds": 0.0037514000141527504,
+            "max_seconds": 0.0037514000141527504
+          },
+          "evidence_fsync": {
+            "count": 1,
+            "total_seconds": 0.1550320001260843,
+            "p50_seconds": 0.1550320001260843,
+            "p95_seconds": 0.1550320001260843,
+            "max_seconds": 0.1550320001260843
+          },
+          "scheduling_wait": {
+            "count": 1,
+            "total_seconds": 0.0,
+            "p50_seconds": 0.0,
+            "p95_seconds": 0.0,
+            "max_seconds": 0.0
+          }
+        },
+        "wait_seconds": 0.0,
+        "scheduled_wait_seconds": 5.0,
+        "interrupted": true,
+        "error": "FeedPaused",
+        "caught_error": "FeedPaused",
+        "status": "PAUSED",
+        "reason": "STALE_POLL",
+        "bars": 0,
+        "quotes": 0,
+        "cumulative_seconds": {
+          "controller_commit": 0.00543299998389557,
+          "protocol_commit": 0.021876900020288303,
+          "feed_commit": 0.0037514000141527504,
+          "evidence_fsync": 0.1550320001260843
+        }
+      }
+    ]
+  },
+  "reserved_requests": 44,
+  "evidence_fsync_seconds": 0.4355130002077203,
+  "experiment": {
+    "kind": "experiment",
+    "parameters": {
+      "seconds": 600.0,
+      "sample_seconds": 5.0,
+      "window_seconds": 600.0,
+      "max_bytes": 5242880,
+      "max_proposals": 20,
+      "max_requests": 600,
+      "settings": null,
+      "version": "0f3b29ce717b2d93cb944f3cc2e800cf8015ea45",
+      "symbol": "NVDAUSDT",
+      "experiment_id": "p7-r13-f02-forward-feed-scheduling-a",
+      "max_quote_gap_seconds": 30.0,
+      "collector_source_sha256": "ea41193e45d966805228dc9f76c734d2101a5ae180039615199fba9cb8d21116",
+      "strategy_definition": {
+        "factory": "P7_M13_GRID_FACTORY",
+        "settings": null,
+        "default_range_multipliers": [
+          "0.99",
+          "1.01"
+        ],
+        "levels": 1,
+        "initial_inventory": 0,
+        "quantity": 1,
+        "max_inventory": 1,
+        "max_cash_committed": 7,
+        "breakout": "pause"
+      },
+      "market": "BINANCE_USDM_DEMO",
+      "interval_seconds": 60,
+      "interruption_rule": "STOP_WITHOUT_RETRY",
+      "restart_rule": "REFUSE",
+      "limit_rule": "ORIGINAL_LEGAL_PROPOSAL_LIMIT_IMMUTABLE",
+      "termination": [
+        "ABSOLUTE_DEADLINE",
+        "REQUEST_BUDGET",
+        "BYTE_BUDGET",
+        "PROPOSAL_BUDGET",
+        "DATA_INTERRUPTION",
+        "SIGNAL"
+      ],
+      "minimum_request_interval_seconds": 0,
+      "minimum_poll_delay_seconds": 5.0,
+      "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774"
+    },
+    "started_at": "2026-11-17T04:05:22.619813+00:00",
+    "deadline": "2026-11-17T04:15:22.619813+00:00"
+  },
+  "ended_at": "2026-11-17T04:05:53.412989+00:00"
+}

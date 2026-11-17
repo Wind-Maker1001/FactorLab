@@ -1,0 +1,158 @@
+{
+  "experiment": {
+    "kind": "experiment",
+    "parameters": {
+      "seconds": 600.0,
+      "sample_seconds": 5.0,
+      "window_seconds": 600.0,
+      "max_bytes": 5242880,
+      "max_proposals": 20,
+      "max_requests": 600,
+      "settings": null,
+      "version": "0f3b29ce717b2d93cb944f3cc2e800cf8015ea45",
+      "symbol": "NVDAUSDT",
+      "experiment_id": "p7-r13-f02-forward-feed-scheduling-a",
+      "max_quote_gap_seconds": 30.0,
+      "collector_source_sha256": "ea41193e45d966805228dc9f76c734d2101a5ae180039615199fba9cb8d21116",
+      "strategy_definition": {
+        "factory": "P7_M13_GRID_FACTORY",
+        "settings": null,
+        "default_range_multipliers": [
+          "0.99",
+          "1.01"
+        ],
+        "levels": 1,
+        "initial_inventory": 0,
+        "quantity": 1,
+        "max_inventory": 1,
+        "max_cash_committed": 7,
+        "breakout": "pause"
+      },
+      "market": "BINANCE_USDM_DEMO",
+      "interval_seconds": 60,
+      "interruption_rule": "STOP_WITHOUT_RETRY",
+      "restart_rule": "REFUSE",
+      "limit_rule": "ORIGINAL_LEGAL_PROPOSAL_LIMIT_IMMUTABLE",
+      "termination": [
+        "ABSOLUTE_DEADLINE",
+        "REQUEST_BUDGET",
+        "BYTE_BUDGET",
+        "PROPOSAL_BUDGET",
+        "DATA_INTERRUPTION",
+        "SIGNAL"
+      ],
+      "minimum_request_interval_seconds": 0,
+      "minimum_poll_delay_seconds": 5.0,
+      "strategy_definition_sha256": "fbf38aaaba653e366e2b032f32fc98201e556e1760c204341216be6215c14774"
+    },
+    "started_at": "2026-11-17T04:05:22.619813+00:00",
+    "deadline": "2026-11-17T04:15:22.619813+00:00"
+  },
+  "ended_at": "2026-11-17T04:05:53.412989+00:00",
+  "requests": {
+    "GET": 44,
+    "POST": 0,
+    "DELETE": 0
+  },
+  "reserved_requests": 44,
+  "terminal": [
+    {
+      "at": "2026-11-17T04:05:53.405100+00:00",
+      "kind": "interruption",
+      "reason": "STALE_POLL"
+    },
+    {
+      "at": "2026-11-17T04:05:53.410985+00:00",
+      "kind": "window_end",
+      "reason": "STOPPED"
+    }
+  ],
+  "counts": {
+    "books": 0,
+    "proposals": 0,
+    "price_touched": 0,
+    "potential_conditions": 0,
+    "right_censored": 0,
+    "confirmed_exchange_fills": 0
+  },
+  "loop": {
+    "count": 1,
+    "p50_seconds": 12.148512099985965,
+    "p95_seconds": 12.148512099985965,
+    "max_seconds": 12.148512099985965
+  },
+  "operations": {
+    "account_get": {
+      "count": 14,
+      "total_seconds": 8.55704460007837,
+      "p50_seconds": 0.5642247000068892,
+      "p95_seconds": 0.8257195000187494,
+      "max_seconds": 0.8257195000187494
+    },
+    "market_get": {
+      "count": 4,
+      "total_seconds": 3.288695799972629,
+      "p50_seconds": 0.567686299997149,
+      "p95_seconds": 1.5688703999912832,
+      "max_seconds": 1.5688703999912832
+    },
+    "grid_recovery": {
+      "count": 1,
+      "total_seconds": 9.416630499996245,
+      "p50_seconds": 9.416630499996245,
+      "p95_seconds": 9.416630499996245,
+      "max_seconds": 9.416630499996245
+    },
+    "cursor_commit": {
+      "count": 1,
+      "total_seconds": 0.0037514000141527504,
+      "p50_seconds": 0.0037514000141527504,
+      "p95_seconds": 0.0037514000141527504,
+      "max_seconds": 0.0037514000141527504
+    },
+    "book_market_to_received": {
+      "count": 1,
+      "total_seconds": 3.6181,
+      "p50_seconds": 3.6181,
+      "p95_seconds": 3.6181,
+      "max_seconds": 3.6181
+    },
+    "controller_commit": {
+      "count": 1,
+      "total_seconds": 0.00543299998389557,
+      "p50_seconds": 0.00543299998389557,
+      "p95_seconds": 0.00543299998389557,
+      "max_seconds": 0.00543299998389557
+    },
+    "protocol_commit": {
+      "count": 1,
+      "total_seconds": 0.021876900020288303,
+      "p50_seconds": 0.021876900020288303,
+      "p95_seconds": 0.021876900020288303,
+      "max_seconds": 0.021876900020288303
+    },
+    "feed_commit": {
+      "count": 1,
+      "total_seconds": 0.0037514000141527504,
+      "p50_seconds": 0.0037514000141527504,
+      "p95_seconds": 0.0037514000141527504,
+      "max_seconds": 0.0037514000141527504
+    },
+    "evidence_fsync": {
+      "count": 1,
+      "total_seconds": 0.1550320001260843,
+      "p50_seconds": 0.1550320001260843,
+      "p95_seconds": 0.1550320001260843,
+      "max_seconds": 0.1550320001260843
+    },
+    "scheduling_wait": {
+      "count": 1,
+      "total_seconds": 0.0,
+      "p50_seconds": 0.0,
+      "p95_seconds": 0.0,
+      "max_seconds": 0.0
+    }
+  },
+  "http_errors": 0,
+  "evidence_fsync_seconds": 0.4355130002077203
+}

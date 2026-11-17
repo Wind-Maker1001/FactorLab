@@ -1,0 +1,30 @@
+{
+  "counts": {
+    "observation_windows": 1,
+    "independent_proposals": 0,
+    "input_proposal_records": 0,
+    "captured_books": 0,
+    "forward_quote_pairs": 0,
+    "touched_proposals": 0,
+    "right_censored_proposals": 0,
+    "qualified_books": 0,
+    "qualified_forward_quote_pairs": 0
+  },
+  "windows": [
+    {
+      "observation_id": "p7-r13-f02-forward-feed-scheduling-a",
+      "evidence_hash": "cd91eab8ed2b133bbf72b184d659e0f4dd5a2ce4351135029b0eaf678b193b7a",
+      "engineering_status": "INVALID_EVIDENCE",
+      "sample_status": "INSUFFICIENT_SAMPLE",
+      "issues": [
+        {
+          "code": "DECLARED_OBSERVATION_GAP",
+          "identity": null
+        }
+      ]
+    }
+  ],
+  "receipt_status": "UNVERIFIED_RECEIPT",
+  "economic_status": "ECONOMIC_ADVANTAGE_NOT_ESTABLISHED",
+  "confirmed_exchange_fills": 0
+}

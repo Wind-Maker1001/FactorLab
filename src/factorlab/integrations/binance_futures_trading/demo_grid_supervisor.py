@@ -1,6 +1,6 @@
 """Closed-bar Binance Demo Grid worker with isolated GET-only previews."""
 import argparse
-from contextlib import closing
+from contextlib import closing, nullcontext
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D, ROUND_CEILING, ROUND_FLOOR
@@ -64,7 +64,9 @@ def grid_factory(settings, *, new_deployment=False):
 class GridConsumer:
     """Bars advance Grid; GET reports alone advance economic state."""
     def __init__(self, bridge, control, *, authority=lambda: True,
-                 clock=lambda: datetime.now(timezone.utc), proposal_observer=None, ensure_campaign=None):
+                 clock=lambda: datetime.now(timezone.utc), proposal_observer=None, ensure_campaign=None,
+                 request_counts=None):
+        self.request_counts = request_counts
         self.ensure_campaign = ensure_campaign
         self.proposal_observer = proposal_observer
         self.bridge, self.control, self.authority, self.clock = bridge, control, authority, clock
@@ -84,6 +86,9 @@ class GridConsumer:
         if not self.running or not self.live_bar:
             raise SafetyBlocked('FRESH_CLOSED_BAR_REQUIRED')
 
+    def recovered(self):
+        """Complete consumer recovery before withdrawing any unsubmitted proposals."""
+
     def before_poll(self):
         desired = self.control.desired()
         if desired == 'STOPPED':
@@ -91,7 +96,9 @@ class GridConsumer:
             self.supervisor.stop()
             return
         try:
-            self.bridge.recover()
+            with self.request_counts.measure('grid_recovery') if self.request_counts is not None else nullcontext():
+                self.bridge.recover()
+            self.recovered()
             if desired == 'RUNNING' and self.ensure_campaign is not None:
                 self.ensure_campaign()
         except SafetyBlocked as error:

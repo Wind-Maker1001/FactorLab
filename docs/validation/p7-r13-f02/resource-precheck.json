@@ -1,0 +1,27 @@
+{
+  "created_at": "2026-11-17T04:02:16.257163+00:00",
+  "experiment_id": "p7-r13-f02-forward-feed-scheduling-a",
+  "collector_source_sha256": "ea41193e45d966805228dc9f76c734d2101a5ae180039615199fba9cb8d21116",
+  "frozen": {
+    "seconds": 600,
+    "max_requests": 600,
+    "max_proposals": 20,
+    "max_bytes": 5242880,
+    "sample_seconds": 5,
+    "max_quote_gap_seconds": 30
+  },
+  "basis": "F01 endpoint mean HTTP timings; preserved dual account observation; no pending and same canTrade fallback",
+  "account_gets_per_recovery": 14,
+  "market_gets_per_recovery": 1,
+  "feed_gets_per_round": 3,
+  "startup_gets_inferred_from_F01": 26,
+  "historical_mean_recovery_http_seconds": 16.059561531436962,
+  "historical_mean_feed_http_seconds": 3.1136080433250752,
+  "inferred_startup_seconds": 25.901830425237964,
+  "projected_rounds": 24,
+  "projected_gets": 458,
+  "fast_network_scheduling_envelope_gets": 2186,
+  "decision": "BOUNDED_ATTEMPT_WITH_IMMUTABLE_REQUEST_BUDGET",
+  "termination": "Original REQUEST_BUDGET/CAPACITY_LIMIT if exhausted; no resize or restart",
+  "writes_permitted": 0
+}

@@ -76,6 +76,8 @@ class PaperStore:
         self.continuous_capacity = continuous_capacity
         self.max_orders = None if continuous_capacity else max_orders
         self.max_events = None if continuous_capacity else max_events
+        self.commit_seconds = 0.
+        self.commit_count = 0
         self.transaction_count = 0
         self.last_transaction = None
         self.last_transaction_times = None
@@ -100,7 +102,12 @@ class PaperStore:
         self.db.execute("BEGIN IMMEDIATE")
         try:
             yield
-            self.db.execute("COMMIT")
+            commit_started = time.perf_counter()
+            try:
+                self.db.execute("COMMIT")
+            finally:
+                self.commit_seconds += time.perf_counter() - commit_started
+                self.commit_count += 1
         except BaseException:
             self.db.execute("ROLLBACK")
             raise
