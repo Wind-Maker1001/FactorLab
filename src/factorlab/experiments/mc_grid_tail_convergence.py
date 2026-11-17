@@ -1,8 +1,9 @@
 """Participation-conditioned tail uncertainty for complete Grid Paper accounts."""
 from collections import deque
 from concurrent.futures import ProcessPoolExecutor
-from contextlib import ExitStack, closing, contextmanager
+from contextlib import ExitStack, closing, contextmanager, nullcontext
 from functools import partial
+from hashlib import sha256
 import json
 from multiprocessing import get_context
 from pathlib import Path
@@ -25,8 +26,12 @@ MODELS = ('gbm', 'moving_block_bootstrap', 'regime_historical', 'jump_down')
 GROUPS = ('unconditional', 'traded', 'ever_inventory', 'terminal_inventory')
 
 
-def write(path, value):
-    Path(path).write_text(json.dumps(value, indent=2, allow_nan=False, default=str) + '\n', encoding='utf-8')
+def write(path, value, *, atomic=False):
+    path = Path(path)
+    target = path.with_suffix(path.suffix + '.tmp') if atomic else path
+    target.write_text(json.dumps(value, indent=2, allow_nan=False, default=str) + '\n', encoding='utf-8')
+    if atomic:
+        target.replace(path)
 
 
 def _lag_one_autocorrelation(values):
@@ -39,16 +44,18 @@ def _lag_one_autocorrelation(values):
     return correlation if np.isfinite(correlation) else None
 
 
-def account_metrics(prices, *, start, config, rules, capacity, output, provenance=None):
+def account_metrics(prices, *, start, config, rules, capacity, output, provenance=None,
+                    accounting_evidence=False, diagnostic=None, latent=None):
     metrics = evaluate_path(prices, start=start, config=config, rules=rules,
-                            capacity=capacity, output=output, research_wal=True, provenance=provenance)
+                            capacity=capacity, output=output, research_wal=True, provenance=provenance,
+                            accounting_evidence=accounting_evidence)
     nav = pd.read_csv(Path(output) / 'daily.csv')
     inventory = nav.inventory.abs()
     exposure = nav.net_exposure.abs()
     result = json.loads((Path(output) / 'result.json').read_text())
     pending_exit = any(o['purpose'] == 'RISK_EXIT' and
         o['status'] not in ('FILLED', 'REJECTED', 'CANCELED') for o in result['orders'].values())
-    return metrics | dict(
+    row = metrics | dict(
         initial_capital=1000, minimum_nav=float(nav.equity.min()),
         terminal_mark_unrealized_pnl=float(nav.unrealized.iloc[-1]),
         terminal_realized_gross_pnl=float(nav.realized_gross.iloc[-1]),
@@ -71,15 +78,24 @@ def account_metrics(prices, *, start, config, rules, capacity, output, provenanc
         exposure_initial_capital_peak=float(exposure.max()/1000),
         exposure_nav_mean=float((exposure/nav.equity).mean()),
         exposure_nav_peak=float((exposure/nav.equity).max()))
+    if diagnostic is not None:
+        diagnostic(row, nav, result, latent, prices)
+    return row
 
 
 def _replay_account(prices, latent, *, start, config, rules, capacity, temporary,
-                    include_path_evidence, provenance):
+                    include_path_evidence, provenance, diagnostic=None):
     wall, cpu = perf_counter(), process_time()
     with tempfile.TemporaryDirectory(dir=temporary, prefix='account-') as directory:
         account = Path(directory)/'paper'
         row = account_metrics(prices, start=start, config=config, rules=rules,
-                              capacity=capacity, output=account, provenance=provenance)
+                              capacity=capacity, output=account, provenance=provenance,
+                              accounting_evidence=diagnostic is not None, diagnostic=diagnostic, latent=latent)
+        if diagnostic is not None:
+            row['price_sha256'] = price_digest(prices)
+            for key in ('reconciliation_residual', 'nav_residual', 'inventory_residual'):
+                if row[key] != 0:
+                    raise ValueError(f'Paper account {key}: {row[key]}')
         if include_path_evidence:
             returns = np.diff(prices)/prices[:-1]
             row.update(price_minimum=float(np.min(prices)),
@@ -109,6 +125,11 @@ def _replay_account(prices, latent, *, start, config, rules, capacity, temporary
                         fees=float(section.fee.sum()), slippage=float(section.slippage.sum()))
         before_cleanup = perf_counter()
     return row, latent, before_cleanup-wall, perf_counter()-before_cleanup, process_time()-cpu
+
+
+def price_digest(prices):
+    """Identify ordered IEEE-754 close prices, including the initial anchor."""
+    return sha256(np.asarray(prices, dtype='<f8').tobytes()).hexdigest()
 
 
 def _account_results(executor, jobs, replay, max_workers):
@@ -243,7 +264,8 @@ def convergence_differences(cells):
     return output
 
 
-def run_study(output, *, inputs, receipt, config, rules, definition, code=None, command=(), max_workers=1):
+def run_study(output, *, inputs, receipt, config, rules, definition, code=None, command=(), max_workers=1,
+              resource_planner=None, group_observer=None, diagnostic=None):
     """Run admitted groups in frozen order. Workers execute only offline Paper accounts."""
     if type(max_workers) is not int or not 1 <= max_workers <= 8:
         raise ValueError('max_workers must be an integer in [1, 8]')
@@ -290,7 +312,7 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
         replay = partial(_replay_account, start=definition['start'], config=config, rules=rules,
             capacity=definition['capacity'], temporary=temporary,
             include_path_evidence=settings.get('path_evidence', False),
-            provenance=provenance)
+            provenance=provenance, diagnostic=diagnostic)
 
         def check_scratch():
             if executor is not None and shutil.disk_usage(temporary).free < required_disk:
@@ -350,24 +372,35 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
         rejected_models = set()
         for selected_model, size in schedule:
             if selected_model in rejected_models:
+                if resource_planner is not None:
+                    begin = completed_by_model[selected_model]
+                    decisions.append(dict(model=selected_model, size=size, begin=begin,
+                        additional_accounts=(size-begin)*len(settings['seeds']), admitted=False,
+                        status='RESOURCE_NOT_ADMITTED', reasons=['EARLIER_TIER_NOT_ADMITTED']))
+                    write(output/'decisions.json', decisions)
                 continue
             selected = [selected_model] if per_model else active
             begin = completed_by_model[selected_model] if per_model else completed
             accounts = (size-begin)*len(selected)*len(settings['seeds'])
             elapsed = perf_counter()-started
-            if settings.get('coverage_first', False):
+            if resource_planner is not None:
+                plan = resource_planner.admit(model=selected_model, size=size, begin=begin,
+                    accounts=accounts, elapsed=elapsed, temporary=temporary, output=output, settings=settings)
+            elif settings.get('coverage_first', False):
                 planning = definition['resource_planning']['models'][selected_model]
                 measured = planning['seconds_per_account_including_cleanup']
                 projected = (accounts*measured + planning['group_generation_statistics_seconds']) * settings['cost_safety_factor']
             else:
                 measured = execution_seconds/(len(rows)+len(deterministic))
                 projected = (accounts*measured + generation_seconds + statistics_seconds)*settings['cost_safety_factor']
-            reserve = definition.get('resource_planning', {}).get('output_reserve_seconds', 0)
-            admitted = elapsed+projected+reserve <= settings['budget_seconds']
+            if resource_planner is None:
+                reserve = definition.get('resource_planning', {}).get('output_reserve_seconds', 0)
+                plan = dict(projected_additional_seconds=projected,
+                            admitted=elapsed+projected+reserve <= settings['budget_seconds'])
+            admitted = plan['admitted']
             decisions.append(dict(model=selected_model, size=size, begin=begin,
-                additional_accounts=accounts, elapsed_seconds=elapsed,
-                projected_additional_seconds=projected, admitted=admitted,
-                status='RESOURCE_ADMITTED' if admitted else 'RESOURCE_NOT_ADMITTED'))
+                additional_accounts=accounts, elapsed_seconds=elapsed) | plan |
+                dict(status='RESOURCE_ADMITTED' if admitted else 'RESOURCE_NOT_ADMITTED'))
             write(output/'decisions.json', decisions)
             if not admitted:
                 if per_model:
@@ -375,7 +408,9 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
                     continue
                 break
             pending_cells = []
-            with _record_interruption(output, selected_model, size, completed_by_model):
+            observation = (group_observer(selected_model, size, temporary, output)
+                           if group_observer is not None else nullcontext())
+            with _record_interruption(output, selected_model, size, completed_by_model), observation:
                 check_scratch()
                 jobs = stochastic_jobs(selected, begin, size)
                 with closing(_account_results(executor, jobs, replay, max_workers)) as results:
@@ -392,12 +427,17 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
                             pending_cells.append(dict(model=model, seed=seed, n_paths=size,
                                 groups=grouped_statistics(sample, resamples=settings['resamples'], bootstrap_seed=seed)))
                             statistics_seconds += perf_counter()-before
-            cells.extend(pending_cells)
-            for model in selected:
-                completed_by_model[model] = size
-            completed = min(completed_by_model.values())
-            pd.DataFrame(rows).to_csv(output/'paths.csv', index=False)
-            write(output/'groups.json', cells)
+                cells.extend(pending_cells)
+                if diagnostic is not None:
+                    write(output/'generation.json', generation)
+                    write(output/'tails.json', tails)
+                    write(output/'path-evidence.json', path_evidence)
+                else:
+                    pd.DataFrame(rows).to_csv(output/'paths.csv', index=False)
+                write(output/'groups.json', cells, atomic=diagnostic is not None)
+                for model in selected:
+                    completed_by_model[model] = size
+                completed = min(completed_by_model.values())
     result = dict(engineering_status='ENGINEERING_VALID',
         statistical_status=('STATISTICALLY_UNSTABLE' if any(
             tail['statistical_status'] == 'STATISTICALLY_UNSTABLE'
@@ -424,8 +464,9 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
             process_lifetime_peak_rss_bytes=_peak_rss_bytes(),
             budget_overrun_seconds=max(0., perf_counter()-started-settings['budget_seconds'])),
         uncertainty='conditional simulation uncertainty; model calibration uncertainty not quantified')
-    pd.DataFrame(rows, columns=list(rows[0]) if rows else ['model', 'seed', 'path_id']).to_csv(output/'paths.csv', index=False)
-    write(output/'groups.json', cells)
+    if diagnostic is None or not rows:
+        pd.DataFrame(rows, columns=list(rows[0]) if rows else ['model', 'seed', 'path_id']).to_csv(output/'paths.csv', index=False)
+    write(output/'groups.json', cells, atomic=diagnostic is not None)
     write(output/'generation.json', generation)
     write(output/'tails.json', tails)
     if settings.get('path_evidence', False):

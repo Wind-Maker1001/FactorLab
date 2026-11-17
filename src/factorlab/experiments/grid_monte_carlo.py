@@ -88,7 +88,7 @@ def close_bars(prices, start):
 
 
 def evaluate_path(prices, *, start, config, rules, capacity, output, research_wal=True,
-                  grid_factory=None, provenance=None):
+                  grid_factory=None, provenance=None, accounting_evidence=False):
     """Persist one auditable temporary account; aggregate before disposal."""
     output = Path(output)
     run_experiment(output, bars=close_bars(prices, start), config=config, rules=rules,
@@ -100,7 +100,7 @@ def evaluate_path(prices, *, start, config, rules, capacity, output, research_wa
     nav = pd.read_csv(output / 'daily.csv')
     fifo = attribution(output)['summary']
     life = lifecycle_metrics(output)
-    return dict(terminal_nav=float(fifo['final_equity']), maximum_drawdown=float(nav.drawdown.max()),
+    metrics = dict(terminal_nav=float(fifo['final_equity']), maximum_drawdown=float(nav.drawdown.max()),
         terminal_inventory=float(fifo['residual_inventory']), max_inventory=float(nav.inventory.max()),
         inventory_mean_age_hours=life['inventory_mean_age_hours'],
         inventory_max_age_hours=life['inventory_max_age_hours'], position_hours=life['position_hours'],
@@ -113,6 +113,16 @@ def evaluate_path(prices, *, start, config, rules, capacity, output, research_wa
         exit_triggers=life['exit_triggers'], exit_orders_unfilled=life['exit_orders_unfilled'],
         exit_partial_or_unfilled=sum(o['purpose'] == 'RISK_EXIT' and o['status'] not in {'FILLED', 'CANCELED', 'REJECTED'}
             for o in result['orders'].values()), final_state=life['final_state'], fills=result['fills'])
+    if accounting_evidence:
+        # Compare cash/equity on the same float boundary as the Paper export.
+        metrics.update(
+            terminal_cash=result['final']['cash'],
+            terminal_price=result['final']['close'],
+            valuation_adjustment=float(fifo['valuation_adjustment']),
+            nav_residual=result['final']['equity'] - float(fifo['final_equity']),
+            inventory_residual=result['final']['inventory'] - float(fifo['residual_inventory']),
+        )
+    return metrics
 
 
 def distribution(rows, confidence=.95):
