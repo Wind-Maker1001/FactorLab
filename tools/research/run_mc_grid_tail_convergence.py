@@ -7,7 +7,6 @@ import sys
 from factorlab.experiments.grid_monte_carlo import historical_input
 from factorlab.experiments.grid_paper import D
 from factorlab.experiments.mc_grid_tail_convergence import run_study
-from factorlab.experiments.provenance import capture_provenance
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridRules
 
@@ -17,6 +16,8 @@ def main():
     parser.add_argument('--snapshot', required=True)
     parser.add_argument('--definition', required=True)
     parser.add_argument('--output', required=True)
+    parser.add_argument('--max-workers', type=int, default=1,
+                        help='independent offline account workers (1 to 8; default: 1)')
     args = parser.parse_args()
     definition = json.loads(Path(args.definition).read_text())
     config = GridConfig(**definition['grid'])
@@ -26,8 +27,8 @@ def main():
         if receipt[field] != definition['dataset'][field]:
             raise ValueError(f'frozen input identity differs: {field}')
     run_study(args.output, inputs=inputs, receipt=receipt, config=config, rules=rules,
-        definition=definition, code=capture_provenance(Path(__file__).resolve().parents[2])['code'],
-        command=[sys.executable, *sys.argv])
+        definition=definition,
+        command=[sys.executable, *sys.argv], max_workers=args.max_workers)
 
 
 if __name__ == '__main__':
