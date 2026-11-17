@@ -1,0 +1,56 @@
+[
+  {
+    "model": "gbm",
+    "size": 16,
+    "begin": 0,
+    "additional_accounts": 48,
+    "elapsed_seconds": 18.82894479999959,
+    "projected_additional_seconds": 179.76390527989716,
+    "admitted": true
+  },
+  {
+    "model": "gbm",
+    "size": 32,
+    "begin": 16,
+    "additional_accounts": 48,
+    "elapsed_seconds": 192.84965089999605,
+    "projected_additional_seconds": 205.1252520933262,
+    "admitted": true
+  },
+  {
+    "model": "gbm",
+    "size": 64,
+    "begin": 32,
+    "additional_accounts": 96,
+    "elapsed_seconds": 368.25653130000865,
+    "projected_additional_seconds": 414.8129583035048,
+    "admitted": true
+  },
+  {
+    "model": "moving_block_bootstrap",
+    "size": 16,
+    "begin": 0,
+    "additional_accounts": 48,
+    "elapsed_seconds": 770.6278603999963,
+    "projected_additional_seconds": 224.2121290727185,
+    "admitted": false
+  },
+  {
+    "model": "regime_historical",
+    "size": 16,
+    "begin": 0,
+    "additional_accounts": 48,
+    "elapsed_seconds": 770.628684700001,
+    "projected_additional_seconds": 224.2121290727185,
+    "admitted": false
+  },
+  {
+    "model": "jump_down",
+    "size": 16,
+    "begin": 0,
+    "additional_accounts": 48,
+    "elapsed_seconds": 770.6294079000072,
+    "projected_additional_seconds": 224.2121290727185,
+    "admitted": false
+  }
+]

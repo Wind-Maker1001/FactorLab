@@ -1,0 +1,3026 @@
+[
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 0,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1729,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1729,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.002195299995946698,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 8,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1730,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1730,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0010482000070624053,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 0,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2718,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2718,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.001036799993016757,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 8,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2719,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2719,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0009064000041689724,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 0,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31415,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31415,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0017208000062964857,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 8,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31416,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31416,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0009168999968096614,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 16,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1731,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1731,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.001247100008185953,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 24,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1732,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1732,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0012739999947370961,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 16,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2720,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2720,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0008888000011211261,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 24,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2721,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2721,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0006015000108163804,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 16,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31417,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31417,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0008336000028066337,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 24,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31418,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31418,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0006216999900061637,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 32,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1733,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1733,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0017992999928537756,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 40,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1734,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1734,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0009052000095834956,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 48,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1735,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1735,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0009101000032387674,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "begin": 56,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 1736,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 1736,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0006062000029487535,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 32,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2722,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2722,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0011200000008102506,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 40,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2723,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2723,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0008880999957909808,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 48,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2724,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2724,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0009294000046793371,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "begin": 56,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 2725,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 2725,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0008788999984972179,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 32,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31419,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31419,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0005071000050520524,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 40,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31420,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31420,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0015536999999312684,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 48,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31421,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31421,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.0010079000057885423,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "begin": 56,
+    "metadata": {
+      "config": {
+        "model": "gbm",
+        "n_paths": 8,
+        "n_steps": 168,
+        "seed": 31422,
+        "dt": 1.0,
+        "initial_value": 1.0,
+        "batch_size": 8,
+        "block_size": 24,
+        "quantiles": [
+          0.01,
+          0.05,
+          0.5,
+          0.95,
+          0.99
+        ],
+        "confidence": 0.95,
+        "drawdown_threshold": 0.2,
+        "save_full_paths": true,
+        "compute": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        }
+      },
+      "sample_hash": "304c177f548cfb79e93f07b79b1ffdd999d66e99e3a093286f0ea016d517b313",
+      "assets": [
+        "BINANCE:USDM:NVDAUSDT"
+      ],
+      "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+      "compute": {
+        "requested": {
+          "device": "cpu",
+          "allow_fallback": false,
+          "gpu_memory_limit_mb": null
+        },
+        "device": "cpu",
+        "backend": "numpy",
+        "backend_version": "1.26.4",
+        "probe": {
+          "available": true,
+          "reason": null,
+          "version": "1.26.4",
+          "driver_visible": null,
+          "runtime_available": true
+        },
+        "fallback": false,
+        "fallback_reason": null,
+        "gpu_memory_limit_mb": null,
+        "gpu_memory_limit_enforced": false,
+        "execution": {
+          "backend": "numpy",
+          "batch_size": 8,
+          "private_pool_limit_enforced": false,
+          "private_pool_limit_bytes": null,
+          "private_pool_peak_bytes": null,
+          "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+          "planned_persistent_bytes": 68656,
+          "planned_bytes_per_path": 37376
+        }
+      },
+      "method_version": 1,
+      "input": {
+        "sample_interval": null,
+        "as_of": null,
+        "correlation_correction": null,
+        "initial_prices": [
+          204.34
+        ],
+        "gbm_parameters": {
+          "drift": [
+            -1.2254443425042917e-05
+          ],
+          "volatility": [
+            0.004451385931577554
+          ],
+          "correlation": [
+            [
+              1.0
+            ]
+          ]
+        }
+      },
+      "seed": 31422,
+      "rng": "NumPy RandomState/MT19937",
+      "rng_backend": "numpy",
+      "rng_version": "1.26.4",
+      "python_version": "3.12.7",
+      "numpy_version": "1.26.4",
+      "cuda_runtime_version": null,
+      "cuda_driver_version": null,
+      "elapsed_seconds": 0.00106229999801144,
+      "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+      "risk_definition": {
+        "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+        "horizon_steps": 168,
+        "dt": 1.0,
+        "confidence": 0.95,
+        "var_quantile": "linear (Hyndman-Fan type 7)",
+        "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+        "drawdown": "positive fraction below running peak including initial NAV",
+        "breach": "maximum_drawdown strictly greater than threshold",
+        "threshold": 0.2
+      },
+      "portfolio": {
+        "weights": [
+          1.0
+        ],
+        "cash_weight": 0.0,
+        "rebalancing": "each_step",
+        "cash_return": 0,
+        "costs": 0
+      },
+      "assumptions": [
+        "RISK_SCENARIO_ONLY",
+        "NOT_EVENT_DRIVEN_EXECUTION",
+        "constant GBM parameters or stationary resampled historical blocks",
+        "sampling uncertainty excludes model uncertainty"
+      ]
+    }
+  }
+]

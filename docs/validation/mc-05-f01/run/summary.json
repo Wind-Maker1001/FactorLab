@@ -1,0 +1,1190 @@
+{
+  "engineering_status": "ENGINEERING_VALID",
+  "statistical_status": "STATISTICALLY_UNSTABLE",
+  "financial_status": "FINANCIAL_NOT_ESTABLISHED",
+  "completed_paths_per_seed": 0,
+  "historical_calibration_rejection": null,
+  "decisions": [
+    {
+      "model": "gbm",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 18.82894479999959,
+      "projected_additional_seconds": 179.76390527989716,
+      "admitted": true
+    },
+    {
+      "model": "gbm",
+      "size": 32,
+      "begin": 16,
+      "additional_accounts": 48,
+      "elapsed_seconds": 192.84965089999605,
+      "projected_additional_seconds": 205.1252520933262,
+      "admitted": true
+    },
+    {
+      "model": "gbm",
+      "size": 64,
+      "begin": 32,
+      "additional_accounts": 96,
+      "elapsed_seconds": 368.25653130000865,
+      "projected_additional_seconds": 414.8129583035048,
+      "admitted": true
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 770.6278603999963,
+      "projected_additional_seconds": 224.2121290727185,
+      "admitted": false
+    },
+    {
+      "model": "regime_historical",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 770.628684700001,
+      "projected_additional_seconds": 224.2121290727185,
+      "admitted": false
+    },
+    {
+      "model": "jump_down",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 770.6294079000072,
+      "projected_additional_seconds": 224.2121290727185,
+      "admitted": false
+    }
+  ],
+  "deterministic_in_probability_distribution": false,
+  "deterministic": [
+    {
+      "model": "deterministic_continuous_decline",
+      "seed": null,
+      "path_id": 0,
+      "terminal_nav": 970.7180562815771,
+      "maximum_drawdown": 0.0292819437184228,
+      "terminal_inventory": 0.5,
+      "max_inventory": 0.5,
+      "inventory_mean_age_hours": 120.0000000002778,
+      "inventory_max_age_hours": 159.0000000002778,
+      "position_hours": 60.0000000001389,
+      "residual_inventory_pnl": -29.281943718422855,
+      "residual_inventory_loss": 29.281943718422855,
+      "completed_cycle_net": 0.0,
+      "grid_cycles": 0,
+      "normal_sell_net": 0.0,
+      "risk_exit_net": 0.0,
+      "fees": 0.03621908985142857,
+      "slippage": 0.054296057142857145,
+      "reconciliation_residual": 0.0,
+      "exit_triggers": 0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "final_state": "PAUSED",
+      "fills": 5,
+      "participation_class": "traded_terminal_inventory",
+      "traded": true,
+      "ever_inventory": true,
+      "has_terminal_inventory": true,
+      "inventory_cap": false,
+      "risk_exit": false,
+      "incomplete_exit": false,
+      "loss": true,
+      "zero_fills": false,
+      "capital_utilization_mean": 0.054855703465765,
+      "capital_utilization_peak": 0.08149273809523809,
+      "inventory_mean": 0.35798816568047337,
+      "holding_hours": 160,
+      "exposure_mean": 54.855703465765004,
+      "exposure_peak": 81.4927380952381,
+      "exposure_initial_capital_mean": 0.054855703465765,
+      "exposure_initial_capital_peak": 0.08149273809523809,
+      "exposure_nav_mean": 0.05561791211234479,
+      "exposure_nav_peak": 0.08224040250494402
+    },
+    {
+      "model": "deterministic_slow_decline",
+      "seed": null,
+      "path_id": 0,
+      "terminal_nav": 995.6917371633089,
+      "maximum_drawdown": 0.0043082628366911,
+      "terminal_inventory": 0.2,
+      "max_inventory": 0.2,
+      "inventory_mean_age_hours": 117.0000000002778,
+      "inventory_max_age_hours": 144.0000000002778,
+      "position_hours": 23.40000000005556,
+      "residual_inventory_pnl": -4.308262836691141,
+      "residual_inventory_loss": 4.308262836691141,
+      "completed_cycle_net": 0.0,
+      "grid_cycles": 0,
+      "normal_sell_net": 0.0,
+      "risk_exit_net": 0.0,
+      "fees": 0.015612180262571428,
+      "slippage": 0.023404227857142856,
+      "reconciliation_residual": 0.0,
+      "exit_triggers": 0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "final_state": "RUNNING",
+      "fills": 2,
+      "participation_class": "traded_terminal_inventory",
+      "traded": true,
+      "ever_inventory": true,
+      "has_terminal_inventory": true,
+      "inventory_cap": false,
+      "risk_exit": false,
+      "incomplete_exit": false,
+      "loss": true,
+      "zero_fills": false,
+      "capital_utilization_mean": 0.025823942508453084,
+      "capital_utilization_peak": 0.03802183571428572,
+      "inventory_mean": 0.13964497041420118,
+      "holding_hours": 145,
+      "exposure_mean": 25.823942508453083,
+      "exposure_peak": 38.021835714285714,
+      "exposure_initial_capital_mean": 0.025823942508453084,
+      "exposure_initial_capital_peak": 0.03802183571428572,
+      "exposure_nav_mean": 0.02587894771483737,
+      "exposure_nav_peak": 0.03806081863703473
+    },
+    {
+      "model": "deterministic_low_volatility",
+      "seed": null,
+      "path_id": 0,
+      "terminal_nav": 1000.0,
+      "maximum_drawdown": 0.0,
+      "terminal_inventory": 0.0,
+      "max_inventory": 0.0,
+      "inventory_mean_age_hours": 0,
+      "inventory_max_age_hours": 0,
+      "position_hours": 0,
+      "residual_inventory_pnl": 0.0,
+      "residual_inventory_loss": 0.0,
+      "completed_cycle_net": 0.0,
+      "grid_cycles": 0,
+      "normal_sell_net": 0.0,
+      "risk_exit_net": 0.0,
+      "fees": 0.0,
+      "slippage": 0.0,
+      "reconciliation_residual": 0.0,
+      "exit_triggers": 0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "final_state": "RUNNING",
+      "fills": 0,
+      "participation_class": "zero_fills",
+      "traded": false,
+      "ever_inventory": false,
+      "has_terminal_inventory": false,
+      "inventory_cap": false,
+      "risk_exit": false,
+      "incomplete_exit": false,
+      "loss": false,
+      "zero_fills": true,
+      "capital_utilization_mean": 0.0,
+      "capital_utilization_peak": 0.0,
+      "inventory_mean": 0.0,
+      "holding_hours": 0,
+      "exposure_mean": 0.0,
+      "exposure_peak": 0.0,
+      "exposure_initial_capital_mean": 0.0,
+      "exposure_initial_capital_peak": 0.0,
+      "exposure_nav_mean": 0.0,
+      "exposure_nav_peak": 0.0
+    },
+    {
+      "model": "deterministic_range_then_gap",
+      "seed": null,
+      "path_id": 0,
+      "terminal_nav": 1000.0,
+      "maximum_drawdown": 0.0,
+      "terminal_inventory": 0.0,
+      "max_inventory": 0.0,
+      "inventory_mean_age_hours": 0,
+      "inventory_max_age_hours": 0,
+      "position_hours": 0,
+      "residual_inventory_pnl": 0.0,
+      "residual_inventory_loss": 0.0,
+      "completed_cycle_net": 0.0,
+      "grid_cycles": 0,
+      "normal_sell_net": 0.0,
+      "risk_exit_net": 0.0,
+      "fees": 0.0,
+      "slippage": 0.0,
+      "reconciliation_residual": 0.0,
+      "exit_triggers": 0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "final_state": "PAUSED",
+      "fills": 0,
+      "participation_class": "zero_fills",
+      "traded": false,
+      "ever_inventory": false,
+      "has_terminal_inventory": false,
+      "inventory_cap": false,
+      "risk_exit": false,
+      "incomplete_exit": false,
+      "loss": false,
+      "zero_fills": true,
+      "capital_utilization_mean": 0.0,
+      "capital_utilization_peak": 0.0,
+      "inventory_mean": 0.0,
+      "holding_hours": 0,
+      "exposure_mean": 0.0,
+      "exposure_peak": 0.0,
+      "exposure_initial_capital_mean": 0.0,
+      "exposure_initial_capital_peak": 0.0,
+      "exposure_nav_mean": 0.0,
+      "exposure_nav_peak": 0.0
+    },
+    {
+      "model": "deterministic_insufficient_rebound",
+      "seed": null,
+      "path_id": 0,
+      "terminal_nav": 989.0680720774022,
+      "maximum_drawdown": 0.0241744978630739,
+      "terminal_inventory": 0.5,
+      "max_inventory": 0.5,
+      "inventory_mean_age_hours": 135.20000000027778,
+      "inventory_max_age_hours": 162.0000000002778,
+      "position_hours": 67.60000000013889,
+      "residual_inventory_pnl": -10.931927922597783,
+      "residual_inventory_loss": 10.931927922597783,
+      "completed_cycle_net": 0.0,
+      "grid_cycles": 0,
+      "normal_sell_net": 0.0,
+      "risk_exit_net": 0.0,
+      "fees": 0.03623531704222222,
+      "slippage": 0.05432038333333333,
+      "reconciliation_residual": 0.0,
+      "exit_triggers": 0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "final_state": "PAUSED",
+      "fills": 5,
+      "participation_class": "traded_terminal_inventory",
+      "traded": true,
+      "ever_inventory": true,
+      "has_terminal_inventory": true,
+      "inventory_cap": false,
+      "risk_exit": false,
+      "incomplete_exit": false,
+      "loss": true,
+      "zero_fills": false,
+      "capital_utilization_mean": 0.06148157958462478,
+      "capital_utilization_peak": 0.08159409722222223,
+      "inventory_mean": 0.4029585798816568,
+      "holding_hours": 163,
+      "exposure_mean": 61.48157958462478,
+      "exposure_peak": 81.59409722222223,
+      "exposure_initial_capital_mean": 0.06148157958462478,
+      "exposure_initial_capital_peak": 0.08159409722222223,
+      "exposure_nav_mean": 0.06236943379376226,
+      "exposure_nav_peak": 0.08233764158862064
+    },
+    {
+      "model": "deterministic_fast_reversal",
+      "seed": null,
+      "path_id": 0,
+      "terminal_nav": 1003.2201267476795,
+      "maximum_drawdown": 0.0049222967026847,
+      "terminal_inventory": 0.0,
+      "max_inventory": 0.3,
+      "inventory_mean_age_hours": 48.99999999999999,
+      "inventory_max_age_hours": 70.0,
+      "position_hours": 14.700000000000001,
+      "residual_inventory_pnl": 0.0,
+      "residual_inventory_loss": 0.0,
+      "completed_cycle_net": 3.2201267476794575,
+      "grid_cycles": 3,
+      "normal_sell_net": 3.2201267476794575,
+      "risk_exit_net": 0.0,
+      "fees": 0.04697015365386666,
+      "slippage": 0.070456432,
+      "reconciliation_residual": -1e-24,
+      "exit_triggers": 0,
+      "exit_orders_unfilled": 0,
+      "exit_partial_or_unfilled": 0,
+      "final_state": "RUNNING",
+      "fills": 6,
+      "participation_class": "traded_flat",
+      "traded": true,
+      "ever_inventory": true,
+      "has_terminal_inventory": false,
+      "inventory_cap": false,
+      "risk_exit": false,
+      "incomplete_exit": false,
+      "loss": false,
+      "zero_fills": false,
+      "capital_utilization_mean": 0.016053284921104534,
+      "capital_utilization_peak": 0.05644162714285714,
+      "inventory_mean": 0.08698224852071006,
+      "holding_hours": 76,
+      "exposure_mean": 16.053284921104535,
+      "exposure_peak": 56.441627142857136,
+      "exposure_initial_capital_mean": 0.016053284921104534,
+      "exposure_initial_capital_peak": 0.05644162714285714,
+      "exposure_nav_mean": 0.016088598391642603,
+      "exposure_nav_peak": 0.05647892289404558
+    }
+  ],
+  "cash_benchmark": {
+    "initial_nav": 1000,
+    "terminal_nav": 1000,
+    "exposure": 0
+  },
+  "completed_paths_per_seed_by_model": {
+    "gbm": 64,
+    "moving_block_bootstrap": 0,
+    "regime_historical": 0,
+    "jump_down": 0
+  },
+  "seed_dispersion": [
+    {
+      "model": "gbm",
+      "n_paths": 16,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0007160534987615264,
+          "maximum": 0.0019233426409241416,
+          "seed_sd": 0.0006099311850641217
+        },
+        "cvar.95": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        },
+        "var.99": {
+          "minimum": 0.00122571554196752,
+          "maximum": 0.0027415026521288573,
+          "seed_sd": 0.0007793083460345136
+        },
+        "cvar.99": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 16,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0008434690095630237,
+          "maximum": 0.0023324226465264984,
+          "seed_sd": 0.000745055182745575
+        },
+        "cvar.95": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        },
+        "var.99": {
+          "minimum": 0.0012511986441278192,
+          "maximum": 0.0028233186532493296,
+          "seed_sd": 0.0008122949618600613
+        },
+        "cvar.99": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 16,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0008434690095630237,
+          "maximum": 0.0023324226465264984,
+          "seed_sd": 0.000745055182745575
+        },
+        "cvar.95": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        },
+        "var.99": {
+          "minimum": 0.0012511986441278192,
+          "maximum": 0.0028233186532493296,
+          "seed_sd": 0.0008122949618600613
+        },
+        "cvar.99": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 16,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0009708845203645224,
+          "maximum": 0.0023324226465264984,
+          "seed_sd": 0.0006823926575405183
+        },
+        "cvar.95": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        },
+        "var.99": {
+          "minimum": 0.0012766817462881198,
+          "maximum": 0.0028233186532493296,
+          "seed_sd": 0.0008008845225721989
+        },
+        "cvar.99": {
+          "minimum": 0.0013531310527690188,
+          "maximum": 0.0029460426549300367,
+          "seed_sd": 0.000834361524900537
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 32,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.001347799467813615,
+          "maximum": 0.0018414289922489332,
+          "seed_sd": 0.00026638874304117237
+        },
+        "cvar.95": {
+          "minimum": 0.0015949654590898807,
+          "maximum": 0.002854525338835428,
+          "seed_sd": 0.0006760541743909922
+        },
+        "var.99": {
+          "minimum": 0.0016164553413336917,
+          "maximum": 0.002914740445144747,
+          "seed_sd": 0.0006962704539055628
+        },
+        "cvar.99": {
+          "minimum": 0.0017189455489580174,
+          "maximum": 0.0032019201829276422,
+          "seed_sd": 0.0007927225641017599
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 32,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0013883319759763202,
+          "maximum": 0.002276179089266488,
+          "seed_sd": 0.0004683946647520692
+        },
+        "cvar.95": {
+          "minimum": 0.0017032020454826981,
+          "maximum": 0.0030166429327451276,
+          "seed_sd": 0.0007387787381947451
+        },
+        "var.99": {
+          "minimum": 0.0016528228343616782,
+          "maximum": 0.0029795874827086236,
+          "seed_sd": 0.0007225210971215163
+        },
+        "cvar.99": {
+          "minimum": 0.0017189455489580174,
+          "maximum": 0.0032019201829276422,
+          "seed_sd": 0.0007927225641017599
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 32,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0013883319759763202,
+          "maximum": 0.002276179089266488,
+          "seed_sd": 0.0004683946647520692
+        },
+        "cvar.95": {
+          "minimum": 0.0017032020454826981,
+          "maximum": 0.0030166429327451276,
+          "seed_sd": 0.0007387787381947451
+        },
+        "var.99": {
+          "minimum": 0.0016528228343616782,
+          "maximum": 0.0029795874827086236,
+          "seed_sd": 0.0007225210971215163
+        },
+        "cvar.99": {
+          "minimum": 0.0017189455489580174,
+          "maximum": 0.0032019201829276422,
+          "seed_sd": 0.0007927225641017599
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 32,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0014709853692217445,
+          "maximum": 0.0023549865675798476,
+          "seed_sd": 0.000501087496863353
+        },
+        "cvar.95": {
+          "minimum": 0.0017189455489580174,
+          "maximum": 0.0032019201829276414,
+          "seed_sd": 0.0007927225641017596
+        },
+        "var.99": {
+          "minimum": 0.0016693535130107627,
+          "maximum": 0.0030259067952542527,
+          "seed_sd": 0.0007327507257322822
+        },
+        "cvar.99": {
+          "minimum": 0.0017189455489580174,
+          "maximum": 0.0032019201829276422,
+          "seed_sd": 0.0007927225641017599
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 64,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0013016595605534525,
+          "maximum": 0.002031450527766627,
+          "seed_sd": 0.0003705686508902281
+        },
+        "cvar.95": {
+          "minimum": 0.001656266024732948,
+          "maximum": 0.0028206110301811347,
+          "seed_sd": 0.0006510683573281816
+        },
+        "var.99": {
+          "minimum": 0.0017969788834140271,
+          "maximum": 0.003172962775476183,
+          "seed_sd": 0.0007479931610996226
+        },
+        "cvar.99": {
+          "minimum": 0.0019298464528931805,
+          "maximum": 0.003559340278027734,
+          "seed_sd": 0.0008564627667696931
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 64,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0013735928820989727,
+          "maximum": 0.0023155828284231648,
+          "seed_sd": 0.0005293574114785631
+        },
+        "cvar.95": {
+          "minimum": 0.001775944442597901,
+          "maximum": 0.003277554883631494,
+          "seed_sd": 0.000795736681584652
+        },
+        "var.99": {
+          "minimum": 0.0018370500551617092,
+          "maximum": 0.0033385531337125633,
+          "seed_sd": 0.0007992908319737336
+        },
+        "cvar.99": {
+          "minimum": 0.0019298464528931802,
+          "maximum": 0.003559340278027734,
+          "seed_sd": 0.0008564627667696932
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 64,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0013735928820989727,
+          "maximum": 0.0023155828284231648,
+          "seed_sd": 0.0005293574114785631
+        },
+        "cvar.95": {
+          "minimum": 0.001775944442597901,
+          "maximum": 0.003277554883631494,
+          "seed_sd": 0.000795736681584652
+        },
+        "var.99": {
+          "minimum": 0.0018370500551617092,
+          "maximum": 0.0033385531337125633,
+          "seed_sd": 0.0007992908319737336
+        },
+        "cvar.99": {
+          "minimum": 0.0019298464528931802,
+          "maximum": 0.003559340278027734,
+          "seed_sd": 0.0008564627667696932
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "gbm",
+      "n_paths": 64,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0015205774051689986,
+          "maximum": 0.002483914920923046,
+          "seed_sd": 0.0005531153608463167
+        },
+        "cvar.95": {
+          "minimum": 0.0018467642786156918,
+          "maximum": 0.003317738184080156,
+          "seed_sd": 0.0007866531695267075
+        },
+        "var.99": {
+          "minimum": 0.0018623581636339282,
+          "maximum": 0.003363085038636471,
+          "seed_sd": 0.0007998962233052025
+        },
+        "cvar.99": {
+          "minimum": 0.0019298464528931802,
+          "maximum": 0.003559340278027734,
+          "seed_sd": 0.0008564627667696932
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    }
+  ],
+  "convergence": [
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -8.191364867520846e-05,
+          "cvar": -0.00029552804367509455
+        },
+        "0.99": {
+          "var": -3.9763179970230943e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -5.6243557260010364e-05,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -1.1248711452003807e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -5.6243557260010364e-05,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -1.1248711452003807e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 2.2563921053349225e-05,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": 4.512784210668978e-06,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0001231859014081294,
+          "cvar": -0.00012398008986813668
+        },
+        "0.99": {
+          "var": -5.2898171677071004e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0001487761078417635,
+          "cvar": -1.57435034753193e-05
+        },
+        "0.99": {
+          "var": -2.9755221568352657e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -0.0001487761078417635,
+          "cvar": -1.57435034753193e-05
+        },
+        "0.99": {
+          "var": -2.9755221568352657e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -9.918407189450878e-05,
+          "cvar": 0.0
+        },
+        "0.99": {
+          "var": -1.983681437890206e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.001052158849668216,
+          "cvar": 0.0015013942860664094
+        },
+        "0.99": {
+          "var": 0.001689024903177227,
+          "cvar": 0.0018487891301586235
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0012475843466028356,
+          "cvar": 0.0016635118799761088
+        },
+        "0.99": {
+          "var": 0.0017283888385808044,
+          "cvar": 0.0018487891301586235
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0012475843466028356,
+          "cvar": 0.0016635118799761088
+        },
+        "0.99": {
+          "var": 0.0017283888385808044,
+          "cvar": 0.0018487891301586235
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 16,
+      "upper": 32,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0013509687241961793,
+          "cvar": 0.0018487891301586226
+        },
+        "0.99": {
+          "var": 0.0017492250489661329,
+          "cvar": 0.0018487891301586235
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -6.299350655260098e-05,
+          "cvar": 0.00017009641892619257
+        },
+        "0.99": {
+          "var": 0.0004712233033175566,
+          "cvar": 0.0006132976230976972
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 3.940373915667676e-05,
+          "cvar": 0.00033151222870145746
+        },
+        "0.99": {
+          "var": 0.0005264831919152375,
+          "cvar": 0.0006132976230976972
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 3.940373915667676e-05,
+          "cvar": 0.00033151222870145746
+        },
+        "0.99": {
+          "var": 0.0005264831919152375,
+          "cvar": 0.0006132976230976972
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 1729,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00011821121747003678,
+          "cvar": 0.00037169552915011913
+        },
+        "0.99": {
+          "var": 0.0005352536011764722,
+          "cvar": 0.0006132976230976972
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -4.613990726016256e-05,
+          "cvar": 6.130056564306735e-05
+        },
+        "0.99": {
+          "var": 0.0001805235420803354,
+          "cvar": 0.00021090090393516303
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -1.473909387734746e-05,
+          "cvar": 7.27423971152029e-05
+        },
+        "0.99": {
+          "var": 0.00018422722080003095,
+          "cvar": 0.0002109009039351628
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": -1.473909387734746e-05,
+          "cvar": 7.27423971152029e-05
+        },
+        "0.99": {
+          "var": 0.00018422722080003095,
+          "cvar": 0.0002109009039351628
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 2718,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 4.9592035947254066e-05,
+          "cvar": 0.00012781872965767437
+        },
+        "0.99": {
+          "var": 0.00019300465062316546,
+          "cvar": 0.0002109009039351628
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "unconditional",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0002632381793368846,
+          "cvar": -0.00011121499699581804
+        },
+        "0.99": {
+          "var": 7.864217974232982e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "traded",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00017204257910079755,
+          "cvar": -3.3313417039193636e-05
+        },
+        "0.99": {
+          "var": 8.33076615253084e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "ever_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.00017204257910079755,
+          "cvar": -3.3313417039193636e-05
+        },
+        "0.99": {
+          "var": 8.33076615253084e-05,
+          "cvar": 0.0
+        }
+      }
+    },
+    {
+      "model": "gbm",
+      "seed": 31415,
+      "group": "terminal_inventory",
+      "lower": 32,
+      "upper": 64,
+      "status": "CONVERGENCE_NOT_ESTABLISHED",
+      "differences": {
+        "0.95": {
+          "var": 0.0001620616763623444,
+          "cvar": -0.00013629905754285188
+        },
+        "0.99": {
+          "var": 6.67794286997609e-05,
+          "cvar": 0.0
+        }
+      }
+    }
+  ],
+  "performance": {
+    "total_seconds": 770.6334943999973,
+    "cpu_seconds": 249.6875,
+    "execution_seconds": 768.334351100013,
+    "generation_seconds": 0.051333899988094345,
+    "statistics_seconds": 0.5292340000014519,
+    "accounts": 198,
+    "process_lifetime_peak_rss_bytes": 177053696,
+    "budget_overrun_seconds": 0.0
+  },
+  "uncertainty": "conditional simulation uncertainty; model calibration uncertainty not quantified"
+}
