@@ -1,0 +1,257 @@
+{
+  "dataset": {
+    "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+    "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+    "source": "BINANCE_USDM_PUBLIC_DATA",
+    "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+    "as_of": "2026-11-14T00:00:00+00:00",
+    "observations": [
+      "2026-05-14T02:00:00+00:00",
+      "2026-08-12T00:00:00+00:00"
+    ],
+    "returns": 2159,
+    "time_unit": "hour",
+    "dt": 1,
+    "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+    "drift": -1.2254443425042917e-05,
+    "volatility": 0.004451385931577554,
+    "initial_price": 204.34,
+    "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+    "availability": "max(observation close, snapshot acquisition); not retrospective research availability"
+  },
+  "grid": {
+    "atr_multiplier": 1,
+    "atr_window": 72,
+    "breakout": "pause",
+    "budget": null,
+    "center_rule": "last_close",
+    "expiry_reseed_interval": 100,
+    "expiry_reseed_limit": 0,
+    "fee_bps": 4,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "initial_price": 204.34,
+    "levels": 8,
+    "lower": 163.472,
+    "max_cash_committed": 1000,
+    "max_drawdown": 0.2,
+    "max_inventory": 100,
+    "max_turnover": 10,
+    "min_rebuild_interval": 72,
+    "minimum_price": 0.01,
+    "minimum_quantity": 1,
+    "mode": "geometric",
+    "order_ttl": 100,
+    "quantity": 10,
+    "rebuild_threshold": 2,
+    "slippage_bps": 6,
+    "upper": 245.208
+  },
+  "rules": {
+    "min_notional": "5",
+    "min_quantity": "0.01",
+    "quantity_unit": "0.01",
+    "step_size": "0.01",
+    "tick_size": "0.01"
+  },
+  "as_of": "2026-11-14T00:00:00+00:00",
+  "start": "2026-11-15T00:00:00Z",
+  "threshold_as_of": "2026-06-28T00:00:00Z",
+  "capacity": "0.10",
+  "costs": {
+    "fee_rate": ".0004",
+    "funding": "NOT_SIMULATED",
+    "slippage": ".0006"
+  },
+  "experiment": {
+    "seeds": [
+      1729
+    ],
+    "sizes": [
+      8
+    ],
+    "batch_size": 8,
+    "steps": 168,
+    "resamples": 999,
+    "budget_seconds": 120,
+    "cost_safety_factor": 1.2,
+    "admission_unit": "model_all_seeds",
+    "coverage_first": true,
+    "run_deterministic": false,
+    "path_evidence": true
+  },
+  "models": [
+    "jump_down",
+    "regime_historical",
+    "moving_block_bootstrap"
+  ],
+  "research_id": "MC-05-F03-PILOT",
+  "resource_planning": {
+    "models": {
+      "jump_down": {
+        "seconds_per_account_including_cleanup": 2.4444215999974404,
+        "group_generation_statistics_seconds": 0.06255239993333817,
+        "generation_batch_seconds": 0.0005614999972749501,
+        "statistics_two_accounts_seconds": 0.019727799983229488,
+        "account_seconds": [
+          2.413260100001935,
+          2.4422887999971863
+        ],
+        "cleanup_seconds": [
+          0.001602899981662631,
+          0.002132800000254065
+        ]
+      },
+      "regime_historical": {
+        "seconds_per_account_including_cleanup": 2.36858549999306,
+        "group_generation_statistics_seconds": 0.06566010011010803,
+        "generation_batch_seconds": 0.001343700016150251,
+        "statistics_two_accounts_seconds": 0.019199300004402176,
+        "account_seconds": [
+          2.366292299993802,
+          2.2135762999823783
+        ],
+        "cleanup_seconds": [
+          0.002293199999257922,
+          0.0016478000034112483
+        ]
+      },
+      "moving_block_bootstrap": {
+        "seconds_per_account_including_cleanup": 3.2896886999951676,
+        "group_generation_statistics_seconds": 0.06318359985016286,
+        "generation_batch_seconds": 0.0009376999805681407,
+        "statistics_two_accounts_seconds": 0.019185799988918006,
+        "account_seconds": [
+          2.4002974999893922,
+          3.2884576999931596
+        ],
+        "cleanup_seconds": [
+          0.0012337000225670636,
+          0.0012310000020079315
+        ]
+      }
+    },
+    "planning_excluded_from_formal_run_budget": true,
+    "projected_accounts": 144,
+    "projected_seconds_with_safety": 466.94495339904677,
+    "expected_peak_rss_bytes": 268435456,
+    "expected_temporary_disk_bytes": 8388608,
+    "expected_evidence_bytes": 2097152,
+    "output_reserve_seconds": 10
+  },
+  "model_parameters": {
+    "jump_down": {
+      "log_drift": [
+        -2.2161861780966202e-05
+      ],
+      "volatility": [
+        0.004451385931577554
+      ],
+      "jump_probability": 0.005952380952380952,
+      "jump_log_sizes": [
+        -0.35667494393873245
+      ],
+      "initial_prices": [
+        204.34
+      ],
+      "event": "one Bernoulli per time step, shared across assets; at most one event per step",
+      "jump_distribution": "point mass at signed per-asset log sizes",
+      "background": "independent asset Gaussian log increments, no jump compensation; dt=1 step"
+    },
+    "regime_historical": {
+      "config": {
+        "block_size": 24,
+        "lookback": 24,
+        "reference_asset": "BINANCE:USDM:NVDAUSDT",
+        "volatility_quantile": 0.5,
+        "min_blocks_per_state": 20,
+        "min_transitions_per_state": 20
+      },
+      "transition": [
+        [
+          0.2222222222222222,
+          0.40555555555555556,
+          0.1388888888888889,
+          0.23333333333333334
+        ],
+        [
+          0.19559228650137742,
+          0.5068870523415978,
+          0.12672176308539945,
+          0.17079889807162535
+        ],
+        [
+          0.14150943396226415,
+          0.2688679245283019,
+          0.17452830188679244,
+          0.41509433962264153
+        ],
+        [
+          0.13309352517985612,
+          0.16906474820143885,
+          0.38848920863309355,
+          0.30935251798561153
+        ]
+      ],
+      "initial_state": [
+        0.1825922421948912,
+        0.3500473036896878,
+        0.2043519394512772,
+        0.2630085146641438
+      ],
+      "initial_state_source": "pool frequencies",
+      "transition_source": "HISTORICAL_BLOCK_LAG_ESTIMATE; overlapping pairs, not independent observations",
+      "states": [
+        "low_down",
+        "low_up",
+        "high_down",
+        "high_up"
+      ],
+      "initial_prices": [
+        204.34
+      ]
+    }
+  },
+  "model_versions": {
+    "jump_down": 1,
+    "regime_historical": 1,
+    "moving_block_bootstrap": "existing MonteCarloRunner / frozen code receipt"
+  },
+  "bootstrap": {
+    "block_size": 24,
+    "selection": "uniform overlapping contiguous blocks, existing CPU MT19937 Runner",
+    "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83"
+  },
+  "statistics": {
+    "loss": "1-terminal_NAV/1000",
+    "var": "linear quantile",
+    "cvar": "fractional worst tail mean",
+    "confidence_levels": [
+      0.95,
+      0.99
+    ],
+    "interval_confidence": 0.95,
+    "uncertainty": "MC-02 iid path percentile bootstrap conditional on observed support; binomial order-statistic VaR bounds",
+    "model_mixing": false
+  },
+  "deterministic_reference": "docs/validation/mc-05-f01/run/deterministic.csv; frozen, not rerun",
+  "frozen_definition": "configs/mc05_f02_grid_tail.json",
+  "resources": {
+    "max_workers": 8,
+    "pilot_seed": 1729,
+    "pilot_paths_per_model": 8,
+    "pilot_budget_seconds": 120,
+    "output_reserve_seconds": 15,
+    "minimum_free_after_bytes": 1073741824
+  },
+  "code": {
+    "commit": "6e933fb8aef447d9a24910bcb14e53cbfb9547db",
+    "tree": "a10a52f4b69d555a09b9458ad84de78345d2cfea",
+    "git_dirty": true,
+    "git_diff_sha256": "00391d608a244f8a114074b19bdbd696a443dff0ad6445213c124dc28dbadd3d"
+  },
+  "command": [],
+  "account_replay": {
+    "max_workers": 8
+  }
+}

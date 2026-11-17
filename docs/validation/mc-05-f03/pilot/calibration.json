@@ -1,0 +1,122 @@
+{
+  "purpose": "FIXED_PRECALIBRATION_ONLY",
+  "seed": 1729,
+  "paths_per_model": 8,
+  "included_in_formal_statistics": false,
+  "admission": [
+    {
+      "model": "jump_down",
+      "size": 8,
+      "begin": 0,
+      "additional_accounts": 8,
+      "elapsed_seconds": 1.8168740999826696,
+      "projected_additional_seconds": 23.541510239895434,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED"
+    },
+    {
+      "model": "regime_historical",
+      "size": 8,
+      "begin": 0,
+      "additional_accounts": 8,
+      "elapsed_seconds": 16.621194199979072,
+      "projected_additional_seconds": 22.817212920065504,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 8,
+      "begin": 0,
+      "additional_accounts": 8,
+      "elapsed_seconds": 24.401319700002205,
+      "projected_additional_seconds": 31.6568318397738,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED"
+    }
+  ],
+  "accounts": 24,
+  "max_workers": 8,
+  "models": {
+    "jump_down": {
+      "model": "jump_down",
+      "size": 8,
+      "peak_tree_rss_bytes": 1686802432,
+      "peak_temporary_disk_bytes": 16791648,
+      "complete": true,
+      "wall_seconds": 14.80030460000853,
+      "tree_cpu_seconds": 35.8125,
+      "additional_evidence_bytes": 73091,
+      "accounts": 8,
+      "accounts_per_second": 0.5405294158604944
+    },
+    "regime_historical": {
+      "model": "regime_historical",
+      "size": 8,
+      "peak_tree_rss_bytes": 1690464256,
+      "peak_temporary_disk_bytes": 16729848,
+      "complete": true,
+      "wall_seconds": 7.774682699993718,
+      "tree_cpu_seconds": 8.578125,
+      "additional_evidence_bytes": 87391,
+      "accounts": 8,
+      "accounts_per_second": 1.028980899761538
+    },
+    "moving_block_bootstrap": {
+      "model": "moving_block_bootstrap",
+      "size": 8,
+      "peak_tree_rss_bytes": 1692917760,
+      "peak_temporary_disk_bytes": 18218300,
+      "complete": true,
+      "wall_seconds": 7.897514599986607,
+      "tree_cpu_seconds": 8.484375,
+      "additional_evidence_bytes": 64895,
+      "accounts": 8,
+      "accounts_per_second": 1.0129769180817427
+    }
+  },
+  "performance": {
+    "peak_tree_rss_bytes": 1693085696,
+    "peak_temporary_disk_bytes": 18218300,
+    "groups": [
+      {
+        "model": "jump_down",
+        "size": 8,
+        "peak_tree_rss_bytes": 1686802432,
+        "peak_temporary_disk_bytes": 16791648,
+        "complete": true,
+        "wall_seconds": 14.80030460000853,
+        "tree_cpu_seconds": 35.8125,
+        "additional_evidence_bytes": 73091
+      },
+      {
+        "model": "regime_historical",
+        "size": 8,
+        "peak_tree_rss_bytes": 1690464256,
+        "peak_temporary_disk_bytes": 16729848,
+        "complete": true,
+        "wall_seconds": 7.774682699993718,
+        "tree_cpu_seconds": 8.578125,
+        "additional_evidence_bytes": 87391
+      },
+      {
+        "model": "moving_block_bootstrap",
+        "size": 8,
+        "peak_tree_rss_bytes": 1692917760,
+        "peak_temporary_disk_bytes": 18218300,
+        "complete": true,
+        "wall_seconds": 7.897514599986607,
+        "tree_cpu_seconds": 8.484375,
+        "additional_evidence_bytes": 64895
+      }
+    ],
+    "sample_interval_seconds": 0.1,
+    "startup_wall_seconds": 1.8457285999902524,
+    "startup_tree_cpu_seconds": 1.671875,
+    "wall_seconds": 33.54295609999099,
+    "tree_cpu_seconds": 61.109375,
+    "cpu_measurement": "Windows Job user + kernel time, including exited descendants"
+  },
+  "evidence_bytes_per_account": 14563.555555555555,
+  "cli_preparation_wall_seconds": 5.956520800013095
+}

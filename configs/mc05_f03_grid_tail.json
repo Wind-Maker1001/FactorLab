@@ -1,0 +1,25 @@
+{
+  "research_id": "MC-05-F03",
+  "frozen_definition": "configs/mc05_f02_grid_tail.json",
+  "experiment": {
+    "seeds": [1729, 2718, 31415],
+    "sizes": [16, 32, 64],
+    "batch_size": 8,
+    "steps": 168,
+    "resamples": 999,
+    "budget_seconds": 900,
+    "cost_safety_factor": 1.2,
+    "admission_unit": "model_all_seeds",
+    "coverage_first": true,
+    "run_deterministic": false,
+    "path_evidence": true
+  },
+  "resources": {
+    "max_workers": 8,
+    "pilot_seed": 1729,
+    "pilot_paths_per_model": 8,
+    "pilot_budget_seconds": 120,
+    "output_reserve_seconds": 15,
+    "minimum_free_after_bytes": 1073741824
+  }
+}

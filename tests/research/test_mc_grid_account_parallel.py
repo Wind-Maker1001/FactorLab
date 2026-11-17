@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 
 from factorlab.experiments import mc_grid_tail_convergence as study
+from factorlab.experiments.mc_grid_tail_f03_financial import capture_account_diagnostics
 from tests.research.test_mc_grid_tail_convergence import settings
 from tests.research.test_mc_regime_jump import grid, study_input
 
@@ -85,7 +86,8 @@ def test_spawned_accounts_preserve_seed_order_and_research_evidence(small_study,
     assert not list(scratch.iterdir())
 
 
-def test_worker_failure_preserves_prior_group_and_cleans_accounts(small_study, tmp_path, monkeypatch):
+@pytest.mark.parametrize('diagnostic', [None, capture_account_diagnostics], ids=['baseline', 'f03'])
+def test_worker_failure_preserves_prior_group_and_cleans_accounts(small_study, tmp_path, monkeypatch, diagnostic):
     run, definition, scratch = small_study
     definition['models'] = ['gbm']
     definition['experiment'].update(sizes=[1, 2], batch_size=1, steps=4)
@@ -99,7 +101,7 @@ def test_worker_failure_preserves_prior_group_and_cleans_accounts(small_study, t
     monkeypatch.setattr(study, 'batches', batches)
     output = tmp_path / 'worker-failure'
     with pytest.raises(ValueError, match='scenario price must be a finite positive Decimal'):
-        run(output, max_workers=2)
+        run(output, max_workers=2, diagnostic=diagnostic)
 
     groups = _read_json(output, 'groups.json')
     assert [(cell['model'], cell['seed'], cell['n_paths'], cell['groups']['unconditional']['n'])
@@ -108,5 +110,8 @@ def test_worker_failure_preserves_prior_group_and_cleans_accounts(small_study, t
     assert failure['status'] == 'ACCOUNT_REPLAY_ABORTED'
     assert (failure['model'], failure['size'], failure['exception_type']) == ('gbm', 2, 'ValueError')
     assert failure['completed_paths_per_seed_by_model'] == {'gbm': 1}
+    if diagnostic is not None:
+        assert len(_read_paths(output)) == 3
+        assert _read_json(output, 'tails.json')['gbm']['identity']['path_id'] == 0
     assert not (output / 'summary.json').exists()
     assert not list(scratch.iterdir())
