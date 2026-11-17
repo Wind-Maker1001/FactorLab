@@ -79,6 +79,18 @@ def test_r12_reads_normalized_original_proposal():
     assert window['description']['confirmed_exchange_fills'] == 0
 
 
+def test_poll_diagnostics_do_not_replace_quotes_or_erase_interruptions():
+    rows = events()
+    rows.append(dict(kind='poll_round', round=1, total_seconds=4,
+                     within_quote_gap=True, quotes=100))
+    rows.append(dict(kind='interruption', at=rows[-2]['at'], reason='R13_QUOTE_GAP'))
+    window = evaluated(rows)
+    assert window['description']['counts']['captured_books'] == sum(r['kind'] == 'book' for r in rows)
+    assert window['evaluation']['engineering_status'] == 'INVALID_EVIDENCE'
+    assert any(g.get('reason') == 'R13_QUOTE_GAP'
+               for g in window['evidence']['source']['payload']['gaps'])
+
+
 def test_rewrapped_source_proposals_rejected_before_aggregation():
     a, b = evaluated(events()), evaluated(events('window-b'))
     assert a['evaluation']['engineering_status'] == b['evaluation']['engineering_status'] == 'VALID_ENGINEERING_OBSERVATION'

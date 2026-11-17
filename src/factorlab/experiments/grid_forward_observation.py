@@ -101,7 +101,7 @@ def normalize(events):
         elif kind == 'request' and event['method'] != 'GET':
             raise ValueError('non-GET observation prohibited')
         elif kind not in {'binding', 'experiment', 'strategy_binding', 'market_status',
-                          'request', 'request_result', 'window_end'}:
+                          'request', 'request_result', 'window_end', 'poll_round'}:
             raise ValueError('unknown observation event: ' + kind)
     used_receipts = {b['raw_sha256'] for b in bars}
     binding['prior_bar_ids'] = [f"BINANCE_USDM_DEMO_REST:{binding['interval_seconds']}:{int(utc(r['closed_at']).timestamp())}"

@@ -1,6 +1,6 @@
 """Bounded GET-only Grid Preview evidence; never an exchange fill estimator."""
 import argparse
-from contextlib import closing
+from contextlib import closing, nullcontext
 import csv
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D
@@ -11,6 +11,7 @@ import math
 import os
 from pathlib import Path
 import signal
+from time import perf_counter
 
 from factorlab.trading.storage import decode, dumps
 from .demo_credentials import DemoCredentialStore
@@ -28,6 +29,20 @@ def utcnow():
 
 def instant(value):
     return datetime.fromisoformat(value)
+
+
+def collector_source_sha256():
+    """Bind the installed collector and trading implementation, including local edits."""
+    root = Path(__file__).resolve().parents[2]
+    paths = sorted({*Path(__file__).parent.glob('*.py'),
+                    *(root / 'trading').glob('*.py'),
+                    *(root / 'strategies').glob('grid*.py')})
+    digest = hashlib.sha256()
+    for path in paths:
+        name, content = path.relative_to(root).as_posix().encode(), path.read_bytes()
+        digest.update(len(name).to_bytes(8, 'big') + name)
+        digest.update(len(content).to_bytes(8, 'big') + content)
+    return digest.hexdigest()
 
 
 class ObservationFull(ValueError):
@@ -61,12 +76,13 @@ class BoundedRequests(RequestCounts):
                                   endpoint=path, at=utcnow().isoformat()))
         self.used += 1
 
-    def record(self, source, method, path, seconds, error, weights):
-        super().record(source, method, path, seconds, error, weights)
+    def record(self, source, method, path, seconds, error, weights, *, status=None):
+        super().record(source, method, path, seconds, error, weights, status=status)
         if error is not None:
             self.failed = True
         self.evidence.append(dict(kind='request_result', source=source, method=method,
-                                  endpoint=path, seconds=seconds, error=error))
+                                  endpoint=path, seconds=seconds, error=error, http_status=status,
+                                  completed_at=utcnow().isoformat()))
 
 
 class ShadowEvidence:
@@ -81,6 +97,7 @@ class ShadowEvidence:
         self.version, self.window = version, window
         self.max_bytes, self.max_proposals = max_bytes, max_proposals
         self.rows, self.proposals, self.pending = [], {}, {}
+        self.fsync_seconds = 0.
         self.last_market = None
         self.path.parent.mkdir(parents=True, exist_ok=True)
         binding = dict(version=version, window=window, max_bytes=max_bytes, max_proposals=max_proposals)
@@ -129,7 +146,11 @@ class ShadowEvidence:
         with self.path.open('ab') as stream:
             stream.write(encoded)
             stream.flush()
-            os.fsync(stream.fileno())
+            started = perf_counter()
+            try:
+                os.fsync(stream.fileno())
+            finally:
+                self.fsync_seconds += perf_counter() - started
         self._apply(event)
 
     def begin(self, identity, bar, live, at):
@@ -244,10 +265,12 @@ class ShadowConsumer(GridConsumer):
         self.evidence = evidence
         self.market_status = 'UNKNOWN'
 
-    def before_poll(self):
+    def recovered(self):
         if self.evidence.pending:
-            self.bridge.recover()
-            self.evidence.recover(self.bridge)
+            with self.request_counts.measure('shadow_recovery') if self.request_counts is not None else nullcontext():
+                self.evidence.recover(self.bridge)
+
+    def before_poll(self):
         super().before_poll()
         self._end_inactive()
         self.evidence.end('WINDOW_END', ids=[k for k, p in self.evidence.proposals.items()
@@ -334,6 +357,7 @@ def main(argv=None):
     if args.experiment_id:
         parameters.update(experiment_id=args.experiment_id,
             max_quote_gap_seconds=args.max_quote_gap_seconds,
+            collector_source_sha256=collector_source_sha256(),
             strategy_definition=dict(factory='P7_M13_GRID_FACTORY', settings=settings,
                 default_range_multipliers=['0.99', '1.01'], levels=1, initial_inventory=0,
                 quantity=1, max_inventory=1, max_cash_committed=7, breakout='pause'),
@@ -382,7 +406,10 @@ def main(argv=None):
                     version=args.version, instrument='NVDAUSDT', interval_seconds=60))
             path = args.output / 'feed.sqlite3'
             with closing(StrategyControl(path, dict(source=SOURCE, mode='SHADOW_GET_ONLY'))) as control:
-                consumer = ShadowConsumer(bridge, control, evidence)
+                requests.enable_rounds(max_requests=args.max_requests,
+                    max_quote_gap_seconds=args.max_quote_gap_seconds,
+                    sink=lambda row: evidence.append(dict(kind='poll_round', **row)))
+                consumer = ShadowConsumer(bridge, control, evidence, request_counts=requests)
                 client = MarketClient(requests)
                 info = client.request('GET', '/fapi/v1/exchangeInfo', signed=False)
                 symbol = next(s for s in info['symbols'] if s['symbol'] == 'NVDAUSDT')
@@ -393,7 +420,12 @@ def main(argv=None):
                         consumer_id='shadow:' + bridge.grid.deployment_id,
                         initial_bars=max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1))) as feed:
                     supervisor = DemoSupervisor(feed, poll_seconds=args.sample_seconds,
-                        before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests)
+                        before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests,
+                        metric_snapshot=lambda: dict(
+                            controller_commit=bridge.controller.store.commit_seconds,
+                            protocol_commit=bridge.gateway.adapter.store.commit_seconds,
+                            feed_commit=feed.commit_seconds,
+                            evidence_fsync=evidence.fsync_seconds))
                     consumer.supervisor = supervisor
                     signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
                     signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())
@@ -422,6 +454,7 @@ def main(argv=None):
         result['run_books'] = result['books'] - initial_books
         result['real_observation'] = 'RUN' if result['run_books'] else 'REAL_OBSERVATION_NOT_RUN'
         result.update(api=requests.snapshot(), reserved_requests=requests.used,
+                      evidence_fsync_seconds=evidence.fsync_seconds,
                       experiment=experiment, ended_at=utcnow().isoformat())
         (args.output / 'summary.json').write_text(json.dumps(result, indent=2, default=str) + '\n', encoding='utf-8')
         print(json.dumps(result, default=str))
