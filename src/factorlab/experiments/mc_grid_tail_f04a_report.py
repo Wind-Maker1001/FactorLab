@@ -77,7 +77,7 @@ def _participation_tests(by_model):
             tests.append(dict(
                 model=model, low=low, high=high, paths=len(trials),
                 gained=up, lost=down,
-                p=binomtest(up, up + down, .5).pvalue if up + down else 1.,
+                p=float(binomtest(up, up + down, .5).pvalue) if up + down else 1.,
                 consistent_seeds=len(direction) == 1 and sum(bool(change) for change in per_seed.values()) >= 2,
                 seed_net_changes=dict(sorted(per_seed.items())),
             ))
@@ -254,10 +254,11 @@ def _exposure_spread_line(identity, rows):
               for field in ('inventory_mean', 'max_inventory', 'terminal_inventory')))
 
 
-def _tails_line(identity, rows, confidence):
+def _tails_line(identity, rows, percentile):
     n = len(rows)
     losses = 1 - np.asarray([row['terminal_nav'] / row['initial_capital'] for row in rows])
-    mass = (1 - confidence) * n
+    confidence = percentile / 100
+    mass = (100 - percentile) * n / 100
     var, cvar = _loss_tail(losses, confidence)
     return (*identity, n, _percentage(confidence), _percentage(var), _percentage(cvar), f'{mass:.2f}',
             int(np.ceil(mass)), 'INSUFFICIENT_TAIL_SUPPORT' if mass < MINIMUM_TAIL_PATHS else '—')
@@ -382,8 +383,8 @@ def _render_financial(by_model, model_cohorts):
     ])
     _table(lines, ('模型', 'TTL', '条件', '路径数', '置信水平', '经验 VaR', '经验 CVaR',
                    '名义尾部质量', '加权路径数', '支持'),
-           (_tails_line(identity, rows, confidence)
-            for identity, rows in conditions if rows for confidence in (.95, .99)))
+           (_tails_line(identity, rows, percentile)
+            for identity, rows in conditions if rows for percentile in (95, 99)))
     lines.extend([
         '', '## 以 TTL 100 为基准的逐路径差异', '',
         '差值是同一路径下对照 TTL 减 TTL 100。百分比指标的差采用百分点。'

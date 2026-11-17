@@ -4,7 +4,7 @@ from time import perf_counter
 import pytest
 
 from factorlab.experiments.mc_grid_tail_f04a import _account_id, _collect, admission, validate_triplet
-from factorlab.experiments.mc_grid_tail_f04a_report import _participation_tests
+from factorlab.experiments.mc_grid_tail_f04a_report import _participation_tests, _tails_line
 
 
 def test_direction_requires_paired_significance_and_support_across_seeds():
@@ -31,7 +31,7 @@ def test_direction_requires_paired_significance_and_support_across_seeds():
 
     one_seed = first['jump_down']
     assert one_seed['holm_p'] < .05
-    assert not one_seed['supports_direction']
+    assert one_seed['supports_direction'] is False
 
     nominal = first['regime_historical']
     assert nominal['p'] < .05 < nominal['holm_p']
@@ -40,7 +40,7 @@ def test_direction_requires_paired_significance_and_support_across_seeds():
     supported = first['moving_block_bootstrap']
     assert supported['paths'] == 48
     assert (supported['gained'], supported['lost']) == (8, 0)
-    assert supported['supports_direction']
+    assert supported['supports_direction'] is True
     assert all(not test['supports_direction'] for test in tests if test['low'] == 100)
 
 
@@ -81,3 +81,9 @@ def test_triplet_rejects_wrong_price_path_and_worker_failure():
                       perf_counter()+10, policy, performance)
     with pytest.raises(RuntimeError, match='account failed'):
         next(groups)
+
+
+def test_effective_tail_path_count_at_integer_mass():
+    rows = [{'terminal_nav': 1000 - index, 'initial_capital': 1000} for index in range(20)]
+    tail = _tails_line(('model', 100, 'all'), rows, 95)
+    assert tail[-3:] == ('1.00', 1, 'INSUFFICIENT_TAIL_SUPPORT')
