@@ -1,0 +1,27 @@
+{
+  "accounts": 144,
+  "unique_accounts": 144,
+  "complete_seed_groups": 9,
+  "maximum_absolute_reconciliation_residual": 0.0,
+  "persistent_sqlite_files": 0,
+  "run_evidence_bytes": 811234,
+  "max_temporary_account_bytes": 128374,
+  "f01_frozen_paths_changed": false,
+  "code": {
+    "commit": "4316b6c568d38567039948bddfe1d9f5b8a28592",
+    "tree": "dd19c50ad143af36048d1437bd731dc2453a6a1f",
+    "git_dirty": false,
+    "git_diff_sha256": null
+  },
+  "performance": {
+    "total_seconds": 508.9301533999969,
+    "cpu_seconds": 128.21875,
+    "execution_seconds": 507.6300697000115,
+    "cleanup_seconds": 0.4257368999242317,
+    "generation_seconds": 0.06349999993108213,
+    "statistics_seconds": 0.34047959992312826,
+    "accounts": 144,
+    "process_lifetime_peak_rss_bytes": 177262592,
+    "budget_overrun_seconds": 0.0
+  }
+}

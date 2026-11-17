@@ -1,0 +1,1742 @@
+[
+  {
+    "seed": 1729,
+    "state": "low_down",
+    "n": 13,
+    "statistics": {
+      "n": 13,
+      "tails": {
+        "0.95": {
+          "var": 3.849403619476553e-05,
+          "cvar": 7.362720168282522e-05,
+          "var_interval": {
+            "estimate": 3.849403619476553e-05,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9754921582541288,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 7.362720168282522e-05,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.6500000000000006,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 7.362720168282522e-05,
+          "distinct_losses": 8,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 6.660056858521323e-05,
+          "cvar": 7.362720168282522e-05,
+          "var_interval": {
+            "estimate": 6.660056858521323e-05,
+            "lower": 1.5071925869392544e-05,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 12,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9927510563220647,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 7.362720168282522e-05,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.13000000000000012,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 7.362720168282522e-05,
+          "distinct_losses": 8,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.15384615384615385,
+        "lower": 0.043258178358081184,
+        "upper": 0.4223463101948254,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 2,
+        "n": 13
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.22809537235419838,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 13
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0002027318957873,
+          "lower": 0.0,
+          "upper": 0.000399586348971,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9775390625,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.0009173449537012984,
+          "lower": 0.000399586348971,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9754921582541288,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0014440046275490588,
+          "lower": 0.0004784618921615,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 12,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9927510563220647,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 1729,
+    "state": "low_up",
+    "n": 13,
+    "statistics": {
+      "n": 13,
+      "tails": {
+        "0.95": {
+          "var": 0.0015623092345701459,
+          "cvar": 0.0025055730914209564,
+          "var_interval": {
+            "estimate": 0.0015623092345701459,
+            "lower": 0.0009034467292732415,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9754921582541288,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0003400083059387953,
+            "upper": 0.0025055730914209564,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.6500000000000006,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0025055730914209564,
+          "distinct_losses": 9,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.0023169203200507932,
+          "cvar": 0.0025055730914209564,
+          "var_interval": {
+            "estimate": 0.0023169203200507932,
+            "lower": 0.0009334666633362759,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 12,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9927510563220647,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0003400083059387953,
+            "upper": 0.0025055730914209564,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.13000000000000012,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0025055730914209564,
+          "distinct_losses": 9,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.5384615384615384,
+        "lower": 0.29143795714506004,
+        "upper": 0.7679393219046169,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 7,
+        "n": 13
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.22809537235419838,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 13
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.000216013228337,
+          "lower": 0.0,
+          "upper": 0.0014575385073591,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9775390625,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.0024343195374448177,
+          "lower": 0.0014575385073591,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9754921582541288,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0032995557175755225,
+          "lower": 0.0017132893873359,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 12,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9927510563220647,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 1729,
+    "state": "high_down",
+    "n": 10,
+    "statistics": {
+      "n": 10,
+      "tails": {
+        "0.95": {
+          "var": 7.103257677507587e-05,
+          "cvar": 0.00012915013959104727,
+          "var_interval": {
+            "estimate": 7.103257677507587e-05,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 8,
+            "upper_rank": 11,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9884964426207031,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.00012915013959104727,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.5000000000000004,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.00012915013959104727,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.00011752662702785303,
+          "cvar": 0.00012915013959104727,
+          "var_interval": {
+            "estimate": 0.00011752662702785303,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 9,
+            "upper_rank": 11,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9957337997571686,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.00012915013959104727,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.10000000000000009,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.00012915013959104727,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.1,
+        "lower": 0.017876213095072896,
+        "upper": 0.4041500267952385,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 1,
+        "n": 10
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.2775327998628892,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 10
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0004705491304632,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 2,
+          "upper_rank": 9,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.978515625,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.000477126582627175,
+          "lower": 0.0004185716794621,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 8,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9884964426207031,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.00048143182404359496,
+          "lower": 0.0004705491304632,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 9,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9957337997571686,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 1729,
+    "state": "high_up",
+    "n": 13,
+    "statistics": {
+      "n": 13,
+      "tails": {
+        "0.95": {
+          "var": 0.00025542840711163914,
+          "cvar": 0.000566189870840617,
+          "var_interval": {
+            "estimate": 0.00025542840711163914,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9754921582541288,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.000566189870840617,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.6500000000000006,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.000566189870840617,
+          "distinct_losses": 7,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.0005040375780948211,
+          "cvar": 0.000566189870840617,
+          "var_interval": {
+            "estimate": 0.0005040375780948211,
+            "lower": 4.82540979589885e-05,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 12,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9927510563220647,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.000566189870840617,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 1729
+          },
+          "expected_tail_paths": 0.13000000000000012,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.000566189870840617,
+          "distinct_losses": 7,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.15384615384615385,
+        "lower": 0.043258178358081184,
+        "upper": 0.4223463101948254,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 2,
+        "n": 13
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.22809537235419838,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 13
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0004032771930843,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9775390625,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.0004478291521707399,
+          "lower": 0.0004032771930843,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9754921582541288,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0004820711897550279,
+          "lower": 0.0004192941208505,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 12,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9927510563220647,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 2718,
+    "state": "low_down",
+    "n": 13,
+    "statistics": {
+      "n": 13,
+      "tails": {
+        "0.95": {
+          "var": 0.00029530473346528593,
+          "cvar": 0.0005313014325049607,
+          "var_interval": {
+            "estimate": 0.00029530473346528593,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9754921582541288,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0005313014325049607,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.6500000000000006,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0005313014325049607,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.0004841020926970255,
+          "cvar": 0.0005313014325049607,
+          "var_interval": {
+            "estimate": 0.0004841020926970255,
+            "lower": 0.00013797360077217035,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 12,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9927510563220647,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0005313014325049607,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.13000000000000012,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0005313014325049607,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.15384615384615385,
+        "lower": 0.043258178358081184,
+        "upper": 0.4223463101948254,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 2,
+        "n": 13
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.22809537235419838,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 13
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 9.566722860485848e-05,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9775390625,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.00074438405376416,
+          "lower": 9.566722860485848e-05,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9754921582541288,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.000762124510618352,
+          "lower": 0.000729600339719,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 12,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9927510563220647,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 2718,
+    "state": "low_up",
+    "n": 13,
+    "statistics": {
+      "n": 13,
+      "tails": {
+        "0.95": {
+          "var": 0.0002349598853666742,
+          "cvar": 0.0004951923110478447,
+          "var_interval": {
+            "estimate": 0.0002349598853666742,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9754921582541288,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0004951923110478447,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.6500000000000006,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0004951923110478447,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.0004431458259116103,
+          "cvar": 0.0004951923110478447,
+          "var_interval": {
+            "estimate": 0.0004431458259116103,
+            "lower": 6.147160157922827e-05,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 12,
+            "upper_rank": 14,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9927510563220647,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0004951923110478447,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.13000000000000012,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0004951923110478447,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.15384615384615385,
+        "lower": 0.043258178358081184,
+        "upper": 0.4223463101948254,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 2,
+        "n": 13
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.22809537235419838,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 13
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0005481225168329,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9775390625,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.0007484704948366798,
+          "lower": 0.0005481225168329,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9754921582541288,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0008049657746685359,
+          "lower": 0.0007013910949768,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 12,
+          "upper_rank": 14,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9927510563220647,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 2718,
+    "state": "high_down",
+    "n": 14,
+    "statistics": {
+      "n": 14,
+      "tails": {
+        "0.95": {
+          "var": 9.284033998664531e-05,
+          "cvar": 0.0002652581142475583,
+          "var_interval": {
+            "estimate": 9.284033998664531e-05,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 15,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9958267615530123,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0002652581142475583,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.7000000000000006,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0002652581142475583,
+          "distinct_losses": 3,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.0002307745593953755,
+          "cvar": 0.0002652581142475583,
+          "var_interval": {
+            "estimate": 0.0002307745593953755,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 13,
+            "upper_rank": 15,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9915987559888338,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0002652581142475583,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.14000000000000012,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0002652581142475583,
+          "distinct_losses": 3,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.07142857142857142,
+        "lower": 0.012722215247890939,
+        "upper": 0.31468704424151117,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 1,
+        "n": 14
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 1.3877787807814457e-17,
+        "upper": 0.2153108027376358,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 14
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 12,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.987060546875,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.00041947505870534494,
+          "lower": 0.0,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 15,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9958267615530123,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0005186055473504289,
+          "lower": 0.000352752614425,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 13,
+          "upper_rank": 15,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9915987559888338,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 2718,
+    "state": "high_up",
+    "n": 15,
+    "statistics": {
+      "n": 15,
+      "tails": {
+        "0.95": {
+          "var": 0.00032461075806343144,
+          "cvar": 0.00040965083359685654,
+          "var_interval": {
+            "estimate": 0.00032461075806343144,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 12,
+            "upper_rank": 16,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9945327413430833,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.00040965083359685654,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.7500000000000007,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0004096508335968565,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.00039264281849017143,
+          "cvar": 0.0004096508335968565,
+          "var_interval": {
+            "estimate": 0.00039264281849017143,
+            "lower": 0.0002881650114062495,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 14,
+            "upper_rank": 16,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9903702265566352,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0004096508335968565,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 2718
+          },
+          "expected_tail_paths": 0.15000000000000013,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0004096508335968565,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.13333333333333333,
+        "lower": 0.03736125910306537,
+        "upper": 0.37881982832322364,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 2,
+        "n": 15
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.20388330103584862,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 15
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0003123531266375,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 4,
+          "upper_rank": 12,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.96484375,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.0007091504629147995,
+          "lower": 0.0003123531266375,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 12,
+          "upper_rank": 16,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9945327413430833,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0009812973139210397,
+          "lower": 0.0005633575070186,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 14,
+          "upper_rank": 16,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9903702265566352,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 31415,
+    "state": "low_down",
+    "n": 10,
+    "statistics": {
+      "n": 10,
+      "tails": {
+        "0.95": {
+          "var": 0.00010633112652590719,
+          "cvar": 0.00019332932095619527,
+          "var_interval": {
+            "estimate": 0.00010633112652590719,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 8,
+            "upper_rank": 11,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9884964426207031,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.00019332932095619527,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.5000000000000004,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.00019332932095619527,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.00017592968207013772,
+          "cvar": 0.00019332932095619527,
+          "var_interval": {
+            "estimate": 0.00017592968207013772,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 9,
+            "upper_rank": 11,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9957337997571686,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.00019332932095619527,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.10000000000000009,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.00019332932095619527,
+          "distinct_losses": 5,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.1,
+        "lower": 0.017876213095072896,
+        "upper": 0.4041500267952385,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 1,
+        "n": 10
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.2775327998628892,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 10
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0002262111469777,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 2,
+          "upper_rank": 9,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.978515625,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.00047407841751539954,
+          "lower": 0.0001699773465388,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 8,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9884964426207031,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0006363188127764401,
+          "lower": 0.0002262111469777,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 9,
+          "upper_rank": 11,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9957337997571686,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 31415,
+    "state": "low_up",
+    "n": 16,
+    "statistics": {
+      "n": 16,
+      "tails": {
+        "0.95": {
+          "var": 0.0002772317617113913,
+          "cvar": 0.0011089270468455652,
+          "var_interval": {
+            "estimate": 0.0002772317617113913,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 13,
+            "upper_rank": 17,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9929960923437927,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0011089270468455652,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.8000000000000007,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0011089270468455652,
+          "distinct_losses": 8,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.00094258798981873,
+          "cvar": 0.0011089270468455652,
+          "var_interval": {
+            "estimate": 0.00094258798981873,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 15,
+            "upper_rank": 17,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9890671078374818,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0011089270468455652,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.16000000000000014,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0011089270468455652,
+          "distinct_losses": 8,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.0625,
+        "lower": 0.01111934476464252,
+        "upper": 0.28328737570298945,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 1,
+        "n": 16
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "upper": 0.1936076805344365,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 16
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0005597631562498,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 4,
+          "upper_rank": 13,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.978729248046875,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.001104303388381325,
+          "lower": 0.0005597631562498,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 13,
+          "upper_rank": 17,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9929960923437927,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0013206827861121048,
+          "lower": 0.0010141453059935,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 15,
+          "upper_rank": 17,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9890671078374818,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 31415,
+    "state": "high_down",
+    "n": 12,
+    "statistics": {
+      "n": 12,
+      "tails": {
+        "0.95": {
+          "var": 0.0002479822493492858,
+          "cvar": 0.0005109801545423807,
+          "var_interval": {
+            "estimate": 0.0002479822493492858,
+            "lower": -0.0,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 10,
+            "upper_rank": 13,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9804317380028454,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0005109801545423807,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.6000000000000005,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0005109801545423807,
+          "distinct_losses": 8,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.00045838057350376204,
+          "cvar": 0.0005109801545423807,
+          "var_interval": {
+            "estimate": 0.00045838057350376204,
+            "lower": 3.280214510039059e-05,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 13,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9938254622271753,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.0,
+            "upper": 0.0005109801545423807,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.1200000000000001,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0005109801545423807,
+          "distinct_losses": 8,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.16666666666666666,
+        "lower": 0.04696514218385378,
+        "upper": 0.4480308622529734,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 2,
+        "n": 12
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 2.7755575615628914e-17,
+        "upper": 0.24249400665524085,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 12
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 1.640107255011272e-05,
+          "lower": 0.0,
+          "upper": 0.0004962311280544,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 10,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.96142578125,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.0011403970965396997,
+          "lower": 0.0004962311280544,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 10,
+          "upper_rank": 13,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9804317380028454,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0013752085957019402,
+          "lower": 0.0009002489723965,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 13,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9938254622271753,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  },
+  {
+    "seed": 31415,
+    "state": "high_up",
+    "n": 12,
+    "statistics": {
+      "n": 12,
+      "tails": {
+        "0.95": {
+          "var": 0.0004542447124045052,
+          "cvar": 0.0006344287020790489,
+          "var_interval": {
+            "estimate": 0.0004542447124045052,
+            "lower": 0.00020021626461118558,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 10,
+            "upper_rank": 13,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9804317380028454,
+            "method": "binomial_order_statistics",
+            "quantile": 0.95
+          },
+          "cvar_interval": {
+            "lower": 0.00010320929763122421,
+            "upper": 0.0006344287020790489,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.6000000000000005,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0006344287020790489,
+          "distinct_losses": 6,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        },
+        "0.99": {
+          "var": 0.0005983919041441404,
+          "cvar": 0.0006344287020790489,
+          "var_interval": {
+            "estimate": 0.0005983919041441404,
+            "lower": 0.00030682144812533353,
+            "upper": null,
+            "lower_unbounded": false,
+            "upper_unbounded": true,
+            "lower_rank": 11,
+            "upper_rank": 13,
+            "coverage": 0.95,
+            "continuous_population_rank_coverage": 0.9938254622271753,
+            "method": "binomial_order_statistics",
+            "quantile": 0.99
+          },
+          "cvar_interval": {
+            "lower": 0.00010320929763122421,
+            "upper": 0.0006344287020790489,
+            "coverage": 0.95,
+            "method": "iid_path_percentile_bootstrap",
+            "resamples": 999,
+            "conditional_on_observed_support": true,
+            "bootstrap_seed": 31415
+          },
+          "expected_tail_paths": 0.1200000000000001,
+          "tail_paths_with_nonzero_weight": 1,
+          "largest_path_tail_weight": 1.0,
+          "largest_path_cvar_contribution": 0.0006344287020790489,
+          "distinct_losses": 6,
+          "warnings": [
+            "CVAR_EQUALS_SAMPLE_MAXIMUM",
+            "FEWER_THAN_20_EXPECTED_TAIL_PATHS_DIAGNOSTIC_NOT_ACCEPTANCE_RULE",
+            "NO_FINITE_DISTRIBUTION_FREE_UPPER_QUANTILE_BOUND"
+          ],
+          "statistical_status": "STATISTICALLY_UNSTABLE"
+        }
+      },
+      "loss_probability": {
+        "estimate": 0.4166666666666667,
+        "lower": 0.19326031365875665,
+        "upper": 0.6804886874504503,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 5,
+        "n": 12
+      },
+      "drawdown_breach_probability": {
+        "estimate": 0.0,
+        "lower": 2.7755575615628914e-17,
+        "upper": 0.24249400665524085,
+        "coverage": 0.95,
+        "method": "wilson_score",
+        "events": 0,
+        "n": 12
+      },
+      "drawdown_threshold": 0.2,
+      "maximum_drawdown_quantiles": {
+        "0.5": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "upper": 0.0006584594818159,
+          "lower_unbounded": false,
+          "upper_unbounded": false,
+          "lower_rank": 3,
+          "upper_rank": 10,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.96142578125,
+          "method": "binomial_order_statistics",
+          "quantile": 0.5
+        },
+        "0.95": {
+          "estimate": 0.0008405495908967198,
+          "lower": 0.0006584594818159,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 10,
+          "upper_rank": 13,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9804317380028454,
+          "method": "binomial_order_statistics",
+          "quantile": 0.95
+        },
+        "0.99": {
+          "estimate": 0.0009768922704421442,
+          "lower": 0.0007011082140889,
+          "upper": null,
+          "lower_unbounded": false,
+          "upper_unbounded": true,
+          "lower_rank": 11,
+          "upper_rank": 13,
+          "coverage": 0.95,
+          "continuous_population_rank_coverage": 0.9938254622271753,
+          "method": "binomial_order_statistics",
+          "quantile": 0.99
+        }
+      },
+      "interval_meaning": "pointwise conditional simulation uncertainty; not financial prediction accuracy"
+    }
+  }
+]
