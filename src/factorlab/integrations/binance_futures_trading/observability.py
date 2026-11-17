@@ -49,14 +49,14 @@ class ObservedClient(FuturesClient):
                 if key.lower().startswith('x-mbx-used-weight')}
         return super()._parse_response(request, response, **kwargs)
 
-    def request(self, method, path, params=None, *, signed=True):
+    def _request_once(self, method, path, params=None, *, signed=True):
         if isinstance(self.request_counts, RequestCounts):
             self.request_counts.before_request(self.request_source, method, path)
         started = perf_counter()
         error = None
         self._observed_weights = {}
         try:
-            return super().request(method, path, params, signed=signed)
+            return super()._request_once(method, path, params, signed=signed)
         except Exception as exc:
             error = getattr(exc, 'category', type(exc).__name__)
             raise

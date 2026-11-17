@@ -38,9 +38,9 @@ def _read_account(client, *, expected_id=None):
         adapter = FuturesAdapter(client, store, account_id=DEMO.account_id)
         if expected_id is not None and adapter.account_id != expected_id:
             raise SafetyBlocked('persisted Demo account binding mismatch')
-        # TODO: diagnose constructor-time CLOCK_SKEW before the session recovery path is available.
         client.sync_time()
-        return adapter.read_facts()
+        with client.recover_get_clock():
+            return adapter.read_facts()
 
 
 def observe_demo_account(credential, *, request_counts=None):
@@ -106,7 +106,8 @@ class DemoSession:
 
         self.adapter = DemoFuturesAdapter(self.client, protocol_store, clock=self._now)
         self.adapter.get_confirmed_writes = get_confirmed_writes
-        observation = observe_demo_rules(self.adapter, source_version=DEMO.host, on_symbol=self._check_symbol)
+        with self.client.recover_get_clock():
+            observation = observe_demo_rules(self.adapter, source_version=DEMO.host, on_symbol=self._check_symbol)
         self.adapter.facts = facts
         balance = facts.usdt()['walletBalance']
         if balance is None:

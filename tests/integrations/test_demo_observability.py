@@ -81,15 +81,13 @@ def test_status_metrics_survive_control_snapshot(network_grid, tmp_path):
 
 def test_metrics_classify_errors_weights_and_sources(monkeypatch):
     from factorlab.integrations.binance.client import Response
-    from factorlab.integrations.binance_futures_trading.protocol import FuturesClient, ExchangeError
+    from factorlab.integrations.binance_futures_trading.protocol import ExchangeError
     from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import MarketClient
     counts = RequestCounts()
     client = MarketClient(counts)
     response = Response(429, {'X-MBX-USED-WEIGHT-1M': '123'}, b'{"code":-1003}')
-    def request(self, method, path, params=None, *, signed=True):
-        from types import SimpleNamespace
-        return self._parse_response(SimpleNamespace(method=method), response)
-    monkeypatch.setattr(FuturesClient, 'request', request)
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol._request_http',
+        lambda *args, **kwargs: response)
     counts.phase = 'poll'
     with pytest.raises(ExchangeError):
         client.request('GET', '/fapi/v1/time', signed=False)
