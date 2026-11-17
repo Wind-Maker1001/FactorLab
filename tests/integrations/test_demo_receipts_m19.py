@@ -1,5 +1,9 @@
 """Exchange receipt persistence shares the existing confirmation transaction."""
 import json
+from datetime import datetime, timedelta
+
+from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
+from factorlab.integrations.binance_futures_trading.fake import NOW
 
 import pytest
 
@@ -26,6 +30,8 @@ from decimal import Decimal as D
 def test_unknown_dispatch_requires_its_own_later_get(
         network_grid, monkeypatch, status, body, unknown):
     root, store, factory, enable, fake, requests = network_grid
+    current_time = NOW
+    monkeypatch.setattr(DemoSession, '_now', lambda _: current_time)
     enable()
     original = NetworkFixture.__call__
     post_seen, query_enabled = False, False
@@ -63,11 +69,36 @@ def test_unknown_dispatch_requires_its_own_later_get(
         key = receipt['client_order_id']
         query_enabled = True
         bridge.recover()
+        assert not capture(bridge.session, bridge.runtime, D('1000'))['lifecycle']['unknown_ack_queried']
+        if unknown:
+            observed_at, payload = bridge.session.adapter.db.execute(
+                'SELECT observed_at,payload FROM futures_receipts WHERE client_id=?', (key,)).fetchone()
+            assert observed_at == receipt['observed_at'] == NOW.isoformat()
+            assert json.loads(payload)['order']['clientOrderId'] == key
+            assert json.loads(payload)['order']['symbol'] == receipt['request_parameters']['symbol']
+        current_time += timedelta(milliseconds=1)
+        bridge.recover()
         after = capture(bridge.session, bridge.runtime, D('1000'))
         assert after['lifecycle']['unknown_ack_queried'] is unknown
+        assert not after['statuses']['DEMO_LIFECYCLE_VERIFIED']
+        if unknown:
+            observed_at, payload = bridge.session.adapter.db.execute(
+                'SELECT observed_at,payload FROM futures_receipts WHERE client_id=?', (key,)).fetchone()
+            assert datetime.fromisoformat(observed_at) == current_time > datetime.fromisoformat(receipt['observed_at'])
+            wrong_symbol = json.loads(payload)
+            wrong_symbol['order']['symbol'] = 'BTCUSDT'
+            bridge.session.adapter.db.execute('UPDATE futures_receipts SET payload=? WHERE client_id=?',
+                                             (json.dumps(wrong_symbol), key))
+            assert not capture(bridge.session, bridge.runtime, D('1000'))['lifecycle']['unknown_ack_queried']
+            bridge.session.adapter.db.execute('UPDATE futures_receipts SET payload=? WHERE client_id=?', (payload, key))
         events = list(bridge.controller.store.order_events())
+        current_time += timedelta(milliseconds=1)
         bridge.recover()
         assert list(bridge.controller.store.order_events()) == events
+        if unknown:
+            assert bridge.session.adapter.db.execute(
+                'SELECT observed_at,payload FROM futures_receipts WHERE client_id=?', (key,)).fetchall() == [
+                    (current_time.isoformat(), payload)]
         assert len([r for r in requests if r.get_method() == 'POST']) == 1
         bridge.runtime.db.execute("UPDATE dispatches SET client_id='unrelated'")
         assert not capture(bridge.session, bridge.runtime, D('1000'))['lifecycle']['unknown_ack_queried']
