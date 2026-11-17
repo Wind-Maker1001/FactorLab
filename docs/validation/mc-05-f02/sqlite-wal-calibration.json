@@ -1,0 +1,8 @@
+{
+  "purpose": "pre-freeze WAL+FULL creation-close-unlink measurement; zero accounts",
+  "journal_mode": "wal",
+  "synchronous": 2,
+  "creation_close_seconds": 0.19222440000157803,
+  "unlink_seconds": 0.0002106000029016286,
+  "bytes": 16384
+}

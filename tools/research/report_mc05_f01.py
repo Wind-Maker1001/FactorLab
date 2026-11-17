@@ -10,12 +10,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True)
     parser.add_argument('--output', required=True)
+    parser.add_argument('--research-id', default='MC-05-F01')
     args = parser.parse_args()
     run = Path(args.run)
     summary = json.loads((run/'summary.json').read_text())
     cells = json.loads((run/'groups.json').read_text())
     rows = pd.read_csv(run/'paths.csv')
-    lines = ['# MC-05-F01 详细统计', '',
+    lines = [f'# {args.research_id} 详细统计', '',
         '损失和回撤以初始资本比例表示；金额单位USDT。区间为95%条件模拟区间，不是市场预测区间。', '',
         '## 每种子、规模、参与条件的尾部与区间', '',
         '|模型|规模|种子|条件|n|VaR95|CVaR95 [区间]|VaR99|CVaR99 [区间]|95/99尾部质量|95/99非零权重路径|',
