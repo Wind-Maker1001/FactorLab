@@ -1,0 +1,467 @@
+{
+  "engineering_status": "ENGINEERING_VALID",
+  "statistical_status": "STATISTICALLY_UNSTABLE",
+  "financial_status": "FINANCIAL_NOT_ESTABLISHED",
+  "completed_paths_per_seed": 16,
+  "historical_calibration_rejection": null,
+  "decisions": [
+    {
+      "model": "jump_down",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 0.0643147999944631,
+      "projected_additional_seconds": 140.87374703977255,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED"
+    },
+    {
+      "model": "regime_historical",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 192.1238161000074,
+      "projected_additional_seconds": 136.50931691973236,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "size": 16,
+      "begin": 0,
+      "additional_accounts": 48,
+      "elapsed_seconds": 361.95813330000965,
+      "projected_additional_seconds": 189.56188943954183,
+      "admitted": true,
+      "status": "RESOURCE_ADMITTED"
+    }
+  ],
+  "model_execution_status": {
+    "jump_down": "COMPLETED",
+    "regime_historical": "COMPLETED",
+    "moving_block_bootstrap": "COMPLETED"
+  },
+  "deterministic_in_probability_distribution": false,
+  "deterministic": [],
+  "cash_benchmark": {
+    "initial_nav": 1000,
+    "terminal_nav": 1000,
+    "exposure": 0
+  },
+  "completed_paths_per_seed_by_model": {
+    "jump_down": 16,
+    "regime_historical": 16,
+    "moving_block_bootstrap": 16
+  },
+  "seed_dispersion": [
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.000984484637734151,
+          "maximum": 0.0013792134268591216,
+          "seed_sd": 0.00020962216286395753
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.0009990907343498056,
+          "maximum": 0.0019687435830813057,
+          "seed_sd": 0.0005325564310717239
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.000990570511324007,
+          "maximum": 0.0017440006845296113,
+          "seed_sd": 0.0004342545881246154
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.001000307909067777,
+          "maximum": 0.0021051282539019237,
+          "seed_sd": 0.0005956341902649173
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.000990570511324007,
+          "maximum": 0.0017440006845296113,
+          "seed_sd": 0.0004342545881246154
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.001000307909067777,
+          "maximum": 0.0021051282539019237,
+          "seed_sd": 0.0005956341902649173
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "moving_block_bootstrap",
+      "n_paths": 16,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0009917876860419783,
+          "maximum": 0.0017845326020485552,
+          "seed_sd": 0.00044577163972020983
+        },
+        "cvar.95": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        },
+        "var.99": {
+          "minimum": 0.0010005513440113712,
+          "maximum": 0.0021051282539019237,
+          "seed_sd": 0.0005972610198463031
+        },
+        "cvar.99": {
+          "minimum": 0.0010027422585037193,
+          "maximum": 0.0021960513677823368,
+          "seed_sd": 0.0006372794328891268
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0002422106348270725,
+          "maximum": 0.0012259832810489202,
+          "seed_sd": 0.0005433765590697253
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.0003448476727687388,
+          "maximum": 0.002308556890692797,
+          "seed_sd": 0.0011186738393098665
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0003362945862736,
+          "maximum": 0.0018574845533411814,
+          "seed_sd": 0.0008653190176836977
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.0003636644630580443,
+          "maximum": 0.00243485714515125,
+          "seed_sd": 0.001183279256669972
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0003362945862736,
+          "maximum": 0.0018574845533411814,
+          "seed_sd": 0.0008653190176836977
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.0003636644630580443,
+          "maximum": 0.00243485714515125,
+          "seed_sd": 0.001183279256669972
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "regime_historical",
+      "n_paths": 16,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0003448476727687388,
+          "maximum": 0.0019476990208115042,
+          "seed_sd": 0.0009133414359003789
+        },
+        "cvar.95": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        },
+        "var.99": {
+          "minimum": 0.00036537508035707205,
+          "maximum": 0.0024529000386453144,
+          "seed_sd": 0.0011928871827543478
+        },
+        "cvar.99": {
+          "minimum": 0.00037050693225415543,
+          "maximum": 0.002579200293103767,
+          "seed_sd": 0.0012627771817713834
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "unconditional",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.0081913416689674,
+          "maximum": 0.014567480180573744,
+          "seed_sd": 0.003614819409130045
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.01033085211989455,
+          "maximum": 0.01533958652766194,
+          "seed_sd": 0.0026617866685178628
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "traded",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.008726219281699183,
+          "maximum": 0.014760506767345792,
+          "seed_sd": 0.003373798522158211
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.010437827642440905,
+          "maximum": 0.01537819184501635,
+          "seed_sd": 0.002616589839665867
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "ever_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.008726219281699183,
+          "maximum": 0.014760506767345792,
+          "seed_sd": 0.003373798522158211
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.010437827642440905,
+          "maximum": 0.01537819184501635,
+          "seed_sd": 0.002616589839665867
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    },
+    {
+      "model": "jump_down",
+      "n_paths": 16,
+      "group": "terminal_inventory",
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "metrics": {
+        "var.95": {
+          "minimum": 0.008904511819276447,
+          "maximum": 0.014824848962936475,
+          "seed_sd": 0.0032917122707166297
+        },
+        "cvar.95": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862827
+        },
+        "var.99": {
+          "minimum": 0.010473486149956364,
+          "maximum": 0.015391060284134488,
+          "seed_sd": 0.0026012294344723683
+        },
+        "cvar.99": {
+          "minimum": 0.010865729732626339,
+          "maximum": 0.01553261311443399,
+          "seed_sd": 0.0024365469340862822
+        }
+      },
+      "meaning": "descriptive seed dispersion; not market prediction interval"
+    }
+  ],
+  "convergence": [],
+  "performance": {
+    "total_seconds": 508.9301533999969,
+    "cpu_seconds": 128.21875,
+    "execution_seconds": 507.6300697000115,
+    "cleanup_seconds": 0.4257368999242317,
+    "generation_seconds": 0.06349999993108213,
+    "statistics_seconds": 0.34047959992312826,
+    "accounts": 144,
+    "process_lifetime_peak_rss_bytes": 177262592,
+    "budget_overrun_seconds": 0.0
+  },
+  "uncertainty": "conditional simulation uncertainty; model calibration uncertainty not quantified"
+}

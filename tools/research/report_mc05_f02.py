@@ -35,7 +35,7 @@ def main():
         'F01资产保持冻结，既有192个GBM与6个确定性账户均未重跑。', '',
         f"预校准6账户单独耗时{planning['total_seconds']:.4f}秒，正式样本不包含这些账户。"
         f"按较慢账户、生成和统计成本及1.2安全系数，144账户预计{planning['projected_144_account_seconds']:.4f}秒。"
-        '正式预算900秒，另预留10秒输出成本；每模型完整48账户整组准入，不按收益选择种子。'
+        '正式预算900秒，其中预留10秒输出成本；每模型完整48账户整组准入，不按收益选择种子。'
         '预估RSS上限目标256MiB、临时磁盘8MiB、证据2MiB，均为资源规划值，不是统计精度承诺。', '',
         f"正式墙钟{performance['total_seconds']:.4f}秒，CPU {performance['cpu_seconds']:.4f}秒；"
         f"账户及账户诊断{performance['execution_seconds']:.4f}秒、清理{performance['cleanup_seconds']:.4f}秒、"
@@ -175,6 +175,13 @@ def main():
         f"STATISTICAL_RELIABILITY_STATUS: {summary['statistical_status']}", '',
         'CONVERGENCE_STATUS: CONVERGENCE_NOT_ESTABLISHED', '',
         'FINANCIAL_NOT_ESTABLISHED', '', 'NO LIVE MONEY', '',
+        '## 验证与账户审计', '',
+        '正式前定向回归151项通过（40.52秒），另新增的无确定性账户配置约束测试单独通过。'
+        '初始新增状态关联测试曾因测试价格区间与准入模式设置错误失败，修正fixture后通过；'
+        '覆盖MC-05调度/整组准入/中断、MC-02尾部、MC-03生成器、Grid Paper和FIFO/NAV相关回归。', '',
+        '实际证据审计见 `audit.json`：144个唯一账户、9个完整种子组，每组path_id为0至15；'
+        '所有归因残差为0，无持久化SQLite，正式运行代码收据git_dirty=false。'
+        '正式run证据811234字节，单账户临时输出观察峰值128374字节；F01冻结路径没有变更。', '',
         '## 重放', '',
         '在冻结代码环境运行；重放输出应使用新目录，不覆盖正式证据。', '', '```bash',
         'PYTHONPATH=src python tools/research/plan_mc05_f02.py \\',
