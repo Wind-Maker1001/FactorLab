@@ -1,4 +1,5 @@
 """Signed USD-M protocol over an injected transport; mutating network IO absent."""
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
@@ -147,7 +148,7 @@ class ReadOnlyNetworkTransport:
 
 
 class FuturesClient:
-    """No automatic retry: callers reconcile writes and respect explicit cooldowns."""
+    """Writes are never retried; signed GET clock recovery requires an explicit scope."""
     def __init__(self, credentials=None, *, transport=None, recv_window=5000,
                  timeout=10, clock=time.time, environment=None):
         if type(recv_window) is not int or not 1 <= recv_window <= 60000 or timeout <= 0:
@@ -167,14 +168,31 @@ class FuturesClient:
         self.credentials, self.transport = credentials, transport
         self.recv_window, self.timeout, self.clock = recv_window, timeout, clock
         self.offset_ms, self.blocked_until = 0, 0.0
+        self._recover_get_clock = False
+        self.clock_recoveries = []
+        self.time_sync = None
+
+    @contextmanager
+    def recover_get_clock(self):
+        """Retry each signed GET once on CLOCK_SKEW, without replaying its caller."""
+        previous = self._recover_get_clock
+        self._recover_get_clock = True
+        try:
+            yield
+        finally:
+            self._recover_get_clock = previous
 
     def sync_time(self):
         before = self.clock()
+        started = time.monotonic()
         payload = self.request('GET', '/fapi/v1/time', signed=False)
+        elapsed_ms = (time.monotonic() - started) * 1000
         after = self.clock()
         if not isinstance(payload, dict) or type(payload.get('serverTime')) is not int or payload['serverTime'] <= 0:
             raise DataQualityError('invalid server time response')
         self.offset_ms = payload['serverTime'] - int((before + after) * 500)
+        self.time_sync = dict(offset_ms=self.offset_ms, rtt_ms=elapsed_ms,
+            midpoint_uncertainty_ms=elapsed_ms / 2, wall_elapsed_ms=(after - before) * 1000)
         return self.offset_ms
 
     def build(self, method, path, params=None, *, signed=True):
@@ -202,6 +220,30 @@ class FuturesClient:
         return SignedRequest(method, path, query + '&signature=' + signature, headers, self.environment)
 
     def request(self, method, path, params=None, *, signed=True):
+        try:
+            return self._request_once(method, path, params, signed=signed)
+        except ExchangeError as first:
+            if not (self._recover_get_clock and signed and method == 'GET'
+                    and first.category == 'CLOCK_SKEW' and first.code == -1021):
+                raise
+            diagnostic = dict(method=method, endpoint=path, code=first.code,
+                http_status=first.status, category=first.category,
+                initial_sync=self.time_sync, outcome='SYNC_FAILED')
+            self.clock_recoveries.append(diagnostic)
+            try:
+                self.sync_time()
+                diagnostic['recovery_sync'] = self.time_sync
+                diagnostic['outcome'] = 'RETRY_FAILED'
+                result = self._request_once(method, path, params, signed=signed)
+            except Exception as error:
+                diagnostic['error'] = getattr(error, 'category', type(error).__name__)
+                error.add_note(f'CLOCK_SKEW recovery {method} {path}: {diagnostic["outcome"]}; '
+                    f'initial code={first.code} HTTP={first.status}; at most one GET retry')
+                raise error from first
+            diagnostic['outcome'] = 'RECOVERED'
+            return result
+
+    def _request_once(self, method, path, params=None, *, signed=True):
         if self.transport is None:
             raise SafetyBlocked('network disabled by default')
         if method != 'GET' and not isinstance(self.transport, OfflineTransport):

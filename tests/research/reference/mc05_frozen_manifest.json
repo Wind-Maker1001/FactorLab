@@ -1,0 +1,38 @@
+{
+  "source_commit": "07821df1840a2c1b8432d7c1c0a6389179509ebe",
+  "source_kind": "ORIGINAL_MC05_FROZEN_EVIDENCE",
+  "hash_algorithm": "sha256",
+  "files": {
+    "configs/mc05_grid_tail.json": "4141f567afa4b7a42b15433e7ec5ea479448ec0231d6b3ea0c15abae681a7359",
+    "docs/validation/mc-05/REPORT.md": "75de974d7358c867ab90e2b23c5c26e13c8501c96cc9d9ce2af9dce6d581d334",
+    "docs/validation/mc-05/run/definition.json": "6822c6c2ea219ff116c94d14ce1fb2beb84ffb936f579c0318530d96ffb53e54",
+    "docs/validation/mc-05/run/deterministic.csv": "f650af09b8a83ef681ffe902443a07547365e9651337a4888fca64c9c85848bc",
+    "docs/validation/mc-05/run/generation.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/validation/mc-05/run/groups.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/validation/mc-05/run/paths.csv": "2ca282f078e45bf34a17573efb43f678598d9df8f1bd168f48c43d17f7e7f107",
+    "docs/validation/mc-05/run/summary.json": "fbe7ec5c919e120cb0ba7e4061f57ad25abaca2ec6beee82583c359ecae723c5",
+    "docs/validation/mc-05/run/tails.json": "8878b1f3d2d31d415ea5979f299d615854c78c60ab020ee6576383ec3ce5125c"
+  },
+  "crlf_files": {
+    "configs/mc05_grid_tail.json": "01f5543d36b0beb429502e96584a052ce6c037082953e0bcfe09fcb65f3c5cc4",
+    "docs/validation/mc-05/REPORT.md": "786f38910490e1b3e997ae6fefa08e519525967bdb52e3a4f4d2d393228392b6",
+    "docs/validation/mc-05/run/definition.json": "4e10a30e4be99d807c5a62448f299e4a341c98f523757cfcaaeef32a0ed5cef0",
+    "docs/validation/mc-05/run/deterministic.csv": "3035b3b10aa7d8fa5361f0ba05fdd58588d415c510aa789ed3a91322f623b9d1",
+    "docs/validation/mc-05/run/generation.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "docs/validation/mc-05/run/groups.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "docs/validation/mc-05/run/paths.csv": "bae6fcbf63a91893cee506c7c62ce59843915e537db0626799c2f2dd770f63c2",
+    "docs/validation/mc-05/run/summary.json": "e8b2b9c26ae10081d47854a679e15ab87d37dc20599dc2c9fb8e329d5928ff94",
+    "docs/validation/mc-05/run/tails.json": "cca45478bc0b252b94d4fe322b10acd106fda4de21a0f521dbbcc1434ce54b53"
+  },
+  "source_blobs": {
+    "configs/mc05_grid_tail.json": "89fb0c05b26485c230859765cb3e41a0ed909b7b",
+    "docs/validation/mc-05/REPORT.md": "ce29e2e12a10373044a21ed4cd944518cf2fb7ac",
+    "docs/validation/mc-05/run/definition.json": "5f43a2601536d8dd0e74c4e30df8b1bf445b4140",
+    "docs/validation/mc-05/run/deterministic.csv": "f42abc921b7bd0e14664fa6bb0c5609cdd8707fa",
+    "docs/validation/mc-05/run/generation.json": "fe51488c7066f6687ef680d6bfaa4f7768ef205c",
+    "docs/validation/mc-05/run/groups.json": "fe51488c7066f6687ef680d6bfaa4f7768ef205c",
+    "docs/validation/mc-05/run/paths.csv": "1bd11e332ac38ddbb200da43296e6153b72fc8b4",
+    "docs/validation/mc-05/run/summary.json": "ba7ef4ebcd76bec2827aad802ce1d752cf18757b",
+    "docs/validation/mc-05/run/tails.json": "6cdf6aa8839326da01e99b267560ebc6c8805583"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "source": "INTERCEPTED_HTTP_OFFLINE_TESTS",
+  "safety": "NO LIVE MONEY",
+  "real_exchange_observation": false,
+  "runs": [
+    {"selection": "receipt/fault/closed-loop/continuous/FIFO", "passed": 55, "seconds": "74.94"},
+    {"selection": "continuous including explicit resume/receipt/fill faults including full cancel race", "passed": 55, "seconds": "172.83"},
+    {"selection": "receipt and independent-process discrimination", "passed": 21, "seconds": "66.97"},
+    {"selection": "M14 fee conflict/runtime/FIFO", "passed": 24, "seconds": "15.19"},
+    {"selection": "integrated constructor clock recovery/continuous/receipt", "passed": 75, "seconds": "123.84"}
+  ],
+  "scenarios": {
+    "partial_fill_then_fill": "OFFLINE_FAULT_VERIFIED",
+    "partial_fill_restart": "OFFLINE_FAULT_VERIFIED",
+    "unknown_ack_get_timeout_recovery": "OFFLINE_FAULT_VERIFIED",
+    "partial_fill_then_canceled": "OFFLINE_FAULT_VERIFIED",
+    "fill_during_cancel_filled_response": "OFFLINE_FAULT_VERIFIED",
+    "fill_during_cancel_lost_response": "OFFLINE_FAULT_VERIFIED",
+    "repeat_get_restart_idempotence": "OFFLINE_FAULT_VERIFIED",
+    "conflicting_fee_revision_blocks_confirmation": "OFFLINE_FAULT_VERIFIED",
+    "duplicate_trade_id_rejected": "OFFLINE_FAULT_VERIFIED",
+    "non_usdt_commission_rejected": "OFFLINE_FAULT_VERIFIED",
+    "unbooked_funding_blocks_acceptance": "OFFLINE_FAULT_VERIFIED",
+    "historical_fills_cannot_satisfy_new_experiment": "OFFLINE_FAULT_VERIFIED",
+    "same_process_reopen_cannot_satisfy_new_restart": "OFFLINE_FAULT_VERIFIED",
+    "explicit_resume_retains_authorization_stop_audit_and_budgets": "OFFLINE_FAULT_VERIFIED"
+  },
+  "special_real_events": {
+    "PARTIALLY_FILLED": "REAL_EXCHANGE_NOT_OBSERVED",
+    "UNKNOWN_ACK_RECOVERY": "REAL_EXCHANGE_NOT_OBSERVED",
+    "CANCEL_FILL_RACE": "REAL_EXCHANGE_NOT_OBSERVED"
+  }
+}
