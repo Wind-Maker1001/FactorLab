@@ -27,6 +27,62 @@ def initialize(root, store, **limits):
             return authorization, session.adapter.facts, status
 
 
+def test_explicit_resume_retains_stop_audit_identity_and_consumption(network_grid):
+    root, store, factory, _, fake, requests = network_grid
+    authorization, _, _ = initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        observe(bridge)
+        key = bridge.grid.active[0].intent.client_order_id
+        consumed = bridge.runtime.consumption(authorization)
+        bridge.runtime.stop()
+        stopped = bridge.runtime.continuous_authorization()
+        epoch = bridge.runtime.stop_epoch()
+        bridge.recover()
+        resumed = bridge.runtime.resume_continuous(store.config, facts=bridge.session.adapter.facts,
+            reconciled=True, stop_epoch=epoch)
+        assert resumed == dict(authorization, state='RUNNING', stop_epoch=epoch)
+        assert bridge.runtime.consumption(resumed) == consumed
+        audit, = bridge.runtime.db.execute("SELECT value FROM runtime WHERE key LIKE 'continuous_resume:%'")
+        assert json.loads(audit[0])['previous_authorization'] == stopped
+        assert bridge.runtime.stop_epoch() == epoch
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        assert bridge.gateway.adapter.order(key).status is S.SUBMITTED
+        assert bridge.dispatch() is None
+    assert len(writes(requests)) == 1
+    assert parse_args(['resume-continuous']).command == 'resume-continuous'
+
+
+@pytest.mark.parametrize('reason', ['unreconciled', 'stop_race', 'loss', 'halted', 'budget'])
+def test_explicit_resume_rejects_unsafe_state_without_replacing_stop(network_grid, reason):
+    root, store, factory, _, fake, requests = network_grid
+    authorization, facts, _ = initialize(root, store)
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.stop()
+        epoch = runtime.stop_epoch()
+        if reason == 'stop_race':
+            runtime.stop()
+        elif reason == 'loss':
+            authorization['opening_equity'] = '1001'
+            runtime._set('continuous', json.dumps(dict(authorization, state='STOPPED')))
+            runtime.db.commit()
+        elif reason == 'halted':
+            runtime.halt('test risk halt')
+            runtime._set('continuous', json.dumps(dict(authorization, state='HALTED')))
+            runtime.db.commit()
+        elif reason == 'budget':
+            runtime._set('continuous', json.dumps(dict(authorization, state='STOPPED', total_orders=0)))
+            runtime.db.commit()
+        before = runtime.continuous_authorization()
+        with pytest.raises(SafetyBlocked):
+            runtime.resume_continuous(store.config, facts=facts,
+                reconciled=reason != 'unreconciled', stop_epoch=epoch)
+        assert runtime.continuous_authorization() == before
+        assert runtime.db.execute("SELECT count(*) FROM runtime WHERE key LIKE 'continuous_resume:%'").fetchone()[0] == 0
+    assert not writes(requests)
+
+
 def expire(monkeypatch, campaign):
     at = datetime.fromisoformat(campaign['expires_at']) + timedelta(seconds=1)
     monkeypatch.setattr(module, 'now', lambda: at)
