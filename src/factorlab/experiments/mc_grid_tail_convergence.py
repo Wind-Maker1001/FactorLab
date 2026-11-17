@@ -22,6 +22,16 @@ def write(path, value):
     Path(path).write_text(json.dumps(value, indent=2, allow_nan=False, default=str) + '\n', encoding='utf-8')
 
 
+def _lag_one_autocorrelation(values):
+    if values.size < 3:
+        return None
+    previous, current = values[:-1], values[1:]
+    if np.all(previous == previous[0]) or np.all(current == current[0]):
+        return None
+    correlation = float(np.corrcoef(previous, current)[0, 1])
+    return correlation if np.isfinite(correlation) else None
+
+
 def account_metrics(prices, *, start, config, rules, capacity, output):
     metrics = evaluate_path(prices, start=start, config=config, rules=rules,
                             capacity=capacity, output=output, research_wal=True)
@@ -199,8 +209,8 @@ def run_study(output, *, inputs, receipt, config, rules, definition, code=None, 
                     worst_hour_return=float(returns.min()),
                     worst_24h_return=float(np.expm1(np.lib.stride_tricks.sliding_window_view(
                         np.log1p(returns), 24).sum(axis=1).min())) if len(returns) >= 24 else None,
-                    return_autocorrelation_1=float(np.corrcoef(returns[:-1], returns[1:])[0, 1]),
-                    squared_return_autocorrelation_1=float(np.corrcoef(returns[:-1]**2, returns[1:]**2)[0, 1]))
+                    return_autocorrelation_1=_lag_one_autocorrelation(returns),
+                    squared_return_autocorrelation_1=_lag_one_autocorrelation(returns**2))
             if latent is not None:
                 nav = pd.read_csv(account/'daily.csv')
                 for event in latent:

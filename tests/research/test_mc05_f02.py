@@ -10,6 +10,40 @@ from tests.research.test_mc_regime_jump import study_input
 from tests.research.test_mc_grid_tail_convergence import settings
 
 
+@pytest.mark.parametrize(
+    'prices, return_defined, squared_defined',
+    [
+        pytest.param([8., 10., 15.], False, False, id='two-returns'),
+        pytest.param([8., 8., 8., 8.], False, False, id='constant-returns'),
+        pytest.param([8., 16., 32., 16.], False, False, id='one-constant-lag'),
+        pytest.param([8., 12., 6., 9., 4.5], True, False, id='constant-squared-returns'),
+        pytest.param([8., 10., 15., 11.25, 22.5], True, True, id='varying-returns'),
+    ],
+)
+def test_deterministic_path_autocorrelations_in_summary(
+    tmp_path, monkeypatch, prices, return_defined, squared_defined,
+):
+    run, definition, _, calls = harness(tmp_path, monkeypatch, models=('gbm',), budget=.015)
+    prices = np.asarray(prices)
+    definition['experiment'].update(path_evidence=True, steps=prices.size - 1)
+    monkeypatch.setattr(study, 'stress_paths', lambda initial, steps: {'example': prices})
+
+    run()
+
+    assert not calls
+    summary = json.loads((tmp_path/'run/summary.json').read_text())
+    row, = summary['deterministic']
+    returns = np.diff(prices) / prices[:-1]
+    for field, values, defined in (
+        ('return_autocorrelation_1', returns, return_defined),
+        ('squared_return_autocorrelation_1', returns**2, squared_defined),
+    ):
+        if defined:
+            assert row[field] == pytest.approx(np.corrcoef(values[:-1], values[1:])[0, 1])
+        else:
+            assert row[field] is None
+
+
 def test_coverage_first_without_repeating_deterministic_accounts(tmp_path, monkeypatch):
     run, definition, _, calls = harness(tmp_path, monkeypatch, budget=2)
     definition['experiment'].update(coverage_first=True, run_deterministic=False)
