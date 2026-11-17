@@ -37,7 +37,8 @@ class DemoMarketFeed:
     Exceptions leave that event unacknowledged. One owner must use each cursor file.
     """
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
-                 max_backfill=120, max_quote_age=5, initial_bars=1, clock=lambda: datetime.now(timezone.utc)):
+                 max_backfill=120, max_quote_age=5, initial_bars=1, catch_up=False,
+                 clock=lambda: datetime.now(timezone.utc)):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -50,6 +51,7 @@ class DemoMarketFeed:
             raise ValueError('quote freshness must be within five seconds')
         if type(initial_bars) is not int or not 1 <= initial_bars <= max_backfill:
             raise ValueError('initial history must fit backfill bound')
+        self.catch_up = catch_up
         self.initial_bars = initial_bars
         self.client, self.consumer, self.clock = client, consumer, clock
         self.interval, self.seconds = interval, INTERVALS[interval]
@@ -108,10 +110,14 @@ class DemoMarketFeed:
         start = last_bar if last_bar is not None else initial_start
         if start > boundary:
             raise FeedPaused('CLOCK_REGRESSION')
-        if boundary - start > self.max_backfill * width:
+        catching_up = boundary - start > self.max_backfill * width
+        if catching_up and not self.catch_up:
             raise FeedPaused('BACKFILL_LIMIT')
+        page_boundary = min(boundary, start + self.max_backfill * width) if catching_up else boundary
         rows = self.client.request('GET', '/fapi/v1/klines', dict(symbol=SYMBOL,
-            interval=self.interval, startTime=start, endTime=server, limit=self.max_backfill + 1), signed=False)
+            interval=self.interval, startTime=start,
+            endTime=page_boundary - 1 if catching_up else server,
+            limit=self.max_backfill + 1), signed=False)
         if not isinstance(rows, list) or len(rows) > self.max_backfill + 1:
             raise FeedPaused('INVALID_KLINES')
         bars_received_at = self.clock()
@@ -142,8 +148,14 @@ class DemoMarketFeed:
                     *(Decimal(v) for v in row[1:6]), self.seconds, SOURCE))
             except (ValueError, InvalidOperation) as error:
                 raise FeedPaused('INVALID_OHLCV') from error
-        if start + len(bars) * width != boundary:
+        if start + len(bars) * width != page_boundary:
             raise FeedPaused('BAR_SEQUENCE_GAP')
+        if catching_up:
+            for bar in bars:
+                self.consumer.closed_bar(bar)
+                self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
+            self.pause('CATCHING_UP')
+            return dict(bars=len(bars), quotes=0)
         raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
         try:
             observed = timestamp(raw['time'])

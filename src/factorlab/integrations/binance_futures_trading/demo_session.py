@@ -1,6 +1,7 @@
 """Compose authenticated Demo sessions over the existing controller and journals."""
 
 from contextlib import closing
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 import json
@@ -37,6 +38,7 @@ def _read_account(client, *, expected_id=None):
         adapter = FuturesAdapter(client, store, account_id=DEMO.account_id)
         if expected_id is not None and adapter.account_id != expected_id:
             raise SafetyBlocked('persisted Demo account binding mismatch')
+        # TODO: diagnose constructor-time CLOCK_SKEW before the session recovery path is available.
         client.sync_time()
         return adapter.read_facts()
 
@@ -88,6 +90,7 @@ class DemoSession:
         self.last_reconciled_at = None
         self.last_recovery_seconds = None
         self.receipts = []
+        self._recovered_receipt_count = 0
         self.receipt_error = False
         self.write_uncertain = False
         self.configuration = configuration
@@ -114,6 +117,25 @@ class DemoSession:
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
 
+    def refresh_authorization(self, authorization, *, write_guard, receipt_sink):
+        """Install a fresh window capability only after successful GET recovery."""
+        status = self.status()
+        if (not status['reconciled'] or status['unknown']
+                or self.last_reconciled_at is None
+                or not timedelta(0) <= self._now() - self.last_reconciled_at <= timedelta(seconds=5)):
+            raise SafetyBlocked('fresh GET reconciliation required before renewing Demo capability')
+        if (authorization.plan.account_id != self.adapter.account_id
+                or demo_account_configuration(self.adapter.facts) != self.configuration):
+            raise SafetyBlocked('renewed Demo capability account or configuration mismatch')
+        old = self.client.transport
+        if old.authorization is not None:
+            old.authorization.revoke()
+        self._write_guard, self._receipt_sink = write_guard, receipt_sink
+        self.client.transport = replace(old, authorization=authorization, write_guard=self._admit_write)
+        self.write_uncertain = False
+        self.receipt_error = False
+        self._recovered_receipt_count = len(self.receipts)
+
     def _now(self):
         return datetime.now(timezone.utc) + timedelta(milliseconds=self.client.offset_ms)
 
@@ -124,7 +146,7 @@ class DemoSession:
     def _admit_write(self, method, params, plan):
         if self.receipt_error or self.write_uncertain:
             raise SafetyBlocked('previous Demo write requires GET-only recovery')
-        if any(receipt['http_status'] == 400 for receipt in self.receipts):
+        if any(receipt['http_status'] == 400 for receipt in self.receipts[self._recovered_receipt_count:]):
             raise SafetyBlocked('Demo HTTP 400 stopped further writes')
         now = self._now()
         if not timedelta(0) <= now - self.adapter.facts.observed_at <= timedelta(seconds=5):
@@ -152,9 +174,20 @@ class DemoSession:
                 payload = body
         code = payload.get('code')
         receipt = dict(method=method, http_status=status, client_order_id=client_id,
+            observed_at=self._now().isoformat(),
+            outcome_unknown=self.client.write_outcome_unknown(request, response),
             code=code if type(code) is int else None,
             message=rejection_message(payload, credentials=self.client.credentials, request=request),
             **_order_observables(payload))
+        business_fields = {'symbol', 'side', 'type', 'timeInForce', 'quantity', 'price',
+                           'positionSide', 'reduceOnly', 'newClientOrderId', 'origClientOrderId',
+                           'newOrderRespType'}
+        receipt['request_parameters'] = {key: values[0] for key, values in parse_qs(request.query).items()
+                                         if key in business_fields}
+        ack_fields = {'clientOrderId', 'orderId', 'symbol', 'side', 'type', 'timeInForce',
+                      'origQty', 'executedQty', 'cumQuote', 'avgPrice', 'price', 'status',
+                      'positionSide', 'reduceOnly', 'updateTime'}
+        receipt['acknowledgement'] = {key: value for key, value in payload.items() if key in ack_fields}
         self.receipts.append(receipt)
         if self._receipt_sink is not None:
             try:
@@ -185,6 +218,10 @@ class DemoSession:
             if result['reconciled']:
                 self.last_reconciled_at = self._now()
             return result
+        except ExchangeError as error:
+            if error.category == 'CLOCK_SKEW':
+                self.client.sync_time()
+            raise
         finally:
             self.last_recovery_seconds = perf_counter() - started
 

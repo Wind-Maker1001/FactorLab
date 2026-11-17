@@ -1,0 +1,619 @@
+{
+  "observed_at": "2026-11-16 15:02:27.404208+00:00",
+  "source": "BINANCE_DEMO_ACTUAL_GET_RECEIPTS",
+  "scope": "ALL_PERSISTED_ACCOUNT_HISTORY; not proof of a new experiment",
+  "opening_wallet": "5000",
+  "statuses": {
+    "DEMO_ORDER_ACK_VERIFIED": true,
+    "DEMO_TRADE_RECEIPT_VERIFIED": true,
+    "DEMO_FEE_RECONCILED": true,
+    "DEMO_POSITION_RECONCILED": true,
+    "DEMO_ACCOUNT_RECONCILED": true,
+    "DEMO_RESTART_RECOVERY_VERIFIED": true,
+    "DEMO_LIFECYCLE_VERIFIED": false
+  },
+  "order_trade_mapping": [
+    {
+      "client_order_id": "fl-6134cc5d117d4d20-01",
+      "order_id": "191862895",
+      "intent": {
+        "fields": {
+          "client_order_id": "fl-6134cc5d117d4d20-01",
+          "instrument_id": "NVDAUSDT",
+          "limit_price": {
+            "decimal": "162.94000"
+          },
+          "market": {
+            "enum": "Market",
+            "value": "BINANCE_USDM"
+          },
+          "order_type": {
+            "enum": "OrderType",
+            "value": "LIMIT"
+          },
+          "position_side": "BOTH",
+          "quantity": {
+            "decimal": "0.04"
+          },
+          "reduce_only": false,
+          "side": {
+            "enum": "Side",
+            "value": "BUY"
+          },
+          "time_in_force": "GTC"
+        },
+        "type": "OrderIntent"
+      },
+      "observed_at": "2026-11-16T14:55:09.636978+00:00",
+      "order_query": {
+        "avgPrice": "162.9400000",
+        "clientOrderId": "fl-6134cc5d117d4d20-01",
+        "closePosition": false,
+        "cumQuote": "6.5176000",
+        "executedQty": "0.04",
+        "goodTillDate": 0,
+        "orderId": 191862895,
+        "origQty": "0.04",
+        "origType": "LIMIT",
+        "positionSide": "BOTH",
+        "price": "162.94000",
+        "priceMatch": "NONE",
+        "priceProtect": false,
+        "reduceOnly": false,
+        "selfTradePreventionMode": "EXPIRE_MAKER",
+        "side": "BUY",
+        "status": "FILLED",
+        "stopPrice": "0.00000",
+        "symbol": "NVDAUSDT",
+        "time": 1794654952707,
+        "timeInForce": "GTC",
+        "type": "LIMIT",
+        "updateTime": 1794654952715,
+        "workingType": "CONTRACT_PRICE"
+      },
+      "trades": [
+        {
+          "baseQty": "0",
+          "buyer": true,
+          "commission": "0.00162940",
+          "commissionAsset": "USDT",
+          "id": 39911928,
+          "maker": false,
+          "marginAsset": "USDT",
+          "orderId": 191862895,
+          "pair": "NVDAUSDT",
+          "positionSide": "BOTH",
+          "price": "162.94000",
+          "qty": "0.04",
+          "quoteQty": "6.5176000",
+          "realizedPnl": "0",
+          "side": "BUY",
+          "symbol": "NVDAUSDT",
+          "time": 1794654952715
+        }
+      ],
+      "trade_ids": [
+        39911928
+      ],
+      "trade_quantity_sum": "0.04",
+      "trade_quote_sum": "6.5176000",
+      "actual_fee": "0.00162940",
+      "fee_asset": "USDT"
+    },
+    {
+      "client_order_id": "fl-75475821429342b2-1000911ffbc2",
+      "order_id": "191865793",
+      "intent": {
+        "fields": {
+          "client_order_id": "fl-75475821429342b2-1000911ffbc2",
+          "instrument_id": "NVDAUSDT",
+          "limit_price": {
+            "decimal": "162.30000"
+          },
+          "market": {
+            "enum": "Market",
+            "value": "BINANCE_USDM"
+          },
+          "order_type": {
+            "enum": "OrderType",
+            "value": "LIMIT"
+          },
+          "position_side": "BOTH",
+          "quantity": {
+            "decimal": "0.04"
+          },
+          "reduce_only": true,
+          "side": {
+            "enum": "Side",
+            "value": "SELL"
+          },
+          "time_in_force": "GTC"
+        },
+        "type": "OrderIntent"
+      },
+      "observed_at": "2026-11-16T14:55:11.030465+00:00",
+      "order_query": {
+        "avgPrice": "162.3000000",
+        "clientOrderId": "fl-75475821429342b2-1000911ffbc2",
+        "closePosition": false,
+        "cumQuote": "6.4920000",
+        "executedQty": "0.04",
+        "goodTillDate": 0,
+        "orderId": 191865793,
+        "origQty": "0.04",
+        "origType": "LIMIT",
+        "positionSide": "BOTH",
+        "price": "162.30000",
+        "priceMatch": "NONE",
+        "priceProtect": false,
+        "reduceOnly": true,
+        "selfTradePreventionMode": "EXPIRE_MAKER",
+        "side": "SELL",
+        "status": "FILLED",
+        "stopPrice": "0.00000",
+        "symbol": "NVDAUSDT",
+        "time": 1794655811319,
+        "timeInForce": "GTC",
+        "type": "LIMIT",
+        "updateTime": 1794655811319,
+        "workingType": "CONTRACT_PRICE"
+      },
+      "trades": [
+        {
+          "baseQty": "0",
+          "buyer": false,
+          "commission": "0.00162300",
+          "commissionAsset": "USDT",
+          "id": 39913139,
+          "maker": false,
+          "marginAsset": "USDT",
+          "orderId": 191865793,
+          "pair": "NVDAUSDT",
+          "positionSide": "BOTH",
+          "price": "162.30000",
+          "qty": "0.04",
+          "quoteQty": "6.4920000",
+          "realizedPnl": "-0.02560000",
+          "side": "SELL",
+          "symbol": "NVDAUSDT",
+          "time": 1794655811319
+        }
+      ],
+      "trade_ids": [
+        39913139
+      ],
+      "trade_quantity_sum": "0.04",
+      "trade_quote_sum": "6.4920000",
+      "actual_fee": "0.00162300",
+      "fee_asset": "USDT"
+    },
+    {
+      "client_order_id": "fl-9624718bcfb044b8-g-00000001",
+      "order_id": "191944057",
+      "intent": {
+        "fields": {
+          "client_order_id": "fl-9624718bcfb044b8-g-00000001",
+          "instrument_id": "NVDAUSDT",
+          "limit_price": {
+            "decimal": "158.63000"
+          },
+          "market": {
+            "enum": "Market",
+            "value": "BINANCE_USDM"
+          },
+          "order_type": {
+            "enum": "OrderType",
+            "value": "LIMIT"
+          },
+          "position_side": null,
+          "quantity": {
+            "decimal": "0.04"
+          },
+          "reduce_only": false,
+          "side": {
+            "enum": "Side",
+            "value": "BUY"
+          },
+          "time_in_force": "GTC"
+        },
+        "type": "OrderIntent"
+      },
+      "observed_at": "2026-11-16T14:55:11.673470+00:00",
+      "order_query": {
+        "avgPrice": "0.00",
+        "clientOrderId": "fl-9624718bcfb044b8-g-00000001",
+        "closePosition": false,
+        "cumQuote": "0.0000000",
+        "executedQty": "0.00",
+        "goodTillDate": 0,
+        "orderId": 191944057,
+        "origQty": "0.04",
+        "origType": "LIMIT",
+        "positionSide": "BOTH",
+        "price": "158.63000",
+        "priceMatch": "NONE",
+        "priceProtect": false,
+        "reduceOnly": false,
+        "selfTradePreventionMode": "EXPIRE_MAKER",
+        "side": "BUY",
+        "status": "CANCELED",
+        "stopPrice": "0.00000",
+        "symbol": "NVDAUSDT",
+        "time": 1794676922299,
+        "timeInForce": "GTC",
+        "type": "LIMIT",
+        "updateTime": 1794677109879,
+        "workingType": "CONTRACT_PRICE"
+      },
+      "trades": [],
+      "trade_ids": [],
+      "trade_quantity_sum": "0",
+      "trade_quote_sum": "0",
+      "actual_fee": "0",
+      "fee_asset": null
+    },
+    {
+      "client_order_id": "fl-b77ee78873704451-g-00000001",
+      "order_id": "191960373",
+      "intent": {
+        "fields": {
+          "client_order_id": "fl-b77ee78873704451-g-00000001",
+          "instrument_id": "NVDAUSDT",
+          "limit_price": {
+            "decimal": "158.83000"
+          },
+          "market": {
+            "enum": "Market",
+            "value": "BINANCE_USDM"
+          },
+          "order_type": {
+            "enum": "OrderType",
+            "value": "LIMIT"
+          },
+          "position_side": null,
+          "quantity": {
+            "decimal": "0.04"
+          },
+          "reduce_only": false,
+          "side": {
+            "enum": "Side",
+            "value": "BUY"
+          },
+          "time_in_force": "GTC"
+        },
+        "type": "OrderIntent"
+      },
+      "observed_at": "2026-11-16T14:55:12.262421+00:00",
+      "order_query": {
+        "avgPrice": "0.00",
+        "clientOrderId": "fl-b77ee78873704451-g-00000001",
+        "closePosition": false,
+        "cumQuote": "0.0000000",
+        "executedQty": "0.00",
+        "goodTillDate": 0,
+        "orderId": 191960373,
+        "origQty": "0.04",
+        "origType": "LIMIT",
+        "positionSide": "BOTH",
+        "price": "158.83000",
+        "priceMatch": "NONE",
+        "priceProtect": false,
+        "reduceOnly": false,
+        "selfTradePreventionMode": "EXPIRE_MAKER",
+        "side": "BUY",
+        "status": "CANCELED",
+        "stopPrice": "0.00000",
+        "symbol": "NVDAUSDT",
+        "time": 1794682340795,
+        "timeInForce": "GTC",
+        "type": "LIMIT",
+        "updateTime": 1794683255011,
+        "workingType": "CONTRACT_PRICE"
+      },
+      "trades": [],
+      "trade_ids": [],
+      "trade_quantity_sum": "0",
+      "trade_quote_sum": "0",
+      "actual_fee": "0",
+      "fee_asset": null
+    },
+    {
+      "client_order_id": "fl-d7345f8795464a65-g-00000003",
+      "order_id": "192147238",
+      "intent": {
+        "fields": {
+          "client_order_id": "fl-d7345f8795464a65-g-00000003",
+          "instrument_id": "NVDAUSDT",
+          "limit_price": {
+            "decimal": "159.47000"
+          },
+          "market": {
+            "enum": "Market",
+            "value": "BINANCE_USDM"
+          },
+          "order_type": {
+            "enum": "OrderType",
+            "value": "LIMIT"
+          },
+          "position_side": null,
+          "quantity": {
+            "decimal": "0.04"
+          },
+          "reduce_only": false,
+          "side": {
+            "enum": "Side",
+            "value": "BUY"
+          },
+          "time_in_force": "GTC"
+        },
+        "type": "OrderIntent"
+      },
+      "observed_at": "2026-11-16T14:55:12.841047+00:00",
+      "order_query": {
+        "avgPrice": "0.00",
+        "clientOrderId": "fl-d7345f8795464a65-g-00000003",
+        "closePosition": false,
+        "cumQuote": "0.0000000",
+        "executedQty": "0.00",
+        "goodTillDate": 0,
+        "orderId": 192147238,
+        "origQty": "0.04",
+        "origType": "LIMIT",
+        "positionSide": "BOTH",
+        "price": "159.47000",
+        "priceMatch": "NONE",
+        "priceProtect": false,
+        "reduceOnly": false,
+        "selfTradePreventionMode": "EXPIRE_MAKER",
+        "side": "BUY",
+        "status": "CANCELED",
+        "stopPrice": "0.00000",
+        "symbol": "NVDAUSDT",
+        "time": 1794734660411,
+        "timeInForce": "GTC",
+        "type": "LIMIT",
+        "updateTime": 1794739899399,
+        "workingType": "CONTRACT_PRICE"
+      },
+      "trades": [],
+      "trade_ids": [],
+      "trade_quantity_sum": "0",
+      "trade_quote_sum": "0",
+      "actual_fee": "0",
+      "fee_asset": null
+    }
+  ],
+  "fifo": {
+    "source": "AUTHORITATIVE_CONTROLLER_EVENTS",
+    "attribution": {
+      "summary": {
+        "grid_cycles": 1,
+        "buy_fill_lots": 1,
+        "normal_sell": {
+          "quantity": "0.04",
+          "reference_gross": "-0.0256000",
+          "execution_gross": "-0.0256000",
+          "buy_fee": "0.00162940",
+          "sell_fee": "0.00162300",
+          "buy_slippage": "0E-7",
+          "sell_slippage": "0E-7",
+          "fees": "0.00325240",
+          "slippage": "0E-7",
+          "net": "-0.02885240"
+        },
+        "risk_exit": {
+          "quantity": "0",
+          "reference_gross": "0",
+          "execution_gross": "0",
+          "buy_fee": "0",
+          "sell_fee": "0",
+          "buy_slippage": "0",
+          "sell_slippage": "0",
+          "fees": "0",
+          "slippage": "0",
+          "net": "0"
+        },
+        "residual": {
+          "quantity": "0",
+          "reference_gross": "0",
+          "execution_gross": "0",
+          "buy_fee": "0",
+          "sell_fee": "0",
+          "buy_slippage": "0",
+          "sell_slippage": "0",
+          "fees": "0",
+          "slippage": "0",
+          "net": "0"
+        },
+        "completed_cycle": {
+          "quantity": "0.04",
+          "reference_gross": "-0.0256000",
+          "execution_gross": "-0.0256000",
+          "buy_fee": "0.00162940",
+          "sell_fee": "0.00162300",
+          "buy_slippage": "0E-7",
+          "sell_slippage": "0E-7",
+          "fees": "0.00325240",
+          "slippage": "0E-7",
+          "net": "-0.02885240"
+        },
+        "residual_inventory": "0",
+        "actual_fees": "0.00325240",
+        "actual_slippage": "0E-7",
+        "economic_net": "-0.02885240",
+        "valuation_adjustment": "0",
+        "final_equity": "4999.97114760",
+        "final_nav": "0.99999422952",
+        "reconciliation_residual": "0E-8",
+        "reported_equity_difference": "0E-8",
+        "funding": "NOT_SIMULATED"
+      },
+      "matches": [
+        {
+          "buy_event_id": "rest:078ac5e65388284928a7beae43c98fce29589bd85e1a3569cb814bac86084c27",
+          "sell_event_id": "rest:35e7dbdf63c53c764243abb51490085810fba1a8acf52184c4057a4b9c8edb69",
+          "sell_order_id": "fl-75475821429342b2-1000911ffbc2",
+          "purpose": "GRID",
+          "endowed": false,
+          "quantity": "0.04",
+          "reference_gross": "-0.0256000",
+          "execution_gross": "-0.0256000",
+          "buy_fee": "0.00162940",
+          "sell_fee": "0.00162300",
+          "buy_slippage": "0E-7",
+          "sell_slippage": "0E-7",
+          "fees": "0.00325240",
+          "slippage": "0E-7",
+          "net": "-0.02885240"
+        }
+      ],
+      "lots": [
+        {
+          "event_id": "rest:078ac5e65388284928a7beae43c98fce29589bd85e1a3569cb814bac86084c27",
+          "order_id": "fl-6134cc5d117d4d20-01",
+          "quantity": "0.04",
+          "remaining": "0.00",
+          "price": "162.94000",
+          "fee": "0E-8",
+          "slippage": "0E-7",
+          "risk_contaminated": false,
+          "endowed": false,
+          "completed_grid_cycle": true
+        }
+      ]
+    },
+    "slippage": "NOT_OBSERVED; execution prices are attribution references",
+    "economic_events": [
+      {
+        "event_id": "rest:078ac5e65388284928a7beae43c98fce29589bd85e1a3569cb814bac86084c27",
+        "client_order_id": "fl-6134cc5d117d4d20-01",
+        "cumulative_quantity": "0.04",
+        "cumulative_fee": "0.00162940",
+        "fill_price": "162.94000",
+        "event_time": "2026-11-14 11:15:52.715000+00:00"
+      },
+      {
+        "event_id": "rest:35e7dbdf63c53c764243abb51490085810fba1a8acf52184c4057a4b9c8edb69",
+        "client_order_id": "fl-75475821429342b2-1000911ffbc2",
+        "cumulative_quantity": "0.04",
+        "cumulative_fee": "0.00162300",
+        "fill_price": "162.30000",
+        "event_time": "2026-11-14 11:30:11.319000+00:00"
+      }
+    ]
+  },
+  "wallet": "4999.97114760",
+  "equity": "4999.97114760",
+  "actual_fees": "0.00325240",
+  "income": [
+    {
+      "symbol": "NVDAUSDT",
+      "incomeType": "COMMISSION",
+      "income": "-0.00162940",
+      "asset": "USDT",
+      "time": 1794654952000,
+      "tranId": 10565139911928,
+      "tradeId": "39911928"
+    },
+    {
+      "symbol": "NVDAUSDT",
+      "incomeType": "REALIZED_PNL",
+      "income": "-0.02560000",
+      "asset": "USDT",
+      "time": 1794655811000,
+      "tranId": 10565039913139,
+      "tradeId": "39913139"
+    },
+    {
+      "symbol": "NVDAUSDT",
+      "incomeType": "COMMISSION",
+      "income": "-0.00162300",
+      "asset": "USDT",
+      "time": 1794655811000,
+      "tranId": 10565039913139,
+      "tradeId": "39913139"
+    }
+  ],
+  "funding": {
+    "events": [],
+    "booking": "NO_EVENT_OBSERVED_IN_RESPONSE"
+  },
+  "observed_order_statuses": [
+    "CANCELED",
+    "FILLED"
+  ],
+  "restart_comparison": {
+    "same_account": true,
+    "historical_intents_preserved": true,
+    "economic_events_unchanged": true,
+    "no_new_dispatch": true,
+    "wallet_unchanged": true,
+    "fees_unchanged": true,
+    "reconciled": true,
+    "get_only": true
+  },
+  "safety": "NO LIVE MONEY",
+  "dispatches": [
+    {
+      "method": "POST",
+      "client_order_id": "fl-6134cc5d117d4d20-01",
+      "parameters": {
+        "symbol": "NVDAUSDT",
+        "side": "BUY",
+        "type": "LIMIT",
+        "quantity": "0.04",
+        "newClientOrderId": "fl-6134cc5d117d4d20-01",
+        "positionSide": "BOTH",
+        "newOrderRespType": "RESULT",
+        "reduceOnly": "false",
+        "price": "162.94000",
+        "timeInForce": "GTC"
+      },
+      "receipt": {
+        "method": "POST",
+        "http_status": 200,
+        "client_order_id": "fl-6134cc5d117d4d20-01",
+        "code": null,
+        "message": null,
+        "order_id": "191862895",
+        "status": "FILLED",
+        "filled_quantity": "0.04"
+      }
+    },
+    {
+      "method": "POST",
+      "client_order_id": "fl-75475821429342b2-1000911ffbc2",
+      "parameters": {
+        "symbol": "NVDAUSDT",
+        "side": "SELL",
+        "type": "LIMIT",
+        "quantity": "0.04",
+        "newClientOrderId": "fl-75475821429342b2-1000911ffbc2",
+        "positionSide": "BOTH",
+        "newOrderRespType": "RESULT",
+        "reduceOnly": "true",
+        "price": "162.30000",
+        "timeInForce": "GTC"
+      },
+      "receipt": {
+        "method": "POST",
+        "http_status": 200,
+        "client_order_id": "fl-75475821429342b2-1000911ffbc2",
+        "code": null,
+        "message": null,
+        "order_id": "191865793",
+        "status": "FILLED",
+        "filled_quantity": "0.04"
+      }
+    }
+  ],
+  "recovery_counts": {
+    "protocol_events": 10,
+    "dispatch_count": 10
+  },
+  "requests": {
+    "GET": 38,
+    "POST": 0,
+    "DELETE": 0
+  }
+}

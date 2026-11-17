@@ -45,13 +45,23 @@ factorlab-demo grid-supervisor resume --execute
 factorlab-demo grid-supervisor stop --execute
 ```
 
-These commands use an **already existing**, unexpired persistent Demo campaign. Starting the worker neither creates nor renews authorization. Execute shares the existing account-wide operator lock and real journals with other Demo strategies, so two execution workers cannot own the account simultaneously. The campaign must match the saved deployment; a different campaign does not silently replace it.
+Record the account's continuous execution policy once before starting the worker:
+
+```console
+factorlab-demo start-continuous --total-orders 100 --total-notional 700 --window-seconds 10800 --window-orders 4
+```
+
+The cumulative allowance includes historical non-smoke POST attempts, including canceled and unconfirmed writes. It is never replenished by another window or restart. The loss limit is 1 USDT against the retained opening-equity baseline. Repeating the command cannot enlarge a frozen budget or clear STOP.
+
+With continuous execution RUNNING, the worker GET-reconciles before automatically creating a missing window or rotating an expired/exhausted window. The deployment, order identities and global budget remain unchanged; old-window orders remain recoverable and cancellable. Execute shares the existing account-wide operator lock and real journals with other Demo strategies, so two execution workers cannot own the account simultaneously. Legacy finite campaigns remain supported without automatic renewal.
+
+`factorlab-demo stop` (also `kill`/`disable-demo`) latches account-wide STOP independently of the worker lock. Restart, resume and automatic window creation cannot clear it. Worker `grid-supervisor stop` only stops that worker; it does not revoke account-wide continuous permission.
 
 The unchanged admission limits are at most **0.04 NVDA**, **7 USDT committed/notional**, and **one active exchange order**. Pending/UNKNOWN submissions also block replacement. Each BUY is checked against current inventory and commitment. SELL is reduce-only and cannot exceed GET-confirmed inventory. Exchange filters can make a proposal inadmissible; quantity and LIMIT price are never increased or repriced to bypass them.
 
 ## Configuration and market timing
 
-Options include `--interval` (default `1m`), `--max-backfill` (default 120), `--poll-seconds` and optional positive `--seconds`. An ATR history window must fit the backfill bound.
+Options include `--interval` (default `1m`), `--max-backfill` (default 120), `--poll-seconds` and optional positive `--seconds`. An ATR history window must fit the backfill bound. After a long outage, the continuous Grid worker replays at most `max-backfill` consecutive historical bars per poll, acknowledging each without submitting a quote while still behind. It resumes live quote processing only after the cursor catches up; no cursor reset or skipped history is required.
 
 `--config path.json` accepts the existing `GridConfig` fields. On first deployment without this option, the worker fixes a one-level arithmetic range approximately 1% below/above the observed ask, rounded to the exchange tick, with a 0.04 quantity unit, maximum inventory of one unit, 7 USDT commitment and pause-on-breakout. Subsequent starts restore the original deployment, not a range derived from a new quote. Restart with the same interval, backfill and configuration arguments; conflicts are rejected.
 
@@ -67,13 +77,13 @@ Execute uses the original Grid LIMIT intent through `DemoSession.submit_intent`.
 
 GET cumulative fills contribute only their new delta. A confirmed BUY fill can create a reduce-only SELL proposal, but neither a crossing quote nor historical high/low can do so. Partial fills retain their accumulated inventory and any below-filter reversal remainder.
 
-A disconnect closes the dispatch gate. Recovery restores the saved deployment, replays Grid commands and reconciles existing order identities before accepting new work. UNKNOWN never triggers another POST for the same identity. If GET cannot resolve it, submission remains blocked; inspect and resolve that identity rather than starting a replacement deployment. Authorization expiry or exhaustion stops further submissions without creating another campaign.
+A disconnect closes the dispatch gate. Recovery restores the saved deployment, replays Grid commands and reconciles existing order identities before accepting new work. UNKNOWN never triggers another POST for the same identity. If GET cannot resolve it, submission remains blocked; inspect and resolve that identity rather than starting a replacement deployment. Continuous windows rotate after GET reconciliation; global trading-budget exhaustion or loss protection still blocks new submissions. Technical write uncertainty closes admission until GET resolves the existing identity, without revoking continuous permission.
 
 Status reports mode, effective state/reason, deployment, last bar, feed watermarks, confirmed inventory, unsubmitted reservations, exchange orders/UNKNOWN and request counters. JSON output may contain private account state; keep raw reports out of public evidence.
 
 ## Continuous history
 
-The supervisor explicitly enables continuous capacity for its protocol/controller stores and Grid execution, including restored deployments without changing their saved binding. It retains order identities and event history rather than rolling over accounts or deleting records. Each journal persists its continuous-capacity policy, so manual recovery and cancellation retain that capacity after the supervisor exits, independently of current authorization. Journals without that policy and ordinary Grid callers keep their bounded defaults. Continuous capacity is not an authorization extension: the independent expiring campaign and POST budget still apply.
+The supervisor explicitly enables continuous capacity for its protocol/controller stores and Grid execution, including restored deployments without changing their saved binding. It retains order identities and event history rather than rolling over accounts or deleting records. Each journal persists its continuous-capacity policy, so manual recovery and cancellation retain that capacity after the supervisor exits, independently of current authorization. Journals without that policy and ordinary Grid callers keep their bounded defaults. Storage capacity grants no trading permission: continuous authorization, window counters and the nonrenewable global trading/loss budgets remain independently enforced.
 
 Database/disk use grows with retained history. Recovery replays the deployment's history; routine bridge event projection uses incremental journal cursors. Operational storage must have space for the intended deployment lifetime.
 
