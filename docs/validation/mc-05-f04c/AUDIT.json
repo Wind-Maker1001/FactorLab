@@ -1,0 +1,1208 @@
+{
+  "accounts": {
+    "A": {
+      "fifo": {
+        "lots": [],
+        "matches": [],
+        "summary": {
+          "actual_fees": "0",
+          "actual_slippage": "0",
+          "buy_fill_lots": 0,
+          "completed_cycle": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "economic_net": "0",
+          "final_equity": "1000",
+          "final_nav": "1",
+          "funding": "NOT_SIMULATED",
+          "grid_cycles": 0,
+          "normal_sell": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "reconciliation_residual": "0",
+          "reported_equity_difference": "0.0",
+          "residual": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "residual_inventory": "0",
+          "risk_exit": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "valuation_adjustment": "0"
+        }
+      },
+      "lifecycle": [
+        {
+          "cause": "TTL",
+          "order_id": "research-00000001",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000002",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000003",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000004",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000005",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        }
+      ],
+      "metrics": {
+        "average_hourly_committed": "63.82748507142857142857142857",
+        "average_hourly_inventory_notional": "0.0",
+        "average_hourly_utilization": "0.06382748507142857142857142857",
+        "average_inventory": "0",
+        "cancellations": 5,
+        "fees": "0",
+        "fifo_realized_net": "0",
+        "fifo_unrealized_net": "0",
+        "fill_rate": "0",
+        "filled_orders": 0,
+        "fills": 0,
+        "first_fill": null,
+        "holding_hours": "0",
+        "max_drawdown": "0",
+        "max_hourly_committed": "108.313308",
+        "max_hourly_inventory_notional": "0.0",
+        "max_hourly_utilization": "0.108313308",
+        "max_inventory": "0",
+        "notional": "0",
+        "paper_unrealized": "0",
+        "partial_fill_events": 0,
+        "quantity": "0",
+        "rejected_orders": 0,
+        "slippage": "0",
+        "submission_rejections": 0,
+        "submitted_orders": 5,
+        "terminal_cash": "1000",
+        "terminal_equity": "1000",
+        "terminal_inventory": "0",
+        "terminal_nav": "1",
+        "terminal_open_orders": {},
+        "terminal_partial_orders": 0,
+        "ttl_cancellations": 5
+      },
+      "observations": {
+        "candidates": 0,
+        "capacity_blocked_quote_quantity": 0,
+        "capacity_blocked_quotes": 0,
+        "distinct_minutes_with_missed_touches": 0,
+        "distinct_orders_with_missed_touches": 0,
+        "dual_side_minutes": 0,
+        "eligible_limit_order_minutes": 30000,
+        "eligible_order_quotes": 500,
+        "limit_touches": 0,
+        "missed_order_hours": 0,
+        "missed_order_minutes": 0,
+        "nearest_limit": {
+          "distance": "2.99000",
+          "limit": "212.16",
+          "minute": "2026-08-05T12:23:00+00:00",
+          "observed_extreme": "215.15000",
+          "order_id": "research-00000005",
+          "side": "BUY"
+        },
+        "ohlc_order_minute_touches": 0,
+        "quote_observations": 168,
+        "slippage_blocked_quote_quantity": 0,
+        "slippage_blocked_quotes": 0,
+        "zero_volume_minutes": 0
+      },
+      "orders": {
+        "research-00000001": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:1",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 1,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:6",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 6,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 0,
+          "limit_price": "173.23",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000002": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:2",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 2,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:7",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 7,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 1,
+          "limit_price": "182.23",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000003": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:3",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 3,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:8",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 8,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 2,
+          "limit_price": "191.71",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000004": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:4",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 4,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:9",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 9,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 3,
+          "limit_price": "201.67",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000005": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:5",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 5,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:10",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 10,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 4,
+          "limit_price": "212.16",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        }
+      },
+      "reconciliation": {
+        "maximum_absolute_residual": {
+          "fifo_inventory": "0",
+          "fifo_nav": "0",
+          "fifo_terminal_mark": "0",
+          "hourly_cash": "0",
+          "hourly_drawdown": "0",
+          "hourly_equity": "0",
+          "hourly_fees": "0",
+          "hourly_inventory": "0",
+          "hourly_slippage": "0",
+          "paper_cash_from_fifo": "0",
+          "paper_fees": "0",
+          "paper_terminal_cash": "0.0",
+          "paper_terminal_nav": "0.0"
+        },
+        "status": "PASS",
+        "tolerance": "1E-8"
+      },
+      "risk": []
+    },
+    "B": {
+      "fifo": {
+        "lots": [],
+        "matches": [],
+        "summary": {
+          "actual_fees": "0",
+          "actual_slippage": "0",
+          "buy_fill_lots": 0,
+          "completed_cycle": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "economic_net": "0",
+          "final_equity": "1000",
+          "final_nav": "1",
+          "funding": "NOT_SIMULATED",
+          "grid_cycles": 0,
+          "normal_sell": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "reconciliation_residual": "0",
+          "reported_equity_difference": "0.0",
+          "residual": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "residual_inventory": "0",
+          "risk_exit": {
+            "buy_fee": "0",
+            "buy_slippage": "0",
+            "execution_gross": "0",
+            "fees": "0",
+            "net": "0",
+            "quantity": "0",
+            "reference_gross": "0",
+            "sell_fee": "0",
+            "sell_slippage": "0",
+            "slippage": "0"
+          },
+          "valuation_adjustment": "0"
+        }
+      },
+      "lifecycle": [
+        {
+          "cause": "TTL",
+          "order_id": "research-00000001",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000002",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000003",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000004",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        },
+        {
+          "cause": "TTL",
+          "order_id": "research-00000005",
+          "status": "CANCELED",
+          "time": "2026-08-09T03:00:00+00:00"
+        }
+      ],
+      "metrics": {
+        "average_hourly_committed": "63.82748507142857142857142857",
+        "average_hourly_inventory_notional": "0.0",
+        "average_hourly_utilization": "0.06382748507142857142857142857",
+        "average_inventory": "0",
+        "cancellations": 5,
+        "fees": "0",
+        "fifo_realized_net": "0",
+        "fifo_unrealized_net": "0",
+        "fill_rate": "0",
+        "filled_orders": 0,
+        "fills": 0,
+        "first_fill": null,
+        "holding_hours": "0",
+        "max_drawdown": "0",
+        "max_hourly_committed": "108.313308",
+        "max_hourly_inventory_notional": "0.0",
+        "max_hourly_utilization": "0.108313308",
+        "max_inventory": "0",
+        "notional": "0",
+        "paper_unrealized": "0",
+        "partial_fill_events": 0,
+        "quantity": "0",
+        "rejected_orders": 0,
+        "slippage": "0",
+        "submission_rejections": 0,
+        "submitted_orders": 5,
+        "terminal_cash": "1000",
+        "terminal_equity": "1000",
+        "terminal_inventory": "0",
+        "terminal_nav": "1",
+        "terminal_open_orders": {},
+        "terminal_partial_orders": 0,
+        "ttl_cancellations": 5
+      },
+      "observations": {
+        "candidates": 0,
+        "capacity_blocked_quote_quantity": 0,
+        "capacity_blocked_quotes": 0,
+        "distinct_minutes_with_missed_touches": 0,
+        "distinct_orders_with_missed_touches": 0,
+        "dual_side_minutes": 0,
+        "eligible_limit_order_minutes": 0,
+        "eligible_order_quotes": 30000,
+        "limit_touches": 0,
+        "missed_order_hours": 0,
+        "missed_order_minutes": 0,
+        "nearest_limit": null,
+        "ohlc_order_minute_touches": 0,
+        "quote_observations": 10080,
+        "slippage_blocked_quote_quantity": 0,
+        "slippage_blocked_quotes": 0,
+        "zero_volume_minutes": 0
+      },
+      "orders": {
+        "research-00000001": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:1",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 1,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:6",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 6,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 0,
+          "limit_price": "173.23",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000002": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:2",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 2,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:7",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 7,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 1,
+          "limit_price": "182.23",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000003": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:3",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 3,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:8",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 8,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 2,
+          "limit_price": "191.71",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000004": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:4",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 4,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:9",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 9,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 3,
+          "limit_price": "201.67",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        },
+        "research-00000005": {
+          "cumulative_fee": "0",
+          "events": [
+            {
+              "event_id": "paper:5",
+              "event_time": "2026-08-04T23:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 5,
+              "status": "SUBMITTED"
+            },
+            {
+              "event_id": "paper:10",
+              "event_time": "2026-08-09T03:59:59.999999+00:00",
+              "fee": "0",
+              "fill_price": null,
+              "filled_quantity": "0",
+              "journal_cursor": 10,
+              "status": "CANCELED"
+            }
+          ],
+          "filled_quantity": "0",
+          "final_status": "CANCELED",
+          "grid_level": 4,
+          "limit_price": "212.16",
+          "order_type": "LIMIT",
+          "purpose": "GRID",
+          "quantity": "0.10",
+          "reduce_only": false,
+          "remaining_quantity": "0.10",
+          "side": "BUY",
+          "submitted_at": "2026-08-04T23:59:59.999999+00:00"
+        }
+      },
+      "reconciliation": {
+        "maximum_absolute_residual": {
+          "fifo_inventory": "0",
+          "fifo_nav": "0",
+          "fifo_terminal_mark": "0",
+          "hourly_cash": "0",
+          "hourly_drawdown": "0",
+          "hourly_equity": "0",
+          "hourly_fees": "0",
+          "hourly_inventory": "0",
+          "hourly_slippage": "0",
+          "paper_cash_from_fifo": "0",
+          "paper_fees": "0",
+          "paper_terminal_cash": "0.0",
+          "paper_terminal_nav": "0.0"
+        },
+        "status": "PASS",
+        "tolerance": "1E-8"
+      },
+      "risk": []
+    }
+  },
+  "configuration": {
+    "capacity": "0.10",
+    "capital": "1000",
+    "fee_rate": "0.0004",
+    "funding": "NOT_SIMULATED",
+    "grid": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "expiry_reseed_interval": 100,
+      "expiry_reseed_limit": 0,
+      "fee_bps": 4,
+      "initial_cash": 1000,
+      "initial_inventory": 0,
+      "initial_price": 216.54,
+      "levels": 8,
+      "lower": 173.232,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 259.848
+    },
+    "instrument_id": "BINANCE:USDM:NVDAUSDT",
+    "market": "BINANCE_USDM",
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "slippage": "0.0006"
+  },
+  "data": {
+    "archive_requests": [
+      {
+        "bytes": 52396,
+        "fetched_at": "2026-11-18T10:29:02.639118+00:00",
+        "last_modified": "Thu, 06 Aug 2026 09:46:14 GMT",
+        "name": "NVDAUSDT-1m-2026-08-05.zip",
+        "sha256": "d6114ff8a58fe1260d932e95e62d09bef72fe7049eb1d6c64ef524f435eff72a",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-05.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:03.162811+00:00",
+        "last_modified": "Thu, 06 Aug 2026 09:46:14 GMT",
+        "name": "NVDAUSDT-1m-2026-08-05.zip.CHECKSUM",
+        "sha256": "4db6b3bd55fbe1bb5baf8aa2ca2684792374ed6821e1dce9fbfddae48840ba5b",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-05.zip.CHECKSUM"
+      },
+      {
+        "bytes": 352,
+        "fetched_at": "2026-11-18T10:29:03.925288+00:00",
+        "last_modified": "Thu, 06 Aug 2026 09:46:14 GMT",
+        "name": "NVDAUSDT-1d-2026-08-05.zip",
+        "sha256": "be93cf0c658f157cfcd743346b62d99cbaf0adb60775961f8e559010d615c04b",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-05.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:04.377155+00:00",
+        "last_modified": "Thu, 06 Aug 2026 09:46:14 GMT",
+        "name": "NVDAUSDT-1d-2026-08-05.zip.CHECKSUM",
+        "sha256": "b2b710182c0a9fef22d11299ce9a1d11dbea64c062d769164e25587643242c25",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-05.zip.CHECKSUM"
+      },
+      {
+        "bytes": 52402,
+        "fetched_at": "2026-11-18T10:29:05.004979+00:00",
+        "last_modified": "Fri, 07 Aug 2026 09:33:24 GMT",
+        "name": "NVDAUSDT-1m-2026-08-06.zip",
+        "sha256": "1cc8ad92e9bdc166fac0b3cee8d4a3d9048d242a0e03eec8a6361e221f41e183",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-06.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:05.502288+00:00",
+        "last_modified": "Fri, 07 Aug 2026 09:33:24 GMT",
+        "name": "NVDAUSDT-1m-2026-08-06.zip.CHECKSUM",
+        "sha256": "ebc662d80d6744167626ea2a283ddf10b293301998db8390f734049b70a123d5",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-06.zip.CHECKSUM"
+      },
+      {
+        "bytes": 354,
+        "fetched_at": "2026-11-18T10:29:06.928218+00:00",
+        "last_modified": "Fri, 07 Aug 2026 09:33:24 GMT",
+        "name": "NVDAUSDT-1d-2026-08-06.zip",
+        "sha256": "3faa5395e72d811ed25d5df0f4803b913273b7d2f3c82e98c0ce80fedb1f9580",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-06.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:07.457697+00:00",
+        "last_modified": "Fri, 07 Aug 2026 09:33:24 GMT",
+        "name": "NVDAUSDT-1d-2026-08-06.zip.CHECKSUM",
+        "sha256": "f867cf392c955d596c755c2f47e252eb26c83df8927ec4fcf3042dcee2b511e2",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-06.zip.CHECKSUM"
+      },
+      {
+        "bytes": 49430,
+        "fetched_at": "2026-11-18T10:29:08.008709+00:00",
+        "last_modified": "Sat, 08 Aug 2026 09:42:18 GMT",
+        "name": "NVDAUSDT-1m-2026-08-07.zip",
+        "sha256": "e34cda1745b0135f49bfef15f0b1e68542c179b3b367b1a920379651da3d8c8f",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-07.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:08.395112+00:00",
+        "last_modified": "Sat, 08 Aug 2026 09:42:18 GMT",
+        "name": "NVDAUSDT-1m-2026-08-07.zip.CHECKSUM",
+        "sha256": "5db5b1357c4b2b9cc6c49f673b2d5fcbb0b58ad13d243124421a8e9da47499bd",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-07.zip.CHECKSUM"
+      },
+      {
+        "bytes": 351,
+        "fetched_at": "2026-11-18T10:29:08.829488+00:00",
+        "last_modified": "Sat, 08 Aug 2026 09:42:18 GMT",
+        "name": "NVDAUSDT-1d-2026-08-07.zip",
+        "sha256": "2d78e4506eca7d2e1651be064472b3a95efc94b61aaa9401e7a3adac4d847b57",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-07.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:09.696945+00:00",
+        "last_modified": "Sat, 08 Aug 2026 09:42:18 GMT",
+        "name": "NVDAUSDT-1d-2026-08-07.zip.CHECKSUM",
+        "sha256": "104525954da012b1cc9f24d2df2882465b6f470f7780d64dbb7c86e20a33919b",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-07.zip.CHECKSUM"
+      },
+      {
+        "bytes": 39557,
+        "fetched_at": "2026-11-18T10:29:10.226562+00:00",
+        "last_modified": "Sun, 09 Aug 2026 09:58:33 GMT",
+        "name": "NVDAUSDT-1m-2026-08-08.zip",
+        "sha256": "f7f74f0055935369791598ff381bfcffff8ea95e3d1decd53c7a7a1b25294aa1",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-08.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:10.593696+00:00",
+        "last_modified": "Sun, 09 Aug 2026 09:58:33 GMT",
+        "name": "NVDAUSDT-1m-2026-08-08.zip.CHECKSUM",
+        "sha256": "b11a2ea9a74bc9da7774d0648dcdd3b7c566709e2155779bdec52619705d3881",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-08.zip.CHECKSUM"
+      },
+      {
+        "bytes": 346,
+        "fetched_at": "2026-11-18T10:29:11.043105+00:00",
+        "last_modified": "Sun, 09 Aug 2026 09:58:33 GMT",
+        "name": "NVDAUSDT-1d-2026-08-08.zip",
+        "sha256": "2f07c608ee6f02545607fdb5b22ff61295b381a0dc1e03eafe555826d38a47d1",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-08.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:11.418257+00:00",
+        "last_modified": "Sun, 09 Aug 2026 09:58:33 GMT",
+        "name": "NVDAUSDT-1d-2026-08-08.zip.CHECKSUM",
+        "sha256": "d7e10a1255c4cd2513bdeb576e3840b8c526a09cf9a8ada32ea4333e009f7a3c",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-08.zip.CHECKSUM"
+      },
+      {
+        "bytes": 39195,
+        "fetched_at": "2026-11-18T10:29:11.856815+00:00",
+        "last_modified": "Mon, 10 Aug 2026 09:30:19 GMT",
+        "name": "NVDAUSDT-1m-2026-08-09.zip",
+        "sha256": "49e928b9ab14057c216579ddbf6c7debf29bd5380a5fe1895fcd9eb10bfccd24",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-09.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:12.309709+00:00",
+        "last_modified": "Mon, 10 Aug 2026 09:30:19 GMT",
+        "name": "NVDAUSDT-1m-2026-08-09.zip.CHECKSUM",
+        "sha256": "37b64dfe9df06d46715cc791f16b63c3d1a77c95821e800f3b85eb02ea74c2b7",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-09.zip.CHECKSUM"
+      },
+      {
+        "bytes": 346,
+        "fetched_at": "2026-11-18T10:29:12.771073+00:00",
+        "last_modified": "Mon, 10 Aug 2026 09:30:19 GMT",
+        "name": "NVDAUSDT-1d-2026-08-09.zip",
+        "sha256": "92710962f0b8c819ca70ef8fdc67f06dc39596cdfba69df7682a6009696cb02e",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-09.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:13.307673+00:00",
+        "last_modified": "Mon, 10 Aug 2026 09:30:19 GMT",
+        "name": "NVDAUSDT-1d-2026-08-09.zip.CHECKSUM",
+        "sha256": "7192ff0dc26bb068a04462ac24591edbd417a49c1fd282c7e6e366412f064cba",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-09.zip.CHECKSUM"
+      },
+      {
+        "bytes": 50444,
+        "fetched_at": "2026-11-18T10:29:13.840305+00:00",
+        "last_modified": "Tue, 11 Aug 2026 10:11:29 GMT",
+        "name": "NVDAUSDT-1m-2026-08-10.zip",
+        "sha256": "f69636f61936d85dc4863e7fcc44a4cf6416c3c22298029e6af4b2d239899a85",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-10.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:14.226073+00:00",
+        "last_modified": "Tue, 11 Aug 2026 10:11:29 GMT",
+        "name": "NVDAUSDT-1m-2026-08-10.zip.CHECKSUM",
+        "sha256": "6e102cfe9967357dc642de34fd2e1322f6979f368f006d567762dbfc7ff1bec6",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-10.zip.CHECKSUM"
+      },
+      {
+        "bytes": 351,
+        "fetched_at": "2026-11-18T10:29:14.778072+00:00",
+        "last_modified": "Tue, 11 Aug 2026 10:11:29 GMT",
+        "name": "NVDAUSDT-1d-2026-08-10.zip",
+        "sha256": "616a3d1e339a6c55bceba352a3aaac459282b44fd19a0cb9184a53aac3fff3f5",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-10.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:15.128772+00:00",
+        "last_modified": "Tue, 11 Aug 2026 10:11:29 GMT",
+        "name": "NVDAUSDT-1d-2026-08-10.zip.CHECKSUM",
+        "sha256": "5db2229f064ba6aa98f66ab97950c045c41a253797e6b2a38b44d9f03d003033",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-10.zip.CHECKSUM"
+      },
+      {
+        "bytes": 49855,
+        "fetched_at": "2026-11-18T10:29:15.785529+00:00",
+        "last_modified": "Wed, 12 Aug 2026 09:57:58 GMT",
+        "name": "NVDAUSDT-1m-2026-08-11.zip",
+        "sha256": "aa64d9a9620b58f338692515eae44414449cdc0cd9374dd9e75aed767bcbde29",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-11.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:16.282947+00:00",
+        "last_modified": "Wed, 12 Aug 2026 09:57:58 GMT",
+        "name": "NVDAUSDT-1m-2026-08-11.zip.CHECKSUM",
+        "sha256": "51a31b863df638873d0eb7cc477e3e0d1cb685dbb3add0c46062be2bb6e47a7f",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1m/NVDAUSDT-1m-2026-08-11.zip.CHECKSUM"
+      },
+      {
+        "bytes": 350,
+        "fetched_at": "2026-11-18T10:29:16.672389+00:00",
+        "last_modified": "Wed, 12 Aug 2026 09:57:58 GMT",
+        "name": "NVDAUSDT-1d-2026-08-11.zip",
+        "sha256": "d6418907ef4e97bc9cdd6c37cd12c83e240991e5a0669f3e7a6155892e66b059",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-11.zip"
+      },
+      {
+        "bytes": 93,
+        "fetched_at": "2026-11-18T10:29:17.115300+00:00",
+        "last_modified": "Wed, 12 Aug 2026 09:57:58 GMT",
+        "name": "NVDAUSDT-1d-2026-08-11.zip.CHECKSUM",
+        "sha256": "84b6dfee254099686a74e9c7df7f8df9e9be98acdd4e411932705e16704e800e",
+        "status": 200,
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/NVDAUSDT/1d/NVDAUSDT-1d-2026-08-11.zip.CHECKSUM"
+      }
+    ],
+    "contract": {
+      "contract_type": "TRADIFI_PERPETUAL",
+      "exchange_info": {
+        "baseAsset": "NVDA",
+        "baseAssetPrecision": 8,
+        "contractType": "TRADIFI_PERPETUAL",
+        "deliveryDate": 4133404800000,
+        "filters": [
+          {
+            "filterType": "PRICE_FILTER",
+            "maxPrice": "20000",
+            "minPrice": "0.01000",
+            "tickSize": "0.01000"
+          },
+          {
+            "filterType": "LOT_SIZE",
+            "maxQty": "30000",
+            "minQty": "0.01",
+            "stepSize": "0.01"
+          },
+          {
+            "filterType": "MARKET_LOT_SIZE",
+            "maxQty": "3000",
+            "minQty": "0.01",
+            "stepSize": "0.01"
+          },
+          {
+            "filterType": "MAX_NUM_ORDERS",
+            "limit": 200
+          },
+          {
+            "filterType": "MIN_NOTIONAL",
+            "notional": "5"
+          },
+          {
+            "filterType": "PERCENT_PRICE",
+            "multiplierDecimal": "4",
+            "multiplierDown": "0.9700",
+            "multiplierUp": "1.0300"
+          },
+          {
+            "filterType": "POSITION_RISK_CONTROL",
+            "positionControlSide": "NONE"
+          }
+        ],
+        "liquidationFee": "0.015000",
+        "maintMarginPercent": "2.5000",
+        "marginAsset": "USDT",
+        "marketTakeBound": "0.03",
+        "maxMoveOrderLimit": 10000,
+        "onboardDate": 1774536000000,
+        "orderTypes": [
+          "LIMIT",
+          "MARKET",
+          "STOP",
+          "STOP_MARKET",
+          "TAKE_PROFIT",
+          "TAKE_PROFIT_MARKET",
+          "TRAILING_STOP_MARKET"
+        ],
+        "pair": "NVDAUSDT",
+        "permissionSets": [
+          "GRID",
+          "COPY",
+          "RPI",
+          "DCA",
+          "PSB"
+        ],
+        "pricePrecision": 5,
+        "quantityPrecision": 2,
+        "quoteAsset": "USDT",
+        "quotePrecision": 8,
+        "requiredMarginPercent": "5.0000",
+        "status": "TRADING",
+        "symbol": "NVDAUSDT",
+        "timeInForce": [
+          "GTC",
+          "IOC",
+          "FOK",
+          "GTX",
+          "GTD"
+        ],
+        "triggerProtect": "0.0300",
+        "underlyingSubType": [
+          "TradFi"
+        ],
+        "underlyingType": "EQUITY"
+      },
+      "instrument_id": "BINANCE:USDM:NVDAUSDT",
+      "margin_asset": "USDT",
+      "onboard_time": 1774536000000,
+      "quote_asset": "USDT",
+      "status": "TRADING",
+      "symbol": "NVDAUSDT",
+      "underlying": null,
+      "underlying_status": "UNVERIFIED"
+    },
+    "contract_metadata": {
+      "classification": "C: 2026-11-10 exchangeInfo, not refreshed",
+      "sha256": "bb6cc37b014e203eefccfdedf8a1258ebe3de52ac878d46c26aa40a58c642d10"
+    },
+    "daily_rows": 7,
+    "end_exclusive": "2026-08-12T00:00:00+00:00",
+    "hour_to_day": {
+      "auxiliary_mismatches": {
+        "quote_volume": 0,
+        "taker_buy_quote_volume": 0,
+        "taker_buy_volume": 0,
+        "trade_count": 0
+      },
+      "examples": [],
+      "ohlcv_matches": 7
+    },
+    "hourly_rows": 168,
+    "hourly_source": {
+      "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+      "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+      "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+      "end_exclusive": "2026-08-12T00:00:00+00:00",
+      "generation": "bde00b2f948842e2b8c2a00465a9f8c6",
+      "raw_receipts": [
+        {
+          "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+          "sha256": "198d588ff3f55eccde27d1f0c4a267765fc6e17b92ceed24e7d906adf8706056",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/NVDAUSDT/1h/NVDAUSDT-1h-2026-08.zip"
+        }
+      ],
+      "rows": 2160,
+      "start": "2026-05-14T00:00:00+00:00"
+    },
+    "instrument_id": "BINANCE:USDM:NVDAUSDT",
+    "interval": "1h",
+    "minute_rows": 10080,
+    "minute_to_hour": {
+      "auxiliary_mismatches": {
+        "quote_volume": 0,
+        "taker_buy_quote_volume": 0,
+        "taker_buy_volume": 0,
+        "trade_count": 0
+      },
+      "examples": [],
+      "ohlcv_matches": 168
+    },
+    "seed": "2026-08-04T23:00:00+00:00",
+    "source": "BINANCE_USDM_PUBLIC_DATA",
+    "start": "2026-08-05T00:00:00+00:00",
+    "status": "MINUTE_DATA_READY",
+    "units": {
+      "price": "USDT per base unit",
+      "quote_volume": "USDT",
+      "trade_count": "exchange trade count",
+      "volume": "base units"
+    }
+  },
+  "observations_sha256": "a7162501208e9e06ba7af30108f8b9bc34e635ccede1c90f10029e72535a5cc0",
+  "order_pairing": {
+    "first_differing_event": null,
+    "first_differing_fill": null,
+    "hourly_only": [],
+    "hourly_only_filled_orders": 0,
+    "hourly_only_orders": 0,
+    "matched_differences": [],
+    "matched_orders": 5,
+    "matched_orders_with_different_fills": 0,
+    "matched_orders_with_different_final_status": 0,
+    "matched_orders_with_different_lifecycle": 0,
+    "minute_only": [],
+    "minute_only_filled_orders": 0,
+    "minute_only_orders": 0,
+    "order_trajectories_with_different_fills": 0
+  },
+  "research": "MC-05-F04C",
+  "resources": {
+    "local_result_bytes": 161629,
+    "python": "3.14.0",
+    "replay_and_audit_cpu_seconds": 0.71875,
+    "replay_and_audit_wall_seconds": 1.668559500016272
+  },
+  "result_sha256": "9570d0f0b83e2f11bb96a052c1c0205561860bb12e1928e81ca54843b638adef",
+  "states": [
+    "ENGINEERING_ACCEPTED",
+    "EXECUTION_SEMANTICS_VALIDATED",
+    "MINUTE_DATA_READY",
+    "INCONCLUSIVE",
+    "REAL_FILL_NOT_VERIFIED",
+    "FINANCIAL_NOT_ESTABLISHED",
+    "NO LIVE MONEY"
+  ],
+  "validation": {
+    "archive_bytes": 337031,
+    "archive_download_wall_seconds": 15.102,
+    "archive_get_requests": 28,
+    "archive_head_probes_http_200": 2,
+    "baseline": "1a7a04d",
+    "budgeting": {
+      "network_requests": 30,
+      "new_archive_estimated_bytes": 419430,
+      "python_workers": 1,
+      "replay_memory_bytes": 268435456,
+      "replay_wall_seconds": 120
+    },
+    "formal_reproduction_result_sha256": "9570d0f0b83e2f11bb96a052c1c0205561860bb12e1928e81ca54843b638adef",
+    "pilot_hours": 24,
+    "targeted_tests_passed": 88,
+    "targeted_tests_wall_seconds": 66.49
+  }
+}

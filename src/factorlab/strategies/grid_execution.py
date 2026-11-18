@@ -603,7 +603,7 @@ class GridExecution:
         self.cancellations.discard(key)
         self.expirations.discard(key)
 
-    def _accept_confirmation(self, record, account):
+    def _accept_confirmation(self, record, account, *, defer_decision=False):
         self._validate_account(account)
         updated = record.snapshot
         key = updated.intent.client_order_id
@@ -619,14 +619,21 @@ class GridExecution:
         else:
             self.records[key], self.orders[key] = record, updated
         self.account = account
+        reverse = (cancel_requested, level, old.intent.side, delta)
+        if defer_decision:
+            return reverse
         if self.expiry_seed_submitting and not any(o.status == OrderStatus.NEW for o in self.active):
             self.expiry_seed_submitting = False
             if not self.active and self.state == 'RUNNING':
                 self._risk('EXPIRY_RESEED_REJECTED')
         self._account_risk()
+        self._propose_reverse(*reverse)
+        self._settle()
+
+    def _propose_reverse(self, cancel_requested, level, filled_side, delta):
         if delta and self.state == 'RUNNING' and self.pending_rebuild is None and not cancel_requested and self._can_propose():
             if 0 <= level < len(self.prices):
-                side = Side.SELL if old.intent.side == Side.BUY else Side.BUY
+                side = Side.SELL if filled_side == Side.BUY else Side.BUY
                 remainder_key = f'{side.value}:{level}'
                 quantity = self.reverse_remainders.get(remainder_key, Decimal(0)) + delta
                 proposal = self._propose(side, self.prices[level], quantity, level)
@@ -639,7 +646,6 @@ class GridExecution:
                         self.reverse_remainders[remainder_key] = residual
                     else:
                         self.reverse_remainders.pop(remainder_key, None)
-        self._settle()
 
     def _authority(self, state, cursor):
         if (state.account_id, state.market, set(state.instruments)) != (
@@ -732,6 +738,17 @@ class GridExecution:
         observation = _observation(event)
         quote = Quote(self.instrument_id, observation['price'], observed_at)
         self._paper_command(controller, delivery, 'observe', (observation, quote))
+
+    def observe_research_hour(self, controller, event, reversals, *, delivery, observed_at):
+        """Complete hourly decisions using intervening authoritative fill feedback."""
+        observation = _observation(event)
+        quote = Quote(self.instrument_id, observation['price'], observed_at)
+        self._paper_command(controller, delivery, 'research_hour', (observation, quote, reversals))
+
+    def fill_research_quote(self, controller, order_id, quantity, price, quote, *, delivery):
+        """Mark and fill atomically, returning feedback for the next hourly decision."""
+        return self._paper_command(controller, delivery, 'research_fill',
+                                   (order_id, quantity, price, quote))
 
     def fill_paper(self, controller, order_id, quantity, price=None, *, delivery):
         """Simulate and confirm one admitted increment in the account transaction.
@@ -828,13 +845,16 @@ class GridExecution:
                 staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
                 return
             staged._require_no_conflict()
-            if action == 'observe':
-                observation, quote = command
+            if action in {'observe', 'research_hour'}:
+                observation, quote = command[:2]
                 broker.set_quote(quote)
                 account = _project_paper_account(broker, staged.instrument_id, turnover)
                 if starting and staged.initial_equity != account.equity:
                     raise ValueError('Grid initial equity differs from Paper authority')
                 staged._observe(observation, account)
+                if action == 'research_hour':
+                    for reverse in command[2]:
+                        staged._propose_reverse(*reverse)
             elif action == 'submit':
                 staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
                 order = staged.orders[command]
@@ -850,23 +870,29 @@ class GridExecution:
                 else:
                     account = _project_paper_account(broker, staged.instrument_id, turnover)
                     staged._accept_confirmation(state.orders[command], account)
-            elif action in {'fill', 'cancel'}:
-                key = command[0] if action == 'fill' else command
+            elif action in {'fill', 'cancel', 'research_fill'}:
+                key = command if action == 'cancel' else command[0]
                 if not staged._owns(key) or key not in staged.records:
                     raise ValueError('execution outside submitted Grid orders')
                 old = state.orders[key].snapshot
-                if action == 'fill':
-                    result = broker.fill(*command)
-                else:
+                if action == 'cancel':
                     if key not in staged.cancellations:
                         raise ValueError('Grid cancellation was not requested')
                     result = controller._cancel_in_transaction(key)
+                else:
+                    if action == 'research_fill':
+                        broker.set_quote(command[3])
+                        staged._write_checkpoint(state, cursor, deployment)
+                    result = broker.fill(*command[:3])
                 if result is not None:
                     delta = result.cumulative_filled_quantity - old.cumulative_filled_quantity
                     if delta:
                         staged._turnover += delta * result.fill_price
                     account = _project_paper_account(broker, staged.instrument_id, staged._turnover)
-                    staged._accept_confirmation(state.orders[key], account)
+                    reverse = staged._accept_confirmation(
+                        state.orders[key], account, defer_decision=action == 'research_fill')
+                    if action == 'research_fill':
+                        result = (result, reverse)
                 else:
                     staged._refresh_paper(broker)
                     staged.account = _project_paper_account(broker, staged.instrument_id, staged._turnover)
