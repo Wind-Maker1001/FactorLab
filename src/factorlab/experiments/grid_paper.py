@@ -93,7 +93,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    interval='1d', buy_hold=False, reference_budget=None,
                    account_id='research-grid', max_exit_quantity=None,
                    scenario=None, synthetic_capacity=None, inventory_risk=None,
-                   research_wal=False, grid_factory=None, provenance=None):
+                   research_wal=False, grid_factory=None, provenance=None,
+                   research_execution=None):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -106,6 +107,10 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
         raise ValueError('research Grid factory requires a dedicated strategy arm')
     if scenario not in {None, 'CLOSE_ONLY_SCENARIO'}:
         raise ValueError('unknown execution scenario')
+    if research_execution is not None and (
+            interval != '1h' or scenario is not None or no_trade or buy_hold
+            or inventory_risk is not None or grid_factory is not None):
+        raise ValueError('research execution clock requires a real hourly Grid arm')
     close_only = scenario == 'CLOSE_ONLY_SCENARIO'
     if close_only:
         if config.mode == 'atr':
@@ -169,35 +174,38 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
         last_risk = None
         estimated_total = ZERO
         peak = capital
-        for bar in bars:
-            now[0] = close_time(bar)
-            close = D(bar['close'])
-            prior = [(key, record.snapshot) for key, record in broker.state.orders.items()
-                     if record.observed_at < now[0] and record.snapshot.status not in
-                     {OrderStatus.FILLED, OrderStatus.CANCELED, OrderStatus.REJECTED}]
-            if no_trade or buy_hold:
-                controller.quote(Quote(instrument_id, close, now[0]))
-            else:
-                observation = dict(bar)
-                if close_only:
-                    observation['scenario'] = scenario
-                if interval == '1h':
-                    # Grid's observation contract uses timezone-free UTC coordinates.
-                    observation['time'] = pd.Timestamp(bar['time']).tz_convert('UTC').tz_localize(None).isoformat()
-                grid.observe_paper(controller, observation, delivery=grid.delivery + 1, observed_at=now[0])
-            budget = synthetic_capacity if close_only else D(bar['volume']) * participation
-            day_fee = day_slippage = day_notional = ZERO
-            for key, order in prior:
-                candidate = execution_candidate(order, ask=close, bid=close, budget=budget,
+
+        def working_orders():
+            return [(key, record.snapshot) for key, record in broker.state.orders.items()
+                    if record.observed_at < now[0] and record.snapshot.status not in
+                    {OrderStatus.FILLED, OrderStatus.CANCELED, OrderStatus.REJECTED}]
+
+        def match(orders, price_reference, *, minute=False):
+            nonlocal budget, day_fee, day_slippage, day_notional, estimated_total
+            for key, order in orders:
+                candidate = execution_candidate(order, ask=price_reference, bid=price_reference, budget=budget,
                                                 slippage=slippage, step=rules.step_size)
+                if research_execution is not None:
+                    research_execution.observe_order(now[0], order, price_reference, budget, candidate,
+                                                     slippage, rules.step_size)
                 if candidate is None:
                     if order_details[key].get('purpose') == 'RISK_EXIT':
                         risk.append(dict(time=bar['time'], kind='EXIT_NO_EXECUTABLE_VOLUME', order_id=key))
                     continue
                 quantity, price = candidate
                 try:
-                    event = (controller.fill(key, quantity, price) if buy_hold else
-                             grid.fill_paper(controller, key, quantity, price, delivery=grid.delivery + 1))
+                    if minute:
+                        quote = Quote(instrument_id, price_reference, now[0])
+                        feedback = grid.fill_research_quote(
+                            controller, key, quantity, price, quote, delivery=grid.delivery + 1)
+                        event = None
+                        if feedback is not None:
+                            event, reverse = feedback
+                            reversals.append(reverse)
+                    elif buy_hold:
+                        event = controller.fill(key, quantity, price)
+                    else:
+                        event = grid.fill_paper(controller, key, quantity, price, delivery=grid.delivery + 1)
                 except InsufficientCollateral:
                     risk.append(dict(time=bar['time'], kind='INSUFFICIENT_COLLATERAL', order_id=key))
                     continue
@@ -206,7 +214,9 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                     continue
                 quantity = event.cumulative_filled_quantity - order.cumulative_filled_quantity
                 fee = event.cumulative_fee - order.cumulative_fee
-                slip = quantity * abs(price - close)
+                slip = quantity * abs(price - price_reference)
+                if research_execution is not None:
+                    research_execution.record_fill(event, price_reference)
                 estimate = fee + slip if buy_hold else grid.estimated_cost(order.intent.side, price, quantity)
                 estimated_total += estimate
                 notional = quantity * price
@@ -222,6 +232,40 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 day_slippage += slip
                 day_notional += notional
                 budget -= quantity
+
+        for bar in bars:
+            now[0] = close_time(bar)
+            hour_close = now[0]
+            close = D(bar['close'])
+            budget = synthetic_capacity if close_only else D(bar['volume']) * participation
+            day_fee = day_slippage = day_notional = ZERO
+            reversals = []
+            if research_execution is not None:
+                budget = research_execution.capacity
+                minutes = research_execution.start_hour(bar, working_orders())
+                for minute_time, minute_close in minutes:
+                    now[0] = minute_time
+                    match(working_orders(), minute_close, minute=True)
+                now[0] = hour_close
+            prior = working_orders()
+            if no_trade or buy_hold:
+                controller.quote(Quote(instrument_id, close, now[0]))
+            else:
+                observation = dict(bar)
+                if close_only:
+                    observation['scenario'] = scenario
+                if interval == '1h':
+                    # Grid's observation contract uses timezone-free UTC coordinates.
+                    observation['time'] = pd.Timestamp(bar['time']).tz_convert('UTC').tz_localize(None).isoformat()
+                if research_execution is not None:
+                    # Grid's volume field is an integer; research capacity is independent.
+                    observation['volume'] = int(D(bar['volume']))
+                if reversals:
+                    grid.observe_research_hour(controller, observation, tuple(reversals),
+                                               delivery=grid.delivery + 1, observed_at=now[0])
+                else:
+                    grid.observe_paper(controller, observation, delivery=grid.delivery + 1, observed_at=now[0])
+            match(prior, close)
             if buy_hold and not broker.state.orders:
                 limit = (close * (1 + slippage) // rules.tick_size) * rules.tick_size
                 if reference_budget is None:
@@ -348,6 +392,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                 max_inventory=float(daily.inventory.max()), risk_triggers=len(risk)), risk=risk,
             orders={key: asdict(record.snapshot) | order_details[key]
                     for key, record in broker.state.orders.items()})
+        if research_execution is not None:
+            final['execution'].update(research_execution.model())
         daily.to_csv(output / 'daily.csv', index=False)
         ledger.to_csv(output / 'trades.csv', index=False)
         _write(output / 'evaluation.json', result.to_dict())
@@ -367,6 +413,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             max_exit_quantity=max_exit_quantity,
             **({'inventory_risk': inventory_risk} if inventory_risk is not None else {}),
             **({'research_grid': grid.deployment()} if grid_factory is not None else {}),
+            **({'research_execution': research_execution.model()} if research_execution is not None else {}),
             market=market.value, instrument_id=instrument_id,
             fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
         return result

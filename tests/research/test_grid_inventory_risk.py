@@ -1,14 +1,19 @@
 """FIFO gates exercised through authoritative Paper transactions."""
 import json
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
 
+from factorlab.experiments.grid_inventory_risk import InventoryRiskGrid
 from factorlab.experiments.grid_paper import run_experiment
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridRules
-from factorlab.trading.contracts import Market
+from factorlab.trading.contracts import Market, OrderType, Side
+from factorlab.trading.control import RiskLimits, TradingController
+from factorlab.trading.paper import Instrument, PaperBroker, Quote
+from factorlab.trading.storage import PaperStore
 from decimal import Decimal as D
 
 
@@ -258,3 +263,64 @@ def test_loss_budget_and_repeatability(tmp_path):
     assert D(event['remaining_budget']) == D('.005')*D(event['equity']) + D(event['realized_net']) + min(D(event['unrealized']),D(0))
     assert D(event['remaining_budget']) <= 0
     assert nav.inventory.iloc[-1] == 0
+
+
+def test_research_fills_post_fifo_before_hourly_loss_decision(tmp_path):
+    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    market = Market.BINANCE_USDM
+    capital = D(100)
+    account_id = 'inventory-risk'
+    broker = PaperBroker(market, account_id, (Instrument('TEST', 'USDT'),),
+                        {'USDT': capital}, fee_rate=D('.0004'))
+    store = PaperStore(tmp_path/'paper.sqlite')
+    try:
+        now = start + timedelta(hours=1, microseconds=-1)
+        controller = TradingController(broker, store, clock=lambda: now,
+            limits=RiskLimits(capital, capital, capital, 1000))
+        config = GridConfig(lower=80, upper=120, levels=4, initial_price=100, quantity=10,
+                            initial_cash=100, initial_inventory=0, max_drawdown=1)
+        rules = GridRules(D('.01'), D('.01'), D('.01'), D('.01'), D('.01'))
+        grid = InventoryRiskGrid(config, rules, deployment_id='grid', account_id=account_id,
+            market=market, instrument_id='TEST', initial_equity=capital, inventory_risk='loss')
+
+        grid.observe_paper(controller, dict(id='seed', time='2026-01-01T00:00:00', price=100,
+            high=100, low=100, close=100, volume=10, completed_bar=True),
+            delivery=grid.delivery+1, observed_at=now)
+        buy_id = next(key for key, order in grid.orders.items() if order.intent.limit_price == 90)
+        grid.submit_paper(controller, buy_id, delivery=grid.delivery+1)
+        reversals = []
+        fills = []
+        for minute, price in ((1, D('89.05')), (2, D('88.05'))):
+            now = start + timedelta(hours=1, minutes=minute, microseconds=-1)
+            event, reverse = grid.fill_research_quote(controller, buy_id, D('.05'), price,
+                Quote('TEST', D(81), now), delivery=grid.delivery+1)
+            reversals.append(reverse)
+            fills.append(event)
+        assert [(lot.time, lot.quantity, lot.price) for lot in grid.lots] == [
+            (fills[0].event_time, D('.05'), D('89.05')),
+            (fills[1].event_time, D('.05'), D('88.05')),
+        ]
+        assert all(reverse[2:] == (Side.BUY, D('.05')) for reverse in reversals)
+        assert grid.state == 'RUNNING'
+        assert not grid.risk_events
+
+        now = start + timedelta(hours=2, microseconds=-1)
+        grid.observe_research_hour(controller, dict(id='hour', time='2026-01-01T01:00:00', price=81,
+            high=89, low=81, close=81, volume=10, completed_bar=True), tuple(reversals),
+            delivery=grid.delivery+1, observed_at=now)
+        assert grid.state == 'EXITING'
+        assert grid.risk_events[0]['exit_reason'] == 'LOSS_BUDGET'
+        assert D(grid.risk_events[0]['unrealized']) == D('-.755')
+        exit_id = next(key for key, order in grid.orders.items()
+                       if order.intent.order_type == OrderType.MARKET)
+        grid.submit_paper(controller, exit_id, delivery=grid.delivery+1)
+        now += timedelta(minutes=1)
+        sale, _ = grid.fill_research_quote(controller, exit_id, D('.06'), D('82.01'),
+            Quote('TEST', D(82), now), delivery=grid.delivery+1)
+        assert [(lot.time, lot.quantity, lot.price) for lot in grid.lots] == [
+            (fills[1].event_time, D('.04'), D('88.05')),
+        ]
+        fifo_gross = D('.05') * (sale.fill_price - D('89.05')) + D('.01') * (sale.fill_price - D('88.05'))
+        assert grid.realized_net == fifo_gross - fills[-1].cumulative_fee - sale.cumulative_fee
+    finally:
+        store.close()
