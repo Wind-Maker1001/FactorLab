@@ -49,29 +49,27 @@ class InventoryRiskGrid(GridExecution):
             return ZERO
         return super()._admit_paper_fill(broker, order, quantity, price)
 
-    def fill_paper(self, controller, order_id, quantity, price=None, *, delivery):
-        self.execution_price = price
-        return super().fill_paper(controller, order_id, quantity, price, delivery=delivery)
-
-    def _accept_confirmation(self, record, account):
+    def _accept_confirmation(self, record, account, *, defer_decision=False):
         updated = record.snapshot
-        old = self.orders[updated.intent.client_order_id]
+        order_id = updated.intent.client_order_id
+        old = self.orders[order_id]
         delta = updated.cumulative_filled_quantity - old.cumulative_filled_quantity
         self.realized_net -= updated.cumulative_fee - old.cumulative_fee
         if delta:
+            execution_price = self._paper_controller.broker.query_order(order_id).fill_price
             if updated.intent.side == Side.BUY:
-                self.lots.append(Lot(record.observed_at, delta, self.execution_price))
+                self.lots.append(Lot(record.observed_at, delta, execution_price))
             else:
                 remaining = delta
                 while remaining:
                     lot = self.lots[0]
                     consumed = min(lot.quantity, remaining)
-                    self.realized_net += consumed * (self.execution_price - lot.price)
+                    self.realized_net += consumed * (execution_price - lot.price)
                     lot.quantity -= consumed
                     remaining -= consumed
                     if not lot.quantity:
                         self.lots.pop(0)
-        super()._accept_confirmation(record, account)
+        return super()._accept_confirmation(record, account, defer_decision=defer_decision)
 
     def _account_risk(self):
         super()._account_risk()
