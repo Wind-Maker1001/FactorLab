@@ -48,7 +48,7 @@ def _paper_inputs(market_data):
     return settings, D(definition['capacity'])
 
 
-def run(output, market_data):
+def run(output, market_data, *, account_prefix='mc05-f04c'):
     started, cpu_started = perf_counter(), process_time()
     output.mkdir(parents=True, exist_ok=False)
     settings, capacity = _paper_inputs(market_data)
@@ -67,7 +67,7 @@ def run(output, market_data):
         ('B', ResearchExecution(minutes_by_hour, capacity)),
     ):
         directory = output / arm
-        run_experiment(directory, account_id=f'mc05-f04c-{arm}', research_execution=clock, **settings)
+        run_experiment(directory, account_id=f'{account_prefix}-{arm}', research_execution=clock, **settings)
         account = audit_account(directory, start=start, end=end, fill_references=clock.fill_references)
         observations = clock.summary()
         observations['quote_observations'] -= 1  # The pre-window hour seeds otherwise empty accounts.
@@ -97,6 +97,7 @@ def run(output, market_data):
     (output / 'AUDIT.json').write_bytes(_encode(audit))
     print(json.dumps(dict(states=audit['states'], result_sha256=audit['result_sha256'],
         resources=audit['resources']), ensure_ascii=False))
+    return audit
 
 
 def main():
