@@ -25,8 +25,6 @@
 
 分钟观察增加报价检查机会，同时可能更早持仓、消耗小时合成容量并改变后续反向单。额外手续费与滑点由实际确认成交计算，不能以成交率较高代替风险与净值评价。逐窗成本、库存、回撤、现金与 FIFO 见 [FINANCIAL.md](FINANCIAL.md)；首处分歧和真实订单时序见 [EXECUTION_CASES.md](EXECUTION_CASES.md)。
 
-本轮没有出现“更多最终成交笔数”的窗口：前两个独立窗口的成交数量相同，但成交时间和价格不同。I1 的分钟组更早承担库存，期末权益较小时组下降；I2 的分钟组更早成交且期末权益略高。因此本轮确认了账户路径对报价粒度敏感，未得到分钟观察必然增加最终成交量或改善净值的结论。
-
 窗口 C1 [2026-06-05T00:00:00+00:00, 2026-06-12T00:00:00+00:00) 拒绝准入：incomplete bounded acquisition receipts; no retry or replacement window: NVDAUSDT-1m-2026-06-07.zip, NVDAUSDT-1m-2026-06-07.zip.CHECKSUM, NVDAUSDT-1d-2026-06-07.zip, NVDAUSDT-1d-2026-06-07.zip.CHECKSUM, NVDAUSDT-1m-2026-06-08.zip, NVDAUSDT-1m-2026-06-08.zip.CHECKSUM, NVDAUSDT-1d-2026-06-08.zip, NVDAUSDT-1d-2026-06-08.zip.CHECKSUM, NVDAUSDT-1m-2026-06-09.zip, NVDAUSDT-1m-2026-06-09.zip.CHECKSUM, NVDAUSDT-1d-2026-06-09.zip, NVDAUSDT-1d-2026-06-09.zip.CHECKSUM, NVDAUSDT-1m-2026-06-10.zip, NVDAUSDT-1m-2026-06-10.zip.CHECKSUM, NVDAUSDT-1d-2026-06-10.zip, NVDAUSDT-1d-2026-06-10.zip.CHECKSUM, NVDAUSDT-1m-2026-06-11.zip, NVDAUSDT-1m-2026-06-11.zip.CHECKSUM, NVDAUSDT-1d-2026-06-11.zip, NVDAUSDT-1d-2026-06-11.zip.CHECKSUM。保留 MARKET_DATA_BLOCKED，未替换候选。
 
 ## 工程与复现
@@ -60,8 +58,8 @@
   "targeted_tests": {
     "existing": 42,
     "reservation": 9,
-    "offline_and_optional_probe": 7,
-    "passed": 58,
+    "offline_and_optional_probe": 9,
+    "passed": 60,
     "status": "PASS"
   },
   "offline_reproduction": {
@@ -83,13 +81,13 @@
 ```json
 {
   "account_bytes": 1685122,
-  "cpu_seconds": 2.671875,
+  "cpu_seconds": 2.703125,
   "formal_accounts": 6,
   "formal_replay_cpu_seconds": 5.15625,
   "frozen_regression_accounts": 2,
   "repeat_accounts": 6,
   "repeat_replay_cpu_seconds": 4.234375,
-  "wall_seconds": 2.8142364000086673
+  "wall_seconds": 2.927742699976079
 }
 ```
 
@@ -172,7 +170,7 @@ python tools/research/run_mc05_f04c_02.py --hourly-snapshot <R04B_SNAPSHOT> --ar
 }
 ```
 
-已有分钟线提供成交笔数和主动买入数量，能够说明该分钟内存在公开成交。对应日期的逐笔归档可用于进一步辨认价格顺序；历史买卖价、盘口深度、队列与订单确认共同决定实际订单是否成交。当前盘口不替代历史盘口。本轮结果验证的是冻结报价、滑点与容量下的 Paper 执行和账务，不构成一般收益结论。
+准入的分钟线包含成交笔数和主动买入数量，可用于辨认存在公开成交的分钟。对应日期的逐笔归档可用于进一步辨认价格顺序；历史买卖价、盘口深度、队列与订单确认共同决定实际订单是否成交。当前盘口不替代历史盘口。Paper 复验的范围是冻结报价、滑点与容量下的执行和账务，不构成一般收益结论。
 
 研究状态：
 

@@ -193,12 +193,13 @@ def execute(args):
         acquisition = acquire(args.archive_root, objects)
     else:
         recorded = json.loads((args.archive_root / 'requests.json').read_text(encoding='utf-8'))
+        fetched_times = [row['fetched_at'] for row in recorded]
         acquisition = dict(mode='OFFLINE_REUSE', get_requests=0, downloaded_bytes=0,
             retained_objects=len(recorded), retained_bytes=sum(row['bytes'] for row in recorded),
             preregistered_head_request_limit=len(objects), retained_successful_get_receipts=len(recorded),
             original_failed_request_details='not retained before evidence interruption; missing objects are rejected',
-            first_fetched_at=min(row['fetched_at'] for row in recorded),
-            last_fetched_at=max(row['fetched_at'] for row in recorded),
+            first_fetched_at=min(fetched_times, default=None),
+            last_fetched_at=max(fetched_times, default=None),
             acquisition_timing='initial acquisition completed; per-object receipts retained; '
                                'original perf_counter interval was interrupted before final report')
         recorded_names = {row['name'] for row in recorded}
@@ -281,12 +282,17 @@ def execute(args):
                                   != row['accounts']['B']['metrics']['terminal_nav'] for row in independent))
     nonzero = any(row['accounts'][arm]['metrics']['fills'] for row in accepted for arm in ('A', 'B'))
     different = any(row['order_pairing']['order_trajectories_with_different_fills'] for row in accepted)
+    execution_states = ['NO_ADMITTED_EXECUTION_CASE']
+    if accepted:
+        execution_states = [
+            'PAPER_NONZERO_FILL_OBSERVED' if nonzero else 'NO_FILL_CASE_OBSERVED',
+            'EXECUTION_GRANULARITY_DIFFERENCE_OBSERVED' if different else 'INCONCLUSIVE',
+            'FIFO_NAV_RECONCILED',
+        ]
     states = ['ENGINEERING_ACCEPTED',
         'MARKET_DATA_ACCEPTED' if len(accepted) == len(selected) else 'MARKET_DATA_BLOCKED',
-        'WINDOW_SELECTION_PRE_REGISTERED',
-        'PAPER_NONZERO_FILL_OBSERVED' if nonzero else 'NO_FILL_CASE_OBSERVED',
-        'EXECUTION_GRANULARITY_DIFFERENCE_OBSERVED' if different else 'INCONCLUSIVE',
-        'FIFO_NAV_RECONCILED', 'REAL_FILL_NOT_VERIFIED', 'FINANCIAL_NOT_ESTABLISHED', 'NO LIVE MONEY']
+        'WINDOW_SELECTION_PRE_REGISTERED', *execution_states,
+        'REAL_FILL_NOT_VERIFIED', 'FINANCIAL_NOT_ESTABLISHED', 'NO LIVE MONEY']
     identity = dict(research='MC-05-F04C-02', protocol_commit=base,
         baseline_commit='053345e08e4c20d9329b3ea6fe1afa308cb00247',
         protocol_sha256=sha256(protocol.read_bytes().replace(b'\r\n', b'\n')).hexdigest(),
@@ -308,7 +314,8 @@ def execute(args):
             repeat_accounts=len(accepted) * 2, frozen_regression_accounts=2,
             formal_replay_cpu_seconds=sum(row['resources']['replay_and_audit_cpu_seconds'] for row in accepted),
             repeat_replay_cpu_seconds=sum(row['repeat_resources']['replay_and_audit_cpu_seconds'] for row in accepted)),
-        validation=dict(deterministic_replay='PASS', frozen_f04c='PASS',
+        validation=dict(deterministic_replay='PASS' if accepted else 'NOT_RUN_NO_ADMITTED_WINDOWS',
+                        frozen_f04c='PASS',
                         accounting_tolerance='0.00000001', targeted_tests='PENDING'))
     audit_path.write_bytes(_encode(audit))
     render_reports(args.output, audit)

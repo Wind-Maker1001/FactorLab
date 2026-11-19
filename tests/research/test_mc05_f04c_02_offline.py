@@ -88,7 +88,7 @@ def study(tmp_path, monkeypatch):
         '--archive-root', str(archive), '--legacy-archive-root', str(tmp_path / 'legacy'),
         '--accounts-root', str(accounts), '--output', str(output), '--resume',
     ]
-    return SimpleNamespace(runner=runner, cached=cached, output=output, argv=argv,
+    return SimpleNamespace(runner=runner, cached=cached, archive=archive, output=output, argv=argv,
                            start=start.isoformat())
 
 
@@ -184,3 +184,38 @@ def test_probe_does_not_hide_programming_errors(study, monkeypatch):
     monkeypatch.setattr(study.runner, 'urlopen', broken_probe)
     with pytest.raises(RuntimeError, match='unexpected probe bug'):
         study.runner.finer_evidence(('I1', study.start), online=True, prior=None)
+
+
+@pytest.mark.parametrize('empty', [False, True], ids=['partial', 'empty'])
+def test_offline_report_only_draws_conclusions_from_admitted_windows(study, monkeypatch, empty):
+    runner = study.runner
+    (accepted,) = runner.select_windows(None, None)
+    blocked = accepted | dict(id='I2')
+    monkeypatch.setattr(runner, 'select_windows', lambda *args: [accepted, blocked])
+    monkeypatch.setattr(runner, 'archive_objects', lambda *args: [
+        dict(name='fixture.zip', window='I1'), dict(name='missing.zip', window='I2'),
+    ])
+    monkeypatch.setattr(runner, 'urlopen', _fail_unexpected_call)
+    monkeypatch.setattr(socket.socket, 'connect', _fail_unexpected_call)
+    if empty:
+        (study.archive / 'requests.json').write_bytes(runner._encode([]))
+    monkeypatch.setattr(sys, 'argv', study.argv)
+
+    runner.main()
+
+    audit = _read(study.output / 'AUDIT.json')
+    report = (study.output / 'REPORT.md').read_text(encoding='utf-8')
+    assert all((study.output / name).stat().st_size > 0 for name in REPORTS)
+    assert audit['windows'][1]['status'] == 'MARKET_DATA_BLOCKED'
+    assert 'I2 的分钟组更早成交' not in report
+    if empty:
+        assert audit['windows'][0]['status'] == 'MARKET_DATA_BLOCKED'
+        assert audit['acquisition']['first_fetched_at'] is None
+        assert audit['acquisition']['last_fetched_at'] is None
+        assert audit['validation']['deterministic_replay'] == 'NOT_RUN_NO_ADMITTED_WINDOWS'
+        assert 'NO_ADMITTED_EXECUTION_CASE' in audit['states']
+        assert '缺少可比较的 Paper 账户结果' in report
+        assert '分钟报价观察改变了配对账户的成交轨迹' not in report
+    else:
+        assert audit['windows'][0]['status'] == 'MARKET_DATA_ACCEPTED'
+        assert '分钟报价观察改变了配对账户的成交轨迹' in report

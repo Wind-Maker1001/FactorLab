@@ -330,13 +330,16 @@ def _report(audit, windows):
     counts = audit['independent_counts']
     nonzero = any(window['accounts'][arm]['metrics']['fills'] for window in windows for arm in ('A', 'B'))
     changed = any(window['order_pairing']['order_trajectories_with_different_fills'] for window in windows)
+    if not windows:
+        conclusion = '全部预定窗口均未通过行情准入，本轮缺少可比较的 Paper 账户结果。'
+    else:
+        conclusion = ('已观察到真实历史价格触发的非零 Paper 成交。' if nonzero else
+                      '全部已准入的预定窗口中均未观察到非零 Paper 成交。')
+        conclusion += ('分钟报价观察改变了配对账户的成交轨迹，具体库存和 NAV 差异逐窗报告。'
+                       if changed else '本轮已准入窗口中，未观察到分钟报价改变成交轨迹。')
     lines = [
         '# MC-05-F04C-02 真实行情非零成交与多粒度复验',
-        ('已观察到真实历史价格触发的非零 Paper 成交。' if nonzero else
-         '全部已准入的预定窗口中均未观察到非零 Paper 成交，保留这一正式结果。')
-        + ('分钟报价观察改变了配对账户的成交轨迹，具体库存和 NAV 差异逐窗报告。' if changed else
-           '本轮未观察到分钟报价观察改变成交轨迹。')
-        + '研究从先前冻结的 F04C 执行规则出发，使用独立历史窗口与小时触价专项案例两组样本。',
+        conclusion + '研究从先前冻结的 F04C 执行规则出发，使用独立历史窗口与小时触价专项案例两组样本。',
         '## 独立窗口结果',
         _table(('计数', '全部预定独立窗口'), (
             ('事前预定窗口', counts['predeclared_windows']),
@@ -363,9 +366,6 @@ def _report(audit, windows):
         '额外手续费与滑点由实际确认成交计算，不能以成交率较高代替风险与净值评价。'
         '逐窗成本、库存、回撤、现金与 FIFO 见 [FINANCIAL.md](FINANCIAL.md)；'
         '首处分歧和真实订单时序见 [EXECUTION_CASES.md](EXECUTION_CASES.md)。',
-        '本轮没有出现“更多最终成交笔数”的窗口：前两个独立窗口的成交数量相同，但成交时间和价格不同。'
-        'I1 的分钟组更早承担库存，期末权益较小时组下降；I2 的分钟组更早成交且期末权益略高。'
-        '因此本轮确认了账户路径对报价粒度敏感，未得到分钟观察必然增加最终成交量或改善净值的结论。',
         '\n'.join(f"窗口 {window['id']} [{window['start']}, {window['end_exclusive']}) "
                   f"拒绝准入：{window['rejection']}。保留 MARKET_DATA_BLOCKED，未替换候选。"
                   for window in audit['windows'] if window['status'] == 'MARKET_DATA_BLOCKED'),
@@ -397,10 +397,10 @@ def _report(audit, windows):
         '离线运行不发出 HTTP HEAD 或 GET，缺少历史凭证时记录 `NOT_RECHECKED_OFFLINE`。',
         '## 历史更细证据',
         _json(audit['finer_evidence']),
-        '已有分钟线提供成交笔数和主动买入数量，能够说明该分钟内存在公开成交。'
+        '准入的分钟线包含成交笔数和主动买入数量，可用于辨认存在公开成交的分钟。'
         '对应日期的逐笔归档可用于进一步辨认价格顺序；历史买卖价、盘口深度、'
         '队列与订单确认共同决定实际订单是否成交。当前盘口不替代历史盘口。'
-        '本轮结果验证的是冻结报价、滑点与容量下的 Paper 执行和账务，'
+        'Paper 复验的范围是冻结报价、滑点与容量下的执行和账务，'
         '不构成一般收益结论。',
         '研究状态：', '\n'.join('- `' + state + '`' for state in audit['states']),
     ])

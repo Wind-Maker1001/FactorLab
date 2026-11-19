@@ -572,9 +572,9 @@
     "src/factorlab/experiments/mc_grid_tail_f04c_cases.py": "d43607eaf28a4321e15d4ec79136a46f981a61688b528f2be5e2c189361517a4",
     "src/factorlab/experiments/mc_grid_tail_f04c_data.py": "7ae69ff90d028363d1ad725449c413dc705ddf72a16735a2935d6273b4a5b8c7",
     "src/factorlab/experiments/mc_grid_tail_f04c_windows.py": "e28dccd7bcdfe1e224385ebe957f5ceb4317485517d8377e3eb54f24ff7a4419",
-    "tools/research/mc05_f04c_02_report.py": "48e30e7d267421f992945bb94cde04f46cdcdf26a74854ee6f68aa3040de28e2",
+    "tools/research/mc05_f04c_02_report.py": "ed922381c6215c4dbf7c3ab2ec9704329aa68b602070a3463b9c8d6446268c43",
     "tools/research/run_mc05_f04c.py": "7e7f88439873622635a0241ccb3514ecd11a8a5b7e045514203ce4ec3bd8fef0",
-    "tools/research/run_mc05_f04c_02.py": "bd25496d7f4809219880a7e8fce6e9423d79c9f226f20d833ed762744f6ae553"
+    "tools/research/run_mc05_f04c_02.py": "619793c48a6d38689aa8c96dbb9cb7145d1a9b09200772900b7d1615800305ed"
   },
   "independent_counts": {
     "accepted_windows": 3,
@@ -589,13 +589,13 @@
   "research": "MC-05-F04C-02",
   "resources": {
     "account_bytes": 1685122,
-    "cpu_seconds": 2.671875,
+    "cpu_seconds": 2.703125,
     "formal_accounts": 6,
     "formal_replay_cpu_seconds": 5.15625,
     "frozen_regression_accounts": 2,
     "repeat_accounts": 6,
     "repeat_replay_cpu_seconds": 4.234375,
-    "wall_seconds": 2.8142364000086673
+    "wall_seconds": 2.927742699976079
   },
   "result_sha256": "b267bc7508873deeccd8a7808a83a12ec89239ba86b7ec9c9ee0301c72b16934",
   "states": [
@@ -626,8 +626,8 @@
     },
     "targeted_tests": {
       "existing": 42,
-      "offline_and_optional_probe": 7,
-      "passed": 58,
+      "offline_and_optional_probe": 9,
+      "passed": 60,
       "reservation": 9,
       "status": "PASS"
     }
