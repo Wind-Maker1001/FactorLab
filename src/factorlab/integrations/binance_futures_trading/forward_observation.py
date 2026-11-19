@@ -401,7 +401,7 @@ def main(argv=None):
     try:
         with open_grid_session(args.output / 'preview-state', DemoCredentialStore(), grid_factory(settings),
                                preview=True, continuous=True, request_counts=requests) as bridge:
-            bridge.gateway.clock = bridge.session._now
+            evidence.clock = bridge.gateway.clock = bridge.session._now
             if args.experiment_id:
                 account = bridge.session.status()
                 evidence.append(dict(kind='account_reconciled', at=utcnow().isoformat(),
@@ -417,7 +417,7 @@ def main(argv=None):
                 requests.enable_rounds(max_requests=args.max_requests,
                     max_quote_gap_seconds=args.max_quote_gap_seconds,
                     sink=lambda row: evidence.append(dict(kind='poll_round', watermarks=feed.watermarks(), **row)))
-                consumer = ShadowConsumer(bridge, control, evidence, request_counts=requests, clock=bridge.session._now)
+                consumer = ShadowConsumer(bridge, control, evidence, request_counts=requests, clock=evidence.clock)
                 client = MarketClient(requests)
                 info = client.request('GET', '/fapi/v1/exchangeInfo', signed=False)
                 symbol = next(s for s in info['symbols'] if s['symbol'] == 'NVDAUSDT')

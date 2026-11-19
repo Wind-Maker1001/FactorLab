@@ -307,6 +307,82 @@ def test_disconnect_stops_and_preserves_interruption_reason(tmp_path):
     assert evidence.summary()['right_censored'] == 1
 
 
+@pytest.mark.parametrize(('host_offset_seconds', 'disconnect'), [
+    (-20, False), (20, True), (0, False),
+])
+def test_preview_lifecycle_uses_session_calibrated_clock(network_grid, monkeypatch,
+                                                        host_offset_seconds, disconnect):
+    from functools import partial
+    from factorlab.integrations.binance_futures_trading import forward_observation as observation
+    from factorlab.integrations.binance_futures_trading import network, protocol
+    from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
+
+    root, credentials, factory, _, _, requests = network_grid
+    exchange_at = NOW
+    host_offset = timedelta(seconds=host_offset_seconds)
+
+    def host_clock():
+        return exchange_at + host_offset
+
+    monkeypatch.setattr(observation, 'utcnow', host_clock)
+    monkeypatch.setattr(observation, 'ShadowEvidence', partial(ShadowEvidence, clock=host_clock))
+    monkeypatch.setattr(observation, 'DemoCredentialStore', lambda: credentials)
+    monkeypatch.setattr(observation, 'grid_factory', lambda settings: factory)
+    monkeypatch.setattr(DemoSession, '_now', lambda _: exchange_at)
+    monkeypatch.setattr(protocol, 'build_opener', network.build_opener)
+    monkeypatch.setattr(observation.signal, 'signal', lambda *_: None)
+
+    ended_proposal = {}
+
+    def run(supervisor, *, seconds):
+        nonlocal exchange_at
+        consumer = supervisor.before_poll.__self__
+        evidence = consumer.evidence
+        if ended_proposal:
+            resume = next(row for row in reversed(evidence.rows) if row['kind'] == 'resume')
+            assert resume['at'] == host_clock().isoformat()
+            assert resume['coverage'] == 'UNOBSERVED_DURING_PROCESS_GAP'
+            assert evidence.clock is consumer.clock
+            assert evidence.clock() == exchange_at
+            consumer._end_inactive()
+            assert evidence.proposals == {ended_proposal['id']: ended_proposal}
+            return
+
+        supervisor.before_poll()
+        event = bar(1)
+        exchange_at = event.closed_at
+        assert consumer.closed_bar(event)
+        proposal, = evidence.proposals.values()
+        assert proposal['proposed_at'] == proposal['captured_at'] == exchange_at.isoformat()
+        exchange_at += timedelta(seconds=3)
+        if disconnect:
+            supervisor.feed.pause('STALE_OR_FUTURE_QUOTE')
+            supervisor.on_pause()
+            interruption, = [row for row in evidence.rows if row['kind'] == 'interruption']
+            assert interruption['reason'] == 'STALE_OR_FUTURE_QUOTE'
+            assert interruption['at'] == exchange_at.isoformat()
+            assert supervisor.stopped.is_set()
+            expected_reason = 'DATA_INTERRUPTION'
+        else:
+            consumer.bridge.grid.cancellations.add(proposal['proposal'])
+            consumer._end_inactive()
+            expected_reason = 'STRATEGY_INVALIDATED:' + str(consumer.bridge.grid.reason)
+        assert proposal['ended_at'] == exchange_at.isoformat()
+        assert observation.instant(proposal['ended_at']) >= observation.instant(proposal['captured_at'])
+        assert proposal['status'] == 'ENDED'
+        assert proposal['reason'] == expected_reason
+        assert proposal['right_censored']
+        ended_proposal.update(proposal)
+
+    monkeypatch.setattr(observation.DemoSupervisor, 'run', run)
+    argv = ['--output', str(root / 'observation'), '--version', 'fixture']
+    assert main(argv) == 0
+    if host_offset_seconds < 0:
+        exchange_at += timedelta(seconds=10)
+        assert main(argv) == 0
+    assert all(request.get_method() == 'GET' for request in requests)
+
+
 def test_request_admission_is_durable_and_get_only(tmp_path):
     from factorlab.integrations.binance_futures_trading.forward_observation import BoundedRequests, utcnow
     evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture')

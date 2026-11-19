@@ -5,7 +5,7 @@ import pytest
 
 from factorlab.integrations.binance_equity.client import Client
 from factorlab.integrations.binance_futures_trading.adapter import FuturesAdapter
-from factorlab.integrations.binance_futures_trading.fake import FakeTransport
+from factorlab.integrations.binance_futures_trading.fake import FakeTransport, MS
 from factorlab.integrations.binance_futures_trading.protocol import (
     Credentials, Environment, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked,
 )
@@ -17,28 +17,39 @@ def test_environment_routes_key_and_disallows_writes(monkeypatch, environment):
     calls = []
     class Result:
         status, headers = 200, {}
+        def __init__(self, body):
+            self.body = body
         def __enter__(self):
             return self
         def __exit__(self, *args):
             pass
         def read(self, size):
-            return b'[]'
+            return self.body
     def read(request, timeout):
         calls.append(request)
-        return Result()
+        if request.selector == '/fapi/v1/time':
+            return Result(json.dumps(dict(serverTime=MS)).encode())
+        return Result(b'[]')
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener',
                         lambda *args: SimpleNamespace(open=read))
     credentials = Credentials(environment.name + 'key', 'secret', environment)
     client = FuturesClient(credentials, environment=environment,
-        transport=ReadOnlyNetworkTransport(environment=environment, permit_account_read=True))
+        transport=ReadOnlyNetworkTransport(environment=environment, permit_account_read=True),
+        clock=lambda: MS / 1000, monotonic=lambda: 0.)
     for path in ('/fapi/v3/balance', '/fapi/v3/positionRisk', '/fapi/v1/openOrders'):
         client.request('GET', path)
     assert all(r.full_url.startswith(environment.host + '/') for r in calls)
-    assert all(r.get_header('X-mbx-apikey') == credentials.key for r in calls)
+    signed = calls
+    if environment is Environment.DEMO:
+        calibration, *signed = calls
+        assert calibration.selector == '/fapi/v1/time'
+        assert calibration.get_header('X-mbx-apikey') is None
+    assert len(signed) == 3
+    assert all(r.get_header('X-mbx-apikey') == credentials.key for r in signed)
     for method in ('POST', 'DELETE', 'PUT'):
         with pytest.raises(SafetyBlocked):
             client.request(method, '/fapi/v1/order')
-    assert len(calls) == 3
+    assert len(calls) == (4 if environment is Environment.DEMO else 3)
 
 
 def test_mismatched_credentials_rejected_before_network():
