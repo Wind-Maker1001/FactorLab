@@ -16,22 +16,24 @@ def test_idle_recovery_measurement(network_grid):
     root, credentials, factory, enable, fake, requests = network_grid
     enable()
     counts = RequestCounts()
+    polls = 20
     tracemalloc.start()
     with open_grid_session(root, credentials, factory, continuous=True, request_counts=counts) as bridge:
         initialization = Counter(urlsplit(r.full_url).path for r in requests)
         bridge.recover()
         economic = deepcopy(bridge.account())
         start_requests = len(requests)
+        start_gets = counts['GET']
         store = bridge.controller.store
         start_events = store.db.execute('SELECT count(*) FROM events').fetchone()[0]
         start_transactions = store.transaction_count
         started = perf_counter()
         counts.phase = 'poll'
-        for _ in range(20):
+        for _ in range(polls):
             bridge.recover()
         elapsed = perf_counter() - started
         assert bridge.account() == economic
-        report = dict(initialization=dict(initialization), polls=20, seconds=elapsed,
+        report = dict(initialization=dict(initialization), polls=polls, seconds=elapsed,
             endpoints=dict(Counter(urlsplit(r.full_url).path for r in requests[start_requests:])),
             events_added=store.db.execute('SELECT count(*) FROM events').fetchone()[0] - start_events,
             transactions=store.transaction_count - start_transactions,
@@ -43,9 +45,19 @@ def test_idle_recovery_measurement(network_grid):
         report['restart_recovery_seconds'] = perf_counter() - started
         assert bridge.account() == economic
     tracemalloc.stop()
-    assert report['endpoints']['/fapi/v3/account'] == 40
-    assert sum(report['endpoints'].values()) == 260
-    assert sum(row['count'] for row in counts.snapshot()['endpoints'] if row['phase'] == 'poll') == 260
+    # Each idle recovery reads one account snapshot and one recovery book.
+    expected_endpoints = dict.fromkeys((
+        '/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
+        '/fapi/v1/openOrders', '/fapi/v1/symbolConfig', '/fapi/v1/apiTradingStatus',
+        '/fapi/v1/ticker/bookTicker',
+    ), polls)
+    assert report['endpoints'] == expected_endpoints
+    poll_telemetry = {(row['source'], row['method'], row['endpoint']): row['count']
+                      for row in counts.snapshot()['endpoints'] if row['phase'] == 'poll'}
+    assert poll_telemetry == {('session', 'GET', path): count
+                              for path, count in expected_endpoints.items()}
+    report['poll_gets'] = counts['GET'] - start_gets
+    assert report['poll_gets'] == sum(expected_endpoints.values())
     assert all(r.get_method() == 'GET' for r in requests)
     print('OFFLINE_MEASUREMENT=' + json.dumps(report, sort_keys=True))
 
