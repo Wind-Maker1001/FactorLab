@@ -1,6 +1,7 @@
 """Bounded Demo REST events with consumer-acknowledged durable cursors."""
 from contextlib import AbstractContextManager, contextmanager, nullcontext
 from datetime import datetime, timezone
+from math import ceil
 from time import perf_counter
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -18,6 +19,7 @@ INTERVALS = {'1m': 60, '3m': 180, '5m': 300, '15m': 900, '30m': 1800,
              '8h': 28800, '12h': 43200, '1d': 86400}
 SYMBOL = 'NVDAUSDT'
 CATCH_UP_PAGES = 4
+MAX_QUOTE_GAP_SECONDS = 30
 
 
 class FeedPaused(ValueError):
@@ -51,7 +53,8 @@ class DemoMarketFeed:
     """
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
                  max_backfill=120, max_quote_age=5, initial_bars=1, catch_up=False,
-                 clock=lambda: datetime.now(timezone.utc), timings: FeedTimings | None = None):
+                 clock=lambda: datetime.now(timezone.utc), timings: FeedTimings | None = None,
+                 exchange_time=None, receipt_clock=None):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -74,8 +77,11 @@ class DemoMarketFeed:
         self.catch_up = catch_up
         self.initial_bars = initial_bars
         self.client, self.consumer, self.clock = client, consumer, clock
+        self.receipt_clock = clock if receipt_clock is None else receipt_clock
+        self.exchange_time = client.demo_time if exchange_time is None else exchange_time
         self.interval, self.seconds = interval, INTERVALS[interval]
         self.max_backfill, self.max_quote_age = max_backfill, max_quote_age
+        self._last_live_quote_received = None
         self.status, self.reason = 'PAUSED', 'STARTING'
         path = Path(state_path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -109,11 +115,10 @@ class DemoMarketFeed:
             raise
 
     def _closed_bar(self, bar, *, historical=False):
-        callback = self.consumer.closed_bar
-        if historical:
-            callback = getattr(self.consumer, 'historical_bar', callback)
         with self._measure('closed_bar_callback'):
-            return callback(bar)
+            if historical:
+                return self.consumer.historical_bar(bar)
+            return self.consumer.closed_bar(bar)
 
     def close(self):
         self.db.close()
@@ -150,7 +155,7 @@ class DemoMarketFeed:
             endTime=page_boundary - 1, limit=count), signed=False)
         if not isinstance(rows, list) or len(rows) > count + 1:
             raise FeedPaused('INVALID_KLINES')
-        bars_received_at = self.clock()
+        bars_received_at = self.receipt_clock()
         bars, previous = [], None
         for row in rows:
             if not isinstance(row, list) or len(row) < 7:
@@ -202,13 +207,8 @@ class DemoMarketFeed:
         return dict(bars=delivered, quotes=0)
 
     def _poll(self):
-        server = self.client.request('GET', '/fapi/v1/time', signed=False)['serverTime']
-        server_at = timestamp(server)
-        server_age = (self.clock() - server_at).total_seconds()
-        if self.timings is not None:
-            self.timings.sample('server_time_at_receipt_age', server_age)
-        if abs(server_age) > self.max_quote_age:
-            raise FeedPaused('CLOCK_SKEW')
+        anchor = self.exchange_time(min_valid_seconds=self.max_quote_age)
+        server = int(anchor.lower_ms)
         width = self.seconds * 1000
         boundary = server // width * width
         last_bar, last_quote = self.watermarks()
@@ -227,26 +227,38 @@ class DemoMarketFeed:
         if boundary - start > self.max_backfill * width:
             raise FeedPaused('BACKFILL_LIMIT')
         bars, rows, bars_received_at = self._bars(start, boundary, server)
+        # Request the book after the closed range so history cannot age the book.
         raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
-        book_received_at = self.clock()
+        book_wall_received_at = self.clock()
+        received = self.exchange_time(allow_refresh=False)
+        book_received_at = timestamp(ceil(received.upper_ms))
         try:
             observed = timestamp(raw['time'])
             if self.timings is not None:
                 self.timings.book_received(observed, book_received_at)
+                self.timings.sample('book_host_wall_to_received',
+                    (book_wall_received_at - observed).total_seconds())
             bid, ask = Decimal(raw['bidPrice']), Decimal(raw['askPrice'])
             symbol = raw['symbol']
         except (KeyError, TypeError, ValueError, InvalidOperation) as error:
             raise FeedPaused('INVALID_BOOK') from error
-        if (symbol != SYMBOL or raw['time'] < boundary
-                or not 0 <= (self.clock() - observed).total_seconds() <= self.max_quote_age):
+        if symbol != SYMBOL or raw['time'] < boundary:
             raise FeedPaused('STALE_OR_FUTURE_QUOTE')
+        self._validate_quote_age(raw['time'], received)
         if last_quote is not None and raw['time'] < last_quote:
             raise FeedPaused('QUOTE_TIME_REGRESSION')
+        if self._last_live_quote_received is not None and (
+                received.observed_monotonic - self._last_live_quote_received > MAX_QUOTE_GAP_SECONDS
+                or raw['time'] - last_quote > MAX_QUOTE_GAP_SECONDS * 1000):
+            self._last_live_quote_received = None
+            raise FeedPaused('R13_QUOTE_GAP')
         if not bid.is_finite() or not ask.is_finite() or not 0 < bid <= ask:
             raise FeedPaused('INVALID_BOOK')
         # Validate the entire batch before advancing even one strategy input.
-        batch_age = (self.clock() - server_at).total_seconds()
+        batch_age = (received.observed_monotonic - anchor.observed_monotonic
+                     + received.uncertainty_ms / 1000)
         if self.timings is not None:
+            self.timings.sample('poll_clock_uncertainty', received.uncertainty_ms / 1000)
             self.timings.sample('poll_anchor_age', batch_age)
         if batch_age > self.max_quote_age:
             raise FeedPaused('STALE_POLL')
@@ -254,18 +266,23 @@ class DemoMarketFeed:
         for bar in bars:
             if hasattr(self.consumer, 'observe_bar_receipt'):
                 self.consumer.observe_bar_receipt(bar,
-                    raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.clock())
+                    raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.receipt_clock())
             self._closed_bar(bar)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
         delivered = 0
         if last_quote is None or raw['time'] > last_quote:
             quote = Quote(SYMBOL, (bid + ask) / 2, observed)
-            if not 0 <= (self.clock() - observed).total_seconds() <= self.max_quote_age:
-                raise FeedPaused('STALE_OR_FUTURE_QUOTE')
+            self._validate_quote_age(raw['time'], self.exchange_time(allow_refresh=False))
             self.consumer.quote(quote)
             if hasattr(self.consumer, 'observe_book'):
                 self.consumer.observe_book(raw, book_received_at)
             self._ack('quote', raw['time'])
+            self._last_live_quote_received = received.observed_monotonic
             delivered = 1
         self.status, self.reason = 'RUNNING', None
         return dict(bars=len(bars), quotes=delivered)
+
+    def _validate_quote_age(self, quote_ms, reading):
+        if (quote_ms > reading.lower_ms
+                or ceil(reading.upper_ms) - quote_ms > self.max_quote_age * 1000):
+            raise FeedPaused('STALE_OR_FUTURE_QUOTE')

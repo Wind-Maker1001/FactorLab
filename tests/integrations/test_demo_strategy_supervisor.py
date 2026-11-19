@@ -29,18 +29,24 @@ from factorlab.trading.strategy import ClosedBar, DualMAStrategy
 
 class Market(OfflineTransport):
     def __init__(self):
-        at = datetime.now(timezone.utc)
-        self.at = at.replace(microsecond=at.microsecond // 1000 * 1000)
-        self.boundary = int(at.timestamp()) // 3600 * 3600000
+        self.at = NOW + timedelta(milliseconds=100)
+        self.boundary = int(NOW.timestamp()) // 3600 * 3600000
         self.start = self.boundary - 21 * 3600000
+
+    def clock(self):
+        return self.at.timestamp() + .005
+
+    def client(self):
+        return FuturesClient(environment=Environment.DEMO, transport=self,
+            clock=self.clock, monotonic=self.clock)
 
     def __call__(self, request, timeout):
         assert request.method == 'GET'
         assert request.environment is Environment.DEMO
         assert request.headers == {}
-        milliseconds = int(self.at.timestamp() * 1000)
+        milliseconds = round(self.at.timestamp() * 1000)
         if request.path.endswith('/time'):
-            payload = dict(serverTime=milliseconds)
+            payload = dict(serverTime=milliseconds + 5)
         elif request.path.endswith('/klines'):
             start = int(parse_qs(request.query)['startTime'][0])
             boundary = milliseconds // 3600000 * 3600000
@@ -72,8 +78,7 @@ def make_runner(session, expect, campaign, market, monkeypatch, *, preview=True)
 
 
 def make_feed(root, market, consumer):
-    client = FuturesClient(environment=Environment.DEMO, transport=market)
-    return DemoMarketFeed(client, consumer, state_path=root / 'strategy-feed.sqlite',
+    return DemoMarketFeed(market.client(), consumer, state_path=root / 'strategy-feed.sqlite',
         consumer_id='strategy-preview', interval='1h', initial_bars=21,
         clock=lambda: market.at)
 
@@ -82,9 +87,6 @@ def make_feed(root, market, consumer):
 def test_execution_feed_signal_has_one_persistent_submission(deployment, monkeypatch, response):
     root, store, campaign, fake = deployment
     market = Market()
-    market.at = NOW + timedelta(milliseconds=2)
-    market.boundary = int(NOW.timestamp()) * 1000
-    market.start = market.boundary - 21 * 3600000
     counts = dict(GET=0, POST=0, DELETE=0)
     if response == 'rejected':
         fake.response_next = Response(400, {}, b'{"code":-2019}')
@@ -122,22 +124,31 @@ def test_execution_feed_signal_has_one_persistent_submission(deployment, monkeyp
                             fake.trade_update(key, str(quantity - D('.01')))
                             consumer.before_poll()
                             assert session.controller.account().positions[0].quantity == quantity
-                            market.at += timedelta(hours=1)
-                            consumer.before_poll()
-                            assert feed.poll()['bars'] == 1
+                        assert counts['POST'] == 1
+                    if response == 'accepted' and not restart:
+                        market.at += timedelta(hours=1)
+                        consumer.before_poll()
+                        with closing(make_feed(root, market, consumer)) as resumed:
+                            assert resumed.poll()['bars'] == 1
                         assert counts['POST'] == 1
 
 
 @pytest.mark.parametrize('execute', [False, True])
 def test_worker_composition_mode_and_persistent_status(deployment, monkeypatch, execute):
     from factorlab.integrations.binance_futures_trading import demo_strategy_supervisor as module
+    from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
     root, store, campaign, fake = deployment
     market = Market()
-    market.at = NOW + timedelta(milliseconds=2)
-    market.boundary = int(NOW.timestamp()) * 1000
-    market.start = market.boundary - 21 * 3600000
-    monkeypatch.setattr(module, 'MarketClient', lambda requests: FuturesClient(
-        environment=Environment.DEMO, transport=market))
+    monkeypatch.setattr(DemoSession, '_now', lambda session: market.at)
+    original = NetworkFixture.__call__
+
+    def current_book(self, request, timeout):
+        if request.path.endswith('/bookTicker'):
+            return market(request, timeout)
+        return original(self, request, timeout)
+
+    monkeypatch.setattr(NetworkFixture, '__call__', current_book)
+    monkeypatch.setattr(module, 'MarketClient', lambda requests: market.client())
     monkeypatch.setattr(module, 'DemoMarketFeed', lambda *args, **kwargs: DemoMarketFeed(
         *args, clock=lambda: market.at, **kwargs))
     counts = dict(GET=0, POST=0, DELETE=0)
@@ -172,9 +183,6 @@ setup = root / 'fixture' if restarting else root
 setup.mkdir(exist_ok=True)
 _, store, _, fake = deployment.__wrapped__(setup, patch, wired.__wrapped__(patch))
 market = Market()
-market.at = NOW + timedelta(milliseconds=2)
-market.boundary = int(NOW.timestamp()) * 1000
-market.start = market.boundary - 21 * 3600000
 counts = dict(GET=0, POST=0, DELETE=0)
 with closing(DemoRuntime(root)) as runtime:
     campaign = runtime.active_campaign()
@@ -215,9 +223,6 @@ with closing(DemoRuntime(root)) as runtime:
 def test_slow_account_refresh_uses_fresh_book_not_aged_trigger(deployment, monkeypatch, book_age):
     root, store, campaign, fake = deployment
     market = Market()
-    market.at = NOW + timedelta(milliseconds=2)
-    market.boundary = int(NOW.timestamp()) * 1000
-    market.start = market.boundary - 21 * 3600000
     counts = dict(GET=0, POST=0, DELETE=0)
     with closing(DemoRuntime(root)) as runtime:
         with open_session(root, store, runtime, counts, campaign=campaign) as (session, expect):

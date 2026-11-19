@@ -1,21 +1,62 @@
 """HTTP-intercepted equivalence of single-round Shadow recovery."""
 from copy import deepcopy
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 import json
 from time import perf_counter
 
 import pytest
 
+from factorlab.integrations.binance.client import Response
 from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import GridConsumer
-from factorlab.integrations.binance_futures_trading.demo_market_feed import FeedPaused
+from factorlab.integrations.binance_futures_trading.demo_market_feed import DemoMarketFeed, FeedPaused
 from factorlab.integrations.binance_futures_trading.demo_runtime import open_grid_session
+from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import MarketClient
 from factorlab.integrations.binance_futures_trading.fake import NOW
 from factorlab.integrations.binance_futures_trading.forward_observation import ShadowConsumer, ShadowEvidence, instant
 from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
 from test_binance_demo_grid_network import network_grid, wired
 from test_demo_grid_supervisor import Control, bar
+from test_demo_market_feed import Transport
 from test_binance_demo_grid_bridge import bridge as offline_bridge, observe
 from test_forward_observation import book
+
+
+class TimedMarketTransport(Transport):
+    """Advance a virtual exchange and host clock by 125 ms in each direction."""
+
+    def clock(self):
+        return self.time / 1000
+
+    def monotonic(self):
+        return self.clock()
+
+    def utcnow(self):
+        return datetime.fromtimestamp(self.clock(), timezone.utc)
+
+    def __call__(self, request, timeout):
+        self.time += 125
+        if request.path.endswith('/bookTicker'):
+            self.requests.append(request)
+            assert request.method == 'GET'
+            observed = self.utcnow() - timedelta(milliseconds=80)
+            response = Response(200, {}, json.dumps(book(observed, '149', '151')).encode())
+        else:
+            response = super().__call__(request, timeout)
+            if request.path.endswith('/klines'):
+                rows = json.loads(response.body)
+                for row in rows:
+                    row[1:6] = ['150', '153', '147', '150', '10']
+                response = Response(200, {}, json.dumps(rows).encode())
+        self.time += 125
+        return response
+
+
+def market_client(request_counts):
+    transport = TimedMarketTransport()
+    client = MarketClient(request_counts)
+    client.transport = transport
+    client.clock, client.monotonic = transport.clock, transport.monotonic
+    return client, transport
 
 
 class OriginalShadowConsumer(ShadowConsumer):
@@ -68,32 +109,20 @@ def test_same_authoritative_recovery_and_proposals_with_fewer_gets(network_grid,
             reports[name] = dict(gets=count, wall_seconds=elapsed,
                 deterministic_http_seconds=virtual[0] - simulated_start, http_seconds_per_request=.25)
             # Deliver the same actual feed responses, including durable cursor acknowledgements.
-            from factorlab.integrations.binance.client import Response
-            from test_demo_market_feed import Transport, make
-            class MarketTransport(Transport):
-                def __call__(self, request, timeout):
-                    virtual[0] += .25
-                    if request.path.endswith('/bookTicker'):
-                        self.requests.append(request)
-                        assert request.method == 'GET'
-                        return Response(200, {}, json.dumps(book(at[0], '149', '151')).encode())
-                    response = super().__call__(request, timeout)
-                    if request.path.endswith('/klines'):
-                        rows = json.loads(response.body)
-                        for row in rows:
-                            row[1:6] = ['150', '153', '147', '150', '10']
-                        return Response(200, {}, json.dumps(rows).encode())
-                    return response
-            transport = MarketTransport()
-            monkeypatch.setattr(bridge.gateway, 'clock', lambda: at[0])
-            feed, _, _ = make(root / name, transport, consumer)
+            client, transport = market_client(dict(GET=0, POST=0, DELETE=0))
+            monkeypatch.setattr(bridge.gateway, 'clock', transport.utcnow)
+            feed = DemoMarketFeed(client, consumer, state_path=root / name / 'cursor.sqlite',
+                consumer_id='test', clock=transport.utcnow)
             try:
+                feed_gets = []
                 for second in (1, 6, 11):
                     at[0] = NOW + timedelta(minutes=1, seconds=second)
                     transport.time = int(at[0].timestamp() * 1000)
+                    before = len(transport.requests)
                     assert feed.poll()['quotes'] == 1
-                assert len(transport.requests) == 7
-                reports[name]['first_round_gets_including_feed'] = count + 3
+                    feed_gets.append(len(transport.requests) - before)
+                assert feed_gets == [3, 1, 1]
+                reports[name]['first_round_gets_including_feed'] = count + feed_gets[0]
             finally:
                 feed.close()
             assert evidence.summary()['books'] == 3
@@ -195,14 +224,10 @@ def test_failed_account_recovery_never_replays_or_decides(network_grid, monkeypa
 def test_measure_full_round_against_main(network_grid, monkeypatch, pending):
     """Run unchanged on either source tree. HTTP is intercepted; each GET models 250 ms."""
     from contextlib import closing
-    from factorlab.integrations.binance.client import Response
-    from factorlab.integrations.binance_futures_trading.demo_market_feed import DemoMarketFeed
     from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
-    from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import MarketClient
     from factorlab.integrations.binance_futures_trading.observability import RequestCounts
     from test_binance_demo_grid_network import observe as submit_fixture
     from test_binance_demo_network import NetworkFixture
-    from test_demo_market_feed import Transport
 
     root, credentials, factory, enable, fake, requests = network_grid
     if pending:
@@ -228,34 +253,18 @@ def test_measure_full_round_against_main(network_grid, monkeypatch, pending):
             fake.trade_update(key, '.02', '146')
             bridge.preview = True
 
-        class MarketTransport(Transport):
-            def __call__(self, request, timeout):
-                if request.path.endswith('/bookTicker'):
-                    self.requests.append(request)
-                    assert request.method == 'GET'
-                    payload = book(at[0], '149', '151')
-                    return Response(200, {}, json.dumps(payload).encode())
-                response = super().__call__(request, timeout)
-                if request.path.endswith('/klines'):
-                    rows = json.loads(response.body)
-                    for row in rows:
-                        row[1:6] = ['150', '153', '147', '150', '10']
-                    return Response(200, {}, json.dumps(rows).encode())
-                return response
-
-        transport = MarketTransport()
-        client = MarketClient(counts)
-        client.transport = transport
+        client, transport = market_client(counts)
         consumer = GridConsumer(bridge, Control(), clock=lambda: at[0], request_counts=counts)
-        monkeypatch.setattr(bridge.gateway, 'clock', lambda: at[0])
+        monkeypatch.setattr(bridge.gateway, 'clock', lambda: max(at[0], transport.utcnow()))
         counts.enable_rounds()
         samples = []
         with closing(DemoMarketFeed(client, consumer, state_path=root / 'bench.sqlite',
-                                    consumer_id='bench', clock=lambda: at[0])) as feed:
+                                    consumer_id='bench', clock=transport.utcnow)) as feed:
             stores = (bridge.controller.store, bridge.gateway.adapter.store, feed)
-            for second in (1, 6, 11, 61, 66, 71):
+            for second in (1, 16, 31, 46, 61, 76):
                 at[0] = NOW + timedelta(seconds=second)
                 transport.time = int(at[0].timestamp() * 1000)
+                network_started = transport.clock()
                 prior = len(requests)
                 before = [store.commit_seconds for store in stores]
                 counts.begin_round()
@@ -274,6 +283,8 @@ def test_measure_full_round_against_main(network_grid, monkeypatch, pending):
                 samples.append(dict(account_gets=account_gets, market_gets=market_gets,
                     feed_gets=feed_gets, account_rtt_model=account_gets * .25,
                     market_rtt_model=market_gets * .25, round_http_model=(account_gets + market_gets) * .25,
+                    feed_http_model=transport.clock() - network_started,
+                    batch_age=operations['poll_anchor_age']['max_seconds'],
                     recovery_wall=operations['grid_recovery']['total_seconds'],
                     feed_wall=operations['feed_wall']['total_seconds'], loop_without_wait_wall=wall,
                     bar_wall=operations.get('closed_bar_callback', {}).get('total_seconds', 0.),
@@ -288,5 +299,5 @@ def test_measure_full_round_against_main(network_grid, monkeypatch, pending):
         assert account.reconciled and len(orders) == pending
         if pending:
             assert str(account.inventory) == '0.02'
-        print('F03_BENCH=' + json.dumps(dict(pending=pending, samples=samples, economics=economics),
-                                      default=str, sort_keys=True))
+        print('DEMO_RELIABILITY_BENCH=' + json.dumps(
+            dict(pending=pending, samples=samples, economics=economics), default=str, sort_keys=True))

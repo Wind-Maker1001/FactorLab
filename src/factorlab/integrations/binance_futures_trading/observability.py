@@ -115,6 +115,9 @@ class RequestCounts(dict):
     def before_request(self, source, method, path):
         """Optional admission hook, before a network request is dispatched."""
 
+    def clock_event(self, source, kind, details):
+        """Optional sink for calibration and signed request timing."""
+
     def record(self, source, method, path, seconds, error, weights, *, status=None):
         if self._round is not None:
             market = path in {'/fapi/v1/time', '/fapi/v1/klines', '/fapi/v1/ticker/bookTicker',
@@ -169,8 +172,13 @@ class ObservedClient(FuturesClient):
 
     def build(self, *args, **kwargs):
         request = super().build(*args, **kwargs)
+        self._observed_signing = request.signing
         self._transport_started = perf_counter()
         return request
+
+    def _clock_event(self, kind, **details):
+        if isinstance(self.request_counts, RequestCounts):
+            self.request_counts.clock_event(self.request_source, kind, details)
 
     def _parse_response(self, request, response, **kwargs):
         if self._transport_started is not None:
@@ -188,15 +196,23 @@ class ObservedClient(FuturesClient):
         error = None
         self._observed_weights = {}
         self._observed_status = None
+        self._observed_signing = None
         self._transport_started = None
         self._transport_seconds = None
+        clock_rejection = None
         try:
             return super()._request_once(method, path, params, signed=signed)
         except Exception as exc:
             error = getattr(exc, 'category', type(exc).__name__)
+            if error == 'CLOCK_SKEW':
+                clock_rejection = dict(code=exc.code, message=exc.message)
             raise
         finally:
             if isinstance(self.request_counts, RequestCounts):
+                if self._observed_signing is not None:
+                    self._clock_event('signed_request_timing', method=method, endpoint=path,
+                        http_status=self._observed_status, error=error, rejection=clock_rejection,
+                        **self._observed_signing)
                 self.request_counts.record(self.request_source, method, path,
                     self._transport_seconds if self._transport_seconds is not None else
                     perf_counter() - (self._transport_started if self._transport_started is not None else started),

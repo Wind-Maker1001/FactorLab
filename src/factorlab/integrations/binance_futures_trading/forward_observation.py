@@ -11,7 +11,7 @@ import math
 import os
 from pathlib import Path
 import signal
-from time import perf_counter
+from time import monotonic, perf_counter
 
 from factorlab.trading.storage import decode, dumps
 from .demo_credentials import DemoCredentialStore
@@ -55,13 +55,21 @@ class ObservationDeadline(ObservationFull):
 
 class BoundedRequests(RequestCounts):
     """Durably reserve every GET before dispatch, including Preview recovery."""
-    def __init__(self, evidence, *, maximum, deadline):
+    def __init__(self, evidence, *, maximum, deadline, monotonic_deadline=math.inf):
         super().__init__()
         self.evidence, self.maximum, self.deadline = evidence, maximum, deadline
+        self.monotonic_deadline = monotonic_deadline
         self.used = sum(r['kind'] == 'request' for r in evidence.rows)
         self.failed = any(r['kind'] == 'interruption' or
                           (r['kind'] == 'request_result' and r['error'] is not None)
                           for r in evidence.rows)
+
+    def remaining(self, at):
+        return min((self.deadline - at).total_seconds(), self.monotonic_deadline - monotonic())
+
+    def check_deadline(self, at):
+        if self.remaining(at) <= 0:
+            raise ObservationDeadline('absolute experiment deadline reached')
 
     def before_request(self, source, method, path):
         if method != 'GET':
@@ -70,19 +78,25 @@ class BoundedRequests(RequestCounts):
             raise ObservationFull('request after interruption prohibited')
         if self.used >= self.maximum:
             raise ObservationFull('HTTP request budget exhausted')
-        if utcnow() >= self.deadline:
-            raise ObservationDeadline('absolute experiment deadline reached')
+        at = self.evidence.clock()
+        self.check_deadline(at)
         self.evidence.append(dict(kind='request', source=source, method=method,
-                                  endpoint=path, at=utcnow().isoformat()))
+                                  endpoint=path, at=at.isoformat()))
         self.used += 1
 
     def record(self, source, method, path, seconds, error, weights, *, status=None):
         super().record(source, method, path, seconds, error, weights, status=status)
+        completed_at = self.evidence.clock()
         if error is not None:
             self.failed = True
         self.evidence.append(dict(kind='request_result', source=source, method=method,
                                   endpoint=path, seconds=seconds, error=error, http_status=status,
-                                  completed_at=utcnow().isoformat()))
+                                  completed_at=completed_at.isoformat()))
+        if error is None:
+            self.check_deadline(completed_at)
+
+    def clock_event(self, source, kind, details):
+        self.evidence.append(dict(kind=kind, source=source, at=self.evidence.clock().isoformat(), **details))
 
 
 class ShadowEvidence:
@@ -96,6 +110,7 @@ class ShadowEvidence:
         self.path, self.clock = Path(path), clock
         self.version, self.window = version, window
         self.max_bytes, self.max_proposals = max_bytes, max_proposals
+        self.deadline = None
         self.rows, self.proposals, self.pending = [], {}, {}
         self.fsync_seconds = 0.
         self.last_market = None
@@ -156,6 +171,8 @@ class ShadowEvidence:
     def begin(self, identity, bar, live, at):
         if live and identity not in self.pending and not any(
                 row['kind'] == 'capture' and row['source'] == identity for row in self.rows):
+            if self.deadline is not None and at >= self.deadline:
+                raise ObservationDeadline('absolute experiment deadline reached')
             receipt = getattr(self, 'bar_receipt', None)
             self.append(dict(kind='begin', source=identity, at=at.isoformat(),
                              market_at=bar.closed_at.isoformat(),
@@ -166,6 +183,8 @@ class ShadowEvidence:
         pending = self.pending.get(identity)
         if pending is None:
             return
+        if self.deadline is not None and at >= self.deadline:
+            raise ObservationDeadline('absolute experiment deadline reached')
         deployment = json.loads(dumps(grid.deployment()))
         config_hash = hashlib.sha256(dumps(grid.deployment()).encode()).hexdigest()
         proposals = []
@@ -199,8 +218,11 @@ class ShadowEvidence:
         keys = [key for key, p in self.proposals.items() if p['status'] == 'OBSERVING'
                 and (ids is None or key in ids)]
         if keys:
+            at = at or self.clock()
+            if self.deadline is not None:
+                at = min(at, self.deadline)
             self.append(dict(kind='end', ids=keys, reason=reason,
-                             at=(at or self.clock()).isoformat()), terminal=True)
+                             at=at.isoformat()), terminal=True)
 
     def book(self, raw, received_at, *, market_status='UNKNOWN'):
         at = timestamp(raw['time'])
@@ -313,9 +335,10 @@ class ShadowConsumer(GridConsumer):
                           ids=set(self.evidence.proposals) - active)
 
     def disconnect(self):
-        self.evidence.append(dict(kind='interruption', at=self.clock().isoformat(),
+        at = self.clock()
+        self.evidence.append(dict(kind='interruption', at=at.isoformat(),
                                   reason=self.supervisor.feed.reason))
-        self.evidence.end('DATA_INTERRUPTION')
+        self.evidence.end('DATA_INTERRUPTION', at=at)
         super().disconnect()
         self.supervisor.stop()
 
@@ -347,8 +370,9 @@ def main(argv=None):
         parser.error('R13 requires at least 384 KiB for raw and normalized evidence')
     # R13 retains a normalized envelope and analysis beside the raw stream.
     event_budget = args.max_bytes // 3 - 65536 if args.experiment_id else args.max_bytes - 65536
+    host_started, monotonic_started = utcnow(), monotonic()
     evidence = ShadowEvidence(args.output / 'events.csv', version=args.version,
-        window=args.window_seconds, max_bytes=event_budget, max_proposals=args.max_proposals)
+        window=args.window_seconds, max_bytes=event_budget, max_proposals=args.max_proposals, clock=utcnow)
     settings = json.loads(args.config.read_text(encoding='utf-8')) if args.config else None
     parameters = dict(seconds=args.seconds, sample_seconds=args.sample_seconds,
                       window_seconds=args.window_seconds, max_bytes=args.max_bytes,
@@ -372,35 +396,57 @@ def main(argv=None):
             parameters['strategy_definition'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     experiments = [r for r in evidence.rows if r['kind'] == 'experiment']
     if args.experiment_id and experiments:
-        evidence.end('PROCESS_RESTART')
         raise ObservationFull('R13 experiment restart prohibited')
     if experiments:
         experiment = experiments[0]
         if experiment['parameters'] != parameters:
             raise ValueError('experiment parameters differ')
     else:
-        start = utcnow()
-        experiment = dict(kind='experiment', parameters=parameters, started_at=start.isoformat(),
-                          deadline=(start + timedelta(seconds=args.seconds)).isoformat())
-        evidence.append(experiment)
-    deadline = instant(experiment['deadline'])
-    if args.experiment_id:
-        evidence.prospective_start = instant(experiment['started_at'])
-        evidence.max_quote_gap = args.max_quote_gap_seconds
+        if any(row['kind'] == 'request' for row in evidence.rows):
+            raise ObservationFull('experiment startup interrupted before its time bounds were recorded')
+        experiment = dict(kind='experiment', parameters=parameters, started_at=host_started.isoformat(),
+                          deadline=(host_started + timedelta(seconds=args.seconds)).isoformat())
+    # Existing reports without host_deadline stored their original bounds in host time.
+    host_deadline = instant(experiment.get('host_deadline', experiment['deadline']))
+    monotonic_deadline = monotonic_started + (host_deadline - host_started).total_seconds()
     initial_books = evidence.summary()['books']
-    requests = BoundedRequests(evidence, maximum=args.max_requests, deadline=deadline)
+    requests = BoundedRequests(evidence, maximum=args.max_requests, deadline=host_deadline,
+                               monotonic_deadline=monotonic_deadline)
     result = dict(engineering='SEE_OFFLINE_TESTS', real_observation='NOT_RUN', requests=requests,
                   source=SOURCE, version=args.version, no_live_money=True,
                   parameters=dict(seconds=args.seconds, sample_seconds=args.sample_seconds,
                                   window_seconds=args.window_seconds, max_bytes=args.max_bytes,
                                   max_proposals=args.max_proposals))
-    settings = json.loads(args.config.read_text(encoding='utf-8')) if args.config else None
+    experiment_pending = not experiments
+    end_reason = 'RUN_END'
     try:
         with open_grid_session(args.output / 'preview-state', DemoCredentialStore(), grid_factory(settings),
                                preview=True, continuous=True, request_counts=requests) as bridge:
+            evidence.clock = bridge.gateway.clock = bridge.session._now
+            exchange_now, monotonic_now = evidence.clock(), monotonic()
+            if 'host_deadline' in experiment:
+                # On resume the persisted exchange deadline is authoritative after calibration.
+                remaining = instant(experiment['deadline']) - exchange_now
+                requests.monotonic_deadline = monotonic_now + remaining.total_seconds()
+            else:
+                # Spend startup time before projecting the original window onto exchange time.
+                duration = instant(experiment['deadline']) - instant(experiment['started_at'])
+                deadline = exchange_now + timedelta(seconds=monotonic_deadline - monotonic_now)
+                experiment = dict(experiment, started_at=(deadline - duration).isoformat(),
+                                  deadline=deadline.isoformat(), host_deadline=host_deadline.isoformat())
+            requests.deadline = evidence.deadline = instant(experiment['deadline'])
+            if experiment_pending:
+                evidence.append(experiment)
+                experiment_pending = False
             if args.experiment_id:
+                evidence.prospective_start = instant(experiment['started_at'])
+                evidence.max_quote_gap = args.max_quote_gap_seconds
+                account = bridge.session.status()
+                evidence.append(dict(kind='account_reconciled', at=evidence.clock().isoformat(),
+                    reconciled=account['reconciled'], positions=len(account['positions']),
+                    open_orders=len(account['open_orders']), unknown_orders=len(account['unknown'])))
                 deployment = json.loads(dumps(bridge.grid.deployment()))
-                evidence.append(dict(kind='strategy_binding', at=utcnow().isoformat(),
+                evidence.append(dict(kind='strategy_binding', at=evidence.clock().isoformat(),
                     deployment_config=deployment,
                     configuration_hash=hashlib.sha256(dumps(bridge.grid.deployment()).encode()).hexdigest(),
                     version=args.version, instrument='NVDAUSDT', interval_seconds=60))
@@ -408,16 +454,18 @@ def main(argv=None):
             with closing(StrategyControl(path, dict(source=SOURCE, mode='SHADOW_GET_ONLY'))) as control:
                 requests.enable_rounds(max_requests=args.max_requests,
                     max_quote_gap_seconds=args.max_quote_gap_seconds,
-                    sink=lambda row: evidence.append(dict(kind='poll_round', **row)))
-                consumer = ShadowConsumer(bridge, control, evidence, request_counts=requests)
+                    sink=lambda row: evidence.append(dict(kind='poll_round', watermarks=feed.watermarks(), **row)))
+                consumer = ShadowConsumer(bridge, control, evidence, request_counts=requests, clock=evidence.clock)
                 client = MarketClient(requests)
                 info = client.request('GET', '/fapi/v1/exchangeInfo', signed=False)
                 symbol = next(s for s in info['symbols'] if s['symbol'] == 'NVDAUSDT')
                 evidence.append(dict(kind='market_status', status=symbol['status'],
-                    instrument=symbol, received_at=utcnow().isoformat(), source='/fapi/v1/exchangeInfo'))
+                    instrument=symbol, received_at=evidence.clock().isoformat(), source='/fapi/v1/exchangeInfo'))
                 consumer.market_status = symbol['status']
                 with closing(DemoMarketFeed(client, consumer, state_path=path,
                         consumer_id='shadow:' + bridge.grid.deployment_id,
+                        clock=utcnow, receipt_clock=evidence.clock,
+                        exchange_time=bridge.session.client.demo_time,
                         initial_bars=max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1))) as feed:
                     supervisor = DemoSupervisor(feed, poll_seconds=args.sample_seconds,
                         before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests,
@@ -429,33 +477,40 @@ def main(argv=None):
                     consumer.supervisor = supervisor
                     signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
                     signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())
-                    remaining = (deadline - utcnow()).total_seconds()
+                    remaining = requests.remaining(evidence.clock())
                     if remaining <= 0:
                         raise ObservationDeadline('absolute experiment deadline reached')
                     supervisor.run(seconds=remaining)
                     result.update(real_observation='RUN' if evidence.summary()['books'] else 'NOT_RUN',
                                   feed_reason=feed.reason)
     except ObservationDeadline as error:
+        end_reason = 'DEADLINE'
         result.update(termination='DEADLINE', reason=str(error))
-        evidence.end('DEADLINE', at=deadline)
     except ObservationFull as error:
+        end_reason = 'CAPACITY_LIMIT'
         result.update(termination='CAPACITY_LIMIT', reason=str(error))
-        evidence.end('CAPACITY_LIMIT')
     except Exception as error:
+        end_reason = 'ERROR:' + type(error).__name__
         result.update(error=type(error).__name__, reason=str(error))
-        evidence.end('ERROR:' + type(error).__name__)
         raise
     finally:
-        evidence.end('RUN_END', at=min(utcnow(), deadline))
+        ended_at = evidence.clock()
+        if experiment_pending:
+            evidence.append(experiment, terminal=True)
+        # Failed re-entry has no calibrated time to end proposals loaded from disk.
+        if not experiments or evidence.deadline is not None:
+            evidence.end(end_reason, at=min(ended_at, requests.deadline))
         if args.experiment_id:
-            evidence.append(dict(kind='window_end', at=utcnow().isoformat(),
+            evidence.append(dict(kind='window_end', at=ended_at.isoformat(),
                 reason=result.get('reason') or result.get('feed_reason') or 'RUN_END'), terminal=True)
         result.update(evidence.summary())
         result['run_books'] = result['books'] - initial_books
         result['real_observation'] = 'RUN' if result['run_books'] else 'REAL_OBSERVATION_NOT_RUN'
         result.update(api=requests.snapshot(), reserved_requests=requests.used,
                       evidence_fsync_seconds=evidence.fsync_seconds,
-                      experiment=experiment, ended_at=utcnow().isoformat())
+                      experiment=experiments[0] if experiments else experiment,
+                      started_at=experiment['started_at'], deadline=experiment['deadline'],
+                      ended_at=ended_at.isoformat())
         (args.output / 'summary.json').write_text(json.dumps(result, indent=2, default=str) + '\n', encoding='utf-8')
         print(json.dumps(result, default=str))
     return 0

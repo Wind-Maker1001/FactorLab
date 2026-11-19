@@ -4,7 +4,6 @@ from contextlib import closing
 import hashlib
 import hmac
 import json
-from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
@@ -14,7 +13,6 @@ from test_binance_demo_grid_network import network_grid, observe, writes
 from test_demo_continuous_campaign import initialize
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.client import Response
-from factorlab.integrations.binance_futures_trading import protocol
 from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
 from factorlab.integrations.binance_futures_trading.demo_session import _read_account
 from factorlab.integrations.binance_futures_trading.fake import MS
@@ -27,8 +25,8 @@ ACCOUNT = '/fapi/v3/account'
 TIME = '/fapi/v1/time'
 
 
-def response(status=400, code=-1021):
-    return Response(status, {}, json.dumps(dict(code=code)).encode())
+def response(status=400, code=-1021, *, message=None):
+    return Response(status, {}, json.dumps(dict(code=code, msg=message)).encode())
 
 
 def inject(monkeypatch, actions, *, endpoint=ACCOUNT):
@@ -49,10 +47,37 @@ def inject(monkeypatch, actions, *, endpoint=ACCOUNT):
     monkeypatch.setattr(NetworkFixture, '__call__', intercepted)
 
 
-def client():
+class NetworkClock:
+    def __init__(self):
+        self.elapsed = 0.
+        self.wall_offset = 0.
+        self.server_offset = 0.
+
+    def wall(self):
+        return MS / 1000 + self.elapsed + self.wall_offset
+
+    def monotonic(self):
+        return self.elapsed
+
+    def server_ms(self):
+        return round(MS + (self.elapsed + self.server_offset) * 1000)
+
+    def time_response(self, upstream=0., downstream=0., *, wall_step=0.):
+        def exchange(_):
+            self.elapsed += upstream
+            server_ms = self.server_ms()
+            self.wall_offset += wall_step
+            self.elapsed += downstream
+            return Response(200, {}, json.dumps(dict(serverTime=server_ms)).encode())
+        return exchange
+
+
+def client(clock=None, *, recv_window=5000):
+    if clock is None:
+        clock = NetworkClock()
     return ObservedClient(Credentials('demo-key', 'demo-secret', Environment.DEMO),
-        environment=Environment.DEMO, transport=DemoNetworkTransport(),
-        clock=lambda: MS / 1000, request_counts=RequestCounts())
+        environment=Environment.DEMO, transport=DemoNetworkTransport(), recv_window=recv_window,
+        clock=clock.wall, monotonic=clock.monotonic, request_counts=RequestCounts())
 
 
 def paths(requests):
@@ -81,7 +106,8 @@ def test_normal_constructor(wired):
 def test_constructor_resigns_only_failed_get(wired, monkeypatch, endpoint):
     _, requests = wired
     subject = client()
-    inject(monkeypatch, [response()], endpoint=endpoint)
+    message = 'Timestamp for this request is outside of the recvWindow.'
+    inject(monkeypatch, [response(message=message)], endpoint=endpoint)
     inject(monkeypatch, [lambda _: Response(200, {}, json.dumps(dict(serverTime=MS)).encode()),
         lambda _: Response(200, {}, json.dumps(dict(serverTime=MS + 2000)).encode())], endpoint=TIME)
     facts = _read_account(subject)
@@ -102,6 +128,7 @@ def test_constructor_resigns_only_failed_get(wired, monkeypatch, endpoint):
     diagnostic, = subject.clock_recoveries
     assert diagnostic['endpoint'] == endpoint
     assert diagnostic['code'] == -1021 and diagnostic['http_status'] == 400
+    assert diagnostic['message'] == message
     assert diagnostic['outcome'] == 'RECOVERED'
     rows = subject.request_counts.snapshot()['endpoints']
     row, = [row for row in rows if row['endpoint'] == endpoint]
@@ -171,15 +198,9 @@ def test_get_timeout_is_not_retried(wired, monkeypatch, after_skew):
 
 
 def test_high_rtt_records_uncertainty_without_widening_window(wired, monkeypatch):
-    subject = client()
-    local = [MS / 1000]
-    subject.clock = lambda: local[0]
-    def delayed(_):
-        local[0] += 1.8
-        return Response(200, {}, json.dumps(dict(serverTime=MS + 900)).encode())
-    inject(monkeypatch, [delayed], endpoint=TIME)
-    samples = iter([10., 11.8])
-    monkeypatch.setattr(protocol, 'time', SimpleNamespace(monotonic=lambda: next(samples)))
+    clock = NetworkClock()
+    subject = client(clock)
+    inject(monkeypatch, [clock.time_response(.9, .9)], endpoint=TIME)
     _read_account(subject)
     assert subject.time_sync['rtt_ms'] == pytest.approx(1800)
     assert subject.time_sync['midpoint_uncertainty_ms'] == pytest.approx(900)
@@ -189,29 +210,121 @@ def test_high_rtt_records_uncertainty_without_widening_window(wired, monkeypatch
     assert paths(wired[1]).count(TIME) == 1
 
 
+def test_slow_time_sample_followed_by_a_usable_sample(wired, monkeypatch):
+    clock = NetworkClock()
+    subject = client(clock)
+    inject(monkeypatch, [clock.time_response(.2, 2.1),
+        clock.time_response(.12, .12)], endpoint=TIME)
+    assert _read_account(subject).can_trade
+    assert paths(wired[1])[:3] == [TIME, TIME, ACCOUNT]
+    assert paths(wired[1]).count(TIME) == 2
+    assert subject.time_sync['rtt_ms'] == pytest.approx(240)
+    assert subject.time_sync['midpoint_uncertainty_ms'] == pytest.approx(120)
+    assert abs(subject.demo_time().estimated_ms - clock.server_ms()) <= 1
+
+
+@pytest.mark.parametrize('recv_window,delay', [(5000, 2.1), (100, .08)])
+def test_unusable_time_samples_fail_before_account_dispatch(wired, monkeypatch, recv_window, delay):
+    clock = NetworkClock()
+    subject = client(clock, recv_window=recv_window)
+    inject(monkeypatch, [clock.time_response(delay / 2, delay / 2)] * 3, endpoint=TIME)
+    with pytest.raises(DataQualityError, match='RTT exceeds signing uncertainty budget'):
+        _read_account(subject)
+    assert paths(wired[1]) == [TIME, TIME, TIME]
+    assert subject.recv_window == recv_window
+
+
+@pytest.mark.parametrize('upstream,downstream', [(.06, .34), (.34, .06)])
+def test_asymmetric_delay_uncertainty_contains_actual_server_time(wired, monkeypatch, upstream, downstream):
+    clock = NetworkClock()
+    subject = client(clock)
+    inject(monkeypatch, [clock.time_response(upstream, downstream)], endpoint=TIME)
+    subject.sync_time()
+    reading = subject.demo_time(allow_refresh=False)
+    assert reading.estimated_ms - clock.server_ms() == pytest.approx((upstream - downstream) * 500)
+    assert reading.lower_ms <= clock.server_ms() <= reading.upper_ms
+    assert reading.uncertainty_ms == pytest.approx(201)
+
+
+def signature_parameters(request):
+    return parse_qs(urlsplit(request.full_url).query)
+
+
+def test_expired_calibration_refreshes_before_the_next_signed_get(wired, monkeypatch):
+    clock = NetworkClock()
+    subject = client(clock)
+    inject(monkeypatch, [clock.time_response(.1, .1)] * 2, endpoint=TIME)
+    subject.sync_time()
+    clock.elapsed += 46
+    with pytest.raises(DataQualityError, match='missing or expired'):
+        subject.demo_time(allow_refresh=False)
+    assert paths(wired[1]) == [TIME]
+    subject.request('GET', ACCOUNT)
+    assert paths(wired[1]) == [TIME, TIME, ACCOUNT]
+    params = signature_parameters(wired[1][-1])
+    assert abs(int(params['timestamp'][0]) - clock.server_ms()) <= 1
+    assert params['recvWindow'] == ['5000']
+
+
+def test_refresh_detects_server_drift_beyond_uncertainty(wired, monkeypatch):
+    clock = NetworkClock()
+    subject = client(clock)
+    inject(monkeypatch, [clock.time_response(.1, .1)] * 2, endpoint=TIME)
+    subject.sync_time()
+    clock.elapsed += 46
+    clock.server_offset += 2
+    with pytest.raises(DataQualityError, match='server time drift exceeds calibration bounds'):
+        subject.request('GET', ACCOUNT)
+    assert paths(wired[1]) == [TIME, TIME]
+
+
+@pytest.mark.parametrize('retry_delay', [.1, 5.1])
+def test_arrival_outside_recv_window_can_only_retry_once(wired, monkeypatch, retry_delay):
+    clock = NetworkClock()
+    subject = client(clock)
+    arrival_ages = []
+
+    def arrive_after(seconds):
+        def exchange(request):
+            clock.elapsed += seconds
+            params = parse_qs(request.query)
+            age = clock.server_ms() - int(params['timestamp'][0])
+            arrival_ages.append(age)
+            if age > int(params['recvWindow'][0]):
+                return response(message='Timestamp for this request is outside of the recvWindow.')
+            return Response(200, {}, b'{}')
+        return exchange
+
+    inject(monkeypatch, [clock.time_response(.1, .1)] * 2, endpoint=TIME)
+    inject(monkeypatch, [arrive_after(5.1), arrive_after(retry_delay)])
+    subject.sync_time()
+    with subject.recover_get_clock():
+        if retry_delay > 5:
+            with pytest.raises(ExchangeError, match='CLOCK_SKEW'):
+                subject.request('GET', ACCOUNT)
+        else:
+            assert subject.request('GET', ACCOUNT) == {}
+    assert paths(wired[1]) == [TIME, ACCOUNT, TIME, ACCOUNT]
+    assert arrival_ages == pytest.approx([5100, retry_delay * 1000], abs=1)
+
+
 @pytest.mark.parametrize('jump', [-20., 20.])
 @pytest.mark.parametrize('during_sync', [False, True])
-def test_clock_step_recovered_by_fresh_sync(wired, monkeypatch, jump, during_sync):
-    subject = client()
-    local = [MS / 1000]
-    subject.clock = lambda: local[0]
-    if during_sync:
-        def time_step(_):
-            local[0] += jump
-            return Response(200, {}, json.dumps(dict(serverTime=MS)).encode())
-        inject(monkeypatch, [time_step], endpoint=TIME)
-    def reject(_):
-        if not during_sync:
-            local[0] += jump
-        return response()
-    inject(monkeypatch, [reject])
-    assert _read_account(subject).can_trade
-    diagnostic, = subject.clock_recoveries
-    initial = diagnostic['initial_sync']
-    assert initial['wall_elapsed_ms'] == pytest.approx(jump * 1000 if during_sync else 0)
-    assert initial['offset_ms'] == pytest.approx(-jump * 500 if during_sync else 0)
-    assert diagnostic['recovery_sync']['offset_ms'] == pytest.approx(-jump * 1000)
-    assert diagnostic['outcome'] == 'RECOVERED'
+def test_wall_clock_step_does_not_change_server_timestamp(wired, monkeypatch, jump, during_sync):
+    clock = NetworkClock()
+    subject = client(clock)
+    inject(monkeypatch, [clock.time_response(.1, .1, wall_step=jump if during_sync else 0.)], endpoint=TIME)
+    subject.sync_time()
+    if not during_sync:
+        clock.wall_offset += jump
+    clock.elapsed += 2
+    subject.request('GET', ACCOUNT)
+    assert paths(wired[1]) == [TIME, ACCOUNT]
+    params = signature_parameters(wired[1][-1])
+    assert abs(int(params['timestamp'][0]) - clock.server_ms()) <= 1
+    assert params['recvWindow'] == ['5000']
+    assert subject.time_sync['wall_step_ms'] == pytest.approx(jump * 1000 if during_sync else 0., abs=.001)
+    assert subject.clock_recoveries == []
     assert_get_only(wired[1])
 
 

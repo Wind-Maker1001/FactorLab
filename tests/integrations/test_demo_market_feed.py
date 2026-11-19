@@ -7,6 +7,7 @@ from urllib.parse import parse_qs
 import pytest
 
 from factorlab.integrations.binance.client import Response
+from factorlab.errors import DataQualityError
 from factorlab.integrations.binance_futures_trading.demo_market_feed import DemoMarketFeed, FeedPaused, SOURCE
 from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import MarketClient
 from factorlab.integrations.binance_futures_trading.demo_supervisor import DemoSupervisor
@@ -15,25 +16,39 @@ from factorlab.integrations.binance_futures_trading.protocol import Environment,
 
 class Transport(OfflineTransport):
     def __init__(self):
-        self.time = 180001
+        self.time = 180101
         self.rows = None
         self.failed = False
+        self.failed_path = None
         self.requests = []
+        self.delays = {}
+        self.quote_age_ms = 100
+
+    def clock(self):
+        return self.time / 1000
+
+    def monotonic(self):
+        return self.clock()
 
     def __call__(self, request, timeout):
         self.requests.append(request)
         assert request.method == 'GET'
         assert request.environment is Environment.DEMO
         assert request.headers == {}
-        if self.failed:
+        endpoint = request.path.rsplit('/', 1)[-1]
+        outbound, inbound = self.delays.get(endpoint, (0, 0))
+        self.time += outbound
+        if self.failed or endpoint == self.failed_path:
             raise OSError('offline')
-        if request.path.endswith('/time'):
+        if endpoint == 'time':
             data = {'serverTime': self.time}
-        elif request.path.endswith('/klines'):
+        elif endpoint == 'klines':
             start = int(parse_qs(request.query)['startTime'][0])
             data = self.rows if self.rows is not None else [bar(t) for t in range(start, self.time, 60000)]
         else:
-            data = dict(symbol='NVDAUSDT', time=self.time, bidPrice='100.00000001', askPrice='100.00000003')
+            data = dict(symbol='NVDAUSDT', time=self.time - self.quote_age_ms,
+                        bidPrice='100.00000001', askPrice='100.00000003')
+        self.time += inbound
         return Response(200, {}, json.dumps(data).encode())
 
 
@@ -43,7 +58,7 @@ def bar(t):
 
 class Consumer:
     def __init__(self):
-        self.bars, self.quotes = [], []
+        self.bars, self.history, self.quotes = [], [], []
         self.fail = False
 
     def closed_bar(self, bar):
@@ -54,10 +69,14 @@ class Consumer:
     def quote(self, quote):
         self.quotes.append(quote)
 
+    def historical_bar(self, bar):
+        self.history.append(bar)
+
 
 def make(tmp_path, transport=None, consumer=None, **kwargs):
     transport, consumer = transport or Transport(), consumer or Consumer()
-    client = FuturesClient(environment=Environment.DEMO, transport=transport)
+    client = FuturesClient(environment=Environment.DEMO, transport=transport,
+        clock=transport.clock, monotonic=transport.monotonic)
     feed = DemoMarketFeed(client, consumer, state_path=tmp_path / 'cursor.sqlite', consumer_id='test',
         clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc), **kwargs)
     return feed, transport, consumer
@@ -68,6 +87,8 @@ def test_market_client_with_plain_request_counts_initializes_and_polls(tmp_path)
     client = MarketClient(counts)
     transport = Transport()
     client.transport = transport
+    client.clock = transport.clock
+    client.monotonic = transport.monotonic
     with closing(DemoMarketFeed(client, Consumer(), state_path=tmp_path / 'cursor.sqlite',
             consumer_id='test', clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc))) as feed:
         assert feed.watermarks() == (None, None)
@@ -79,7 +100,7 @@ def test_market_client_with_plain_request_counts_initializes_and_polls(tmp_path)
 
 def test_strategy_bootstrap_range_survives_failed_callback_and_restart(tmp_path):
     transport = Transport()
-    transport.time = 1800001
+    transport.time = 1800101
     consumer = Consumer()
     consumer.fail = True
     feed, _, _ = make(tmp_path, transport, consumer, initial_bars=21)
@@ -126,39 +147,77 @@ def test_continuous_catchup_pages_without_quotes_or_skipped_bars(tmp_path):
     feed, _, _ = make(tmp_path, transport, consumer, max_backfill=2, catch_up=True)
     assert feed.poll() == dict(bars=2, quotes=0)
     assert feed.poll() == dict(bars=1, quotes=1)
-    assert [b.opened_at.timestamp() for b in consumer.bars] == list(range(120, 840, 60))
+    assert [b.opened_at.timestamp() for b in consumer.history] == list(range(180, 780, 60))
+    assert [b.opened_at.timestamp() for b in consumer.bars] == [120, 780]
     assert len(consumer.quotes) == 2
     feed.close()
 
 
 def test_caught_up_cursor_skips_klines_until_next_boundary(tmp_path):
-    feed, transport, _ = make(tmp_path)
+    transport = Transport()
+    transport.time = 239000
+    feed, _, _ = make(tmp_path, transport)
     with closing(feed):
         assert feed.poll() == dict(bars=1, quotes=1)
-        transport.time += 1000
+        transport.time += 500
         transport.requests.clear()
         assert feed.poll() == dict(bars=0, quotes=1)
-        assert [r.path for r in transport.requests] == ['/fapi/v1/time', '/fapi/v1/ticker/bookTicker']
-        transport.time += 60000
+        assert [r.path for r in transport.requests] == ['/fapi/v1/ticker/bookTicker']
+        transport.time += 1000
         assert feed.poll() == dict(bars=1, quotes=1)
+        assert [r.path.rsplit('/', 1)[-1] for r in transport.requests] == [
+            'bookTicker', 'klines', 'bookTicker']
 
 
-def test_aged_poll_anchor_still_rejects_fresh_book_before_delivery(tmp_path):
-    class LaggedTime(Transport):
-        def __call__(self, request, timeout):
-            response = super().__call__(request, timeout)
-            if request.path.endswith('/time'):
-                return Response(200, {}, json.dumps({'serverTime': self.time - 3500}).encode())
-            if request.path.endswith('/klines'):
-                self.time += 1601
-            return response
-
-    transport = LaggedTime()
-    transport.time = 184000
+def test_uncertainty_defers_just_closed_bar_until_next_poll(tmp_path):
+    transport = Transport()
+    transport.time = 235000
+    transport.delays['time'] = (20, 20)
     feed, _, consumer = make(tmp_path, transport)
-    with closing(feed), pytest.raises(FeedPaused, match='STALE_POLL'):
-        feed.poll()
+    with closing(feed):
+        assert feed.poll() == dict(bars=1, quotes=1)
+        transport.time = 240000
+        transport.quote_age_ms = 30
+        assert feed.poll() == dict(bars=0, quotes=1)
+        transport.time = 240100
+        assert feed.poll() == dict(bars=1, quotes=1)
+    assert [item.opened_at.timestamp() for item in consumer.bars] == [120, 180]
+
+
+def test_slow_klines_do_not_consume_latest_book_lifetime(tmp_path):
+    transport = Transport()
+    transport.delays['klines'] = (2000, 2400)
+    transport.delays['bookTicker'] = (100, 150)
+    feed, _, consumer = make(tmp_path, transport)
+    with closing(feed):
+        assert feed.poll() == dict(bars=1, quotes=1)
+    assert transport.time - round(consumer.quotes[0].observed_at.timestamp() * 1000) == 250
+
+
+@pytest.mark.parametrize('slow_path', ['klines', 'bookTicker'])
+def test_expired_batch_rejects_even_a_fresh_book_before_delivery(tmp_path, slow_path):
+    transport = Transport()
+    transport.delays[slow_path] = (4300, 900)
+    feed, _, consumer = make(tmp_path, transport)
+    with closing(feed):
+        with pytest.raises(FeedPaused, match='STALE_POLL'):
+            feed.poll()
+        assert feed.watermarks() == (None, None)
     assert not consumer.bars and not consumer.quotes
+
+
+@pytest.mark.parametrize('failed_path', ['klines', 'bookTicker'])
+def test_partial_market_reads_leave_both_watermarks_for_replay(tmp_path, failed_path):
+    transport = Transport()
+    transport.failed_path = failed_path
+    feed, _, consumer = make(tmp_path, transport)
+    with closing(feed):
+        with pytest.raises(DataQualityError, match='account read failed'):
+            feed.poll()
+        assert feed.watermarks() == (None, None)
+        assert not consumer.bars and not consumer.quotes
+        transport.failed_path = None
+        assert feed.poll() == dict(bars=1, quotes=1)
 
 
 def test_complete_precision_duplicate_restart(tmp_path):
@@ -175,6 +234,42 @@ def test_complete_precision_duplicate_restart(tmp_path):
     transport.time += 120000
     assert feed.poll() == dict(bars=2, quotes=1)
     feed.close()
+
+
+@pytest.mark.parametrize('gap_source', ['receipt', 'market'])
+def test_quote_gap_pauses_before_bar_or_book_delivery(tmp_path, gap_source):
+    transport = Transport()
+    transport.time = 211004
+    transport.quote_age_ms = 100
+    feed, _, consumer = make(tmp_path, transport)
+    with closing(feed):
+        assert feed.poll() == dict(bars=1, quotes=1)
+        watermarks = feed.watermarks()
+        if gap_source == 'receipt':
+            transport.time += 31000
+            transport.quote_age_ms = 1200
+        else:
+            transport.time += 30000
+            transport.quote_age_ms = 50
+        with pytest.raises(FeedPaused, match='R13_QUOTE_GAP'):
+            feed.poll()
+        assert feed.watermarks() == watermarks
+    assert len(consumer.bars) == len(consumer.quotes) == 1
+
+
+def test_catch_up_does_not_reset_live_book_continuity(tmp_path):
+    feed, transport, consumer = make(tmp_path, catch_up=True)
+    with closing(feed):
+        assert feed.poll() == dict(bars=1, quotes=1)
+        transport.time += 120000
+        transport.rows = [bar(180000)]
+        assert feed.poll() == dict(bars=1, quotes=0)
+        assert feed.watermarks() == (240000, 180001)
+        transport.rows = None
+        with pytest.raises(FeedPaused, match='R13_QUOTE_GAP'):
+            feed.poll()
+        assert feed.watermarks() == (240000, 180001)
+    assert len(consumer.history) == len(consumer.bars) == len(consumer.quotes) == 1
 
 
 @pytest.mark.parametrize('rows,reason', [
@@ -325,10 +420,11 @@ def test_recovery_and_stop(tmp_path):
     feed.close()
 
 
-@pytest.mark.parametrize('offset', [6, -1])
-def test_stale_or_future_observation_pauses_before_delivery(tmp_path, offset):
+@pytest.mark.parametrize('quote_age_ms', [5000, -1])
+def test_stale_or_future_observation_pauses_before_delivery(tmp_path, quote_age_ms):
     feed, transport, consumer = make(tmp_path)
-    feed.clock = lambda: datetime.fromtimestamp(transport.time / 1000 + offset, timezone.utc)
+    transport.time += 8000
+    transport.quote_age_ms = quote_age_ms
     with pytest.raises(FeedPaused):
         feed.poll()
     assert not consumer.bars and not consumer.quotes
