@@ -119,7 +119,15 @@ class GridConsumer:
         self.eligible_after = self.clock()
         self.reason = 'RECONCILE_REQUIRED'
 
+    def historical_bar(self, bar):
+        self.live_bar = False
+        self.reason = 'FRESH_CLOSED_BAR_REQUIRED'
+        return self._accept_bar(bar, historical=True)
+
     def closed_bar(self, bar):
+        return self._accept_bar(bar, historical=False)
+
+    def _accept_bar(self, bar, *, historical):
         if (not bar.complete or bar.source != SOURCE or bar.symbol != 'NVDAUSDT'
                 or bar.closed_at > self.clock()):
             raise FeedPaused('INVALID_CLOSED_BAR')
@@ -131,7 +139,7 @@ class GridConsumer:
         store = self.bridge.controller.store
         source_key = self.bridge.prefix + 'source:' + identity
         saved = store.event_payload(source_key)
-        live = (self.running and self.control.desired() == 'RUNNING'
+        live = (not historical and self.running and self.control.desired() == 'RUNNING'
                 and bar.closed_at > self.eligible_after
                 and self.clock() - bar.closed_at < timedelta(seconds=bar.interval_seconds))
         event = dict(id='bar-' + str(int(bar.closed_at.timestamp())),

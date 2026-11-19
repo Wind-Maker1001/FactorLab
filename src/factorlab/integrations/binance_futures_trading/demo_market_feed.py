@@ -17,6 +17,7 @@ INTERVALS = {'1m': 60, '3m': 180, '5m': 300, '15m': 900, '30m': 1800,
              '1h': 3600, '2h': 7200, '4h': 14400, '6h': 21600,
              '8h': 28800, '12h': 43200, '1d': 86400}
 SYMBOL = 'NVDAUSDT'
+CATCH_UP_PAGES = 4
 
 
 class FeedPaused(ValueError):
@@ -107,9 +108,12 @@ class DemoMarketFeed:
             self.db.rollback()
             raise
 
-    def _closed_bar(self, bar):
+    def _closed_bar(self, bar, *, historical=False):
+        callback = self.consumer.closed_bar
+        if historical:
+            callback = getattr(self.consumer, 'historical_bar', callback)
         with self._measure('closed_bar_callback'):
-            return self.consumer.closed_bar(bar)
+            return callback(bar)
 
     def close(self):
         self.db.close()
@@ -127,7 +131,8 @@ class DemoMarketFeed:
     def poll(self):
         self.pause('CHECKING')
         try:
-            return self._poll()
+            with self._measure('market_poll'):
+                return self._poll()
         except FeedPaused as error:
             self.pause(str(error))
             raise
@@ -135,33 +140,15 @@ class DemoMarketFeed:
             self.pause('POLL_OR_CONSUMER_FAILED')
             raise
 
-    def _poll(self):
-        server = self.client.request('GET', '/fapi/v1/time', signed=False)['serverTime']
-        server_at = timestamp(server)
-        if abs((self.clock() - server_at).total_seconds()) > self.max_quote_age:
-            raise FeedPaused('CLOCK_SKEW')
+    def _bars(self, start, page_boundary, server):
         width = self.seconds * 1000
-        boundary = server // width * width
-        last_bar, last_quote = self.watermarks()
-        initial_start = self.db.execute('SELECT initial_start FROM cursor WHERE id=?',
-            (self.identity,)).fetchone()[0]
-        if last_bar is None and initial_start is None:
-            initial_start = boundary - width * self.initial_bars
-            with self._transaction():
-                self.db.execute('UPDATE cursor SET initial_start=? WHERE id=?',
-                    (initial_start, self.identity))
-        start = last_bar if last_bar is not None else initial_start
-        if start > boundary:
-            raise FeedPaused('CLOCK_REGRESSION')
-        catching_up = boundary - start > self.max_backfill * width
-        if catching_up and not self.catch_up:
-            raise FeedPaused('BACKFILL_LIMIT')
-        page_boundary = min(boundary, start + self.max_backfill * width) if catching_up else boundary
+        count = (page_boundary - start) // width
+        if count == 0:
+            return [], [], None
         rows = self.client.request('GET', '/fapi/v1/klines', dict(symbol=SYMBOL,
             interval=self.interval, startTime=start,
-            endTime=page_boundary - 1 if catching_up else server,
-            limit=self.max_backfill + 1), signed=False)
-        if not isinstance(rows, list) or len(rows) > self.max_backfill + 1:
+            endTime=page_boundary - 1, limit=count), signed=False)
+        if not isinstance(rows, list) or len(rows) > count + 1:
             raise FeedPaused('INVALID_KLINES')
         bars_received_at = self.clock()
         bars, previous = [], None
@@ -191,14 +178,55 @@ class DemoMarketFeed:
                     *(Decimal(v) for v in row[1:6]), self.seconds, SOURCE))
             except (ValueError, InvalidOperation) as error:
                 raise FeedPaused('INVALID_OHLCV') from error
-        if start + len(bars) * width != page_boundary:
+        if len(bars) != count:
             raise FeedPaused('BAR_SEQUENCE_GAP')
-        if catching_up:
-            for bar in bars:
-                self._closed_bar(bar)
-                self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
-            self.pause('CATCHING_UP')
-            return dict(bars=len(bars), quotes=0)
+        return bars, rows, bars_received_at
+
+    def _backfill(self, start, boundary, server, width):
+        # Hold the newest closed bar for a fresh market batch. Every earlier
+        # page is contiguous, validated in full and acknowledged bar by bar.
+        history_end = boundary - width
+        delivered = 0
+        with self._measure('bar_backfill'):
+            for _ in range(CATCH_UP_PAGES):
+                end = min(history_end, start + self.max_backfill * width)
+                bars, _, _ = self._bars(start, end, server)
+                for bar in bars:
+                    self._closed_bar(bar, historical=True)
+                    self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
+                delivered += len(bars)
+                start = end
+                if start == history_end:
+                    break
+        self.pause('CATCHING_UP')
+        return dict(bars=delivered, quotes=0)
+
+    def _poll(self):
+        server = self.client.request('GET', '/fapi/v1/time', signed=False)['serverTime']
+        server_at = timestamp(server)
+        server_age = (self.clock() - server_at).total_seconds()
+        if self.timings is not None:
+            self.timings.sample('server_time_at_receipt_age', server_age)
+        if abs(server_age) > self.max_quote_age:
+            raise FeedPaused('CLOCK_SKEW')
+        width = self.seconds * 1000
+        boundary = server // width * width
+        last_bar, last_quote = self.watermarks()
+        initial_start = self.db.execute('SELECT initial_start FROM cursor WHERE id=?',
+            (self.identity,)).fetchone()[0]
+        if last_bar is None and initial_start is None:
+            initial_start = boundary - width * self.initial_bars
+            with self._transaction():
+                self.db.execute('UPDATE cursor SET initial_start=? WHERE id=?',
+                    (initial_start, self.identity))
+        start = last_bar if last_bar is not None else initial_start
+        if start > boundary:
+            raise FeedPaused('CLOCK_REGRESSION')
+        if self.catch_up and boundary - start > width:
+            return self._backfill(start, boundary, server, width)
+        if boundary - start > self.max_backfill * width:
+            raise FeedPaused('BACKFILL_LIMIT')
+        bars, rows, bars_received_at = self._bars(start, boundary, server)
         raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
         book_received_at = self.clock()
         try:
@@ -217,7 +245,10 @@ class DemoMarketFeed:
         if not bid.is_finite() or not ask.is_finite() or not 0 < bid <= ask:
             raise FeedPaused('INVALID_BOOK')
         # Validate the entire batch before advancing even one strategy input.
-        if (self.clock() - server_at).total_seconds() > self.max_quote_age:
+        batch_age = (self.clock() - server_at).total_seconds()
+        if self.timings is not None:
+            self.timings.sample('poll_anchor_age', batch_age)
+        if batch_age > self.max_quote_age:
             raise FeedPaused('STALE_POLL')
         raw_by_open = {row[0]: row for row in rows}
         for bar in bars:

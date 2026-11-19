@@ -92,7 +92,7 @@ def test_same_authoritative_recovery_and_proposals_with_fewer_gets(network_grid,
                     at[0] = NOW + timedelta(minutes=1, seconds=second)
                     transport.time = int(at[0].timestamp() * 1000)
                     assert feed.poll()['quotes'] == 1
-                assert len(transport.requests) == 9
+                assert len(transport.requests) == 7
                 reports[name]['first_round_gets_including_feed'] = count + 3
             finally:
                 feed.close()
@@ -106,8 +106,8 @@ def test_same_authoritative_recovery_and_proposals_with_fewer_gets(network_grid,
                 for p in result['proposals'].values()]
             results[name] = result
     assert results['original'] == results['shared']
-    assert reports['shared']['gets'] == 13
-    assert reports['original']['gets'] == (26 if pending else 13)
+    assert reports['shared']['gets'] == 7
+    assert reports['original']['gets'] == (14 if pending else 7)
     assert all(r.get_method() == 'GET' for r in requests)
     print('RECOVERY_COMPARISON=' + json.dumps(dict(pending=pending, **reports), sort_keys=True))
 
@@ -189,3 +189,104 @@ def test_failed_account_recovery_never_replays_or_decides(network_grid, monkeypa
             consumer.before_poll()
         assert not consumer.running and not bridge.ready
         assert evidence.pending
+
+
+@pytest.mark.parametrize('pending', [False, True], ids=['ordinary', 'exchange_pending'])
+def test_measure_full_round_against_main(network_grid, monkeypatch, pending):
+    """Run unchanged on either source tree. HTTP is intercepted; each GET models 250 ms."""
+    from contextlib import closing
+    from factorlab.integrations.binance.client import Response
+    from factorlab.integrations.binance_futures_trading.demo_market_feed import DemoMarketFeed
+    from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
+    from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import MarketClient
+    from factorlab.integrations.binance_futures_trading.observability import RequestCounts
+    from test_binance_demo_grid_network import observe as submit_fixture
+    from test_binance_demo_network import NetworkFixture
+    from test_demo_market_feed import Transport
+
+    root, credentials, factory, enable, fake, requests = network_grid
+    if pending:
+        enable()
+    at = [NOW]
+    original = NetworkFixture.__call__
+
+    def dispatch(self, request, timeout):
+        response = original(self, request, timeout)
+        if request.path.endswith('/bookTicker'):
+            response = Response(200, {}, json.dumps(book(at[0], '149', '150')).encode())
+        return response
+
+    monkeypatch.setattr(NetworkFixture, '__call__', dispatch)
+    monkeypatch.setattr(DemoSession, '_now', lambda _: at[0])
+    counts = RequestCounts()
+    with open_grid_session(root, credentials, factory, preview=not pending,
+                           request_counts=counts) as bridge:
+        if pending:
+            bridge.recover()
+            submit_fixture(bridge)
+            key, = bridge.gateway.state.orders
+            fake.trade_update(key, '.02', '146')
+            bridge.preview = True
+
+        class MarketTransport(Transport):
+            def __call__(self, request, timeout):
+                if request.path.endswith('/bookTicker'):
+                    self.requests.append(request)
+                    assert request.method == 'GET'
+                    payload = book(at[0], '149', '151')
+                    return Response(200, {}, json.dumps(payload).encode())
+                response = super().__call__(request, timeout)
+                if request.path.endswith('/klines'):
+                    rows = json.loads(response.body)
+                    for row in rows:
+                        row[1:6] = ['150', '153', '147', '150', '10']
+                    return Response(200, {}, json.dumps(rows).encode())
+                return response
+
+        transport = MarketTransport()
+        client = MarketClient(counts)
+        client.transport = transport
+        consumer = GridConsumer(bridge, Control(), clock=lambda: at[0], request_counts=counts)
+        monkeypatch.setattr(bridge.gateway, 'clock', lambda: at[0])
+        counts.enable_rounds()
+        samples = []
+        with closing(DemoMarketFeed(client, consumer, state_path=root / 'bench.sqlite',
+                                    consumer_id='bench', clock=lambda: at[0])) as feed:
+            stores = (bridge.controller.store, bridge.gateway.adapter.store, feed)
+            for second in (1, 6, 11, 61, 66, 71):
+                at[0] = NOW + timedelta(seconds=second)
+                transport.time = int(at[0].timestamp() * 1000)
+                prior = len(requests)
+                before = [store.commit_seconds for store in stores]
+                counts.begin_round()
+                started = perf_counter()
+                consumer.before_poll()
+                with counts.measure('feed_wall'):
+                    delivered = feed.poll()
+                wall = perf_counter() - started
+                round_data = counts.end_round()
+                account_gets = sum(r['classification'] == 'account_get' for r in round_data['requests'])
+                market_gets = round_data['request_count'] - account_gets
+                feed_gets = sum(r['source'] == 'feed' for r in round_data['requests'])
+                assert all(r.get_method() == 'GET' for r in requests[prior:])
+                assert delivered['quotes'] == 1
+                operations = round_data['operations']
+                samples.append(dict(account_gets=account_gets, market_gets=market_gets,
+                    feed_gets=feed_gets, account_rtt_model=account_gets * .25,
+                    market_rtt_model=market_gets * .25, round_http_model=(account_gets + market_gets) * .25,
+                    recovery_wall=operations['grid_recovery']['total_seconds'],
+                    feed_wall=operations['feed_wall']['total_seconds'], loop_without_wait_wall=wall,
+                    bar_wall=operations.get('closed_bar_callback', {}).get('total_seconds', 0.),
+                    scheduling_wait_policy=5., bars=delivered['bars'],
+                    sqlite_commit=sum(store.commit_seconds - old for store, old in zip(stores, before))))
+        account = bridge.account()
+        orders = [record.snapshot for record in bridge.gateway.state.orders.values()]
+        from dataclasses import asdict
+        economics = dict(account=asdict(account), orders=[dict(status=order.status.value,
+            quantity=order.cumulative_filled_quantity, fee=order.cumulative_fee) for order in orders],
+            grid_state=bridge.grid.state, strategy_delivery=bridge.grid.delivery)
+        assert account.reconciled and len(orders) == pending
+        if pending:
+            assert str(account.inventory) == '0.02'
+        print('F03_BENCH=' + json.dumps(dict(pending=pending, samples=samples, economics=economics),
+                                      default=str, sort_keys=True))

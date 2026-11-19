@@ -160,6 +160,17 @@ def test_delayed_poll_catchup_does_not_submit_old_reservations():
     assert len(posts(fake)) == 1
 
 
+def test_historical_replay_cannot_admit_an_order_when_local_clock_lags():
+    b, fake = bridge()
+    consumer, _ = worker(b)
+    consumer.clock = lambda: NOW + timedelta(minutes=2, seconds=57)
+    consumer.historical_bar(bar(2))
+    assert not consumer.live_bar
+    assert not b.grid.active
+    consumer.quote(Quote('NVDAUSDT', D('150'), NOW))
+    assert not posts(fake)
+
+
 def test_partial_fills_get_confirmed_then_reduce_only_sell():
     b, fake = bridge()
     consumer, _ = worker(b)
