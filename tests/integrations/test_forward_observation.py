@@ -307,24 +307,28 @@ def test_disconnect_stops_and_preserves_interruption_reason(tmp_path):
     assert evidence.summary()['right_censored'] == 1
 
 
-@pytest.mark.parametrize(('host_offset_seconds', 'disconnect'), [
-    (-20, False), (20, True), (0, False),
+@pytest.mark.parametrize(('host_offset_seconds', 'disconnect', 'legacy_window'), [
+    (-20, False, False), (-20, False, True), (20, True, False), (0, False, False),
 ])
 def test_preview_lifecycle_uses_session_calibrated_clock(network_grid, monkeypatch,
-                                                        host_offset_seconds, disconnect):
+                                                        host_offset_seconds, disconnect, legacy_window):
     from functools import partial
     from factorlab.integrations.binance_futures_trading import forward_observation as observation
     from factorlab.integrations.binance_futures_trading import network, protocol
     from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
 
     root, credentials, factory, _, _, requests = network_grid
+    output = root / 'observation'
     exchange_at = NOW
     host_offset = timedelta(seconds=host_offset_seconds)
+    duration = timedelta(seconds=180)
+    exchange_deadline = NOW + duration
 
     def host_clock():
         return exchange_at + host_offset
 
     monkeypatch.setattr(observation, 'utcnow', host_clock)
+    monkeypatch.setattr(observation, 'monotonic', lambda: (exchange_at - NOW).total_seconds())
     monkeypatch.setattr(observation, 'ShadowEvidence', partial(ShadowEvidence, clock=host_clock))
     monkeypatch.setattr(observation, 'DemoCredentialStore', lambda: credentials)
     monkeypatch.setattr(observation, 'grid_factory', lambda settings: factory)
@@ -332,18 +336,33 @@ def test_preview_lifecycle_uses_session_calibrated_clock(network_grid, monkeypat
     monkeypatch.setattr(protocol, 'build_opener', network.build_opener)
     monkeypatch.setattr(observation.signal, 'signal', lambda *_: None)
 
+    if legacy_window:
+        stored_experiment = dict(kind='experiment', started_at=host_clock().isoformat(),
+            deadline=(host_clock() + duration).isoformat(), parameters=dict(seconds=180,
+                sample_seconds=5, window_seconds=180, max_bytes=5 * 1024 * 1024,
+                max_proposals=20, max_requests=1500, settings=None, version='fixture',
+                symbol='NVDAUSDT'))
+        historical = ShadowEvidence(output / 'events.csv', version='fixture', clock=host_clock,
+                                    max_bytes=5 * 1024 * 1024 - 65536)
+        historical.append(stored_experiment)
+
     ended_proposal = {}
 
     def run(supervisor, *, seconds):
         nonlocal exchange_at
         consumer = supervisor.before_poll.__self__
         evidence = consumer.evidence
+        assert supervisor.request_counts.deadline == exchange_deadline
+        if legacy_window:
+            persisted, = [row for row in evidence.rows if row['kind'] == 'experiment']
+            assert persisted == stored_experiment
         if ended_proposal:
             resume = next(row for row in reversed(evidence.rows) if row['kind'] == 'resume')
             assert resume['at'] == host_clock().isoformat()
             assert resume['coverage'] == 'UNOBSERVED_DURING_PROCESS_GAP'
             assert evidence.clock is consumer.clock
             assert evidence.clock() == exchange_at
+            assert seconds == 10
             consumer._end_inactive()
             assert evidence.proposals == {ended_proposal['id']: ended_proposal}
             return
@@ -375,30 +394,77 @@ def test_preview_lifecycle_uses_session_calibrated_clock(network_grid, monkeypat
         ended_proposal.update(proposal)
 
     monkeypatch.setattr(observation.DemoSupervisor, 'run', run)
-    argv = ['--output', str(root / 'observation'), '--version', 'fixture']
+    argv = ['--output', str(output), '--version', 'fixture']
     assert main(argv) == 0
     if host_offset_seconds < 0:
-        exchange_at += timedelta(seconds=10)
+        exchange_at = exchange_deadline - timedelta(seconds=10)
+        if not legacy_window:
+            host_offset += timedelta(seconds=5)
         assert main(argv) == 0
+    if legacy_window:
+        summary = json.loads((output / 'summary.json').read_text(encoding='utf-8'))
+        assert summary['experiment'] == stored_experiment
+        assert summary['started_at'] == NOW.isoformat()
+        assert summary['deadline'] == exchange_deadline.isoformat()
     assert all(request.get_method() == 'GET' for request in requests)
 
 
-def test_request_admission_is_durable_and_get_only(tmp_path):
-    from factorlab.integrations.binance_futures_trading.forward_observation import BoundedRequests, utcnow
-    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture')
-    deadline = utcnow() + timedelta(minutes=1)
-    counts = BoundedRequests(evidence, maximum=1, deadline=deadline)
+def test_request_admission_is_durable_and_get_only(tmp_path, monkeypatch):
+    from factorlab.integrations.binance_futures_trading import forward_observation as observation
+
+    exchange_at = NOW
+
+    def exchange_clock():
+        return exchange_at
+
+    monkeypatch.setattr(observation, 'utcnow', lambda: exchange_at + timedelta(seconds=20))
+    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture', clock=exchange_clock)
+    deadline = exchange_at + timedelta(seconds=10)
+    counts = observation.BoundedRequests(evidence, maximum=1, deadline=deadline)
     with pytest.raises(ValueError, match='GET only'):
         counts.before_request('feed', 'POST', '/fapi/v1/order')
     counts.before_request('session', 'GET', '/fapi/v2/account')
-    restored = ShadowEvidence(evidence.path, version='fixture')
-    resumed = BoundedRequests(restored, maximum=1, deadline=deadline)
+    exchange_at += timedelta(seconds=1)
+    counts.record('session', 'GET', '/fapi/v2/account', 1, None, {}, status=200)
+    counts.clock_event('session', 'clock_sample', {'rtt_ms': 200})
+    restored = ShadowEvidence(evidence.path, version='fixture', clock=exchange_clock)
+    resumed = observation.BoundedRequests(restored, maximum=1, deadline=deadline)
     with pytest.raises(ObservationFull, match='request budget'):
         resumed.before_request('feed', 'GET', '/fapi/v1/ticker/bookTicker')
-    expired = BoundedRequests(restored, maximum=2, deadline=utcnow() - timedelta(seconds=1))
-    with pytest.raises(ObservationFull, match='deadline'):
+    exchange_at = deadline
+    expired = observation.BoundedRequests(restored, maximum=2, deadline=deadline)
+    with pytest.raises(observation.ObservationDeadline):
         expired.before_request('feed', 'GET', '/fapi/v1/time')
-    assert sum(r['kind'] == 'request' for r in restored.rows) == 1
+    reservation, = [row for row in restored.rows if row['kind'] == 'request']
+    receipt, = [row for row in restored.rows if row['kind'] == 'request_result']
+    clock_event, = [row for row in restored.rows if row['kind'] == 'clock_sample']
+    assert reservation['at'] == NOW.isoformat()
+    assert receipt['completed_at'] == clock_event['at'] == (NOW + timedelta(seconds=1)).isoformat()
+
+
+@pytest.mark.parametrize(('exchange_elapsed', 'monotonic_elapsed'), [(11, 9), (9, 10)])
+def test_request_receipt_at_or_after_deadline_is_preserved(tmp_path, monkeypatch,
+                                                       exchange_elapsed, monotonic_elapsed):
+    from factorlab.integrations.binance_futures_trading import forward_observation as observation
+
+    exchange_at = NOW
+    monotonic_at = 100
+    monkeypatch.setattr(observation, 'monotonic', lambda: monotonic_at)
+    evidence = ShadowEvidence(tmp_path / 'events.csv', version='fixture', clock=lambda: exchange_at)
+    counts = observation.BoundedRequests(evidence, maximum=2, deadline=NOW + timedelta(seconds=10),
+                                         monotonic_deadline=110)
+    counts.before_request('feed', 'GET', '/fapi/v1/ticker/bookTicker')
+    exchange_at += timedelta(seconds=exchange_elapsed)
+    monotonic_at += monotonic_elapsed
+    with pytest.raises(observation.ObservationDeadline):
+        counts.record('feed', 'GET', '/fapi/v1/ticker/bookTicker', 10, None, {}, status=200)
+    receipt = evidence.rows[-1]
+    assert receipt['kind'] == 'request_result'
+    assert receipt['completed_at'] == exchange_at.isoformat()
+    assert receipt['http_status'] == 200 and receipt['error'] is None
+    with pytest.raises(observation.ObservationDeadline):
+        counts.before_request('feed', 'GET', '/fapi/v1/ticker/bookTicker')
+    assert counts.used == 1
 
 
 def test_api_interruption_blocks_further_requests_after_restart(tmp_path):
