@@ -54,7 +54,7 @@ class DemoMarketFeed:
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
                  max_backfill=120, max_quote_age=5, initial_bars=1, catch_up=False,
                  clock=lambda: datetime.now(timezone.utc), timings: FeedTimings | None = None,
-                 exchange_time=None):
+                 exchange_time=None, receipt_clock=None):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -77,6 +77,7 @@ class DemoMarketFeed:
         self.catch_up = catch_up
         self.initial_bars = initial_bars
         self.client, self.consumer, self.clock = client, consumer, clock
+        self.receipt_clock = clock if receipt_clock is None else receipt_clock
         self.exchange_time = client.demo_time if exchange_time is None else exchange_time
         self.interval, self.seconds = interval, INTERVALS[interval]
         self.max_backfill, self.max_quote_age = max_backfill, max_quote_age
@@ -154,7 +155,7 @@ class DemoMarketFeed:
             endTime=page_boundary - 1, limit=count), signed=False)
         if not isinstance(rows, list) or len(rows) > count + 1:
             raise FeedPaused('INVALID_KLINES')
-        bars_received_at = self.clock()
+        bars_received_at = self.receipt_clock()
         bars, previous = [], None
         for row in rows:
             if not isinstance(row, list) or len(row) < 7:
@@ -265,7 +266,7 @@ class DemoMarketFeed:
         for bar in bars:
             if hasattr(self.consumer, 'observe_bar_receipt'):
                 self.consumer.observe_bar_receipt(bar,
-                    raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.clock())
+                    raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.receipt_clock())
             self._closed_bar(bar)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
         delivered = 0

@@ -464,6 +464,7 @@ def main(argv=None):
                 consumer.market_status = symbol['status']
                 with closing(DemoMarketFeed(client, consumer, state_path=path,
                         consumer_id='shadow:' + bridge.grid.deployment_id,
+                        clock=utcnow, receipt_clock=evidence.clock,
                         exchange_time=bridge.session.client.demo_time,
                         initial_bars=max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1))) as feed:
                     supervisor = DemoSupervisor(feed, poll_seconds=args.sample_seconds,

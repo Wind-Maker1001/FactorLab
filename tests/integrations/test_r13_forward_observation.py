@@ -12,7 +12,7 @@ from test_demo_grid_supervisor import Control, bar
 from test_demo_market_feed import make, Consumer
 from test_forward_observation import setup, book
 from test_binance_demo_grid_network import network_grid
-from test_binance_demo_network import wired
+from test_binance_demo_network import NetworkFixture, wired
 
 
 def test_real_bar_receipt_precedes_decision_and_preserves_raw(tmp_path):
@@ -86,7 +86,8 @@ def test_r13_quote_gap_and_rejected_book_stop_instead_of_retry(tmp_path):
 def test_preview_terminates_late_proposal_in_calibrated_window(network_grid, monkeypatch,
                                                               host_offset_seconds, termination):
     from contextlib import contextmanager
-    from factorlab.experiments.grid_forward_observation import read_events
+    from factorlab.experiments.grid_forward_observation import normalize, read_events
+    from factorlab.integrations.binance.client import Response
     from factorlab.integrations.binance_futures_trading import forward_observation as observation
     from factorlab.integrations.binance_futures_trading import network, protocol
     from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
@@ -95,8 +96,27 @@ def test_preview_terminates_late_proposal_in_calibrated_window(network_grid, mon
     host_offset = timedelta(seconds=host_offset_seconds)
     exchange_at = NOW
     deadline = NOW + timedelta(seconds=130)
-    captured_at = bar(2).closed_at
+    current = bar(2)
+    closed_at = current.closed_at
+    market_delay = timedelta(milliseconds=100)
+    poll_at = closed_at + market_delay
+    captured_at = poll_at + 2 * market_delay
+    raw_bar = [int(current.opened_at.timestamp() * 1000), '150', '153', '147', '150', '10',
+               int(closed_at.timestamp() * 1000) - 1]
     original_open = observation.open_grid_session
+    original_transport = NetworkFixture.__call__
+
+    def replay_market(fixture, request, timeout):
+        nonlocal exchange_at
+        if request.path.endswith('/klines'):
+            exchange_at += market_delay
+            payload = [raw_bar]
+        elif request.path.endswith('/bookTicker') and exchange_at >= poll_at:
+            payload = book(exchange_at, '149', '151')
+            exchange_at += market_delay
+        else:
+            return original_transport(fixture, request, timeout)
+        return Response(200, {}, json.dumps(payload).encode())
 
     @contextmanager
     def open_with_startup_time(*args, **kwargs):
@@ -113,6 +133,7 @@ def test_preview_terminates_late_proposal_in_calibrated_window(network_grid, mon
     monkeypatch.setattr(observation.signal, 'signal', lambda *_: None)
     monkeypatch.setattr(DemoSession, '_now', lambda _: exchange_at)
     monkeypatch.setattr(protocol, 'build_opener', network.build_opener)
+    monkeypatch.setattr(NetworkFixture, '__call__', replay_market)
 
     final_request_path = '/fapi/v1/time'
     request_at = deadline - timedelta(seconds=2)
@@ -123,9 +144,10 @@ def test_preview_terminates_late_proposal_in_calibrated_window(network_grid, mon
         consumer = supervisor.before_poll.__self__
         assert consumer.evidence.prospective_start == NOW
         supervisor.before_poll()
-        exchange_at = captured_at
-        current = bar(2)
-        assert consumer.closed_bar(current)
+        supervisor.feed.exchange_time = lambda **_: protocol.ExchangeTime(
+            exchange_at.timestamp() * 1000, 1, (exchange_at - NOW).total_seconds())
+        exchange_at = poll_at
+        assert supervisor.feed.poll() == dict(bars=1, quotes=1)
         proposal, = consumer.evidence.proposals.values()
         assert proposal['captured_at'] == captured_at.isoformat()
         assert timedelta(0) < deadline - captured_at < timedelta(seconds=20)
@@ -151,6 +173,11 @@ def test_preview_terminates_late_proposal_in_calibrated_window(network_grid, mon
                  '--seconds', '130']) == 0
     rows = read_events(output / 'events.csv')
     summary = json.loads((output / 'summary.json').read_text(encoding='utf-8'))
+    assert {'clock_sample', 'signed_request_timing', 'account_reconciled'} <= {row['kind'] for row in rows}
+    normalized = normalize(rows)['source']['payload']
+    received_bar, = normalized['bars']
+    assert closed_at <= observation.instant(received_bar['received_at']) <= observation.instant(received_bar['known_at'])
+    assert observation.instant(received_bar['known_at']) <= observation.instant(received_bar['decision_at']) == captured_at
     experiment, = [row for row in rows if row['kind'] == 'experiment']
     assert experiment['started_at'] == NOW.isoformat()
     assert experiment['deadline'] == deadline.isoformat()
