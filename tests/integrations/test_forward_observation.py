@@ -267,7 +267,8 @@ def test_same_response_book_hook_and_zero_writes(tmp_path):
     try:
         feed.poll()
         assert D(consumer.raw['bidPrice']) < consumer.quote_value.price < D(consumer.raw['askPrice'])
-        assert consumer.received == consumer.quote_value.observed_at
+        age = (consumer.received - consumer.quote_value.observed_at).total_seconds()
+        assert 0 < age <= feed.max_quote_age
         assert all(r.method == 'GET' for r in transport.requests)
     finally:
         feed.close()

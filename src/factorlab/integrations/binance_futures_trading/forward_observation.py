@@ -84,6 +84,9 @@ class BoundedRequests(RequestCounts):
                                   endpoint=path, seconds=seconds, error=error, http_status=status,
                                   completed_at=utcnow().isoformat()))
 
+    def clock_event(self, source, kind, details):
+        self.evidence.append(dict(kind=kind, source=source, at=utcnow().isoformat(), **details))
+
 
 class ShadowEvidence:
     """One bounded replayable CSV; each row is an indivisible observation batch."""
@@ -398,7 +401,12 @@ def main(argv=None):
     try:
         with open_grid_session(args.output / 'preview-state', DemoCredentialStore(), grid_factory(settings),
                                preview=True, continuous=True, request_counts=requests) as bridge:
+            bridge.gateway.clock = bridge.session._now
             if args.experiment_id:
+                account = bridge.session.status()
+                evidence.append(dict(kind='account_reconciled', at=utcnow().isoformat(),
+                    reconciled=account['reconciled'], positions=len(account['positions']),
+                    open_orders=len(account['open_orders']), unknown_orders=len(account['unknown'])))
                 deployment = json.loads(dumps(bridge.grid.deployment()))
                 evidence.append(dict(kind='strategy_binding', at=utcnow().isoformat(),
                     deployment_config=deployment,
@@ -408,8 +416,8 @@ def main(argv=None):
             with closing(StrategyControl(path, dict(source=SOURCE, mode='SHADOW_GET_ONLY'))) as control:
                 requests.enable_rounds(max_requests=args.max_requests,
                     max_quote_gap_seconds=args.max_quote_gap_seconds,
-                    sink=lambda row: evidence.append(dict(kind='poll_round', **row)))
-                consumer = ShadowConsumer(bridge, control, evidence, request_counts=requests)
+                    sink=lambda row: evidence.append(dict(kind='poll_round', watermarks=feed.watermarks(), **row)))
+                consumer = ShadowConsumer(bridge, control, evidence, request_counts=requests, clock=bridge.session._now)
                 client = MarketClient(requests)
                 info = client.request('GET', '/fapi/v1/exchangeInfo', signed=False)
                 symbol = next(s for s in info['symbols'] if s['symbol'] == 'NVDAUSDT')
@@ -418,6 +426,7 @@ def main(argv=None):
                 consumer.market_status = symbol['status']
                 with closing(DemoMarketFeed(client, consumer, state_path=path,
                         consumer_id='shadow:' + bridge.grid.deployment_id,
+                        exchange_time=bridge.session.client.demo_time,
                         initial_bars=max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1))) as feed:
                     supervisor = DemoSupervisor(feed, poll_seconds=args.sample_seconds,
                         before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests,

@@ -488,19 +488,17 @@ def test_worker_end_to_end_persists_status_and_control(deployment, monkeypatch, 
     from contextlib import closing
     from factorlab.integrations.binance_futures_trading import demo_grid_supervisor as module
     from factorlab.integrations.binance_futures_trading.demo_market_feed import DemoMarketFeed
-    from factorlab.integrations.binance_futures_trading.protocol import FuturesClient, Environment
     from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import StrategyControl
     from test_demo_strategy_supervisor import Market
     root, store, _, _ = deployment
     market = Market()
     market.at = NOW + timedelta(milliseconds=2)
-    monkeypatch.setattr(module, 'MarketClient', lambda requests: FuturesClient(
-        environment=Environment.DEMO, transport=market))
+    monkeypatch.setattr(module, 'MarketClient', lambda requests: market.client())
     monkeypatch.setattr(module, 'DemoMarketFeed', lambda *args, **kwargs: DemoMarketFeed(
         *args, clock=lambda: market.at, **kwargs))
     args = parse_args(['grid-supervisor', 'start', '--seconds', '.01', '--poll-seconds', '.001', '--interval', '1h'])
     path = root / 'grid-preview' / 'grid-supervisor.sqlite3'
-    with closing(DemoMarketFeed(FuturesClient(environment=Environment.DEMO, transport=market),
+    with closing(DemoMarketFeed(market.client(),
             SimpleNamespace(), state_path=path, consumer_id='grid-dry-run', interval='1h')) as legacy:
         legacy._ack('bar', int((NOW - timedelta(days=2)).timestamp() * 1000))
         old_watermarks = legacy.watermarks()

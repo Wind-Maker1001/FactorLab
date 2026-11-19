@@ -155,14 +155,23 @@ def test_reconcile_fetches_each_account_endpoint_once(network_grid):
 
 
 @pytest.mark.parametrize('size', [100, 1000])
-def test_historical_orders_measurement(network_grid, size):
+def test_historical_orders_measurement(network_grid, monkeypatch, size):
     from dataclasses import replace
     from decimal import Decimal
     from test_binance_demo_execution import intent
     from factorlab.trading import OrderSnapshot, OrderStatus
     from factorlab.trading.state import OrderRecord
     from factorlab.integrations.binance_futures_trading.fake import NOW, MS
+    from factorlab.integrations.binance_futures_trading import demo_session
     root, credentials, factory, enable, fake, requests = network_grid
+    create_client = demo_session._demo_client
+
+    def frozen_demo_clock(*args, **kwargs):
+        client = create_client(*args, **kwargs)
+        client.monotonic = lambda: 0.
+        return client
+
+    monkeypatch.setattr(demo_session, '_demo_client', frozen_demo_clock)
     enable()
     with open_grid_session(root, credentials, factory, continuous=True) as bridge:
         adapter = bridge.session.adapter

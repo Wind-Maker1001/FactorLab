@@ -138,7 +138,8 @@ class DemoSession:
         self._recovered_receipt_count = len(self.receipts)
 
     def _now(self):
-        return datetime.now(timezone.utc) + timedelta(milliseconds=self.client.offset_ms)
+        milliseconds = self.client.projected_demo_time().estimated_ms
+        return datetime.fromtimestamp(milliseconds / 1000, timezone.utc)
 
     def _check_symbol(self, symbol):
         if self._write_guard is not None and 'GTC' not in symbol.get('timeInForce', ()):

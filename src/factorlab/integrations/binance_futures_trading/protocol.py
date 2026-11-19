@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from enum import Enum
+from math import floor
 import hashlib
 import hmac
 import json
@@ -45,6 +46,11 @@ READ_PATHS = frozenset({
     '/fapi/v1/apiTradingStatus', '/fapi/v1/premiumIndex', '/fapi/v1/ticker/bookTicker', '/fapi/v1/klines',
 })
 WRITE_PATHS = frozenset({('POST', '/fapi/v1/order'), ('DELETE', '/fapi/v1/order')})
+
+DEMO_TIME_SAMPLES = 3
+DEMO_TIME_TTL_SECONDS = 45
+DEMO_TIME_MAX_UNCERTAINTY_MS = 950
+DEMO_TIME_DRIFT_MS_PER_SECOND = 1
 
 
 class SafetyBlocked(PermissionError):
@@ -109,9 +115,52 @@ class SignedRequest:
     query: str = field(repr=False)
     headers: dict = field(repr=False)
     environment: Environment | None = None
+    signing: dict | None = field(default=None, repr=False, compare=False)
 
     def __repr__(self):
         return f'SignedRequest({self.method}, {self.path}, <redacted>)'
+
+
+@dataclass(frozen=True)
+class ExchangeTime:
+    estimated_ms: float
+    uncertainty_ms: float
+    observed_monotonic: float
+
+    @property
+    def lower_ms(self):
+        return self.estimated_ms - self.uncertainty_ms
+
+    @property
+    def upper_ms(self):
+        return self.estimated_ms + self.uncertainty_ms
+
+
+@dataclass(frozen=True)
+class _TimeSample:
+    server_ms: int
+    started: float
+    received: float
+    wall_before_ms: float
+    wall_after_ms: float
+
+    @property
+    def rtt_ms(self):
+        return (self.received - self.started) * 1000
+
+    def at(self, monotonic):
+        age = monotonic - self.received
+        return ExchangeTime(self.server_ms + self.rtt_ms / 2 + age * 1000,
+                            self.rtt_ms / 2 + 1 + age * DEMO_TIME_DRIFT_MS_PER_SECOND,
+                            monotonic)
+
+    def diagnostics(self):
+        wall_elapsed = self.wall_after_ms - self.wall_before_ms
+        return dict(server_ms=self.server_ms, wall_before_ms=self.wall_before_ms,
+            wall_after_ms=self.wall_after_ms, rtt_ms=self.rtt_ms,
+            midpoint_uncertainty_ms=self.rtt_ms / 2,
+            wall_elapsed_ms=wall_elapsed, wall_step_ms=wall_elapsed - self.rtt_ms,
+            offset_ms=round(self.at(self.received).estimated_ms - self.wall_after_ms))
 
 
 class OfflineTransport:
@@ -150,7 +199,7 @@ class ReadOnlyNetworkTransport:
 class FuturesClient:
     """Writes are never retried; signed GET clock recovery requires an explicit scope."""
     def __init__(self, credentials=None, *, transport=None, recv_window=5000,
-                 timeout=10, clock=time.time, environment=None):
+                 timeout=10, clock=time.time, monotonic=time.monotonic, environment=None):
         if type(recv_window) is not int or not 1 <= recv_window <= 60000 or timeout <= 0:
             raise ValueError('invalid recvWindow or timeout')
         from .network import DemoNetworkTransport
@@ -167,10 +216,16 @@ class FuturesClient:
                 raise SafetyBlocked('Demo transport requires matching Demo client and credentials')
         self.credentials, self.transport = credentials, transport
         self.recv_window, self.timeout, self.clock = recv_window, timeout, clock
+        self.monotonic = monotonic
         self.offset_ms, self.blocked_until = 0, 0.0
         self._recover_get_clock = False
         self.clock_recoveries = []
         self.time_sync = None
+        self._demo_sample = None
+        self._demo_time_valid = False
+
+    def _clock_event(self, kind, **details):
+        """Allow the observing client to retain credential-free timing evidence."""
 
     @contextmanager
     def recover_get_clock(self):
@@ -183,6 +238,9 @@ class FuturesClient:
             self._recover_get_clock = previous
 
     def sync_time(self):
+        if self.environment is Environment.DEMO:
+            self._calibrate_demo(accept_clock_change=True)
+            return self.offset_ms
         before = self.clock()
         started = time.monotonic()
         payload = self.request('GET', '/fapi/v1/time', signed=False)
@@ -194,6 +252,58 @@ class FuturesClient:
         self.time_sync = dict(offset_ms=self.offset_ms, rtt_ms=elapsed_ms,
             midpoint_uncertainty_ms=elapsed_ms / 2, wall_elapsed_ms=(after - before) * 1000)
         return self.offset_ms
+
+    def _calibrate_demo(self, *, accept_clock_change=False):
+        previous = self._demo_sample
+        self._demo_time_valid = False
+        maximum = min(DEMO_TIME_MAX_UNCERTAINTY_MS, self.recv_window / 4)
+        for attempt in range(1, DEMO_TIME_SAMPLES + 1):
+            wall_before_ms = self.clock() * 1000
+            started = self.monotonic()
+            payload = self.request('GET', '/fapi/v1/time', signed=False)
+            received = self.monotonic()
+            wall_after_ms = self.clock() * 1000
+            if not isinstance(payload, dict) or type(payload.get('serverTime')) is not int or payload['serverTime'] <= 0:
+                raise DataQualityError('invalid server time response')
+            sample = _TimeSample(payload['serverTime'], started, received, wall_before_ms, wall_after_ms)
+            reading = sample.at(received)
+            diagnostics = sample.diagnostics()
+            quality_ok = reading.uncertainty_ms <= maximum
+            drift_ms = None
+            drift_ok = True
+            if previous is not None:
+                predicted = previous.at(received)
+                drift_ms = reading.estimated_ms - predicted.estimated_ms
+                drift_ok = abs(drift_ms) <= reading.uncertainty_ms + predicted.uncertainty_ms
+            self._clock_event('clock_sample', attempt=attempt, **diagnostics,
+                uncertainty_ms=reading.uncertainty_ms, quality_ok=quality_ok,
+                drift_ms=drift_ms, drift_ok=drift_ok, explicit_sync=accept_clock_change)
+            if not quality_ok:
+                continue
+            if not drift_ok and not accept_clock_change:
+                raise DataQualityError('Demo server time drift exceeds calibration bounds')
+            self._demo_sample = sample
+            self._demo_time_valid = True
+            self.time_sync = diagnostics
+            self.offset_ms = diagnostics['offset_ms']
+            return
+        raise DataQualityError('Demo time calibration RTT exceeds signing uncertainty budget')
+
+    def demo_time(self, *, allow_refresh=True, min_valid_seconds=0):
+        now = self.monotonic()
+        maximum = min(999, self.recv_window / 2)
+        if (not self._demo_time_valid
+                or now - self._demo_sample.received + min_valid_seconds >= DEMO_TIME_TTL_SECONDS
+                or self._demo_sample.at(now + min_valid_seconds).uncertainty_ms > maximum):
+            if not allow_refresh:
+                raise DataQualityError('Demo time calibration missing or expired')
+            self._calibrate_demo()
+            now = self.monotonic()
+        return self._demo_sample.at(now)
+
+    def projected_demo_time(self):
+        """Project the anchor for local bookkeeping without authorizing a signature."""
+        return self._demo_sample.at(self.monotonic())
 
     def build(self, method, path, params=None, *, signed=True):
         if not ((method == 'GET' and path in READ_PATHS) or (method, path) in WRITE_PATHS):
@@ -213,13 +323,31 @@ class FuturesClient:
         if getattr(self.transport, 'environment', None) is not None:
             if self.credentials.environment is not self.environment or self.transport.environment is not self.environment:
                 raise SafetyBlocked('credential and client environment mismatch')
-        params = dict(params, timestamp=int(self.clock() * 1000) + self.offset_ms, recvWindow=self.recv_window)
+        signing = None
+        if self.environment is Environment.DEMO and (self._demo_sample is not None
+                or not isinstance(self.transport, OfflineTransport)):
+            reading = self.demo_time(allow_refresh=False)
+            timestamp_ms = floor(reading.estimated_ms)
+            wall_ms = self.clock() * 1000
+            sample = self._demo_sample
+            predicted_wall_ms = sample.wall_after_ms + (reading.observed_monotonic - sample.received) * 1000
+            signing = dict(timestamp_ms=timestamp_ms, recv_window_ms=self.recv_window,
+                estimated_server_ms=reading.estimated_ms, uncertainty_ms=reading.uncertainty_ms,
+                wall_ms=wall_ms, wall_step_since_sync_ms=wall_ms - predicted_wall_ms,
+                calibration_age_ms=(reading.observed_monotonic - sample.received) * 1000)
+        else:
+            timestamp_ms = int(self.clock() * 1000) + self.offset_ms
+        params = dict(params, timestamp=timestamp_ms, recvWindow=self.recv_window)
         headers = {'X-MBX-APIKEY': self.credentials.key}
         query = urlencode(sorted(params.items()))
         signature = hmac.new(self.credentials.secret.encode(), query.encode(), hashlib.sha256).hexdigest()
-        return SignedRequest(method, path, query + '&signature=' + signature, headers, self.environment)
+        return SignedRequest(method, path, query + '&signature=' + signature, headers, self.environment, signing)
 
     def request(self, method, path, params=None, *, signed=True):
+        if (self.environment is Environment.DEMO and signed and method == 'GET'
+                and path in READ_PATHS and self.credentials is not None
+                and (self._demo_sample is not None or not isinstance(self.transport, OfflineTransport))):
+            self.demo_time()
         try:
             return self._request_once(method, path, params, signed=signed)
         except ExchangeError as first:
@@ -228,7 +356,7 @@ class FuturesClient:
                 raise
             diagnostic = dict(method=method, endpoint=path, code=first.code,
                 http_status=first.status, category=first.category,
-                initial_sync=self.time_sync, outcome='SYNC_FAILED')
+                message=first.message, initial_sync=self.time_sync, outcome='SYNC_FAILED')
             self.clock_recoveries.append(diagnostic)
             try:
                 self.sync_time()

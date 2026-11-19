@@ -182,7 +182,8 @@ def test_feed_measures_callbacks_cursor_commits_and_book_receipt(tmp_path, expli
     counts = RequestCounts()
     counts.enable_rounds()
     transport = Transport()
-    client = ObservedClient(environment=Environment.DEMO, transport=transport, request_counts=counts)
+    client = ObservedClient(environment=Environment.DEMO, transport=transport, request_counts=counts,
+        clock=transport.clock, monotonic=transport.monotonic)
     timings = Mock(spec_set=['sample', 'measure', 'book_received'], wraps=counts) if explicit else None
     feed = DemoMarketFeed(client, Consumer(), state_path=tmp_path / 'cursor.sqlite', consumer_id='test',
         clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc), timings=timings)
@@ -193,7 +194,8 @@ def test_feed_measures_callbacks_cursor_commits_and_book_receipt(tmp_path, expli
     assert feed.commit_count - before == 3
     assert summary['operations']['cursor_commit']['count'] == 3
     assert summary['operations']['closed_bar_callback']['count'] == 1
-    assert summary['operations']['book_market_to_received']['max_seconds'] == 0
+    assert summary['operations']['book_market_to_received']['max_seconds'] == .101
+    assert summary['operations']['book_host_wall_to_received']['max_seconds'] == .100
     assert {row['classification'] for row in summary['requests']} == {'market_get'}
     if timings is not None:
         timings.book_received.assert_called_once()
