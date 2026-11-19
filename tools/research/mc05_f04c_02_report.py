@@ -142,7 +142,7 @@ def _financial(windows):
             exposure = '空仓' if Decimal(str(metrics['terminal_inventory'])) == 0 else '保留库存'
             participation = '零成交账户' if metrics['fills'] == 0 else '非零成交账户'
             lines.append(f"**{arm}：{participation}，期末{exposure}。** "
-                         f"期末未完成订单及剩余数量：`{json.dumps(metrics['terminal_open_orders'], ensure_ascii=False)}`。")
+                         f"期末未完成订单及剩余数量：`{json.dumps(metrics['terminal_open_orders'], ensure_ascii=False, default=str)}`。")
             exits = {key: dict(status=order['final_status'], filled=order['filled_quantity'], remaining=order['remaining_quantity'])
                      for key, order in account['orders'].items() if order['purpose'] == 'RISK_EXIT'}
             lines.append('风险退出订单：' + ('无。' if not exits else _json(exits)))
@@ -293,11 +293,12 @@ def _cases(windows):
             rows = []
             for order_id, order in evidence['orders'].items():
                 rows.append((order_id, order['side'], _number(order['quantity']), _number(order['limit_price']),
+                             _number(order['reservation_price']),
                              order['submitted_at'], order['effective_at'], order['eligible_until'],
                              _compact(order['first_raw_ohlc_touch']), _compact(order['first_slippage_ohlc_touch']),
                              _compact(order['first_raw_close']), _compact(order['first_slippage_close']),
                              order['final_status']))
-            lines.append(_table(('订单', '方向', '数量', '限价', '提交 UTC', '生效 UTC', '有效至 UTC',
+            lines.append(_table(('订单', '方向', '数量', '限价', 'Paper 原始预留价', '提交 UTC', '生效 UTC', '有效至 UTC',
                                  '首次原始极值触价', '首次滑点极值触价', '首次原始分钟收盘触价',
                                  '首次滑点分钟收盘触价', '最终状态'), rows))
             for order_id, order in evidence['orders'].items():
@@ -377,6 +378,8 @@ def _report(audit, windows):
         _table(('窗口', '首次结果 SHA-256', '重复结果 SHA-256'),
                [(window['id'], window['result_sha256'], window['repeat_result_sha256']) for window in windows]),
         _json(audit['frozen_regression']),
+        f"经济结果集合 SHA-256 为 `{audit['economic_results_sha256']}`。"
+        f"包含执行案例的稳定审计 SHA-256 为 `{audit['result_sha256']}`。",
         '定向验证：', _json(audit['validation']),
         '资源实测：', _json(audit['resources']),
         '归档采集统计：',
@@ -389,6 +392,9 @@ def _report(audit, windows):
         '--hourly-snapshot <R04B_SNAPSHOT> --archive-root <ARCHIVE_ROOT> '
         '--legacy-archive-root <F04C_ARCHIVE_ROOT> --accounts-root <NEW_ACCOUNT_ROOT> '
         '--output <NEW_REPORT_ROOT>\n```',
+        '已有账户时，使用 `--resume` 并将 `--accounts-root` 指向缓存目录，从原生 PaperStore 重新审计。'
+        '已有探测凭证可通过 `--probe-audit <PRIOR_AUDIT_JSON>` 复用。'
+        '离线运行不发出 HTTP HEAD 或 GET，缺少历史凭证时记录 `NOT_RECHECKED_OFFLINE`。',
         '## 历史更细证据',
         _json(audit['finer_evidence']),
         '已有分钟线提供成交笔数和主动买入数量，能够说明该分钟内存在公开成交。'

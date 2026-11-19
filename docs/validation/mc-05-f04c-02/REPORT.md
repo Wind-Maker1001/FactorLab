@@ -48,6 +48,8 @@
 }
 ```
 
+经济结果集合 SHA-256 为 `b88ab3998ef5cd32057338494536466f9bfdf1b3eddf7e21a78fddfd20754d0a`。包含执行案例的稳定审计 SHA-256 为 `b267bc7508873deeccd8a7808a83a12ec89239ba86b7ec9c9ee0301c72b16934`。
+
 定向验证：
 
 ```json
@@ -56,23 +58,22 @@
   "deterministic_replay": "PASS",
   "frozen_f04c": "PASS",
   "targeted_tests": {
-    "existing_and_window_suite": {
-      "files": [
-        "tests/research/test_mc05_f04c_02.py",
-        "tests/research/test_mc05_f04c_execution.py",
-        "tests/research/test_mc_grid_tail_f04c_data.py",
-        "tests/research/test_grid_inventory_risk.py"
-      ],
-      "passed": 41,
-      "seconds": 160.83
-    },
-    "nonzero_case_test": {
-      "passed": 1,
-      "seconds": 2.3,
-      "test": "test_nonzero_case_reconstructs_native_wallet_and_excludes_terminal_order_touches"
-    },
-    "passed": 42,
+    "existing": 42,
+    "reservation": 9,
+    "offline_and_optional_probe": 7,
+    "passed": 58,
     "status": "PASS"
+  },
+  "offline_reproduction": {
+    "cached_and_fresh_reports": "PASS",
+    "http_or_socket_attempts": 0,
+    "windows_reaudited": 3,
+    "fresh_frozen_f04c": "PASS"
+  },
+  "economic_comparison": {
+    "baseline_review_head": "80797f1d3b7454d7bcda3789b63d63b9ae152b68",
+    "windows_with_equal_economic_result": 3,
+    "native_journals_with_equal_event_order": 6
   }
 }
 ```
@@ -82,15 +83,13 @@
 ```json
 {
   "account_bytes": 1685122,
-  "cpu_seconds": 3.75,
+  "cpu_seconds": 2.671875,
   "formal_accounts": 6,
   "formal_replay_cpu_seconds": 5.15625,
-  "formal_replay_wall_seconds": 7.939525699941441,
   "frozen_regression_accounts": 2,
   "repeat_accounts": 6,
   "repeat_replay_cpu_seconds": 4.234375,
-  "repeat_replay_wall_seconds": 6.983842699963134,
-  "wall_seconds": 5.360003000008874
+  "wall_seconds": 2.8142364000086673
 }
 ```
 
@@ -104,14 +103,15 @@
   "get_requests": 0,
   "last_fetched_at": "2026-11-19T10:47:31.612568+00:00",
   "mode": "OFFLINE_REUSE",
-  "original_failed_request_details": "not retained before evidence interruption; incomplete C1 receipts rejected without retry",
-  "original_head_request_count": 112,
+  "original_failed_request_details": "not retained before evidence interruption; missing objects are rejected",
+  "preregistered_head_request_limit": 112,
   "rejected_windows": {
     "C1": "incomplete bounded acquisition receipts; no retry or replacement window: NVDAUSDT-1m-2026-06-07.zip, NVDAUSDT-1m-2026-06-07.zip.CHECKSUM, NVDAUSDT-1d-2026-06-07.zip, NVDAUSDT-1d-2026-06-07.zip.CHECKSUM, NVDAUSDT-1m-2026-06-08.zip, NVDAUSDT-1m-2026-06-08.zip.CHECKSUM, NVDAUSDT-1d-2026-06-08.zip, NVDAUSDT-1d-2026-06-08.zip.CHECKSUM, NVDAUSDT-1m-2026-06-09.zip, NVDAUSDT-1m-2026-06-09.zip.CHECKSUM, NVDAUSDT-1d-2026-06-09.zip, NVDAUSDT-1d-2026-06-09.zip.CHECKSUM, NVDAUSDT-1m-2026-06-10.zip, NVDAUSDT-1m-2026-06-10.zip.CHECKSUM, NVDAUSDT-1d-2026-06-10.zip, NVDAUSDT-1d-2026-06-10.zip.CHECKSUM, NVDAUSDT-1m-2026-06-11.zip, NVDAUSDT-1m-2026-06-11.zip.CHECKSUM, NVDAUSDT-1d-2026-06-11.zip, NVDAUSDT-1d-2026-06-11.zip.CHECKSUM"
   },
   "retained_bytes": 1145509,
   "retained_objects": 92,
-  "retained_successful_get_receipts": 92
+  "retained_successful_get_receipts": 92,
+  "original_head_request_count": 112
 }
 ```
 
@@ -124,18 +124,22 @@ $env:PYTHONPATH = "src"
 python tools/research/run_mc05_f04c_02.py --hourly-snapshot <R04B_SNAPSHOT> --archive-root <ARCHIVE_ROOT> --legacy-archive-root <F04C_ARCHIVE_ROOT> --accounts-root <NEW_ACCOUNT_ROOT> --output <NEW_REPORT_ROOT>
 ```
 
+已有账户时，使用 `--resume` 并将 `--accounts-root` 指向缓存目录，从原生 PaperStore 重新审计。已有探测凭证可通过 `--probe-audit <PRIOR_AUDIT_JSON>` 复用。离线运行不发出 HTTP HEAD 或 GET，缺少历史凭证时记录 `NOT_RECHECKED_OFFLINE`。
+
 ## 历史更细证据
 
 ```json
 {
   "historical_spread_depth": "NOT_ADMITTED",
   "minute_trade_fields": "trade_count, taker_buy_volume, taker_buy_quote_volume",
+  "probe_mode": "OFFLINE_REUSE",
   "probes": [
     {
       "checked_at": "2026-11-19T10:50:30.768490+00:00",
       "content_length": "1721245",
       "date": "2026-05-15",
       "last_modified": "Sat, 16 May 2026 06:59:09 GMT",
+      "outcome": "AVAILABLE",
       "product": "aggTrades",
       "status": 200,
       "url": "https://data.binance.vision/data/futures/um/daily/aggTrades/NVDAUSDT/NVDAUSDT-aggTrades-2026-05-15.zip",
@@ -144,6 +148,8 @@ python tools/research/run_mc05_f04c_02.py --hourly-snapshot <R04B_SNAPSHOT> --ar
     {
       "checked_at": "2026-11-19T10:50:31.089328+00:00",
       "date": "2026-05-15",
+      "object_availability": "NOT_AVAILABLE_IN_ARCHIVE",
+      "outcome": "HTTP_NOT_FOUND",
       "product": "bookTicker",
       "status": 404,
       "url": "https://data.binance.vision/data/futures/um/daily/bookTicker/NVDAUSDT/NVDAUSDT-bookTicker-2026-05-15.zip",
@@ -154,6 +160,7 @@ python tools/research/run_mc05_f04c_02.py --hourly-snapshot <R04B_SNAPSHOT> --ar
       "content_length": "446576",
       "date": "2026-05-15",
       "last_modified": "Sat, 16 May 2026 07:17:12 GMT",
+      "outcome": "AVAILABLE",
       "product": "bookDepth",
       "status": 200,
       "url": "https://data.binance.vision/data/futures/um/daily/bookDepth/NVDAUSDT/NVDAUSDT-bookDepth-2026-05-15.zip",

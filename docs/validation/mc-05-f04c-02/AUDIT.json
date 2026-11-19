@@ -6,8 +6,9 @@
     "get_requests": 0,
     "last_fetched_at": "2026-11-19T10:47:31.612568+00:00",
     "mode": "OFFLINE_REUSE",
-    "original_failed_request_details": "not retained before evidence interruption; incomplete C1 receipts rejected without retry",
+    "original_failed_request_details": "not retained before evidence interruption; missing objects are rejected",
     "original_head_request_count": 112,
+    "preregistered_head_request_limit": 112,
     "rejected_windows": {
       "C1": "incomplete bounded acquisition receipts; no retry or replacement window: NVDAUSDT-1m-2026-06-07.zip, NVDAUSDT-1m-2026-06-07.zip.CHECKSUM, NVDAUSDT-1d-2026-06-07.zip, NVDAUSDT-1d-2026-06-07.zip.CHECKSUM, NVDAUSDT-1m-2026-06-08.zip, NVDAUSDT-1m-2026-06-08.zip.CHECKSUM, NVDAUSDT-1d-2026-06-08.zip, NVDAUSDT-1d-2026-06-08.zip.CHECKSUM, NVDAUSDT-1m-2026-06-09.zip, NVDAUSDT-1m-2026-06-09.zip.CHECKSUM, NVDAUSDT-1d-2026-06-09.zip, NVDAUSDT-1d-2026-06-09.zip.CHECKSUM, NVDAUSDT-1m-2026-06-10.zip, NVDAUSDT-1m-2026-06-10.zip.CHECKSUM, NVDAUSDT-1d-2026-06-10.zip, NVDAUSDT-1d-2026-06-10.zip.CHECKSUM, NVDAUSDT-1m-2026-06-11.zip, NVDAUSDT-1m-2026-06-11.zip.CHECKSUM, NVDAUSDT-1d-2026-06-11.zip, NVDAUSDT-1d-2026-06-11.zip.CHECKSUM"
     },
@@ -517,15 +518,18 @@
       "start": "2026-07-24T00:00:00+00:00"
     }
   ],
+  "economic_results_sha256": "b88ab3998ef5cd32057338494536466f9bfdf1b3eddf7e21a78fddfd20754d0a",
   "finer_evidence": {
     "historical_spread_depth": "NOT_ADMITTED",
     "minute_trade_fields": "trade_count, taker_buy_volume, taker_buy_quote_volume",
+    "probe_mode": "OFFLINE_REUSE",
     "probes": [
       {
         "checked_at": "2026-11-19T10:50:30.768490+00:00",
         "content_length": "1721245",
         "date": "2026-05-15",
         "last_modified": "Sat, 16 May 2026 06:59:09 GMT",
+        "outcome": "AVAILABLE",
         "product": "aggTrades",
         "status": 200,
         "url": "https://data.binance.vision/data/futures/um/daily/aggTrades/NVDAUSDT/NVDAUSDT-aggTrades-2026-05-15.zip",
@@ -534,6 +538,8 @@
       {
         "checked_at": "2026-11-19T10:50:31.089328+00:00",
         "date": "2026-05-15",
+        "object_availability": "NOT_AVAILABLE_IN_ARCHIVE",
+        "outcome": "HTTP_NOT_FOUND",
         "product": "bookTicker",
         "status": 404,
         "url": "https://data.binance.vision/data/futures/um/daily/bookTicker/NVDAUSDT/NVDAUSDT-bookTicker-2026-05-15.zip",
@@ -544,6 +550,7 @@
         "content_length": "446576",
         "date": "2026-05-15",
         "last_modified": "Sat, 16 May 2026 07:17:12 GMT",
+        "outcome": "AVAILABLE",
         "product": "bookDepth",
         "status": 200,
         "url": "https://data.binance.vision/data/futures/um/daily/bookDepth/NVDAUSDT/NVDAUSDT-bookDepth-2026-05-15.zip",
@@ -558,16 +565,16 @@
     "expected": "9570d0f0b83e2f11bb96a052c1c0205561860bb12e1928e81ca54843b638adef"
   },
   "implementation_sha256": {
-    "src/factorlab/experiments/grid_execution_audit.py": "53efdf40811eac803a1996379e44d4ff94c9a752f75d1f89edb027111fb95331",
+    "src/factorlab/experiments/grid_execution_audit.py": "6f2c43db47b73f9b8b6044dc91897b43d7f8de8d3a3dbf2e3ccf50526c8da5a9",
     "src/factorlab/experiments/grid_execution_clock.py": "7a76974401374b3930d4a9b2e50bb442636e1bd9d59a4978be31fb2925f5ae42",
     "src/factorlab/experiments/grid_inventory_risk.py": "291d7810ed9ab2a94534dee1111711e2cc2b92a66231d922fa881d1af3cf8eda",
     "src/factorlab/experiments/grid_paper.py": "7516b9ef49d8059ae78d4946fc454f8d7bba5d8a8c98b0bff5c32b46e5e77643",
-    "src/factorlab/experiments/mc_grid_tail_f04c_cases.py": "e81239de2e5a72e061f88c464903e9c8253989fe985f1b804a33cd9015bda2a1",
+    "src/factorlab/experiments/mc_grid_tail_f04c_cases.py": "d43607eaf28a4321e15d4ec79136a46f981a61688b528f2be5e2c189361517a4",
     "src/factorlab/experiments/mc_grid_tail_f04c_data.py": "7ae69ff90d028363d1ad725449c413dc705ddf72a16735a2935d6273b4a5b8c7",
     "src/factorlab/experiments/mc_grid_tail_f04c_windows.py": "e28dccd7bcdfe1e224385ebe957f5ceb4317485517d8377e3eb54f24ff7a4419",
-    "tools/research/mc05_f04c_02_report.py": "158fa8368941ae6bea31c5c5a993ac6d55cde9462db03f73e18f31efa8df3acf",
-    "tools/research/run_mc05_f04c.py": "84f03a2fea506a20d1760c1ba1b2658ce96e36c07e40a3cfb2dd19b6fa988aaa",
-    "tools/research/run_mc05_f04c_02.py": "d4f80ec89180a8eaa01531761cf3f7fc04936b01baa50d38ee1d121c2111aaf7"
+    "tools/research/mc05_f04c_02_report.py": "48e30e7d267421f992945bb94cde04f46cdcdf26a74854ee6f68aa3040de28e2",
+    "tools/research/run_mc05_f04c.py": "7e7f88439873622635a0241ccb3514ecd11a8a5b7e045514203ce4ec3bd8fef0",
+    "tools/research/run_mc05_f04c_02.py": "bd25496d7f4809219880a7e8fce6e9423d79c9f226f20d833ed762744f6ae553"
   },
   "independent_counts": {
     "accepted_windows": 3,
@@ -582,17 +589,15 @@
   "research": "MC-05-F04C-02",
   "resources": {
     "account_bytes": 1685122,
-    "cpu_seconds": 3.75,
+    "cpu_seconds": 2.671875,
     "formal_accounts": 6,
     "formal_replay_cpu_seconds": 5.15625,
-    "formal_replay_wall_seconds": 7.939525699941441,
     "frozen_regression_accounts": 2,
     "repeat_accounts": 6,
     "repeat_replay_cpu_seconds": 4.234375,
-    "repeat_replay_wall_seconds": 6.983842699963134,
-    "wall_seconds": 5.360003000008874
+    "wall_seconds": 2.8142364000086673
   },
-  "result_sha256": "930716745f25e6b5d43fbf880abac91d0793984a83e14dcfbcd1c1149457c09d",
+  "result_sha256": "b267bc7508873deeccd8a7808a83a12ec89239ba86b7ec9c9ee0301c72b16934",
   "states": [
     "ENGINEERING_ACCEPTED",
     "MARKET_DATA_BLOCKED",
@@ -607,24 +612,23 @@
   "validation": {
     "accounting_tolerance": "0.00000001",
     "deterministic_replay": "PASS",
+    "economic_comparison": {
+      "baseline_review_head": "80797f1d3b7454d7bcda3789b63d63b9ae152b68",
+      "native_journals_with_equal_event_order": 6,
+      "windows_with_equal_economic_result": 3
+    },
     "frozen_f04c": "PASS",
+    "offline_reproduction": {
+      "cached_and_fresh_reports": "PASS",
+      "fresh_frozen_f04c": "PASS",
+      "http_or_socket_attempts": 0,
+      "windows_reaudited": 3
+    },
     "targeted_tests": {
-      "existing_and_window_suite": {
-        "files": [
-          "tests/research/test_mc05_f04c_02.py",
-          "tests/research/test_mc05_f04c_execution.py",
-          "tests/research/test_mc_grid_tail_f04c_data.py",
-          "tests/research/test_grid_inventory_risk.py"
-        ],
-        "passed": 41,
-        "seconds": 160.83
-      },
-      "nonzero_case_test": {
-        "passed": 1,
-        "seconds": 2.3,
-        "test": "test_nonzero_case_reconstructs_native_wallet_and_excludes_terminal_order_touches"
-      },
-      "passed": 42,
+      "existing": 42,
+      "offline_and_optional_probe": 7,
+      "passed": 58,
+      "reservation": 9,
       "status": "PASS"
     }
   },
@@ -848,6 +852,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -882,6 +887,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -916,6 +922,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -951,6 +958,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.00",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -986,6 +994,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.00",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -1020,6 +1029,7 @@
               "quantity": "0.10",
               "reduce_only": true,
               "remaining_quantity": "0.10",
+              "reservation_price": "245.18",
               "side": "SELL",
               "submitted_at": "2026-05-15T05:59:59.999999+00:00"
             },
@@ -1045,6 +1055,7 @@
               "quantity": "0.10",
               "reduce_only": true,
               "remaining_quantity": "0.10",
+              "reservation_price": "233.06",
               "side": "SELL",
               "submitted_at": "2026-05-18T18:59:59.999999+00:00"
             }
@@ -1276,6 +1287,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -1310,6 +1322,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -1344,6 +1357,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -1379,6 +1393,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.00",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -1414,6 +1429,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.00",
+              "reservation_price": "237.86000",
               "side": "BUY",
               "submitted_at": "2026-05-14T23:59:59.999999+00:00"
             },
@@ -1448,6 +1464,7 @@
               "quantity": "0.10",
               "reduce_only": true,
               "remaining_quantity": "0.10",
+              "reservation_price": "245.18",
               "side": "SELL",
               "submitted_at": "2026-05-15T05:59:59.999999+00:00"
             },
@@ -1473,6 +1490,7 @@
               "quantity": "0.10",
               "reduce_only": true,
               "remaining_quantity": "0.10",
+              "reservation_price": "233.06",
               "side": "SELL",
               "submitted_at": "2026-05-18T00:59:59.999999+00:00"
             }
@@ -2017,14 +2035,17 @@
             "first_fill_path": [
               {
                 "after": {
-                  "available_wallet_cash": "894.664068674480000",
+                  "available_wallet_cash": "881.771913874480000",
+                  "committed": "118.21887140000",
                   "cumulative_fees": "0.009214725520000",
                   "entry_price": "230.368138000",
                   "equity": "999.976971474480000",
                   "inventory": "0.10",
                   "mark_price": "230.23000",
                   "nav": "0.999976971474480",
-                  "reserved_collateral": "105.32671660000",
+                  "pending_reservations": "95.18205760000",
+                  "position_collateral": "23.03681380000",
+                  "reserved_collateral": "118.21887140000",
                   "time": "2026-05-15T05:59:59.999999+00:00",
                   "unrealized": "-0.01381380000",
                   "wallet_cash": "999.990785274480000",
@@ -2035,7 +2056,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2045,7 +2066,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2055,7 +2076,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2065,21 +2086,24 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "221.53",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
                   ]
                 },
                 "before": {
-                  "available_wallet_cash": "894.39577520",
+                  "available_wallet_cash": "881.02242800000",
+                  "committed": "118.97757200000",
                   "cumulative_fees": "0",
                   "entry_price": "0",
                   "equity": "1000.00000",
                   "inventory": "0",
                   "mark_price": "230.23000",
                   "nav": "1.00000",
-                  "reserved_collateral": "105.60422480",
+                  "pending_reservations": "118.97757200000",
+                  "position_collateral": "0",
+                  "reserved_collateral": "118.97757200000",
                   "time": "2026-05-15T05:59:59.999999+00:00",
                   "unrealized": "0.00000",
                   "wallet_cash": "1000",
@@ -2090,7 +2114,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2100,7 +2124,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2110,7 +2134,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2120,7 +2144,7 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "221.53",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2130,7 +2154,7 @@
                       "order_id": "research-00000005",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "233.05",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
@@ -2151,14 +2175,17 @@
               },
               {
                 "after": {
-                  "available_wallet_cash": "894.822943599040000",
+                  "available_wallet_cash": "883.564441999040000",
+                  "committed": "116.41754560000",
                   "cumulative_fees": "0.018012400960000",
                   "entry_price": "225.155012000",
                   "equity": "998.912985199040000",
                   "inventory": "0.20",
                   "mark_price": "219.81000",
                   "nav": "0.998912985199040",
-                  "reserved_collateral": "105.15904400000",
+                  "pending_reservations": "71.38654320000",
+                  "position_collateral": "45.03100240000",
+                  "reserved_collateral": "116.41754560000",
                   "time": "2026-05-18T18:59:59.999999+00:00",
                   "unrealized": "-1.06900240000",
                   "wallet_cash": "999.981987599040000",
@@ -2169,7 +2196,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2179,7 +2206,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2189,7 +2216,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2206,14 +2233,17 @@
                   ]
                 },
                 "before": {
-                  "available_wallet_cash": "894.664068674480000",
+                  "available_wallet_cash": "881.771913874480000",
+                  "committed": "118.21887140000",
                   "cumulative_fees": "0.009214725520000",
                   "entry_price": "230.368138000",
                   "equity": "998.934971474480000",
                   "inventory": "0.10",
                   "mark_price": "219.81000",
                   "nav": "0.998934971474480",
-                  "reserved_collateral": "105.32671660000",
+                  "pending_reservations": "95.18205760000",
+                  "position_collateral": "23.03681380000",
+                  "reserved_collateral": "118.21887140000",
                   "time": "2026-05-18T18:59:59.999999+00:00",
                   "unrealized": "-1.05581380000",
                   "wallet_cash": "999.990785274480000",
@@ -2224,7 +2254,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2234,7 +2264,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2244,7 +2274,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2254,7 +2284,7 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "221.53",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -2325,6 +2355,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "237.86000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-14T23:59:59.999999+00:00"
@@ -2369,6 +2400,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "237.86000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-14T23:59:59.999999+00:00"
@@ -2413,6 +2445,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "237.86000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-14T23:59:59.999999+00:00"
@@ -2524,6 +2557,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.00",
+                "reservation_price": "237.86000",
                 "reverse_orders": [
                   {
                     "grid_level": 4,
@@ -2644,6 +2678,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.00",
+                "reservation_price": "237.86000",
                 "reverse_orders": [
                   {
                     "grid_level": 5,
@@ -2697,6 +2732,7 @@
                 "quantity": "0.10",
                 "reduce_only": true,
                 "remaining_quantity": "0.10",
+                "reservation_price": "245.18",
                 "reverse_orders": [],
                 "side": "SELL",
                 "submitted_at": "2026-05-15T05:59:59.999999+00:00"
@@ -2732,6 +2768,7 @@
                 "quantity": "0.10",
                 "reduce_only": true,
                 "remaining_quantity": "0.10",
+                "reservation_price": "233.06",
                 "reverse_orders": [],
                 "side": "SELL",
                 "submitted_at": "2026-05-18T18:59:59.999999+00:00"
@@ -6760,14 +6797,17 @@
             "first_fill_path": [
               {
                 "after": {
-                  "available_wallet_cash": "894.407812613040000",
+                  "available_wallet_cash": "881.515657813040000",
+                  "committed": "118.47502500000",
                   "cumulative_fees": "0.009317186960000",
                   "entry_price": "232.929674000",
                   "equity": "999.976715413040000",
                   "inventory": "0.10",
                   "mark_price": "232.79000",
                   "nav": "0.999976715413040",
-                  "reserved_collateral": "105.58287020000",
+                  "pending_reservations": "95.18205760000",
+                  "position_collateral": "23.29296740000",
+                  "reserved_collateral": "118.47502500000",
                   "time": "2026-05-15T05:18:59.999999+00:00",
                   "unrealized": "-0.01396740000",
                   "wallet_cash": "999.990682813040000",
@@ -6778,7 +6818,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6788,7 +6828,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6798,7 +6838,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6808,21 +6848,24 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "221.53",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
                   ]
                 },
                 "before": {
-                  "available_wallet_cash": "894.39577520",
+                  "available_wallet_cash": "881.02242800000",
+                  "committed": "118.97757200000",
                   "cumulative_fees": "0",
                   "entry_price": "0",
                   "equity": "1000.00000",
                   "inventory": "0",
                   "mark_price": "232.79000",
                   "nav": "1.00000",
-                  "reserved_collateral": "105.60422480",
+                  "pending_reservations": "118.97757200000",
+                  "position_collateral": "0",
+                  "reserved_collateral": "118.97757200000",
                   "time": "2026-05-15T05:18:59.999999+00:00",
                   "unrealized": "0.00000",
                   "wallet_cash": "1000",
@@ -6833,7 +6876,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6843,7 +6886,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6853,7 +6896,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6863,7 +6906,7 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "221.53",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6873,7 +6916,7 @@
                       "order_id": "research-00000005",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "233.05",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
@@ -6894,14 +6937,17 @@
               },
               {
                 "after": {
-                  "available_wallet_cash": "894.411532500400000",
+                  "available_wallet_cash": "883.153030900400000",
+                  "committed": "116.82879220000",
                   "cumulative_fees": "0.018176899600000",
                   "entry_price": "227.211245000",
                   "equity": "998.811574100400000",
                   "inventory": "0.20",
                   "mark_price": "221.36000",
                   "nav": "0.998811574100400",
-                  "reserved_collateral": "105.57029060000",
+                  "pending_reservations": "71.38654320000",
+                  "position_collateral": "45.44224900000",
+                  "reserved_collateral": "116.82879220000",
                   "time": "2026-05-18T00:45:59.999999+00:00",
                   "unrealized": "-1.17024900000",
                   "wallet_cash": "999.981823100400000",
@@ -6912,7 +6958,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6922,7 +6968,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6932,7 +6978,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6949,14 +6995,17 @@
                   ]
                 },
                 "before": {
-                  "available_wallet_cash": "894.407812613040000",
+                  "available_wallet_cash": "881.515657813040000",
+                  "committed": "118.47502500000",
                   "cumulative_fees": "0.009317186960000",
                   "entry_price": "232.929674000",
                   "equity": "998.833715413040000",
                   "inventory": "0.10",
                   "mark_price": "221.36000",
                   "nav": "0.998833715413040",
-                  "reserved_collateral": "105.58287020000",
+                  "pending_reservations": "95.18205760000",
+                  "position_collateral": "23.29296740000",
+                  "reserved_collateral": "118.47502500000",
                   "time": "2026-05-18T00:45:59.999999+00:00",
                   "unrealized": "-1.15696740000",
                   "wallet_cash": "999.990682813040000",
@@ -6967,7 +7016,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "190.28",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6977,7 +7026,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "200.18",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6987,7 +7036,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "210.58",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -6997,7 +7046,7 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "221.53",
+                      "reservation_price": "237.86000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -7068,6 +7117,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "237.86000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-14T23:59:59.999999+00:00"
@@ -7112,6 +7162,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "237.86000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-14T23:59:59.999999+00:00"
@@ -7156,6 +7207,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "237.86000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-14T23:59:59.999999+00:00"
@@ -7267,6 +7319,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.00",
+                "reservation_price": "237.86000",
                 "reverse_orders": [
                   {
                     "grid_level": 4,
@@ -7387,6 +7440,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.00",
+                "reservation_price": "237.86000",
                 "reverse_orders": [
                   {
                     "grid_level": 5,
@@ -7440,6 +7494,7 @@
                 "quantity": "0.10",
                 "reduce_only": true,
                 "remaining_quantity": "0.10",
+                "reservation_price": "245.18",
                 "reverse_orders": [],
                 "side": "SELL",
                 "submitted_at": "2026-05-15T05:59:59.999999+00:00"
@@ -7475,6 +7530,7 @@
                 "quantity": "0.10",
                 "reduce_only": true,
                 "remaining_quantity": "0.10",
+                "reservation_price": "233.06",
                 "reverse_orders": [],
                 "side": "SELL",
                 "submitted_at": "2026-05-18T00:59:59.999999+00:00"
@@ -7771,14 +7827,17 @@
           "accounts": {
             "A": {
               "after": {
-                "available_wallet_cash": "894.39577520",
+                "available_wallet_cash": "881.02242800000",
+                "committed": "118.97757200000",
                 "cumulative_fees": "0",
                 "entry_price": "0",
                 "equity": "1000.00000",
                 "inventory": "0",
                 "mark_price": "232.79000",
                 "nav": "1.00000",
-                "reserved_collateral": "105.60422480",
+                "pending_reservations": "118.97757200000",
+                "position_collateral": "0",
+                "reserved_collateral": "118.97757200000",
                 "time": "2026-05-15T05:18:59.999999+00:00",
                 "unrealized": "0.00000",
                 "wallet_cash": "1000",
@@ -7789,7 +7848,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "190.28",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7799,7 +7858,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "200.18",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7809,7 +7868,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "210.58",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7819,7 +7878,7 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "221.53",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7829,21 +7888,24 @@
                     "order_id": "research-00000005",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "233.05",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
                 ]
               },
               "before": {
-                "available_wallet_cash": "894.39577520",
+                "available_wallet_cash": "881.02242800000",
+                "committed": "118.97757200000",
                 "cumulative_fees": "0",
                 "entry_price": "0",
                 "equity": "1000.00000",
                 "inventory": "0",
                 "mark_price": "232.79000",
                 "nav": "1.00000",
-                "reserved_collateral": "105.60422480",
+                "pending_reservations": "118.97757200000",
+                "position_collateral": "0",
+                "reserved_collateral": "118.97757200000",
                 "time": "2026-05-15T05:18:59.999999+00:00",
                 "unrealized": "0.00000",
                 "wallet_cash": "1000",
@@ -7854,7 +7916,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "190.28",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7864,7 +7926,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "200.18",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7874,7 +7936,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "210.58",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7884,7 +7946,7 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "221.53",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7894,7 +7956,7 @@
                     "order_id": "research-00000005",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "233.05",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
@@ -7903,14 +7965,17 @@
             },
             "B": {
               "after": {
-                "available_wallet_cash": "894.407812613040000",
+                "available_wallet_cash": "881.515657813040000",
+                "committed": "118.47502500000",
                 "cumulative_fees": "0.009317186960000",
                 "entry_price": "232.929674000",
                 "equity": "999.976715413040000",
                 "inventory": "0.10",
                 "mark_price": "232.79000",
                 "nav": "0.999976715413040",
-                "reserved_collateral": "105.58287020000",
+                "pending_reservations": "95.18205760000",
+                "position_collateral": "23.29296740000",
+                "reserved_collateral": "118.47502500000",
                 "time": "2026-05-15T05:18:59.999999+00:00",
                 "unrealized": "-0.01396740000",
                 "wallet_cash": "999.990682813040000",
@@ -7921,7 +7986,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "190.28",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7931,7 +7996,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "200.18",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7941,7 +8006,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "210.58",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7951,21 +8016,24 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "221.53",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
                 ]
               },
               "before": {
-                "available_wallet_cash": "894.39577520",
+                "available_wallet_cash": "881.02242800000",
+                "committed": "118.97757200000",
                 "cumulative_fees": "0",
                 "entry_price": "0",
                 "equity": "1000.00000",
                 "inventory": "0",
                 "mark_price": "232.79000",
                 "nav": "1.00000",
-                "reserved_collateral": "105.60422480",
+                "pending_reservations": "118.97757200000",
+                "position_collateral": "0",
+                "reserved_collateral": "118.97757200000",
                 "time": "2026-05-15T05:18:59.999999+00:00",
                 "unrealized": "0.00000",
                 "wallet_cash": "1000",
@@ -7976,7 +8044,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "190.28",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7986,7 +8054,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "200.18",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -7996,7 +8064,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "210.58",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -8006,7 +8074,7 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "221.53",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -8016,7 +8084,7 @@
                     "order_id": "research-00000005",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "233.05",
+                    "reservation_price": "237.86000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
@@ -8397,7 +8465,7 @@
           "order_trajectories_with_different_fills": 2
         }
       },
-      "execution_cases_sha256": "54f4b76c404c4d177a27d4ca46d074fcfd28f6096e95ef9bf123b0a10d851789",
+      "execution_cases_sha256": "6eb3f41091798fd09974922944102ca97871d141819fa05a5b9b08cf6910e171",
       "id": "I1",
       "order_pairing": {
         "first_differing_event": {
@@ -8956,6 +9024,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -8990,6 +9059,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9024,6 +9094,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9058,6 +9129,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9093,6 +9165,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.00",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9127,6 +9200,7 @@
               "quantity": "0.10",
               "reduce_only": true,
               "remaining_quantity": "0.10",
+              "reservation_price": "226.84",
               "side": "SELL",
               "submitted_at": "2026-05-22T19:59:59.999999+00:00"
             }
@@ -9350,6 +9424,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9384,6 +9459,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9418,6 +9494,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9452,6 +9529,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9487,6 +9565,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.00",
+              "reservation_price": "220.07000",
               "side": "BUY",
               "submitted_at": "2026-05-21T23:59:59.999999+00:00"
             },
@@ -9521,6 +9600,7 @@
               "quantity": "0.10",
               "reduce_only": true,
               "remaining_quantity": "0.10",
+              "reservation_price": "226.84",
               "side": "SELL",
               "submitted_at": "2026-05-22T14:59:59.999999+00:00"
             }
@@ -10065,14 +10145,17 @@
             "first_fill_path": [
               {
                 "after": {
-                  "available_wallet_cash": "902.295004228240000",
+                  "available_wallet_cash": "890.366234628240000",
+                  "committed": "109.62514060000",
                   "cumulative_fees": "0.008624771760000",
                   "entry_price": "215.619294000",
                   "equity": "999.978445828240000",
                   "inventory": "0.10",
                   "mark_price": "215.49000",
                   "nav": "0.999978445828240",
-                  "reserved_collateral": "97.69637100000",
+                  "pending_reservations": "88.06321120000",
+                  "position_collateral": "21.56192940000",
+                  "reserved_collateral": "109.62514060000",
                   "time": "2026-05-22T19:59:59.999999+00:00",
                   "unrealized": "-0.01292940000",
                   "wallet_cash": "999.991375228240000",
@@ -10083,7 +10166,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "176.05",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -10093,7 +10176,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "185.20",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -10103,7 +10186,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "194.83",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -10113,21 +10196,24 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "204.96",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
                   ]
                 },
                 "before": {
-                  "available_wallet_cash": "902.29493360",
+                  "available_wallet_cash": "889.92098600000",
+                  "committed": "110.07901400000",
                   "cumulative_fees": "0",
                   "entry_price": "0",
                   "equity": "1000.00000",
                   "inventory": "0",
                   "mark_price": "215.49000",
                   "nav": "1.00000",
-                  "reserved_collateral": "97.70506640",
+                  "pending_reservations": "110.07901400000",
+                  "position_collateral": "0",
+                  "reserved_collateral": "110.07901400000",
                   "time": "2026-05-22T19:59:59.999999+00:00",
                   "unrealized": "0.00000",
                   "wallet_cash": "1000",
@@ -10138,7 +10224,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "176.05",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -10148,7 +10234,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "185.20",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -10158,7 +10244,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "194.83",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -10168,7 +10254,7 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "204.96",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -10178,7 +10264,7 @@
                       "order_id": "research-00000005",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "215.62",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
@@ -10239,6 +10325,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -10283,6 +10370,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -10327,6 +10415,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -10371,6 +10460,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -10482,6 +10572,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.00",
+                "reservation_price": "220.07000",
                 "reverse_orders": [
                   {
                     "grid_level": 5,
@@ -10535,6 +10626,7 @@
                 "quantity": "0.10",
                 "reduce_only": true,
                 "remaining_quantity": "0.10",
+                "reservation_price": "226.84",
                 "reverse_orders": [],
                 "side": "SELL",
                 "submitted_at": "2026-05-22T19:59:59.999999+00:00"
@@ -11352,14 +11444,17 @@
             "first_fill_path": [
               {
                 "after": {
-                  "available_wallet_cash": "902.307016231120000",
+                  "available_wallet_cash": "890.378246631120000",
+                  "committed": "109.61313340000",
                   "cumulative_fees": "0.008619968880000",
                   "entry_price": "215.499222000",
                   "equity": "999.978457831120000",
                   "inventory": "0.10",
                   "mark_price": "215.37000",
                   "nav": "0.999978457831120",
-                  "reserved_collateral": "97.68436380000",
+                  "pending_reservations": "88.06321120000",
+                  "position_collateral": "21.54992220000",
+                  "reserved_collateral": "109.61313340000",
                   "time": "2026-05-22T14:23:59.999999+00:00",
                   "unrealized": "-0.01292220000",
                   "wallet_cash": "999.991380031120000",
@@ -11370,7 +11465,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "176.05",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -11380,7 +11475,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "185.20",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -11390,7 +11485,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "194.83",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -11400,21 +11495,24 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "204.96",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
                   ]
                 },
                 "before": {
-                  "available_wallet_cash": "902.29493360",
+                  "available_wallet_cash": "889.92098600000",
+                  "committed": "110.07901400000",
                   "cumulative_fees": "0",
                   "entry_price": "0",
                   "equity": "1000.00000",
                   "inventory": "0",
                   "mark_price": "215.37000",
                   "nav": "1.00000",
-                  "reserved_collateral": "97.70506640",
+                  "pending_reservations": "110.07901400000",
+                  "position_collateral": "0",
+                  "reserved_collateral": "110.07901400000",
                   "time": "2026-05-22T14:23:59.999999+00:00",
                   "unrealized": "0.00000",
                   "wallet_cash": "1000",
@@ -11425,7 +11523,7 @@
                       "order_id": "research-00000001",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "176.05",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -11435,7 +11533,7 @@
                       "order_id": "research-00000002",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "185.20",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -11445,7 +11543,7 @@
                       "order_id": "research-00000003",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "194.83",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -11455,7 +11553,7 @@
                       "order_id": "research-00000004",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "204.96",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     },
@@ -11465,7 +11563,7 @@
                       "order_id": "research-00000005",
                       "quantity": "0.10",
                       "remaining_quantity": "0.10",
-                      "reservation_price": "215.62",
+                      "reservation_price": "220.07000",
                       "side": "BUY",
                       "status": "SUBMITTED"
                     }
@@ -11526,6 +11624,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -11570,6 +11669,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -11614,6 +11714,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -11658,6 +11759,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "220.07000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-21T23:59:59.999999+00:00"
@@ -11769,6 +11871,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.00",
+                "reservation_price": "220.07000",
                 "reverse_orders": [
                   {
                     "grid_level": 5,
@@ -11822,6 +11925,7 @@
                 "quantity": "0.10",
                 "reduce_only": true,
                 "remaining_quantity": "0.10",
+                "reservation_price": "226.84",
                 "reverse_orders": [],
                 "side": "SELL",
                 "submitted_at": "2026-05-22T14:59:59.999999+00:00"
@@ -11887,14 +11991,17 @@
           "accounts": {
             "A": {
               "after": {
-                "available_wallet_cash": "902.29493360",
+                "available_wallet_cash": "889.92098600000",
+                "committed": "110.07901400000",
                 "cumulative_fees": "0",
                 "entry_price": "0",
                 "equity": "1000.00000",
                 "inventory": "0",
                 "mark_price": "215.37000",
                 "nav": "1.00000",
-                "reserved_collateral": "97.70506640",
+                "pending_reservations": "110.07901400000",
+                "position_collateral": "0",
+                "reserved_collateral": "110.07901400000",
                 "time": "2026-05-22T14:23:59.999999+00:00",
                 "unrealized": "0.00000",
                 "wallet_cash": "1000",
@@ -11905,7 +12012,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "176.05",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -11915,7 +12022,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "185.20",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -11925,7 +12032,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "194.83",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -11935,7 +12042,7 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "204.96",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -11945,21 +12052,24 @@
                     "order_id": "research-00000005",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "215.62",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
                 ]
               },
               "before": {
-                "available_wallet_cash": "902.29493360",
+                "available_wallet_cash": "889.92098600000",
+                "committed": "110.07901400000",
                 "cumulative_fees": "0",
                 "entry_price": "0",
                 "equity": "1000.00000",
                 "inventory": "0",
                 "mark_price": "215.37000",
                 "nav": "1.00000",
-                "reserved_collateral": "97.70506640",
+                "pending_reservations": "110.07901400000",
+                "position_collateral": "0",
+                "reserved_collateral": "110.07901400000",
                 "time": "2026-05-22T14:23:59.999999+00:00",
                 "unrealized": "0.00000",
                 "wallet_cash": "1000",
@@ -11970,7 +12080,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "176.05",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -11980,7 +12090,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "185.20",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -11990,7 +12100,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "194.83",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12000,7 +12110,7 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "204.96",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12010,7 +12120,7 @@
                     "order_id": "research-00000005",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "215.62",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
@@ -12019,14 +12129,17 @@
             },
             "B": {
               "after": {
-                "available_wallet_cash": "902.307016231120000",
+                "available_wallet_cash": "890.378246631120000",
+                "committed": "109.61313340000",
                 "cumulative_fees": "0.008619968880000",
                 "entry_price": "215.499222000",
                 "equity": "999.978457831120000",
                 "inventory": "0.10",
                 "mark_price": "215.37000",
                 "nav": "0.999978457831120",
-                "reserved_collateral": "97.68436380000",
+                "pending_reservations": "88.06321120000",
+                "position_collateral": "21.54992220000",
+                "reserved_collateral": "109.61313340000",
                 "time": "2026-05-22T14:23:59.999999+00:00",
                 "unrealized": "-0.01292220000",
                 "wallet_cash": "999.991380031120000",
@@ -12037,7 +12150,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "176.05",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12047,7 +12160,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "185.20",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12057,7 +12170,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "194.83",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12067,21 +12180,24 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "204.96",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
                 ]
               },
               "before": {
-                "available_wallet_cash": "902.29493360",
+                "available_wallet_cash": "889.92098600000",
+                "committed": "110.07901400000",
                 "cumulative_fees": "0",
                 "entry_price": "0",
                 "equity": "1000.00000",
                 "inventory": "0",
                 "mark_price": "215.37000",
                 "nav": "1.00000",
-                "reserved_collateral": "97.70506640",
+                "pending_reservations": "110.07901400000",
+                "position_collateral": "0",
+                "reserved_collateral": "110.07901400000",
                 "time": "2026-05-22T14:23:59.999999+00:00",
                 "unrealized": "0.00000",
                 "wallet_cash": "1000",
@@ -12092,7 +12208,7 @@
                     "order_id": "research-00000001",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "176.05",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12102,7 +12218,7 @@
                     "order_id": "research-00000002",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "185.20",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12112,7 +12228,7 @@
                     "order_id": "research-00000003",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "194.83",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12122,7 +12238,7 @@
                     "order_id": "research-00000004",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "204.96",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   },
@@ -12132,7 +12248,7 @@
                     "order_id": "research-00000005",
                     "quantity": "0.10",
                     "remaining_quantity": "0.10",
-                    "reservation_price": "215.62",
+                    "reservation_price": "220.07000",
                     "side": "BUY",
                     "status": "SUBMITTED"
                   }
@@ -12448,7 +12564,7 @@
           "order_trajectories_with_different_fills": 1
         }
       },
-      "execution_cases_sha256": "53ed790b1c06a745e79ad665065eea9938dee78525605553ef7be2550771aef8",
+      "execution_cases_sha256": "53d1eee697e51173ace2de800f186c3fe529ea85bb66c25955f03ac0c445a7bb",
       "id": "I2",
       "order_pairing": {
         "first_differing_event": {
@@ -12929,6 +13045,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -12963,6 +13080,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -12997,6 +13115,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -13031,6 +13150,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -13065,6 +13185,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             }
@@ -13275,6 +13396,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -13309,6 +13431,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -13343,6 +13466,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -13377,6 +13501,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             },
@@ -13411,6 +13536,7 @@
               "quantity": "0.10",
               "reduce_only": false,
               "remaining_quantity": "0.10",
+              "reservation_price": "214.25000",
               "side": "BUY",
               "submitted_at": "2026-05-28T23:59:59.999999+00:00"
             }
@@ -13999,6 +14125,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14043,6 +14170,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14087,6 +14215,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14131,6 +14260,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14175,6 +14305,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14245,6 +14376,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14289,6 +14421,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14333,6 +14466,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14377,6 +14511,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14421,6 +14556,7 @@
                 "quantity": "0.10",
                 "reduce_only": false,
                 "remaining_quantity": "0.10",
+                "reservation_price": "214.25000",
                 "reverse_orders": [],
                 "side": "BUY",
                 "submitted_at": "2026-05-28T23:59:59.999999+00:00"
@@ -14474,7 +14610,7 @@
           "order_trajectories_with_different_fills": 0
         }
       },
-      "execution_cases_sha256": "0e08a37e40a48cb45d726c6ca386c6674917d878e7eed38108099933f3eedbe5",
+      "execution_cases_sha256": "6a56f80662399095fc0ef94f660e9fd015553869ddca58e558bd6ab826e40908",
       "id": "I3",
       "order_pairing": {
         "first_differing_event": null,

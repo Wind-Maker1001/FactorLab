@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 from factorlab.experiments.grid_fifo import D, attribute_events
-from factorlab.trading.contracts import OrderStatus, Side, TERMINAL, ZERO
+from factorlab.trading.contracts import OrderStatus, Side, TERMINAL, ZERO, decimal_value
 from factorlab.trading.storage import PaperStore
 
 
@@ -21,6 +21,12 @@ def _read_csv(path):
         return list(csv.DictReader(stream))
 
 
+def validate_reservation_price(order_id, price, limit):
+    decimal_value(price, f'Paper reservation_price for {order_id}', positive=True)
+    if limit is not None and price < limit:
+        raise ValueError(f'Paper reservation_price below the limit for {order_id}')
+
+
 def _order_receipts(state, events, result, references):
     orders = {}
     fills = []
@@ -31,8 +37,10 @@ def _order_receipts(state, events, result, references):
         snapshot = record.snapshot
         intent = snapshot.intent
         details = result['orders'][order_id]
+        validate_reservation_price(order_id, record.reservation_price, intent.limit_price)
         orders[order_id] = dict(side=intent.side.value, order_type=intent.order_type.value,
             quantity=intent.quantity, limit_price=intent.limit_price, reduce_only=intent.reduce_only,
+            reservation_price=record.reservation_price,
             grid_level=details['grid_level'], purpose=details['purpose'],
             final_status=snapshot.status.value, filled_quantity=snapshot.cumulative_filled_quantity,
             cumulative_fee=snapshot.cumulative_fee,

@@ -48,6 +48,42 @@ def _paper_inputs(market_data):
     return settings, D(definition['capacity'])
 
 
+def _economic_accounts(accounts):
+    # Preserve the issued F04C economic identity when adding collateral evidence.
+    return {arm: account | dict(orders={
+        order_id: {key: value for key, value in order.items() if key != 'reservation_price'}
+        for order_id, order in account['orders'].items()
+    }) for arm, account in accounts.items()}
+
+
+def refresh_reserved_collateral(directory, cached, market_data):
+    """Reaudit finished accounts against the native journal and admitted prices."""
+    start = datetime.fromisoformat(market_data.evidence['start'])
+    end = datetime.fromisoformat(market_data.evidence['end_exclusive'])
+    bars = {'A': market_data.hourly, 'B': market_data.minutes}
+    accounts = {}
+    for arm, cached_account in cached['accounts'].items():
+        account_dir = directory / arm
+        if not (account_dir / 'paper.sqlite').is_file():
+            raise ValueError(f'Paper reservation evidence BLOCKED: missing {account_dir / "paper.sqlite"}. '
+                             'Rebuild from admitted local archives in a fresh accounts directory.')
+        closes = {row['time']: row['close'] for row in bars[arm]}
+        references = {}
+        for order in cached_account['orders'].values():
+            for event in order['events']:
+                if event['fill_price'] is not None:
+                    at = datetime.fromisoformat(event['event_time'])
+                    if arm == 'A':
+                        at = at.replace(minute=0)
+                    references[event['event_id']] = closes[
+                        at.replace(second=0, microsecond=0).isoformat()]
+        account = audit_account(account_dir, start=start, end=end, fill_references=references)
+        accounts[arm] = account | dict(observations=cached_account['observations'])
+    if _encode(_economic_accounts(accounts)) != _encode(_economic_accounts(cached['accounts'])):
+        raise ValueError(f'Native Paper journal or account exports disagree with cached audit in {directory}')
+    return cached | dict(accounts=accounts)
+
+
 def run(output, market_data, *, account_prefix='mc05-f04c'):
     started, cpu_started = perf_counter(), process_time()
     output.mkdir(parents=True, exist_ok=False)
@@ -88,7 +124,8 @@ def run(output, market_data, *, account_prefix='mc05-f04c'):
                     observations_sha256=sha256(trace).hexdigest())
     sensitivity = ('CLOSE_VS_MINUTE_SENSITIVITY_ESTABLISHED'
                    if pairing['order_trajectories_with_different_fills'] else 'INCONCLUSIVE')
-    audit = dict(research='MC-05-F04C', **identity, result_sha256=sha256(_encode(identity)).hexdigest(),
+    economics = identity | dict(accounts=_economic_accounts(accounts))
+    audit = dict(research='MC-05-F04C', **identity, result_sha256=sha256(_encode(economics)).hexdigest(),
         states=[evidence['status'], sensitivity, 'REAL_FILL_NOT_VERIFIED',
                 'FINANCIAL_NOT_ESTABLISHED', 'NO LIVE MONEY'],
         resources=dict(replay_and_audit_wall_seconds=perf_counter()-started,

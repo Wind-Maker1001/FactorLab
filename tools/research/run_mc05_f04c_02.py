@@ -5,6 +5,7 @@ from decimal import Decimal
 from hashlib import sha256
 import json
 from pathlib import Path
+import socket
 import subprocess
 from time import perf_counter, process_time
 from urllib.error import HTTPError, URLError
@@ -17,7 +18,7 @@ from factorlab.experiments.mc_grid_tail_f04c_data import (
 )
 from factorlab.experiments.mc_grid_tail_f04c_windows import candidate_windows, screen_initial_orders
 from factorlab.integrations.binance.market import milliseconds
-from run_mc05_f04c import _encode, _paper_inputs, run
+from run_mc05_f04c import _encode, _paper_inputs, refresh_reserved_collateral, run
 
 
 MAX_OBJECT = 2 * 1024 * 1024
@@ -98,29 +99,57 @@ def acquire(root, objects):
     for item in objects:
         if item['name'] not in completed_names and item['window'] not in rejected:
             rejected[item['window']] = 'acquisition stopped at the preregistered budget'
-    return dict(head_requests=availability, get_requests=len(receipts), downloaded_bytes=total,
-                rejected_windows=rejected, acquisition_wall_seconds=perf_counter() - started)
+    return dict(mode='ONLINE_ACQUIRE', head_requests=availability, get_requests=len(receipts),
+                downloaded_bytes=total, rejected_windows=rejected,
+                acquisition_wall_seconds=perf_counter() - started)
 
 
-def finer_evidence(window_id, minute):
-    """A single historical day, three official product probes, no trade download."""
+def _probe_targets(window_id, minute):
     date = minute[:10]
-    observations = []
     for product in ('aggTrades', 'bookTicker', 'bookDepth'):
         name = f'NVDAUSDT-{product}-{date}.zip'
         url = f'{ARCHIVE}/daily/{product}/NVDAUSDT/{name}'
-        row = dict(window=window_id, product=product, date=date, url=url,
-                   checked_at=datetime.now(timezone.utc).isoformat())
-        try:
-            with urlopen(Request(url, method='HEAD'), timeout=20) as response:
-                row.update(status=response.status, content_length=response.headers.get('Content-Length'),
-                           last_modified=response.headers.get('Last-Modified'))
-        except HTTPError as error:
-            row.update(status=error.code)
-        except URLError as error:
-            row.update(status='NETWORK_ERROR', error=str(error.reason))
-        observations.append(row)
-    return dict(probes=observations, trade_payload_downloaded=False,
+        yield dict(window=window_id, product=product, date=date, url=url)
+
+
+def _head_probe(target):
+    url = target['url']
+    row = target | dict(checked_at=datetime.now(timezone.utc).isoformat())
+    try:
+        with urlopen(Request(url, method='HEAD'), timeout=20) as response:
+            return row | dict(status=response.status, headers=dict(response.headers))
+    except HTTPError as error:
+        return row | dict(status=error.code, headers=dict(error.headers or {}), error=str(error))
+    except (URLError, TimeoutError, socket.timeout) as error:
+        return row | dict(status='NETWORK_ERROR', error=str(error))
+
+
+def _classify_probe(row):
+    status = row['status']
+    if status == 200:
+        return row | dict(outcome='AVAILABLE')
+    if status == 404:
+        return row | dict(outcome='HTTP_NOT_FOUND', object_availability='NOT_AVAILABLE_IN_ARCHIVE')
+    return row | dict(outcome=f'HTTP_{status}' if isinstance(status, int) else status)
+
+
+def finer_evidence(touched, *, online, prior):
+    """Use three HEAD requests for one historical day, or reuse recorded receipts offline."""
+    targets = list(_probe_targets(*touched)) if touched else []
+    if online:
+        if not targets:
+            return None
+        mode = 'ONLINE_HEAD'
+        observations = [_head_probe(target) for target in targets]
+    else:
+        cached = {(row['window'], row['url']): row for row in (prior or {}).get('probes', [])
+                  if row['status'] != 'NOT_RECHECKED_OFFLINE'}
+        observations = [cached.get((target['window'], target['url']),
+                                   target | dict(status='NOT_RECHECKED_OFFLINE')) for target in targets]
+        mode = ('OFFLINE_REUSE' if any(row['status'] != 'NOT_RECHECKED_OFFLINE' for row in observations)
+                else 'NOT_RECHECKED_OFFLINE')
+    return dict(probe_mode=mode, probes=[_classify_probe(row) for row in observations],
+                trade_payload_downloaded=False,
                 queue_position='NOT_AVAILABLE', historical_spread_depth='NOT_ADMITTED',
                 minute_trade_fields='trade_count, taker_buy_volume, taker_buy_quote_volume')
 
@@ -143,6 +172,14 @@ def execute(args):
     hourly, manifest, _, _ = _hourly_source(args.hourly_snapshot)
     candidates = select_windows(hourly, manifest)
     selected = [row for row in candidates if row['selected']]
+    audit_path = args.output / 'AUDIT.json'
+    prior_finer = None
+    if not args.acquire:
+        probe_audit = args.probe_audit
+        if probe_audit is None and audit_path.is_file():
+            probe_audit = audit_path
+        if probe_audit is not None:
+            prior_finer = json.loads(probe_audit.read_text(encoding='utf-8')).get('finer_evidence')
     # Freeze selected identities before availability, minute data or account outcomes.
     args.output.mkdir(parents=True, exist_ok=args.resume)
     (args.output / 'DATA_COVERAGE.md').write_text(
@@ -173,8 +210,8 @@ def execute(args):
                 acquisition['rejected_windows'][candidate['id']] = (
                     'incomplete bounded acquisition receipts; no retry or replacement window: '
                     + ', '.join(missing))
-    (args.output / 'AUDIT.json').write_bytes(_encode(dict(
-        research='MC-05-F04C-02', stage='ARCHIVES_ACQUIRED', acquisition=acquisition)))
+    audit_path.write_bytes(_encode(dict(research='MC-05-F04C-02', stage='ARCHIVES_ACQUIRED',
+                                       acquisition=acquisition, finer_evidence=prior_finer)))
 
     windows = []
     touched = None
@@ -193,6 +230,7 @@ def execute(args):
         prefix = f"mc05-f04c-02-{candidate['id']}"
         if args.resume and directory.exists():
             result = json.loads((directory / 'AUDIT.json').read_text(encoding='utf-8'))
+            result = refresh_reserved_collateral(directory, result, market_data)
         else:
             result = run(directory, market_data, account_prefix=prefix)
         cases = extract_execution_cases(result['accounts'], market_data, Decimal('0.0006'))
@@ -207,6 +245,7 @@ def execute(args):
         repeated = args.accounts_root / 'repeat' / candidate['id']
         if args.resume and repeated.exists():
             replay = json.loads((repeated / 'AUDIT.json').read_text(encoding='utf-8'))
+            replay = refresh_reserved_collateral(repeated, replay, market_data)
         else:
             replay = run(repeated, market_data, account_prefix=prefix)
         if result['result_sha256'] != replay['result_sha256']:
@@ -215,8 +254,10 @@ def execute(args):
         windows[-1]['repeat_resources'] = replay['resources']
         if touched is None and (result['accounts']['A']['observations']['ohlc_order_minute_touches']
                                 or result['accounts']['B']['metrics']['fills']):
-            touched = (candidate['id'], min(touch['minute'] for arm in cases['arms'].values()
-                                            for touch in arm['touches']))
+            first_touch = min((touch['minute'] for arm in cases['arms'].values()
+                               for touch in arm['touches']), default=None)
+            if first_touch is not None:
+                touched = (candidate['id'], first_touch)
         if process_time() - cpu_started > 600 or perf_counter() - started > 900:
             raise TimeoutError('preregistered research runtime budget exceeded')
 
@@ -252,12 +293,16 @@ def execute(args):
         candidates=candidates, windows=windows, independent_counts=counts,
         frozen_regression=dict(expected=legacy_expected['result_sha256'], actual=legacy_actual['result_sha256']),
         states=states)
-    # Acquisition times and measured runtimes do not define economic reproducibility.
+    economics = dict(windows=[dict(id=row['id'], result_sha256=row['result_sha256'])
+                              for row in accepted],
+                     frozen_f04c=legacy_actual['result_sha256'])
+    # The stable audit identity also binds the execution cases, including funding snapshots.
     stable = dict(protocol_sha256=identity['protocol_sha256'], candidates=candidates,
                   windows=[dict(id=row['id'], result_sha256=row['result_sha256'],
                                 execution_cases_sha256=row['execution_cases_sha256']) for row in accepted])
     audit = identity | dict(result_sha256=sha256(_encode(stable)).hexdigest(),
-        acquisition=acquisition, finer_evidence=finer_evidence(*touched) if touched else None,
+        economic_results_sha256=sha256(_encode(economics)).hexdigest(),
+        acquisition=acquisition, finer_evidence=finer_evidence(touched, online=args.acquire, prior=prior_finer),
         resources=dict(wall_seconds=perf_counter() - started, cpu_seconds=process_time() - cpu_started,
             account_bytes=directory_bytes(args.accounts_root), formal_accounts=len(accepted) * 2,
             repeat_accounts=len(accepted) * 2, frozen_regression_accounts=2,
@@ -265,7 +310,7 @@ def execute(args):
             repeat_replay_cpu_seconds=sum(row['repeat_resources']['replay_and_audit_cpu_seconds'] for row in accepted)),
         validation=dict(deterministic_replay='PASS', frozen_f04c='PASS',
                         accounting_tolerance='0.00000001', targeted_tests='PENDING'))
-    (args.output / 'AUDIT.json').write_bytes(_encode(audit))
+    audit_path.write_bytes(_encode(audit))
     render_reports(args.output, audit)
     print(json.dumps(dict(states=states, independent_counts=counts,
                           result_sha256=audit['result_sha256'], resources=audit['resources'])))
@@ -279,6 +324,7 @@ def main():
     parser.add_argument('--accounts-root', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--acquire', action='store_true')
+    parser.add_argument('--probe-audit', type=Path, help='reuse finer evidence from this audit offline')
     parser.add_argument('--resume', action='store_true', help='reuse completed accounts after an interrupted evidence pass')
     execute(parser.parse_args())
 

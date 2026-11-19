@@ -1,9 +1,9 @@
 """Eligible real-price evidence for the bounded F04C execution case study."""
 from collections import Counter
 from datetime import datetime, timedelta
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
-from factorlab.experiments.grid_execution_audit import pair_orders
+from factorlab.experiments.grid_execution_audit import pair_orders, validate_reservation_price
 from factorlab.trading.contracts import (
     Market, OrderIntent, OrderSnapshot, OrderStatus, OrderType, Side, TERMINAL,
 )
@@ -122,6 +122,7 @@ def _balances(broker, at, mark, fees):
     position = broker.state.positions.get(SYMBOL)
     inventory = position.quantity if position else ZERO
     entry = position.entry_price if position else ZERO
+    position_collateral = abs(inventory) * entry
     unrealized = inventory * (mark - entry)
     equity = asset.total + unrealized
     working = []
@@ -135,7 +136,9 @@ def _balances(broker, at, mark, fees):
             remaining_quantity=order.intent.quantity - order.cumulative_filled_quantity,
             reservation_price=record.reservation_price))
     return dict(time=at.isoformat(), wallet_cash=asset.total, reserved_collateral=asset.reserved,
-        available_wallet_cash=asset.available, inventory=inventory, entry_price=entry,
+        available_wallet_cash=asset.available, position_collateral=position_collateral,
+        pending_reservations=asset.reserved - position_collateral, committed=asset.reserved,
+        inventory=inventory, entry_price=entry,
         mark_price=mark, unrealized=unrealized, equity=equity, nav=equity / CAPITAL,
         cumulative_fees=fees, working_orders=working)
 
@@ -145,6 +148,16 @@ def _replay_receipts(account, minute_index, hourly_index, start, end, target):
     broker = PaperBroker(Market.BINANCE_USDM, 'execution-case-evidence',
         (Instrument(SYMBOL, 'USDT'),), {'USDT': CAPITAL}, fee_rate=FEE_RATE)
     intents = {order_id: _intent(order_id, order) for order_id, order in account['orders'].items()}
+    reservations = {}
+    for order_id, order in account['orders'].items():
+        price = order.get('reservation_price')
+        if isinstance(price, str):
+            try:
+                price = Decimal(price)
+            except InvalidOperation as error:
+                raise ValueError(f'Invalid Paper reservation_price for {order_id}') from error
+        validate_reservation_price(order_id, price, intents[order_id].limit_price)
+        reservations[order_id] = price
     events = sorted((event | dict(order_id=order_id) for order_id, order in account['orders'].items()
                      for event in order['events']), key=lambda event: event['journal_cursor'])
 
@@ -173,8 +186,6 @@ def _replay_receipts(account, minute_index, hourly_index, start, end, target):
         previous = broker.state.orders.get(order_id)
         cumulative_quantity = previous.snapshot.cumulative_filled_quantity if previous else ZERO
         cumulative_fee = previous.snapshot.cumulative_fee if previous else ZERO
-        reservation = previous.reservation_price if previous else (
-            intent.limit_price if intent.limit_price is not None else mark)
         quantity = _decimal(event['filled_quantity'])
         fee = _decimal(event['fee'])
         if event['fill_price'] is not None:
@@ -184,7 +195,8 @@ def _replay_receipts(account, minute_index, hourly_index, start, end, target):
         fees += fee
         snapshot = OrderSnapshot(intent, OrderStatus(event['status']),
             cumulative_quantity + quantity, cumulative_fee + fee)
-        broker.state.orders[order_id] = OrderRecord(snapshot, at, reservation, snapshot.status)
+        broker.state.orders[order_id] = OrderRecord(
+            snapshot, at, reservations[order_id], snapshot.status)
         if event['fill_price'] is not None:
             path.append(event | dict(side=intent.side.value,
                 cumulative_filled_quantity=snapshot.cumulative_filled_quantity,
@@ -197,11 +209,10 @@ def _replay_receipts(account, minute_index, hourly_index, start, end, target):
             after_target = _balances(broker, target, target_mark, fees)
     terminal_time = end - MICROSECOND
     terminal = _balances(broker, terminal_time, reference(terminal_time), fees)
-    position_collateral = terminal['inventory'] * terminal['entry_price']
     terminal_account = dict(cash=terminal['wallet_cash'], inventory=terminal['inventory'],
         equity=terminal['equity'], nav=terminal['nav'], entry_price=terminal['entry_price'],
-        mark=terminal['mark_price'], pending_reservations=terminal['reserved_collateral'] - position_collateral,
-        position_collateral=position_collateral, committed=terminal['reserved_collateral'],
+        mark=terminal['mark_price'], pending_reservations=terminal['pending_reservations'],
+        position_collateral=terminal['position_collateral'], committed=terminal['committed'],
         available=terminal['available_wallet_cash'], unrealized=terminal['unrealized'],
         cumulative_fees=fees, working_orders=terminal['working_orders'])
     return path, dict(before=before_target, after=after_target), terminal_account
