@@ -1,0 +1,58 @@
+{
+  "bar_receipts": 0,
+  "book_age_seconds": null,
+  "book_market_gap_seconds": null,
+  "book_receipt_gap_seconds": null,
+  "books": 0,
+  "collector_source_sha256": "af39e2926ada7adf8121b92a9fb518ac2459d9bd4c6fc6ce33ca8354cab06994",
+  "deadline": "2026-11-19T15:15:16.252415+00:00",
+  "eligible_bar_gap_seconds": null,
+  "eligible_closed_bars": 0,
+  "eligible_closes": [],
+  "end_reason": "request after interruption prohibited",
+  "experiment": "p7-r13-f03-realtime-recovery-a",
+  "failed_requests": [
+    {
+      "at": "2026-11-19T15:05:23.588403+00:00",
+      "endpoint": "/fapi/v3/positionRisk",
+      "error": "CLOCK_SKEW",
+      "status": 400
+    }
+  ],
+  "http_errors": {
+    "CLOCK_SKEW": 1
+  },
+  "http_status": {
+    "200": 2,
+    "400": 1
+  },
+  "interruptions": [],
+  "limits": {
+    "max_bytes": 5242880,
+    "max_proposals": 20,
+    "max_quote_gap_seconds": 30.0,
+    "max_requests": 600,
+    "sample_seconds": 5.0,
+    "seconds": 600.0
+  },
+  "market_gaps_over_limit": 0,
+  "mode": "SIGNED_GRID_PREVIEW",
+  "raw_events_sha256": "e13ce4e3ab6fdf36ca3936a6b05fd53668dd3b2235aab1684b330f4472159ac9",
+  "receipt_gaps_over_limit": 0,
+  "requests": {
+    "DELETE": 0,
+    "GET": 3,
+    "POST": 0
+  },
+  "reserved_methods": {
+    "GET": 3
+  },
+  "round_account_gets": null,
+  "round_loop_seconds": null,
+  "round_market_gets": null,
+  "round_stage_seconds": {},
+  "rounds": [],
+  "source_commit": "97198b434cd48a509db2b987f036f35686821121",
+  "started_at": "2026-11-19T15:05:16.252415+00:00",
+  "window_end": "2026-11-19T15:05:23.601184+00:00"
+}
