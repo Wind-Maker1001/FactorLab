@@ -215,6 +215,14 @@ class DemoExecutionGateway(FuturesPaperGateway):
             for a in local.assets)
         return replace(local, assets=assets, reconciled=remote.reconciled)
 
+    def recover(self, controller):
+        # No order identity means there is nothing to import, replay or verify
+        # on both sides of replay. Reconcile once with current exchange facts.
+        if not self.state.orders and self.adapter.db.execute(
+                'SELECT 1 FROM futures_orders LIMIT 1').fetchone() is None:
+            return controller.reconcile()
+        return super().recover(controller)
+
     def reconcile(self):
         """Import authenticated account authority after all execution deltas are booked."""
         exchange = self.adapter.reconcile()

@@ -114,16 +114,51 @@ def test_continuous_catchup_pages_without_quotes_or_skipped_bars(tmp_path):
     transport = PagedTransport()
     feed, _, consumer = make(tmp_path, transport, max_backfill=2, catch_up=True)
     assert feed.poll() == dict(bars=1, quotes=1)
-    transport.time += 300000
-    assert feed.poll() == dict(bars=2, quotes=0)
+    transport.time += 11 * 60000
+    start = len(transport.requests)
+    assert feed.poll() == dict(bars=8, quotes=0)
     assert feed.reason == 'CATCHING_UP'
+    pages = transport.requests[start:]
+    assert [r.path.rsplit('/', 1)[-1] for r in pages] == ['time'] + ['klines'] * 4
+    assert [int(parse_qs(r.query)['startTime'][0]) for r in pages[1:]] == [
+        180000, 300000, 420000, 540000]
     feed.close()
     feed, _, _ = make(tmp_path, transport, consumer, max_backfill=2, catch_up=True)
     assert feed.poll() == dict(bars=2, quotes=0)
     assert feed.poll() == dict(bars=1, quotes=1)
-    assert [b.opened_at.timestamp() for b in consumer.bars] == [120, 180, 240, 300, 360, 420]
+    assert [b.opened_at.timestamp() for b in consumer.bars] == list(range(120, 840, 60))
     assert len(consumer.quotes) == 2
     feed.close()
+
+
+def test_caught_up_cursor_skips_klines_until_next_boundary(tmp_path):
+    feed, transport, _ = make(tmp_path)
+    with closing(feed):
+        assert feed.poll() == dict(bars=1, quotes=1)
+        transport.time += 1000
+        transport.requests.clear()
+        assert feed.poll() == dict(bars=0, quotes=1)
+        assert [r.path for r in transport.requests] == ['/fapi/v1/time', '/fapi/v1/ticker/bookTicker']
+        transport.time += 60000
+        assert feed.poll() == dict(bars=1, quotes=1)
+
+
+def test_aged_poll_anchor_still_rejects_fresh_book_before_delivery(tmp_path):
+    class LaggedTime(Transport):
+        def __call__(self, request, timeout):
+            response = super().__call__(request, timeout)
+            if request.path.endswith('/time'):
+                return Response(200, {}, json.dumps({'serverTime': self.time - 3500}).encode())
+            if request.path.endswith('/klines'):
+                self.time += 1601
+            return response
+
+    transport = LaggedTime()
+    transport.time = 184000
+    feed, _, consumer = make(tmp_path, transport)
+    with closing(feed), pytest.raises(FeedPaused, match='STALE_POLL'):
+        feed.poll()
+    assert not consumer.bars and not consumer.quotes
 
 
 def test_complete_precision_duplicate_restart(tmp_path):

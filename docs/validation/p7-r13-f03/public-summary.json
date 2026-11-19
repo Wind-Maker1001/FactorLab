@@ -1,0 +1,224 @@
+{
+  "bar_receipts": 1,
+  "book_age_seconds": {
+    "count": 2,
+    "max": 4.380186,
+    "p50": 3.811276,
+    "p95": 4.380186
+  },
+  "book_market_gap_seconds": {
+    "count": 1,
+    "max": 9.028,
+    "p50": 9.028,
+    "p95": 9.028
+  },
+  "book_receipt_gap_seconds": {
+    "count": 1,
+    "max": 8.45909,
+    "p50": 8.45909,
+    "p95": 8.45909
+  },
+  "books": 2,
+  "collector_source_sha256": "af39e2926ada7adf8121b92a9fb518ac2459d9bd4c6fc6ce33ca8354cab06994",
+  "deadline": "2026-11-19T15:11:55.421700+00:00",
+  "eligible_bar_gap_seconds": null,
+  "eligible_closed_bars": 0,
+  "eligible_closes": [],
+  "end_reason": "STALE_POLL",
+  "experiment": "p7-r13-f03-public-diagnostic-a",
+  "failed_requests": [],
+  "http_errors": {},
+  "http_status": {
+    "200": 9
+  },
+  "interruptions": [
+    {
+      "at": "2026-11-19T15:10:12.751826+00:00",
+      "reason": "STALE_POLL"
+    }
+  ],
+  "limits": {
+    "max_bytes": 5242880,
+    "max_proposals": 20,
+    "max_quote_gap_seconds": 30,
+    "max_requests": 597,
+    "sample_seconds": 5,
+    "seconds": 155
+  },
+  "market_gaps_over_limit": 0,
+  "mode": "PUBLIC_ONLY",
+  "raw_events_sha256": "31fa1aa28036e1a4b9b18239053d3c808f008ddeada2a650acaf0b9599e22ba0",
+  "receipt_gaps_over_limit": 0,
+  "requests": {
+    "DELETE": 0,
+    "GET": 9,
+    "POST": 0
+  },
+  "reserved_methods": {
+    "GET": 9
+  },
+  "round_account_gets": {
+    "count": 3,
+    "max": 0,
+    "p50": 0,
+    "p95": 0
+  },
+  "round_loop_seconds": {
+    "count": 3,
+    "max": 10.905950000043958,
+    "p50": 8.4417752000154,
+    "p95": 10.905950000043958
+  },
+  "round_market_gets": {
+    "count": 3,
+    "max": 3,
+    "p50": 3,
+    "p95": 3
+  },
+  "round_stage_seconds": {
+    "book_market_to_received": {
+      "count": 3,
+      "max": 4.380186,
+      "p50": 3.811276,
+      "p95": 4.380186
+    },
+    "book_received_gap": {
+      "count": 2,
+      "max": 15.929448,
+      "p50": 8.45909,
+      "p95": 15.929448
+    },
+    "closed_bar_callback": {
+      "count": 1,
+      "max": 2.100015990436077e-06,
+      "p50": 2.100015990436077e-06,
+      "p95": 2.100015990436077e-06
+    },
+    "cursor_commit": {
+      "count": 2,
+      "max": 0.013715900015085936,
+      "p50": 0.0038972999900579453,
+      "p95": 0.013715900015085936
+    },
+    "feed_commit": {
+      "count": 3,
+      "max": 0.013715900015085936,
+      "p50": 0.0038972999900579453,
+      "p95": 0.013715900015085936
+    },
+    "market_get": {
+      "count": 3,
+      "max": 10.864548799931072,
+      "p50": 3.412122300011106,
+      "p95": 10.864548799931072
+    },
+    "market_poll": {
+      "count": 3,
+      "max": 10.903757000050973,
+      "p50": 3.4356582000036724,
+      "p95": 10.903757000050973
+    },
+    "poll_anchor_age": {
+      "count": 3,
+      "max": 5.117789,
+      "p50": 4.088249,
+      "p95": 5.117789
+    },
+    "scheduling_wait": {
+      "count": 3,
+      "max": 5.005812499963213,
+      "p50": 5.005087800032925,
+      "p95": 5.005812499963213
+    },
+    "server_time_at_receipt_age": {
+      "count": 3,
+      "max": 2.433162,
+      "p50": 2.424128,
+      "p95": 2.433162
+    },
+    "start_to_start": {
+      "count": 2,
+      "max": 8.453473399975337,
+      "p50": 7.591549800010398,
+      "p95": 8.453473399975337
+    }
+  },
+  "rounds": [
+    {
+      "account_gets": 0,
+      "at": "2026-11-19T15:09:45.802995+00:00",
+      "bars": 1,
+      "book_received_at": "2026-11-19T15:09:48.363186+00:00",
+      "books": 1,
+      "error": null,
+      "market_at": "2026-11-19T15:09:43.983000+00:00",
+      "market_gets": 3,
+      "operations": {
+        "book_market_to_received": 4.380186,
+        "closed_bar_callback": 2.100015990436077e-06,
+        "cursor_commit": 0.013715900015085936,
+        "feed_commit": 0.013715900015085936,
+        "market_get": 2.51774750003824,
+        "market_poll": 2.57459309999831,
+        "poll_anchor_age": 4.088249,
+        "scheduling_wait": 5.005087800032925,
+        "server_time_at_receipt_age": 2.424128
+      },
+      "reason": null,
+      "seconds": 7.5800326000317,
+      "total_requests": 3
+    },
+    {
+      "account_gets": 0,
+      "at": "2026-11-19T15:09:53.394547+00:00",
+      "bars": 0,
+      "book_received_at": "2026-11-19T15:09:56.822276+00:00",
+      "books": 1,
+      "error": null,
+      "market_at": "2026-11-19T15:09:53.011000+00:00",
+      "market_gets": 2,
+      "operations": {
+        "book_market_to_received": 3.811276,
+        "book_received_gap": 8.45909,
+        "cursor_commit": 0.0038972999900579453,
+        "feed_commit": 0.0038972999900579453,
+        "market_get": 3.412122300011106,
+        "market_poll": 3.4356582000036724,
+        "poll_anchor_age": 2.977355,
+        "scheduling_wait": 5.005812499963213,
+        "server_time_at_receipt_age": 2.416775,
+        "start_to_start": 7.591549800010398
+      },
+      "reason": null,
+      "seconds": 8.4417752000154,
+      "total_requests": 2
+    },
+    {
+      "account_gets": 0,
+      "at": "2026-11-19T15:10:01.848018+00:00",
+      "bars": 0,
+      "book_received_at": "2026-11-19T15:10:12.751724+00:00",
+      "books": 0,
+      "error": "FeedPaused",
+      "market_at": "2026-11-19T15:10:09.059000+00:00",
+      "market_gets": 3,
+      "operations": {
+        "book_market_to_received": 3.692724,
+        "book_received_gap": 15.929448,
+        "feed_commit": 0.0,
+        "market_get": 10.864548799931072,
+        "market_poll": 10.903757000050973,
+        "poll_anchor_age": 5.117789,
+        "scheduling_wait": 2.600019797682762e-06,
+        "server_time_at_receipt_age": 2.433162,
+        "start_to_start": 8.453473399975337
+      },
+      "reason": "STALE_POLL",
+      "seconds": 10.905950000043958,
+      "total_requests": 3
+    }
+  ],
+  "source_commit": "97198b434cd48a509db2b987f036f35686821121",
+  "started_at": "2026-11-19T15:09:20.421700+00:00",
+  "window_end": "2026-11-19T15:10:12.755809+00:00"
+}
