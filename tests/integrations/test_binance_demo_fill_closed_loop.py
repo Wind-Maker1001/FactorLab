@@ -207,8 +207,9 @@ def test_partial_buy_sell_fees_fifo_equity_and_restart(network_grid, monkeypatch
         Path(destination).write_text(json.dumps(json.loads(dumps(evidence)), indent=2) + '\n', encoding='utf-8')
 
 
-@pytest.mark.parametrize('quantity', ['0', '1', '2'])
-def test_independent_process_reopens_ack_partial_and_filled_ledgers(tmp_path, quantity):
+@pytest.mark.parametrize(('quantity', 'restart_fill'), [('0', '0'), ('1', '0'), ('2', '0'),
+                                                       ('0', '1'), ('1', '1')])
+def test_independent_process_reopens_ack_partial_and_filled_ledgers(tmp_path, quantity, restart_fill):
     from test_binance_demo_execution import setup, intent
 
     protocol, ledger = tmp_path / 'protocol.sqlite', tmp_path / 'controller.sqlite'
@@ -221,9 +222,11 @@ def test_independent_process_reopens_ack_partial_and_filled_ledgers(tmp_path, qu
     expected_receipts = adapter.db.execute('SELECT count(*) FROM futures_receipts').fetchone()[0]
     adapter.store.close()
     controller.store.close()
+    if D(restart_fill):
+        fake.trade_update('one', restart_fill)
     payload = dict(orders=fake.orders, trades=fake.trades, cash=str(fake.cash),
                    quantity=str(fake.quantity), entry=str(fake.entry), events=expected_events,
-                   receipts=expected_receipts)
+                   receipts=expected_receipts, restart_fill=restart_fill)
     program = '''
 import json, sys
 from decimal import Decimal as D
@@ -236,6 +239,7 @@ fake.orders, fake.trades = payload['orders'], payload['trades']
 for field in ('cash', 'quantity', 'entry'):
     setattr(fake, field, D(payload[field]))
 a, g, c, _ = setup(sys.argv[1], sys.argv[2], fake=fake, authorize=False)
+restored_events = None
 for _ in range(2):
     account = g.recover(c)
     assert sum((p.quantity for p in account.positions), D(0)) == fake.quantity
@@ -243,8 +247,19 @@ for _ in range(2):
     assert a.order('one').exchange_order_id == str(fake.orders['one']['orderId'])
     assert a.order('one').cumulative_filled_quantity == fake.quantity
     assert a.order('one').cumulative_fee == D('1000') - fake.cash
-    assert dumps(list(c.store.order_events())) == payload['events']
-    assert a.db.execute('SELECT count(*) FROM futures_receipts').fetchone()[0] == payload['receipts']
+    events = json.loads(dumps(list(c.store.order_events())))
+    previous = json.loads(payload['events'])
+    if D(payload['restart_fill']):
+        assert events[:len(previous)] == previous
+        assert len(events) == len(previous) + 1
+        assert len({event[1]['fields']['event_id'] for event in events}) == len(events)
+    else:
+        assert events == previous
+    if restored_events is not None:
+        assert events == restored_events
+    restored_events = events
+    assert a.db.execute('SELECT count(*) FROM futures_receipts').fetchone()[0] == (
+        payload['receipts'] + int(D(payload['restart_fill']) > 0))
 assert all(method == 'GET' for method, _, _ in fake.calls)
 a.store.close()
 c.store.close()
