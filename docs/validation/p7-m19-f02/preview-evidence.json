@@ -1,0 +1,74 @@
+{
+  "baseline": "203d35dfc592c299455f7a253f04037effdf3cd3",
+  "environment": "OFFICIAL_BINANCE_USDM_DEMO",
+  "host": "demo-fapi.binance.com",
+  "symbol": "NVDAUSDT",
+  "mode": "GET_ONLY_PREVIEW",
+  "started_at": "2026-11-20T09:41:54.289404+00:00",
+  "worker_seconds": 155,
+  "elapsed_seconds": 187.75722530001076,
+  "maximum_seconds": 600,
+  "maximum_requests": 600,
+  "maximum_evidence_bytes": 5242880,
+  "event_evidence_bytes": 96499,
+  "requests": {"GET": 121, "POST": 0, "DELETE": 0},
+  "request_accounting": "admitted process requests including initialization; round status totals exclude initialization",
+  "round_http_statuses": {"200": 101, "400": 1, "unavailable": 1},
+  "rounds": 12,
+  "delivered_bars": 3,
+  "delivered_quotes": 9,
+  "stale_poll": 0,
+  "clock_skew": 1,
+  "fresh_bar": {
+    "opened_at": "2026-11-20T09:43:00+00:00",
+    "closed_at": "2026-11-20T09:44:00+00:00",
+    "received_at": "2026-11-20T09:44:02.878332+00:00",
+    "eligible_after": "2026-11-20T09:43:07.804067+00:00",
+    "previous_reason": "FRESH_CLOSED_BAR_REQUIRED",
+    "reason": null,
+    "live_bar": true,
+    "sequence": 3,
+    "grid_state": "RUNNING",
+    "proposal_count": 1
+  },
+  "quotes_after_fresh_bar": [
+    {"observed_at": "2026-11-20T09:44:02.067000+00:00", "received_at": "2026-11-20T09:44:02.890848+00:00", "price": "142.46000", "live_bar": true},
+    {"observed_at": "2026-11-20T09:44:15.397000+00:00", "received_at": "2026-11-20T09:44:15.777912+00:00", "price": "142.46000", "live_bar": true},
+    {"observed_at": "2026-11-20T09:44:26.263000+00:00", "received_at": "2026-11-20T09:44:27.068570+00:00", "price": "142.46000", "live_bar": true}
+  ],
+  "interruptions": [
+    {
+      "endpoint": "/fapi/v3/positionRisk",
+      "method": "GET",
+      "http_status": 400,
+      "code": -1021,
+      "category": "CLOCK_SKEW",
+      "message": "Timestamp for this request is outside of the recvWindow.",
+      "rtt_seconds": 5.730398499988951,
+      "timestamp_ms": 1795167770270,
+      "recv_window_ms": 5000,
+      "uncertainty_ms": 273.6018579234951,
+      "calibration_age_ms": 11430.407899955753,
+      "wall_step_since_sync_ms": 0.016845703125,
+      "action": "existing recalibration, disconnect and next-round reconciliation"
+    },
+    {
+      "endpoint": "/fapi/v1/openOrders",
+      "method": "GET",
+      "http_status": null,
+      "category": "DataQualityError",
+      "rtt_seconds": 8.584506499988493,
+      "action": "existing disconnect and reconciliation"
+    },
+    {
+      "category": "R13_QUOTE_GAP",
+      "book_market_at": "2026-11-20T09:44:57.395000+00:00",
+      "book_received_at": "2026-11-20T09:44:59.173000+00:00",
+      "book_received_gap_seconds": 31.839,
+      "action": "recovery batch rejected before Consumer quote delivery"
+    }
+  ],
+  "final_reason": "RECONCILE_REQUIRED",
+  "execution_input_ready": false,
+  "safety": "NO LIVE MONEY"
+}

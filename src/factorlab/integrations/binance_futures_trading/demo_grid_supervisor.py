@@ -247,12 +247,14 @@ def run(args, *, root=None, credentials=None):
                     and bridge.grid.deployment_id == campaign['prefix'] + '-g'
                     and bridge.runtime.post_count(campaign['id']) < campaign['orders']
                     and not bridge.session.receipt_error and not bridge.session.write_uncertain)
-            consumer = GridConsumer(bridge, control, authority=authority, ensure_campaign=bridge.ensure_campaign)
+            consumer = GridConsumer(bridge, control, authority=authority, clock=bridge.session._now,
+                                    ensure_campaign=bridge.ensure_campaign)
             client = MarketClient(requests)
             initial_bars = max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1)
             with closing(DemoMarketFeed(client, consumer, state_path=path, consumer_id='grid-' + mode + ':' + bridge.grid.deployment_id,
                     interval=args.interval, max_backfill=args.max_backfill, initial_bars=initial_bars,
-                    catch_up=True)) as feed:
+                    catch_up=True, exchange_time=bridge.session.client.demo_time,
+                    receipt_clock=bridge.session._now)) as feed:
                 def report(raw):
                     payload = json.loads(raw)
                     payload['feed_reason'] = payload['reason']

@@ -9,11 +9,15 @@ from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import 
 from factorlab.integrations.binance_futures_trading.demo_market_feed import FeedPaused, SOURCE
 from factorlab.integrations.binance_futures_trading.fake import NOW
 from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
+from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
 from factorlab.trading.paper import Quote
 from factorlab.trading.strategy import ClosedBar
 from test_binance_demo_grid_bridge import bridge
 from test_binance_demo_strategy_session import deployment, wired
 from test_binance_demo_grid_network import network_grid
+
+
+SESSION_NOW = DemoSession._now
 
 
 class Control:
@@ -534,3 +538,251 @@ def test_cli_default_is_preview_and_controls_are_integrated():
     assert not args.execute and args.seconds == 1
     args = parse_args(['grid-supervisor', 'stop', '--execute'])
     assert args.execute and args.action == 'stop'
+
+
+@pytest.fixture
+def calibrated_worker(network_grid, monkeypatch):
+    from factorlab.integrations.binance.client import Response
+    from factorlab.integrations.binance_futures_trading import demo_grid_supervisor as module
+    from factorlab.integrations.binance_futures_trading import network, protocol
+    from test_binance_demo_network import NetworkFixture
+    import json
+    from urllib.parse import parse_qs
+
+    root, store, factory, enable, fake, requests = network_grid
+    state = SimpleNamespace(seconds=.2, wall_offset=0., quote_age=100, fail_time=False,
+                            delay_bars=0., consumer=None, feed=None)
+    initial = NOW.timestamp()
+    original_init = protocol.FuturesClient.__init__
+
+    def initialize(client, *args, **kwargs):
+        original_init(client, *args, **kwargs)
+        client.clock = lambda: initial + state.seconds + state.wall_offset
+        client.monotonic = lambda: state.seconds
+
+    original_request = NetworkFixture.__call__
+
+    def response(exchange, request, timeout):
+        if request.path.endswith('/time') and state.fail_time:
+            raise OSError('calibration unavailable')
+        if request.path.endswith('/klines'):
+            exchange.calls.append((request.method, request.path, parse_qs(request.query)))
+            params = parse_qs(request.query)
+            start, end = int(params['startTime'][0]), int(params['endTime'][0])
+            payload = [[at, '150', '153', '147', '150', '10', at + 59999]
+                       for at in range(start, end + 1, 60000)]
+            state.seconds += state.delay_bars
+            return Response(200, {}, json.dumps(payload).encode())
+        result = original_request(exchange, request, timeout)
+        if request.path.endswith(('/time', '/bookTicker', '/premiumIndex')):
+            payload = json.loads(result.body)
+            key = 'serverTime' if request.path.endswith('/time') else 'time'
+            payload[key] = round((initial + state.seconds) * 1000)
+            if request.path.endswith('/bookTicker'):
+                payload[key] -= state.quote_age
+            return Response(200, {}, json.dumps(payload).encode())
+        return result
+
+    original_feed = module.DemoMarketFeed
+
+    def feed(client, consumer, **kwargs):
+        state.consumer = consumer
+        state.feed = original_feed(client, consumer, **kwargs)
+        return state.feed
+
+    monkeypatch.setattr(protocol.FuturesClient, '__init__', initialize)
+    monkeypatch.setattr(DemoSession, '_now', SESSION_NOW)
+    monkeypatch.setattr(NetworkFixture, '__call__', response)
+    monkeypatch.setattr(protocol, 'build_opener', network.build_opener)
+    monkeypatch.setattr(module, 'grid_factory', lambda *args, **kwargs: factory)
+    monkeypatch.setattr(module, 'DemoMarketFeed', feed)
+    monkeypatch.setattr(module.signal, 'signal', lambda *args: None)
+
+    def run(rounds, *, execute=False, offset=0):
+        state.wall_offset = offset
+        if execute:
+            enable()
+        def drive(supervisor, **kwargs):
+            rounds(supervisor, state)
+        monkeypatch.setattr(module.DemoSupervisor, 'run', drive)
+        args = parse_args(['grid-supervisor', 'start', '--seconds', '1',
+                           *(['--execute'] if execute else [])])
+        return module.run(args, root=root, credentials=store)
+
+    return run, state, fake, requests
+
+
+@pytest.mark.parametrize('offset', [-20, 20])
+@pytest.mark.parametrize('execute', [False, True])
+def test_worker_uses_session_clock_for_live_bar_and_exact_order(calibrated_worker, offset, execute):
+    from urllib.parse import parse_qs, urlsplit
+    run, state, fake, requests = calibrated_worker
+
+    def rounds(supervisor, state):
+        consumer, feed = state.consumer, state.feed
+        session = consumer.bridge.session
+        assert consumer.clock == session._now
+        assert feed.receipt_clock == session._now
+        assert feed.exchange_time == session.client.demo_time
+        supervisor.before_poll()
+        assert feed.poll() == dict(bars=1, quotes=1)
+        assert not consumer.live_bar
+        assert consumer.reason == 'FRESH_CLOSED_BAR_REQUIRED'
+        assert not posts(fake)
+        for at in (20.2, 40.2):
+            state.seconds = at
+            supervisor.before_poll()
+            state.feed.poll()
+        state.seconds = 60.2
+        supervisor.before_poll()
+        assert feed.poll() == dict(bars=1, quotes=1)
+        assert consumer.live_bar and consumer.reason is None
+        assert consumer.last_bar == NOW + timedelta(minutes=1)
+        assert feed.status == 'RUNNING'
+        assert consumer.bridge.grid.sequence == 2
+        assert consumer.clock() == NOW + timedelta(seconds=state.seconds)
+        if not execute:
+            for method in ('POST', 'DELETE'):
+                with pytest.raises(SafetyBlocked):
+                    session.client.request(method, '/fapi/v1/order')
+        state.seconds += .2
+        supervisor.before_poll()
+        assert feed.poll() == dict(bars=0, quotes=1)
+        assert consumer.bridge.account().inventory == 0
+
+    assert run(rounds, execute=execute, offset=offset) == 0
+    writes = [request for request in requests if request.get_method() != 'GET']
+    assert len(writes) == int(execute)
+    if execute:
+        params = parse_qs(urlsplit(writes[0].full_url).query)
+        assert params['recvWindow'] == ['5000']
+        assert D(params['price'][0]) == D('146')
+        assert params['type'] == ['LIMIT'] and params['reduceOnly'] == ['false']
+
+
+@pytest.mark.parametrize('jump', [-40, 40])
+def test_worker_wall_jump_does_not_change_bar_eligibility(calibrated_worker, jump):
+    run, state, fake, _ = calibrated_worker
+
+    def rounds(supervisor, state):
+        supervisor.before_poll()
+        state.feed.poll()
+        state.wall_offset += jump
+        for at in (20.2, 40.2):
+            state.seconds = at
+            supervisor.before_poll()
+            state.feed.poll()
+        state.seconds = 60.2
+        supervisor.before_poll()
+        state.feed.poll()
+        assert state.consumer.live_bar
+        assert state.consumer.last_bar == NOW + timedelta(minutes=1)
+        assert state.consumer.clock() == NOW + timedelta(seconds=60.2)
+
+    run(rounds)
+    assert not posts(fake)
+
+
+@pytest.mark.parametrize('unavailable', [False, True])
+def test_worker_expired_calibration_refreshes_or_disconnects(calibrated_worker, unavailable):
+    from factorlab.integrations.binance_futures_trading.protocol import DEMO_TIME_TTL_SECONDS
+    run, state, fake, _ = calibrated_worker
+
+    def rounds(supervisor, state):
+        supervisor.before_poll()
+        state.feed.poll()
+        previous = sum(path.endswith('/time') for _, path, _ in fake.calls)
+        state.seconds = DEMO_TIME_TTL_SECONDS + .2
+        state.fail_time = unavailable
+        if unavailable:
+            from factorlab.errors import DataQualityError
+            with pytest.raises(DataQualityError, match='account read failed'):
+                supervisor.before_poll()
+                state.feed.poll()
+            supervisor.on_pause()
+            assert not state.consumer.running and not state.consumer.live_bar
+            assert state.consumer.reason == 'RECONCILE_REQUIRED'
+        else:
+            supervisor.before_poll()
+            with pytest.raises(FeedPaused, match='R13_QUOTE_GAP'):
+                state.feed.poll()
+            supervisor.on_pause()
+            assert sum(path.endswith('/time') for _, path, _ in fake.calls) > previous
+            supervisor.before_poll()
+            state.feed.poll()
+            assert not state.consumer.live_bar
+            assert not posts(fake)
+
+    run(rounds)
+
+
+@pytest.mark.parametrize('failure', ['stale_book', 'stale_poll'])
+def test_worker_clock_wiring_preserves_market_freshness(calibrated_worker, failure):
+    run, state, fake, _ = calibrated_worker
+
+    def rounds(supervisor, state):
+        supervisor.before_poll()
+        state.feed.poll()
+        sequence = state.consumer.bridge.grid.sequence
+        for at in (20.2, 40.2):
+            state.seconds = at
+            supervisor.before_poll()
+            state.feed.poll()
+        state.seconds = 60.2
+        supervisor.before_poll()
+        if failure == 'stale_book':
+            state.quote_age = 5001
+            expected = 'STALE_OR_FUTURE_QUOTE'
+        else:
+            state.delay_bars = 5.1
+            expected = 'STALE_POLL'
+        with pytest.raises(FeedPaused, match=expected):
+            state.feed.poll()
+        supervisor.on_pause()
+        assert not state.consumer.live_bar
+        assert state.consumer.bridge.grid.sequence == sequence
+        assert not posts(fake)
+        state.quote_age, state.delay_bars = 100, 0
+        supervisor.before_poll()
+        state.feed.poll()
+        assert not state.consumer.live_bar
+        for at in (80.2, 100.2, 120.2):
+            state.seconds = at
+            supervisor.before_poll()
+            state.feed.poll()
+        assert state.consumer.live_bar
+
+    run(rounds)
+
+
+@pytest.mark.parametrize('failure', ['account_delay', 'kill_switch'])
+def test_worker_calibrated_execution_still_requires_risk_admission(calibrated_worker, monkeypatch, failure):
+    from factorlab.trading.control import RiskRejected
+    run, state, fake, requests = calibrated_worker
+
+    def rounds(supervisor, state):
+        supervisor.before_poll()
+        state.feed.poll()
+        for at in (20.2, 40.2):
+            state.seconds = at
+            supervisor.before_poll()
+            state.feed.poll()
+        state.seconds = 60.2
+        supervisor.before_poll()
+        session = state.consumer.bridge.session
+        if failure == 'account_delay':
+            original = session._fresh_facts_for_submission
+            def delayed():
+                original()
+                state.seconds += 6
+            monkeypatch.setattr(session, '_fresh_facts_for_submission', delayed)
+            expected, error = 'STALE_ACCOUNT', FeedPaused
+        else:
+            session.controller.set_kill_switch()
+            expected, error = 'KILL_SWITCH', RiskRejected
+        with pytest.raises(error, match=expected):
+            state.feed.poll()
+        assert not posts(fake)
+        assert not [request for request in requests if request.get_method() != 'GET']
+
+    run(rounds, execute=True)
