@@ -236,7 +236,10 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
         restart_comparison['later_capture'] = (
             datetime.fromisoformat(str(current['observed_at'])) >
             datetime.fromisoformat(str(previous_recovery['observed_at'])))
-    recovered = bool(new_ids) and restart_comparison is not None and all(restart_comparison.values())
+    recovered = (bool(new_ids) and restart_comparison is not None
+                 and current['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
+                 and all(restart_comparison[key] for key in (
+                     'experiment_orders_present_before_restart', 'independent_process', 'later_capture')))
     account_ok = bool(filled) and fee_ok and current['statuses']['DEMO_ACCOUNT_RECONCILED']
     statuses = dict(
         HISTORICAL_DEMO_ACCOUNT_RECONCILED=baseline['statuses']['DEMO_ACCOUNT_RECONCILED'],
@@ -273,7 +276,100 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
         account_fifo=current['fifo']['attribution'],
         wallet_change=Decimal(str(current['wallet'])) - Decimal(str(baseline['wallet'])),
         equity_change=Decimal(str(current['equity'])) - Decimal(str(baseline['equity'])),
-        restart_comparison=restart_comparison, safety='NO LIVE MONEY')
+        restart_comparison=restart_comparison,
+        restart_outcome=current.get('restart_outcome') if restart_comparison is not None else None,
+        restart_fill_delta=current.get('restart_fill_delta') if restart_comparison is not None else None,
+        safety='NO LIVE MONEY')
+
+
+def recovery_fill_delta(previous, current, old_state, new_state):
+    """Validate natural GET-confirmed fills without weakening unchanged-state facts."""
+    old_events = previous['fifo']['economic_events']
+    events = current['fifo']['economic_events']
+    if events[:len(old_events)] != old_events or len(events) == len(old_events):
+        return None
+    if len({event['event_id'] for event in events}) != len(events):
+        return None
+    if not current['statuses']['DEMO_ACCOUNT_RECONCILED']:
+        return None
+    before = {row['client_order_id']: row for row in previous['order_trade_mapping']}
+    after = {row['client_order_id']: row for row in current['order_trade_mapping']}
+    if before.keys() != after.keys() or old_state.orders.keys() != new_state.orders.keys():
+        return None
+    def positions(state):
+        return {symbol: (position.quantity, position.entry_price)
+                for symbol, position in state.positions.items() if position.quantity != ZERO}
+
+    account_positions = {position['symbol']: (Decimal(position['quantity']), Decimal(position['entry_price']))
+                         for position in current['account']['positions'] if Decimal(position['quantity']) != ZERO}
+    if positions(new_state) != account_positions:
+        return None
+    rows, wallet_delta, fee_delta = [], ZERO, ZERO
+    inventory_delta = {}
+    appended = events[len(old_events):]
+    if any(event['client_order_id'] not in after for event in appended):
+        return None
+    for key, row in after.items():
+        old, new = old_state.orders[key].snapshot, new_state.orders[key].snapshot
+        earlier = before[key]
+        if (old.intent != new.intent or old.exchange_order_id != new.exchange_order_id
+                or new.reconcile_required or row['receipt_source'] != 'GET'
+                or row['order_id'] != new.exchange_order_id
+                or row['order_query']['status'] != new.status.value):
+            return None
+        old_trades = {str(trade['id']): trade for trade in earlier['trades']}
+        trades = {str(trade['id']): trade for trade in row['trades']}
+        if (len(trades) != len(row['trades'])
+                or any(trades.get(identity) != trade for identity, trade in old_trades.items())):
+            return None
+        added = [trade for identity, trade in trades.items() if identity not in old_trades]
+        quantity = sum((Decimal(trade['qty']) for trade in added), ZERO)
+        quote = sum((Decimal(trade['quoteQty']) for trade in added), ZERO)
+        fee = sum((Decimal(trade['commission']) for trade in added), ZERO)
+        if (any(trade['commissionAsset'] != 'USDT'
+                or str(trade['orderId']) != new.exchange_order_id
+                or trade['symbol'] != new.intent.instrument_id for trade in added)
+                or quantity != new.cumulative_filled_quantity - old.cumulative_filled_quantity
+                or fee != new.cumulative_fee - old.cumulative_fee
+                or Decimal(str(row['trade_quantity_sum'])) != new.cumulative_filled_quantity
+                or Decimal(str(row['actual_fee'])) != new.cumulative_fee
+                or Decimal(row['order_query']['cumQuote']) - Decimal(earlier['order_query']['cumQuote']) != quote):
+            return None
+        order_events = [event for event in appended if event['client_order_id'] == key]
+        last_quantity, last_fee, event_quote = old.cumulative_filled_quantity, old.cumulative_fee, ZERO
+        for event in order_events:
+            next_quantity, next_fee = Decimal(event['cumulative_quantity']), Decimal(event['cumulative_fee'])
+            if next_quantity <= last_quantity or next_fee < last_fee:
+                return None
+            event_quote += (next_quantity - last_quantity) * Decimal(event['fill_price'])
+            last_quantity, last_fee = next_quantity, next_fee
+        if (last_quantity != new.cumulative_filled_quantity or last_fee != new.cumulative_fee
+                or event_quote != quote):
+            return None
+        if not added and (old.status != new.status or old.reconcile_required != new.reconcile_required):
+            return None
+        if added:
+            if (old.status.value in ('FILLED', 'CANCELED', 'REJECTED')
+                    or new.status.value not in ('PARTIALLY_FILLED', 'FILLED', 'CANCELED')
+                    or new.cumulative_filled_quantity > new.intent.quantity):
+                return None
+            rows.append(dict(client_order_id=key, trade_ids=[trade['id'] for trade in added],
+                             quantity=quantity, quote=quote, actual_fee=fee))
+        symbol = new.intent.instrument_id
+        inventory_delta[symbol] = inventory_delta.get(symbol, ZERO) + (
+            quantity if new.intent.side.value == 'BUY' else -quantity)
+        wallet_delta += sum((Decimal(trade['realizedPnl']) for trade in added), ZERO) - fee
+        fee_delta += fee
+    for symbol in old_state.positions.keys() | new_state.positions.keys() | inventory_delta.keys():
+        old_position, new_position = old_state.positions.get(symbol), new_state.positions.get(symbol)
+        if ((new_position.quantity if new_position else ZERO)
+                - (old_position.quantity if old_position else ZERO) != inventory_delta.get(symbol, ZERO)):
+            return None
+    if (Decimal(current['wallet']) - Decimal(previous['wallet']) != wallet_delta
+            or Decimal(current['actual_fees']) - Decimal(previous['actual_fees']) != fee_delta):
+        return None
+    return dict(source='ACTUAL_GET_USER_TRADES_AND_CONTROLLER_DELTAS', orders=rows,
+                wallet_change=wallet_delta, actual_fee_change=fee_delta)
 
 
 def compare_recovery(previous, current):
@@ -300,13 +396,22 @@ def compare_recovery(previous, current):
         order_facts_unchanged=order_facts(old_state) == order_facts(new_state),
         position_facts_unchanged=position_facts(old_state) == position_facts(new_state),
         economic_events_unchanged=previous['fifo']['economic_events'] == current['fifo']['economic_events'],
-        no_new_dispatch=previous['recovery_proof']['dispatch_count'] == current['recovery_proof']['dispatch_count'],
+        no_new_dispatch=(previous['recovery_proof']['dispatch_count'] == current['recovery_proof']['dispatch_count']
+                         and previous['dispatches'] == current['dispatches']),
         wallet_unchanged=previous['wallet'] == current['wallet'],
         fees_unchanged=previous['actual_fees'] == current['actual_fees'],
         reconciled=current['account']['reconciled'] and not current['account']['unknown'],
         get_only=current['account']['requests']['POST'] == current['account']['requests']['DELETE'] == 0)
+    unchanged = all(facts.values())
+    delta = None
+    if not unchanged and all(facts[key] for key in (
+            'same_account', 'historical_intents_preserved', 'no_new_dispatch', 'reconciled', 'get_only')):
+        delta = recovery_fill_delta(previous, current, old_state, new_state)
     report['restart_comparison'] = facts
-    report['statuses']['DEMO_RESTART_RECOVERY_VERIFIED'] = all(facts.values())
+    report['restart_outcome'] = ('UNCHANGED' if unchanged else
+                                 'NATURAL_FILL_DELTA_VERIFIED' if delta is not None else 'UNVERIFIED_CHANGE')
+    report['restart_fill_delta'] = delta
+    report['statuses']['DEMO_RESTART_RECOVERY_VERIFIED'] = unchanged or delta is not None
     return facts
 
 

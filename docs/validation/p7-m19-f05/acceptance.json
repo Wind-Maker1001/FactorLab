@@ -1,0 +1,41 @@
+{
+  "baseline_revision": "555a9bfdf0615f89146eddba991854299010dd97",
+  "post_f04_integration_revision": null,
+  "environment": "OFFICIAL_BINANCE_USDM_DEMO",
+  "safety": "NO LIVE MONEY",
+  "observation": {
+    "state": "NOT_STARTED",
+    "blocking_dependency": "F04 completion and main integration, regression, exclusive account handoff",
+    "interval": "1m",
+    "seconds": 180,
+    "poll_seconds": 5,
+    "original_deployment_only": true,
+    "reset_bar_cursor": false,
+    "reprice": false,
+    "change_quantity": false,
+    "change_breakout_pause": false,
+    "outcome": null
+  },
+  "actual_exchange_requests": {"GET": 0, "POST": 0, "DELETE": 0},
+  "new_order_ids": [],
+  "actual_fees": null,
+  "wallet_change": null,
+  "equity_change": null,
+  "nav": null,
+  "offline_regression": {"python": "3.14", "passed": 110, "seconds": 107.87},
+  "post_review_regression": {"passed": 29, "seconds": 50.62},
+  "review": {"external_codex": "BLOCKED_UNSUPPORTED_CONFIGURED_MODEL", "direct_self_review": "COMPLETE"},
+  "statuses": {
+    "ENGINEERING_ACCEPTED": "PENDING",
+    "CI_ACCEPTED": "PENDING",
+    "DEMO_NEW_ORDER_ACCEPTED": "BLOCKED",
+    "DEMO_FILL_ACCEPTED": "REAL_EXCHANGE_NOT_OBSERVED",
+    "DEMO_FEE_RECONCILED": "REAL_EXCHANGE_NOT_OBSERVED",
+    "DEMO_ACCOUNT_RECONCILED": "REAL_EXCHANGE_NOT_OBSERVED",
+    "DEMO_RESTART_ACCEPTED": "REAL_EXCHANGE_NOT_OBSERVED",
+    "DEMO_LIFECYCLE_VERIFIED": "REAL_EXCHANGE_NOT_OBSERVED"
+  },
+  "natural_partial_fill": "REAL_EXCHANGE_NOT_OBSERVED",
+  "natural_unknown_ack_recovery": "REAL_EXCHANGE_NOT_OBSERVED",
+  "natural_cancel_fill_race": "REAL_EXCHANGE_NOT_OBSERVED"
+}

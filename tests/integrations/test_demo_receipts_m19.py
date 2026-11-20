@@ -365,3 +365,57 @@ def test_complete_export_requires_actual_trades_and_reconciles_fee_nav(network_g
             assert not compare_recovery(report, altered)['order_facts_unchanged']
             assert not altered['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
         state.orders[key] = record
+
+
+def test_restart_attributes_natural_fill_without_claiming_unchanged(network_grid, monkeypatch):
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory) as bridge:
+        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: ())
+        bridge.recover()
+        baseline = capture(bridge.session, bridge.runtime, D('1000'))
+        observe(bridge)
+        before = capture(bridge.session, bridge.runtime, D('1000'))
+        key = bridge.grid.active[0].intent.client_order_id
+    fake.trade_update(key, '.04', '146')
+    fake.trades[-1]['realizedPnl'] = '0'
+    with open_grid_session(root, store, factory) as bridge:
+        current = capture(bridge.session, bridge.runtime, D('1000'))
+        facts = compare_recovery(before, current)
+        assert not facts['order_facts_unchanged']
+        assert not facts['economic_events_unchanged']
+        assert current['restart_outcome'] == 'NATURAL_FILL_DELTA_VERIFIED'
+        assert current['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
+        delta, = current['restart_fill_delta']['orders']
+        assert delta['client_order_id'] == key
+        assert delta['quantity'] == D('.04')
+        assert delta['quote'] == D('5.84')
+        from factorlab.integrations.binance_futures_trading.demo_fill_acceptance import experiment_evidence
+        current['recovery_proof']['process_id'] = before['recovery_proof']['process_id'] + 1
+        experiment = experiment_evidence(baseline, current, previous_recovery=before)
+        assert experiment['statuses']['NEW_DEMO_RESTART_RECOVERY_VERIFIED']
+        assert experiment['restart_outcome'] == 'NATURAL_FILL_DELTA_VERIFIED'
+        assert experiment['restart_fill_delta']['orders'] == [delta]
+        changed_dispatch = copy.deepcopy(current)
+        changed_dispatch['dispatches'][0]['parameters']['quantity'] = '0.03'
+        compare_recovery(before, changed_dispatch)
+        assert not changed_dispatch['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
+        assert current['account']['requests']['POST'] == current['account']['requests']['DELETE'] == 0
+        for field in ['wallet', 'actual_fees']:
+            altered = copy.deepcopy(current)
+            altered[field] += D('.01')
+            compare_recovery(before, altered)
+            assert not altered['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
+        from dataclasses import replace
+        from factorlab.trading.storage import decode, dumps
+        state = decode(json.loads(current['recovery_proof']['state']))
+        symbol, = state.positions
+        state.positions[symbol] = replace(state.positions[symbol], entry_price=D('147'))
+        altered = copy.deepcopy(current)
+        altered['recovery_proof']['state'] = dumps(state)
+        compare_recovery(before, altered)
+        assert not altered['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
+        altered = copy.deepcopy(current)
+        altered['fifo']['economic_events'].append(altered['fifo']['economic_events'][-1])
+        compare_recovery(before, altered)
+        assert not altered['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
