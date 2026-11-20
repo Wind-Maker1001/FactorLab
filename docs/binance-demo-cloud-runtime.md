@@ -77,7 +77,7 @@ An old snapshot cannot prove there were no later orders, budget reservations, or
 
 The Worker atomically publishes private `cloud-health.json`. Read it with the `health` action, which makes no network requests, initializes no database, and does not obtain a trading lock. Exit 0 means a recent ready heartbeat (explicit OFFLINE is identified as such); exit 1 means stopped, stale or not ready. The timer produces a failed health service/journald signal for operational alert routing. Connect those existing OS events to your organization's alert delivery rather than installing a separate web platform.
 
-The snapshot includes process heartbeat, market/reconciliation success times, market batch age, method counts and failure rate, UNKNOWN count, positions/equity, remaining campaign inputs, global cumulative consumption, desired STOP/HALTED state, journal event high-water marks, SQLite/sidecar sizes, free disk, process starts/restarts and last exception classification. Missing observations are null. Request counters and failure rate are process-scoped; starts/restarts persist across normal process restarts, and are not claimed as independent host reboot accounting. Secrets, signed queries and full binding records are excluded.
+The snapshot includes process startup time, per-endpoint request counts/error categories and total/last/maximum request latency (`api`), last account recovery duration, process-local `CLOCK_SKEW` request failures and `STALE_POLL`/`R13_QUOTE_GAP` pause counts (`safety_events`), process heartbeat, market/reconciliation success times, market batch age, method counts and failure rate, UNKNOWN count, positions/equity, remaining campaign inputs, global cumulative consumption, desired STOP/HALTED state, journal event high-water marks, SQLite/sidecar sizes, free disk, process starts/restarts and last exception classification. Missing observations are null. Request counters and failure rate are process-scoped; starts/restarts persist across normal process restarts, and are not claimed as independent host reboot accounting. Secrets, signed queries and full binding records are excluded.
 
 | Classification | Response |
 | --- | --- |
@@ -97,5 +97,48 @@ The default free-space threshold is 256 MiB, checked before network recovery/jou
 Use the same GET-only unit and health timer for 24 hours, 72 hours and seven days. Retain the full observation window's journald records and periodic private health snapshots outside the active state volume. Do not enable execution to conduct a stability observation.
 
 For each window require: zero POST and DELETE; no binding/cursor/budget reset; zero unexpected readiness during failed reconciliation or UNKNOWN; intentional STOP remains effective; disk free stays above reserve; backup restores validate and remain quarantined; every crash/restart is accounted for. Track maximum market and reconciliation age (alert at 90 seconds), request error rate (alert for sustained nonzero rates across five minutes), UNKNOWN immediately, restart bursts immediately, and any integrity/low-space/credential failure immediately. Document network outages separately from process crashes and retain recovery latency. Progress from 24h to 72h to 7d only after investigating each unexpected incident. Passing a startup smoke test is not passing these windows.
+
+## C02 preflight and account handover
+
+Before provisioning or transferring anything, retain a private inventory with the approved host identifier, Linux release/kernel, systemd version, Python 3.13/3.14 version, reviewed commit and installed package version, service user, mount source/type, free bytes/inodes, log capacity, operation owner and maintenance window. Useful read-only commands on the proposed host:
+
+```sh
+uname -sr
+cat /etc/os-release
+systemctl --version
+/opt/factorlab/venv/bin/python --version
+/opt/factorlab/venv/bin/python -m pip show factorlab
+findmnt -T /var/lib/factorlab-demo -o TARGET,SOURCE,FSTYPE,OPTIONS
+df -h /var/lib/factorlab-demo /var/log
+df -i /var/lib/factorlab-demo /var/log
+stat -c '%U:%G %a %n' /opt/factorlab /opt/factorlab/venv /var/lib/factorlab-demo
+sudo -u factorlab-demo test ! -w /opt/factorlab/venv/bin/python
+systemctl show factorlab-demo -p User -p Group -p MainPID -p ActiveState -p NRestarts -p ExecMainStartTimestamp -p ExecMainStatus
+journalctl --disk-usage
+```
+
+Confirm the backing disk survives host reboots; a filesystem name alone does not prove persistence. Reject NFS/shared or ephemeral ledger storage. Record only the Secret's presence/ownership/mode, not its contents. A public endpoint connectivity test does not prove the bound account is usable. Confirm official Demo connectivity and binding only after the account owner grants the exclusive GET-only window; retain redacted identity-match results, not the binding itself.
+
+Before moving historical state, the Windows/F04/F05 owner must stop all account access, scheduled restarts and maintenance writers and explicitly transfer ownership. A Linux flock cannot exclude a separate Windows state copy. Validate the surviving original ledger and complete the existing coherent backup procedure before transfer. Restore into a new private root, retain the original and restore quarantine, verify the original account/journal identity and cursor/budget/STOP high-water marks privately, then GET-reconcile. Do not run setup against a replacement account or delete quarantine to resume execution. If any original evidence or exclusivity is unavailable, account acceptance is BLOCKED.
+
+For handover to F05, stop and disable the C02 service and health timer, close maintenance and manual processes, verify service inactivity and process exit, and record the operation-owner transfer. Do not infer release from a stale heartbeat or delete the lock file. F05 must separately establish its own exclusive ownership before accessing that account.
+
+## C02 observation evidence and incident record
+
+The health command retains legacy `ready` for the OS exit check but separately reports `offline_heartbeat_healthy` and `get_only_healthy`. `cloud_get_only_accepted` and `demo_execution_ready` remain false: a heartbeat cannot certify deployment history, a completed observation window or execution permission. Cloud acceptance is an operator-reviewed evidence result, never an automatic readiness promotion.
+
+The existing health timer writes its JSON to journald, so use its retained snapshots rather than adding a collector/database. Configure sufficient persistent journal retention before the window; retain records on separately provisioned persistent storage, with restricted access because account balances/positions are private. At each window boundary capture:
+
+```sh
+sudo journalctl --no-pager --output=json --since '<window-start-UTC>' --until '<window-end-UTC>' -u factorlab-demo.service -u factorlab-demo-health.service
+sudo systemctl show factorlab-demo.service -p MainPID -p ActiveState -p NRestarts -p ExecMainStartTimestamp -p ExecMainStatus
+sudo -u factorlab-demo env FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo /opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime health
+```
+
+Use UTC start/end and elapsed wall time, not sample counts, to prove 24h/72h/7d. Preserve all unhealthy samples and missing intervals. Health snapshots contain account recovery duration, last successful market/reconciliation times, current market age, UNKNOWN, desired STOP/HALTED, SQLite and disk sizes. Record host/installed revision and OS service restarts separately. For each process segment, derive GET success rate from endpoint count/error deltas and use the retained maximum request latency as the tail bound; do not call it p95/p99. Request and safety counters reset on process restart: segment by PID/startup time, retain each terminal/high-water sample and mark abrupt-exit losses unknown rather than claiming exact whole-window totals. In particular, zero sampled POST/DELETE is supported by the transport write-refusal regression, not by assuming no unobserved requests occurred.
+
+For each incident record UTC onset/detection/recovery, last successful reconciliation/quote, classification and counter deltas, process/PID/restart changes, GET-only boundary, cursor/journal high-water marks, disk/log growth, operator action and evidence references. Record account contention explicitly. Alerts: market/reconciliation age over 90 seconds, sustained request errors over five minutes, UNKNOWN, restart bursts and credential/integrity/space refusals. CLOCK_SKEW is an observed request failure count, not a count of all clock calibration events. STALE_POLL/R13_QUOTE_GAP count supervisor pauses. Protocol recovery defects are evidence for F04, not changes to signed retry here.
+
+24h requires the first complete real cloud GET-only window, accounted-for interruptions/restarts, reconciliation/quote continuity, recovery latency, intact SQLite/cursors and zero writes. Schedule controlled fault experiments separately and label their intervals. Begin 72h only after reviewing 24h incidents; additionally compare state/log growth, backlog catch-up, intermittent outages and repeated reconciliation cost. Begin 7d only after 72h acceptance; review retention, disk trends, account drift and multiple restart recovery. At each completed window perform the offline coherent backup and quarantine-preserving restore validation in a declared maintenance window. A missing interval, unknown request loss or unexplained state drift must be resolved before acceptance; never fill it with offline CI evidence.
 
 Cloud acceptance is separate from offline Linux and systemd evidence. Without an existing authorized host and Demo credential, report `CLOUD_NOT_DEPLOYED`. `CLOUD_DEMO_EXECUTION_READY` remains false until the M19 execution loop and a later cloud execution integration are accepted.
