@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from math import ceil
 from datetime import datetime, timezone
 from time import perf_counter
+from threading import RLock
 
 from factorlab.integrations.binance.client import Response
 from .protocol import FuturesClient
@@ -13,6 +14,7 @@ class RequestCounts(dict):
     """Preserve legacy method totals alongside process-local request diagnostics."""
     def __init__(self):
         super().__init__(GET=0, POST=0, DELETE=0)
+        self.admission_lock = RLock()
         self.phase = 'initialization'
         self.endpoints = {}
         self.weight_headers = {}
@@ -178,7 +180,8 @@ class ObservedClient(FuturesClient):
 
     def _clock_event(self, kind, **details):
         if isinstance(self.request_counts, RequestCounts):
-            self.request_counts.clock_event(self.request_source, kind, details)
+            with self.request_counts.admission_lock:
+                self.request_counts.clock_event(self.request_source, kind, details)
 
     def _parse_response(self, request, response, **kwargs):
         if self._transport_started is not None:
@@ -191,7 +194,8 @@ class ObservedClient(FuturesClient):
 
     def _request_once(self, method, path, params=None, *, signed=True):
         if isinstance(self.request_counts, RequestCounts):
-            self.request_counts.before_request(self.request_source, method, path)
+            with self.request_counts.admission_lock:
+                self.request_counts.before_request(self.request_source, method, path)
         started = perf_counter()
         error = None
         self._observed_weights = {}
@@ -212,11 +216,13 @@ class ObservedClient(FuturesClient):
                 if self._observed_signing is not None:
                     self._clock_event('signed_request_timing', method=method, endpoint=path,
                         http_status=self._observed_status, error=error, rejection=clock_rejection,
+                        timing_boundary='LOCAL_OPENER_AND_BODY_NOT_WIRE_OR_SERVER_RECEIPT',
                         **self._observed_signing)
-                self.request_counts.record(self.request_source, method, path,
-                    self._transport_seconds if self._transport_seconds is not None else
-                    perf_counter() - (self._transport_started if self._transport_started is not None else started),
-                    error, self._observed_weights, status=self._observed_status)
+                with self.request_counts.admission_lock:
+                    self.request_counts.record(self.request_source, method, path,
+                        self._transport_seconds if self._transport_seconds is not None else
+                        perf_counter() - (self._transport_started if self._transport_started is not None else started),
+                        error, self._observed_weights, status=self._observed_status)
 
 
 def worker_metrics(session, feed, runtime, requests):

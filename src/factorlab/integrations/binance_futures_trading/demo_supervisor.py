@@ -15,7 +15,8 @@ from .observability import RequestCounts
 
 class DemoSupervisor:
     def __init__(self, feed, *, poll_seconds=2, max_backoff=60, report=print,
-                 before_poll=None, on_pause=None, request_counts=None, metric_snapshot=None):
+                 before_poll=None, on_pause=None, request_counts=None, metric_snapshot=None,
+                 collection=None, collection_requests=None, on_recovery_delay=None):
         if poll_seconds <= 0 or max_backoff < poll_seconds:
             raise ValueError('invalid polling bounds')
         self.feed, self.poll_seconds, self.max_backoff = feed, poll_seconds, max_backoff
@@ -23,6 +24,8 @@ class DemoSupervisor:
         self.before_poll, self.on_pause = before_poll, on_pause
         self.request_counts = request_counts
         self.metric_snapshot = metric_snapshot
+        self.collection, self.collection_requests = collection, collection_requests
+        self.on_recovery_delay = on_recovery_delay
 
     def stop(self):
         self.stopped.set()
@@ -34,6 +37,9 @@ class DemoSupervisor:
         backoff = self.poll_seconds
         recovering = True
         try:
+            if self.collection is not None:
+                self.feed.collection = self.collection
+                self.collection.start()
             while not self.stopped.is_set() and (deadline is None or monotonic() < deadline):
                 delay = self.poll_seconds
                 if isinstance(self.request_counts, RequestCounts):
@@ -49,22 +55,30 @@ class DemoSupervisor:
                 result = dict(bars=0, quotes=0)
                 try:
                     try:
+                        if self.collection is not None:
+                            self.collection.check()
+                        recovery_started = monotonic()
                         if self.before_poll is not None:
                             self.before_poll()
-                        if self.stopped.is_set():
+                        if (self.on_recovery_delay is not None
+                                and monotonic() - recovery_started >= self.feed.seconds):
+                            self.on_recovery_delay()
+                        if self.stopped.is_set() or (deadline is not None and monotonic() >= deadline):
                             break
                         result = self.feed.poll()
                         recovering = False
                         backoff = self.poll_seconds
                     except (DataQualityError, FeedPaused, OSError) as error:
-                        caught_error = type(error).__name__
+                        caught_error = getattr(error, 'category', type(error).__name__)
                         recovering = True
-                        self.feed.pause(str(error) if isinstance(error, FeedPaused) else type(error).__name__)
+                        self.feed.pause(str(error) if isinstance(error, FeedPaused) else caught_error)
                         if self.on_pause is not None:
                             self.on_pause()
                         result = dict(bars=0, quotes=0)
                         delay = max(backoff, error.retry_after or 0) if isinstance(error, ExchangeError) else backoff
                         backoff = min(self.max_backoff, backoff * 2)
+                    if self.collection_requests is not None:
+                        self.collection_requests.drain()
                     self.report(json.dumps(dict(status=self.feed.status, reason=self.feed.reason,
                         source=SOURCE, interval=self.feed.interval, watermarks=self.feed.watermarks(), **result)))
                     if deadline is not None:
@@ -76,6 +90,8 @@ class DemoSupervisor:
                         wait_seconds = monotonic() - wait_started
                     completed = True
                 finally:
+                    if self.collection_requests is not None:
+                        self.collection_requests.drain()
                     if telemetry is not None:
                         exc = sys.exc_info()[1]
                         metrics = self.metric_snapshot() if self.metric_snapshot else {}
@@ -91,6 +107,12 @@ class DemoSupervisor:
                             cumulative_seconds=deltas)
         finally:
             self.feed.pause('STOPPED')
+            if self.collection is not None:
+                try:
+                    self.collection.close()
+                finally:
+                    if self.collection_requests is not None:
+                        self.collection_requests.drain()
 
 
 class ReadOnlyConsumer:

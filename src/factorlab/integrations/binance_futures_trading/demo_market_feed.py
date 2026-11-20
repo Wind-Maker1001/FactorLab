@@ -82,6 +82,7 @@ class DemoMarketFeed:
         self.interval, self.seconds = interval, INTERVALS[interval]
         self.max_backfill, self.max_quote_age = max_backfill, max_quote_age
         self._last_live_quote_received = None
+        self.collection = None
         self.status, self.reason = 'PAUSED', 'STARTING'
         path = Path(state_path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -136,6 +137,8 @@ class DemoMarketFeed:
     def poll(self):
         self.pause('CHECKING')
         try:
+            if self.collection is not None:
+                self.collection.check()
             with self._measure('market_poll'):
                 return self._poll()
         except FeedPaused as error:
@@ -228,7 +231,12 @@ class DemoMarketFeed:
             raise FeedPaused('BACKFILL_LIMIT')
         bars, rows, bars_received_at = self._bars(start, boundary, server)
         # Request the book after the closed range so history cannot age the book.
-        raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
+        if self.collection is None:
+            raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
+        else:
+            # Reuse only a recent receipt; current exchange bounds below still
+            # enforce the five-second market-age limit at consumption.
+            raw = self.collection.receive(after=self.collection.clock() - 1).payload
         book_wall_received_at = self.clock()
         received = self.exchange_time(allow_refresh=False)
         book_received_at = timestamp(ceil(received.upper_ms))
@@ -247,7 +255,7 @@ class DemoMarketFeed:
         self._validate_quote_age(raw['time'], received)
         if last_quote is not None and raw['time'] < last_quote:
             raise FeedPaused('QUOTE_TIME_REGRESSION')
-        if self._last_live_quote_received is not None and (
+        if self.collection is None and self._last_live_quote_received is not None and (
                 received.observed_monotonic - self._last_live_quote_received > MAX_QUOTE_GAP_SECONDS
                 or raw['time'] - last_quote > MAX_QUOTE_GAP_SECONDS * 1000):
             self._last_live_quote_received = None

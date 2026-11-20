@@ -357,22 +357,54 @@ def test_production_credential_refused_before_window(network_grid):
 
 
 def test_clock_skew_syncs_before_next_get_recovery(network_grid, monkeypatch):
-    from factorlab.integrations.binance_futures_trading.protocol import ExchangeError
+    from test_demo_constructor_clock import inject, paths, response, signature_parameters, TIME
     root, store, factory, _, _, requests = network_grid
     initialize(root, store)
     with open_grid_session(root, store, factory, continuous=True) as bridge:
-        original = bridge.session.gateway.recover
-        def skew_once(controller):
-            monkeypatch.setattr(bridge.session.gateway, 'recover', original)
-            raise ExchangeError(-1021, 400, 'CLOCK_SKEW')
-        monkeypatch.setattr(bridge.session.gateway, 'recover', skew_once)
-        before = len([request for request in requests if '/fapi/v1/time' in request.full_url])
-        with pytest.raises(ExchangeError, match='CLOCK_SKEW'):
-            bridge.recover()
-        assert len([request for request in requests if '/fapi/v1/time' in request.full_url]) == before + 1
+        endpoint = '/fapi/v3/positionRisk'
+        inject(monkeypatch, [response()], endpoint=endpoint)
+        before = len(requests)
         bridge.recover()
+        recovered = requests[before:]
+        observed = paths(recovered)
+        assert observed.count(TIME) == 1
+        assert observed.count('/fapi/v3/account') == 1
+        assert observed.count(endpoint) == 2
+        failed = observed.index(endpoint)
+        assert observed[failed:failed + 3] == [endpoint, TIME, endpoint]
+        attempts = [signature_parameters(request) for request in recovered
+                    if endpoint in request.full_url]
+        business = [{key: value for key, value in params.items()
+                     if key not in {'timestamp', 'signature'}} for params in attempts]
+        assert business[0] == business[1]
+        assert business[0]['recvWindow'] == ['5000']
+        assert bridge.session.client.clock_recoveries[-1]['outcome'] == 'RECOVERED'
         bridge.ensure_campaign()
         assert bridge.account().reconciled
+        assert not writes(requests)
+
+
+def test_non_protocol_clock_skew_does_not_replay_recovery(network_grid, monkeypatch):
+    from factorlab.integrations.binance_futures_trading.protocol import ExchangeError
+    from test_demo_constructor_clock import paths, TIME
+    root, store, factory, _, _, requests = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        calls = []
+
+        def reject(controller):
+            calls.append(controller)
+            raise ExchangeError(-1021, 400, 'CLOCK_SKEW')
+
+        monkeypatch.setattr(bridge.session.gateway, 'recover', reject)
+        before = len(requests)
+        with pytest.raises(ExchangeError, match='CLOCK_SKEW'):
+            bridge.recover()
+        assert calls == [bridge.session.controller]
+        assert TIME not in paths(requests[before:])
+        assert not bridge.ready
+        with pytest.raises(SafetyBlocked, match='RECONCILE_REQUIRED'):
+            bridge.dispatch()
         assert not writes(requests)
 
 
