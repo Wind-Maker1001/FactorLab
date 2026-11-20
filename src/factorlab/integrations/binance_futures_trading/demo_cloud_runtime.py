@@ -96,7 +96,7 @@ class CloudFeed:
         from .demo_cloud_storage import storage_metrics
         if storage_metrics(self.root)['disk_free_bytes'] < self.min_free_bytes:
             self.last_exception = 'DISK_SPACE_LOW'
-            raise SafetyBlocked('DISK_SPACE_LOW')
+            raise ValueError('DISK_SPACE_LOW')
         desired = durable_state(self.root, self.runtime)
         if desired in {'STOPPED', 'HALTED'}:
             self.status, self.reason = desired, desired
@@ -108,8 +108,11 @@ class CloudFeed:
         if self.session is None:
             # Identity/configuration refusals are fatal; transient network errors still
             # reach DemoSupervisor's existing recovery backoff.
-            self.session, _ = self.stack.enter_context(open_session(
-                self.root, self.store, self.runtime, self.requests))
+            try:
+                self.session, _ = self.stack.enter_context(open_session(
+                    self.root, self.store, self.runtime, self.requests))
+            except SafetyBlocked:
+                raise ValueError('BOUND_ACCOUNT_CONFIGURATION_REFUSED') from None
         try:
             account = self.session.recover()
             self.status = 'RECOVERING'
@@ -129,15 +132,15 @@ class CloudFeed:
         except ExchangeError:
             self.last_exception = 'NETWORK_EXCHANGE_ERROR'
             raise
+        except SafetyBlocked:
+            self.last_exception = 'RECONCILIATION_FAILED'
+            raise FeedPaused('RECONCILIATION_FAILED') from None
         except OSError:
             self.last_exception = 'NETWORK_INTERRUPTED'
             raise
         except DataQualityError:
             self.last_exception = 'MARKET_STALE_OR_INVALID'
             raise
-        except SafetyBlocked:
-            self.last_exception = 'RECONCILIATION_FAILED'
-            raise FeedPaused('RECONCILIATION_FAILED') from None
 
     def snapshot(self):
         from .demo_cloud_storage import storage_metrics

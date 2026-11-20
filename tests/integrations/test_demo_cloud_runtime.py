@@ -167,6 +167,22 @@ def test_unknown_and_reconciliation_failure_never_create_market_feed(tmp_path):
         assert dict(feed.requests) == dict(GET=0, POST=0, DELETE=0)
 
 
+def test_identity_and_disk_refusals_do_not_enter_network_backoff(tmp_path, monkeypatch):
+    from contextlib import ExitStack, contextmanager
+    @contextmanager
+    def refused(*args):
+        raise SafetyBlocked('synthetic binding mismatch')
+        yield
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_cloud_runtime.open_session', refused)
+    with closing(DemoRuntime(tmp_path)) as runtime, ExitStack() as stack:
+        feed = CloudFeed(tmp_path, runtime, None, RequestCounts(), stack, min_free_bytes=0)
+        with pytest.raises(ValueError, match='BOUND_ACCOUNT'):
+            feed.poll()
+        feed.min_free_bytes = 2**63
+        with pytest.raises(ValueError, match='DISK_SPACE_LOW'):
+            feed.poll()
+
+
 def test_network_failure_then_get_recovery(tmp_path):
     from contextlib import ExitStack
     class Session:
