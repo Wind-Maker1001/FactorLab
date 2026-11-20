@@ -17,13 +17,60 @@ def test_preview_window_uses_only_get_and_redacts_account_binding(deployment, mo
                         network.build_opener)
     root, credentials, _, _ = deployment
     result = window['observe'](root, credentials=credentials, worker_seconds=.01)
-    assert result['outcome'] is None
+    assert result['outcome'] is None, result['failure']
     assert result['admitted_get_requests'] > 0
     assert result['completed_requests']['POST'] == result['completed_requests']['DELETE'] == 0
     assert all(row['method'] == 'GET' for row in result['events'] if row['kind'] == 'request')
     text = json.dumps(result)
     assert 'demo-key' not in text and 'demo-secret' not in text
     assert 'account_id' not in text and 'signature=' not in text
+
+
+@pytest.mark.parametrize('exception,outcome', [(ValueError, 'ValueError'), (WindowEnded, 'WINDOW_ENDED')])
+def test_failed_window_releases_collection_feed_and_session(deployment, monkeypatch, exception, outcome):
+    import json
+    import sqlite3
+    from factorlab.integrations.binance_futures_trading import network
+    from factorlab.integrations.binance_futures_trading.demo_runtime import operator_lock
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.protocol.build_opener',
+                        network.build_opener)
+    collections, feeds = [], []
+    collection_type = window['DemoBookCollection']
+    feed_type = window['DemoMarketFeed']
+    start, close = collection_type.start, feed_type.close
+
+    def started(collection):
+        collections.append(collection)
+        start(collection)
+
+    def closed(feed):
+        feeds.append(feed)
+        close(feed)
+
+    def fail(consumer):
+        raise exception('demo-key demo-secret account_id signature=private')
+
+    monkeypatch.setattr(collection_type, 'start', started)
+    monkeypatch.setattr(feed_type, 'close', closed)
+    monkeypatch.setattr(window['GridConsumer'], 'before_poll', fail)
+    root, credentials, _, _ = deployment
+    result = window['observe'](root, credentials=credentials, worker_seconds=1)
+    assert result['outcome'] == outcome
+    assert result['failure']['stage'] == 'supervisor_run'
+    assert result['failure']['frames'][-1]['function'] == 'fail'
+    text = json.dumps(result)
+    assert all(secret not in text for secret in ('demo-key', 'demo-secret', 'account_id', 'signature='))
+    assert len(collections) == len(feeds) == 1
+    assert not collections[0]._thread.is_alive()
+    with pytest.raises(sqlite3.ProgrammingError, match='closed'):
+        feeds[0].db.execute('SELECT 1')
+    with operator_lock(root / 'grid-preview'):
+        pass
+    for path in root.rglob('*.sqlite3'):
+        with sqlite3.connect(path) as connection:
+            connection.execute('BEGIN EXCLUSIVE')
+            connection.rollback()
+    assert result['completed_requests']['POST'] == result['completed_requests']['DELETE'] == 0
 
 
 def test_request_and_time_budgets_are_reserved_before_dispatch():

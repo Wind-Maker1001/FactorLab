@@ -18,6 +18,7 @@ from factorlab.integrations.binance_futures_trading.observability import Request
 
 class WindowEnded(ValueError):
     """A request or evidence budget ended the single observation window."""
+    category = 'WINDOW_ENDED'
 
 
 class WindowRequests(RequestCounts):
@@ -69,16 +70,20 @@ class PreviewControl:
 def observe(root, *, credentials=None, worker_seconds=155):
     requests = WindowRequests()
     outcome = None
+    failure = None
+    stage = 'session_initialization'
     started_at = datetime.now(timezone.utc).isoformat()
     try:
         with open_grid_session(root, credentials or DemoCredentialStore(), grid_factory(None),
                 preview=True, continuous=True, request_counts=requests) as bridge:
+            stage = 'consumer_initialization'
             consumer = GridConsumer(bridge, PreviewControl(), clock=bridge.session._now,
                 request_counts=requests)
             reader, queued = collection_client(requests, MarketClient)
             reader.share_demo_clock(bridge.session.client)
             collection = DemoBookCollection(reader, poll_seconds=2, clock=reader.monotonic,
                 on_acquired=queued.acquired, exchange_time=reader.demo_time)
+            stage = 'feed_initialization'
             with closing(DemoMarketFeed(MarketClient(requests), consumer,
                     state_path=root / 'feed.sqlite3', consumer_id='get-recovery-preview',
                     interval='1m', catch_up=True, exchange_time=bridge.session.client.demo_time,
@@ -99,10 +104,19 @@ def observe(root, *, credentials=None, worker_seconds=155):
                     collection=collection, collection_requests=queued,
                     on_recovery_delay=consumer.require_fresh_bar)
                 consumer.supervisor = supervisor
+                stage = 'supervisor_run'
                 supervisor.run(seconds=min(worker_seconds, requests.deadline - monotonic()))
     except Exception as error:
         outcome = getattr(error, 'category', type(error).__name__)
-    return dict(started_at=started_at, elapsed_seconds=monotonic() - requests.started,
+        frames = []
+        traceback = error.__traceback__
+        while traceback is not None:
+            code = traceback.tb_frame.f_code
+            frames.append(dict(module=Path(code.co_filename).name,
+                function=code.co_name, line=traceback.tb_lineno))
+            traceback = traceback.tb_next
+        failure = dict(stage=stage, exception=type(error).__name__, frames=frames[-8:])
+    return dict(failure=failure, started_at=started_at, elapsed_seconds=monotonic() - requests.started,
         outcome=outcome, limits=dict(worker_seconds=worker_seconds, absolute_seconds=600,
             get_requests=600, evidence_bytes=5 * 1024 * 1024),
         admitted_get_requests=requests.used, completed_requests=dict(requests),
