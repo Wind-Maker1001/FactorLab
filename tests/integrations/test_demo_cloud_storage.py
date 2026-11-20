@@ -242,40 +242,40 @@ def test_binding_credentials_rejected(state, tmp_path):
     assert not list(tmp_path.glob('.backup-*'))
 
 
-@pytest.mark.skipif(os.name == 'nt', reason='POSIX ownership and mode enforcement')
-def test_private_tree_and_owner_enforcement(state, tmp_path, monkeypatch):
-    for path in (state, state / 'runtime.sqlite3', state / 'journals'):
-        original = path.stat().st_mode & 0o777
-        path.chmod(original | 0o040)
-        with pytest.raises(SafetyBlocked, match='private'):
+if os.name != 'nt':
+    def test_private_tree_and_owner_enforcement(state, tmp_path, monkeypatch):
+        for path in (state, state / 'runtime.sqlite3', state / 'journals'):
+            original = path.stat().st_mode & 0o777
+            path.chmod(original | 0o040)
+            with pytest.raises(SafetyBlocked, match='private'):
+                storage.validate_state(state, 0)
+            path.chmod(original)
+        owner = os.getuid()
+        monkeypatch.setattr(storage.os, 'getuid', lambda: owner + 1)
+        with pytest.raises(SafetyBlocked, match='owned'):
             storage.validate_state(state, 0)
-        path.chmod(original)
-    owner = os.getuid()
-    monkeypatch.setattr(storage.os, 'getuid', lambda: owner + 1)
-    with pytest.raises(SafetyBlocked, match='owned'):
-        storage.validate_state(state, 0)
 
 
-@pytest.mark.skipif(os.name == 'nt', reason='unprivileged Linux symlink creation')
-def test_symlinks_and_hardlinks_rejected(state, tmp_path):
-    alias = tmp_path / 'alias'
-    alias.symlink_to(state, target_is_directory=True)
-    with pytest.raises(SafetyBlocked):
-        storage.validate_state(alias, 0)
-    link = state / 'linked.sqlite3'
-    link.symlink_to(state / 'runtime.sqlite3')
-    with pytest.raises(SafetyBlocked):
-        storage.backup_state(state, tmp_path / 'backup')
-    link.unlink()
-    os.link(state / 'runtime.sqlite3', link)
-    with pytest.raises(SafetyBlocked, match='hard links'):
-        storage.validate_state(state, 0)
+if os.name != 'nt':
+    def test_symlinks_and_hardlinks_rejected(state, tmp_path):
+        alias = tmp_path / 'alias'
+        alias.symlink_to(state, target_is_directory=True)
+        with pytest.raises(SafetyBlocked):
+            storage.validate_state(alias, 0)
+        link = state / 'linked.sqlite3'
+        link.symlink_to(state / 'runtime.sqlite3')
+        with pytest.raises(SafetyBlocked):
+            storage.backup_state(state, tmp_path / 'backup')
+        link.unlink()
+        os.link(state / 'runtime.sqlite3', link)
+        with pytest.raises(SafetyBlocked, match='hard links'):
+            storage.validate_state(state, 0)
 
 
-@pytest.mark.skipif(os.name == 'nt', reason='POSIX permission modes')
-def test_snapshots_and_all_staged_directories_are_private(state, tmp_path):
-    backup = storage.backup_state(state, tmp_path / 'backup')
-    restored = storage.restore_state(backup, tmp_path / 'restored')
-    for root in (backup, restored):
-        for path in (root, *root.rglob('*')):
-            assert path.stat().st_mode & 0o077 == 0
+if os.name != 'nt':
+    def test_snapshots_and_all_staged_directories_are_private(state, tmp_path):
+        backup = storage.backup_state(state, tmp_path / 'backup')
+        restored = storage.restore_state(backup, tmp_path / 'restored')
+        for root in (backup, restored):
+            for path in (root, *root.rglob('*')):
+                assert path.stat().st_mode & 0o077 == 0

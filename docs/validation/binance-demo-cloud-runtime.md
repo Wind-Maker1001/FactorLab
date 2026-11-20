@@ -7,7 +7,7 @@ The reproducible Linux/Windows suite and real Linux systemd SIGKILL/SIGTERM acce
 Windows Python 3.13 evidence during implementation:
 
 - Existing runtime, continuous campaign, Grid supervisor and observability: 61 passed; Credential Manager independent-process case passed after supplying the checkout's `src` on `PYTHONPATH` to the child process.
-- Final cloud lifecycle/storage regression run: **33 passed, 4 POSIX-only cases skipped**. Includes killed SQLite transaction recovery, two-process lock exclusion, preserved STOP epoch, UNKNOWN/reconciliation withholding, method-write refusal, consistent backups, incomplete-backup rejection, fatal refusal classification, long-downtime cursor catch-up, strategy STOP precedence, progressive market staleness and disappearing-sidecar races.
+- Cloud credential/lifecycle/storage regression run: **34 passed, zero skipped**. Platform-specific cases are collected only on their applicable platform. Windows exercises a real Credential Manager round trip in a unique namespace, including reopen, secret rotation, binding preservation and deletion. Includes killed SQLite transaction recovery, two-process lock exclusion, preserved STOP epoch, UNKNOWN/reconciliation withholding, method-write refusal, consistent backups, incomplete-backup rejection, fatal refusal classification, long-downtime cursor catch-up, strategy STOP precedence, progressive market staleness and disappearing-sidecar races.
 
 [Offline CI run 44714569193](https://github.com/Wind-Maker1001/FactorLab/actions/runs/44714569193), commit `65522e6ef698b98f3f408d69923a52f5a0cdbe14`:
 

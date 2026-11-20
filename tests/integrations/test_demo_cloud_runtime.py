@@ -98,21 +98,21 @@ def test_two_workers_and_kill_release_lock(tmp_path):
             worker.communicate(timeout=15)
 
 
-@pytest.mark.skipif(os.name == 'nt', reason='POSIX SIGTERM semantics')
-def test_sigterm_closes_without_operator_stop(tmp_path):
-    worker = start(tmp_path)
-    try:
-        worker.stdout.readline()
-        worker.send_signal(signal.SIGTERM)
-        out, err = worker.communicate(timeout=15)
-        assert worker.returncode == 0, (out, err)
-        with closing(DemoRuntime(tmp_path)) as runtime:
-            assert durable_state(tmp_path, runtime) == 'READ_ONLY'
-        assert health(tmp_path) == 1
-    finally:
-        if worker.poll() is None:
-            worker.kill()
-            worker.communicate(timeout=15)
+if os.name != 'nt':
+    def test_sigterm_closes_without_operator_stop(tmp_path):
+        worker = start(tmp_path)
+        try:
+            worker.stdout.readline()
+            worker.send_signal(signal.SIGTERM)
+            out, err = worker.communicate(timeout=15)
+            assert worker.returncode == 0, (out, err)
+            with closing(DemoRuntime(tmp_path)) as runtime:
+                assert durable_state(tmp_path, runtime) == 'READ_ONLY'
+            assert health(tmp_path) == 1
+        finally:
+            if worker.poll() is None:
+                worker.kill()
+                worker.communicate(timeout=15)
 
 
 def test_stop_persists_no_network_or_credential_access(tmp_path, monkeypatch):
