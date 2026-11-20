@@ -1,9 +1,10 @@
-"""Current-user Windows Credential Manager storage for FactorLab Demo."""
+"""Platform credential storage for FactorLab Demo."""
 
 import ctypes
 from ctypes import wintypes
 import json
 import os
+import sys
 
 from .protocol import Credentials, Environment
 
@@ -41,6 +42,12 @@ class DemoCredentialStoreError(RuntimeError):
 
 class DemoCredentialStore:
     """Store the Demo key pair and the private runtime configuration separately."""
+
+    def __new__(cls, *, namespace='FactorLab'):
+        if sys.platform == 'linux':
+            from .demo_file_credentials import DemoFileCredentialStore
+            return DemoFileCredentialStore(namespace=namespace)
+        return super().__new__(cls)
 
     def __init__(self, *, namespace='FactorLab'):
         if os.name != 'nt':

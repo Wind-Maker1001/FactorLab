@@ -1,0 +1,11 @@
+[Unit]
+Description=Check FactorLab Demo heartbeat every minute
+
+[Timer]
+OnBootSec=120
+OnUnitActiveSec=60
+AccuracySec=5
+Unit=factorlab-demo-health.service
+
+[Install]
+WantedBy=timers.target
