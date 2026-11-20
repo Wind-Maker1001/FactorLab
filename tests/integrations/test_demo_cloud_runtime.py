@@ -251,6 +251,65 @@ Event().wait(60)
             child.communicate(timeout=15)
 
 
+def test_health_market_age_advances_since_snapshot(tmp_path, monkeypatch, capsys):
+    from factorlab.integrations.binance_futures_trading.demo_cloud_storage import atomic_json
+    from datetime import datetime, timezone
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_cloud_runtime.time', lambda: 1000)
+    atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=920, status='READ_ONLY', mode='GET_ONLY',
+        market_batch_age_seconds=85, last_reconciled_at=datetime.fromtimestamp(920, timezone.utc).isoformat()))
+    assert health(tmp_path, max_age=90) == 1
+    assert json.loads(capsys.readouterr().out)['ready'] is False
+
+
+def test_execute_strategy_stop_is_preserved_and_beats_grid_pause(tmp_path):
+    from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import StrategyControl
+    with closing(DemoRuntime(tmp_path)) as runtime:
+        for name, desired in [('grid-supervisor.sqlite3', 'PAUSED'), ('strategy-execute.sqlite3', 'STOPPED')]:
+            with closing(StrategyControl(tmp_path / name, dict(mode='execute'))) as control:
+                control.request(desired)
+        assert durable_state(tmp_path, runtime) == 'STOPPED'
+
+
+def test_cloud_market_cursor_recovers_after_long_downtime(tmp_path, monkeypatch):
+    from contextlib import ExitStack
+    from datetime import datetime, timezone
+    from urllib.parse import parse_qs
+    from test_demo_market_feed import Transport, bar
+    from factorlab.integrations.binance_futures_trading.protocol import FuturesClient, Environment
+    from factorlab.integrations.binance_futures_trading.demo_market_feed import DemoMarketFeed
+    class Paged(Transport):
+        def __call__(self, request, timeout):
+            if request.path.endswith('/klines'):
+                params = parse_qs(request.query)
+                self.rows = [bar(t) for t in range(int(params['startTime'][0]), int(params['endTime'][0]) + 1, 60000)]
+            return super().__call__(request, timeout)
+    class Session:
+        def recover(self):
+            return dict(reconciled=True, unknown=[])
+    transport = Paged()
+    client = FuturesClient(environment=Environment.DEMO, transport=transport,
+        clock=transport.clock, monotonic=transport.monotonic)
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_cloud_runtime.MarketClient', lambda _: client)
+    def market(*args, **kwargs):
+        return DemoMarketFeed(*args, **kwargs,
+            clock=lambda: datetime.fromtimestamp(transport.time / 1000, timezone.utc))
+    monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_cloud_runtime.DemoMarketFeed', market)
+    with closing(DemoRuntime(tmp_path)) as runtime:
+        with ExitStack() as stack:
+            cloud = CloudFeed(tmp_path, runtime, None, RequestCounts(), stack, min_free_bytes=0)
+            cloud.session = Session()
+            cloud.poll()
+            previous = cloud.watermarks()[0]
+        transport.time += 200 * 60000
+        with ExitStack() as stack:
+            restarted = CloudFeed(tmp_path, runtime, None, RequestCounts(), stack, min_free_bytes=0)
+            restarted.session = Session()
+            restarted.poll()
+            assert restarted.watermarks()[0] > previous
+            assert restarted.feed.reason != 'BACKFILL_LIMIT'
+            assert all(request.method == 'GET' for request in transport.requests)
+
+
 def test_health_does_not_validate_or_initialize_database(tmp_path, monkeypatch, capsys):
     from factorlab.integrations.binance_futures_trading.demo_cloud_runtime import main
     from factorlab.integrations.binance_futures_trading.demo_cloud_storage import atomic_json

@@ -62,7 +62,12 @@ def _inventory(root):
             _private(Path(directory) / name, directory=True)
         for name in names:
             path = Path(directory) / name
-            _private(path)
+            try:
+                _private(path)
+            except FileNotFoundError:
+                if name.endswith(_SIDECARS):
+                    continue
+                raise
             files.append(path)
             if name == 'session.lock' or name.endswith(_SIDECARS):
                 continue
@@ -87,8 +92,17 @@ def _integrity(path, *, recover=False):
 def storage_metrics(root):
     """Return disk capacity and per-database main/WAL/SHM/journal byte counts."""
     root = _root(root)
-    databases, files = _inventory(root)
-    sizes = {path: path.stat().st_size for path in files}
+    return _storage_metrics(root, *_inventory(root))
+
+
+def _storage_metrics(root, databases, files):
+    sizes = {}
+    for path in files:
+        try:
+            sizes[path] = path.stat().st_size
+        except FileNotFoundError:
+            if not path.name.endswith(_SIDECARS):
+                raise
     records = {}
     for path in databases:
         record = {'database_bytes': sizes[path]}
@@ -110,8 +124,8 @@ def validate_state(root, min_free_bytes, *, recover=False):
     if min_free_bytes < 0:
         raise ValueError('minimum free bytes must be nonnegative')
     root = _root(root)
-    databases, _ = _inventory(root)
-    metrics = storage_metrics(root)
+    databases, files = _inventory(root)
+    metrics = _storage_metrics(root, databases, files)
     if metrics['disk_free_bytes'] < min_free_bytes:
         raise SafetyBlocked('insufficient free space for Demo storage')
     for path in databases:

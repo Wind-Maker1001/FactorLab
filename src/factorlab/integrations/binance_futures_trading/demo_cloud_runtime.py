@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import shutil
 import sqlite3
 from time import time
 
@@ -35,19 +36,22 @@ def durable_state(root, runtime):
         return authorization['state']
     if runtime._get('stop_epoch') and not runtime._get('active') and not runtime._get('continuous_window'):
         return 'STOPPED'
-    for path in (root / 'grid-supervisor.sqlite3', root / 'strategy-supervisor.sqlite3'):
+    paused = False
+    for path in (root / 'grid-supervisor.sqlite3', root / 'strategy-execute.sqlite3'):
         if path.exists():
             with closing(readonly(path)) as db:
                 row = db.execute("SELECT name FROM sqlite_master WHERE name='strategy_control'").fetchone()
                 if row:
                     desired = db.execute('SELECT desired FROM strategy_control WHERE id=1').fetchone()
-                    if desired and desired[0] in {'STOPPED', 'PAUSED'}:
-                        return desired[0]
-    return 'READ_ONLY'
+                    if desired:
+                        if desired[0] == 'STOPPED':
+                            return 'STOPPED'
+                        paused = paused or desired[0] == 'PAUSED'
+    return 'PAUSED' if paused else 'READ_ONLY'
 
 
-def budget_metrics(runtime):
-    report = runtime.report(SMOKE_CAMPAIGN)
+def budget_metrics(runtime, report=None):
+    report = runtime.report(SMOKE_CAMPAIGN) if report is None else report
     authorization = report.get('USER_DEMO_AUTHORIZATION')
     campaign = {key: report[key] for key in (
         'enabled', 'expires_at', 'post_budget', 'posts_consumed', 'limits')}
@@ -68,6 +72,9 @@ class SilentConsumer:
         pass
 
     def quote(self, quote):
+        pass
+
+    def historical_bar(self, bar):
         pass
 
 
@@ -93,8 +100,7 @@ class CloudFeed:
             self.feed.pause(reason)
 
     def poll(self):
-        from .demo_cloud_storage import storage_metrics
-        if storage_metrics(self.root)['disk_free_bytes'] < self.min_free_bytes:
+        if shutil.disk_usage(self.root).free < self.min_free_bytes:
             self.last_exception = 'DISK_SPACE_LOW'
             raise ValueError('DISK_SPACE_LOW')
         desired = durable_state(self.root, self.runtime)
@@ -114,6 +120,8 @@ class CloudFeed:
             except SafetyBlocked:
                 raise ValueError('BOUND_ACCOUNT_CONFIGURATION_REFUSED') from None
         try:
+            # TODO: reuse incremental GET recovery once late-fill/commission coverage
+            # is proven; the existing full journal recovery must not be shortened here.
             account = self.session.recover()
             self.status = 'RECOVERING'
             if not account['reconciled']:
@@ -125,7 +133,7 @@ class CloudFeed:
             if self.feed is None:
                 self.feed = self.stack.enter_context(closing(DemoMarketFeed(
                     MarketClient(self.requests), SilentConsumer(), state_path=self.root / 'cloud-feed.sqlite3',
-                    consumer_id='cloud-get-only-v1', interval=self.interval)))
+                    consumer_id='cloud-get-only-v1', interval=self.interval, catch_up=True)))
             result = self.feed.poll()
             self.status, self.reason = ('PAUSED', 'PAUSED') if desired == 'PAUSED' else ('READ_ONLY', None)
             return result
@@ -144,11 +152,12 @@ class CloudFeed:
 
     def snapshot(self):
         from .demo_cloud_storage import storage_metrics
-        account = self.session.status() if self.session is not None else None
+        facts = self.session.adapter.facts if self.session is not None else None
         metrics = (worker_metrics(self.session, self.feed, self.runtime, self.requests)
                    if self.session is not None and self.feed is not None else {})
         quote = self.watermarks()[1]
-        endpoints = self.requests.snapshot()['endpoints']
+        api = metrics.get('api') or self.requests.snapshot()
+        endpoints = api['endpoints']
         count = sum(row['count'] for row in endpoints)
         failures = sum(sum(row['errors'].values()) for row in endpoints)
         return dict(version=1, pid=os.getpid(), heartbeat_at=time(), status=self.status, reason=self.reason,
@@ -157,10 +166,12 @@ class CloudFeed:
             last_reconciled_at=self.session.last_reconciled_at if self.session else None,
             market_batch_age_seconds=None if quote is None else max(0, time() - quote / 1000),
             requests=dict(self.requests), request_failure_rate=failures / count if count else None,
-            unknown_count=len(account['unknown']) if account else None,
-            positions=account['positions'] if account else None,
-            equity=account['balances'] if account else None,
-            last_exception=self.last_exception, **budget_metrics(self.runtime), **storage_metrics(self.root))
+            unknown_count=metrics.get('unknown_count'),
+            positions=[row for row in facts.position_details() if row['quantity'] != 0] if facts else None,
+            equity=facts.usdt() if facts else None,
+            last_exception=self.last_exception, journals=metrics.get('journals'),
+            **budget_metrics(self.runtime, metrics.get('campaign')),
+            **storage_metrics(self.root))
 
 
 def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MIN_FREE_BYTES):
@@ -208,11 +219,12 @@ def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MI
 
 def health(root, *, max_age=90):
     payload = json.loads((root / 'cloud-health.json').read_text())
-    fresh = 0 <= time() - payload['heartbeat_at'] <= max_age
+    elapsed = time() - payload['heartbeat_at']
+    fresh = 0 <= elapsed <= max_age
     alive = fresh and payload['status'] not in {'EXITED', 'STOPPED', 'HALTED'}
     ready = alive and (payload['mode'] == 'OFFLINE' or (
         payload['status'] == 'READ_ONLY' and payload['market_batch_age_seconds'] is not None
-        and payload['market_batch_age_seconds'] <= max_age
+        and payload['market_batch_age_seconds'] + elapsed <= max_age
         and payload['last_reconciled_at'] is not None
         and 0 <= time() - datetime.fromisoformat(payload['last_reconciled_at']).timestamp() <= max_age))
     print(json.dumps(dict(payload, alive=alive, ready=ready)))

@@ -216,6 +216,24 @@ def test_atomic_json_serializes_runtime_metrics(tmp_path):
     assert storage.storage_metrics(root)['disk_free_bytes'] > 0
 
 
+def test_transient_sidecar_disappearance_is_not_fatal(state, monkeypatch):
+    sidecar = state / 'runtime.sqlite3-journal'
+    sidecar.write_bytes(b'transient')
+    sidecar.chmod(0o600)
+    original = storage._private
+    def private(path, **kwargs):
+        if path == sidecar:
+            sidecar.unlink()
+        return original(path, **kwargs)
+    monkeypatch.setattr(storage, '_private', private)
+    assert storage.storage_metrics(state)['database_bytes'] > 0
+    monkeypatch.setattr(storage, '_private', original)
+    databases, files = storage._inventory(state)
+    assert storage._storage_metrics(state, databases, files + [sidecar])['database_bytes'] > 0
+    with pytest.raises(FileNotFoundError):
+        storage._storage_metrics(state, databases, files + [state / 'lost.sqlite3'])
+
+
 def test_binding_credentials_rejected(state, tmp_path):
     storage.atomic_json(state / 'binding.json', {'configuration': {'api_secret': 'secret'}})
     with pytest.raises(SafetyBlocked, match='credentials'):
