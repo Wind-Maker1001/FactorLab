@@ -49,8 +49,11 @@ jobs:
           sudo useradd --system --home /nonexistent --shell /usr/sbin/nologin factorlab-demo
           sudo install -d -o factorlab-demo -g factorlab-demo -m 700 /var/lib/factorlab-demo
           sudo mkdir -p /opt/factorlab
-          sudo "$(command -v python)" -m venv --system-site-packages /opt/factorlab/venv
+          sudo "$(command -v python)" -m venv --copies /opt/factorlab/venv
+          sudo /opt/factorlab/venv/bin/python -m pip install -r requirements/py314-core.txt
           sudo /opt/factorlab/venv/bin/python -m pip install --no-deps .
+          sudo chown -R root:root /opt/factorlab
+          sudo chmod -R go-w /opt/factorlab
           sudo cp deploy/systemd/factorlab-demo.service /etc/systemd/system/factorlab-demo-ci.service
           sudo mkdir -p /etc/systemd/system/factorlab-demo-ci.service.d
           printf '%s\n' '[Service]' 'LoadCredential=' 'ExecStart=' 'ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime run --offline' | sudo tee /etc/systemd/system/factorlab-demo-ci.service.d/offline.conf > /dev/null

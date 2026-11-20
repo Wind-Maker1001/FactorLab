@@ -35,7 +35,7 @@ Baseline: `555a9bfdf0615f89146eddba991854299010dd97` (merged P8-C01).
 
 The CI matrix reuses the production unit with an explicit offline drop-in. Its service user and private directory are disposable synthetic state, not a substitute for the historical account. Artifacts include JUnit, journal, systemd properties and `cloud-systemd-acceptance.json` with revision/host/runtime identity, initial/restarted/stopped health, double-worker refusal, permissions and SQLite integrity. Cursor, backup/restore quarantine, credential loading and other safety cases remain in the existing integration suite. No short CI run establishes a long-term window.
 
-C02 Windows Python 3.13 runtime/storage/credentials and existing runtime/campaign/Grid/observability regression: **110 passed**. Python 3.14 cloud runtime/storage/credential regression: **36 passed**. Codex review and final Linux CI evidence: running; not yet accepted.
+C02 Windows Python 3.13 runtime/storage/credentials and existing runtime/campaign/Grid/observability regression: **110 passed**. Python 3.14 cloud runtime/storage/credential regression: **36 passed**. Codex Review: BLOCKED. CLI 0.165.0 interrupted both the configured-model attempt and the read-only `gpt-5.4` attempt with an unsupported-model error for the current ChatGPT login; neither produced findings or a review verdict. Initial Linux Python 3.13 regression: **120 passed, 1 skipped**. The systemd job then correctly rejected the CI installation because its venv linked to the runner-writable Python executable. The CI installation now copies the executable, installs dependencies into the root-owned venv and removes group/other write permission. Final Linux/systemd evidence for this correction: pending.
 
 ## Acceptance states (C02)
 
