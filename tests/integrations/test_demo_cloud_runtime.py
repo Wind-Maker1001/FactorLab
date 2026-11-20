@@ -142,6 +142,39 @@ def test_missing_credentials_refuses_before_network(tmp_path, monkeypatch):
     assert main(['run', '--state-root', str(tmp_path), '--min-free-bytes', '0']) == 78
 
 
+def test_health_distinguishes_offline_from_get_only_and_execution(tmp_path, capsys):
+    from datetime import datetime, timezone
+    from time import time
+    from factorlab.integrations.binance_futures_trading.demo_cloud_storage import atomic_json
+    for mode, status in [('OFFLINE', 'OFFLINE'), ('GET_ONLY', 'READ_ONLY')]:
+        atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=time(), mode=mode,
+            status=status, market_batch_age_seconds=0,
+            last_reconciled_at=datetime.now(timezone.utc).isoformat()))
+        assert health(tmp_path) == 0
+        report = json.loads(capsys.readouterr().out)
+        assert report['offline_heartbeat_healthy'] == (mode == 'OFFLINE')
+        assert report['get_only_healthy'] == (mode == 'GET_ONLY')
+        assert report['cloud_get_only_accepted'] is False
+        assert report['demo_execution_ready'] is False
+
+
+def test_cloud_health_retains_request_diagnostics(tmp_path):
+    from contextlib import ExitStack
+    requests = RequestCounts()
+    requests.record('session', 'GET', '/fapi/v3/account', .75, 'CLOCK_SKEW', {})
+    with closing(DemoRuntime(tmp_path)) as runtime, ExitStack() as stack:
+        feed = CloudFeed(tmp_path, runtime, None, requests, stack, offline=True)
+        feed.pause('STALE_POLL')
+        feed.pause('R13_QUOTE_GAP')
+        report = feed.snapshot()
+    assert report['safety_events'] == dict(STALE_POLL=1, R13_QUOTE_GAP=1, CLOCK_SKEW=1)
+    endpoint = report['api']['endpoints'][0]
+    assert endpoint['errors'] == {'CLOCK_SKEW': 1}
+    assert endpoint['max_seconds'] == .75
+    assert report['request_failure_rate'] == 1
+    assert report['last_recovery_seconds'] is None
+
+
 def test_low_space_refuses_before_session(tmp_path, monkeypatch):
     from factorlab.integrations.binance_futures_trading.demo_cloud_runtime import main
     assert main(['run', '--offline', '--state-root', str(tmp_path),

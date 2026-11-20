@@ -89,12 +89,15 @@ class CloudFeed:
         self.session = self.feed = None
         self.status, self.reason = 'STARTING', None
         self.last_exception = None
+        self.market_refusals = dict(STALE_POLL=0, R13_QUOTE_GAP=0)
         self.supervisor = None
 
     def watermarks(self):
         return self.feed.watermarks() if self.feed is not None else (None, None)
 
     def pause(self, reason):
+        if reason in self.market_refusals:
+            self.market_refusals[reason] += 1
         self.status, self.reason = 'PAUSED', reason
         if self.feed is not None:
             self.feed.pause(reason)
@@ -165,7 +168,11 @@ class CloudFeed:
             last_valid_market_at=metrics.get('last_valid_market_at'),
             last_reconciled_at=self.session.last_reconciled_at if self.session else None,
             market_batch_age_seconds=None if quote is None else max(0, time() - quote / 1000),
-            requests=dict(self.requests), request_failure_rate=failures / count if count else None,
+            requests=dict(self.requests), api=api,
+            last_recovery_seconds=metrics.get('last_recovery_seconds'),
+            safety_events=dict(self.market_refusals,
+                CLOCK_SKEW=sum(row['errors'].get('CLOCK_SKEW', 0) for row in endpoints)),
+            request_failure_rate=failures / count if count else None,
             unknown_count=metrics.get('unknown_count'),
             positions=[row for row in facts.position_details() if row['quantity'] != 0] if facts else None,
             equity=facts.usdt() if facts else None,
@@ -188,12 +195,13 @@ def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MI
             load_bound_credential(store)
         requests = RequestCounts()
         feed = CloudFeed(root, runtime, store, requests, stack, offline=offline, min_free_bytes=min_free_bytes)
+        started_at = time()
         previous = root / 'cloud-health.json'
         starts = json.loads(previous.read_text())['starts'] + 1 if previous.exists() else 1
 
         def publish(_=None):
             payload = feed.snapshot()
-            payload.update(starts=starts, restart_count=starts - 1)
+            payload.update(started_at=started_at, starts=starts, restart_count=starts - 1)
             atomic_json(previous, payload)
             # The durable file has metrics; logs only carry bounded state classifications.
             print(json.dumps(dict(event='cloud_health', pid=payload['pid'], starts=starts, status=payload['status'],
@@ -227,7 +235,10 @@ def health(root, *, max_age=90):
         and payload['market_batch_age_seconds'] + elapsed <= max_age
         and payload['last_reconciled_at'] is not None
         and 0 <= time() - datetime.fromisoformat(payload['last_reconciled_at']).timestamp() <= max_age))
-    print(json.dumps(dict(payload, alive=alive, ready=ready)))
+    print(json.dumps(dict(payload, alive=alive, ready=ready,
+        offline_heartbeat_healthy=ready and payload['mode'] == 'OFFLINE',
+        get_only_healthy=ready and payload['mode'] == 'GET_ONLY',
+        cloud_get_only_accepted=False, demo_execution_ready=False)))
     return 0 if ready else 1
 
 
