@@ -12,7 +12,9 @@
     "python": "3.14",
     "passed": 107,
     "duration_seconds": 177.87,
-    "codex_review": "BLOCKED_UNSUPPORTED_CONFIGURED_MODEL"
+    "codex_review": "EXTERNAL_INVOCATION_FAILED_UNSUPPORTED_MODEL",
+    "direct_code_review": "COMPLETED_NO_UNRESOLVED_FINDINGS",
+    "post_review_receipt_regression": {"passed": 22, "duration_seconds": 45.60}
   },
   "official_demo": {
     "state": "BLOCKED",
@@ -30,7 +32,7 @@
     "BLOCKED"
   ],
   "results": {
-    "ENGINEERING_ACCEPTED": "BLOCKED",
+    "ENGINEERING_ACCEPTED": "ACCEPTED",
     "CI_ACCEPTED": "BLOCKED",
     "DEMO_NEW_ORDER_ACCEPTED": "BLOCKED",
     "DEMO_RECONCILIATION_ACCEPTED": "REAL_EXCHANGE_NOT_OBSERVED",

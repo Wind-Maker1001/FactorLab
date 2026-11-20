@@ -263,9 +263,9 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
         classifications.append('HISTORICAL_ACTUAL_VERIFIED')
     if not statuses['DEMO_LIFECYCLE_VERIFIED']:
         classifications.append('REAL_EXCHANGE_NOT_OBSERVED')
-    observation = 'NO_NEW_ORDER' if not new_ids else 'ORDERS_OBSERVED'
     return dict(scope='NEW_POST_IDENTITIES_AFTER_FROZEN_BASELINE',
-        evidence_classifications=classifications, observation=observation,
+        evidence_classifications=classifications,
+        order_identity_status='NEW_POST_IDENTITIES_PRESENT' if new_ids else 'NO_NEW_POST_IDENTITIES',
         baseline_observed_at=baseline['observed_at'], observed_at=current['observed_at'],
         historical_order_ids=sorted(old_ids), new_client_order_ids=sorted(new_ids),
         statuses=statuses, dispatches=dispatches, order_trade_mapping=mapping,

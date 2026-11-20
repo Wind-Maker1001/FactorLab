@@ -37,11 +37,11 @@ The receipt regressions additionally reject equal aggregate totals assigned to t
 
 Targeted regression: **OFFLINE_FAULT_VERIFIED**. The initial five-module regression passed 54 tests on Python 3.13. The expanded Python 3.13 run reached 106 passed / 1 failed: the new ACK-only subprocess test compared a pre-GET original process with a post-GET child, so legitimate first GET evidence violated its unchanged-record assertion. The test now takes an authoritative GET snapshot in the original process before closing the stores, matching the recovery procedure. Final Python 3.14 regression passed **107 tests in 177.87 seconds** against that correction, including all three independent-process states. Command: `python -m pytest -q tests/integrations/test_demo_receipts_m19.py tests/integrations/test_binance_demo_fill_closed_loop.py tests/integrations/test_binance_demo_fill_faults.py tests/integrations/test_demo_reconciliation_m14.py tests/integrations/test_binance_demo_execution.py tests/integrations/test_binance_demo_grid_network.py tests/test_grid_fifo.py`.
 
-Codex Review is **BLOCKED**: the installed reviewer exited with code 1 before producing a review because its configured model was not supported by its ChatGPT account. No review approval or finding count is inferred from the failed invocation.
+The external Codex invocation exited with code 1 before producing a review because its configured model was not supported by its ChatGPT account. The final change set was subsequently reviewed directly: ACK/GET matching, per-order execution comparison, income attribution, restored order/position facts, subprocess journal recovery and evidence classification. That review identified that absence of new POST identities must not be labelled an execution-window outcome; the exporter now reports `order_identity_status`, leaving NO_NEW_ORDER/RIGHT_CENSORED to actual observation windows. Receipt regression after this correction passed **22 tests in 45.60 seconds** on Python 3.14; no unresolved defect remained in this direct review. This is direct code review, not a successful external Codex invocation.
 
 ## Evidence classifications
 
-Existing boolean status names retain their meanings. `experiment_evidence` adds `evidence_classifications` and an observation field without renaming or removing existing fields.
+Existing boolean status names retain their meanings. `experiment_evidence` adds `evidence_classifications` and `order_identity_status` without renaming or removing existing fields. Absence of new POST identities does not establish that an execution window ran.
 
 | Classification | Required evidence |
 |---|---|
@@ -70,7 +70,7 @@ When a real new order exists, capture the original worker's authoritative facts,
 
 | Result | State |
 |---|---|
-| ENGINEERING_ACCEPTED | BLOCKED — 107 offline tests passed; Codex Review unavailable |
+| ENGINEERING_ACCEPTED | ACCEPTED — 107-test offline regression, 22-test post-review regression and direct code review complete |
 | CI_ACCEPTED | BLOCKED — Draft PR CI and trusted merge gate pending |
 | DEMO_NEW_ORDER_ACCEPTED | BLOCKED — integration/ownership prerequisites pending |
 | DEMO_RECONCILIATION_ACCEPTED | REAL_EXCHANGE_NOT_OBSERVED — no F03 actual fills |

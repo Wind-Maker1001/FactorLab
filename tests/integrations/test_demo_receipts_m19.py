@@ -161,7 +161,8 @@ def test_experiment_excludes_historical_fills_and_requires_new_recovery(network_
         assert not fresh['statuses']['NEW_DEMO_RESTART_RECOVERY_VERIFIED']
         historical = experiment_evidence(completed, completed)
         assert historical['statuses']['HISTORICAL_DEMO_ACCOUNT_RECONCILED']
-        assert historical['observation'] == 'NO_NEW_ORDER'
+        assert historical['order_identity_status'] == 'NO_NEW_POST_IDENTITIES'
+        assert 'observation' not in historical
         assert historical['evidence_classifications'] == [
             'HISTORICAL_ACTUAL_VERIFIED', 'REAL_EXCHANGE_NOT_OBSERVED']
         assert not any(value for name, value in historical['statuses'].items() if name.startswith('NEW_'))
