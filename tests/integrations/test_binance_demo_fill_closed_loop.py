@@ -4,6 +4,10 @@ from decimal import Decimal as D
 import json
 import os
 from pathlib import Path
+import subprocess
+import sys
+
+import pytest
 
 from test_binance_demo_grid_network import network_grid, observe, writes
 from test_binance_demo_network import NetworkFixture, wired
@@ -201,3 +205,54 @@ def test_partial_buy_sell_fees_fifo_equity_and_restart(network_grid, monkeypatch
     destination = os.environ.get('FACTORLAB_M16_EVIDENCE')
     if destination:
         Path(destination).write_text(json.dumps(json.loads(dumps(evidence)), indent=2) + '\n', encoding='utf-8')
+
+
+@pytest.mark.parametrize('quantity', ['0', '1', '2'])
+def test_independent_process_reopens_ack_partial_and_filled_ledgers(tmp_path, quantity):
+    from test_binance_demo_execution import setup, intent
+
+    protocol, ledger = tmp_path / 'protocol.sqlite', tmp_path / 'controller.sqlite'
+    adapter, gateway, controller, fake = setup(protocol, ledger)
+    controller.submit(intent())
+    if D(quantity):
+        fake.trade_update('one', quantity)
+    gateway.recover(controller)
+    expected_events = dumps(list(controller.store.order_events()))
+    expected_receipts = adapter.db.execute('SELECT count(*) FROM futures_receipts').fetchone()[0]
+    adapter.store.close()
+    controller.store.close()
+    payload = dict(orders=fake.orders, trades=fake.trades, cash=str(fake.cash),
+                   quantity=str(fake.quantity), entry=str(fake.entry), events=expected_events,
+                   receipts=expected_receipts)
+    program = '''
+import json, sys
+from decimal import Decimal as D
+sys.path[:0] = sys.argv[3:5]
+from test_binance_demo_execution import setup, DemoFixture
+from factorlab.trading.storage import dumps
+fake = DemoFixture()
+payload = json.load(sys.stdin)
+fake.orders, fake.trades = payload['orders'], payload['trades']
+for field in ('cash', 'quantity', 'entry'):
+    setattr(fake, field, D(payload[field]))
+a, g, c, _ = setup(sys.argv[1], sys.argv[2], fake=fake, authorize=False)
+for _ in range(2):
+    account = g.recover(c)
+    assert sum((p.quantity for p in account.positions), D(0)) == fake.quantity
+    assert account.assets[0].total == fake.cash
+    assert a.order('one').exchange_order_id == str(fake.orders['one']['orderId'])
+    assert a.order('one').cumulative_filled_quantity == fake.quantity
+    assert a.order('one').cumulative_fee == D('1000') - fake.cash
+    assert dumps(list(c.store.order_events())) == payload['events']
+    assert a.db.execute('SELECT count(*) FROM futures_receipts').fetchone()[0] == payload['receipts']
+assert all(method == 'GET' for method, _, _ in fake.calls)
+a.store.close()
+c.store.close()
+print('OFFLINE_FAULT_VERIFIED')
+'''
+    result = subprocess.run([sys.executable, '-c', program, str(protocol), str(ledger),
+                             str(Path(__file__).parent.resolve()),
+                             str(Path(__file__).resolve().parents[2] / 'src')],
+                            input=json.dumps(payload), capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == 'OFFLINE_FAULT_VERIFIED'

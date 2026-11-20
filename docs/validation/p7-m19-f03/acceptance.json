@@ -1,0 +1,42 @@
+{
+  "task": "P7-M19-F03",
+  "development_baseline": "203d35dfc592c299455f7a253f04037effdf3cd3",
+  "safety": "NO LIVE MONEY",
+  "historical_evidence": {
+    "classification": "HISTORICAL_ACTUAL_VERIFIED",
+    "reference": "../p7-m19-f01/actual-evidence.json",
+    "new_f03_result": false
+  },
+  "offline_evidence": {
+    "state": "OFFLINE_FAULT_VERIFIED",
+    "python": "3.14",
+    "passed": 107,
+    "duration_seconds": 177.87,
+    "codex_review": "EXTERNAL_INVOCATION_FAILED_UNSUPPORTED_MODEL",
+    "direct_code_review": "COMPLETED_NO_UNRESOLVED_FINDINGS",
+    "post_review_receipt_regression": {"passed": 22, "duration_seconds": 45.60}
+  },
+  "official_demo": {
+    "state": "BLOCKED",
+    "reason": "F02 integration, engineering acceptance, serial ownership handoff and current risk/budget inspection pending",
+    "observation_started": false,
+    "new_client_order_ids": [],
+    "new_trade_ids": [],
+    "new_actual_fees": null,
+    "independent_process_new_order_recovery": "REAL_EXCHANGE_NOT_OBSERVED"
+  },
+  "evidence_classifications": [
+    "HISTORICAL_ACTUAL_VERIFIED",
+    "OFFLINE_FAULT_VERIFIED",
+    "REAL_EXCHANGE_NOT_OBSERVED",
+    "BLOCKED"
+  ],
+  "results": {
+    "ENGINEERING_ACCEPTED": "ACCEPTED",
+    "CI_ACCEPTED": "BLOCKED",
+    "DEMO_NEW_ORDER_ACCEPTED": "BLOCKED",
+    "DEMO_RECONCILIATION_ACCEPTED": "REAL_EXCHANGE_NOT_OBSERVED",
+    "DEMO_RESTART_ACCEPTED": "REAL_EXCHANGE_NOT_OBSERVED",
+    "DEMO_LIFECYCLE_VERIFIED": "REAL_EXCHANGE_NOT_OBSERVED"
+  }
+}

@@ -105,8 +105,22 @@ def capture(session, runtime, opening_wallet):
     fifo = fifo_evidence(session, opening_wallet)
     income_fields = {'symbol', 'incomeType', 'income', 'asset', 'time', 'tranId', 'tradeId'}
     income = [{key: value for key, value in row.items() if key in income_fields}
-              for row in session.adapter.income('NVDAUSDT')]
+              for row in session.adapter.income()]
     funding = [row for row in income if row['incomeType'] == 'FUNDING_FEE']
+    trade_income = {}
+    for receipt in mapping:
+        for trade in receipt['trades']:
+            key = (trade['symbol'], str(trade['id']), 'USDT')
+            trade_income[('COMMISSION', *key)] = -Decimal(trade['commission'])
+            if 'realizedPnl' in trade:
+                trade_income[('REALIZED_PNL', *key)] = Decimal(trade['realizedPnl'])
+    income_groups = {}
+    for row in income:
+        key = (row['incomeType'], row['symbol'], str(row.get('tradeId', '')), row['asset'])
+        income_groups.setdefault(key, []).append(row)
+    unaccounted_income = [row for key, rows in income_groups.items()
+                          if sum((Decimal(row['income']) for row in rows), ZERO) != trade_income.get(key)
+                          for row in rows if Decimal(row['income']) != ZERO]
     summary = fifo['attribution']['summary']
     filled = [row for row in mapping if row['trade_quantity_sum'] > 0]
     inventory = sum((p['quantity'] for p in account['positions']), ZERO)
@@ -119,7 +133,7 @@ def capture(session, runtime, opening_wallet):
     # TODO: attribute confirmed funding settlements through the authoritative ledger before accepting funded accounts.
     account_ok = (fee_ok and position_ok and account['reconciled']
                   and summary['reconciliation_residual'] == 0
-                  and summary['final_equity'] == equity and not funding)
+                  and summary['final_equity'] == equity and not funding and not unaccounted_income)
     dispatches = [dict(campaign=c, method=m, client_order_id=i, parameters=json.loads(p),
                        receipt=json.loads(r) if r is not None else None)
                   for c, m, i, p, r in runtime.db.execute(
@@ -139,6 +153,7 @@ def capture(session, runtime, opening_wallet):
         opening_wallet=opening_wallet, statuses=statuses, account=account,
         order_trade_mapping=mapping, dispatches=dispatches, fifo=fifo,
         wallet=wallet, equity=equity, actual_fees=fees, income=income,
+        unaccounted_income=unaccounted_income,
         funding=dict(events=funding, booking='NOT_SUPPORTED' if funding else 'NO_EVENT_OBSERVED_IN_RESPONSE'),
         observed_order_statuses=sorted({row['order_query']['status'] for row in mapping}),
         receipt_history=history, lifecycle=lifecycle,
@@ -204,10 +219,13 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
     lifecycle, lifecycle_ok = lifecycle_evidence(dispatches, history)
     filled = [row for row in mapping if row['trade_quantity_sum'] > 0]
     fees = sum((row['actual_fee'] for row in mapping), ZERO)
-    latest_fees = {}
+    latest_execution = {}
     for event in events:
-        latest_fees[event['client_order_id']] = Decimal(str(event['cumulative_fee']))
-    fee_ok = bool(filled) and fees == sum(latest_fees.values(), ZERO)
+        latest_execution[event['client_order_id']] = (
+            Decimal(str(event['cumulative_quantity'])), Decimal(str(event['cumulative_fee'])))
+    receipt_execution = {row['client_order_id']: (
+        Decimal(str(row['trade_quantity_sum'])), Decimal(str(row['actual_fee']))) for row in filled}
+    fee_ok = bool(filled) and receipt_execution == latest_execution
     restart_comparison = (compare_recovery(previous_recovery, current)
                           if previous_recovery is not None else None)
     if restart_comparison is not None:
@@ -224,8 +242,14 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
         HISTORICAL_DEMO_ACCOUNT_RECONCILED=baseline['statuses']['DEMO_ACCOUNT_RECONCILED'],
         NEW_DEMO_ACK_VERIFIED=any(d['method'] == 'POST' and d['receipt'] is not None
             and d['receipt']['http_status'] == 200 and d['receipt'].get('order_id') is not None
-            and not _unknown_dispatch(d) for d in dispatches),
-        NEW_DEMO_FILL_VERIFIED=any(row['order_query']['status'] == 'FILLED'
+            and not _unknown_dispatch(d)
+            and any(row['client_order_id'] == d['client_order_id']
+                    and row['receipt_source'] == 'GET'
+                    and row['order_id'] == str(d['receipt']['order_id'])
+                    and row['order_query']['symbol'] == d['parameters']['symbol'] for row in mapping)
+            for d in dispatches),
+        NEW_DEMO_FILL_VERIFIED=any(row['receipt_source'] == 'GET'
+                                 and row['order_query']['status'] == 'FILLED'
                                  and row['trade_quantity_sum'] > 0 for row in mapping),
         NEW_DEMO_FEE_RECONCILED=fee_ok, NEW_DEMO_ACCOUNT_RECONCILED=account_ok,
         NEW_DEMO_RESTART_RECOVERY_VERIFIED=recovered,
@@ -233,7 +257,15 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
         NEW_DEMO_UNKNOWN_ACK_RECOVERY_VERIFIED=lifecycle['unknown_ack_queried'],
         NEW_DEMO_CANCEL_FILL_RACE_VERIFIED=lifecycle['cancel_fill_race_observed'],
         DEMO_LIFECYCLE_VERIFIED=lifecycle_ok and account_ok and recovered)
+    classifications = [name for name, verified in statuses.items()
+                       if name.startswith('NEW_DEMO_') and verified]
+    if baseline['statuses']['DEMO_ACCOUNT_RECONCILED']:
+        classifications.append('HISTORICAL_ACTUAL_VERIFIED')
+    if not statuses['DEMO_LIFECYCLE_VERIFIED']:
+        classifications.append('REAL_EXCHANGE_NOT_OBSERVED')
     return dict(scope='NEW_POST_IDENTITIES_AFTER_FROZEN_BASELINE',
+        evidence_classifications=classifications,
+        order_identity_status='NEW_POST_IDENTITIES_PRESENT' if new_ids else 'NO_NEW_POST_IDENTITIES',
         baseline_observed_at=baseline['observed_at'], observed_at=current['observed_at'],
         historical_order_ids=sorted(old_ids), new_client_order_ids=sorted(new_ids),
         statuses=statuses, dispatches=dispatches, order_trade_mapping=mapping,
@@ -254,7 +286,19 @@ def compare_recovery(previous, current):
     same_identity = old_state.account_id == new_state.account_id
     old_orders = {key: record.snapshot.intent for key, record in old_state.orders.items()}
     new_orders = {key: record.snapshot.intent for key, record in new_state.orders.items()}
+    def order_facts(state):
+        return {key: (record.snapshot.exchange_order_id, record.snapshot.status,
+                      record.snapshot.cumulative_filled_quantity, record.snapshot.cumulative_fee,
+                      record.snapshot.reconcile_required)
+                for key, record in state.orders.items()}
+
+    def position_facts(state):
+        return {key: (position.quantity, position.entry_price)
+                for key, position in state.positions.items() if position.quantity != ZERO}
+
     facts = dict(same_account=same_identity, historical_intents_preserved=old_orders == new_orders,
+        order_facts_unchanged=order_facts(old_state) == order_facts(new_state),
+        position_facts_unchanged=position_facts(old_state) == position_facts(new_state),
         economic_events_unchanged=previous['fifo']['economic_events'] == current['fifo']['economic_events'],
         no_new_dispatch=previous['recovery_proof']['dispatch_count'] == current['recovery_proof']['dispatch_count'],
         wallet_unchanged=previous['wallet'] == current['wallet'],

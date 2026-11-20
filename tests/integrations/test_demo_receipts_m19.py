@@ -1,4 +1,5 @@
 """Exchange receipt persistence shares the existing confirmation transaction."""
+import copy
 import json
 from datetime import datetime, timedelta
 
@@ -137,14 +138,33 @@ def test_experiment_excludes_historical_fills_and_requires_new_recovery(network_
         fresh = experiment_evidence(baseline, completed)
         assert fresh['lifecycle']['completed_order_get']
         assert fresh['statuses']['NEW_DEMO_ACK_VERIFIED']
+        for field, value in [('order_id', 'wrong'), ('receipt_source', 'POST')]:
+            altered = copy.deepcopy(completed)
+            for row in altered['order_trade_mapping']:
+                row[field] = value
+            assert not experiment_evidence(baseline, altered)['statuses']['NEW_DEMO_ACK_VERIFIED']
+        assert 'NEW_DEMO_ACK_VERIFIED' in fresh['evidence_classifications']
         assert fresh['statuses']['NEW_DEMO_FILL_VERIFIED']
         assert fresh['statuses']['NEW_DEMO_FEE_RECONCILED']
         assert fresh['statuses']['NEW_DEMO_ACCOUNT_RECONCILED']
+        # An equal total cannot hide fees or quantities assigned to the wrong order.
+        for field, delta in [('cumulative_fee', D('.0001')), ('cumulative_quantity', D('.001'))]:
+            altered = copy.deepcopy(completed)
+            events = altered['fifo']['economic_events']
+            events[0][field] += delta
+            events[-1][field] -= delta
+            mismatched = experiment_evidence(baseline, altered)
+            assert not mismatched['statuses']['NEW_DEMO_FEE_RECONCILED']
+            assert not mismatched['statuses']['NEW_DEMO_ACCOUNT_RECONCILED']
         assert fresh['actual_fees'] == D('.012')
         assert fresh['wallet_change'] == D('.308')
         assert not fresh['statuses']['NEW_DEMO_RESTART_RECOVERY_VERIFIED']
         historical = experiment_evidence(completed, completed)
         assert historical['statuses']['HISTORICAL_DEMO_ACCOUNT_RECONCILED']
+        assert historical['order_identity_status'] == 'NO_NEW_POST_IDENTITIES'
+        assert 'observation' not in historical
+        assert historical['evidence_classifications'] == [
+            'HISTORICAL_ACTUAL_VERIFIED', 'REAL_EXCHANGE_NOT_OBSERVED']
         assert not any(value for name, value in historical['statuses'].items() if name.startswith('NEW_'))
         assert not historical['statuses']['DEMO_LIFECYCLE_VERIFIED']
     with open_grid_session(root, store, factory) as bridge:
@@ -236,6 +256,29 @@ def test_partial_actual_receipts_project_existing_fifo_without_rebooking(network
         assert fifo_evidence(bridge.session, D('1000')) == exported
 
 
+def test_restart_compares_position_economics_but_not_market_marks(network_grid):
+    from dataclasses import replace
+    from factorlab.trading.storage import decode, dumps
+
+    root, store, factory, enable, fake, requests = network_grid
+    enable()
+    with open_grid_session(root, store, factory) as bridge:
+        bridge.recover()
+        observe(bridge)
+        fake.trade_update(bridge.grid.active[0].intent.client_order_id, '.02', '146')
+        previous = capture(bridge.session, bridge.runtime, D('1000'))
+        state = decode(json.loads(previous['recovery_proof']['state']))
+        key, = state.positions
+        position = state.positions[key]
+        for field, value, unchanged in [('quantity', D('.01'), False),
+                                        ('entry_price', D('147'), False),
+                                        ('mark_price', D('151'), True)]:
+            state.positions[key] = replace(position, **{field: value})
+            current = copy.deepcopy(previous)
+            current['recovery_proof']['state'] = dumps(state)
+            assert compare_recovery(previous, current)['position_facts_unchanged'] is unchanged
+
+
 def test_complete_export_requires_actual_trades_and_reconciles_fee_nav(network_grid, monkeypatch):
     root, store, factory, enable, fake, requests = network_grid
     enable()
@@ -267,6 +310,38 @@ def test_complete_export_requires_actual_trades_and_reconciles_fee_nav(network_g
         assert report['fifo']['attribution']['summary']['normal_sell']['net'] == D('.308')
         assert len(report['order_trade_mapping']) == 2
         assert report['funding']['events'] == []
+        for income_type, symbol, asset in [
+                ('TRANSFER', '', 'USDT'), ('INSURANCE_CLEAR', 'NVDAUSDT', 'USDT'),
+                ('REALIZED_PNL', 'BTCUSDT', 'USDT'), ('COMMISSION', 'NVDAUSDT', 'BNB'),
+                ('COMMISSION', 'NVDAUSDT', 'USDT'), ('REALIZED_PNL', 'NVDAUSDT', 'USDT')]:
+            unbooked = [dict(symbol=symbol, incomeType=income_type, income=value,
+                             asset=asset, time=1, tranId=index, tradeId='')
+                        for index, value in enumerate(['1', '-1'])]
+            queried = []
+
+            def income(self, symbol=None):
+                queried.append(symbol)
+                return unbooked
+
+            monkeypatch.setattr(type(bridge.session.adapter), 'income', income)
+            offsetting = capture(bridge.session, bridge.runtime, D('1000'))
+            assert queried == [None]
+            assert offsetting['unaccounted_income'] == unbooked
+            assert offsetting['wallet'] == report['wallet']
+            assert not offsetting['statuses']['DEMO_ACCOUNT_RECONCILED']
+        trade = report['order_trade_mapping'][0]['trades'][0]
+        commission = dict(symbol=trade['symbol'], incomeType='COMMISSION',
+                          income=str(-D(trade['commission'])), asset='USDT',
+                          time=1, tranId=99, tradeId=str(trade['id']))
+        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: (commission,))
+        recognized = capture(bridge.session, bridge.runtime, D('1000'))
+        assert not recognized['unaccounted_income']
+        assert recognized['statuses']['DEMO_ACCOUNT_RECONCILED']
+        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: (commission, commission))
+        duplicated = capture(bridge.session, bridge.runtime, D('1000'))
+        assert duplicated['unaccounted_income'] == [commission, commission]
+        assert not duplicated['statuses']['DEMO_ACCOUNT_RECONCILED']
+        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: ())
         assert not report['statuses']['DEMO_LIFECYCLE_VERIFIED']
         assert not report['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
     with open_grid_session(root, store, factory) as bridge:
@@ -277,3 +352,16 @@ def test_complete_export_requires_actual_trades_and_reconciles_fee_nav(network_g
         altered['recovery_proof']['dispatch_count'] += 1
         assert not compare_recovery(report, altered)['no_new_dispatch']
         assert not altered['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
+        from dataclasses import replace
+        from factorlab.trading.storage import decode, dumps
+        state = decode(json.loads(restored['recovery_proof']['state']))
+        key = next(iter(state.orders))
+        record = state.orders[key]
+        for field, value in [('exchange_order_id', 'wrong'), ('cumulative_filled_quantity', D('.01')),
+                             ('cumulative_fee', D('1')), ('reconcile_required', True)]:
+            state.orders[key] = replace(record, snapshot=replace(record.snapshot, **{field: value}))
+            altered = json.loads(json.dumps(restored, default=str))
+            altered['recovery_proof']['state'] = dumps(state)
+            assert not compare_recovery(report, altered)['order_facts_unchanged']
+            assert not altered['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
+        state.orders[key] = record
