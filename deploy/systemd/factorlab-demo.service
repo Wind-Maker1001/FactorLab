@@ -1,0 +1,38 @@
+[Unit]
+Description=FactorLab Binance Demo GET-only runtime (NO LIVE MONEY)
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/var/lib/factorlab-demo
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=factorlab-demo
+Group=factorlab-demo
+WorkingDirectory=/opt/factorlab
+Environment=PYTHONUNBUFFERED=1
+Environment=FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo
+Environment=FACTORLAB_DEMO_SECRET_FILE=%d/demo-secret
+LoadCredential=demo-secret:/etc/factorlab-demo/demo-secret.json
+ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime run
+Restart=on-failure
+RestartSec=15
+RestartPreventExitStatus=78
+KillSignal=SIGTERM
+TimeoutStopSec=90
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/factorlab-demo
+
+[Install]
+WantedBy=multi-user.target

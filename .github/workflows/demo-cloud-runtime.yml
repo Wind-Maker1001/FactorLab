@@ -1,0 +1,75 @@
+name: Demo cloud runtime offline acceptance
+on:
+  push:
+    branches: [feat/p8-c01-cloud-runtime]
+  pull_request:
+    paths:
+      - 'src/factorlab/integrations/binance_futures_trading/**'
+      - 'tests/integrations/test_demo_cloud*'
+      - 'deploy/systemd/**'
+      - 'tools/ci/demo_cloud_systemd.py'
+      - '.github/workflows/demo-cloud-runtime.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r requirements/py314-core.txt pytest
+      - run: python -m pip install --no-deps .
+      - name: Platform, persistence and runtime regressions
+        run: >-
+          python -m pytest -q
+          tests/integrations/test_demo_cloud_runtime.py
+          tests/integrations/test_demo_cloud_storage.py
+          tests/integrations/test_demo_cloud_credentials.py
+          tests/integrations/test_binance_demo_runtime.py
+          tests/integrations/test_demo_continuous_campaign.py
+          tests/integrations/test_demo_grid_supervisor.py
+          tests/integrations/test_demo_observability.py
+          --junitxml=cloud-offline.xml
+      - name: Install offline systemd acceptance unit
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo useradd --system --home /nonexistent --shell /usr/sbin/nologin factorlab-demo
+          sudo install -d -o factorlab-demo -g factorlab-demo -m 700 /var/lib/factorlab-demo
+          sudo mkdir -p /opt/factorlab
+          sudo "$(command -v python)" -m venv --system-site-packages /opt/factorlab/venv
+          sudo /opt/factorlab/venv/bin/python -m pip install --no-deps .
+          sudo cp deploy/systemd/factorlab-demo.service /etc/systemd/system/factorlab-demo-ci.service
+          sudo mkdir -p /etc/systemd/system/factorlab-demo-ci.service.d
+          printf '%s\n' '[Service]' 'LoadCredential=' 'ExecStart=' 'ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime run --offline' | sudo tee /etc/systemd/system/factorlab-demo-ci.service.d/offline.conf > /dev/null
+          sudo systemctl daemon-reload
+          sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-ci.service
+      - name: Real systemd SIGKILL restart and SIGTERM stop
+        if: runner.os == 'Linux'
+        run: python -I tools/ci/demo_cloud_systemd.py
+      - name: Collect systemd evidence
+        if: always() && runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo journalctl --no-pager -u factorlab-demo-ci.service > cloud-systemd.log
+          sudo systemctl show factorlab-demo-ci.service > cloud-systemd-state.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: cloud-offline-${{ runner.os }}
+          path: |
+            cloud-offline.xml
+            cloud-systemd.log
+            cloud-systemd-state.txt
+          if-no-files-found: error

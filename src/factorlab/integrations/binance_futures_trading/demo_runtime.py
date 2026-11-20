@@ -31,23 +31,53 @@ def journal_id(account_id):
 
 
 def state_root():
+    configured = os.environ.get('FACTORLAB_DEMO_STATE_ROOT')
+    if configured:
+        root = Path(configured)
+        if not root.is_absolute():
+            raise SafetyBlocked('Demo state root must be absolute')
+        if os.name != 'nt':
+            from .demo_cloud_storage import storage_metrics
+            storage_metrics(root)
+            # SQLite and account subdirectories inherit this process-wide privacy policy.
+            os.umask(0o077)
+        else:
+            root.mkdir(parents=True, exist_ok=True)
+        return root.resolve()
+    if os.name != 'nt':
+        raise SafetyBlocked('explicit persistent Demo state root required')
     root = Path(os.environ['LOCALAPPDATA']) / 'FactorLab' / 'BinanceDemo'
     root.mkdir(parents=True, exist_ok=True)
     return root
 
 
 @contextmanager
-def operator_lock(root):
+def operator_lock(root, *, allow_quarantined=False):
     """Serialize sessions opening both ledgers, across terminals and worktrees."""
-    import msvcrt
-
-    with (root / 'session.lock').open('a+b') as lock:
-        lock.seek(0)
-        try:
-            msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
-        except OSError:
-            raise SafetyBlocked('another Demo session is active') from None
-        yield
+    root = Path(root)
+    if not allow_quarantined and (root / 'restore-quarantine.json').exists():
+        raise SafetyBlocked('restored Demo state is restricted to cloud GET-only recovery')
+    if os.name == 'nt':
+        import msvcrt
+        with (root / 'session.lock').open('a+b') as lock:
+            lock.seek(0)
+            try:
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError:
+                raise SafetyBlocked('another Demo session is active') from None
+            yield
+    else:
+        import fcntl
+        flags = os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC
+        with os.fdopen(os.open(root / 'session.lock', flags, 0o600), 'a+b') as lock:
+            try:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise SafetyBlocked('another Demo session is active') from None
+            try:
+                yield
+            finally:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
 
 def private_binding(store):

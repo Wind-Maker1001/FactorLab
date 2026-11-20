@@ -1,0 +1,16 @@
+[Unit]
+Description=FactorLab Demo read-only health alert
+RequiresMountsFor=/var/lib/factorlab-demo
+
+[Service]
+Type=oneshot
+User=factorlab-demo
+Group=factorlab-demo
+Environment=FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo
+ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime health
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
