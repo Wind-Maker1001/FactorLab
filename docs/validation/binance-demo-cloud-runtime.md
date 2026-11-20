@@ -26,7 +26,7 @@ Baseline: `555a9bfdf0615f89146eddba991854299010dd97` (merged P8-C01).
 | --- | --- |
 | Authorized cloud Linux host / administrative access | Not available; CLOUD_NOT_DEPLOYED. |
 | Local execution host | Windows 11; WSL has no installed Linux distribution. |
-| Linux/systemd and Python 3.13/3.14 | Disposable GitHub Actions runners; evidence must come from this revision's jobs. |
+| Linux/systemd and Python 3.13/3.14 | Accepted on disposable GitHub Actions runners at `4173b56e93b178549e73f37da94962a328268920`; see final evidence below. |
 | Persistent cloud disk, capacity and service identity | Not provisioned; BLOCKED for real deployment. Runner disks prove CI behavior only. |
 | Official Demo network/account GET | NOT_EXECUTED; no real account or market HTTP in C02. |
 | Linux Demo Secret and historical binding | Not provisioned or migrated; no Secret values collected. |
@@ -35,15 +35,24 @@ Baseline: `555a9bfdf0615f89146eddba991854299010dd97` (merged P8-C01).
 
 The CI matrix reuses the production unit with an explicit offline drop-in. Its service user and private directory are disposable synthetic state, not a substitute for the historical account. Artifacts include JUnit, journal, systemd properties and `cloud-systemd-acceptance.json` with revision/host/runtime identity, initial/restarted/stopped health, double-worker refusal, permissions and SQLite integrity. Cursor, backup/restore quarantine, credential loading and other safety cases remain in the existing integration suite. No short CI run establishes a long-term window.
 
-C02 Windows Python 3.13 runtime/storage/credentials and existing runtime/campaign/Grid/observability regression: **110 passed**. Python 3.14 cloud runtime/storage/credential regression: **36 passed**. Review: self-review completed; external review produced no verdict. Self-review identified and corrected two acceptance gaps: the STOP test previously sent an explicit service stop before proving natural successful exit, and restart continuity only compared heartbeat metadata. The corrected test waits for natural STOP exit without an operator stop, checks successful inactive status and zero automatic restarts, and verifies a nonempty synthetic SQLite record across SIGKILL and SIGTERM. The service identity also checks all installed FactorLab package paths for writability, not only the Python executable. No remaining correctness defect was identified in the C02 runtime/telemetry changes during this review; corrected systemd assertions require Linux CI evidence. Initial Linux Python 3.13 regression: **120 passed, 1 skipped**. The systemd job then correctly rejected the CI installation because its venv linked to the runner-writable Python executable. The CI installation now copies the executable, installs dependencies into the root-owned venv and removes group/other write permission. Final Linux/systemd evidence for this correction: pending.
+C02 Windows Python 3.13 runtime/storage/credentials and existing runtime/campaign/Grid/observability regression: **110 passed**. Python 3.14 cloud runtime/storage/credential regression: **36 passed**. Review: self-review completed; external review produced no verdict. Self-review identified and corrected two acceptance gaps: the STOP test previously sent an explicit service stop before proving natural successful exit, and restart continuity only compared heartbeat metadata. The corrected test waits for natural STOP exit without an operator stop, checks successful inactive status and zero automatic restarts, and verifies a nonempty synthetic SQLite record across SIGKILL and SIGTERM. The service identity also checks all installed FactorLab package paths for writability, not only the Python executable. No remaining correctness defect was identified in the C02 runtime/telemetry changes during this review. The CI installation copies the executable, installs dependencies into the root-owned venv and removes group/other write permission.
+
+### Final C02 evidence
+
+Accepted revision: `4173b56e93b178549e73f37da94962a328268920`, merged through [PR #216](https://github.com/Wind-Maker1001/FactorLab/pull/216) as `3120acc4a5ec2d1b106e18d4387ee63b21e98c3d` on 2026-11-20.
+
+- [Offline acceptance run 44731958383](https://github.com/Wind-Maker1001/FactorLab/actions/runs/44731958383): all four Linux/Windows × Python 3.13/3.14 jobs passed. Both Linux jobs passed the actual systemd SIGKILL restart, SIGTERM clean stop, natural durable STOP exit, second-worker refusal, nonempty SQLite record preservation, integrity and installation-permission assertions. JUnit, systemd journal/properties and `cloud-systemd-acceptance.json` are retained as workflow artifacts.
+- [Trusted PR validation run 44731955793](https://github.com/Wind-Maker1001/FactorLab/actions/runs/44731955793): risk selection, fast regression, extended Python 3.13/3.14 shards, Linux/Windows lock checks, package validation, CI control review, actual sharded coverage and merge gate all passed. The separate **FactorLab trusted merge gate** status was SUCCESS for the accepted revision.
+
+These results accept the Linux runtime, persistence and watchdog mechanisms on CI. They do not establish a persistent cloud installation, official account reconciliation or any long-term observation window.
 
 ## Acceptance states (C02)
 
 | State | Current evidence |
 | --- | --- |
-| LINUX_RUNTIME_ACCEPTED | Pending C02 Linux CI; C01 evidence above is historical. |
-| PERSISTENCE_ACCEPTED | Pending C02 regression/CI. |
-| WATCHDOG_ACCEPTED | Pending C02 real systemd CI. |
+| LINUX_RUNTIME_ACCEPTED | Accepted at `4173b56`: Linux Python 3.13/3.14 offline acceptance passed. |
+| PERSISTENCE_ACCEPTED | Accepted at `4173b56`: persistence regression and real systemd restart/stop state preservation passed. |
+| WATCHDOG_ACCEPTED | Accepted at `4173b56`: real systemd SIGKILL restart, SIGTERM stop and natural durable STOP exit passed. |
 | CLOUD_GET_ONLY_ACCEPTED | CLOUD_NOT_DEPLOYED. |
 | CLOUD_24H_STABILITY_ACCEPTED | NOT_OBSERVED. |
 | CLOUD_72H_STABILITY_ACCEPTED | NOT_OBSERVED; requires accepted 24h evidence first. |
