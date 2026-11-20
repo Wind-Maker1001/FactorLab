@@ -215,15 +215,12 @@ class DemoSession:
         from time import perf_counter
         started = perf_counter()
         try:
-            self.gateway.recover(self.controller)
-            result = self.status()
+            with self.client.recover_get_clock():
+                self.gateway.recover(self.controller)
+                result = self.status()
             if result['reconciled']:
                 self.last_reconciled_at = self._now()
             return result
-        except ExchangeError as error:
-            if error.category == 'CLOCK_SKEW':
-                self.client.sync_time()
-            raise
         finally:
             self.last_recovery_seconds = perf_counter() - started
 

@@ -455,3 +455,92 @@ def test_multiprocess_clock_recovery_keeps_one_window(network_grid):
         assert tuple(runtime.db.iterdump()) == before
         assert runtime.db.execute('SELECT count(*) FROM campaigns').fetchone()[0] == 1
         assert runtime.db.execute('SELECT count(*) FROM dispatches').fetchone()[0] == 0
+
+
+@pytest.mark.parametrize('failure,category', [
+    (TimeoutError('private-url'), 'TRANSPORT_TIMEOUT'),
+    (OSError('private-url'), 'TRANSPORT_ERROR'),
+])
+def test_transport_failure_category_is_safe(wired, monkeypatch, failure, category):
+    from urllib.error import URLError
+    subject = client()
+    inject(monkeypatch, [URLError(failure)])
+    with pytest.raises(DataQualityError) as caught:
+        _read_account(subject)
+    assert caught.value.category == category
+    assert 'private-url' not in str(caught.value)
+    row, = [row for row in subject.request_counts.snapshot()['endpoints'] if row['endpoint'] == ACCOUNT]
+    assert row['errors'] == {category: 1}
+    assert paths(wired[1]) == [TIME, ACCOUNT]
+
+
+@pytest.mark.parametrize('arrival,accepted', [(.1, True), (5.1, False)])
+def test_high_response_rtt_does_not_determine_arrival_acceptance(wired, monkeypatch, arrival, accepted):
+    clock = NetworkClock()
+    subject = client(clock)
+    inject(monkeypatch, [clock.time_response(.9, .9)], endpoint=TIME)
+    def exchange(request):
+        clock.elapsed += arrival
+        params = parse_qs(request.query)
+        age = clock.server_ms() - int(params['timestamp'][0])
+        result = Response(200, {}, b'{}') if age <= 5000 else response()
+        clock.elapsed += 6 - arrival
+        return result
+    inject(monkeypatch, [exchange])
+    subject.sync_time()
+    if accepted:
+        assert subject.request('GET', ACCOUNT) == {}
+    else:
+        with pytest.raises(ExchangeError, match='CLOCK_SKEW'):
+            subject.request('GET', ACCOUNT)
+    assert subject.recv_window == 5000
+    assert paths(wired[1]) == [TIME, ACCOUNT]
+
+
+@pytest.mark.parametrize('failure', ['recover', 'second_skew', 'calibration'])
+def test_session_recover_has_one_clock_retry_without_extra_sync(network_grid, monkeypatch, failure):
+    root, store, factory, _, _, requests = network_grid
+    authorization, _, _ = initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        consumed = bridge.runtime.consumption(authorization)
+        requests.clear()
+        inject(monkeypatch, [response(), response()] if failure == 'second_skew' else [response()])
+        if failure == 'calibration':
+            inject(monkeypatch, [Response(200, {}, b'{}')], endpoint=TIME)
+        if failure == 'recover':
+            bridge.session.recover()
+        else:
+            with pytest.raises(DataQualityError):
+                bridge.session.recover()
+        assert paths(requests).count(TIME) == 1
+        assert paths(requests).count(ACCOUNT) == (1 if failure == 'calibration' else 2)
+        assert not bridge.session.client._recover_get_clock
+        assert bridge.runtime.consumption(authorization) == consumed
+        assert_get_only(requests)
+
+
+def test_signed_local_http_stages_use_injected_monotonic(wired, monkeypatch):
+    class Counts(RequestCounts):
+        def __init__(self):
+            super().__init__()
+            self.events = []
+        def clock_event(self, source, kind, details):
+            if kind == 'signed_request_timing':
+                self.events.append(details)
+    clock = NetworkClock()
+    subject = client(clock)
+    subject.request_counts = Counts()
+    inject(monkeypatch, [clock.time_response(.1, .1)], endpoint=TIME)
+    def exchange(_):
+        clock.elapsed += 6
+        return Response(200, {}, b'{}')
+    inject(monkeypatch, [exchange])
+    subject.sync_time()
+    subject.request('GET', ACCOUNT)
+    event, = subject.request_counts.events
+    assert event['signed_monotonic'] == pytest.approx(.2)
+    assert event['transport_enter_monotonic'] == pytest.approx(.2)
+    assert event['http_opener_enter_monotonic'] == pytest.approx(.2)
+    assert event['headers_available_monotonic'] == pytest.approx(6.2)
+    assert event['body_complete_monotonic'] == pytest.approx(6.2)
+    assert event['timing_boundary'] == 'LOCAL_OPENER_AND_BODY_NOT_WIRE_OR_SERVER_RECEIPT'

@@ -212,6 +212,7 @@ class ObservedClient(FuturesClient):
                 if self._observed_signing is not None:
                     self._clock_event('signed_request_timing', method=method, endpoint=path,
                         http_status=self._observed_status, error=error, rejection=clock_rejection,
+                        timing_boundary='LOCAL_OPENER_AND_BODY_NOT_WIRE_OR_SERVER_RECEIPT',
                         **self._observed_signing)
                 self.request_counts.record(self.request_source, method, path,
                     self._transport_seconds if self._transport_seconds is not None else

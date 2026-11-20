@@ -10,7 +10,7 @@ import hmac
 import json
 import os
 import time
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, build_opener
 
@@ -82,6 +82,17 @@ class ExchangeError(DataQualityError):
         super().__init__(f'Binance error code={code} HTTP={status} category={category}')
 
 
+class ReadTransportError(DataQualityError):
+    def __init__(self, category):
+        self.category = category
+        super().__init__(f'account read failed; reconciliation required; category={category}')
+
+
+def transport_failure_category(error):
+    reason = error.reason if isinstance(error, URLError) else error
+    return 'TRANSPORT_TIMEOUT' if isinstance(reason, TimeoutError) else 'TRANSPORT_ERROR'
+
+
 class OutcomeUnknown(TimeoutError):
     pass
 
@@ -116,6 +127,8 @@ class SignedRequest:
     headers: dict = field(repr=False)
     environment: Environment | None = None
     signing: dict | None = field(default=None, repr=False, compare=False)
+
+    timing_clock: object = field(default=time.monotonic, repr=False, compare=False)
 
     def __repr__(self):
         return f'SignedRequest({self.method}, {self.path}, <redacted>)'
@@ -170,13 +183,26 @@ class OfflineTransport:
 
 
 def _request_http(host, request, timeout, *, opener):
+    """Local HTTP boundaries, not wire-send, first-byte or server-receipt times."""
+    def stage(name):
+        if request.signing is not None:
+            request.signing[name] = request.timing_clock()
+
     url = host + request.path + ('?' + request.query if request.query else '')
+    http_request = Request(url, headers=request.headers, method=request.method)
+    http_opener = opener(_NoRedirect())
+    stage('http_opener_enter_monotonic')
     try:
-        with opener(_NoRedirect()).open(Request(url, headers=request.headers, method=request.method),
-                                        timeout=timeout) as reply:
-            return Response(reply.status, dict(reply.headers), reply.read(2 * 1024 * 1024 + 1))
+        with http_opener.open(http_request, timeout=timeout) as reply:
+            stage('headers_available_monotonic')
+            body = reply.read(2 * 1024 * 1024 + 1)
+            stage('body_complete_monotonic')
+            return Response(reply.status, dict(reply.headers), body)
     except HTTPError as error:
-        return Response(error.code, dict(error.headers), error.read(2 * 1024 * 1024 + 1))
+        stage('headers_available_monotonic')
+        body = error.read(2 * 1024 * 1024 + 1)
+        stage('body_complete_monotonic')
+        return Response(error.code, dict(error.headers), body)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -192,8 +218,8 @@ class ReadOnlyNetworkTransport:
             raise SafetyBlocked('credential and transport environment mismatch')
         try:
             return _request_http(self.environment.host, request, timeout, opener=build_opener)
-        except OSError:
-            raise OSError('account read transport failed') from None
+        except OSError as error:
+            raise ReadTransportError(transport_failure_category(error)) from None
 
 
 class FuturesClient:
@@ -341,7 +367,9 @@ class FuturesClient:
         headers = {'X-MBX-APIKEY': self.credentials.key}
         query = urlencode(sorted(params.items()))
         signature = hmac.new(self.credentials.secret.encode(), query.encode(), hashlib.sha256).hexdigest()
-        return SignedRequest(method, path, query + '&signature=' + signature, headers, self.environment, signing)
+        if signing is not None:
+            signing['signed_monotonic'] = self.monotonic()
+        return SignedRequest(method, path, query + '&signature=' + signature, headers, self.environment, signing, self.monotonic)
 
     def request(self, method, path, params=None, *, signed=True):
         if (self.environment is Environment.DEMO and signed and method == 'GET'
@@ -384,13 +412,18 @@ class FuturesClient:
             raise ExchangeError(None, 429, 'RATE_LIMIT', self.blocked_until - self.clock())
         request = self.build(method, path, params, signed=signed)
         try:
+            if request.signing is not None:
+                request.signing['transport_enter_monotonic'] = self.monotonic()
             response = self.transport(request, self.timeout)
         except SafetyBlocked:
             raise
-        except (OSError, TimeoutError):
+        except (OSError, ReadTransportError) as error:
             if method != 'GET':
                 raise OutcomeUnknown('order outcome unknown; query by clientOrderId, never resend') from None
-            raise DataQualityError('account read failed; reconciliation required') from None
+            category = error.category if isinstance(error, ReadTransportError) else transport_failure_category(error)
+            failure = DataQualityError(f'account read failed; reconciliation required; category={category}')
+            failure.category = category
+            raise failure from None
         return self._parse_response(request, response)
 
     def write_outcome_unknown(self, request, response):

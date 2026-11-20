@@ -4,12 +4,11 @@ from datetime import datetime, timezone
 from decimal import Decimal
 import time
 from typing import Callable
-from urllib.error import HTTPError
 from urllib.parse import parse_qs
-from urllib.request import Request, build_opener
+from urllib.request import build_opener
 
-from .protocol import Environment, SafetyBlocked, SignedRequest, READ_PATHS, WRITE_PATHS, credential_account_id
-from factorlab.integrations.binance.client import Response, _NoRedirect
+from .protocol import Environment, SafetyBlocked, SignedRequest, READ_PATHS, WRITE_PATHS, credential_account_id, _request_http, ReadTransportError, transport_failure_category
+from factorlab.integrations.binance.client import Response
 from factorlab.trading.contracts import utc
 
 
@@ -195,16 +194,11 @@ class DemoNetworkTransport:
                     raise DemoWriteRefused(str(error)) from None
                 if not self.permitted():
                     raise DemoWriteRefused('Demo authorization expired at dispatch')
-        url = 'https://demo-fapi.binance.com' + request.path + ('?' + request.query if request.query else '')
         response = None
         try:
-            with build_opener(_NoRedirect()).open(
-                    Request(url, headers=request.headers, method=request.method), timeout=timeout) as reply:
-                response = Response(reply.status, dict(reply.headers), reply.read(2 * 1024 * 1024 + 1))
-        except HTTPError as error:
-            response = Response(error.code, dict(error.headers), error.read(2 * 1024 * 1024 + 1))
-        except OSError:
-            raise OSError('Demo request failed') from None
+            response = _request_http(self.host, request, timeout, opener=build_opener)
+        except OSError as error:
+            raise ReadTransportError(transport_failure_category(error)) from None
         finally:
             if self.observe_response is not None:
                 self.observe_response(request, response)
