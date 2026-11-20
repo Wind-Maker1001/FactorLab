@@ -10,6 +10,7 @@ import hmac
 import json
 import os
 import time
+from threading import RLock
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, build_opener
@@ -80,6 +81,10 @@ class ExchangeError(DataQualityError):
         self.message = message
         # Never include server messages, URLs, signatures, keys or payloads.
         super().__init__(f'Binance error code={code} HTTP={status} category={category}')
+
+
+class TimeCalibrationError(DataQualityError):
+    category = 'TIME_CALIBRATION'
 
 
 class ReadTransportError(DataQualityError):
@@ -222,6 +227,16 @@ class ReadOnlyNetworkTransport:
             raise ReadTransportError(transport_failure_category(error)) from None
 
 
+class DemoClockState:
+    """One calibration authority shared by clients with independent transports."""
+    def __init__(self):
+        self.lock = RLock()
+        self.sample = None
+        self.valid = False
+        self.diagnostics = None
+        self.offset_ms = 0
+
+
 class FuturesClient:
     """Writes are never retried; signed GET clock recovery requires an explicit scope."""
     def __init__(self, credentials=None, *, transport=None, recv_window=5000,
@@ -247,8 +262,31 @@ class FuturesClient:
         self._recover_get_clock = False
         self.clock_recoveries = []
         self.time_sync = None
-        self._demo_sample = None
-        self._demo_time_valid = False
+        self.demo_clock = DemoClockState()
+
+    @property
+    def _demo_sample(self):
+        return self.demo_clock.sample
+
+    @_demo_sample.setter
+    def _demo_sample(self, sample):
+        self.demo_clock.sample = sample
+
+    @property
+    def _demo_time_valid(self):
+        return self.demo_clock.valid
+
+    @_demo_time_valid.setter
+    def _demo_time_valid(self, valid):
+        self.demo_clock.valid = valid
+
+    def share_demo_clock(self, owner):
+        """Share calibration, not request parsing, retry scopes or credentials."""
+        if self.environment is not Environment.DEMO or owner.environment is not Environment.DEMO:
+            raise ValueError('Demo clients required for shared time')
+        self.demo_clock = owner.demo_clock
+        self.clock, self.monotonic = owner.clock, owner.monotonic
+        self.recv_window = owner.recv_window
 
     def _clock_event(self, kind, **details):
         """Allow the observing client to retain credential-free timing evidence."""
@@ -280,6 +318,10 @@ class FuturesClient:
         return self.offset_ms
 
     def _calibrate_demo(self, *, accept_clock_change=False):
+        with self.demo_clock.lock:
+            self._calibrate_demo_locked(accept_clock_change=accept_clock_change)
+
+    def _calibrate_demo_locked(self, *, accept_clock_change=False):
         previous = self._demo_sample
         self._demo_time_valid = False
         maximum = min(DEMO_TIME_MAX_UNCERTAINTY_MS, self.recv_window / 4)
@@ -290,7 +332,7 @@ class FuturesClient:
             received = self.monotonic()
             wall_after_ms = self.clock() * 1000
             if not isinstance(payload, dict) or type(payload.get('serverTime')) is not int or payload['serverTime'] <= 0:
-                raise DataQualityError('invalid server time response')
+                raise TimeCalibrationError('invalid server time response')
             sample = _TimeSample(payload['serverTime'], started, received, wall_before_ms, wall_after_ms)
             reading = sample.at(received)
             diagnostics = sample.diagnostics()
@@ -307,22 +349,30 @@ class FuturesClient:
             if not quality_ok:
                 continue
             if not drift_ok and not accept_clock_change:
-                raise DataQualityError('Demo server time drift exceeds calibration bounds')
+                raise TimeCalibrationError('Demo server time drift exceeds calibration bounds')
             self._demo_sample = sample
             self._demo_time_valid = True
-            self.time_sync = diagnostics
-            self.offset_ms = diagnostics['offset_ms']
+            self.time_sync = self.demo_clock.diagnostics = diagnostics
+            self.offset_ms = self.demo_clock.offset_ms = diagnostics['offset_ms']
             return
-        raise DataQualityError('Demo time calibration RTT exceeds signing uncertainty budget')
+        raise TimeCalibrationError('Demo time calibration RTT exceeds signing uncertainty budget')
 
     def demo_time(self, *, allow_refresh=True, min_valid_seconds=0):
+        with self.demo_clock.lock:
+            reading = self._demo_time_locked(allow_refresh=allow_refresh,
+                                             min_valid_seconds=min_valid_seconds)
+            self.time_sync = self.demo_clock.diagnostics
+            self.offset_ms = self.demo_clock.offset_ms
+            return reading
+
+    def _demo_time_locked(self, *, allow_refresh=True, min_valid_seconds=0):
         now = self.monotonic()
         maximum = min(999, self.recv_window / 2)
         if (not self._demo_time_valid
                 or now - self._demo_sample.received + min_valid_seconds >= DEMO_TIME_TTL_SECONDS
                 or self._demo_sample.at(now + min_valid_seconds).uncertainty_ms > maximum):
             if not allow_refresh:
-                raise DataQualityError('Demo time calibration missing or expired')
+                raise TimeCalibrationError('Demo time calibration missing or expired')
             self._calibrate_demo()
             now = self.monotonic()
         return self._demo_sample.at(now)
@@ -342,6 +392,10 @@ class FuturesClient:
         return SignedRequest(method, path, urlencode(sorted(params.items())), {}, self.environment)
 
     def _signed_request(self, method, path, params):
+        with self.demo_clock.lock:
+            return self._signed_request_locked(method, path, params)
+
+    def _signed_request_locked(self, method, path, params):
         if {'signature', 'timestamp', 'recvWindow'} & params.keys():
             raise ValueError('authentication fields are owned by the signer')
         if self.credentials is None:

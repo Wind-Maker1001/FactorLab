@@ -79,6 +79,8 @@ class GridConsumer:
         self.last_bar = None
 
     def gate(self):
+        if self.supervisor is not None and self.supervisor.collection is not None:
+            self.supervisor.collection.check()
         if self.control.desired() != 'RUNNING':
             raise SafetyBlocked('Grid control prohibits submission')
         if not self.authority():
@@ -112,6 +114,13 @@ class GridConsumer:
         self.running = allowed
         self.reason = (None if self.live_bar else 'FRESH_CLOSED_BAR_REQUIRED') if allowed else (
             'PAUSED' if desired == 'PAUSED' else 'AUTHORIZATION_REQUIRED')
+
+    def require_fresh_bar(self):
+        """A long owner interruption cannot promote its accumulated bars."""
+        self.bridge.withdraw_unsubmitted()
+        self.live_bar = False
+        self.eligible_after = self.clock()
+        self.reason = 'FRESH_CLOSED_BAR_REQUIRED'
 
     def disconnect(self):
         self.bridge.ready = False
@@ -262,8 +271,16 @@ def run(args, *, root=None, credentials=None):
                         metrics=worker_metrics(bridge.session, feed, bridge.runtime, requests))
                     control.report(payload)
                     print(json.dumps(payload, default=str), flush=True)
+                from .demo_market_collection import DemoBookCollection, collection_client
+                reader, collection_requests = collection_client(requests, MarketClient)
+                reader.share_demo_clock(bridge.session.client)
+                collection = DemoBookCollection(reader, poll_seconds=args.poll_seconds,
+                    clock=reader.monotonic, on_acquired=collection_requests.acquired,
+                    exchange_time=reader.demo_time)
                 supervisor = DemoSupervisor(feed, poll_seconds=args.poll_seconds, report=report,
-                    before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests)
+                    before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests,
+                    collection=collection, collection_requests=collection_requests,
+                    on_recovery_delay=consumer.require_fresh_bar)
                 consumer.supervisor = supervisor
                 signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
                 signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())

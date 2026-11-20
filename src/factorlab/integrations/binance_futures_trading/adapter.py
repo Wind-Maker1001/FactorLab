@@ -19,6 +19,10 @@ from .protocol import (
 )
 from .rules import order_parameters
 
+class AccountReadExpired(DataQualityError):
+    category = 'STALE_ACCOUNT'
+
+
 ZERO = Decimal('0')
 STATUS = {'NEW': S.SUBMITTED, 'PARTIALLY_FILLED': S.PARTIALLY_FILLED, 'FILLED': S.FILLED,
           'CANCELED': S.CANCELED, 'REJECTED': S.REJECTED, 'EXPIRED': S.CANCELED,
@@ -310,11 +314,20 @@ class FuturesAdapter:
 
     def _read_facts(self):
         self._validate_network_identity()
-        account = self.client.request('GET', '/fapi/v3/account')
-        risk = self.client.request('GET', '/fapi/v3/positionRisk')
-        mode = self.client.request('GET', '/fapi/v1/positionSide/dual')
-        orders = self.open_orders()
-        config = self.client.request('GET', '/fapi/v1/symbolConfig')
+        observed_at = self.clock()
+
+        def read(path):
+            payload = self.client.request('GET', path)
+            if (self.client.environment is Environment.DEMO
+                    and not 0 <= (self.clock() - observed_at).total_seconds() <= 5):
+                raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
+            return payload
+
+        account = read('/fapi/v3/account')
+        risk = read('/fapi/v3/positionRisk')
+        mode = read('/fapi/v1/positionSide/dual')
+        orders = read('/fapi/v1/openOrders')
+        config = read('/fapi/v1/symbolConfig')
         if not isinstance(account, dict) or not isinstance(mode, dict) or not all(
                 isinstance(rows, list) and all(isinstance(row, dict) for row in rows)
                 for rows in (risk, orders, config)):
@@ -331,13 +344,13 @@ class FuturesAdapter:
         if type(self.client.transport) is DemoNetworkTransport or readonly_demo:
             if 'canTrade' not in account:
                 try:
-                    can_trade = account_can_trade(self.client.request('GET', '/fapi/v2/account'))
+                    can_trade = account_can_trade(read('/fapi/v2/account'))
                 except DataQualityError:
                     if not readonly_demo:
                         raise
             from .quantitative import QuantitativeObservation
             try:
-                status = self.client.request('GET', '/fapi/v1/apiTradingStatus')
+                status = read('/fapi/v1/apiTradingStatus')
             except (DataQualityError, OSError, TimeoutError) as error:
                 category = error.category if isinstance(error, ExchangeError) else type(error).__name__
                 quantitative = QuantitativeObservation(error=category)
@@ -353,7 +366,10 @@ class FuturesAdapter:
         assets, positions = account.get('assets'), account.get('positions')
         assets_known = isinstance(assets, list) and all(isinstance(row, dict) for row in assets)
         positions_known = isinstance(positions, list) and all(isinstance(row, dict) for row in positions)
-        self.facts = AccountFacts(self.account_id, self.clock(), tuple(assets) if assets_known else (),
+        if (self.client.environment is Environment.DEMO
+                and not 0 <= (self.clock() - observed_at).total_seconds() <= 5):
+            raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
+        self.facts = AccountFacts(self.account_id, observed_at, tuple(assets) if assets_known else (),
             tuple(positions) if positions_known else (), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
             assets_known and positions_known,
             can_trade, quantitative)

@@ -38,7 +38,7 @@ def bar(number, **changes):
 def worker(b, *, allowed=lambda: True):
     control = Control()
     consumer = GridConsumer(b, control, authority=allowed, clock=lambda: NOW)
-    consumer.supervisor = SimpleNamespace(stop=lambda: None)
+    consumer.supervisor = SimpleNamespace(stop=lambda: None, collection=None)
     consumer.before_poll()
     consume = consumer.closed_bar
     def closed(value):
@@ -500,7 +500,7 @@ def test_worker_end_to_end_persists_status_and_control(deployment, monkeypatch, 
     monkeypatch.setattr(module, 'MarketClient', lambda requests: market.client())
     monkeypatch.setattr(module, 'DemoMarketFeed', lambda *args, **kwargs: DemoMarketFeed(
         *args, clock=lambda: market.at, **kwargs))
-    args = parse_args(['grid-supervisor', 'start', '--seconds', '.01', '--poll-seconds', '.001', '--interval', '1h'])
+    args = parse_args(['grid-supervisor', 'start', '--seconds', '1', '--poll-seconds', '.001', '--interval', '1h'])
     path = root / 'grid-preview' / 'grid-supervisor.sqlite3'
     with closing(DemoMarketFeed(market.client(),
             SimpleNamespace(), state_path=path, consumer_id='grid-dry-run', interval='1h')) as legacy:
