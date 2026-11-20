@@ -76,6 +76,18 @@ The Preview test now reuses `test_demo_market_feed.bar` to respond to klines at 
 
 The observation now records a bounded stack of module basenames, function names and line numbers together with the initialization/run stage. Exception messages, local values, request parameters and account bindings are not recorded. Expected budget termination has category `WINDOW_ENDED`; an ordinary ValueError remains a failure. Injected failures after collector startup verify thread termination, closed feed SQLite, reacquirable operator lock and unlocked state databases without permitting writes.
 
+## Strategy worker deadline regression (2026-11-20)
+
+At 65b570d, trusted run 44744616279 passed Fast Python 3.13 and all software shards except Python 3.14 shard 2 (2654 passed, two Strategy worker failures). Actual sharded coverage and the merge gates correctly failed downstream. Cross-platform offline run 44744619585 passed all four jobs. Both Strategy failures reproduced locally: missing last_signal in Preview and zero POST in Execute.
+
+The ten-millisecond worker deadline could expire during successful account recovery, before the first feed.poll. A controlled monotonic clock now independently exercises that boundary in both modes: recovery completes, elapsed time advances beyond the original ten-millisecond deadline, any poll is forbidden, and EXITED persists without Bars, signals or writes. Feed closure and operator-lock release are checked. This confirms the deadline path rather than treating missing signals as a strategy failure.
+
+The composition test now stops after its first actual poll report, retaining a 60-second failure bound. It requires 21 Bars, one quote, no pause reason, reconciled account state, persisted BUY and watermarks, and LIMIT BUY quantity 0.04 at original price 100. Execute must traverse the offline HTTP fixture exactly once and consume exactly one persistent POST; Preview remains zero-write. The existing Campaign and risk decisions are unchanged. Only the Strategy test and this report are modified.
+
+Self-review checked the real run/poll/recovery path, naturally generated signals, HTTP and persistent POST counts, separate deadline coverage, function-scoped monkeypatches and state cleanup. No production change or additional confirmed production defect was required. This is self-review, not Codex Review; the unavailable review service was not retried.
+
+Focused validation passed all four cases. The first full module invocation passed 17 cases but its subprocess restart case imported an installed package instead of this checkout and failed with ModuleNotFoundError. With checkout src explicitly inherited through PYTHONPATH, the complete Strategy module passed **18 cases in 38.71 seconds**, including both ten-millisecond controlled deadline cases and subprocess restart. The affected feed/Grid supervisor/collection/GET recovery/Campaign/observation selection passed **132 cases in 86.53 seconds**, with unhandled thread warnings promoted to errors. Final-head trusted CI and gates remain pending.
+
 ## Review
 
 The original Codex Review did not run: configured `gpt-6.2-sol` was rejected as unsupported for the account. A new read-only review against `origin/main` selected the locally listed `gpt-6.1-sol`; it stopped at the account usage limit before producing findings. Codex Review remains **BLOCKED**, not passed. A separate automated review could not access the target checkout and produced no verified findings.

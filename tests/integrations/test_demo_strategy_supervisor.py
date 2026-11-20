@@ -133,8 +133,8 @@ def test_execution_feed_signal_has_one_persistent_submission(deployment, monkeyp
                         assert counts['POST'] == 1
 
 
-@pytest.mark.parametrize('execute', [False, True])
-def test_worker_composition_mode_and_persistent_status(deployment, monkeypatch, execute):
+@pytest.fixture
+def worker_composition(deployment, monkeypatch):
     from factorlab.integrations.binance_futures_trading import demo_strategy_supervisor as module
     from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
     root, store, campaign, fake = deployment
@@ -151,19 +151,113 @@ def test_worker_composition_mode_and_persistent_status(deployment, monkeypatch, 
     monkeypatch.setattr(module, 'MarketClient', lambda requests: market.client())
     monkeypatch.setattr(module, 'DemoMarketFeed', lambda *args, **kwargs: DemoMarketFeed(
         *args, clock=lambda: market.at, **kwargs))
+    return module, root, store, campaign, fake, market
+
+
+@pytest.mark.parametrize('execute', [False, True])
+def test_worker_composition_mode_and_persistent_status(worker_composition, monkeypatch, execute):
+    module, root, store, campaign, fake, market = worker_composition
+    reports, supervisors = [], []
+    supervisor_type = module.DemoSupervisor
+
+    class OnePoll(supervisor_type):
+        def run(self, *, seconds=None):
+            supervisors.append(self)
+            report = self.report
+
+            def completed(raw):
+                reports.append(json.loads(raw))
+                report(raw)
+                self.stop()
+
+            self.report = completed
+            super().run(seconds=seconds)
+
+    monkeypatch.setattr(module, 'DemoSupervisor', OnePoll)
     counts = dict(GET=0, POST=0, DELETE=0)
     args = SimpleNamespace(execute=execute, interval='1h', max_backfill=120,
-        poll_seconds=.001, seconds=.01)
+        poll_seconds=.001, seconds=60)
     with closing(DemoRuntime(root)) as runtime:
         module.run_worker(args, root, store, runtime, counts)
         assert counts['POST'] == runtime.post_count(campaign['id']) == int(execute)
         assert counts['DELETE'] == 0
+    posts = [params for method, path, params in fake.calls if method == 'POST']
+    assert len(posts) == int(execute)
+    if execute:
+        post, = posts
+        assert post['type'] == ['LIMIT'] and post['side'] == ['BUY']
+        assert list(map(D, post['quantity'])) == [D('.04')]
+        assert list(map(D, post['price'])) == [D('100')]
+    report, = reports
+    assert report['bars'] == 21
+    assert report['quotes'] == 1
+    assert report['reason'] is None
+    supervisor, = supervisors
+    import sqlite3
+    with pytest.raises(sqlite3.ProgrammingError, match='closed'):
+        supervisor.feed.db.execute('SELECT 1')
     mode = 'execute' if execute else 'dry-run'
     with closing(StrategyControl(root / ('strategy-' + mode + '.sqlite3'))) as control:
         snapshot = control.snapshot()
         assert snapshot['observed']['status'] == 'EXITED'
         assert snapshot['observed']['strategy']['last_signal']['direction'] == 'BUY'
         assert snapshot['observed']['watermarks'][0] == market.boundary
+        assert snapshot['observed']['account']['reconciled']
+        strategy = snapshot['observed']['strategy']
+        assert len(strategy['bars']) == 21
+        intent = strategy['last_order']['intent']
+        assert intent['order_type'] == 'LIMIT' and intent['side'] == 'BUY'
+        assert D(intent['quantity']) == D('.04')
+        assert D(intent['limit_price']) == D('100')
+        assert not intent['reduce_only']
+
+
+@pytest.mark.parametrize('execute', [False, True])
+def test_recovery_past_deadline_exits_before_market_poll(worker_composition, monkeypatch, execute):
+    from factorlab.integrations.binance_futures_trading import demo_supervisor
+    from factorlab.integrations.binance_futures_trading.demo_runtime import operator_lock
+    import sqlite3
+    module, root, store, campaign, fake, market = worker_composition
+    elapsed, recovered, feeds = [0.], [], []
+    monkeypatch.setattr(demo_supervisor, 'monotonic', lambda: elapsed[0])
+    before_poll = StrategyConsumer.before_poll
+    feed_type = module.DemoMarketFeed
+
+    def recovery(consumer):
+        before_poll(consumer)
+        recovered.append(consumer.runner.session.status()['reconciled'])
+        elapsed[0] = .02
+
+    def feed(*args, **kwargs):
+        opened = feed_type(*args, **kwargs)
+        feeds.append(opened)
+        monkeypatch.setattr(opened, 'poll', lambda: pytest.fail('poll started after deadline'))
+        return opened
+
+    monkeypatch.setattr(StrategyConsumer, 'before_poll', recovery)
+    monkeypatch.setattr(module, 'DemoMarketFeed', feed)
+    counts = dict(GET=0, POST=0, DELETE=0)
+    args = SimpleNamespace(execute=execute, interval='1h', max_backfill=120,
+        poll_seconds=.001, seconds=.01)
+    with operator_lock(root), closing(DemoRuntime(root)) as runtime:
+        module.run_worker(args, root, store, runtime, counts)
+        assert runtime.post_count(campaign['id']) == 0
+    assert recovered == [True]
+    assert counts['POST'] == counts['DELETE'] == 0
+    mode = 'execute' if execute else 'dry-run'
+    with closing(StrategyControl(root / ('strategy-' + mode + '.sqlite3'))) as control:
+        observed = control.snapshot()['observed']
+        assert observed['status'] == 'EXITED'
+        assert 'last_signal' not in observed['strategy']
+        assert observed['strategy']['bars'] == []
+        assert observed['watermarks'] == [None, None]
+    opened, = feeds
+    with pytest.raises(sqlite3.ProgrammingError, match='closed'):
+        opened.db.execute('SELECT 1')
+    with operator_lock(root):
+        pass
+    with operator_lock(root if execute else root / 'strategy-preview'):
+        pass
 
 
 def test_abrupt_process_exit_before_feed_ack_and_reopen(tmp_path):
