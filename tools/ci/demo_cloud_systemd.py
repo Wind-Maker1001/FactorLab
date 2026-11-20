@@ -38,6 +38,13 @@ def main():
     journal = subprocess.Popen(['sudo', 'journalctl', '--follow', '--lines=0',
         '--output=cat', '--unit', unit], stdout=subprocess.PIPE, text=True)
     try:
+        as_service('-c', '''
+from contextlib import closing
+from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, state_root
+with closing(DemoRuntime(state_root())) as runtime:
+    with runtime.db:
+        runtime._set('c02-persistence-sentinel', 'retained-before-restart')
+''')
         systemctl('start', unit)
 
         def heartbeat(previous_pid=None, status='OFFLINE'):
@@ -67,6 +74,13 @@ def main():
         assert after['starts'] == before['starts'] + 1
         assert after['desired'] == before['desired'] == 'READ_ONLY'
         assert after['requests'] == dict(GET=0, POST=0, DELETE=0)
+        persisted = as_service('-c', '''
+from contextlib import closing
+from factorlab.integrations.binance_futures_trading.demo_cloud_runtime import readonly
+with closing(readonly('/var/lib/factorlab-demo/runtime.sqlite3')) as db:
+    print(db.execute("SELECT value FROM runtime WHERE key='c02-persistence-sentinel'").fetchone()[0])
+''')
+        assert persisted == 'retained-before-restart'
         assert int(systemctl('show', unit, '--property=NRestarts', '--value')) >= 1
         systemctl('stop', unit)
         assert systemctl('show', unit, '--property=ActiveState', '--value') == 'inactive'
@@ -88,22 +102,38 @@ print(json.dumps(results))
         integrity = json.loads(integrity)
         assert integrity and all(result == [['ok']] for result in integrity.values())
         assert as_service('-c', f"import os; print(os.access('{PYTHON}', os.W_OK))") == 'False'
+        installation = json.loads(as_service('-c', '''
+import importlib.metadata, json, os
+from pathlib import Path
+import factorlab
+root = Path(factorlab.__file__).parent
+paths = [root, *root.rglob('*')]
+print(json.dumps(dict(version=importlib.metadata.version('factorlab'),
+    writable=[str(path.relative_to(root)) for path in paths if os.access(path, os.W_OK)])))
+'''))
+        assert installation['writable'] == []
         assert as_service('-c', f"import os; print(oct(os.stat('{ROOT}').st_mode & 0o777))") == '0o700'
         # Verify durable STOP through a manual systemd start, without credentials.
         as_service('-c', '''
 from contextlib import closing
 from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, state_root
 with closing(DemoRuntime(state_root())) as runtime:
+    assert runtime._get('c02-persistence-sentinel') == 'retained-before-restart'
     runtime.stop()
 ''')
-        systemctl('start', unit)
+        systemctl('start', '--wait', unit)
         heartbeat(status='STOPPED')
-        systemctl('stop', unit)
+        assert systemctl('show', unit, '--property=ActiveState', '--value') == 'inactive'
+        assert systemctl('show', unit, '--property=ExecMainStatus', '--value') == '0'
+        assert systemctl('show', unit, '--property=Result', '--value') == 'success'
+        # systemd resets NRestarts on a manual start; zero proves this start did not restart.
+        assert systemctl('show', unit, '--property=NRestarts', '--value') == '0'
         stop_report = snapshot()
         assert stop_report['desired'] == 'STOPPED'
         assert stop_report['requests'] == dict(GET=0, POST=0, DELETE=0)
         evidence.update(systemd_sigkill_restart=True, systemd_sigterm_stop=True,
             lock_exclusion=True, code_not_service_writable=True, state_mode='0700',
+            persisted_sentinel=persisted, installation=installation, operator_stop_natural_exit=True,
             before=before, after_restart=after, after_sigterm=stopped,
             after_operator_stop=stop_report, sqlite_integrity=integrity,
             ended_at=datetime.now(timezone.utc).isoformat())
