@@ -2,7 +2,7 @@
 import argparse
 from contextlib import ExitStack, closing
 from datetime import datetime, timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import json
 import os
 from pathlib import Path
@@ -343,6 +343,20 @@ def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MI
     return 0
 
 
+def _has_global_execute_budget(budget):
+    if not isinstance(budget, dict) or budget.get('state') != 'RUNNING':
+        return False
+    posts = budget.get('remaining_posts')
+    notional = budget.get('remaining_notional')
+    if type(posts) is not int or posts <= 0 or type(notional) not in (str, int, float):
+        return False
+    try:
+        amount = Decimal(notional)
+    except InvalidOperation:
+        return False
+    return amount.is_finite() and amount > 0
+
+
 def health(root, *, max_age=90, unit=None):
     payload = json.loads((root / 'cloud-health.json').read_text(encoding='utf-8'))
     now = time()
@@ -394,6 +408,7 @@ def health(root, *, max_age=90, unit=None):
         and market_fresh
         and unknown_count == 0
         and bool(campaign.get('enabled'))
+        and _has_global_execute_budget(payload.get('global_budget'))
         and isinstance(grid, dict)
         and grid.get('state') == 'RUNNING'
         and bool(grid.get('running'))

@@ -454,7 +454,8 @@ def test_restart_preserves_budget_consumption_and_deployment(execute_harness):
 # C04-04: Health wiring & honest readiness
 # ---------------------------------------------------------------------------
 
-def test_health_execute_reports_real_facts_and_never_trusts_systemd_active_alone(tmp_path, monkeypatch, capsys):
+@pytest.fixture
+def execute_health_snapshot(monkeypatch):
     now_ts = time()
     now_iso = datetime.fromtimestamp(now_ts, timezone.utc).isoformat()
     active_systemd = dict(
@@ -469,9 +470,10 @@ def test_health_execute_reports_real_facts_and_never_trusts_systemd_active_alone
         exec_main_status=0,
         exec_main_start_timestamp='2026-11-22 00:00:00 UTC',
     )
+    monkeypatch.setattr(cloud, 'time', lambda: now_ts)
     monkeypatch.setattr(cloud, 'systemd_unit_state', lambda unit: active_systemd if unit else None)
 
-    base = dict(
+    return dict(
         version=1,
         pid=4242,
         heartbeat_at=now_ts,
@@ -505,7 +507,12 @@ def test_health_execute_reports_real_facts_and_never_trusts_systemd_active_alone
                       last_failure_at=None, last_failure_reason=None, last_recovered_at=now_iso,
                       startup_recovered=True),
         last_exception=None,
-    )
+    ), active_systemd
+
+
+def test_health_execute_reports_real_facts_and_never_trusts_systemd_active_alone(
+        tmp_path, monkeypatch, capsys, execute_health_snapshot):
+    base, active_systemd = execute_health_snapshot
 
     # 1. Truly healthy Execute -> exit 0, demo_execution_ready=True, all fields present.
     atomic_json(tmp_path / 'cloud-health.json', base)
@@ -550,6 +557,30 @@ def test_health_execute_reports_real_facts_and_never_trusts_systemd_active_alone
     assert out['alive'] is False
     assert out['ready'] is False
     assert out['demo_execution_ready'] is False
+
+
+@pytest.mark.parametrize(('budget', 'expected'), [
+    pytest.param(dict(state='RUNNING', remaining_posts=1, remaining_notional='0.01'), True, id='available'),
+    pytest.param(dict(state='RUNNING', remaining_posts=0, remaining_notional='1'), False, id='no-posts'),
+    pytest.param(dict(state='RUNNING', remaining_posts=1, remaining_notional='0'), False, id='no-notional'),
+    pytest.param(dict(state='HALTED', remaining_posts=1, remaining_notional='1'), False, id='halted'),
+    pytest.param(None, False, id='no-authorization'),
+    pytest.param(dict(state='RUNNING', remaining_posts=1), False, id='missing-notional'),
+    pytest.param(dict(state='RUNNING', remaining_posts=True, remaining_notional='1'), False, id='invalid-posts'),
+    pytest.param(dict(state='RUNNING', remaining_posts=1, remaining_notional='invalid'), False, id='invalid-notional'),
+    pytest.param(dict(state='RUNNING', remaining_posts=1, remaining_notional='Infinity'), False, id='nonfinite-notional'),
+])
+def test_execute_health_requires_remaining_global_budget(tmp_path, capsys, execute_health_snapshot, budget, expected):
+    base, _ = execute_health_snapshot
+    base['global_budget'] = budget
+    base['campaign']['remaining_posts'] = 0
+    atomic_json(tmp_path / 'cloud-health.json', base)
+
+    assert cloud.health(tmp_path) == (0 if expected else 1)
+    out = json.loads(capsys.readouterr().out)
+    assert out['alive'] is True
+    for flag in ('execute_healthy', 'demo_execution_ready', 'dispatch_eligible', 'ready'):
+        assert out[flag] is expected
 
 
 def test_no_credentials_leaked_in_logs_health_or_control(execute_harness, capsys):
