@@ -98,7 +98,13 @@ class GridConsumer:
             return
         try:
             with self.request_counts.measure('grid_recovery') if self.request_counts is not None else nullcontext():
-                self.bridge.recover()
+                collection = None
+                if self.supervisor is not None and self.supervisor.collection is not None:
+                    collection = self.supervisor.feed.collection
+                if collection is None:
+                    self.bridge.recover()
+                else:
+                    self.bridge.recover(collection=collection)
             self.recovered()
             if desired == 'RUNNING' and self.ensure_campaign is not None:
                 self.ensure_campaign()

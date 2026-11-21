@@ -234,9 +234,9 @@ class DemoMarketFeed:
         if self.collection is None:
             raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
         else:
-            # Reuse only a recent receipt; current exchange bounds below still
-            # enforce the five-second market-age limit at consumption.
-            raw = self.collection.receive(after=self.collection.clock() - 1).payload
+            # Acquisition can overlap klines. Apply the exchange age bound
+            # below at delivery, using the current calibration.
+            raw = self.collection.receive_recent(anchor.observed_monotonic, market_after=boundary).payload
         book_wall_received_at = self.clock()
         received = self.exchange_time(allow_refresh=False)
         book_received_at = timestamp(ceil(received.upper_ms))

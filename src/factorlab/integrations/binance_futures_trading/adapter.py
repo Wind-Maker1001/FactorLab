@@ -333,7 +333,7 @@ class FuturesAdapter:
             if parallel:
                 facts.confirmed_position_amounts()
                 facts.open_order_identities()
-                self._require_fresh_account_read(observed_at, started)
+                self._require_fresh_account_read(observed_at, started, self.clock())
         except Exception as exc:
             error = getattr(exc, 'category', type(exc).__name__)
             if parallel and self.quantitative_observation is None:
@@ -353,7 +353,7 @@ class FuturesAdapter:
         if not parallel:
             def read(path):
                 payload = self.client.request('GET', path)
-                self._require_fresh_account_read(observed_at, started)
+                self._require_fresh_account_read(observed_at, started, self.clock())
                 return payload
             yield read
             return
@@ -427,15 +427,15 @@ class FuturesAdapter:
         assets, positions = account.get('assets'), account.get('positions')
         assets_known = isinstance(assets, list) and all(isinstance(row, dict) for row in assets)
         positions_known = isinstance(positions, list) and all(isinstance(row, dict) for row in positions)
-        self._require_fresh_account_read(observed_at, started)
+        self._require_fresh_account_read(observed_at, started, self.clock())
         return AccountFacts(self.account_id, observed_at, tuple(assets) if assets_known else (),
             tuple(positions) if positions_known else (), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
             assets_known and positions_known, can_trade, quantitative, read_started_monotonic=started)
 
-    def _require_fresh_account_read(self, observed_at, started):
+    def _require_fresh_account_read(self, observed_at, started, now):
         if (self.client.environment is Environment.DEMO
                 and (self.client.monotonic() - started > ACCOUNT_READ_SECONDS
-                     or not 0 <= (self.clock() - observed_at).total_seconds() <= ACCOUNT_READ_SECONDS)):
+                     or not 0 <= (now - observed_at).total_seconds() <= ACCOUNT_READ_SECONDS)):
             raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
 
     def read_account(self):
@@ -473,7 +473,7 @@ class FuturesAdapter:
         if not snapshot.reconciled:
             raise DataQualityError('account incomplete, hedge mode or unmanaged open orders: reconciliation blocked')
         if initial_facts is not None:
-            self._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic)
+            self._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic, self.clock())
         with self.store.transaction():
             self.db.execute('UPDATE futures_meta SET reconciled=1')
         return self._account_snapshot(facts)

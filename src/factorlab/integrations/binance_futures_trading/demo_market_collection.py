@@ -158,11 +158,12 @@ class DemoBookCollection:
                 self._condition.notify_all()
                 raise error
 
-    def receive(self, *, after):
+    def receive(self, *, after, market_after=0):
         self._demand.set()
         with self._condition:
             ready = self._condition.wait_for(lambda: self._failure is not None or self._stop.is_set()
-                or (self._receipt is not None and self._receipt.received_monotonic >= after),
+                or (self._receipt is not None and self._receipt.received_monotonic >= after
+                    and self._receipt.payload['time'] >= market_after),
                 timeout=self.reader.timeout + self.poll_seconds)
             if self._failure is not None:
                 error, self._failure = self._failure, None
@@ -171,6 +172,9 @@ class DemoBookCollection:
             if not ready or self._stop.is_set():
                 raise FeedPaused('MARKET_COLLECTION_UNAVAILABLE')
             return self._receipt
+
+    def receive_recent(self, at, *, market_after=0):
+        return self.receive(after=at - min(self.poll_seconds, 2), market_after=market_after)
 
     def close(self):
         self._stop.set()

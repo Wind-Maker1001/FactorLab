@@ -159,7 +159,7 @@ class DemoSession:
         now = self._now()
         facts = self.adapter.facts
         try:
-            self.adapter._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic)
+            self.adapter._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic, now)
         except AccountReadExpired:
             raise SafetyBlocked('STALE_ACCOUNT at Demo dispatch') from None
         if method == 'POST':
@@ -208,8 +208,10 @@ class DemoSession:
                 # Let the adapter reconcile the actual response even when reporting fails.
                 self.receipt_error = True
 
-    def _fresh_book(self):
-        book = _book(self.client.request('GET', BOOK, {'symbol': SYMBOL}, signed=False))
+    def _fresh_book(self, payload=None):
+        if payload is None:
+            payload = self.client.request('GET', BOOK, {'symbol': SYMBOL}, signed=False)
+        book = _book(payload)
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo top of book')
         return book

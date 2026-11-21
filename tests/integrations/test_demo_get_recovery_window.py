@@ -95,6 +95,9 @@ def test_preview_reads_account_once_at_startup_and_delivers_live_market(
     assert startup.index('/fapi/v1/exchangeInfo') < startup.index('/fapi/v1/leverageBracket')
     assert startup.index('/fapi/v1/leverageBracket') < min(startup.index(path) for path in account_paths)
     assert '/fapi/v1/order' not in startup and '/fapi/v1/userTrades' not in startup
+    session_books = [row for row in result['events'] if row['kind'] == 'request'
+                     and row['source'] == 'session' and row['endpoint'] == '/fapi/v1/ticker/bookTicker']
+    assert [row['poll_round'] for row in session_books] == [0]
     warmup, live = [row for row in result['events'] if row['kind'] == 'poll']
     assert warmup['reconciled'] and live['reconciled']
     assert warmup['bars'] == warmup['quotes'] == live['bars'] == live['quotes'] == 1
