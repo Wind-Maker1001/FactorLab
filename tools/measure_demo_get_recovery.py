@@ -185,7 +185,7 @@ def observe(root, *, credentials=None, worker_seconds=155):
                 supervisor = DemoSupervisor(feed, before_poll=consumer.before_poll,
                     on_pause=consumer.disconnect, report=report, request_counts=requests,
                     collection=collection, collection_requests=queued,
-                    on_recovery_delay=consumer.require_fresh_bar)
+                    on_recovery_delay=consumer.require_fresh_bar, recover_after_bars=True)
                 consumer.supervisor = supervisor
                 stage = 'supervisor_run'
                 supervisor.run(seconds=min(worker_seconds, requests.deadline - monotonic()))

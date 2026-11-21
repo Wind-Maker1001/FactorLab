@@ -24,11 +24,11 @@ WindowRequests, WindowEnded = window['WindowRequests'], window['WindowEnded']
 SESSION_NOW = DemoSession._now
 
 
-@pytest.mark.parametrize(('account_delay', 'bar_delay', 'classification'), [
-    (.8, .6, 'valid'), (4.2, 1.1, 'expired'),
+@pytest.mark.parametrize(('account_delay', 'bar_delay', 'delivery_delay', 'classification'), [
+    (.8, .6, 0, 'valid'), (4.2, 1.1, 0, 'valid'), (4.2, 1.1, 1.1, 'expired'),
 ])
 def test_preview_reads_account_once_at_startup_and_delivers_live_market(
-        deployment, monkeypatch, account_delay, bar_delay, classification):
+        deployment, monkeypatch, account_delay, bar_delay, delivery_delay, classification):
     clock = NetworkClock()
     clock.elapsed = 58.2
     monkeypatch.setattr(DemoSession, '_now', SESSION_NOW)
@@ -65,6 +65,14 @@ def test_preview_reads_account_once_at_startup_and_delivers_live_market(
         return original(fixture, request, timeout)
 
     monkeypatch.setattr(NetworkFixture, '__call__', market)
+    preview_consumer = window['PreviewConsumer']
+    closed_bar = preview_consumer.closed_bar
+
+    def deliver(consumer, bar):
+        clock.elapsed += delivery_delay
+        return closed_bar(consumer, bar)
+
+    monkeypatch.setattr(preview_consumer, 'closed_bar', deliver)
     supervisor_type = window['DemoSupervisor']
     supervisors, startup = [], []
 
@@ -105,12 +113,15 @@ def test_preview_reads_account_once_at_startup_and_delivers_live_market(
     assert live['watermarks'][0] == MS + 60000
     deliveries = [row for row in result['events'] if row['poll_round'] == live['poll_round']
                   and row['kind'] in ('bar_delivery', 'quote_delivery')]
+    live_gets = [row['endpoint'] for row in result['events'] if row['poll_round'] == live['poll_round']
+                 and row['kind'] == 'request']
+    assert live_gets.index('/fapi/v1/klines') < live_gets.index('/fapi/v3/account')
     delivered_bar, delivered_quote = deliveries
     assert delivered_bar['fresh_bar']
     assert delivered_bar['closed_at'] == live['last_bar']
     for delivery in deliveries:
-        assert delivery['account_age_seconds'] == pytest.approx(account_delay + bar_delay)
-        assert delivery['calibrated_account_age_seconds'] == pytest.approx(account_delay + bar_delay)
+        assert delivery['account_age_seconds'] == pytest.approx(account_delay + delivery_delay)
+        assert delivery['calibrated_account_age_seconds'] == pytest.approx(account_delay + delivery_delay)
         assert delivery['account_valid'] is (classification == 'valid')
     assert delivered_bar['delivered_at'] <= delivered_quote['delivered_at']
     assert warmup['account_round'] == 'valid' and live['account_round'] == classification
@@ -183,6 +194,7 @@ def test_failed_window_releases_collection_feed_and_session(deployment, monkeypa
 
     monkeypatch.setattr(collection_type, 'start', started)
     monkeypatch.setattr(feed_type, 'close', closed)
+    monkeypatch.setattr(feed_type, '_bars', lambda *args: ([], [], None))
     monkeypatch.setattr(window['GridConsumer'], 'before_poll', fail)
     root, credentials, _, _ = deployment
     result = window['observe'](root, credentials=credentials, worker_seconds=1)

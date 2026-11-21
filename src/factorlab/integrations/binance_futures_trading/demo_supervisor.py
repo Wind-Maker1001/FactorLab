@@ -16,7 +16,7 @@ from .observability import RequestCounts
 class DemoSupervisor:
     def __init__(self, feed, *, poll_seconds=2, max_backoff=60, report=print,
                  before_poll=None, on_pause=None, request_counts=None, metric_snapshot=None,
-                 collection=None, collection_requests=None, on_recovery_delay=None):
+                 collection=None, collection_requests=None, on_recovery_delay=None, recover_after_bars=False):
         if poll_seconds <= 0 or max_backoff < poll_seconds:
             raise ValueError('invalid polling bounds')
         self.feed, self.poll_seconds, self.max_backoff = feed, poll_seconds, max_backoff
@@ -26,9 +26,18 @@ class DemoSupervisor:
         self.metric_snapshot = metric_snapshot
         self.collection, self.collection_requests = collection, collection_requests
         self.on_recovery_delay = on_recovery_delay
+        self.recover_after_bars = recover_after_bars
 
     def stop(self):
         self.stopped.set()
+
+    def _recover(self, deadline):
+        started = monotonic()
+        if self.before_poll is not None:
+            self.before_poll()
+        if self.on_recovery_delay is not None and monotonic() - started >= self.feed.seconds:
+            self.on_recovery_delay()
+        return not self.stopped.is_set() and (deadline is None or monotonic() < deadline)
 
     def run(self, *, seconds=None):
         if seconds is not None and seconds <= 0:
@@ -57,15 +66,15 @@ class DemoSupervisor:
                     try:
                         if self.collection is not None:
                             self.collection.check()
-                        recovery_started = monotonic()
-                        if self.before_poll is not None:
-                            self.before_poll()
-                        if (self.on_recovery_delay is not None
-                                and monotonic() - recovery_started >= self.feed.seconds):
-                            self.on_recovery_delay()
-                        if self.stopped.is_set() or (deadline is not None and monotonic() >= deadline):
-                            break
-                        result = self.feed.poll()
+                        if self.recover_after_bars:
+                            delivery = self.feed.poll(before_delivery=lambda: self._recover(deadline))
+                            if delivery is None:
+                                break
+                            result = delivery
+                        else:
+                            if not self._recover(deadline):
+                                break
+                            result = self.feed.poll()
                         recovering = False
                         backoff = self.poll_seconds
                     except (DataQualityError, FeedPaused, OSError) as error:
