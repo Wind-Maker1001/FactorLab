@@ -1,4 +1,5 @@
 """Demo execution admission over offline injection or a separately authorized boundary."""
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 
 from factorlab.errors import DataQualityError
@@ -91,9 +92,23 @@ class DemoFuturesAdapter(FuturesAdapter):
         super().__init__(client, store, account_id=Environment.DEMO.account_id, **kwargs)
         self._admitted_intent = None
         self._admitted_cancel_id = None
+        self._initial_facts = None
         self.db.execute('CREATE TABLE IF NOT EXISTS demo_quote_receipts (id TEXT PRIMARY KEY, policy TEXT NOT NULL, receipt TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS demo_cancel_attempts (id TEXT PRIMARY KEY)')
         self.db.execute('CREATE TABLE IF NOT EXISTS demo_quote_rejections (id TEXT PRIMARY KEY, receipt TEXT NOT NULL)')
+
+    @contextmanager
+    def _initial_reconciliation(self, facts):
+        """Supply the wallet seed to the controller's synchronous startup reconcile."""
+        self._initial_facts = facts
+        try:
+            yield
+        finally:
+            self._initial_facts = None
+
+    def reconcile(self):
+        facts, self._initial_facts = self._initial_facts, None
+        return self._reconcile(initial_facts=facts)
 
     def submit_order(self, intent):
         if intent is not self._admitted_intent:
@@ -215,12 +230,13 @@ class DemoExecutionGateway(FuturesPaperGateway):
             for a in local.assets)
         return replace(local, assets=assets, reconciled=remote.reconciled)
 
-    def recover(self, controller):
+    def recover(self, controller, *, initial_facts=None):
         # No order identity means there is nothing to import, replay or verify
         # on both sides of replay. Reconcile once with current exchange facts.
         if not self.state.orders and self.adapter.db.execute(
                 'SELECT 1 FROM futures_orders LIMIT 1').fetchone() is None:
-            return controller.reconcile()
+            with self.adapter._initial_reconciliation(initial_facts):
+                return controller.reconcile()
         return super().recover(controller)
 
     def reconcile(self):

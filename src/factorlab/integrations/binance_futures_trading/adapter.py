@@ -314,13 +314,12 @@ class FuturesAdapter:
 
     def _read_facts(self):
         self._validate_network_identity()
+        started = self.client.monotonic()
         observed_at = self.clock()
 
         def read(path):
             payload = self.client.request('GET', path)
-            if (self.client.environment is Environment.DEMO
-                    and not 0 <= (self.clock() - observed_at).total_seconds() <= 5):
-                raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
+            self._require_fresh_account_read(observed_at, started)
             return payload
 
         account = read('/fapi/v3/account')
@@ -366,14 +365,17 @@ class FuturesAdapter:
         assets, positions = account.get('assets'), account.get('positions')
         assets_known = isinstance(assets, list) and all(isinstance(row, dict) for row in assets)
         positions_known = isinstance(positions, list) and all(isinstance(row, dict) for row in positions)
-        if (self.client.environment is Environment.DEMO
-                and not 0 <= (self.clock() - observed_at).total_seconds() <= 5):
-            raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
+        self._require_fresh_account_read(observed_at, started)
         self.facts = AccountFacts(self.account_id, observed_at, tuple(assets) if assets_known else (),
             tuple(positions) if positions_known else (), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
-            assets_known and positions_known,
-            can_trade, quantitative)
+            assets_known and positions_known, can_trade, quantitative, read_started_monotonic=started)
         return self.facts
+
+    def _require_fresh_account_read(self, observed_at, started):
+        if (self.client.environment is Environment.DEMO
+                and (self.client.monotonic() - started > 5
+                     or not 0 <= (self.clock() - observed_at).total_seconds() <= 5)):
+            raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
 
     def read_account(self):
         return self._account_snapshot(self.read_facts())
@@ -385,23 +387,32 @@ class FuturesAdapter:
         return facts.shared([o for o in records if o.status not in TERMINAL], reconciled=self.reconciled and known == actual)
 
     def reconcile(self):
+        return self._reconcile()
+
+    def _reconcile(self, *, initial_facts=None):
         # Any failure leaves the durable global risk gate closed.
         self.disconnect()
         # TODO: replace lifetime polling only with a contract proving history
         # coverage and visibility of late fills/commission corrections. Neither
         # terminal status nor a forward-only trade ID proves that completeness.
         keys = [row[0] for row in self.db.execute('SELECT id FROM futures_orders')]
+        if initial_facts is not None:
+            self._validate_network_identity()
+            if keys or initial_facts is not self.facts:
+                raise SafetyBlocked('initial Demo facts require an unchanged empty order journal')
         for key in keys:
             order = self.order(key)
             if order.status == S.REJECTED and order.exchange_order_id is None:
                 continue
             self.query_order(key)
-        facts = self.read_facts()
+        facts = self.read_facts() if initial_facts is None else initial_facts
         known = {key for key in keys if self.order(key).status not in TERMINAL}
         actual = {o['clientOrderId'] for o in facts.open_orders}
         snapshot = facts.shared(reconciled=known == actual)
         if not snapshot.reconciled:
             raise DataQualityError('account incomplete, hedge mode or unmanaged open orders: reconciliation blocked')
+        if initial_facts is not None:
+            self._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic)
         with self.store.transaction():
             self.db.execute('UPDATE futures_meta SET reconciled=1')
         return self._account_snapshot(facts)

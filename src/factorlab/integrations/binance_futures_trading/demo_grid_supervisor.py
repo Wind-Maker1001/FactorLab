@@ -35,7 +35,6 @@ def grid_factory(settings, *, new_deployment=False):
             if settings is not None and grid.config != GridConfig(**settings):
                 raise SafetyBlocked('persisted Grid configuration differs')
             return grid
-        session.recover()
         status = session.status()
         if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
             raise SafetyBlocked('initial Grid deployment requires a reconciled flat dedicated account')

@@ -38,6 +38,7 @@ class AccountFacts:
     source_complete: bool = False
     can_trade: bool | None = None
     quantitative: QuantitativeObservation | None = None
+    read_started_monotonic: float | None = None
 
     def usdt(self):
         matches = [asset for asset in self.assets if asset.get('asset') == 'USDT']
