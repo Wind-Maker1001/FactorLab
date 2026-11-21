@@ -49,6 +49,32 @@ class AccountFacts:
             'walletBalance', 'availableBalance', 'marginBalance', 'unrealizedProfit',
             'initialMargin', 'maintMargin', 'positionInitialMargin', 'openOrderInitialMargin')}
 
+    def confirmed_position_amounts(self):
+        def nonzero(rows):
+            amounts = {}
+            for row in rows:
+                symbol, side = row.get('symbol'), row.get('positionSide')
+                identity = symbol, side
+                if not isinstance(symbol, str) or not symbol or side not in {'BOTH', 'LONG', 'SHORT'} or identity in amounts:
+                    raise DataQualityError('unusable position identity')
+                amount = number(row, 'positionAmt')
+                if amount is None:
+                    raise DataQualityError('unusable position amount')
+                amounts[identity] = amount
+            return {key: value for key, value in amounts.items() if value}
+
+        account = nonzero(self.positions)
+        if not self.source_complete or account != nonzero(self.risk):
+            raise DataQualityError('incomplete or conflicting positions')
+        return account
+
+    def open_order_identities(self):
+        identities = {(row.get('symbol'), row.get('clientOrderId')) for row in self.open_orders}
+        if (len(identities) != len(self.open_orders)
+                or any(not all(isinstance(value, str) and value for value in key) for key in identities)):
+            raise DataQualityError('unusable open order identity')
+        return identities
+
     def position_details(self):
         rows = []
         for row in self.positions:

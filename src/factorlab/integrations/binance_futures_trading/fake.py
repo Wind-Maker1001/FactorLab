@@ -25,6 +25,8 @@ def synthetic_rules():
 
 
 class FakeTransport(OfflineTransport):
+    inject_responses_on_get = True
+
     def __init__(self):
         self.calls, self.orders, self.trades = [], {}, []
         self.cash, self.quantity, self.entry = Decimal('1000'), Decimal('0'), Decimal('0')
@@ -34,7 +36,7 @@ class FakeTransport(OfflineTransport):
     def __call__(self, request, timeout):
         self.calls.append((request.method, request.path, parse_qs(request.query)))
         p = {k: v[0] for k, v in parse_qs(request.query).items()}
-        if self.response_next is not None:
+        if self.response_next is not None and (request.method != 'GET' or self.inject_responses_on_get):
             response, self.response_next = self.response_next, None
             return response
         if request.path == '/fapi/v1/time':
@@ -76,6 +78,7 @@ class FakeTransport(OfflineTransport):
                          'unrealizedProfit': '0', 'initialMargin': str(collateral), 'maintMargin': str(collateral * Decimal('0.01'))}]}
         elif request.path == '/fapi/v3/positionRisk':
             value = [] if not self.quantity else [{'symbol': 'NVDAUSDT', 'positionSide': 'BOTH',
+                       'positionAmt': str(self.quantity), 'entryPrice': str(self.entry),
                        'markPrice': str(self.entry), 'notional': str(self.quantity * self.entry),
                        'liquidationPrice': '0', 'isolatedMargin': '0'}]
         elif request.path == '/fapi/v1/symbolConfig':

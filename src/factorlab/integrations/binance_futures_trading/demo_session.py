@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 import json
 import re
+from threading import Lock
 from time import perf_counter
 from urllib.parse import parse_qs
 
@@ -15,7 +16,7 @@ from factorlab.trading.control import RiskLimits, TradingController
 from factorlab.trading.paper import Instrument, Quote
 from factorlab.trading.storage import PaperStore
 
-from .adapter import FuturesAdapter, STATUS
+from .adapter import AccountReadExpired, FuturesAdapter, STATUS
 from .demo_preflight import BOOK, DEMO, SYMBOL, _book, _positions
 from .execution import DemoExecutionGateway, DemoFuturesAdapter, observe_demo_rules
 from .network import DemoNetworkTransport
@@ -45,9 +46,11 @@ def _read_account(client):
 def observe_demo_account(credential, *, request_counts=None):
     """Confirm a Demo credential against the exchange before binding local state."""
     requests = _new_request_counts() if request_counts is None else request_counts
+    count_lock = Lock()
 
     def observe(request, response):
-        requests[request.method] += 1
+        with count_lock:
+            requests[request.method] += 1
 
     client = _demo_client(credential, DemoNetworkTransport(observe_response=observe), requests)
     return _read_account(client), requests
@@ -86,6 +89,7 @@ class DemoSession:
         if (authorization is None) != (write_guard is None):
             raise SafetyBlocked('Demo writes require authorization and a persistent guard')
         self.requests = _new_request_counts() if request_counts is None else request_counts
+        self._count_lock = Lock()
         self.last_reconciled_at = None
         self.last_recovery_seconds = None
         self.receipts = []
@@ -153,8 +157,11 @@ class DemoSession:
         if any(receipt['http_status'] == 400 for receipt in self.receipts[self._recovered_receipt_count:]):
             raise SafetyBlocked('Demo HTTP 400 stopped further writes')
         now = self._now()
-        if not timedelta(0) <= now - self.adapter.facts.observed_at <= timedelta(seconds=5):
-            raise SafetyBlocked('STALE_ACCOUNT at Demo dispatch')
+        facts = self.adapter.facts
+        try:
+            self.adapter._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic)
+        except AccountReadExpired:
+            raise SafetyBlocked('STALE_ACCOUNT at Demo dispatch') from None
         if method == 'POST':
             if not timedelta(0) <= now - self._order_quote_at <= timedelta(seconds=5):
                 raise SafetyBlocked('STALE_QUOTE at Demo dispatch')
@@ -162,7 +169,8 @@ class DemoSession:
 
     def _observe_response(self, request, response):
         method = request.method
-        self.requests[method] += 1
+        with self._count_lock:
+            self.requests[method] += 1
         if method == 'GET':
             return
         client_id_key = 'newClientOrderId' if method == 'POST' else 'origClientOrderId'

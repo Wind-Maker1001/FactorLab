@@ -1,5 +1,6 @@
 """One bounded GET-only Preview window with concurrent book acquisition."""
 import argparse
+from collections import Counter
 from contextlib import closing
 from datetime import datetime, timezone
 import json
@@ -31,9 +32,10 @@ class WindowRequests(RequestCounts):
         self.used = 0
         self.rows = []
         self.bytes = 0
+        self.poll_round = 0
 
     def append(self, row):
-        row = dict(elapsed_seconds=self.clock() - self.started, **row)
+        row = dict(elapsed_seconds=self.clock() - self.started, poll_round=self.poll_round, **row)
         size = len(json.dumps(row, separators=(',', ':')).encode()) + 1
         if self.bytes + size > self.max_bytes:
             raise WindowEnded('evidence byte budget exhausted')
@@ -67,6 +69,82 @@ class PreviewControl:
         return 'RUNNING'
 
 
+class PreviewConsumer(GridConsumer):
+    """Sample the account evidence the consumer had on entry to each callback."""
+    def __init__(self, bridge, requests):
+        super().__init__(bridge, PreviewControl(), clock=bridge.session._now, request_counts=requests)
+        self.poll_facts = None
+        self.first_poll_event = len(requests.rows)
+        requests.poll_round = 1
+
+    def before_poll(self):
+        adapter = self.bridge.session.adapter
+        previous = adapter.facts
+        super().before_poll()
+        if adapter.facts is not previous:
+            self.poll_facts = adapter.facts
+
+    def _account_at_delivery(self):
+        session = self.bridge.session
+        known_at = self.clock()
+        facts = self.poll_facts
+        if facts is None or facts is not session.adapter.facts:
+            return dict(delivered_at=known_at.isoformat(), account_valid=False, account_expired=False)
+        age = session.client.monotonic() - facts.read_started_monotonic
+        calibrated_age = (known_at - facts.observed_at).total_seconds()
+        return dict(delivered_at=known_at.isoformat(), account_read_started_at=facts.observed_at.isoformat(),
+            account_age_seconds=age, calibrated_account_age_seconds=calibrated_age,
+            account_valid=self.bridge.ready and 0 <= age <= 5 and 0 <= calibrated_age <= 5,
+            account_expired=age > 5 or calibrated_age > 5)
+
+    def _append(self, kind, **details):
+        with self.request_counts.admission_lock:
+            self.request_counts.append(dict(kind=kind, **details))
+
+    def observe_bar_receipt(self, bar, raw, received_at, known_at):
+        self._append('bar_receipt', closed_at=bar.closed_at.isoformat(),
+                     received_at=received_at.isoformat(), known_at=known_at.isoformat())
+
+    def closed_bar(self, bar):
+        evidence = self._account_at_delivery()
+        accepted = super().closed_bar(bar)
+        self._append('bar_delivery', closed_at=bar.closed_at.isoformat(),
+                     fresh_bar=accepted and self.live_bar, **evidence)
+        return accepted
+
+    def quote(self, quote):
+        evidence = self._account_at_delivery()
+        result = super().quote(quote)
+        self._append('quote_delivery', market_at=quote.observed_at.isoformat(), **evidence)
+        return result
+
+    def report_poll(self, report):
+        requests = self.request_counts
+        with requests.admission_lock:
+            self._report_poll(report)
+            self.first_poll_event = len(requests.rows)
+            requests.poll_round += 1
+        self.poll_facts = None
+
+    def _report_poll(self, report):
+        deliveries = [row for row in self.request_counts.rows[self.first_poll_event:]
+                      if row['kind'] in ('bar_delivery', 'quote_delivery')]
+        consumed = deliveries or [self._account_at_delivery()]
+        valid = all(row['account_valid'] for row in consumed)
+        expired = (report['reason'] in ('STALE_ACCOUNT', 'AccountReadExpired')
+                   or any(row['account_expired'] for row in consumed))
+        if expired:
+            classification = 'expired'
+        elif report['status'] == 'RUNNING' and report['reconciled'] and valid:
+            classification = 'valid'
+        else:
+            classification = 'paused'
+        paired = (classification == 'valid'
+                  and any(row.get('fresh_bar') for row in deliveries)
+                  and any(row['kind'] == 'quote_delivery' for row in deliveries))
+        self.request_counts.append(dict(account_round=classification, fresh_bar_and_account=paired, **report))
+
+
 def account_evidence(session):
     status = session.status()
     facts = session.adapter.facts
@@ -86,8 +164,7 @@ def observe(root, *, credentials=None, worker_seconds=155):
                 preview=True, continuous=True, request_counts=requests) as bridge:
             requests.append(dict(kind='initialized', **account_evidence(bridge.session)))
             stage = 'consumer_initialization'
-            consumer = GridConsumer(bridge, PreviewControl(), clock=bridge.session._now,
-                request_counts=requests)
+            consumer = PreviewConsumer(bridge, requests)
             reader, queued = collection_client(requests, MarketClient)
             reader.share_demo_clock(bridge.session.client)
             collection = DemoBookCollection(reader, poll_seconds=2, clock=reader.monotonic,
@@ -103,8 +180,7 @@ def observe(root, *, credentials=None, worker_seconds=155):
                         eligible_after=consumer.eligible_after.isoformat(),
                         last_bar=consumer.last_bar.isoformat() if consumer.last_bar else None,
                         **account_evidence(bridge.session))
-                    with requests.admission_lock:
-                        requests.append(row)
+                    consumer.report_poll(row)
 
                 supervisor = DemoSupervisor(feed, before_poll=consumer.before_poll,
                     on_pause=consumer.disconnect, report=report, request_counts=requests,
@@ -123,10 +199,14 @@ def observe(root, *, credentials=None, worker_seconds=155):
                 function=code.co_name, line=traceback.tb_lineno))
             traceback = traceback.tb_next
         failure = dict(stage=stage, exception=type(error).__name__, frames=frames[-8:])
+    polls = [row for row in requests.rows if row['kind'] == 'poll']
+    rounds = Counter(row['account_round'] for row in polls)
     return dict(failure=failure, started_at=started_at, elapsed_seconds=monotonic() - requests.started,
         outcome=outcome, limits=dict(worker_seconds=worker_seconds, absolute_seconds=600,
             get_requests=600, evidence_bytes=5 * 1024 * 1024),
         admitted_get_requests=requests.used, completed_requests=dict(requests),
+        rounds={name: rounds[name] for name in ('valid', 'expired', 'paused')},
+        fresh_bar_and_account_rounds=[row['poll_round'] for row in polls if row['fresh_bar_and_account']],
         metrics=requests.snapshot(), events=requests.rows)
 
 
