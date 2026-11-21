@@ -173,7 +173,8 @@ def test_preview_terminates_late_proposal_in_calibrated_window(network_grid, mon
                  '--seconds', '130']) == 0
     rows = read_events(output / 'events.csv')
     summary = json.loads((output / 'summary.json').read_text(encoding='utf-8'))
-    assert {'clock_sample', 'signed_request_timing', 'account_reconciled'} <= {row['kind'] for row in rows}
+    assert {'clock_sample', 'signed_request_timing', 'account_reconciled', 'account_read_set'} <= {
+        row['kind'] for row in rows}
     normalized = normalize(rows)['source']['payload']
     received_bar, = normalized['bars']
     assert closed_at <= observation.instant(received_bar['received_at']) <= observation.instant(received_bar['known_at'])
