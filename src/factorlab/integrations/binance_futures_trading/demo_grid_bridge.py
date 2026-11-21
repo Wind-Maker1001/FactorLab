@@ -32,7 +32,8 @@ class DemoGridBridge:
     cannot lose an issued identity. Economic events stay in the existing ledger.
     """
 
-    def __init__(self, grid, controller, *, expect=None, read_only=False, preview=False):
+    def __init__(self, grid, controller, *, expect=None, read_only=False, preview=False,
+                 deferred_admission=False, expected_prefix=None):
         self.session = controller if isinstance(controller, DemoSession) else None
         self.expect = expect
         self.read_only = read_only
@@ -43,10 +44,13 @@ class DemoGridBridge:
         if self.session is not None:
             controller = self.session.controller
         if self.session is not None and not read_only and not preview:
-            if expect is None or self.session._write_guard is None:
+            if expect is None or (self.session._write_guard is None and not deferred_admission):
                 raise SafetyBlocked('Grid network delivery requires persistent runtime admission')
-            plan = self.session.client.transport.authorization.plan
-            if (not grid.deployment_id.startswith(plan.client_id_prefix + '-')
+            if self.session._write_guard is not None:
+                prefix = self.session.client.transport.authorization.plan.client_id_prefix
+            else:
+                prefix = expected_prefix
+            if (not prefix or not grid.deployment_id.startswith(prefix + '-')
                     or len(grid.deployment_id) + 9 > 36):
                 raise SafetyBlocked('Grid identity is outside the authorized campaign or length limit')
         gateway = controller.broker
@@ -174,7 +178,9 @@ class DemoGridBridge:
             if collection is None:
                 book = self.session._fresh_book()
             else:
-                receipt = collection.receive_recent(collection.clock())
+                previous = self.gateway.state.quotes.get(self.grid.instrument_id)
+                market_after = 0 if previous is None else round(previous.observed_at.timestamp() * 1000)
+                receipt = collection.receive_recent(collection.clock(), market_after=market_after)
                 book = self.session._fresh_book(dict(receipt.payload))
             self.controller.quote(Quote(self.grid.instrument_id, book['askPrice'], book['time_utc']))
         if not self.account().reconciled:

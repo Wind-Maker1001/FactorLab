@@ -6,8 +6,10 @@ on:
     paths:
       - 'src/factorlab/integrations/binance_futures_trading/**'
       - 'tests/integrations/test_demo_cloud*'
+      - 'tests/integrations/test_demo_execute_systemd.py'
       - 'deploy/systemd/**'
       - 'tools/ci/demo_cloud_systemd.py'
+      - 'tools/ci/demo_execute_systemd.py'
       - '.github/workflows/demo-cloud-runtime.yml'
   workflow_dispatch:
 permissions:
@@ -36,6 +38,7 @@ jobs:
           tests/integrations/test_demo_cloud_runtime.py
           tests/integrations/test_demo_cloud_storage.py
           tests/integrations/test_demo_cloud_credentials.py
+          tests/integrations/test_demo_execute_systemd.py
           tests/integrations/test_binance_demo_runtime.py
           tests/integrations/test_demo_continuous_campaign.py
           tests/integrations/test_demo_grid_supervisor.py
@@ -57,11 +60,18 @@ jobs:
           sudo cp deploy/systemd/factorlab-demo.service /etc/systemd/system/factorlab-demo-ci.service
           sudo mkdir -p /etc/systemd/system/factorlab-demo-ci.service.d
           printf '%s\n' '[Service]' 'LoadCredential=' 'ExecStart=' 'ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime run --offline' | sudo tee /etc/systemd/system/factorlab-demo-ci.service.d/offline.conf > /dev/null
+          sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-execute.service /etc/systemd/system/factorlab-demo-execute.service
           sudo systemctl daemon-reload
           sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-ci.service
+          sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-execute.service
       - name: Real systemd SIGKILL restart and SIGTERM stop
         if: runner.os == 'Linux'
         run: python -I tools/ci/demo_cloud_systemd.py
+      - name: Real systemd Execute acceptance (offline loopback)
+        if: runner.os == 'Linux'
+        env:
+          FACTORLAB_C04_EVIDENCE_OUT: execute-systemd-acceptance.json
+        run: python -I tools/ci/demo_execute_systemd.py
       - name: Collect systemd evidence
         if: always() && runner.os == 'Linux'
         shell: bash
@@ -77,4 +87,5 @@ jobs:
             cloud-systemd.log
             cloud-systemd-state.txt
             cloud-systemd-acceptance.json
+            execute-systemd-acceptance.json
           if-no-files-found: error

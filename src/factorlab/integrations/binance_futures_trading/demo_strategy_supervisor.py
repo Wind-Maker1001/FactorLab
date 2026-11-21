@@ -10,7 +10,8 @@ from factorlab.trading.strategy import DualMAStrategy
 from .demo_cli import open_session
 from .demo_credentials import DemoCredentialStore
 from .demo_market_feed import DemoMarketFeed, FeedPaused, INTERVALS, SOURCE
-from .demo_runtime import DemoRuntime, MAX_NOTIONAL, MAX_QUANTITY, operator_lock, state_root
+from .demo_runtime import (DemoRuntime, MAX_NOTIONAL, MAX_QUANTITY, durable_control_state,
+                           operator_lock, state_root)
 from .demo_supervisor import DemoSupervisor
 from .protocol import Environment, ReadOnlyNetworkTransport, SafetyBlocked
 from .strategy_runtime import DemoStrategyRuntime
@@ -137,8 +138,27 @@ def run_worker(args, root, store, runtime, requests):
     mode = 'execute' if args.execute else 'dry-run'
     configuration = dict(mode=mode, interval=args.interval, source=SOURCE, max_backfill=args.max_backfill)
     state = root / ('strategy-' + mode + '.sqlite3')
+    if args.execute:
+        runtime_stop = durable_control_state(runtime)
+        if runtime_stop in {'STOPPED', 'HALTED'}:
+            if state.exists():
+                with closing(StrategyControl(state)) as control:
+                    try:
+                        control.desired()
+                    except SafetyBlocked:
+                        pass
+                    else:
+                        control.report(dict(mode=mode, status=runtime_stop, desired=runtime_stop,
+                            requests=dict(requests)))
+            print(json.dumps(dict(mode=mode, status=runtime_stop, desired=runtime_stop,
+                requests=dict(requests)), default=str), flush=True)
+            return
     with closing(StrategyControl(state, configuration)) as control:
-        control.request('RUNNING')
+        if control.desired() == 'STOPPED':
+            payload = dict(mode=mode, status='STOPPED', desired='STOPPED', requests=dict(requests))
+            control.report(payload)
+            print(json.dumps(payload, default=str), flush=True)
+            return
         campaign = runtime.active_campaign() if args.execute else None
         if args.execute and (campaign is None or campaign['smoke']):
             raise SafetyBlocked('current persistent Demo authorization required')

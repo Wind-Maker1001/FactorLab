@@ -9,7 +9,7 @@ from time import monotonic
 
 from factorlab.errors import DataQualityError
 from .demo_market_feed import DemoMarketFeed, FeedPaused, INTERVALS, SOURCE
-from .protocol import Environment, ExchangeError, FuturesClient, ReadOnlyNetworkTransport
+from .protocol import Environment, ExchangeError, FuturesClient, ReadOnlyNetworkTransport, SafetyBlocked
 from .observability import RequestCounts
 
 
@@ -77,6 +77,8 @@ class DemoSupervisor:
                             result = self.feed.poll()
                         recovering = False
                         backoff = self.poll_seconds
+                    except SafetyBlocked:
+                        raise
                     except (DataQualityError, FeedPaused, OSError) as error:
                         caught_error = getattr(error, 'category', type(error).__name__)
                         recovering = True

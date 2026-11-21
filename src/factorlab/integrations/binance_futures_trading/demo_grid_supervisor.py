@@ -1,25 +1,40 @@
 """Closed-bar Binance Demo Grid worker with isolated GET-only previews."""
 import argparse
-from contextlib import closing, nullcontext
+from contextlib import ExitStack, closing, nullcontext
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D, ROUND_CEILING, ROUND_FLOOR
 import json
+import os
 from pathlib import Path
+import shutil
 import signal
+import sqlite3
+import tempfile
+from time import time
 
+from factorlab.errors import DataQualityError
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, GridRules
 from factorlab.trading import Market
-from factorlab.trading.storage import decode
-from .demo_credentials import DemoCredentialStore
+from factorlab.trading.realtime import PersistenceConflict
+from factorlab.trading.storage import PaperStore, decode
+from .demo_cloud_runtime import (
+    CONFIG_ERROR, MIN_FREE_BYTES, budget_metrics, detect_systemd_unit, diagnostic_info,
+    next_start_count, recent_order_summaries,
+)
+from .demo_credentials import DemoCredentialStore, DemoCredentialStoreError
 from .demo_grid_bridge import minimum_quantity
 from .demo_market_feed import DemoMarketFeed, FeedPaused, INTERVALS, SOURCE
-from .demo_runtime import (MAX_NOTIONAL, MAX_QUANTITY, open_grid_session, restore_grid,
-                           saved_grid_deployment, state_root)
+from .demo_runtime import (
+    DemoRuntime, MAX_NOTIONAL, MAX_QUANTITY, durable_control_state, journal_id,
+    open_grid_session, operator_lock, private_binding, restore_grid, saved_grid_deployment,
+    state_root,
+)
+from .demo_session import DEMO
 from .demo_strategy_supervisor import MarketClient, StrategyControl
 from .demo_supervisor import DemoSupervisor
-from .protocol import SafetyBlocked
+from .protocol import ExchangeError, SafetyBlocked, credential_account_id
 from .observability import RequestCounts, worker_metrics
 
 
@@ -185,7 +200,9 @@ class GridConsumer:
         return saved is None
 
     def quote(self, quote):
-        self.bridge.controller.quote(quote)
+        previous = self.bridge.gateway.state.quotes.get(quote.instrument_id)
+        if previous is None or quote.observed_at >= previous.observed_at:
+            self.bridge.controller.quote(quote)
         if not self.running or self.control.desired() != 'RUNNING':
             return None
         if self.bridge.preview or not self.live_bar:
@@ -222,13 +239,541 @@ def add_arguments(parser):
     parser.add_argument('--max-backfill', type=int, default=120)
     parser.add_argument('--seconds', type=float)
     parser.add_argument('--config', type=Path, help='GridConfig JSON; immutable after first deployment')
+    parser.add_argument('--min-free-bytes', type=int, default=MIN_FREE_BYTES)
+
+
+def _check_storage_and_integrity(directory, *, min_free_bytes, strict_permissions):
+    from .demo_cloud_storage import _DB_SUFFIXES, _SIDECARS, _integrity, validate_state
+    if min_free_bytes < 0:
+        raise ValueError('min-free-bytes cannot be negative')
+    if strict_permissions:
+        validate_state(directory, min_free_bytes=min_free_bytes, recover=True)
+        return
+    if min_free_bytes and shutil.disk_usage(directory).free < min_free_bytes:
+        raise SafetyBlocked('insufficient free space for Demo storage')
+    for root_dir, _, names in os.walk(directory, followlinks=False):
+        for name in sorted(names):
+            if name == 'session.lock' or name.endswith(_SIDECARS):
+                continue
+            path = Path(root_dir) / name
+            with path.open('rb') as stream:
+                header = stream.read(16)
+            if path.suffix in _DB_SUFFIXES or header == b'SQLite format 3\x00':
+                _integrity(path, recover=True)
+
+
+def _safe_storage_metrics(directory, *, strict_permissions):
+    from .demo_cloud_storage import _DB_SUFFIXES, _SIDECARS, storage_metrics
+    if strict_permissions:
+        return storage_metrics(directory)
+    databases, sizes = [], {}
+    for root_dir, _, names in os.walk(directory, followlinks=False):
+        for name in sorted(names):
+            path = Path(root_dir) / name
+            try:
+                sizes[path] = path.stat().st_size
+            except FileNotFoundError:
+                if name.endswith(_SIDECARS):
+                    continue
+                raise
+            if name == 'session.lock' or name.endswith(_SIDECARS):
+                continue
+            with path.open('rb') as stream:
+                header = stream.read(16)
+            if path.suffix in _DB_SUFFIXES or header == b'SQLite format 3\x00':
+                databases.append(path)
+    records = {}
+    for path in sorted(databases):
+        record = {'database_bytes': sizes[path]}
+        for suffix in _SIDECARS:
+            record[suffix[1:] + '_bytes'] = sizes.get(Path(str(path) + suffix), 0)
+        record['total_bytes'] = sum(record.values())
+        records[path.relative_to(directory).as_posix()] = record
+    usage = shutil.disk_usage(directory)
+    return {
+        'databases': records,
+        'database_bytes': sum(r['database_bytes'] for r in records.values()),
+        'sidecar_bytes': sum(r['total_bytes'] - r['database_bytes'] for r in records.values()),
+        'state_bytes': sum(sizes.values()),
+        'disk_free_bytes': usage.free,
+        'disk_bytes': usage.total,
+    }
+
+
+def _write_health_json(path, payload, *, strict_permissions):
+    from .demo_cloud_storage import atomic_json
+    if strict_permissions:
+        atomic_json(path, payload)
+        return
+    encoded = (json.dumps(payload, allow_nan=False, sort_keys=True, separators=(',', ':'), default=str) + '\n').encode('utf-8')
+    descriptor, temporary = tempfile.mkstemp(prefix='.' + path.name + '-', dir=path.parent)
+    temporary = Path(temporary)
+    try:
+        with os.fdopen(descriptor, 'wb') as stream:
+            stream.write(encoded)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _is_auth_exchange_error(error):
+    return isinstance(error, ExchangeError) and (
+        error.category in {'AUTH', 'SIGNATURE'} or error.status in {401, 403}
+    )
+
+
+def _is_recoverable_startup_safety_error(error):
+    text = str(error)
+    return text.startswith('STALE_QUOTE') or text in {'RECONCILE_REQUIRED', 'STALE_ACCOUNT'}
+
+
+def _preflight_local_state(directory, runtime, store, settings, *, execute, new_deployment):
+    if settings is not None:
+        GridConfig(**settings)
+    binding = private_binding(store)
+    credential = store.read()
+    if credential is None:
+        raise SafetyBlocked('saved Demo credential missing; run setup')
+    if credential.environment is not DEMO:
+        raise SafetyBlocked('Demo credentials required')
+    if credential_account_id(DEMO, credential.key) != binding['account_id']:
+        raise SafetyBlocked('persisted Demo account binding mismatch')
+    continuous_auth = runtime.continuous_authorization() if execute else None
+    campaign = dict(id='grid-preview', prefix='preview') if not execute else runtime.active_campaign()
+    automatic = execute and continuous_auth is not None
+    if execute:
+        if automatic:
+            runtime._validate_continuous(binding, continuous_auth)
+        else:
+            if campaign is None or campaign['smoke']:
+                raise SafetyBlocked('no persistent Demo authorization; run start-continuous')
+            runtime.authority(binding, campaign)
+    journal = directory / journal_id(binding['account_id'])
+    controller_path = journal / 'controller.sqlite3'
+    if controller_path.exists():
+        with closing(PaperStore(controller_path, continuous_capacity=True)) as controller_store:
+            saved = saved_grid_deployment(controller_store)
+        if saved is not None:
+            deployment = decode(json.loads(saved))
+            if new_deployment:
+                if campaign is not None and deployment['campaign'] == campaign['id']:
+                    raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
+            else:
+                expected_prefix = (campaign['prefix'] if campaign is not None
+                    else continuous_auth['prefix'] if automatic else None)
+                if ((campaign is None or deployment['campaign'] != campaign['id'])
+                        and not (automatic and deployment['deployment']['deployment_id'] == expected_prefix + '-g')):
+                    raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
+                grid = restore_grid(deployment['deployment'])
+                if settings is not None and grid.config != GridConfig(**settings):
+                    raise SafetyBlocked('persisted Grid configuration differs')
+    return binding
+
+
+class GridSupervisorRuntime:
+    """Lazy, recoverable Grid execution feed sharing DemoSupervisor's existing backoff loop."""
+
+    def __init__(self, *, root, directory, path, runtime, control, store, requests, stack,
+                 args, mode, settings, started_at, starts, sqlite_integrity_checked_at,
+                 strict_permissions, min_free_bytes):
+        self.root = root
+        self.directory = directory
+        self.path = path
+        self.runtime = runtime
+        self.control = control
+        self.store = store
+        self.requests = requests
+        self.stack = stack
+        self.args = args
+        self.mode = mode
+        self.execute = bool(args.execute)
+        self.settings = settings
+        self.interval = args.interval
+        self.seconds = INTERVALS[args.interval]
+        self.started_at = started_at
+        self.starts = starts
+        self.sqlite_integrity_checked_at = sqlite_integrity_checked_at
+        self.strict_permissions = strict_permissions
+        self.min_free_bytes = min_free_bytes
+        self.systemd_unit = detect_systemd_unit()
+        self.bridge = None
+        self.consumer = None
+        self.feed = None
+        self._collection = None
+        self.initial_collection = None
+        self.collection_requests = None
+        self.supervisor = None
+        self.status = 'STARTING'
+        self.reason = 'STARTING'
+        self.account_recovered = False
+        self.last_exception = None
+        self.refusals = dict(STALE_ACCOUNT=0, STALE_POLL=0, R13_QUOTE_GAP=0)
+        self.recovery_attempts = 0
+        self.consecutive_failures = 0
+        self.last_failure_at = None
+        self.last_recovered_at = None
+        self.startup_recovered = False
+        self._pending_startup_error = None
+
+    @property
+    def collection(self):
+        return self._collection
+
+    @collection.setter
+    def collection(self, value):
+        self._collection = value
+        if self.feed is not None:
+            self.feed.collection = value
+
+    def watermarks(self):
+        return self.feed.watermarks() if self.feed is not None else (None, None)
+
+    def _effective_desired(self):
+        if self.execute:
+            runtime_stop = durable_control_state(self.runtime)
+            if runtime_stop is not None:
+                return runtime_stop
+        return self.control.desired()
+
+    def _has_saved_deployment(self):
+        binding = private_binding(self.store)
+        controller_path = self.directory / journal_id(binding['account_id']) / 'controller.sqlite3'
+        if not controller_path.exists():
+            return False
+        with closing(PaperStore(controller_path, continuous_capacity=True)) as controller_store:
+            return saved_grid_deployment(controller_store) is not None
+
+    def _open(self):
+        if self.bridge is not None:
+            return
+        if self.execute and self.control.desired() == 'PAUSED' and not self._has_saved_deployment():
+            raise FeedPaused('PAUSED')
+        attempt = ExitStack()
+        consumer = None
+
+        def gate():
+            consumer.gate()
+
+        try:
+            bridge = attempt.enter_context(open_grid_session(
+                self.root, self.store,
+                grid_factory(self.settings, new_deployment=self.args.new_deployment),
+                new_deployment=self.args.new_deployment, preview=not self.execute,
+                continuous=True, request_counts=self.requests, dispatch_gate=gate,
+                runtime=self.runtime, ensure_on_open=False))
+
+            def authority():
+                if not self.execute:
+                    return True
+                campaign = bridge.runtime.active_campaign()
+                return (campaign is not None and not campaign['smoke']
+                    and bridge.grid.deployment_id == campaign['prefix'] + '-g'
+                    and bridge.runtime.post_count(campaign['id']) < campaign['orders']
+                    and not bridge.session.receipt_error and not bridge.session.write_uncertain)
+
+            consumer = GridConsumer(bridge, self.control, authority=authority,
+                clock=bridge.session._now, ensure_campaign=bridge.ensure_campaign,
+                request_counts=self.requests)
+            client = MarketClient(self.requests)
+            initial_bars = max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1)
+            feed = attempt.enter_context(closing(DemoMarketFeed(
+                client, consumer, state_path=self.path,
+                consumer_id='grid-' + self.mode + ':' + bridge.grid.deployment_id,
+                interval=self.args.interval, max_backfill=self.args.max_backfill,
+                initial_bars=initial_bars, catch_up=True,
+                exchange_time=bridge.session.client.demo_time,
+                receipt_clock=bridge.session._now)))
+            from .demo_market_collection import DemoBookCollection, collection_client
+            reader, collection_requests = collection_client(self.requests, MarketClient)
+            reader.share_demo_clock(bridge.session.client)
+            collection = DemoBookCollection(reader, poll_seconds=self.args.poll_seconds,
+                clock=reader.monotonic, on_acquired=collection_requests.acquired,
+                exchange_time=reader.demo_time)
+            if self.supervisor is not None:
+                feed.collection = collection
+                collection.start()
+        except Exception as error:
+            attempt.close()
+            if _is_auth_exchange_error(error):
+                self.last_exception = error.category
+                raise SafetyBlocked(f'Demo API authentication rejected ({error.category})') from None
+            if isinstance(error, SafetyBlocked):
+                if _is_recoverable_startup_safety_error(error):
+                    raise FeedPaused(str(error)) from error
+                raise
+            raise
+        self.stack.enter_context(attempt.pop_all())
+        self.bridge = bridge
+        self.consumer = consumer
+        self.feed = feed
+        self.collection_requests = collection_requests
+        self.initial_collection = collection
+        if self.supervisor is not None:
+            self.collection = collection
+            self.consumer.supervisor = self.supervisor
+            self.supervisor.collection = collection
+            self.supervisor.collection_requests = collection_requests
+
+    def open_or_defer(self):
+        """Attempt one initial open; hand transient network/market errors to DemoSupervisor."""
+        try:
+            self._open()
+        except (SafetyBlocked, DemoCredentialStoreError, PersistenceConflict, sqlite3.DatabaseError):
+            raise
+        except (DataQualityError, FeedPaused, OSError) as error:
+            self._pending_startup_error = error
+            self.status = 'RECOVERING'
+            self.reason = str(error) if isinstance(error, FeedPaused) else getattr(error, 'category', type(error).__name__)
+            self.last_exception = self.reason
+
+    def _stop_if_requested(self):
+        desired = self._effective_desired()
+        if desired in {'STOPPED', 'HALTED'}:
+            self.status, self.reason = desired, desired
+            self.supervisor.stop()
+            return True
+        return False
+
+    def before_poll(self):
+        if self._stop_if_requested():
+            return
+        self.account_recovered = False
+        try:
+            self.consumer.before_poll()
+        except ExchangeError as error:
+            if _is_auth_exchange_error(error):
+                self.last_exception = error.category
+                raise SafetyBlocked(f'Demo API authentication rejected ({error.category})') from None
+            raise
+        except FeedPaused as error:
+            if self._stop_if_requested():
+                self.last_exception = str(error)
+                return
+            raise
+        account = self.bridge.session.status()
+        self.account_recovered = bool(account['reconciled'] and not account['unknown'])
+
+    def poll(self, *, before_delivery=None):
+        if self._stop_if_requested():
+            return None
+        if self.min_free_bytes and shutil.disk_usage(self.directory).free < self.min_free_bytes:
+            self.last_exception = 'DISK_SPACE_LOW'
+            raise ValueError('DISK_SPACE_LOW')
+        if self._pending_startup_error is not None:
+            error, self._pending_startup_error = self._pending_startup_error, None
+            raise error
+        self._open()
+        result = self.feed.poll(before_delivery=before_delivery)
+        if result is None:
+            return None
+        if self.consecutive_failures or not self.startup_recovered:
+            self.last_recovered_at = datetime.now(timezone.utc).isoformat()
+            self.startup_recovered = True
+        self.consecutive_failures = 0
+        desired = self._effective_desired()
+        if desired in {'STOPPED', 'HALTED'}:
+            self.status, self.reason = desired, desired
+        elif desired == 'PAUSED' or not self.consumer.running:
+            self.status = 'PAUSED'
+            self.reason = self.consumer.reason or 'PAUSED'
+        else:
+            self.status = 'RUNNING'
+            self.reason = self.consumer.reason
+        return result
+
+    def pause(self, reason):
+        if reason in self.refusals:
+            self.refusals[reason] += 1
+        if reason != 'STOPPED':
+            self.last_exception = reason
+            self.recovery_attempts += 1
+            self.consecutive_failures += 1
+            self.last_failure_at = datetime.now(timezone.utc).isoformat()
+            self.account_recovered = False
+            self.status = 'RECOVERING' if self.bridge is None else 'PAUSED'
+            self.reason = reason
+        else:
+            self.status, self.reason = 'PAUSED', 'STOPPED'
+        if self.feed is not None:
+            self.feed.pause(reason)
+
+    def on_pause(self):
+        self.account_recovered = False
+        if self.consumer is not None:
+            self.consumer.disconnect()
+
+    def on_recovery_delay(self):
+        if self.consumer is not None:
+            self.consumer.require_fresh_bar()
+
+    def control_payload(self, base=None):
+        payload = dict(base or {})
+        payload.update(mode=self.mode, requests=self.requests)
+        if self.consumer is not None and self.bridge is not None and self.feed is not None:
+            payload.update(self.consumer.status(),
+                metrics=worker_metrics(self.bridge.session, self.feed, self.runtime, self.requests))
+        else:
+            payload.update(
+                reason=self.reason,
+                effective=self.status,
+                desired=self._effective_desired(),
+                last_exception=self.last_exception,
+                recovery=self._recovery_snapshot(),
+            )
+        return payload
+
+    def _recovery_snapshot(self):
+        state = ('RECOVERING' if self.consecutive_failures
+            else 'RECOVERED' if self.last_recovered_at is not None else 'IDLE')
+        return dict(
+            state=state,
+            consecutive_failures=self.consecutive_failures,
+            recovery_attempts=self.recovery_attempts,
+            last_failure_at=self.last_failure_at,
+            last_failure_reason=self.last_exception,
+            last_recovered_at=self.last_recovered_at,
+            startup_recovered=self.startup_recovered,
+        )
+
+    def health_snapshot(self):
+        mode_label = 'EXECUTE' if self.execute else 'PREVIEW'
+        desired = self._effective_desired()
+        session = self.bridge.session if self.bridge is not None else None
+        consumer_status = self.consumer.status() if self.consumer is not None else None
+        account = consumer_status['account'] if consumer_status is not None else (
+            session.status() if session is not None else None)
+        metrics = (worker_metrics(session, self.feed, self.runtime, self.requests)
+                   if session is not None and self.feed is not None else {})
+        quote = self.watermarks()[1]
+        api = metrics.get('api') or self.requests.snapshot()
+        endpoints = api['endpoints']
+        count = sum(row['count'] for row in endpoints)
+        failures = sum(sum(row['errors'].values()) for row in endpoints)
+        account_ok = bool(self.account_recovered and account is not None
+                          and account['reconciled'] and not account['unknown'])
+        facts = session.adapter.facts if (account_ok and session is not None) else None
+        equity = facts.usdt() if facts is not None else None
+        nav_usdt = None
+        if equity and equity['walletBalance'] is not None and equity['unrealizedProfit'] is not None:
+            nav_usdt = equity['walletBalance'] + equity['unrealizedProfit']
+        grid_info = None
+        if consumer_status is not None:
+            grid_info = dict(
+                deployment_id=consumer_status['deployment']['deployment_id'],
+                state=consumer_status['grid_state'],
+                grid_reason=consumer_status['grid_reason'],
+                effective=consumer_status['effective'],
+                reason=consumer_status['reason'],
+                running=self.consumer.running,
+                live_bar=self.consumer.live_bar,
+                last_bar=consumer_status['last_bar'],
+                inventory=consumer_status['inventory'],
+                reservations_count=len(consumer_status['reservations']),
+            )
+        unknown_orders = account['unknown'] if account is not None else None
+        unknown_count = len(unknown_orders) if unknown_orders is not None else metrics.get('unknown_count')
+        last_reconciled = session.last_reconciled_at if session is not None else None
+        if isinstance(last_reconciled, datetime):
+            last_reconciled = last_reconciled.isoformat()
+        exchange_now = session._now() if session is not None else None
+        account_age = None if facts is None else max(
+            (exchange_now - facts.observed_at).total_seconds(),
+            session.client.monotonic() - facts.read_started_monotonic,
+        )
+        return dict(
+            version=1,
+            pid=os.getpid(),
+            heartbeat_at=time(),
+            started_at=self.started_at,
+            starts=self.starts,
+            restart_count=self.starts - 1,
+            sqlite_integrity_checked_at=self.sqlite_integrity_checked_at,
+            systemd_unit=self.systemd_unit,
+            status=self.status,
+            reason=self.reason,
+            mode=mode_label,
+            desired=desired,
+            last_valid_market_at=metrics.get('last_valid_market_at'),
+            last_reconciled_at=last_reconciled,
+            account_recovered=account_ok,
+            market_batch_age_seconds=None if quote is None else exchange_now.timestamp() - quote / 1000,
+            account_age_seconds=account_age,
+            requests=dict(self.requests),
+            api=api,
+            last_recovery_seconds=session.last_recovery_seconds if session is not None else None,
+            safety_events=dict(self.refusals,
+                CLOCK_SKEW=sum(row['errors'].get('CLOCK_SKEW', 0) for row in endpoints)),
+            request_failure_rate=failures / count if count else None,
+            unknown_count=unknown_count,
+            unknown_orders=unknown_orders,
+            recent_orders=recent_order_summaries(account['orders']) if account is not None else None,
+            open_orders=account['open_orders'] if account_ok else None,
+            positions=[row for row in facts.position_details() if row['quantity'] != 0] if facts is not None else None,
+            equity=equity,
+            nav_usdt=nav_usdt,
+            grid=grid_info,
+            diagnostic=diagnostic_info(self.runtime),
+            recovery=self._recovery_snapshot(),
+            last_exception=self.last_exception,
+            journals=metrics.get('journals'),
+            **budget_metrics(self.runtime, metrics.get('campaign')),
+            **_safe_storage_metrics(self.directory, strict_permissions=self.strict_permissions),
+        )
+
+
+def _stopped_health_snapshot(directory, runtime, requests, *, mode_label, desired,
+                             started_at, starts, sqlite_integrity_checked_at, strict_permissions):
+    api = requests.snapshot()
+    return dict(
+        version=1,
+        pid=os.getpid(),
+        heartbeat_at=time(),
+        started_at=started_at,
+        starts=starts,
+        restart_count=starts - 1,
+        sqlite_integrity_checked_at=sqlite_integrity_checked_at,
+        systemd_unit=detect_systemd_unit(),
+        status=desired,
+        reason=desired,
+        mode=mode_label,
+        desired=desired,
+        last_valid_market_at=None,
+        last_reconciled_at=None,
+        account_recovered=False,
+        market_batch_age_seconds=None,
+        requests=dict(requests),
+        api=api,
+        last_recovery_seconds=None,
+        safety_events=dict(STALE_ACCOUNT=0, STALE_POLL=0, R13_QUOTE_GAP=0, CLOCK_SKEW=0),
+        request_failure_rate=None,
+        unknown_count=None,
+        unknown_orders=None,
+        recent_orders=None,
+        open_orders=None,
+        positions=None,
+        equity=None,
+        nav_usdt=None,
+        grid=None,
+        diagnostic=diagnostic_info(runtime),
+        recovery=dict(state='IDLE', consecutive_failures=0, recovery_attempts=0,
+            last_failure_at=None, last_failure_reason=None, last_recovered_at=None,
+            startup_recovered=False),
+        last_exception=None,
+        journals=None,
+        **budget_metrics(runtime),
+        **_safe_storage_metrics(directory, strict_permissions=strict_permissions),
+    )
 
 
 def run(args, *, root=None, credentials=None):
     if args.new_deployment and (args.action != 'start' or not args.execute):
         raise SafetyBlocked('--new-deployment requires start --execute')
-    root = state_root() if root is None else root
+    strict_permissions = root is None
+    root = state_root() if root is None else Path(root)
     mode = 'execute' if args.execute else 'dry-run'
+    mode_label = 'EXECUTE' if args.execute else 'PREVIEW'
     directory = root if args.execute else root / 'grid-preview'
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / 'grid-supervisor.sqlite3'
@@ -240,71 +785,149 @@ def run(args, *, root=None, credentials=None):
                 control.request(dict(pause='PAUSED', resume='RUNNING', stop='STOPPED')[args.action])
             print(json.dumps(control.snapshot(), default=str), flush=True)
         return 0
+    min_free_bytes = getattr(args, 'min_free_bytes', MIN_FREE_BYTES)
     settings = json.loads(args.config.read_text(encoding='utf-8')) if args.config is not None else None
     configuration = dict(mode=mode, interval=args.interval, source=SOURCE, max_backfill=args.max_backfill,
                          settings=settings)
     requests = RequestCounts()
-    with closing(StrategyControl(path, configuration)) as control:
-        control.request('RUNNING')
-        consumer = None
-        def gate():
-            consumer.gate()
-        with open_grid_session(root, credentials or DemoCredentialStore(),
-                grid_factory(settings, new_deployment=args.new_deployment),
-                new_deployment=args.new_deployment, preview=not args.execute,
-                continuous=True, request_counts=requests, dispatch_gate=gate) as bridge:
-            def authority():
-                if not args.execute:
-                    return True
-                campaign = bridge.runtime.active_campaign()
-                return (campaign is not None and not campaign['smoke']
-                    and bridge.grid.deployment_id == campaign['prefix'] + '-g'
-                    and bridge.runtime.post_count(campaign['id']) < campaign['orders']
-                    and not bridge.session.receipt_error and not bridge.session.write_uncertain)
-            consumer = GridConsumer(bridge, control, authority=authority, clock=bridge.session._now,
-                                    ensure_campaign=bridge.ensure_campaign)
-            client = MarketClient(requests)
-            initial_bars = max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1)
-            with closing(DemoMarketFeed(client, consumer, state_path=path, consumer_id='grid-' + mode + ':' + bridge.grid.deployment_id,
-                    interval=args.interval, max_backfill=args.max_backfill, initial_bars=initial_bars,
-                    catch_up=True, exchange_time=bridge.session.client.demo_time,
-                    receipt_clock=bridge.session._now)) as feed:
-                def report(raw):
-                    payload = json.loads(raw)
-                    payload['feed_reason'] = payload['reason']
-                    payload.update(consumer.status(), mode=mode, requests=requests,
-                        metrics=worker_metrics(bridge.session, feed, bridge.runtime, requests))
-                    control.report(payload)
-                    print(json.dumps(payload, default=str), flush=True)
-                from .demo_market_collection import DemoBookCollection, collection_client
-                reader, collection_requests = collection_client(requests, MarketClient)
-                reader.share_demo_clock(bridge.session.client)
-                collection = DemoBookCollection(reader, poll_seconds=args.poll_seconds,
-                    clock=reader.monotonic, on_acquired=collection_requests.acquired,
-                    exchange_time=reader.demo_time)
-                supervisor = DemoSupervisor(feed, poll_seconds=args.poll_seconds, report=report,
-                    before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests,
-                    collection=collection, collection_requests=collection_requests,
-                    on_recovery_delay=consumer.require_fresh_bar, recover_after_bars=True)
-                consumer.supervisor = supervisor
-                signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
-                signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())
-                try:
-                    supervisor.run(seconds=args.seconds)
-                finally:
-                    consumer.running = False
-                    payload = dict(mode=mode, status='EXITED', desired=control.desired(),
-                                   watermarks=feed.watermarks(), requests=requests, **consumer.status(),
-                                   metrics=worker_metrics(bridge.session, feed, bridge.runtime, requests))
-                    control.report(payload)
-                    print(json.dumps(payload, default=str), flush=True)
+    with ExitStack() as stack:
+        stack.enter_context(operator_lock(directory))
+        _check_storage_and_integrity(directory, min_free_bytes=min_free_bytes,
+            strict_permissions=strict_permissions)
+        sqlite_integrity_checked_at = time()
+        runtime = stack.enter_context(closing(DemoRuntime(directory)))
+        health_path = directory / 'cloud-health.json'
+        started_at = time()
+        starts = next_start_count(health_path)
+        # Durable account-wide STOP/HALTED must be honored before control init, credentials or network.
+        runtime_stop = durable_control_state(runtime) if args.execute else None
+        if runtime_stop in {'STOPPED', 'HALTED'}:
+            if path.exists():
+                with closing(StrategyControl(path)) as existing_control:
+                    try:
+                        existing_control.desired()
+                    except SafetyBlocked:
+                        pass
+                    else:
+                        existing_control.report(dict(mode=mode, status=runtime_stop, desired=runtime_stop,
+                            reason=runtime_stop, requests=dict(requests)))
+            health_payload = _stopped_health_snapshot(directory, runtime, requests,
+                mode_label=mode_label, desired=runtime_stop, started_at=started_at, starts=starts,
+                sqlite_integrity_checked_at=sqlite_integrity_checked_at,
+                strict_permissions=strict_permissions)
+            _write_health_json(health_path, health_payload, strict_permissions=strict_permissions)
+            print(json.dumps(dict(mode=mode, status=runtime_stop, desired=runtime_stop,
+                reason=runtime_stop, requests=dict(requests)), default=str), flush=True)
+            return 0
+        control = stack.enter_context(closing(StrategyControl(path, configuration)))
+        if control.desired() == 'STOPPED':
+            payload = dict(mode=mode, status='STOPPED', desired='STOPPED',
+                reason='STOPPED', requests=dict(requests))
+            control.report(payload)
+            health_payload = _stopped_health_snapshot(directory, runtime, requests,
+                mode_label=mode_label, desired='STOPPED', started_at=started_at, starts=starts,
+                sqlite_integrity_checked_at=sqlite_integrity_checked_at,
+                strict_permissions=strict_permissions)
+            _write_health_json(health_path, health_payload, strict_permissions=strict_permissions)
+            print(json.dumps(payload, default=str), flush=True)
+            return 0
+        store = credentials or DemoCredentialStore()
+        _preflight_local_state(directory, runtime, store, settings,
+            execute=args.execute, new_deployment=args.new_deployment)
+        worker = GridSupervisorRuntime(
+            root=root, directory=directory, path=path, runtime=runtime, control=control,
+            store=store, requests=requests, stack=stack, args=args, mode=mode, settings=settings,
+            started_at=started_at, starts=starts,
+            sqlite_integrity_checked_at=sqlite_integrity_checked_at,
+            strict_permissions=strict_permissions, min_free_bytes=min_free_bytes,
+        )
+        worker.open_or_defer()
+
+        def publish_health():
+            _write_health_json(health_path, worker.health_snapshot(), strict_permissions=strict_permissions)
+
+        def report(raw):
+            base = json.loads(raw)
+            base['feed_reason'] = base['reason']
+            payload = worker.control_payload(base)
+            control.report(payload)
+            publish_health()
+            print(json.dumps(payload, default=str), flush=True)
+
+        supervisor = DemoSupervisor(worker, poll_seconds=args.poll_seconds,
+            max_backoff=max(60, args.poll_seconds), report=report,
+            before_poll=worker.before_poll, on_pause=worker.on_pause, request_counts=requests,
+            collection=worker.initial_collection, collection_requests=worker.collection_requests,
+            on_recovery_delay=worker.on_recovery_delay, recover_after_bars=True)
+        worker.supervisor = supervisor
+        if worker.consumer is not None:
+            worker.consumer.supervisor = supervisor
+        original = {sig: signal.signal(sig, lambda *_: supervisor.stop())
+                    for sig in (signal.SIGINT, signal.SIGTERM)}
+        try:
+            publish_health()
+            supervisor.run(seconds=args.seconds)
+        finally:
+            if worker.consumer is not None:
+                worker.consumer.running = False
+            final_desired = worker._effective_desired()
+            final_status = final_desired if final_desired in {'STOPPED', 'HALTED'} else 'EXITED'
+            worker.status = final_status
+            if final_status in {'STOPPED', 'HALTED'}:
+                worker.reason = final_status
+            payload = worker.control_payload(dict(
+                status=final_status,
+                desired=final_desired,
+                watermarks=worker.watermarks(),
+            ))
+            control.report(payload)
+            publish_health()
+            print(json.dumps(payload, default=str), flush=True)
+            for sig, handler in original.items():
+                signal.signal(sig, handler)
     return 0
+
+
+def _refusal_reason(error):
+    if isinstance(error, DemoCredentialStoreError):
+        return 'CREDENTIAL_ERROR'
+    if isinstance(error, sqlite3.DatabaseError):
+        return 'SQLITE_CORRUPT_OR_UNAVAILABLE'
+    if isinstance(error, PersistenceConflict):
+        return 'CONFIGURATION_CONFLICT'
+    if isinstance(error, SafetyBlocked):
+        text = str(error)
+        if 'another Demo session is active' in text:
+            return 'SESSION_LOCK_CONTENDED'
+        if 'quarantined' in text or 'GET-only recovery' in text:
+            return 'RESTORE_QUARANTINE'
+        if 'SQLite integrity' in text:
+            return 'SQLITE_INTEGRITY_FAILED'
+        if 'authentication rejected' in text:
+            return 'EXCHANGE_AUTH_REJECTED'
+        if 'binding' in text or 'credential' in text or 'configuration mismatch' in text:
+            return 'IDENTITY_OR_CREDENTIAL_ERROR'
+        if 'insufficient free space' in text:
+            return 'DISK_SPACE_LOW'
+        return 'SAFETY_BLOCKED'
+    if isinstance(error, ValueError) and str(error) == 'DISK_SPACE_LOW':
+        return 'DISK_SPACE_LOW'
+    return 'STATE_OR_CONFIGURATION_ERROR'
+
+
+def run_cli(args, *, root=None, credentials=None):
+    try:
+        return run(args, root=root, credentials=credentials)
+    except (SafetyBlocked, DemoCredentialStoreError, PersistenceConflict,
+            ValueError, OSError, sqlite3.DatabaseError) as error:
+        print(json.dumps(dict(event='grid_start_refused', reason=_refusal_reason(error))), flush=True)
+        return CONFIG_ERROR
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     add_arguments(parser)
-    return run(parser.parse_args(argv))
+    return run_cli(parser.parse_args(argv))
 
 
 if __name__ == '__main__':
