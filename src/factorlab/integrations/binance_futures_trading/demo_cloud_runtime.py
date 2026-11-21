@@ -11,7 +11,6 @@ import shutil
 import sqlite3
 from time import time
 
-from factorlab.errors import DataQualityError
 from .demo_cli import load_bound_credential, open_session
 from .demo_credentials import DemoCredentialStore, DemoCredentialStoreError
 from .demo_market_feed import DemoMarketFeed, FeedPaused
@@ -19,7 +18,7 @@ from .demo_runtime import DemoRuntime, SMOKE_CAMPAIGN, operator_lock, state_root
 from .demo_strategy_supervisor import MarketClient
 from .demo_supervisor import DemoSupervisor
 from .observability import RequestCounts, worker_metrics
-from .protocol import ExchangeError, SafetyBlocked
+from .protocol import SafetyBlocked
 
 
 CONFIG_ERROR = 78
@@ -89,15 +88,18 @@ class CloudFeed:
         self.session = self.feed = None
         self.status, self.reason = 'STARTING', None
         self.last_exception = None
-        self.market_refusals = dict(STALE_POLL=0, R13_QUOTE_GAP=0)
+        self.account_recovered = False
+        self.refusals = dict(STALE_ACCOUNT=0, STALE_POLL=0, R13_QUOTE_GAP=0)
         self.supervisor = None
 
     def watermarks(self):
         return self.feed.watermarks() if self.feed is not None else (None, None)
 
     def pause(self, reason):
-        if reason in self.market_refusals:
-            self.market_refusals[reason] += 1
+        if reason in self.refusals:
+            self.refusals[reason] += 1
+        if reason != 'STOPPED':
+            self.last_exception = reason
         self.status, self.reason = 'PAUSED', reason
         if self.feed is not None:
             self.feed.pause(reason)
@@ -114,25 +116,25 @@ class CloudFeed:
         if self.offline:
             self.status, self.reason = 'OFFLINE', None
             return dict(bars=0, quotes=0)
-        if self.session is None:
-            # Identity/configuration refusals are fatal; transient network errors still
-            # reach DemoSupervisor's existing recovery backoff.
-            try:
-                self.session, _ = self.stack.enter_context(open_session(
-                    self.root, self.store, self.runtime, self.requests))
-            except SafetyBlocked:
-                raise ValueError('BOUND_ACCOUNT_CONFIGURATION_REFUSED') from None
+        self.account_recovered = False
         try:
+            if self.session is None:
+                # Identity/configuration refusals are fatal; transient errors reach backoff.
+                try:
+                    self.session, _ = self.stack.enter_context(open_session(
+                        self.root, self.store, self.runtime, self.requests))
+                except SafetyBlocked:
+                    self.last_exception = 'BOUND_ACCOUNT_CONFIGURATION_REFUSED'
+                    raise ValueError(self.last_exception) from None
             # TODO: reuse incremental GET recovery once late-fill/commission coverage
             # is proven; the existing full journal recovery must not be shortened here.
             account = self.session.recover()
             self.status = 'RECOVERING'
             if not account['reconciled']:
-                self.last_exception = 'RECONCILIATION_FAILED'
                 raise FeedPaused('RECONCILIATION_FAILED')
             if account['unknown']:
-                self.last_exception = 'ORDER_UNKNOWN'
                 raise FeedPaused('ORDER_UNKNOWN')
+            self.account_recovered = True
             if self.feed is None:
                 self.feed = self.stack.enter_context(closing(DemoMarketFeed(
                     MarketClient(self.requests), SilentConsumer(), state_path=self.root / 'cloud-feed.sqlite3',
@@ -140,22 +142,12 @@ class CloudFeed:
             result = self.feed.poll()
             self.status, self.reason = ('PAUSED', 'PAUSED') if desired == 'PAUSED' else ('READ_ONLY', None)
             return result
-        except ExchangeError:
-            self.last_exception = 'NETWORK_EXCHANGE_ERROR'
-            raise
         except SafetyBlocked:
-            self.last_exception = 'RECONCILIATION_FAILED'
             raise FeedPaused('RECONCILIATION_FAILED') from None
-        except OSError:
-            self.last_exception = 'NETWORK_INTERRUPTED'
-            raise
-        except DataQualityError:
-            self.last_exception = 'MARKET_STALE_OR_INVALID'
-            raise
 
     def snapshot(self):
         from .demo_cloud_storage import storage_metrics
-        facts = self.session.adapter.facts if self.session is not None else None
+        facts = self.session.adapter.facts if self.account_recovered else None
         metrics = (worker_metrics(self.session, self.feed, self.runtime, self.requests)
                    if self.session is not None and self.feed is not None else {})
         quote = self.watermarks()[1]
@@ -163,19 +155,24 @@ class CloudFeed:
         endpoints = api['endpoints']
         count = sum(row['count'] for row in endpoints)
         failures = sum(sum(row['errors'].values()) for row in endpoints)
+        equity = facts.usdt() if facts else None
+        nav_usdt = None
+        if equity and equity['walletBalance'] is not None and equity['unrealizedProfit'] is not None:
+            nav_usdt = equity['walletBalance'] + equity['unrealizedProfit']
         return dict(version=1, pid=os.getpid(), heartbeat_at=time(), status=self.status, reason=self.reason,
             mode='OFFLINE' if self.offline else 'GET_ONLY', desired=durable_state(self.root, self.runtime),
             last_valid_market_at=metrics.get('last_valid_market_at'),
             last_reconciled_at=self.session.last_reconciled_at if self.session else None,
+            account_recovered=self.account_recovered,
             market_batch_age_seconds=None if quote is None else max(0, time() - quote / 1000),
             requests=dict(self.requests), api=api,
-            last_recovery_seconds=metrics.get('last_recovery_seconds'),
-            safety_events=dict(self.market_refusals,
+            last_recovery_seconds=self.session.last_recovery_seconds if self.session else None,
+            safety_events=dict(self.refusals,
                 CLOCK_SKEW=sum(row['errors'].get('CLOCK_SKEW', 0) for row in endpoints)),
             request_failure_rate=failures / count if count else None,
             unknown_count=metrics.get('unknown_count'),
             positions=[row for row in facts.position_details() if row['quantity'] != 0] if facts else None,
-            equity=facts.usdt() if facts else None,
+            equity=equity, nav_usdt=nav_usdt,
             last_exception=self.last_exception, journals=metrics.get('journals'),
             **budget_metrics(self.runtime, metrics.get('campaign')),
             **storage_metrics(self.root))
@@ -186,6 +183,7 @@ def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MI
     with ExitStack() as stack:
         stack.enter_context(operator_lock(root, allow_quarantined=True))
         validate_state(root, min_free_bytes=min_free_bytes, recover=True)
+        sqlite_integrity_checked_at = time()
         runtime = stack.enter_context(closing(DemoRuntime(root)))
         # STOP must be observable without opening credentials or touching the network.
         desired = durable_state(root, runtime)
@@ -201,7 +199,8 @@ def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MI
 
         def publish(_=None):
             payload = feed.snapshot()
-            payload.update(started_at=started_at, starts=starts, restart_count=starts - 1)
+            payload.update(started_at=started_at, starts=starts, restart_count=starts - 1,
+                sqlite_integrity_checked_at=sqlite_integrity_checked_at)
             atomic_json(previous, payload)
             # The durable file has metrics; logs only carry bounded state classifications.
             print(json.dumps(dict(event='cloud_health', pid=payload['pid'], starts=starts, status=payload['status'],
@@ -227,17 +226,28 @@ def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MI
 
 def health(root, *, max_age=90):
     payload = json.loads((root / 'cloud-health.json').read_text())
-    elapsed = time() - payload['heartbeat_at']
+    now = time()
+    elapsed = now - payload['heartbeat_at']
     fresh = 0 <= elapsed <= max_age
     alive = fresh and payload['status'] not in {'EXITED', 'STOPPED', 'HALTED'}
-    ready = alive and (payload['mode'] == 'OFFLINE' or (
-        payload['status'] == 'READ_ONLY' and payload['market_batch_age_seconds'] is not None
-        and payload['market_batch_age_seconds'] + elapsed <= max_age
-        and payload['last_reconciled_at'] is not None
-        and 0 <= time() - datetime.fromisoformat(payload['last_reconciled_at']).timestamp() <= max_age))
+    market_age = payload['market_batch_age_seconds']
+    if market_age is not None:
+        market_age += elapsed
+    market_fresh = alive and market_age is not None and 0 <= market_age <= max_age
+    reconciled_at = payload['last_reconciled_at']
+    account_recovered = (alive and payload['account_recovered'] and reconciled_at is not None
+        and 0 <= now - datetime.fromisoformat(reconciled_at).timestamp() <= max_age)
+    offline_healthy = alive and payload['mode'] == 'OFFLINE'
+    get_only_healthy = market_fresh and account_recovered and payload['status'] == 'READ_ONLY'
+    ready = offline_healthy or get_only_healthy
     print(json.dumps(dict(payload, alive=alive, ready=ready,
-        offline_heartbeat_healthy=ready and payload['mode'] == 'OFFLINE',
-        get_only_healthy=ready and payload['mode'] == 'GET_ONLY',
+        uptime_seconds=now - payload['started_at'] if alive else None,
+        market_fresh=market_fresh, market_batch_age_seconds=market_age,
+        account_recovered=account_recovered,
+        positions=payload['positions'] if account_recovered else None,
+        equity=payload['equity'] if account_recovered else None,
+        nav_usdt=payload['nav_usdt'] if account_recovered else None,
+        offline_heartbeat_healthy=offline_healthy, get_only_healthy=get_only_healthy,
         cloud_get_only_accepted=False, demo_execution_ready=False)))
     return 0 if ready else 1
 

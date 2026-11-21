@@ -47,6 +47,8 @@ Install the units from `deploy/systemd/`, then:
 sudo systemctl daemon-reload
 sudo systemctl enable --now factorlab-demo.service factorlab-demo-health.timer
 sudo systemctl status factorlab-demo.service
+sudo systemctl stop factorlab-demo.service
+sudo systemctl restart factorlab-demo.service
 sudo journalctl -u factorlab-demo.service
 ```
 
@@ -78,6 +80,18 @@ An old snapshot cannot prove there were no later orders, budget reservations, or
 The Worker atomically publishes private `cloud-health.json`. Read it with the `health` action, which makes no network requests, initializes no database, and does not obtain a trading lock. Exit 0 means a recent ready heartbeat (explicit OFFLINE is identified as such); exit 1 means stopped, stale or not ready. The timer produces a failed health service/journald signal for operational alert routing. Connect those existing OS events to your organization's alert delivery rather than installing a separate web platform.
 
 The snapshot includes process startup time, per-endpoint request counts/error categories and total/last/maximum request latency (`api`), last account recovery duration, process-local `CLOCK_SKEW` request failures and `STALE_POLL`/`R13_QUOTE_GAP` pause counts (`safety_events`), process heartbeat, market/reconciliation success times, market batch age, method counts and failure rate, UNKNOWN count, positions/equity, remaining campaign inputs, global cumulative consumption, desired STOP/HALTED state, journal event high-water marks, SQLite/sidecar sizes, free disk, process starts/restarts and last exception classification. Missing observations are null. Request counters and failure rate are process-scoped; starts/restarts persist across normal process restarts, and are not claimed as independent host reboot accounting. Secrets, signed queries and full binding records are excluded.
+
+`health` reports elapsed uptime for the current heartbeat, `market_fresh` and `account_recovered` independently. `STALE_ACCOUNT` counts recovery rounds refused for an expired account read set, including during session construction. Account recovery can succeed in a round that subsequently fails to collect market data. A failed account recovery or an expired heartbeat/reconciliation suppresses current positions, equity and `nav_usdt`. NAV uses the recovered USDT wallet balance plus unrealized profit. `sqlite_integrity_checked_at` records the startup check of the existing databases. The account freshness threshold here is for observation; order admission uses its own freshness rules.
+
+Use the OS state alongside the heartbeat. systemd's `NRestarts` counts automatic restarts for the current service activation. The health snapshot's cumulative starts include manual starts.
+
+```sh
+sudo systemctl show factorlab-demo.service \
+  -p ActiveState -p SubState -p MainPID -p NRestarts -p ExecMainStartTimestamp -p ExecMainStatus
+sudo -u factorlab-demo /opt/factorlab/venv/bin/python \
+  -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime \
+  health --state-root /var/lib/factorlab-demo
+```
 
 | Classification | Response |
 | --- | --- |
