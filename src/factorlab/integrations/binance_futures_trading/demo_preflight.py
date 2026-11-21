@@ -69,28 +69,13 @@ def _numbers(row, fields, *, nonnegative=False):
 
 
 def _positions(facts):
-    def nonzero(rows):
-        amounts = {}
-        for row in rows:
-            symbol, side = row['symbol'], row['positionSide']
-            identity = symbol, side
-            if not isinstance(symbol, str) or not symbol or side not in {'BOTH', 'LONG', 'SHORT'} or identity in amounts:
-                raise DataQualityError('unusable position identity')
-            amounts[identity] = _decimal(str(row['positionAmt']))
-        return {key: value for key, value in amounts.items() if value}
-
-    account, risk = nonzero(facts.positions), nonzero(facts.risk)
-    if not facts.source_complete or account != risk:
-        raise DataQualityError('incomplete or conflicting positions')
+    account = facts.confirmed_position_amounts()
     return {'count': len(account), 'NVDAUSDT': [
         {'side': side, 'quantity': quantity} for (symbol, side), quantity in account.items() if symbol == SYMBOL]}
 
 
 def _open_orders(facts):
-    identities = {(row['symbol'], row['clientOrderId']) for row in facts.open_orders}
-    if (len(identities) != len(facts.open_orders)
-            or any(not all(isinstance(value, str) and value for value in key) for key in identities)):
-        raise DataQualityError('unusable open order identity')
+    identities = facts.open_order_identities()
     return {'count': len(identities), 'NVDAUSDT_count': sum(symbol == SYMBOL for symbol, _ in identities)}
 
 

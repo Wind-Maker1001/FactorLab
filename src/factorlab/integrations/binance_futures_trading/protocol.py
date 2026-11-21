@@ -1,5 +1,6 @@
 """Signed USD-M protocol over an injected transport; mutating network IO absent."""
 from contextlib import contextmanager
+from copy import copy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
@@ -85,6 +86,16 @@ class ExchangeError(DataQualityError):
 
 class TimeCalibrationError(DataQualityError):
     category = 'TIME_CALIBRATION'
+
+
+class AccountReadExpired(DataQualityError):
+    category = 'STALE_ACCOUNT'
+
+
+@dataclass
+class AccountReadWindow:
+    deadline: float
+    calibration_attempted: bool = False
 
 
 class ReadTransportError(DataQualityError):
@@ -237,6 +248,12 @@ class DemoClockState:
         self.offset_ms = 0
 
 
+class _RequestCooldown:
+    def __init__(self):
+        self.lock = RLock()
+        self.until = 0.0
+
+
 class FuturesClient:
     """Writes are never retried; signed GET clock recovery requires an explicit scope."""
     def __init__(self, credentials=None, *, transport=None, recv_window=5000,
@@ -258,7 +275,9 @@ class FuturesClient:
         self.credentials, self.transport = credentials, transport
         self.recv_window, self.timeout, self.clock = recv_window, timeout, clock
         self.monotonic = monotonic
-        self.offset_ms, self.blocked_until = 0, 0.0
+        self.offset_ms = 0
+        self._cooldown = _RequestCooldown()
+        self._account_read_window = None
         self._recover_get_clock = False
         self.clock_recoveries = []
         self.time_sync = None
@@ -287,6 +306,12 @@ class FuturesClient:
         self.demo_clock = owner.demo_clock
         self.clock, self.monotonic = owner.clock, owner.monotonic
         self.recv_window = owner.recv_window
+
+    def account_reader(self, window):
+        """Isolate per-request diagnostics while sharing calibration and cooldown."""
+        reader = copy(self)
+        reader._account_read_window = window
+        return reader
 
     def _clock_event(self, kind, **details):
         """Allow the observing client to retain credential-free timing evidence."""
@@ -426,10 +451,15 @@ class FuturesClient:
         return SignedRequest(method, path, query + '&signature=' + signature, headers, self.environment, signing, self.monotonic)
 
     def request(self, method, path, params=None, *, signed=True):
+        window = self._account_read_window
         if (self.environment is Environment.DEMO and signed and method == 'GET'
                 and path in READ_PATHS and self.credentials is not None
                 and (self._demo_sample is not None or not isinstance(self.transport, OfflineTransport))):
-            self.demo_time()
+            with self.demo_clock.lock:
+                self.demo_time(allow_refresh=window is None)
+                sample = self._demo_sample
+        else:
+            sample = None
         try:
             return self._request_once(method, path, params, signed=signed)
         except ExchangeError as first:
@@ -441,7 +471,16 @@ class FuturesClient:
                 message=first.message, initial_sync=self.time_sync, outcome='SYNC_FAILED')
             self.clock_recoveries.append(diagnostic)
             try:
-                self.sync_time()
+                with self.demo_clock.lock:
+                    if (sample is not None and self._demo_time_valid
+                            and self._demo_sample is not sample):
+                        self.demo_time(allow_refresh=False)
+                    else:
+                        if window is not None:
+                            if window.calibration_attempted:
+                                raise TimeCalibrationError('Demo account read already attempted clock recalibration')
+                            window.calibration_attempted = True
+                        self.sync_time()
                 diagnostic['recovery_sync'] = self.time_sync
                 diagnostic['outcome'] = 'RETRY_FAILED'
                 result = self._request_once(method, path, params, signed=signed)
@@ -462,13 +501,19 @@ class FuturesClient:
                 raise SafetyBlocked('NO LIVE MONEY: production or unauthorized network write forbidden')
         if isinstance(self.transport, ReadOnlyNetworkTransport) and not self.transport.permit_account_read:
             raise SafetyBlocked('explicit account read permission required')
-        if self.clock() < self.blocked_until:
-            raise ExchangeError(None, 429, 'RATE_LIMIT', self.blocked_until - self.clock())
+        cooldown = self._cooldown.until - self.clock()
+        if cooldown > 0:
+            raise ExchangeError(None, 429, 'RATE_LIMIT', cooldown)
         request = self.build(method, path, params, signed=signed)
+        timeout = self.timeout
+        if self._account_read_window is not None:
+            timeout = min(timeout, self._account_read_window.deadline - self.monotonic())
+            if timeout <= 0:
+                raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
         try:
             if request.signing is not None:
                 request.signing['transport_enter_monotonic'] = self.monotonic()
-            response = self.transport(request, self.timeout)
+            response = self.transport(request, timeout)
         except SafetyBlocked:
             raise
         except (OSError, ReadTransportError) as error:
@@ -482,10 +527,11 @@ class FuturesClient:
 
     def write_outcome_unknown(self, request, response):
         """Classify persisted write evidence using the live parser without changing cooldowns."""
-        from copy import copy
         from urllib.parse import parse_qs
+        parser = copy(self)
+        parser._cooldown = _RequestCooldown()
         try:
-            payload = FuturesClient._parse_response(copy(self), request, response)
+            payload = FuturesClient._parse_response(parser, request, response)
         except OutcomeUnknown:
             return True
         except ExchangeError:
@@ -513,7 +559,8 @@ class FuturesClient:
                 retry_after = max(0.0, float(raw))
             except ValueError:
                 retry_after = max(0.0, parsedate_to_datetime(raw).timestamp() - self.clock())
-            self.blocked_until = self.clock() + retry_after
+            with self._cooldown.lock:
+                self._cooldown.until = max(self._cooldown.until, self.clock() + retry_after)
         try:
             payload = json.loads(response.body)
         except (ValueError, UnicodeError):

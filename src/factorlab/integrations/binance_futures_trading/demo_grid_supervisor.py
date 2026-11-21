@@ -98,7 +98,13 @@ class GridConsumer:
             return
         try:
             with self.request_counts.measure('grid_recovery') if self.request_counts is not None else nullcontext():
-                self.bridge.recover()
+                collection = None
+                if self.supervisor is not None and self.supervisor.collection is not None:
+                    collection = self.supervisor.feed.collection
+                if collection is None:
+                    self.bridge.recover()
+                else:
+                    self.bridge.recover(collection=collection)
             self.recovered()
             if desired == 'RUNNING' and self.ensure_campaign is not None:
                 self.ensure_campaign()
@@ -279,7 +285,7 @@ def run(args, *, root=None, credentials=None):
                 supervisor = DemoSupervisor(feed, poll_seconds=args.poll_seconds, report=report,
                     before_poll=consumer.before_poll, on_pause=consumer.disconnect, request_counts=requests,
                     collection=collection, collection_requests=collection_requests,
-                    on_recovery_delay=consumer.require_fresh_bar)
+                    on_recovery_delay=consumer.require_fresh_bar, recover_after_bars=True)
                 consumer.supervisor = supervisor
                 signal.signal(signal.SIGINT, lambda *_: supervisor.stop())
                 signal.signal(signal.SIGTERM, lambda *_: supervisor.stop())

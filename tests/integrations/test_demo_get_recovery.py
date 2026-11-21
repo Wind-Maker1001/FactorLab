@@ -1,13 +1,17 @@
 """Account facts must describe a bounded read set, not its completion time."""
 from contextlib import closing
+from dataclasses import replace
 from datetime import datetime, timezone
+import json
+from threading import Barrier, Event, current_thread
 
 import pytest
 
 from factorlab.errors import DataQualityError
-from factorlab.integrations.binance_futures_trading.adapter import FuturesAdapter
+from factorlab.integrations.binance.client import Response
+from factorlab.integrations.binance_futures_trading.adapter import ACCOUNT_PATHS, ACCOUNT_PERMISSION_PATH, FuturesAdapter
 from factorlab.trading.storage import PaperStore
-from test_demo_constructor_clock import NetworkClock, client, inject, paths, TIME
+from test_demo_constructor_clock import NetworkClock, client, inject, paths, response, TIME
 from test_binance_demo_network import NetworkFixture, wired
 
 
@@ -117,3 +121,123 @@ def test_consecutive_get_timeouts_leave_gate_closed_and_do_not_retry(wired, monk
         assert paths(wired[1]).count(TIME) == 1
         assert subject.clock_recoveries == []
         assert all(request.get_method() == 'GET' for request in wired[1])
+
+
+def test_parallel_account_matches_serial_and_starts_known_v2_read_with_v3(wired, monkeypatch):
+    original = NetworkFixture.__call__
+    permission_read = Event()
+    hold_account = False
+    report_permission_in_v3 = False
+    permission = True
+    account, *_ = ACCOUNT_PATHS
+
+    def account_routes(fixture, request, timeout):
+        if request.path == ACCOUNT_PERMISSION_PATH:
+            permission_read.set()
+            return Response(200, {}, json.dumps(dict(canTrade=permission)).encode())
+        if request.path == account and hold_account:
+            assert permission_read.wait(2)
+        reply = original(fixture, request, timeout)
+        if request.path == account and not report_permission_in_v3:
+            payload = json.loads(reply.body)
+            del payload['canTrade']
+            return Response(reply.status, reply.headers, json.dumps(payload).encode())
+        return reply
+
+    monkeypatch.setattr(NetworkFixture, '__call__', account_routes)
+    subject = client()
+    subject.sync_time()
+    with closing(PaperStore(':memory:')) as store:
+        adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id)
+        read_set = adapter._account_reads
+        with monkeypatch.context() as patch:
+            patch.setattr(adapter, '_account_reads', lambda observed_at, started, *, parallel:
+                read_set(observed_at, started, parallel=False))
+            serial = adapter.reconcile()
+            serial_facts = adapter.facts
+        permission_read.clear()
+        hold_account = True
+        assert adapter.reconcile().assets == serial.assets
+        assert adapter.facts == replace(serial_facts, observed_at=adapter.facts.observed_at)
+        assert adapter.facts.can_trade
+        assert paths(wired[1]).count(ACCOUNT_PERMISSION_PATH) == 2
+        report_permission_in_v3 = True
+        permission = False
+        permission_read.clear()
+        with pytest.raises(DataQualityError, match='conflicting Demo account trade permissions'):
+            adapter.read_facts()
+        assert adapter.facts is None and not adapter.reconciled
+
+
+def test_two_simultaneous_skews_share_one_recalibration(wired, monkeypatch):
+    subject = client()
+    subject.sync_time()
+    first_attempts = Barrier(2)
+
+    def reject(_):
+        first_attempts.wait(2)
+        return response()
+
+    account, risk, *_ = ACCOUNT_PATHS
+    inject(monkeypatch, [reject], endpoint=account)
+    inject(monkeypatch, [reject], endpoint=risk)
+    with closing(PaperStore(':memory:')) as store:
+        adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id)
+        with subject.recover_get_clock():
+            assert adapter.reconcile().reconciled
+    counts = paths(wired[1])
+    assert counts.count(TIME) == counts.count(account) == counts.count(risk) == 2
+    assert {row['endpoint']: row['outcome'] for row in subject.clock_recoveries} == {
+        account: 'RECOVERED', risk: 'RECOVERED'}
+
+
+def test_out_of_order_conflicting_position_risk_never_publishes_a_snapshot(wired, monkeypatch):
+    subject = client()
+    subject.sync_time()
+    original = NetworkFixture.__call__
+    account, risk, *_ = ACCOUNT_PATHS
+    conflicting_risk = Event()
+
+    def changed_position(fixture, request, timeout):
+        if request.path == risk:
+            conflicting_risk.set()
+            return Response(200, {}, b'[{"symbol":"NVDAUSDT","positionSide":"BOTH","positionAmt":"1"}]')
+        if request.path == account:
+            assert conflicting_risk.wait(2)
+        return original(fixture, request, timeout)
+
+    with closing(PaperStore(':memory:')) as store:
+        adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id)
+        assert adapter.reconcile().reconciled
+        monkeypatch.setattr(NetworkFixture, '__call__', changed_position)
+        with pytest.raises(DataQualityError, match='conflicting positions'):
+            adapter.read_facts()
+        assert adapter.facts is None and not adapter.reconciled
+
+
+def test_read_set_timeout_drains_its_workers_before_recovery(wired, monkeypatch):
+    from factorlab.integrations.binance_futures_trading import adapter as adapter_module
+
+    original = NetworkFixture.__call__
+    workers = []
+    release = Event()
+
+    def pending(fixture, request, timeout):
+        if request.path == ACCOUNT_PATHS[0]:
+            workers.append(current_thread())
+            release.wait(timeout + .05)
+        return original(fixture, request, timeout)
+
+    subject = client()
+    subject.sync_time()
+    with closing(PaperStore(':memory:')) as store:
+        adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id)
+        with monkeypatch.context() as patch:
+            patch.setattr(adapter_module, 'ACCOUNT_READ_SECONDS', .1)
+            patch.setattr(NetworkFixture, '__call__', pending)
+            with pytest.raises(DataQualityError, match='STALE_ACCOUNT'):
+                adapter.reconcile()
+        worker, = workers
+        assert not worker.is_alive()
+        assert adapter.facts is None and not adapter.reconciled
+        assert adapter.reconcile().reconciled

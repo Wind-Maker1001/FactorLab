@@ -33,14 +33,14 @@ class Reader:
 
 
 def test_collection_has_no_owner_callbacks_and_joins():
-    reader = Reader([(1, 1000)])
+    reader = Reader([(1, 1000), (2, 2000)])
     collection = DemoBookCollection(reader, poll_seconds=.01, clock=lambda: reader.elapsed)
     owner = get_ident()
     collection.start()
     try:
-        receipt = collection.receive(after=1)
-        assert receipt.payload['time'] == 1000
-        assert receipt.received_monotonic == 1
+        receipt = collection.receive(after=1, market_after=2000)
+        assert receipt.payload['time'] == 2000
+        assert receipt.received_monotonic == 2
         assert reader.threads and all(thread != owner for thread in reader.threads)
     finally:
         reader.release.set()

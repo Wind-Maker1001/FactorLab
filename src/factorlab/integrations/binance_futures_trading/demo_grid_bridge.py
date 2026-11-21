@@ -164,14 +164,18 @@ class DemoGridBridge:
             min(confirmed_equity, funds['walletBalance'] + funds['unrealizedProfit']), committed, self.turnover,
             snapshot.account_id, self.grid.instrument_id, snapshot.market, snapshot.reconciled)
 
-    def recover(self):
+    def recover(self, *, collection=None):
         """GET-reconcile first; replay missing confirmations, never resubmit."""
         self.ready = False
         if self.session is None:
             self.gateway.recover(self.controller)
         else:
             self.session.recover()
-            book = self.session._fresh_book()
+            if collection is None:
+                book = self.session._fresh_book()
+            else:
+                receipt = collection.receive_recent(collection.clock())
+                book = self.session._fresh_book(dict(receipt.payload))
             self.controller.quote(Quote(self.grid.instrument_id, book['askPrice'], book['time_utc']))
         if not self.account().reconciled:
             raise SafetyBlocked('RECONCILE_REQUIRED')

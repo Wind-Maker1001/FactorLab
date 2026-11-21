@@ -134,13 +134,13 @@ class DemoMarketFeed:
         with self._transaction():
             self.db.execute(f'UPDATE cursor SET {column}=? WHERE id=?', (value, self.identity))
 
-    def poll(self):
+    def poll(self, *, before_delivery=None):
         self.pause('CHECKING')
         try:
             if self.collection is not None:
                 self.collection.check()
             with self._measure('market_poll'):
-                return self._poll()
+                return self._poll(before_delivery)
         except FeedPaused as error:
             self.pause(str(error))
             raise
@@ -209,7 +209,7 @@ class DemoMarketFeed:
         self.pause('CATCHING_UP')
         return dict(bars=delivered, quotes=0)
 
-    def _poll(self):
+    def _poll(self, before_delivery):
         anchor = self.exchange_time(min_valid_seconds=self.max_quote_age)
         server = int(anchor.lower_ms)
         width = self.seconds * 1000
@@ -226,17 +226,26 @@ class DemoMarketFeed:
         if start > boundary:
             raise FeedPaused('CLOCK_REGRESSION')
         if self.catch_up and boundary - start > width:
+            if before_delivery is not None and not before_delivery():
+                return None
             return self._backfill(start, boundary, server, width)
         if boundary - start > self.max_backfill * width:
             raise FeedPaused('BACKFILL_LIMIT')
         bars, rows, bars_received_at = self._bars(start, boundary, server)
+        if before_delivery is not None:
+            if self._poll_age(anchor, self.exchange_time(allow_refresh=False)) > self.max_quote_age:
+                raise FeedPaused('STALE_POLL')
+            if not before_delivery():
+                return None
+            # The closed range stays fixed. Take a new anchor for the current quote.
+            anchor = self.exchange_time(allow_refresh=False)
         # Request the book after the closed range so history cannot age the book.
         if self.collection is None:
             raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
         else:
-            # Reuse only a recent receipt; current exchange bounds below still
-            # enforce the five-second market-age limit at consumption.
-            raw = self.collection.receive(after=self.collection.clock() - 1).payload
+            # Acquisition can overlap klines. Apply the exchange age bound
+            # below at delivery, using the current calibration.
+            raw = self.collection.receive_recent(anchor.observed_monotonic, market_after=boundary).payload
         book_wall_received_at = self.clock()
         received = self.exchange_time(allow_refresh=False)
         book_received_at = timestamp(ceil(received.upper_ms))
@@ -263,8 +272,7 @@ class DemoMarketFeed:
         if not bid.is_finite() or not ask.is_finite() or not 0 < bid <= ask:
             raise FeedPaused('INVALID_BOOK')
         # Validate the entire batch before advancing even one strategy input.
-        batch_age = (received.observed_monotonic - anchor.observed_monotonic
-                     + received.uncertainty_ms / 1000)
+        batch_age = self._poll_age(anchor, received)
         if self.timings is not None:
             self.timings.sample('poll_clock_uncertainty', received.uncertainty_ms / 1000)
             self.timings.sample('poll_anchor_age', batch_age)
@@ -289,6 +297,9 @@ class DemoMarketFeed:
             delivered = 1
         self.status, self.reason = 'RUNNING', None
         return dict(bars=len(bars), quotes=delivered)
+
+    def _poll_age(self, anchor, reading):
+        return reading.observed_monotonic - anchor.observed_monotonic + reading.uncertainty_ms / 1000
 
     def _validate_quote_age(self, quote_ms, reading):
         if (quote_ms > reading.lower_ms
