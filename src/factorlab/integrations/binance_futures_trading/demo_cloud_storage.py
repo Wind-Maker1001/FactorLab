@@ -78,13 +78,14 @@ def _inventory(root):
     return sorted(databases), sorted(files)
 
 
-def _connect(path, *, writable=False):
+def _connect(path, *, writable=False, timeout=0):
     return sqlite3.connect(path.as_uri() + ('?mode=rw' if writable else '?mode=ro'),
-                           uri=True, timeout=0, isolation_level=None)
+                           uri=True, timeout=timeout, isolation_level=None)
 
 
 def _integrity(path, *, recover=False):
-    with closing(_connect(path, writable=recover)) as connection:
+    # The worker lock excludes other sessions, but control commands can still commit.
+    with closing(_connect(path, writable=recover, timeout=5 if recover else 0)) as connection:
         if connection.execute('PRAGMA integrity_check').fetchall() != [('ok',)]:
             raise SafetyBlocked(f'SQLite integrity check failed: {path}')
 
