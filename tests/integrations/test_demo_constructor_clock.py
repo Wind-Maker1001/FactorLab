@@ -84,6 +84,10 @@ def paths(requests):
     return [urlsplit(request.full_url).path for request in requests]
 
 
+def account_clock_paths(requests):
+    return [path for path in paths(requests) if path in (ACCOUNT, TIME)]
+
+
 def assert_get_only(requests):
     assert requests and {request.get_method() for request in requests} == {'GET'}
 
@@ -92,7 +96,7 @@ def test_normal_constructor(wired):
     _, requests = wired
     subject = client()
     assert _read_account(subject).can_trade
-    assert paths(requests)[:2] == [TIME, ACCOUNT]
+    assert paths(requests)[0] == TIME
     assert paths(requests).count(TIME) == paths(requests).count(ACCOUNT) == 1
     assert subject.clock_recoveries == []
     assert subject.recv_window == 5000
@@ -147,7 +151,7 @@ def test_second_skew_terminates_with_first_failure(wired, monkeypatch):
     assert isinstance(caught.value.__cause__, ExchangeError)
     assert caught.value.__cause__.code == -1021
     assert 'GET /fapi/v3/account: RETRY_FAILED' in caught.value.__notes__[0]
-    assert paths(requests) == [TIME, ACCOUNT, TIME, ACCOUNT]
+    assert account_clock_paths(requests) == [TIME, ACCOUNT, TIME, ACCOUNT]
     assert subject.clock_recoveries[0]['outcome'] == 'RETRY_FAILED'
     assert not subject._recover_get_clock
     assert_get_only(requests)
@@ -163,7 +167,7 @@ def test_other_exchange_errors_never_resync(wired, monkeypatch, status, code, ca
     with pytest.raises(ExchangeError) as caught:
         _read_account(subject)
     assert caught.value.category == category
-    assert paths(requests) == [TIME, ACCOUNT]
+    assert account_clock_paths(requests) == [TIME, ACCOUNT]
     assert subject.clock_recoveries == []
     assert_get_only(requests)
 
@@ -178,7 +182,7 @@ def test_invalid_sync_fails_without_retry(wired, monkeypatch, on_recovery):
     inject(monkeypatch, [None, invalid] if on_recovery else [invalid], endpoint=TIME)
     with pytest.raises(DataQualityError, match='invalid server time') as caught:
         _read_account(subject)
-    assert paths(requests) == ([TIME, ACCOUNT, TIME] if on_recovery else [TIME])
+    assert account_clock_paths(requests) == ([TIME, ACCOUNT, TIME] if on_recovery else [TIME])
     if on_recovery:
         assert caught.value.__cause__.category == 'CLOCK_SKEW'
         assert subject.clock_recoveries[0]['outcome'] == 'SYNC_FAILED'
@@ -193,7 +197,7 @@ def test_get_timeout_is_not_retried(wired, monkeypatch, after_skew):
     inject(monkeypatch, [response(), TimeoutError()] if after_skew else [TimeoutError()])
     with pytest.raises(DataQualityError, match='account read failed'):
         _read_account(subject)
-    assert paths(requests) == ([TIME, ACCOUNT, TIME, ACCOUNT] if after_skew else [TIME, ACCOUNT])
+    assert account_clock_paths(requests) == ([TIME, ACCOUNT, TIME, ACCOUNT] if after_skew else [TIME, ACCOUNT])
     assert_get_only(requests)
 
 
@@ -216,7 +220,7 @@ def test_slow_time_sample_followed_by_a_usable_sample(wired, monkeypatch):
     inject(monkeypatch, [clock.time_response(.2, 2.1),
         clock.time_response(.12, .12)], endpoint=TIME)
     assert _read_account(subject).can_trade
-    assert paths(wired[1])[:3] == [TIME, TIME, ACCOUNT]
+    assert account_clock_paths(wired[1]) == [TIME, TIME, ACCOUNT]
     assert paths(wired[1]).count(TIME) == 2
     assert subject.time_sync['rtt_ms'] == pytest.approx(240)
     assert subject.time_sync['midpoint_uncertainty_ms'] == pytest.approx(120)
@@ -471,7 +475,7 @@ def test_transport_failure_category_is_safe(wired, monkeypatch, failure, categor
     assert 'private-url' not in str(caught.value)
     row, = [row for row in subject.request_counts.snapshot()['endpoints'] if row['endpoint'] == ACCOUNT]
     assert row['errors'] == {category: 1}
-    assert paths(wired[1]) == [TIME, ACCOUNT]
+    assert account_clock_paths(wired[1]) == [TIME, ACCOUNT]
 
 
 @pytest.mark.parametrize('arrival,accepted', [(.1, True), (5.1, False)])

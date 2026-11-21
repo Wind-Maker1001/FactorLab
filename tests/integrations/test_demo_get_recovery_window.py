@@ -24,7 +24,11 @@ WindowRequests, WindowEnded = window['WindowRequests'], window['WindowEnded']
 SESSION_NOW = DemoSession._now
 
 
-def test_preview_reads_account_once_at_startup_and_delivers_live_market(deployment, monkeypatch):
+@pytest.mark.parametrize(('account_delay', 'bar_delay', 'classification'), [
+    (.8, .6, 'valid'), (4.2, 1.1, 'expired'),
+])
+def test_preview_reads_account_once_at_startup_and_delivers_live_market(
+        deployment, monkeypatch, account_delay, bar_delay, classification):
     clock = NetworkClock()
     clock.elapsed = 58.2
     monkeypatch.setattr(DemoSession, '_now', SESSION_NOW)
@@ -53,7 +57,11 @@ def test_preview_reads_account_once_at_startup_and_delivers_live_market(deployme
             start, end = int(params['startTime'][0]), int(params['endTime'][0])
             assert start % 60000 == 0 and (end + 1) % 60000 == 0
             assert end < clock.server_ms() and int(params['limit'][0]) == (end + 1 - start) // 60000
+            if clock.elapsed >= 60:
+                clock.elapsed += bar_delay
             return Response(200, {}, json.dumps([bar(t) for t in range(start, end + 1, 60000)]).encode())
+        if request.path == '/fapi/v3/account' and clock.elapsed >= 60:
+            clock.elapsed += account_delay
         return original(fixture, request, timeout)
 
     monkeypatch.setattr(NetworkFixture, '__call__', market)
@@ -91,7 +99,21 @@ def test_preview_reads_account_once_at_startup_and_delivers_live_market(deployme
     assert warmup['reconciled'] and live['reconciled']
     assert warmup['bars'] == warmup['quotes'] == live['bars'] == live['quotes'] == 1
     assert not warmup['live_bar'] and live['live_bar']
-    assert live['watermarks'] == [MS + 60000, MS + 60100]
+    assert live['watermarks'][0] == MS + 60000
+    deliveries = [row for row in result['events'] if row['poll_round'] == live['poll_round']
+                  and row['kind'] in ('bar_delivery', 'quote_delivery')]
+    delivered_bar, delivered_quote = deliveries
+    assert delivered_bar['fresh_bar']
+    assert delivered_bar['closed_at'] == live['last_bar']
+    for delivery in deliveries:
+        assert delivery['account_age_seconds'] == pytest.approx(account_delay + bar_delay)
+        assert delivery['calibrated_account_age_seconds'] == pytest.approx(account_delay + bar_delay)
+        assert delivery['account_valid'] is (classification == 'valid')
+    assert delivered_bar['delivered_at'] <= delivered_quote['delivered_at']
+    assert warmup['account_round'] == 'valid' and live['account_round'] == classification
+    assert result['fresh_bar_and_account_rounds'] == ([live['poll_round']] if classification == 'valid' else [])
+    assert result['rounds'] == dict(valid=2 if classification == 'valid' else 1,
+                                    expired=1 if classification == 'expired' else 0, paused=0)
     supervisor, = supervisors
     assert not supervisor.collection._thread.is_alive()
     with pytest.raises(sqlite3.ProgrammingError, match='closed'):

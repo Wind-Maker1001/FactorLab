@@ -1,4 +1,6 @@
 """Persistent offline execution adapter implementing the shared one-way contract."""
+from concurrent.futures import ThreadPoolExecutor, wait
+from contextlib import contextmanager
 from dataclasses import replace
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -15,12 +17,15 @@ from factorlab.trading.storage import dumps, decode
 from .account import AccountFacts, instant
 from .protocol import (
     Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport,
-    ReadOnlyNetworkTransport, credential_account_id,
+    AccountReadExpired, AccountReadWindow, ReadOnlyNetworkTransport, credential_account_id,
 )
 from .rules import order_parameters
 
-class AccountReadExpired(DataQualityError):
-    category = 'STALE_ACCOUNT'
+ACCOUNT_READ_SECONDS = 5
+ACCOUNT_PATHS = ('/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
+                 '/fapi/v1/openOrders', '/fapi/v1/symbolConfig')
+ACCOUNT_PERMISSION_PATH = '/fapi/v2/account'
+QUANTITATIVE_PATH = '/fapi/v1/apiTradingStatus'
 
 
 ZERO = Decimal('0')
@@ -313,20 +318,77 @@ class FuturesAdapter:
             raise
 
     def _read_facts(self):
+        from .network import DemoNetworkTransport
+        parallel = type(self.client.transport) is DemoNetworkTransport
         self._validate_network_identity()
+        if parallel:
+            self.quantitative_observation = None
+            self.client.demo_time(min_valid_seconds=ACCOUNT_READ_SECONDS)
         started = self.client.monotonic()
         observed_at = self.clock()
+        error = None
+        try:
+            with self._account_reads(observed_at, started, parallel=parallel) as read:
+                facts = self._assemble_facts(observed_at, started, read)
+            if parallel:
+                facts.confirmed_position_amounts()
+                facts.open_order_identities()
+                self._require_fresh_account_read(observed_at, started)
+        except Exception as exc:
+            error = getattr(exc, 'category', type(exc).__name__)
+            if parallel and self.quantitative_observation is None:
+                from .quantitative import QuantitativeObservation
+                self.quantitative_observation = QuantitativeObservation(error=error)
+            raise
+        finally:
+            if parallel:
+                self.client._clock_event('account_read_set', started_at=observed_at.isoformat(),
+                    started_monotonic=started, ended_at=self.clock().isoformat(),
+                    ended_monotonic=self.client.monotonic(), error=error)
+        self.facts = facts
+        return facts
 
-        def read(path):
-            payload = self.client.request('GET', path)
-            self._require_fresh_account_read(observed_at, started)
+    @contextmanager
+    def _account_reads(self, observed_at, started, *, parallel):
+        if not parallel:
+            def read(path):
+                payload = self.client.request('GET', path)
+                self._require_fresh_account_read(observed_at, started)
+                return payload
+            yield read
+            return
+
+        window = AccountReadWindow(started + ACCOUNT_READ_SECONDS)
+
+        def fetch(path):
+            reader = self.client.account_reader(window)
+            payload = reader.request('GET', path)
+            if path == ACCOUNT_PATHS[0]:
+                permission = None
+                if isinstance(payload, dict) and 'canTrade' not in payload:
+                    permission = reader.request('GET', ACCOUNT_PERMISSION_PATH)
+                return payload, permission
             return payload
 
-        account = read('/fapi/v3/account')
-        risk = read('/fapi/v3/positionRisk')
-        mode = read('/fapi/v1/positionSide/dual')
-        orders = read('/fapi/v1/openOrders')
-        config = read('/fapi/v1/symbolConfig')
+        endpoints = (*ACCOUNT_PATHS, QUANTITATIVE_PATH)
+        with ThreadPoolExecutor(max_workers=len(endpoints), thread_name_prefix='demo-account') as pool:
+            pending = {path: pool.submit(fetch, path) for path in endpoints}
+            _, unfinished = wait(pending.values(), timeout=max(0, window.deadline - self.client.monotonic()))
+            if unfinished:
+                for future in unfinished:
+                    future.cancel()
+                raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
+
+            def read(path):
+                if path == ACCOUNT_PERMISSION_PATH:
+                    return pending[ACCOUNT_PATHS[0]].result()[1]
+                result = pending[path].result()
+                return result[0] if path == ACCOUNT_PATHS[0] else result
+
+            yield read
+
+    def _assemble_facts(self, observed_at, started, read):
+        account, risk, mode, orders, config = (read(path) for path in ACCOUNT_PATHS)
         if not isinstance(account, dict) or not isinstance(mode, dict) or not all(
                 isinstance(rows, list) and all(isinstance(row, dict) for row in rows)
                 for rows in (risk, orders, config)):
@@ -343,13 +405,13 @@ class FuturesAdapter:
         if type(self.client.transport) is DemoNetworkTransport or readonly_demo:
             if 'canTrade' not in account:
                 try:
-                    can_trade = account_can_trade(read('/fapi/v2/account'))
+                    can_trade = account_can_trade(read(ACCOUNT_PERMISSION_PATH))
                 except DataQualityError:
                     if not readonly_demo:
                         raise
             from .quantitative import QuantitativeObservation
             try:
-                status = read('/fapi/v1/apiTradingStatus')
+                status = read(QUANTITATIVE_PATH)
             except (DataQualityError, OSError, TimeoutError) as error:
                 category = error.category if isinstance(error, ExchangeError) else type(error).__name__
                 quantitative = QuantitativeObservation(error=category)
@@ -366,15 +428,14 @@ class FuturesAdapter:
         assets_known = isinstance(assets, list) and all(isinstance(row, dict) for row in assets)
         positions_known = isinstance(positions, list) and all(isinstance(row, dict) for row in positions)
         self._require_fresh_account_read(observed_at, started)
-        self.facts = AccountFacts(self.account_id, observed_at, tuple(assets) if assets_known else (),
+        return AccountFacts(self.account_id, observed_at, tuple(assets) if assets_known else (),
             tuple(positions) if positions_known else (), tuple(risk), tuple(orders), (), (), hedge, tuple(config),
             assets_known and positions_known, can_trade, quantitative, read_started_monotonic=started)
-        return self.facts
 
     def _require_fresh_account_read(self, observed_at, started):
         if (self.client.environment is Environment.DEMO
-                and (self.client.monotonic() - started > 5
-                     or not 0 <= (self.clock() - observed_at).total_seconds() <= 5)):
+                and (self.client.monotonic() - started > ACCOUNT_READ_SECONDS
+                     or not 0 <= (self.clock() - observed_at).total_seconds() <= ACCOUNT_READ_SECONDS)):
             raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
 
     def read_account(self):
