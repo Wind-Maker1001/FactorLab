@@ -123,20 +123,22 @@ def test_consecutive_get_timeouts_leave_gate_closed_and_do_not_retry(wired, monk
         assert all(request.get_method() == 'GET' for request in wired[1])
 
 
-def test_parallel_account_matches_serial_and_reads_v2_while_other_get_is_pending(wired, monkeypatch):
+def test_parallel_account_matches_serial_and_starts_known_v2_read_with_v3(wired, monkeypatch):
     original = NetworkFixture.__call__
     permission_read = Event()
-    hold_config = False
-    account, _, _, _, config = ACCOUNT_PATHS
+    hold_account = False
+    report_permission_in_v3 = False
+    permission = True
+    account, *_ = ACCOUNT_PATHS
 
     def account_routes(fixture, request, timeout):
         if request.path == ACCOUNT_PERMISSION_PATH:
             permission_read.set()
-            return Response(200, {}, b'{"canTrade":true}')
-        if request.path == config and hold_config:
+            return Response(200, {}, json.dumps(dict(canTrade=permission)).encode())
+        if request.path == account and hold_account:
             assert permission_read.wait(2)
         reply = original(fixture, request, timeout)
-        if request.path == account:
+        if request.path == account and not report_permission_in_v3:
             payload = json.loads(reply.body)
             del payload['canTrade']
             return Response(reply.status, reply.headers, json.dumps(payload).encode())
@@ -154,11 +156,17 @@ def test_parallel_account_matches_serial_and_reads_v2_while_other_get_is_pending
             serial = adapter.reconcile()
             serial_facts = adapter.facts
         permission_read.clear()
-        hold_config = True
+        hold_account = True
         assert adapter.reconcile().assets == serial.assets
         assert adapter.facts == replace(serial_facts, observed_at=adapter.facts.observed_at)
         assert adapter.facts.can_trade
         assert paths(wired[1]).count(ACCOUNT_PERMISSION_PATH) == 2
+        report_permission_in_v3 = True
+        permission = False
+        permission_read.clear()
+        with pytest.raises(DataQualityError, match='conflicting Demo account trade permissions'):
+            adapter.read_facts()
+        assert adapter.facts is None and not adapter.reconciled
 
 
 def test_two_simultaneous_skews_share_one_recalibration(wired, monkeypatch):

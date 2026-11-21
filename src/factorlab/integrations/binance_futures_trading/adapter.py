@@ -22,7 +22,8 @@ from .protocol import (
 from .rules import order_parameters
 
 ACCOUNT_READ_SECONDS = 5
-ACCOUNT_PATHS = ('/fapi/v3/account', '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
+ACCOUNT_PATH = '/fapi/v3/account'
+ACCOUNT_PATHS = (ACCOUNT_PATH, '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
                  '/fapi/v1/openOrders', '/fapi/v1/symbolConfig')
 ACCOUNT_PERMISSION_PATH = '/fapi/v2/account'
 QUANTITATIVE_PATH = '/fapi/v1/apiTradingStatus'
@@ -50,6 +51,7 @@ class FuturesAdapter:
         self.get_confirmed_writes = False
         self.facts = None
         self.quantitative_observation = None
+        self._read_v2_permission_early = False
         self.db = store.db
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_orders (id TEXT PRIMARY KEY, payload TEXT NOT NULL, quote TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
@@ -359,19 +361,22 @@ class FuturesAdapter:
             return
 
         window = AccountReadWindow(started + ACCOUNT_READ_SECONDS)
+        early_permission = self._read_v2_permission_early
 
         def fetch(path):
             reader = self.client.account_reader(window)
             payload = reader.request('GET', path)
-            if path == ACCOUNT_PATHS[0]:
+            if path == ACCOUNT_PATH:
                 permission = None
-                if isinstance(payload, dict) and 'canTrade' not in payload:
+                if not early_permission and isinstance(payload, dict) and 'canTrade' not in payload:
                     permission = reader.request('GET', ACCOUNT_PERMISSION_PATH)
                 return payload, permission
             return payload
 
         endpoints = (*ACCOUNT_PATHS, QUANTITATIVE_PATH)
-        with ThreadPoolExecutor(max_workers=len(endpoints), thread_name_prefix='demo-account') as pool:
+        if early_permission:
+            endpoints = (ACCOUNT_PERMISSION_PATH, *endpoints)
+        with ThreadPoolExecutor(max_workers=6, thread_name_prefix='demo-account') as pool:
             pending = {path: pool.submit(fetch, path) for path in endpoints}
             _, unfinished = wait(pending.values(), timeout=max(0, window.deadline - self.client.monotonic()))
             if unfinished:
@@ -380,10 +385,10 @@ class FuturesAdapter:
                 raise AccountReadExpired('STALE_ACCOUNT: account read set exceeded five seconds')
 
             def read(path):
-                if path == ACCOUNT_PERMISSION_PATH:
-                    return pending[ACCOUNT_PATHS[0]].result()[1]
+                if path == ACCOUNT_PERMISSION_PATH and not early_permission:
+                    return pending[ACCOUNT_PATH].result()[1]
                 result = pending[path].result()
-                return result[0] if path == ACCOUNT_PATHS[0] else result
+                return result[0] if path == ACCOUNT_PATH else result
 
             yield read
 
@@ -402,13 +407,22 @@ class FuturesAdapter:
         from .network import DemoNetworkTransport
         readonly_demo = (isinstance(self.client.transport, ReadOnlyNetworkTransport)
                          and self.client.environment is Environment.DEMO)
-        if type(self.client.transport) is DemoNetworkTransport or readonly_demo:
-            if 'canTrade' not in account:
+        network_demo = type(self.client.transport) is DemoNetworkTransport
+        if network_demo or readonly_demo:
+            permission_missing = 'canTrade' not in account
+            if network_demo and permission_missing:
+                # Remember the response shape. Each round still reads a new permission.
+                self._read_v2_permission_early = True
+            if permission_missing or (network_demo and self._read_v2_permission_early):
                 try:
-                    can_trade = account_can_trade(read(ACCOUNT_PERMISSION_PATH))
+                    can_trade = account_can_trade(account, read(ACCOUNT_PERMISSION_PATH))
                 except DataQualityError:
                     if not readonly_demo:
                         raise
+                if network_demo and not permission_missing:
+                    if can_trade is None:
+                        raise DataQualityError('conflicting Demo account trade permissions')
+                    self._read_v2_permission_early = False
             from .quantitative import QuantitativeObservation
             try:
                 status = read(QUANTITATIVE_PATH)
