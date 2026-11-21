@@ -147,15 +147,17 @@ def test_health_distinguishes_offline_from_get_only_and_execution(tmp_path, caps
     from time import time
     from factorlab.integrations.binance_futures_trading.demo_cloud_storage import atomic_json
     for mode, status in [('OFFLINE', 'OFFLINE'), ('GET_ONLY', 'READ_ONLY')]:
-        atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=time(), mode=mode,
-            status=status, market_batch_age_seconds=0,
-            last_reconciled_at=datetime.now(timezone.utc).isoformat()))
+        atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=time(), started_at=time() - 5,
+            mode=mode, status=status, market_batch_age_seconds=0 if mode == 'GET_ONLY' else None,
+            last_reconciled_at=datetime.now(timezone.utc).isoformat() if mode == 'GET_ONLY' else None,
+            account_recovered=mode == 'GET_ONLY', equity=None, positions=None, nav_usdt=None))
         assert health(tmp_path) == 0
         report = json.loads(capsys.readouterr().out)
         assert report['offline_heartbeat_healthy'] == (mode == 'OFFLINE')
         assert report['get_only_healthy'] == (mode == 'GET_ONLY')
         assert report['cloud_get_only_accepted'] is False
         assert report['demo_execution_ready'] is False
+        assert report['account_recovered'] == report['market_fresh'] == (mode == 'GET_ONLY')
 
 
 def test_cloud_health_retains_request_diagnostics(tmp_path):
@@ -166,8 +168,10 @@ def test_cloud_health_retains_request_diagnostics(tmp_path):
         feed = CloudFeed(tmp_path, runtime, None, requests, stack, offline=True)
         feed.pause('STALE_POLL')
         feed.pause('R13_QUOTE_GAP')
+        feed.pause('STALE_ACCOUNT')
         report = feed.snapshot()
-    assert report['safety_events'] == dict(STALE_POLL=1, R13_QUOTE_GAP=1, CLOCK_SKEW=1)
+    assert report['safety_events'] == dict(STALE_ACCOUNT=1, STALE_POLL=1, R13_QUOTE_GAP=1, CLOCK_SKEW=1)
+    assert report['last_exception'] == 'STALE_ACCOUNT'
     endpoint = report['api']['endpoints'][0]
     assert endpoint['errors'] == {'CLOCK_SKEW': 1}
     assert endpoint['max_seconds'] == .75
@@ -218,24 +222,43 @@ def test_identity_and_disk_refusals_do_not_enter_network_backoff(tmp_path, monke
 
 def test_network_failure_then_get_recovery(tmp_path):
     from contextlib import ExitStack
+    from factorlab.integrations.binance_futures_trading.adapter import AccountReadExpired
+    from factorlab.integrations.binance_futures_trading.demo_supervisor import DemoSupervisor
+
     class Session:
-        failed = False
+        failures = iter((AccountReadExpired('expired read set'), OSError('synthetic disconnection')))
+
         def recover(self):
-            if not self.failed:
-                self.failed = True
-                raise OSError('synthetic disconnection')
+            failure = next(self.failures, None)
+            if failure:
+                raise failure
             return dict(reconciled=True, unknown=[])
+
     class Market:
         def poll(self):
             return dict(bars=1, quotes=1)
+
+        def watermarks(self):
+            return None, None
+
+        def pause(self, reason):
+            pass
+
     with closing(DemoRuntime(tmp_path)) as runtime, ExitStack() as stack:
         feed = CloudFeed(tmp_path, runtime, None, RequestCounts(), stack, min_free_bytes=0)
         feed.session, feed.feed = Session(), Market()
-        with pytest.raises(OSError):
-            feed.poll()
-        assert feed.last_exception == 'NETWORK_INTERRUPTED'
-        assert feed.poll() == dict(bars=1, quotes=1)
-        assert feed.status == 'READ_ONLY'
+        observed = []
+
+        def report(_):
+            observed.append((feed.status, feed.account_recovered, feed.last_exception))
+            if feed.account_recovered:
+                supervisor.stop()
+
+        supervisor = DemoSupervisor(feed, poll_seconds=.01, report=report)
+        supervisor.run(seconds=1)
+        assert observed == [('PAUSED', False, 'STALE_ACCOUNT'), ('PAUSED', False, 'OSError'),
+                            ('READ_ONLY', True, 'OSError')]
+        assert feed.refusals['STALE_ACCOUNT'] == 1
         assert feed.requests['POST'] == feed.requests['DELETE'] == 0
 
 
@@ -288,10 +311,19 @@ def test_health_market_age_advances_since_snapshot(tmp_path, monkeypatch, capsys
     from factorlab.integrations.binance_futures_trading.demo_cloud_storage import atomic_json
     from datetime import datetime, timezone
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_cloud_runtime.time', lambda: 1000)
-    atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=920, status='READ_ONLY', mode='GET_ONLY',
-        market_batch_age_seconds=85, last_reconciled_at=datetime.fromtimestamp(920, timezone.utc).isoformat()))
+    atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=920, started_at=900,
+        status='PAUSED', mode='GET_ONLY', market_batch_age_seconds=85,
+        last_reconciled_at=datetime.fromtimestamp(920, timezone.utc).isoformat(),
+        account_recovered=False, positions=[{'quantity': '1'}], equity={'walletBalance': '100'},
+        nav_usdt='120'))
     assert health(tmp_path, max_age=90) == 1
-    assert json.loads(capsys.readouterr().out)['ready'] is False
+    report = json.loads(capsys.readouterr().out)
+    assert report['alive'] is True
+    assert report['uptime_seconds'] == 100
+    assert report['market_batch_age_seconds'] == 165
+    assert report['market_fresh'] is False
+    assert report['account_recovered'] is False
+    assert report['positions'] is report['nav_usdt'] is None
 
 
 def test_execute_strategy_stop_is_preserved_and_beats_grid_pause(tmp_path):
@@ -348,7 +380,9 @@ def test_health_does_not_validate_or_initialize_database(tmp_path, monkeypatch, 
     from factorlab.integrations.binance_futures_trading.demo_cloud_storage import atomic_json
     from time import time
     (tmp_path / 'runtime.sqlite3').write_bytes(b'corrupt')
-    atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=time(), status='OFFLINE', mode='OFFLINE'))
+    atomic_json(tmp_path / 'cloud-health.json', dict(heartbeat_at=time(), started_at=time() - 1,
+        status='OFFLINE', mode='OFFLINE', market_batch_age_seconds=None,
+        last_reconciled_at=None, account_recovered=False))
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_cloud_runtime.state_root',
                         lambda: pytest.fail('health must not validate/open SQLite'))
     assert main(['health', '--state-root', str(tmp_path)]) == 0

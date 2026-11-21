@@ -1,4 +1,4 @@
-"""Exercise the installed CI-only offline unit on a disposable Linux runner."""
+"""Exercise the installed offline acceptance unit on a disposable Linux state root."""
 import json
 import os
 from pathlib import Path
@@ -40,10 +40,18 @@ def main():
     try:
         as_service('-c', '''
 from contextlib import closing
+from decimal import Decimal
+import json
 from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, state_root
 with closing(DemoRuntime(state_root())) as runtime:
+    binding = dict(account_id='offline-systemd-fixture', configuration={})
+    authorization = runtime.start_continuous(binding, opening_equity=Decimal('1000'),
+        stop_epoch=runtime.stop_epoch())
+    campaign = dict(id='offline-systemd-fixture', journal_id=authorization['journal_id'], smoke=False)
     with runtime.db:
-        runtime._set('c02-persistence-sentinel', 'retained-before-restart')
+        runtime.db.execute('INSERT INTO campaigns VALUES (?, ?)', (campaign['id'], json.dumps(campaign)))
+        runtime.db.execute('INSERT INTO dispatches VALUES (?, ?, ?, ?, NULL)',
+            (campaign['id'], 'POST', 'historical-fixture', json.dumps(dict(quantity='1', price='5'))))
 ''')
         systemctl('start', unit)
 
@@ -74,13 +82,9 @@ with closing(DemoRuntime(state_root())) as runtime:
         assert after['starts'] == before['starts'] + 1
         assert after['desired'] == before['desired'] == 'READ_ONLY'
         assert after['requests'] == dict(GET=0, POST=0, DELETE=0)
-        persisted = as_service('-c', '''
-from contextlib import closing
-from factorlab.integrations.binance_futures_trading.demo_cloud_runtime import readonly
-with closing(readonly('/var/lib/factorlab-demo/runtime.sqlite3')) as db:
-    print(db.execute("SELECT value FROM runtime WHERE key='c02-persistence-sentinel'").fetchone()[0])
-''')
-        assert persisted == 'retained-before-restart'
+        consumed = dict(posts=1, submitted_notional='5')
+        assert before['global_budget']['consumed'] == after['global_budget']['consumed'] == consumed
+        assert after['global_budget']['remaining_posts'] == 99
         assert int(systemctl('show', unit, '--property=NRestarts', '--value')) >= 1
         systemctl('stop', unit)
         assert systemctl('show', unit, '--property=ActiveState', '--value') == 'inactive'
@@ -118,7 +122,6 @@ print(json.dumps(dict(version=importlib.metadata.version('factorlab'),
 from contextlib import closing
 from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, state_root
 with closing(DemoRuntime(state_root())) as runtime:
-    assert runtime._get('c02-persistence-sentinel') == 'retained-before-restart'
     runtime.stop()
 ''')
         systemctl('start', '--wait', unit)
@@ -131,9 +134,10 @@ with closing(DemoRuntime(state_root())) as runtime:
         stop_report = snapshot()
         assert stop_report['desired'] == 'STOPPED'
         assert stop_report['requests'] == dict(GET=0, POST=0, DELETE=0)
+        assert stop_report['global_budget']['consumed'] == consumed
         evidence.update(systemd_sigkill_restart=True, systemd_sigterm_stop=True,
             lock_exclusion=True, code_not_service_writable=True, state_mode='0700',
-            persisted_sentinel=persisted, installation=installation, operator_stop_natural_exit=True,
+            persisted_consumption=consumed, installation=installation, operator_stop_natural_exit=True,
             before=before, after_restart=after, after_sigterm=stopped,
             after_operator_stop=stop_report, sqlite_integrity=integrity,
             ended_at=datetime.now(timezone.utc).isoformat())
