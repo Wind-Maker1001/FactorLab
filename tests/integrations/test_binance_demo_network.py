@@ -28,6 +28,8 @@ from factorlab.trading import Side, OrderStatus as S
 
 
 class NetworkFixture(DemoFixture):
+    inject_responses_on_get = False
+
     def __call__(self, request, timeout):
         if request.path == '/fapi/v2/account':
             self.calls.append((request.method, request.path, parse_qs(request.query)))
@@ -38,12 +40,7 @@ class NetworkFixture(DemoFixture):
                      if request.path.endswith('premiumIndex') else
                      {'indicators': {'NVDAUSDT': [{'indicator': 'UFR', 'isLocked': False}]}})
             return Response(200, {}, json.dumps(value).encode())
-        pending = self.response_next
-        if request.method == 'GET':
-            self.response_next = None
         result = super().__call__(request, timeout)
-        if request.method == 'GET':
-            self.response_next = pending
         if request.path.endswith('exchangeInfo'):
             value = json.loads(result.body)
             value['symbols'][0]['filters'].extend([
