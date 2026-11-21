@@ -69,27 +69,34 @@ def test_account_transport_does_not_hold_shared_calibration_lock(wired, monkeypa
 
 @pytest.mark.parametrize('endpoint', ['/fapi/v3/account', '/fapi/v3/positionRisk',
     '/fapi/v1/openOrders', '/fapi/v1/apiTradingStatus'])
-def test_slow_read_set_never_becomes_reconciled(wired, monkeypatch, endpoint):
+@pytest.mark.parametrize('delay,expired', [(4.999, False), (5.001, True)])
+def test_account_read_set_uses_five_second_window(wired, monkeypatch, endpoint, delay, expired):
     clock = NetworkClock()
+    observed_at = datetime.fromtimestamp(clock.wall(), timezone.utc)
     subject = client(clock)
     original = NetworkFixture.__call__
 
     def slow(self, request, timeout):
         result = original(self, request, timeout)
         if request.path == endpoint:
-            clock.elapsed += 61
+            clock.elapsed += delay
         return result
 
     monkeypatch.setattr(NetworkFixture, '__call__', slow)
-    inject(monkeypatch, [clock.time_response()] * 4, endpoint=TIME)
+    inject(monkeypatch, [clock.time_response()], endpoint=TIME)
     subject.sync_time()
     with closing(PaperStore(':memory:')) as store:
         adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id,
             clock=lambda: datetime.fromtimestamp(clock.wall(), timezone.utc))
-        with pytest.raises(DataQualityError, match='STALE_ACCOUNT'):
-            adapter.reconcile()
-        assert adapter.facts is None
-        assert not adapter.reconciled
+        if expired:
+            with pytest.raises(DataQualityError, match='STALE_ACCOUNT'):
+                adapter.reconcile()
+            assert adapter.facts is None
+            assert not adapter.reconciled
+        else:
+            snapshot = adapter.reconcile()
+            assert snapshot.reconciled and adapter.reconciled
+            assert snapshot.observed_at == observed_at
         assert all(request.get_method() == 'GET' for request in wired[1])
 
 

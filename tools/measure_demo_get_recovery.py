@@ -67,6 +67,14 @@ class PreviewControl:
         return 'RUNNING'
 
 
+def account_evidence(session):
+    status = session.status()
+    facts = session.adapter.facts
+    age = None if facts is None else session.client.monotonic() - facts.read_started_monotonic
+    return dict(reconciled=status['reconciled'], unknown_count=len(status['unknown']),
+        account_age_seconds=age, recovery_seconds=session.last_recovery_seconds)
+
+
 def observe(root, *, credentials=None, worker_seconds=155):
     requests = WindowRequests()
     outcome = None
@@ -76,6 +84,7 @@ def observe(root, *, credentials=None, worker_seconds=155):
     try:
         with open_grid_session(root, credentials or DemoCredentialStore(), grid_factory(None),
                 preview=True, continuous=True, request_counts=requests) as bridge:
+            requests.append(dict(kind='initialized', **account_evidence(bridge.session)))
             stage = 'consumer_initialization'
             consumer = GridConsumer(bridge, PreviewControl(), clock=bridge.session._now,
                 request_counts=requests)
@@ -93,9 +102,7 @@ def observe(root, *, credentials=None, worker_seconds=155):
                     row.update(kind='poll', live_bar=consumer.live_bar,
                         eligible_after=consumer.eligible_after.isoformat(),
                         last_bar=consumer.last_bar.isoformat() if consumer.last_bar else None,
-                        reconciled=bridge.session.status()['reconciled'],
-                        unknown_count=len(bridge.session.status()['unknown']),
-                        recovery_seconds=bridge.session.last_recovery_seconds)
+                        **account_evidence(bridge.session))
                     with requests.admission_lock:
                         requests.append(row)
 

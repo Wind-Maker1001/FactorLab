@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 import json
 import re
+from time import perf_counter
 from urllib.parse import parse_qs
 
 from factorlab.trading import Market, OrderIntent, OrderType, Side
@@ -18,7 +19,7 @@ from .adapter import FuturesAdapter, STATUS
 from .demo_preflight import BOOK, DEMO, SYMBOL, _book, _positions
 from .execution import DemoExecutionGateway, DemoFuturesAdapter, observe_demo_rules
 from .network import DemoNetworkTransport
-from .protocol import ExchangeError, SafetyBlocked, rejection_message
+from .protocol import ExchangeError, SafetyBlocked, credential_account_id, rejection_message
 from .rules import symbol_row
 from .observability import ObservedClient
 
@@ -33,11 +34,9 @@ def _demo_client(credential, transport, request_counts=None):
     return ObservedClient(credential, environment=DEMO, transport=transport, request_counts=request_counts)
 
 
-def _read_account(client, *, expected_id=None):
+def _read_account(client):
     with closing(PaperStore(':memory:')) as store:
         adapter = FuturesAdapter(client, store, account_id=DEMO.account_id)
-        if expected_id is not None and adapter.account_id != expected_id:
-            raise SafetyBlocked('persisted Demo account binding mismatch')
         client.sync_time()
         with client.recover_get_clock():
             return adapter.read_facts()
@@ -83,7 +82,7 @@ class DemoSession:
 
     def __init__(self, credential, *, protocol_store, controller_store, account_id, configuration,
                  authorization=None, limits=RiskLimits(), write_guard=None, receipt_sink=None, request_counts=None,
-                 get_confirmed_writes=False):
+                 get_confirmed_writes=False, reconcile_on_open=False):
         if (authorization is None) != (write_guard is None):
             raise SafetyBlocked('Demo writes require authorization and a persistent guard')
         self.requests = _new_request_counts() if request_counts is None else request_counts
@@ -100,15 +99,16 @@ class DemoSession:
         transport = DemoNetworkTransport(authorization=authorization, observe_response=self._observe_response,
             write_guard=self._admit_write if write_guard is not None else None)
         self.client = _demo_client(credential, transport, self.requests)
-        facts = _read_account(self.client, expected_id=account_id)
-        if authorization is not None and demo_account_configuration(facts) != configuration:
-            raise SafetyBlocked('persisted Demo account configuration mismatch')
-
+        if credential_account_id(DEMO, credential.key) != account_id:
+            raise SafetyBlocked('persisted Demo account binding mismatch')
         self.adapter = DemoFuturesAdapter(self.client, protocol_store, clock=self._now)
         self.adapter.get_confirmed_writes = get_confirmed_writes
+        self.client.sync_time()
         with self.client.recover_get_clock():
             observation = observe_demo_rules(self.adapter, source_version=DEMO.host, on_symbol=self._check_symbol)
-        self.adapter.facts = facts
+            facts = self.adapter.read_facts()
+        if (authorization is not None or reconcile_on_open) and demo_account_configuration(facts) != configuration:
+            raise SafetyBlocked('persisted Demo account configuration mismatch')
         balance = facts.usdt()['walletBalance']
         if balance is None:
             raise SafetyBlocked('Demo wallet balance unavailable')
@@ -117,6 +117,8 @@ class DemoSession:
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
+        if reconcile_on_open:
+            self._recover(initial_facts=facts)
 
     def refresh_authorization(self, authorization, *, write_guard, receipt_sink):
         """Install a fresh window capability only after successful GET recovery."""
@@ -209,14 +211,19 @@ class DemoSession:
 
     def recover(self):
         """Reconcile the existing journals and account via GET only."""
+        return self._recover()
+
+    def _recover(self, *, initial_facts=None):
         if self.gateway.state.quotes.get(SYMBOL) is None and self._protocol_ids():
             book = self._fresh_book()
             self.controller.quote(Quote(SYMBOL, book['askPrice'], book['time_utc']))
-        from time import perf_counter
         started = perf_counter()
         try:
             with self.client.recover_get_clock():
-                self.gateway.recover(self.controller)
+                if initial_facts is None:
+                    self.gateway.recover(self.controller)
+                else:
+                    self.gateway.recover(self.controller, initial_facts=initial_facts)
                 result = self.status()
             if result['reconciled']:
                 self.last_reconciled_at = self._now()
