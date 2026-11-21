@@ -538,12 +538,15 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
         capacity = dict(continuous_capacity=True) if continuous else {}
         with (closing(PaperStore(journal / 'protocol.sqlite3', **capacity)) as protocol_store,
               closing(PaperStore(journal / 'controller.sqlite3', **capacity)) as controller_store):
+            saved = saved_grid_deployment(controller_store)
+            reconcile_on_open = not read_only and (automatic or new_deployment
+                or (saved is None and grid_factory is not None))
             session = DemoSession(credential, protocol_store=protocol_store, controller_store=controller_store,
                 account_id=binding['account_id'], configuration=binding['configuration'],
                 authorization=authorization, limits=DEMO_LIMITS,
                 write_guard=guard if writes and not automatic else None,
                 receipt_sink=record if writes and not automatic else None,
-                request_counts=request_counts, get_confirmed_writes=continuous)
+                request_counts=request_counts, get_confirmed_writes=continuous, reconcile_on_open=reconcile_on_open)
 
             def ensure_campaign():
                 nonlocal campaign
@@ -564,16 +567,13 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
                 return campaign
 
             if automatic:
-                session.recover()
                 ensure_campaign()
             key = 'demo-grid:deployment'
-            saved = saved_grid_deployment(controller_store)
             if new_deployment:
                 if read_only:
                     raise SafetyBlocked('new Grid deployment requires explicit write mode')
                 if saved is not None and decode(json.loads(saved))['campaign'] == campaign['id']:
                     raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
-                session.recover()
                 status = session.status()
                 if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
                     raise SafetyBlocked('new Grid deployment requires a reconciled flat account without open or UNKNOWN orders')
