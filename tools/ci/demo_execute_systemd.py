@@ -49,6 +49,7 @@ class OfflineDemoExchange:
         self.outage = False
         self.auth_reject = False
         self.timeout_next_post = False
+        self.breakout_bar_open = None
         self.orders = {}
         self.trades = []
         self.cash = Decimal('1000')
@@ -152,7 +153,9 @@ class OfflineDemoExchange:
             if path == '/fapi/v1/klines':
                 start = int(p['startTime'])
                 end = int(p['endTime'])
-                rows = [[at, '150', '153', '147', '150', '10', at + 59_999]
+                rows = [[at, '150', '155', '147', '155', '10', at + 59_999]
+                        if at == self.breakout_bar_open else
+                        [at, '150', '153', '147', '150', '10', at + 59_999]
                         for at in range(start, end + 1, 60_000)]
                 return 200, rows
             if path == '/fapi/v3/account':
@@ -678,6 +681,46 @@ def main():
             systemd_conflicts_switchover=True,
         )
 
+        # Finish the existing reduction, deliver a breakout bar, then recover
+        # the replacement and its first working order in a separate process.
+        order2_id = next(client_id for client_id in exchange.orders if client_id != order1_id)
+        systemctl('stop', EXEC_UNIT)
+        exchange.fill_order(order2_id)
+        with exchange.lock:
+            exchange.breakout_bar_open = exchange.server_ms() // 60_000 * 60_000
+        systemctl('start', EXEC_UNIT)
+        replacement_id = deployment_id + '-00001'
+        rotated = wait_for(
+            lambda: (snap := read_snapshot()) and (snap.get('grid') or {}).get('deployment_id') == replacement_id
+                    and snap['global_budget']['consumed']['posts'] == 2 and snap,
+            timeout=80, description='flat BREAKOUT rotated under systemd',
+        )
+        assert not rotated['grid']['live_bar']
+        replacement_order_id = replacement_id + '-00000001'
+        working = wait_for(
+            lambda: (snap := read_snapshot()) and any(
+                order['client_order_id'] == replacement_order_id for order in snap.get('open_orders') or [])
+                and snap,
+            timeout=80, description='first fresh bar submits under rotated Grid',
+        )
+        assert working['global_budget']['consumed']['posts'] == 3
+        assert exchange.post_count == 3 and exchange.delete_count == 0
+        systemctl('restart', EXEC_UNIT)
+        resumed = wait_for(
+            lambda: (res := read_health()) and res[0] == 0 and res[1]['pid'] != working['pid']
+                    and res[1]['grid']['deployment_id'] == replacement_id and res[1],
+            timeout=25, description='independent systemd process recovers rotated Grid and working order',
+        )
+        assert resumed['global_budget'] == working['global_budget']
+        assert [order['client_order_id'] for order in resumed['open_orders']] == [replacement_order_id]
+        assert resumed['recent_orders'] == working['recent_orders']
+        assert exchange.post_count == 3 and exchange.delete_count == 0
+        evidence['checks']['f08_rotation_and_restart'] = dict(
+            passed=True, previous_deployment_id=deployment_id, deployment_id=replacement_id,
+            client_order_id=replacement_order_id, old_pid=working['pid'], new_pid=resumed['pid'],
+            consumed=resumed['global_budget']['consumed'],
+        )
+
         # ------------------------------------------------------------------
         # CHECK 2: Durable STOP (both worker STOP and account-wide STOP)
         # ------------------------------------------------------------------
@@ -713,8 +756,8 @@ def main():
         acct_stop_code, acct_stop_health = read_health()
         assert acct_stop_code == 1
         assert acct_stop_health['desired'] == 'STOPPED'
-        assert acct_stop_health['global_budget']['consumed']['posts'] == 2
-        assert acct_stop_health['global_budget']['remaining_posts'] == 8
+        assert acct_stop_health['global_budget']['consumed']['posts'] == 3
+        assert acct_stop_health['global_budget']['remaining_posts'] == 7
         evidence['checks']['2_durable_stop_preserved'] = dict(
             passed=True, worker_stop_exit=0, account_stop_exit=0,
             zero_network_calls_while_stopped=True, n_restarts=0,
@@ -754,7 +797,7 @@ with closing(DemoRuntime(state_root())) as runtime:
         assert halt_health['desired'] == 'HALTED'
         assert halt_health['diagnostic'] is not None
         assert halt_health['demo_execution_ready'] is False
-        assert halt_health['global_budget']['consumed']['posts'] == 2
+        assert halt_health['global_budget']['consumed']['posts'] == 3
         evidence['checks']['3_durable_halted_preserved'] = dict(
             passed=True, exit_status=0, n_restarts=0,
             status=halt_health['status'], diagnostic=halt_health['diagnostic'],

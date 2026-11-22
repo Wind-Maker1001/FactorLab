@@ -33,7 +33,7 @@ class DemoGridBridge:
     """
 
     def __init__(self, grid, controller, *, expect=None, read_only=False, preview=False,
-                 deferred_admission=False, expected_prefix=None):
+                 deferred_admission=False, expected_prefix=None, new_deployment=None):
         self.session = controller if isinstance(controller, DemoSession) else None
         self.expect = expect
         self.read_only = read_only
@@ -83,6 +83,8 @@ class DemoGridBridge:
             raise ValueError('persisted Grid deployment differs')
         with controller.store.transaction():
             controller.store.record_metadata(self.prefix + 'deployment', binding)
+            if new_deployment is not None:
+                controller.store.record_metadata('demo-grid:deployment:' + grid.deployment_id, new_deployment)
         self.restored = False
 
     def _restore(self):
@@ -183,6 +185,10 @@ class DemoGridBridge:
                 receipt = collection.receive_recent(collection.clock(), market_after=market_after)
                 book = self.session._fresh_book(dict(receipt.payload))
             self.controller.quote(Quote(self.grid.instrument_id, book['askPrice'], book['time_utc']))
+        return self.restore_reconciled()
+
+    def restore_reconciled(self):
+        """Project the Grid over an already GET-reconciled shared account."""
         if not self.account().reconciled:
             raise SafetyBlocked('RECONCILE_REQUIRED')
         if not self.restored:
