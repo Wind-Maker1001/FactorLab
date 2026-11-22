@@ -759,6 +759,7 @@ class FuturesAdapter:
             or coverage is None
             or not coverage['complete']
             or new_from_ms < coverage['covered_from_ms']
+            or new_through_ms > coverage['covered_through_ms']
         )
         if need_db_write:
             with self.store.transaction():

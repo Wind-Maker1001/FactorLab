@@ -67,6 +67,7 @@ F10 通过把官方已确认 `FUNDING_FEE` 纳入协议账本、`PaperStore` 权
 
 - **历史起点推导**：综合显式 `start_time`、账本最早订单/回执/成交/资金费活动时间 `_earliest_activity_ms()` 以及已持久化的 `covered_from_ms`，取最小时间戳作为 `target_origin_ms`。若发现更早的历史活动起点，自动向前补齐 `[target_origin_ms, covered_from_ms]`。
 - **增量重叠回看**：在已有完整覆盖 `[covered_from_ms, covered_through_ms]` 基础上，每次增量同步从 `max(target_origin_ms, covered_through_ms - INCOME_OVERLAP_MS)`（默认回看 1 小时）拉取至当前 `end_ms`，确保迟到入账的资金费流水可被无损补录，且已入账事件通过 `tran_id` 幂等去重。
+- **空同步水位持久化**：成功完整读取后，即使没有新增事件，只要 `covered_through_ms` 推进，也通过已有事务与覆盖记录 UPSERT 持久化；新 Session 从最近一次已确认水位继续增量重叠扫描。
 - **故障保持**：当 `/fapi/v1/income` 发生超时或网络异常时，保留既有 SQLite 账本与 `PaperState` 不变，`adapter.reconciled` 置为 `False`，待后续 `recover()` 重试恢复。
 
 ---
@@ -185,3 +186,45 @@ F10 通过把官方已确认 `FUNDING_FEE` 纳入协议账本、`PaperStore` 权
 - **官方账户在线复验区分**：
   - 本次交付严格遵循边界约束，**未修改本机原私有账本，未启动第二个 Execute Owner，未发送任何交易所写请求**。
   - 官方 Demo 账户在线最新状态的复验留待合并后由唯一授权的在线会话通过只读 GET 恢复与 `demo_fill_acceptance` 执行。
+
+---
+
+## 八、PR #225 Codex P2 修复：空同步覆盖水位（2026-11-22）
+
+基线 HEAD：`66769a7191c6ef7f55d8de34cc3235efe1d10340`。原 Review：[Persist the coverage watermark when an empty sync advances it](https://github.com/Wind-Maker1001/FactorLab/pull/225#discussion_r4657676289)。
+
+### 根因与修复
+
+`_sync_funding()` 的 `need_db_write` 原先只考虑新事件、首次覆盖、不完整覆盖与覆盖起点扩展，遗漏了覆盖终点推进。成功空同步因此只更新 `_funding_coverage_cache`，重启后会从旧 SQLite 水位重复扫描。
+
+在原判断中加入 `new_through_ms > coverage['covered_through_ms']`，继续复用 `self.store.transaction()` 与 `INSERT ... ON CONFLICT DO UPDATE`。事件校验与分页完成后才进入事务，事件插入与覆盖推进仍保持原子性；覆盖水位不回退，同一水位没有新增事件时不写库。金额、历史事件身份、持仓、手续费与交易所请求路径均未修改。
+
+### 新增定向回归（6 项）
+
+| 场景 | 证据 |
+| --- | --- |
+| A：成功空同步与 Session 重开 | 建立 16 天完整历史覆盖，时钟推进 10 分钟，`newly_recorded == ()`；直接读取 SQLite 验证水位推进，关闭并重开 DemoSession 后仍保留新水位；下一次 GET 仅扫描默认 1 小时重叠窗口。 |
+| B：空闲账户连续进程重启 | 5 次独立 Python 子进程，各推进 6 天；重开前后读取 SQLite 水位，每次只需一个真实 7 天窗口内的 GET，扫描起点始终为上次持久水位减 1 小时。测试将 `INCOME_MAX_WINDOWS` 缩至 2，以较短模拟时间检验窗口预算，始终未触发上限。原有 1 笔资金费、订单事件、现金、持仓、钱包与平仓账户 NAV 保持不变。 |
+| C：失败保持与恢复（3 项） | 分别注入网络 GET 超时、分页超过上限、非有限金额；SQLite 完整覆盖记录与资金费事件不变，对账关闭。恢复后重新覆盖旧水位后的未确认区间，3 笔待确认事件全部入账并推进水位。 |
+| D：同水位幂等 | 同一终点重复同步以及请求更早终点时，`db.total_changes` 不变，完整 SQLite 覆盖记录不变，水位不回退。 |
+
+新增测试均仅使用离线响应与临时 SQLite，并断言所有交易所请求为 GET。修复前先运行定向测试，A/B 在 SQLite 水位断言处复现失败（2 failed、4 passed）；应用修复后全部通过。
+
+### 本次离线验证
+
+环境：`D:\Environments\factorlab-py314\Scripts\python.exe`，Python 3.14.0 / pytest 8.4.2。
+
+1. 新增定向测试：**6 passed, 27 deselected**（10.12 秒）。
+2. 完整 F10 专项（原 27 项 + 新增 6 项）：**33 passed**（74.53 秒）。
+3. 直接受影响的恢复、执行、对账与经济账本回归：**114 passed**（44.71 秒）。
+4. `git diff --check` 通过。
+
+可复现命令（在本 worktree 使用上述 Python 执行）：
+
+```text
+python -m pytest tests/integrations/test_demo_funding_ledger_f10.py -k "empty_sync_persists or idle_funding_watermark or failed_funding_sync_keeps or same_funding_watermark" -q --tb=short
+python -m pytest tests/integrations/test_demo_funding_ledger_f10.py -q
+python -m pytest tests/integrations/test_demo_get_recovery.py tests/integrations/test_demo_get_recovery_window.py tests/integrations/test_demo_reconciliation_m14.py tests/integrations/test_binance_demo_execution.py tests/integrations/test_binance_demo_fill_closed_loop.py tests/test_grid_fifo.py tests/trading/test_paper_control.py -q
+```
+
+本次合计覆盖 **147 项不同测试**，未重新运行上文基线交付的全部 538 项。未启动官方 Demo Execute，未访问或修改原台式机私有账本，未发送交易所写请求。新 HEAD 的托管 CI 与可信合并门禁状态另在原 PR Review 回复中记录，以 GitHub 对该提交的状态为准。

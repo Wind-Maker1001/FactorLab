@@ -16,7 +16,9 @@ from test_binance_demo_network import NetworkFixture, wired
 
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.client import Response
-from factorlab.integrations.binance_futures_trading.adapter import INCOME_MAX_WINDOW_MS
+from factorlab.integrations.binance_futures_trading.adapter import (
+    INCOME_MAX_WINDOW_MS, INCOME_OVERLAP_MS,
+)
 from factorlab.integrations.binance_futures_trading.demo_fill_acceptance import (
     capture, compare_recovery, experiment_evidence, fifo_evidence,
 )
@@ -229,6 +231,185 @@ print('CROSS_PROCESS_FUNDING_VERIFIED')
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == 'CROSS_PROCESS_FUNDING_VERIFIED'
+
+
+def test_empty_sync_persists_watermark_across_demo_session_restart(network_grid, monkeypatch):
+    root, store, factory, enable, fake, requests = network_grid
+    current_time = NOW
+    monkeypatch.setattr(DemoSession, '_now', lambda _: current_time)
+    enable()
+    with open_grid_session(root, store, factory) as bridge:
+        adapter = bridge.session.adapter
+        initial = adapter.sync_funding(start_time=MS - 16 * 86_400_000)
+        assert initial.complete and initial.windows == 3
+        current_time += timedelta(minutes=10)
+        through_ms = int(current_time.timestamp() * 1000)
+        synced = adapter.sync_funding()
+        assert synced.newly_recorded == ()
+        assert synced.covered_through_ms == through_ms
+        assert adapter.db.execute(
+            'SELECT covered_through_ms FROM futures_income_coverage'
+        ).fetchone() == (through_ms,)
+
+    with open_grid_session(root, store, factory) as bridge:
+        adapter = bridge.session.adapter
+        assert adapter.funding_coverage()['covered_through_ms'] == through_ms
+        before_calls = len(fake.calls)
+        synced = adapter.sync_funding()
+        income_calls = [params for _, path, params in fake.calls[before_calls:]
+                        if path == '/fapi/v1/income']
+        assert synced.newly_recorded == ()
+        assert synced.windows == 1
+        assert len(income_calls) == 1
+        assert int(income_calls[0]['startTime'][0]) == through_ms - INCOME_OVERLAP_MS
+        assert int(income_calls[0]['endTime'][0]) == through_ms
+    assert all(request.get_method() == 'GET' for request in requests)
+
+
+def test_idle_funding_watermark_advances_across_process_restarts(tmp_path):
+    protocol, ledger = tmp_path / 'protocol.sqlite', tmp_path / 'controller.sqlite'
+    fake = DemoFixture()
+    fake.funding_update('-0.01', tran_id=701, time_ms=MS)
+    adapter, gateway, controller, _ = demo_setup(protocol, ledger, fake=fake, authorize=False)
+    try:
+        expected = dumps(dict(
+            cash=gateway.state.cash, positions=gateway.state.positions,
+            funding=gateway.state.funding, events=list(controller.store.funding_events()),
+            order_events=list(controller.store.order_events()),
+        ))
+        origin_ms = adapter.funding_coverage()['covered_from_ms']
+    finally:
+        adapter.store.close()
+        controller.store.close()
+
+    program = '''
+import json, sqlite3, sys
+from datetime import timedelta
+from decimal import Decimal as D
+sys.path[:0] = sys.argv[3:5]
+from test_binance_demo_execution import setup, DemoFixture
+from factorlab.integrations.binance_futures_trading import adapter as module
+from factorlab.integrations.binance_futures_trading.fake import MS, NOW
+from factorlab.trading.storage import dumps
+payload = json.load(sys.stdin)
+# Six-day increments fit one real seven-day window. A stale watermark would
+# exceed this reduced budget by the third restart, without a years-long fixture.
+module.INCOME_MAX_WINDOWS = 2
+step_ms = 6 * 86_400_000
+previous_ms = MS + (payload['cycle'] - 1) * step_ms
+with sqlite3.connect(sys.argv[1]) as db:
+    assert db.execute('SELECT covered_through_ms FROM futures_income_coverage').fetchone() == (previous_ms,)
+fake = DemoFixture()
+fake.funding_update('-0.01', tran_id=701, time_ms=MS)
+now = NOW + timedelta(days=6 * payload['cycle'])
+a, g, c, _ = setup(sys.argv[1], sys.argv[2], fake=fake, authorize=False, now=now)
+try:
+    coverage = a.funding_coverage()
+    assert coverage['covered_from_ms'] == payload['origin_ms']
+    assert coverage['covered_through_ms'] == previous_ms + step_ms
+    assert a.db.execute('SELECT covered_through_ms FROM futures_income_coverage').fetchone() == (previous_ms + step_ms,)
+    calls = [params for _, path, params in fake.calls if path == '/fapi/v1/income']
+    assert len(calls) == 1
+    assert int(calls[0]['startTime'][0]) == previous_ms - module.INCOME_OVERLAP_MS
+    assert int(calls[0]['endTime'][0]) == previous_ms + step_ms
+    assert coverage['detail']['windows'] == 1
+    assert coverage['detail']['newly_recorded'] == 0
+    assert a.db.execute('SELECT count(*) FROM futures_funding').fetchone() == (1,)
+    assert dumps(dict(cash=g.state.cash, positions=g.state.positions,
+        funding=g.state.funding, events=list(c.store.funding_events()),
+        order_events=list(c.store.order_events()))) == payload['expected']
+    assert c.account().assets[0].total == fake.cash == D('999.99')
+    account = g.read_account()
+    assert account.reconciled
+    assert account.assets[0].total / D('1000') == D('0.99999')
+    assert all(method == 'GET' for method, _, _ in fake.calls)
+finally:
+    a.store.close()
+    c.store.close()
+print('IDLE_WATERMARK_VERIFIED')
+'''
+    for cycle in range(1, 6):
+        result = subprocess.run(
+            [sys.executable, '-c', program, str(protocol), str(ledger),
+             str(Path(__file__).parent.resolve()),
+             str(Path(__file__).resolve().parents[2] / 'src')],
+            input=json.dumps(dict(cycle=cycle, expected=expected, origin_ms=origin_ms)),
+            capture_output=True, text=True, timeout=30,
+        )
+        assert result.returncode == 0, result.stderr
+        assert result.stdout.strip() == 'IDLE_WATERMARK_VERIFIED'
+
+
+@pytest.mark.parametrize('failure', ['network', 'pagination', 'malformed'])
+def test_failed_funding_sync_keeps_watermark_and_retries_interval(tmp_path, failure):
+    class FailingIncome(DemoFixture):
+        failure = None
+
+        def __call__(self, request, timeout):
+            if request.path == '/fapi/v1/income' and self.failure == 'network':
+                raise TimeoutError('income GET failed')
+            response = super().__call__(request, timeout)
+            if request.path == '/fapi/v1/income' and self.failure == 'malformed':
+                rows = json.loads(response.body)
+                rows[-1]['income'] = 'NaN'
+                return Response(200, {}, json.dumps(rows).encode())
+            return response
+
+    fake = FailingIncome()
+    fake.funding_update('-0.01', tran_id=801, time_ms=MS)
+    adapter, gateway, controller, _ = demo_setup(
+        tmp_path / 'protocol.sqlite', tmp_path / 'controller.sqlite', fake=fake, authorize=False,
+    )
+    try:
+        before = adapter.db.execute('SELECT * FROM futures_income_coverage').fetchall()
+        events = adapter.funding_events()
+        for number in range(1, 4):
+            fake.funding_update('-0.01', tran_id=801 + number, time_ms=MS + number * 60_000)
+        adapter.clock = lambda: NOW + timedelta(minutes=10)
+        fake.failure = failure
+        with pytest.raises(DataQualityError, match={
+            'network': 'TRANSPORT_TIMEOUT', 'pagination': 'max pages', 'malformed': 'nonfinite',
+        }[failure]):
+            adapter.sync_funding(page_limit=2, max_pages=1)
+        assert adapter.db.execute('SELECT * FROM futures_income_coverage').fetchall() == before
+        assert adapter.funding_events() == events
+        assert not adapter.reconciled
+
+        fake.failure = None
+        before_calls = len(fake.calls)
+        synced = adapter.sync_funding()
+        income_calls = [params for _, path, params in fake.calls[before_calls:]
+                        if path == '/fapi/v1/income']
+        assert int(income_calls[0]['startTime'][0]) == MS - INCOME_OVERLAP_MS
+        assert [event.tran_id for event in synced.newly_recorded] == ['802', '803', '804']
+        assert adapter.db.execute(
+            'SELECT covered_through_ms FROM futures_income_coverage'
+        ).fetchone() == (MS + 600_000,)
+        assert gateway.recover(controller).reconciled
+        assert gateway.state.funding['USDT'] == D('-0.04')
+        assert all(method == 'GET' for method, _, _ in fake.calls)
+    finally:
+        adapter.store.close()
+        controller.store.close()
+
+
+def test_same_funding_watermark_skips_database_write(tmp_path):
+    adapter, _, controller, fake = demo_setup(
+        tmp_path / 'protocol.sqlite', tmp_path / 'controller.sqlite', authorize=False,
+    )
+    try:
+        before = adapter.db.execute('SELECT * FROM futures_income_coverage').fetchall()
+        changes = adapter.db.total_changes
+        for end_ms in (MS, MS, MS - 60_000):
+            synced = adapter.sync_funding(end_time=end_ms)
+            assert synced.newly_recorded == ()
+            assert synced.covered_through_ms == MS
+            assert adapter.db.total_changes == changes
+            assert adapter.db.execute('SELECT * FROM futures_income_coverage').fetchall() == before
+        assert all(method == 'GET' for method, _, _ in fake.calls)
+    finally:
+        adapter.store.close()
+        controller.store.close()
 
 
 def test_late_arriving_funding_backfill_and_restart_delta(network_grid, monkeypatch):
