@@ -259,16 +259,16 @@ def _evaluate_maintenance_failure(
     maintenance_alert_active: bool,
     max_downtime_seconds: float,
     now_ts: float,
-) -> dict | None:
+) -> tuple[dict | None, bool]:
     """Detect failed, timed-out, unreconciled, or unrecovered C07 backup maintenance windows."""
     if not isinstance(backup_records, dict):
-        return None
+        return None, False
     latest = backup_records.get('latest_status')
     if not isinstance(latest, dict):
-        return None
+        return None, False
     completed_ts = _parse_iso_ts(latest.get('completed_at')) or _parse_iso_ts(latest.get('started_at'))
     if completed_ts is not None and (now_ts - completed_ts) > 48 * 3600:
-        return None
+        return None, False
 
     mw = latest.get('maintenance_window') if isinstance(latest.get('maintenance_window'), dict) else {}
     downtime = _safe_float(mw.get('downtime_seconds'))
@@ -290,7 +290,14 @@ def _evaluate_maintenance_failure(
         if not service_running and (recent_maint or maintenance_alert_active):
             reasons.append(f"service_not_recovered(alive={sample.get('alive')},status={sample.get('status')})")
     if not reasons:
-        return None
+        verified_window = mw.get('service_control_enabled') is False or (
+            mw.get('service_control_enabled') is True
+            and mw.get('restart_succeeded') is True
+            and mw.get('reconcile_verified') is True
+            and downtime is not None
+            and 0.0 <= downtime <= max_downtime_seconds
+        )
+        return None, completed_ts is not None and service_running and verified_window
     return dict(
         severity='CRITICAL',
         summary=(
@@ -310,7 +317,7 @@ def _evaluate_maintenance_failure(
             reconcile_reason=mw.get('reconcile_reason'),
             reasons=reasons,
         ),
-    )
+    ), False
 
 
 def _parse_decimal(value) -> Decimal | None:
@@ -510,7 +517,7 @@ def sanitize_sample(health_payload: dict, *, observed_at: float | None = None) -
     recovery_raw = health_payload.get('recovery') if isinstance(health_payload.get('recovery'), dict) else {}
     recovery = dict(
         state=recovery_raw.get('state'),
-        consecutive_failures=_safe_int(recovery_raw.get('consecutive_failures')) or 0,
+        consecutive_failures=_safe_int(recovery_raw.get('consecutive_failures')),
         recovery_attempts=_safe_int(recovery_raw.get('recovery_attempts')) or 0,
         last_failure_reason=recovery_raw.get('last_failure_reason'),
         startup_recovered=bool(recovery_raw.get('startup_recovered', False)),
@@ -720,14 +727,7 @@ def backfill_from_journald(
     monitor_dir = ensure_monitor_dir(monitor_dir)
     samples_path = monitor_dir / 'samples.jsonl'
     existing = load_jsonl(samples_path)
-    seen_keys = {
-        (round(_safe_float(row.get('observed_at')) or 0.0, 0), _safe_int(row.get('pid')))
-        for row in existing
-    }
-    seen_heartbeats = {
-        round(_safe_float(row.get('heartbeat_at')) or -1.0, 3)
-        for row in existing if row.get('heartbeat_at') is not None
-    }
+    seen_observations = {(row['observed_at_utc'], row['pid']) for row in existing}
 
     if _runner is None and os.name == 'nt':
         return dict(imported=0, total_samples=len(existing), source='journald_unavailable_on_windows')
@@ -765,19 +765,21 @@ def backfill_from_journald(
             continue
         if not isinstance(payload, dict) or 'heartbeat_at' not in payload:
             continue
-        ts_usec = entry.get('__REALTIME_TIMESTAMP')
-        obs_ts = int(ts_usec) / 1_000_000.0 if isinstance(ts_usec, str) and ts_usec.isdigit() else _safe_float(payload.get('heartbeat_at'))
+        # Monitor stdout identifies the sample already written locally. Older health-only
+        # invocations have no observation time apart from the journal entry timestamp.
+        monitoring = payload.get('monitoring') or {}
+        obs_ts = _parse_iso_ts(monitoring.get('observed_at_utc'))
         if obs_ts is None:
-            continue
-        hb_key = round(_safe_float(payload.get('heartbeat_at')) or -1.0, 3)
-        dedupe_key = (round(obs_ts, 0), _safe_int(payload.get('pid')))
-        if dedupe_key in seen_keys or (hb_key >= 0 and hb_key in seen_heartbeats):
+            ts_usec = entry.get('__REALTIME_TIMESTAMP')
+            if not isinstance(ts_usec, str) or not ts_usec.isdigit():
+                continue
+            obs_ts = int(ts_usec) / 1_000_000.0
+        observation = (_iso_utc(obs_ts), _safe_int(payload.get('pid')))
+        if observation in seen_observations:
             continue
         sample = sanitize_sample(payload, observed_at=obs_ts)
         merged.append(sample)
-        seen_keys.add(dedupe_key)
-        if hb_key >= 0:
-            seen_heartbeats.add(hb_key)
+        seen_observations.add(observation)
         imported += 1
 
     merged.sort(key=lambda row: _safe_float(row.get('observed_at')) or 0.0)
@@ -1334,7 +1336,8 @@ def evaluate_alerts(
     prev_sample = new_state.get('last_sample') if isinstance(new_state.get('last_sample'), dict) else None
 
     # Update streaks
-    is_healthy = bool(sample.get('ready'))
+    snapshot_current = sample.get('alive') is True and sample.get('snapshot_error') is None
+    is_healthy = snapshot_current and sample.get('ready') is True
     if is_healthy:
         new_state['consecutive_unhealthy'] = 0
     else:
@@ -1345,8 +1348,9 @@ def evaluate_alerts(
     else:
         new_state['consecutive_account_failures'] = int(new_state.get('consecutive_account_failures') or 0) + 1
 
-    # Detect conditions for the 7 required alert classes
+    # A sample can detect a fault without carrying enough evidence to clear it later.
     detected: dict[str, dict] = {}
+    recovery_confirmed: set[str] = set()
 
     # 1. Process exit / stale heartbeat / systemd mismatch
     systemd = sample.get('systemd') if isinstance(sample.get('systemd'), dict) else {}
@@ -1391,6 +1395,8 @@ def evaluate_alerts(
                 snapshot_error=sample.get('snapshot_error'),
             ),
         )
+    elif snapshot_current and sample.get('status') is not None and sample.get('pid') is not None:
+        recovery_confirmed.add('process_exited')
 
     # 2. Sustained health check failure
     unhealthy_streak = int(new_state['consecutive_unhealthy'])
@@ -1413,6 +1419,8 @@ def evaluate_alerts(
                 last_exception=sample.get('last_exception'),
             ),
         )
+    elif is_healthy:
+        recovery_confirmed.add('sustained_health_failure')
 
     # 3. Order UNKNOWN (immediate CRITICAL)
     unknown_count = _safe_int(sample.get('unknown_count'))
@@ -1426,14 +1434,16 @@ def evaluate_alerts(
                 status=sample.get('status'),
             ),
         )
+    elif snapshot_current and unknown_count == 0:
+        recovery_confirmed.add('order_unknown')
 
     # 4. Account recovery abnormal
     recovery = sample.get('recovery') if isinstance(sample.get('recovery'), dict) else {}
-    rec_failures = _safe_int(recovery.get('consecutive_failures')) or 0
+    rec_failures = _safe_int(recovery.get('consecutive_failures'))
     acct_streak = int(new_state['consecutive_account_failures'])
     if (
         acct_streak >= thresholds.account_failure_streak
-        or rec_failures >= thresholds.account_recovery_consecutive_failures
+        or (rec_failures is not None and rec_failures >= thresholds.account_recovery_consecutive_failures)
     ):
         detected['account_recovery_abnormal'] = dict(
             severity='CRITICAL' if acct_streak >= thresholds.account_failure_streak else 'WARNING',
@@ -1452,6 +1462,8 @@ def evaluate_alerts(
                 stale_account_events=(sample.get('safety_events') or {}).get('STALE_ACCOUNT'),
             ),
         )
+    elif snapshot_current and sample.get('account_recovered') is True and rec_failures is not None:
+        recovery_confirmed.add('account_recovery_abnormal')
 
     # 5. Disk space low
     disk_free = _safe_int(sample.get('disk_free_bytes'))
@@ -1479,6 +1491,8 @@ def evaluate_alerts(
                 state_bytes=sample.get('state_bytes'),
             ),
         )
+    elif snapshot_current and free_ratio is not None:
+        recovery_confirmed.add('disk_space_low')
 
     # 6. Budget near exhaustion (read-only; never resets or expands)
     gb = sample.get('global_budget') if isinstance(sample.get('global_budget'), dict) else None
@@ -1523,6 +1537,8 @@ def evaluate_alerts(
                     policy_note='READ_ONLY_NO_RESET_OR_AUTO_EXPANSION',
                 ),
             )
+        elif snapshot_current and gb_state == 'RUNNING' and posts_ratio is not None and notional_ratio is not None:
+            recovery_confirmed.add('budget_low')
 
     # 7. Unexpected restart detection vs verified C07 planned maintenance restart
     restart_detected = False
@@ -1562,7 +1578,7 @@ def evaluate_alerts(
                 restart_reason = f'worker restarted (pid {prev_pid}->{curr_pid}, starts {prev_starts}->{curr_starts})'
 
     # 7b. Failed, timed-out, unreconciled, or unrecovered C07 backup maintenance window must alert
-    maint_failure = _evaluate_maintenance_failure(
+    maint_failure, maint_recovered = _evaluate_maintenance_failure(
         backup_records,
         sample=sample,
         maintenance_alert_active=('maintenance_failure' in new_state['active_alerts']),
@@ -1571,6 +1587,8 @@ def evaluate_alerts(
     )
     if maint_failure is not None:
         detected['maintenance_failure'] = maint_failure
+    elif snapshot_current and maint_recovered:
+        recovery_confirmed.add('maintenance_failure')
 
     restart_ts = [
         float(ts) for ts in (new_state.get('restart_timestamps') or [])
@@ -1613,6 +1631,8 @@ def evaluate_alerts(
                 recovery_required_samples=thresholds.restart_recovery_healthy_samples,
             ),
         )
+    elif is_healthy:
+        recovery_confirmed.add('unexpected_restart')
 
     # State machine transitions: dedupe, cooldown reminder, severity escalation, rate limit, recovery
     renotify_sec = min(thresholds.renotify_seconds, alert_config.renotify_seconds)
@@ -1711,38 +1731,37 @@ def evaluate_alerts(
                     suppressed_by_rate_limit=not can_send,
                 ))
 
-    # 2) Recovery notifications for alerts no longer active
-    for key in sorted(list(active.keys())):
-        if key not in detected:
-            previous = active.pop(key)
-            first_ts = _safe_float(previous.get('first_triggered_at')) or now_ts
-            duration = max(0.0, now_ts - first_ts)
-            can_send = _can_deliver(True)
-            if can_send:
-                delivery_ts.append(now_ts)
-            events.append(dict(
-                event='ALERT_RESOLVED',
-                alert_key=key,
-                severity='INFO',
-                previous_severity=previous.get('severity'),
-                summary=f"Recovered: {key} (duration={round(duration, 1)}s)",
-                details=dict(
-                    previous_summary=previous.get('summary'),
-                    duration_seconds=round(duration, 2),
-                    occurrences=previous.get('occurrences'),
-                    current_status=sample.get('status'),
-                    alive=sample.get('alive'),
-                    ready=sample.get('ready'),
-                ),
-                observed_at=now_ts,
-                observed_at_utc=_iso_utc(now_ts),
-                first_triggered_at=first_ts,
-                first_triggered_utc=_iso_utc(first_ts),
+    # 2) Recovery notifications for active alerts with affirmative evidence
+    for key in sorted(active.keys() & recovery_confirmed):
+        previous = active.pop(key)
+        first_ts = _safe_float(previous.get('first_triggered_at')) or now_ts
+        duration = max(0.0, now_ts - first_ts)
+        can_send = _can_deliver(True)
+        if can_send:
+            delivery_ts.append(now_ts)
+        events.append(dict(
+            event='ALERT_RESOLVED',
+            alert_key=key,
+            severity='INFO',
+            previous_severity=previous.get('severity'),
+            summary=f"Recovered: {key} (duration={round(duration, 1)}s)",
+            details=dict(
+                previous_summary=previous.get('summary'),
                 duration_seconds=round(duration, 2),
-                unit=sample.get('systemd_unit'),
-                mode=sample.get('mode'),
-                suppressed_by_rate_limit=not can_send,
-            ))
+                occurrences=previous.get('occurrences'),
+                current_status=sample.get('status'),
+                alive=sample.get('alive'),
+                ready=sample.get('ready'),
+            ),
+            observed_at=now_ts,
+            observed_at_utc=_iso_utc(now_ts),
+            first_triggered_at=first_ts,
+            first_triggered_utc=_iso_utc(first_ts),
+            duration_seconds=round(duration, 2),
+            unit=sample.get('systemd_unit'),
+            mode=sample.get('mode'),
+            suppressed_by_rate_limit=not can_send,
+        ))
 
     new_state['delivery_timestamps'] = delivery_ts
     new_state['updated_at'] = now_ts

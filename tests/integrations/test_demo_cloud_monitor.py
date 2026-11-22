@@ -568,6 +568,55 @@ def test_cli_monitor_report_and_state_root_isolation(tmp_path, capsys):
     assert self_out['passed'] is True
 
 
+def test_cli_alert_recovery_requires_complete_current_health(tmp_path, capsys, monkeypatch):
+    from factorlab.integrations.binance_futures_trading import demo_cloud_runtime as runtime
+
+    now = 1_800_000_000.0
+    monkeypatch.setattr(runtime, 'time', lambda: now)
+    state_dir = tmp_path / 'execute-state'
+    state_dir.mkdir()
+    health_file = state_dir / 'cloud-health.json'
+    args = ['monitor', '--state-root', str(state_dir), '--monitor-dir', str(tmp_path / 'monitoring')]
+    fault_keys = {'order_unknown', 'budget_low', 'disk_space_low', 'account_recovery_abnormal'}
+
+    atomic_json(health_file, dict(_make_health_payload(
+        now=now, unknown_count=2, consumed_posts=98, disk_free_bytes=200 * 1024 ** 2,
+        worker_consecutive_failures=5,
+    ), systemd_unit=None))
+    assert cloud_main(args) == 1
+    assert set(json.loads(capsys.readouterr().out)['monitoring']['active_alert_keys']) == fault_keys
+
+    health_file.unlink()
+    assert cloud_main(args) == 1
+    missing = json.loads(capsys.readouterr().out)
+    assert missing['snapshot_error'] == 'FileNotFoundError'
+    assert fault_keys <= set(missing['monitoring']['active_alert_keys'])
+    assert not any(e['event'] == 'ALERT_RESOLVED' for e in missing['monitoring']['events'])
+
+    health_file.write_text('{', encoding='utf-8')
+    assert cloud_main(args) == 1
+    unreadable = json.loads(capsys.readouterr().out)
+    assert unreadable['snapshot_error'] == 'JSONDecodeError'
+    assert fault_keys <= set(unreadable['monitoring']['active_alert_keys'])
+    assert not any(e['event'] == 'ALERT_RESOLVED' for e in unreadable['monitoring']['events'])
+
+    now += 1
+    healthy = dict(_make_health_payload(now=now), systemd_unit=None)
+    partial = dict(healthy, disk_bytes=None, recovery={}, global_budget=dict(healthy['global_budget'], remaining_notional=None))
+    del partial['unknown_count']
+    atomic_json(health_file, partial)
+    assert cloud_main(args) == 1
+    incomplete = json.loads(capsys.readouterr().out)['monitoring']
+    assert fault_keys <= set(incomplete['active_alert_keys'])
+    assert not any(e['event'] == 'ALERT_RESOLVED' and e['alert_key'] in fault_keys for e in incomplete['events'])
+
+    atomic_json(health_file, healthy)
+    assert cloud_main(args) == 0
+    recovered = json.loads(capsys.readouterr().out)['monitoring']
+    assert recovered['active_alert_keys'] == []
+    assert fault_keys <= {e['alert_key'] for e in recovered['events'] if e['event'] == 'ALERT_RESOLVED'}
+
+
 def test_rate_limiting_suppresses_excess_warning_deliveries():
     now = 1_800_000_000.0
     cfg = AlertDeliveryConfig(
@@ -594,20 +643,36 @@ def test_rate_limiting_suppresses_excess_warning_deliveries():
     assert delivery['delivered'] is False
 
 
-def test_backfill_from_journald_passes_all_flag_and_deduplicates(tmp_path, monkeypatch):
+def test_backfill_preserves_outage_observations_and_deduplicates_reimport(tmp_path, monkeypatch):
     from factorlab.integrations.binance_futures_trading import demo_cloud_monitor as mon
 
     now = 1_800_000_000.0
     monkeypatch.setattr(mon, 'time', lambda: now)
     captured_cmd = []
 
-    p1 = _make_health_payload(now=now - 120)
-    p2 = _make_health_payload(now=now - 60)
+    heartbeat = now - 240
+    healthy = _make_health_payload(now=heartbeat)
+    stale = dict(healthy, alive=False, ready=False, execute_healthy=False, dispatch_eligible=False)
+    missing = dict(stale, heartbeat_at=None, pid=None, status='MISSING', snapshot_error='FileNotFoundError')
+    monitor_dir = tmp_path / 'monitoring'
+    local_ts = now - 60.25
+    recorded = run_monitor_cycle(stale, monitor_dir, now=local_ts, alert_config=AlertDeliveryConfig())
+
+    def entry(observed_at, payload, *, byte_message=False):
+        message = json.dumps(payload)
+        return json.dumps({
+            '__REALTIME_TIMESTAMP': str(int(observed_at * 1_000_000)),
+            'MESSAGE': list(message.encode('utf-8')) if byte_message else message,
+        })
+
     stdout = '\n'.join([
-        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 120) * 1_000_000)), 'MESSAGE': json.dumps(p1)}),
-        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 60) * 1_000_000)), 'MESSAGE': list(json.dumps(p2).encode('utf-8'))}),
-        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 60) * 1_000_000)), 'MESSAGE': json.dumps(p2)}),  # duplicate
-        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 30) * 1_000_000)), 'MESSAGE': 'Finished health check.'}),
+        entry(now - 180, healthy),
+        entry(now - 90.25, stale, byte_message=True),
+        entry(now - 90.25, stale),
+        entry(now - 90.125, stale),
+        entry(local_ts + 1.25, dict(stale, monitoring=recorded)),
+        entry(now - 15, missing),
+        json.dumps({'MESSAGE': 'Finished health check.'}),
     ])
 
     class _FakeProc:
@@ -619,14 +684,19 @@ def test_backfill_from_journald_passes_all_flag_and_deduplicates(tmp_path, monke
         captured_cmd.extend(cmd)
         return _FakeProc()
 
-    res = mon.backfill_from_journald(tmp_path / 'monitoring', _runner=_fake_run)
+    res = mon.backfill_from_journald(monitor_dir, _runner=_fake_run)
     assert '--all' in captured_cmd
-    assert res['imported'] == 2
-    assert res['total_samples'] == 2
-    # Second run deduplicates all
-    res2 = mon.backfill_from_journald(tmp_path / 'monitoring', _runner=_fake_run)
+    assert res['imported'] == 4
+    assert res['total_samples'] == 5
+    samples = load_jsonl(monitor_dir / 'samples.jsonl')
+    assert [r['observed_at'] for r in samples] == [now - 180, now - 90.25, now - 90.125, local_ts, now - 15]
+    assert [r['alive'] for r in samples] == [True, False, False, False, False]
+    report = generate_daily_report(monitor_dir, now=now)
+    assert report['service_liveness']['availability_24h_ratio'] == pytest.approx(0.2)
+
+    res2 = mon.backfill_from_journald(monitor_dir, _runner=_fake_run)
     assert res2['imported'] == 0
-    assert res2['total_samples'] == 2
+    assert res2['total_samples'] == 5
 
 
 def test_eight_day_full_window_capacity_preserves_seven_day_stats(tmp_path):
@@ -818,6 +888,13 @@ def test_c07_maintenance_failure_timeout_or_unrecovered_must_alert(tmp_path):
     )
     assert 'maintenance_failure' in r_fail['active_alert_keys']
     assert 'unexpected_restart' in r_fail['active_alert_keys']
+
+    (backup_root / 'backup-status.json').unlink()
+    no_status = run_monitor_cycle(
+        _make_health_payload(now=now + 120, pid=9800, starts=3),
+        monitor_dir, now=now + 120, backup_root=backup_root,
+    )
+    assert 'maintenance_failure' in no_status['active_alert_keys']
 
     # Case B: C07 maintenance succeeded but exceeded downtime bound (>120s) -> maintenance_failure CRITICAL AND not suppressed
     _write_c07_backup_status(

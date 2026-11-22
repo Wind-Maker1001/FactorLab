@@ -103,3 +103,12 @@
 
 1. **外部推送凭据尚未配置**：当前 Azure 主机未配置 `/etc/factorlab-demo/alert-config.json` 与 `20-alert-webhook.conf` drop-in，**手机推送/外部告警投递尚未开通**；告警目前记录于 `/var/lib/factorlab-demo/monitoring/alert-events.jsonl` 与 `journald`。待确定通知平台后，按 [云端运行手册](../../binance-demo-cloud-runtime.md#optional-private-https-webhook-configuration) 注入私有 HTTPS Webhook 即可启用外部推送。
 2. **24h / 72h / 7d 长窗口持续积累中**：当前样本跨度约 37 分钟（`window_complete=false`），Timer 已在后台持续每分钟采集并将自动覆盖 24h、72h 和 7d 窗口。
+
+## 6. PR #230 Codex Review 复验（2026-11-23 Asia/Shanghai）
+
+- **P1，systemd 路径。** 两个 unit 默认读取 `/var/lib/factorlab-demo/execute-state`，只写 `/var/lib/factorlab-demo/monitoring`。Azure 保留两个服务现有的 `10-state-root.conf`，实测有效配置一致。北京时间 01:41 通过 `systemctl start` 运行健康检查和日报，两个服务均为 `Result=success`、`ExecMainStatus=0`。健康 stdout 显示 `alive=true`、`ready=true`、`execute_healthy=true`、`dispatch_eligible=true`、`unknown_count=0`、活动告警为 0。日报 stdout 与落盘 JSON 均生成，覆盖 74 条样本，24h 窗口仍在积累。
+- **P2，告警恢复。** UNKNOWN、预算、账户恢复、磁盘和 C07 等告警按各自所需的有效证据确认恢复。已验证健康文件丢失、JSON 无法解析、字段缺失或为 `null` 时保留活动告警，完整健康样本到来后仍可发出 `ALERT_RESOLVED`。
+- **P2，回填身份。** 已落盘样本按监控 stdout 中的观测时间关联，历史 health-only 记录使用 journal 时间戳。同一 heartbeat 下的不同观测均可入库。回归模拟 1 条健康及 4 条进程失联或过期观测，存活率为 20%，重复回填新增 0 条。Azure 对实际日志连续回填两次，均为 `imported=0`、`total_samples=74`。
+- **历史重启。** 报告的 `Unexpected / Maint Restarts: 1 / 1` 对应两次独立的同 unit 停启。2026-11-22 16:25:49 UTC 是 PID `3323 → 3792`、`starts 1 → 2`；C07 成功备份 `backup-20261122T165547Z` 对应 16:55:50 UTC 的 PID `3792 → 9745`、`starts 2 → 3`，对账通过，停机 2.045 秒。生成的报告保持两类各计一次，原始 `unexpected_restart` 的触发和恢复事件仍在审计文件。
+- **Execute 与排程。** 部署前后 PID 均为 `9745`，进程启动时间、`NRestarts=0`、Execute Owner 和 `desired=RUNNING` 一致。累计 POST 为 `7/100`，名义额已用 `41.3308000/700` USDT，剩余 `658.6692000` USDT，预算状态 `RUNNING`。健康和日报 timer 均在等待正常触发。发现备份 timer 已禁用后，核对了持久化触发记录并恢复原有每日排程，启用时没有补跑。最近一份备份为 `SUCCEEDED`、`verified=true`；下一次计划触发是北京时间 11:15，日报为 08:05。
+- **回归。** 首次运行 CI 同款 9 文件套件得到 154 通过、2 失败，分别暴露了账户恢复计数在脱敏时被补成 0，以及 Windows 子进程缺少源码导入路径。修正脱敏并设置子进程可继承的 `PYTHONPATH` 后，监控全模块与 Windows 凭据独立进程用例合计 15 项全部通过。最终提交的自动化结果见 [PR #230 Checks](https://github.com/Wind-Maker1001/FactorLab/pull/230/checks)。

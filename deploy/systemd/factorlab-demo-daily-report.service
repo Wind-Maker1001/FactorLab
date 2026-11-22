@@ -6,7 +6,7 @@ RequiresMountsFor=/var/lib/factorlab-demo
 Type=oneshot
 User=factorlab-demo
 Group=factorlab-demo
-Environment=FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo
+Environment=FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo/execute-state
 Environment=FACTORLAB_DEMO_MONITOR_DIR=/var/lib/factorlab-demo/monitoring
 Environment=FACTORLAB_DEMO_BACKUP_ROOT=/var/backups/factorlab-demo
 ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime report --write-report --markdown

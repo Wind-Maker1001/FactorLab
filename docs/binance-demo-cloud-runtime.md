@@ -220,6 +220,8 @@ Cloud acceptance is separate from offline Linux and systemd evidence. Without an
 
 C06 reuses the existing private `cloud-health.json`, `demo_cloud_runtime`, `factorlab-demo-health.timer`, and `journald` without adding a new trading database or heavy monitoring platform. Monitoring state lives in a separate private directory (`/var/lib/factorlab-demo/monitoring`, owner `factorlab-demo:factorlab-demo`, mode `0700`) so `/var/lib/factorlab-demo/execute-state` remains strictly read-only to health and reporting units.
 
+Both `factorlab-demo-health.service` and `factorlab-demo-daily-report.service` default to the Execute state root `/var/lib/factorlab-demo/execute-state`. An existing C05 health drop-in pointing there can stay installed. For a different Execute state location, set `FACTORLAB_DEMO_STATE_ROOT` on both services and keep the monitoring directory separate from that root.
+
 ### Persistent bounded journald configuration
 
 Install `deploy/systemd/journald-factorlab-demo.conf` to `/etc/systemd/journald.conf.d/factorlab-demo.conf` and restart `systemd-journald` (this does not restart `factorlab-demo-execute.service`):
