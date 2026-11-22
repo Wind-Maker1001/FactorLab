@@ -868,6 +868,3 @@ def test_c07_maintenance_failure_timeout_or_unrecovered_must_alert(tmp_path):
     assert 'process_exited' not in r_ok['active_alert_keys']
     assert any(e['event'] == 'ALERT_RESOLVED' and e['alert_key'] == 'maintenance_failure' for e in r_ok['events'])
     assert load_c07_backup_records(backup_root)['latest_status']['backup_name'] == 'backup-clean-04'
-
-
-

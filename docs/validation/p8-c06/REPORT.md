@@ -34,9 +34,10 @@
    - `SystemMaxUse=512M`、`SystemKeepFree=4G`、`SystemMaxFileSize=32M`、`SystemMaxFiles=32`
    - `RuntimeMaxUse=32M`（保护 1 GiB RAM 主机 tmpfs 内存）
    - `MaxRetentionSec=14day`、`MaxFileSec=1day`、`SyncIntervalSec=30s`
+   - **实际增长速度与 512 MiB 配额关系（实机测算）**：实测 `16:25–17:10 UTC`（45 分钟）内，`factorlab-demo-execute.service` 产生 911 行、原始文本 `17.08 MB`（约 `521 MiB/天`），`factorlab-demo-health.service` 产生 `0.77 MB`（约 `23.6 MiB/天`），合计原始文本约 **`545 MiB/天`**；开启 `Compress=yes` 后按 JSON 常见压缩比（6:1–12:1）估算，磁盘占用约为 `45–90 MiB/天`。因此 `SystemMaxUse=512M` 下实际磁盘轮转周期预计约 **5–11 天**（遇异常日志突发或低压缩比时可能更短，仅约 **2–5 天**）。**`MaxRetentionSec=14day` 仅为时间上限，绝不代表必然保存 14 天**——磁盘配额（`512M` / `SystemKeepFree=4G`）优先生效并会提前滚动清理旧归档。
 2. **独立监控目录与有界滚动存储**（`/var/lib/factorlab-demo/monitoring`，`factorlab-demo:factorlab-demo 0700`）：
    - 与交易状态目录 `/var/lib/factorlab-demo/execute-state` 完全隔离；systemd unit 使用 `ProtectSystem=strict` + `ReadWritePaths=/var/lib/factorlab-demo/monitoring`，对交易状态目录保持内核级只读。
-   - `samples.jsonl`：保留 8 天且单文件上限 `16 MiB`（原子替换裁剪，防止 journald 轮转 execute 大日志导致 24h/72h/7d 采样丢失）。
+   - `samples.jsonl`：保留 **8 天**且单文件上限已由 `16 MiB` 上调至 **`48 MiB`**（并精简了未使用的 `systemd.load_state`、`recovery.last_failure_at`/`last_recovered_at` 等字段）。实测每条样本约 `2.1–2.55 KiB`，完整 8 天（`11,520` 条）约占用 **`24–28 MiB`**，`48 MiB` 上限可提供约 `1.7x–2.0x` 余量，确保容量裁剪绝不会提前截断 7 天统计；也是 journald 提前轮转后保障 24h/72h/7d 统计完整的独立基石。
    - `alert-events.jsonl`：保留 14 天且单文件上限 `2 MiB`。
    - `daily-reports/`：保留最近 14 天 `.json` + `.md` 报告。
 
@@ -92,9 +93,9 @@
 
 ## 4. 自动化测试记录
 
-- 新增单元测试 `tests/integrations/test_demo_cloud_monitor.py`：10/10 通过（覆盖采样脱敏、有界 JSONL 裁剪、24h/72h/7d 多窗口聚合与按 PID 分段计数、POST 消耗速率、7 类异常监测与去重/升级/提醒/限流/恢复、HTTPS 校验与未配置诚实声明、本地模拟 Webhook 端到端测试、每日报告三层状态区分、CLI 状态根目录隔离、`journalctl --all` 回填）。
-- CI 同款完整 Demo 云端回归套件（9 个测试文件：`test_demo_cloud_runtime.py`、`test_demo_cloud_monitor.py`、`test_demo_cloud_storage.py`、`test_demo_cloud_credentials.py`、`test_demo_execute_systemd.py`、`test_binance_demo_runtime.py`、`test_demo_continuous_campaign.py`、`test_demo_grid_supervisor.py`、`test_demo_observability.py`）：**152 passed，0 failed，0 skipped**（298.23s，Windows Python 3.12.7）。
-- Azure 实机 `systemd-analyze verify` 校验全部 5 个 unit（`execute`、`health.service/.timer`、`daily-report.service/.timer`）通过。
+- 新增单元测试 `tests/integrations/test_demo_cloud_monitor.py`：**13/13 通过**（覆盖采样脱敏、有界 JSONL 裁剪、**完整 8 天 11,520 条真实体积采样容量测试与 7 天统计完整性验证**、24h/72h/7d 多窗口聚合与按 PID 分段计数、POST 消耗速率、7 类异常监测与去重/升级/提醒/限流/恢复、**C07 预期备份维护重启区分（仅记录 `MAINTENANCE_RESTART` 不触发误报）及维护失败/停机超时/未对账/服务未恢复强制告警**、HTTPS 校验与未配置诚实声明、本地模拟 Webhook 端到端测试、每日报告三层状态区分、CLI 状态根目录隔离、`journalctl --all` 回填）。
+- CI 同款完整 Demo 云端回归套件（初始 9 个测试文件 152 passed）及 PR #230 修复后定向回归（`test_demo_cloud_monitor.py` + `test_demo_cloud_runtime.py` + `test_demo_execute_systemd.py`）均全部通过，无失败或跳过。
+- Azure 实机 `systemd-analyze verify` 校验全部 5 个 unit（`execute`、`health.service/.timer`、`daily-report.service/.timer`）通过；`17:18 UTC` 实机验证单条精简样本 `2,296 B`（8 天 11,520 条约 `25.22 MiB` << `48 MiB` 上限），并自动将 `16:55:48 UTC` 的 C07 2.045s 维护重启分类为 `Planned Maintenance Restarts: 1`（`Unexpected / Maint Restarts: 1 / 1`）。
 
 ---
 
