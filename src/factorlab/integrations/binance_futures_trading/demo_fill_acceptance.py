@@ -23,6 +23,7 @@ from factorlab.integrations.binance.client import Response
 from urllib.parse import urlencode
 
 ZERO = Decimal(0)
+USDT_EQUITY_QUANTUM = Decimal('0.00000001')
 
 
 def receipt_mapping(adapter):
@@ -218,6 +219,9 @@ def capture(session, runtime, opening_wallet, *, history_start=None):
     position_ok = bool(filled) and inventory == summary['residual_inventory']
     wallet = account['balances']['walletBalance']
     equity = wallet + account['balances']['unrealizedProfit']
+    # Binance reports USDT PnL to eight decimal places. The mark times quantity
+    # used by FIFO can retain extra decimal places for the same valuation.
+    official_equity_difference = summary['final_equity'] - equity
     account_ok = (
         fee_ok
         and position_ok
@@ -225,7 +229,7 @@ def capture(session, runtime, opening_wallet, *, history_start=None):
         and account['reconciled']
         and summary['reconciliation_residual'] == 0
         and summary['reported_equity_difference'] == 0
-        and summary['final_equity'] == equity
+        and abs(official_equity_difference) <= USDT_EQUITY_QUANTUM / 2
         and not unaccounted_income
     )
     dispatches = [dict(campaign=c, method=m, client_order_id=i, parameters=json.loads(p),
@@ -253,7 +257,8 @@ def capture(session, runtime, opening_wallet, *, history_start=None):
         scope='ALL_PERSISTED_ACCOUNT_HISTORY; not proof of a new experiment',
         opening_wallet=opening_wallet, statuses=statuses, account=account,
         order_trade_mapping=mapping, dispatches=dispatches, fifo=fifo,
-        wallet=wallet, equity=equity, actual_fees=fees, income=income,
+        wallet=wallet, equity=equity, official_equity_difference=official_equity_difference,
+        actual_fees=fees, income=income,
         unaccounted_income=unaccounted_income,
         funding=dict(
             events=funding_rows,
