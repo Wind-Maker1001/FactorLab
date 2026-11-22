@@ -62,7 +62,21 @@ class FakeTransport(OfflineTransport):
         elif request.path in {'/fapi/v1/openOrders', '/fapi/v1/allOrders'}:
             value = [dict(o) for o in self.orders.values() if request.path.endswith('allOrders') or o['status'] in {'NEW', 'PARTIALLY_FILLED'}]
         elif request.path == '/fapi/v1/userTrades':
-            value = [t for t in self.trades if 'orderId' not in p or str(t['orderId']) == p['orderId']]
+            rows = [t for t in self.trades
+                    if ('symbol' not in p or t.get('symbol') == p['symbol'])
+                    and ('orderId' not in p or str(t['orderId']) == p['orderId'])]
+            if 'fromId' in p:
+                from_id = int(p['fromId'])
+                rows = [t for t in rows if t['id'] >= from_id]
+            if 'startTime' in p:
+                start_ms = int(p['startTime'])
+                rows = [t for t in rows if t.get('time', MS) >= start_ms]
+            if 'endTime' in p:
+                end_ms = int(p['endTime'])
+                rows = [t for t in rows if t.get('time', MS) <= end_ms]
+            if 'limit' in p:
+                rows = rows[:int(p['limit'])]
+            value = rows
         elif request.path == '/fapi/v1/income':
             if self.income is None:
                 rows = [{'symbol': 'NVDAUSDT', 'incomeType': 'FUNDING_FEE', 'income': '-0.02',
@@ -82,7 +96,9 @@ class FakeTransport(OfflineTransport):
             rows.sort(key=lambda row: (row.get('time', 0) if isinstance(row.get('time'), int) else 0,
                                        str(row.get('tranId', ''))))
             limit = int(p.get('limit', 100))
-            value = rows[:limit]
+            page = int(p.get('page', 1))
+            offset = (page - 1) * limit
+            value = rows[offset:offset + limit]
         elif request.path == '/fapi/v1/positionSide/dual':
             value = {'dualSidePosition': self.hedge_mode}
         elif request.path == '/fapi/v3/account':

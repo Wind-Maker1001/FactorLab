@@ -1,0 +1,748 @@
+{
+  "benchmark": "P7-M19-F12-INCREMENTAL-RECOVERY",
+  "python": "3.14.0",
+  "results": [
+    {
+      "baseline": {
+        "economics": {
+          "controller_fill_events": 6,
+          "controller_order_events": 17,
+          "equity_usdt": "499999.49530278",
+          "exchange_equity_usdt": "499999.49530278",
+          "exchange_position_qty": "3.0",
+          "exchange_wallet_usdt": "499999.49530278",
+          "funding_events": 1,
+          "funding_usdt": "-0.00469722",
+          "position_qty": "3.0",
+          "protocol_events": 10,
+          "reconciled": true,
+          "total_fee_usdt": "0.5000",
+          "total_filled_quantity": "5.0",
+          "wallet_usdt": "499999.49530278"
+        },
+        "funding_recovery": {
+          "get_total": 38,
+          "income_gets": 2,
+          "order_gets": 16,
+          "wall_seconds": 0.227785
+        },
+        "historical_orders": 6,
+        "late_fill_recovery": {
+          "get_total": 42,
+          "order_gets": 18,
+          "target_order": "hist-0001",
+          "user_trades_gets": 12,
+          "wall_seconds": 0.348439
+        },
+        "mode": "baseline_on",
+        "recovery_status": {
+          "audit_round": 1,
+          "clock_rollback_count": 0,
+          "counts": {
+            "active": 3,
+            "archived_exchange": 6,
+            "archived_terminal": 6,
+            "economic_incomplete": 0,
+            "local_rejected": 0,
+            "unknown": 0
+          },
+          "has_unknown": false,
+          "history_audit_error": null,
+          "history_audit_status": "OK",
+          "last_history_audit_at": "2026-11-11T12:00:02+00:00",
+          "last_realtime_reconcile_at": "2026-11-11T12:00:08+00:00",
+          "pruned_by_exchange_retention": 0,
+          "realtime_rounds": 16,
+          "rounds_since_audit": 14,
+          "watermarks": {
+            "income:*:FUNDING_FEE": {
+              "complete": true,
+              "covered_from_ms": 1794394800000,
+              "covered_through_ms": 1794398408000,
+              "detail": {
+                "events_seen": 1,
+                "max_window_ms": 604800000,
+                "newly_recorded": 0,
+                "overlap_ms": 3600000,
+                "pages": 1,
+                "ranges": [
+                  [
+                    1794394808000,
+                    1794398408000
+                  ]
+                ],
+                "windows": 1
+              },
+              "scope": "FUNDING_FEE",
+              "updated_at": "2026-11-11T12:00:08+00:00"
+            },
+            "trades:NVDAUSDT": {
+              "coverage_complete": true,
+              "coverage_note": null,
+              "last_scan_at": "2026-11-11T12:00:02+00:00",
+              "last_trade_id": 5,
+              "last_trade_time_ms": 1794394800050,
+              "overlap_ids": 50
+            }
+          }
+        },
+        "restart_recovery": {
+          "get_total": 42,
+          "idempotent": true,
+          "income_gets": 2,
+          "order_gets": 18,
+          "user_trades_gets": 12,
+          "wall_seconds": 0.442182
+        },
+        "scheduled_history_audit": null,
+        "steady_per_round": {
+          "account_gets": 10.0,
+          "active_order_gets": 4.0,
+          "cpu_seconds": 0.036458,
+          "get_total": 38.0,
+          "income_gets": 2.0,
+          "max_snapshot_age_seconds": 0.0,
+          "order_gets": 16.0,
+          "user_trades_gets": 10.0,
+          "wall_seconds": 0.227244,
+          "within_5s_freshness": true
+        },
+        "steady_rounds": 3,
+        "unknown_recovery": {
+          "get_total": 40,
+          "order_gets": 18,
+          "post_count": 1,
+          "recovered_status": "SUBMITTED",
+          "user_trades_gets": 10,
+          "wall_seconds": 0.326657
+        }
+      },
+      "historical_orders": 6,
+      "optimized": {
+        "economics": {
+          "controller_fill_events": 6,
+          "controller_order_events": 17,
+          "equity_usdt": "499999.49530278",
+          "exchange_equity_usdt": "499999.49530278",
+          "exchange_position_qty": "3.0",
+          "exchange_wallet_usdt": "499999.49530278",
+          "funding_events": 1,
+          "funding_usdt": "-0.00469722",
+          "position_qty": "3.0",
+          "protocol_events": 10,
+          "reconciled": true,
+          "total_fee_usdt": "0.5000",
+          "total_filled_quantity": "5.0",
+          "wallet_usdt": "499999.49530278"
+        },
+        "funding_recovery": {
+          "get_total": 9,
+          "income_gets": 1,
+          "order_gets": 2,
+          "wall_seconds": 0.18802
+        },
+        "historical_orders": 6,
+        "late_fill_recovery": {
+          "get_total": 18,
+          "order_gets": 4,
+          "target_order": "hist-0001",
+          "user_trades_gets": 3,
+          "wall_seconds": 0.254298
+        },
+        "mode": "optimized_f12",
+        "recovery_status": {
+          "audit_round": 3,
+          "clock_rollback_count": 0,
+          "counts": {
+            "active": 3,
+            "archived_exchange": 6,
+            "archived_terminal": 6,
+            "economic_incomplete": 0,
+            "local_rejected": 0,
+            "unknown": 0
+          },
+          "has_unknown": false,
+          "history_audit_error": null,
+          "history_audit_status": "OK",
+          "last_history_audit_at": "2026-11-11T12:00:06+00:00",
+          "last_realtime_reconcile_at": "2026-11-11T12:00:08+00:00",
+          "pruned_by_exchange_retention": 0,
+          "realtime_rounds": 9,
+          "rounds_since_audit": 1,
+          "watermarks": {
+            "income:*:FUNDING_FEE": {
+              "complete": true,
+              "covered_from_ms": 1794394800000,
+              "covered_through_ms": 1794398408000,
+              "detail": {
+                "events_seen": 1,
+                "max_window_ms": 604800000,
+                "newly_recorded": 0,
+                "overlap_ms": 3600000,
+                "pages": 1,
+                "ranges": [
+                  [
+                    1794394806000,
+                    1794398408000
+                  ]
+                ],
+                "windows": 1
+              },
+              "scope": "FUNDING_FEE",
+              "updated_at": "2026-11-11T12:00:08+00:00"
+            },
+            "trades:NVDAUSDT": {
+              "coverage_complete": true,
+              "coverage_note": null,
+              "last_scan_at": "2026-11-11T12:00:06+00:00",
+              "last_trade_id": 6,
+              "last_trade_time_ms": 1794394800050,
+              "overlap_ids": 50
+            }
+          }
+        },
+        "restart_recovery": {
+          "get_total": 12,
+          "idempotent": true,
+          "income_gets": 1,
+          "order_gets": 4,
+          "user_trades_gets": 2,
+          "wall_seconds": 0.185694
+        },
+        "scheduled_history_audit": {
+          "batch_size": 5,
+          "full_rolling_cycle_audits": 2,
+          "get_total": 11,
+          "income_gets": 1,
+          "order_gets": 5,
+          "overlap_ids": 50,
+          "rolling_orders_audited": 5,
+          "trades_scanned": 6,
+          "user_trades_gets": 5,
+          "wall_seconds": 0.117767
+        },
+        "steady_per_round": {
+          "account_gets": 5.0,
+          "active_order_gets": 2.0,
+          "cpu_seconds": 0.015625,
+          "get_total": 9.0,
+          "income_gets": 1.0,
+          "max_snapshot_age_seconds": 0.0,
+          "order_gets": 2.0,
+          "user_trades_gets": 1.0,
+          "wall_seconds": 0.141603,
+          "within_5s_freshness": true
+        },
+        "steady_rounds": 3,
+        "unknown_recovery": {
+          "get_total": 10,
+          "order_gets": 3,
+          "post_count": 1,
+          "recovered_status": "SUBMITTED",
+          "user_trades_gets": 1,
+          "wall_seconds": 0.206689
+        }
+      },
+      "reduction": {
+        "steady_get_reduction_pct": 76.32,
+        "steady_order_get_reduction_pct": 87.5,
+        "steady_wall_speedup_x": 1.6
+      }
+    },
+    {
+      "baseline": {
+        "economics": {
+          "controller_fill_events": 68,
+          "controller_order_events": 205,
+          "equity_usdt": "499994.04530278",
+          "exchange_equity_usdt": "499994.04530278",
+          "exchange_position_qty": "1.5",
+          "exchange_wallet_usdt": "499994.04530278",
+          "funding_events": 1,
+          "funding_usdt": "-0.00469722",
+          "position_qty": "1.5",
+          "protocol_events": 104,
+          "reconciled": true,
+          "total_fee_usdt": "5.9500",
+          "total_filled_quantity": "59.5",
+          "wallet_usdt": "499994.04530278"
+        },
+        "funding_recovery": {
+          "get_total": 350,
+          "income_gets": 2,
+          "order_gets": 204,
+          "wall_seconds": 1.934593
+        },
+        "historical_orders": 100,
+        "late_fill_recovery": {
+          "get_total": 354,
+          "order_gets": 206,
+          "target_order": "hist-0001",
+          "user_trades_gets": 136,
+          "wall_seconds": 0.382038
+        },
+        "mode": "baseline_on",
+        "recovery_status": {
+          "audit_round": 1,
+          "clock_rollback_count": 0,
+          "counts": {
+            "active": 3,
+            "archived_exchange": 100,
+            "archived_terminal": 100,
+            "economic_incomplete": 0,
+            "local_rejected": 0,
+            "unknown": 0
+          },
+          "has_unknown": false,
+          "history_audit_error": null,
+          "history_audit_status": "OK",
+          "last_history_audit_at": "2026-11-11T12:00:02+00:00",
+          "last_realtime_reconcile_at": "2026-11-11T12:00:08+00:00",
+          "pruned_by_exchange_retention": 0,
+          "realtime_rounds": 16,
+          "rounds_since_audit": 14,
+          "watermarks": {
+            "income:*:FUNDING_FEE": {
+              "complete": true,
+              "covered_from_ms": 1794394800000,
+              "covered_through_ms": 1794398408000,
+              "detail": {
+                "events_seen": 1,
+                "max_window_ms": 604800000,
+                "newly_recorded": 0,
+                "overlap_ms": 3600000,
+                "pages": 1,
+                "ranges": [
+                  [
+                    1794394808000,
+                    1794398408000
+                  ]
+                ],
+                "windows": 1
+              },
+              "scope": "FUNDING_FEE",
+              "updated_at": "2026-11-11T12:00:08+00:00"
+            },
+            "trades:NVDAUSDT": {
+              "coverage_complete": true,
+              "coverage_note": null,
+              "last_scan_at": "2026-11-11T12:00:02+00:00",
+              "last_trade_id": 67,
+              "last_trade_time_ms": 1794394800980,
+              "overlap_ids": 50
+            }
+          }
+        },
+        "restart_recovery": {
+          "get_total": 354,
+          "idempotent": true,
+          "income_gets": 2,
+          "order_gets": 206,
+          "user_trades_gets": 136,
+          "wall_seconds": 1.989029
+        },
+        "scheduled_history_audit": null,
+        "steady_per_round": {
+          "account_gets": 10.0,
+          "active_order_gets": 4.0,
+          "cpu_seconds": 0.354167,
+          "get_total": 350.0,
+          "income_gets": 2.0,
+          "max_snapshot_age_seconds": 0.0,
+          "order_gets": 204.0,
+          "user_trades_gets": 134.0,
+          "wall_seconds": 1.973558,
+          "within_5s_freshness": true
+        },
+        "steady_rounds": 3,
+        "unknown_recovery": {
+          "get_total": 352,
+          "order_gets": 206,
+          "post_count": 1,
+          "recovered_status": "SUBMITTED",
+          "user_trades_gets": 134,
+          "wall_seconds": 0.353105
+        }
+      },
+      "historical_orders": 100,
+      "optimized": {
+        "economics": {
+          "controller_fill_events": 68,
+          "controller_order_events": 205,
+          "equity_usdt": "499994.04530278",
+          "exchange_equity_usdt": "499994.04530278",
+          "exchange_position_qty": "1.5",
+          "exchange_wallet_usdt": "499994.04530278",
+          "funding_events": 1,
+          "funding_usdt": "-0.00469722",
+          "position_qty": "1.5",
+          "protocol_events": 104,
+          "reconciled": true,
+          "total_fee_usdt": "5.9500",
+          "total_filled_quantity": "59.5",
+          "wallet_usdt": "499994.04530278"
+        },
+        "funding_recovery": {
+          "get_total": 9,
+          "income_gets": 1,
+          "order_gets": 2,
+          "wall_seconds": 0.144966
+        },
+        "historical_orders": 100,
+        "late_fill_recovery": {
+          "get_total": 18,
+          "order_gets": 4,
+          "target_order": "hist-0001",
+          "user_trades_gets": 3,
+          "wall_seconds": 0.232945
+        },
+        "mode": "optimized_f12",
+        "recovery_status": {
+          "audit_round": 3,
+          "clock_rollback_count": 0,
+          "counts": {
+            "active": 3,
+            "archived_exchange": 100,
+            "archived_terminal": 100,
+            "economic_incomplete": 0,
+            "local_rejected": 0,
+            "unknown": 0
+          },
+          "has_unknown": false,
+          "history_audit_error": null,
+          "history_audit_status": "OK",
+          "last_history_audit_at": "2026-11-11T12:00:06+00:00",
+          "last_realtime_reconcile_at": "2026-11-11T12:00:08+00:00",
+          "pruned_by_exchange_retention": 0,
+          "realtime_rounds": 9,
+          "rounds_since_audit": 1,
+          "watermarks": {
+            "income:*:FUNDING_FEE": {
+              "complete": true,
+              "covered_from_ms": 1794394800000,
+              "covered_through_ms": 1794398408000,
+              "detail": {
+                "events_seen": 1,
+                "max_window_ms": 604800000,
+                "newly_recorded": 0,
+                "overlap_ms": 3600000,
+                "pages": 1,
+                "ranges": [
+                  [
+                    1794394806000,
+                    1794398408000
+                  ]
+                ],
+                "windows": 1
+              },
+              "scope": "FUNDING_FEE",
+              "updated_at": "2026-11-11T12:00:08+00:00"
+            },
+            "trades:NVDAUSDT": {
+              "coverage_complete": true,
+              "coverage_note": null,
+              "last_scan_at": "2026-11-11T12:00:06+00:00",
+              "last_trade_id": 68,
+              "last_trade_time_ms": 1794394800980,
+              "overlap_ids": 50
+            }
+          }
+        },
+        "restart_recovery": {
+          "get_total": 12,
+          "idempotent": true,
+          "income_gets": 1,
+          "order_gets": 4,
+          "user_trades_gets": 2,
+          "wall_seconds": 0.126574
+        },
+        "scheduled_history_audit": {
+          "batch_size": 5,
+          "full_rolling_cycle_audits": 20,
+          "get_total": 11,
+          "income_gets": 1,
+          "order_gets": 5,
+          "overlap_ids": 50,
+          "rolling_orders_audited": 5,
+          "trades_scanned": 50,
+          "user_trades_gets": 5,
+          "wall_seconds": 0.119137
+        },
+        "steady_per_round": {
+          "account_gets": 5.0,
+          "active_order_gets": 2.0,
+          "cpu_seconds": 0.03125,
+          "get_total": 9.0,
+          "income_gets": 1.0,
+          "max_snapshot_age_seconds": 0.0,
+          "order_gets": 2.0,
+          "user_trades_gets": 1.0,
+          "wall_seconds": 0.098628,
+          "within_5s_freshness": true
+        },
+        "steady_rounds": 3,
+        "unknown_recovery": {
+          "get_total": 10,
+          "order_gets": 3,
+          "post_count": 1,
+          "recovered_status": "SUBMITTED",
+          "user_trades_gets": 1,
+          "wall_seconds": 0.178408
+        }
+      },
+      "reduction": {
+        "steady_get_reduction_pct": 97.43,
+        "steady_order_get_reduction_pct": 99.02,
+        "steady_wall_speedup_x": 20.01
+      }
+    },
+    {
+      "baseline": {
+        "economics": {
+          "controller_fill_events": 668,
+          "controller_order_events": 2005,
+          "equity_usdt": "499941.54530278",
+          "exchange_equity_usdt": "499941.54530278",
+          "exchange_position_qty": "1.5",
+          "exchange_wallet_usdt": "499941.54530278",
+          "funding_events": 1,
+          "funding_usdt": "-0.00469722",
+          "position_qty": "1.5",
+          "protocol_events": 1004,
+          "reconciled": true,
+          "total_fee_usdt": "58.4500",
+          "total_filled_quantity": "584.5",
+          "wallet_usdt": "499941.54530278"
+        },
+        "funding_recovery": {
+          "get_total": 3350,
+          "income_gets": 2,
+          "order_gets": 2004,
+          "wall_seconds": 17.291678
+        },
+        "historical_orders": 1000,
+        "late_fill_recovery": {
+          "get_total": 3354,
+          "order_gets": 2006,
+          "target_order": "hist-0001",
+          "user_trades_gets": 1336,
+          "wall_seconds": 2.09193
+        },
+        "mode": "baseline_on",
+        "recovery_status": {
+          "audit_round": 1,
+          "clock_rollback_count": 0,
+          "counts": {
+            "active": 3,
+            "archived_exchange": 1000,
+            "archived_terminal": 1000,
+            "economic_incomplete": 0,
+            "local_rejected": 0,
+            "unknown": 0
+          },
+          "has_unknown": false,
+          "history_audit_error": null,
+          "history_audit_status": "OK",
+          "last_history_audit_at": "2026-11-11T12:00:02+00:00",
+          "last_realtime_reconcile_at": "2026-11-11T12:00:06+00:00",
+          "pruned_by_exchange_retention": 0,
+          "realtime_rounds": 12,
+          "rounds_since_audit": 10,
+          "watermarks": {
+            "income:*:FUNDING_FEE": {
+              "complete": true,
+              "covered_from_ms": 1794394800000,
+              "covered_through_ms": 1794398406000,
+              "detail": {
+                "events_seen": 1,
+                "max_window_ms": 604800000,
+                "newly_recorded": 0,
+                "overlap_ms": 3600000,
+                "pages": 1,
+                "ranges": [
+                  [
+                    1794394806000,
+                    1794398406000
+                  ]
+                ],
+                "windows": 1
+              },
+              "scope": "FUNDING_FEE",
+              "updated_at": "2026-11-11T12:00:06+00:00"
+            },
+            "trades:NVDAUSDT": {
+              "coverage_complete": true,
+              "coverage_note": null,
+              "last_scan_at": "2026-11-11T12:00:02+00:00",
+              "last_trade_id": 667,
+              "last_trade_time_ms": 1794394809980,
+              "overlap_ids": 50
+            }
+          }
+        },
+        "restart_recovery": {
+          "get_total": 3354,
+          "idempotent": true,
+          "income_gets": 2,
+          "order_gets": 2006,
+          "user_trades_gets": 1336,
+          "wall_seconds": 18.395693
+        },
+        "scheduled_history_audit": null,
+        "steady_per_round": {
+          "account_gets": 10.0,
+          "active_order_gets": 4.0,
+          "cpu_seconds": 3.484375,
+          "get_total": 3350.0,
+          "income_gets": 2.0,
+          "max_snapshot_age_seconds": 0.0,
+          "order_gets": 2004.0,
+          "user_trades_gets": 1334.0,
+          "wall_seconds": 17.503235,
+          "within_5s_freshness": true
+        },
+        "steady_rounds": 1,
+        "unknown_recovery": {
+          "get_total": 3352,
+          "order_gets": 2006,
+          "post_count": 1,
+          "recovered_status": "SUBMITTED",
+          "user_trades_gets": 1334,
+          "wall_seconds": 2.205854
+        }
+      },
+      "historical_orders": 1000,
+      "optimized": {
+        "economics": {
+          "controller_fill_events": 668,
+          "controller_order_events": 2005,
+          "equity_usdt": "499941.54530278",
+          "exchange_equity_usdt": "499941.54530278",
+          "exchange_position_qty": "1.5",
+          "exchange_wallet_usdt": "499941.54530278",
+          "funding_events": 1,
+          "funding_usdt": "-0.00469722",
+          "position_qty": "1.5",
+          "protocol_events": 1004,
+          "reconciled": true,
+          "total_fee_usdt": "58.4500",
+          "total_filled_quantity": "584.5",
+          "wallet_usdt": "499941.54530278"
+        },
+        "funding_recovery": {
+          "get_total": 9,
+          "income_gets": 1,
+          "order_gets": 2,
+          "wall_seconds": 0.414024
+        },
+        "historical_orders": 1000,
+        "late_fill_recovery": {
+          "get_total": 18,
+          "order_gets": 4,
+          "target_order": "hist-0001",
+          "user_trades_gets": 3,
+          "wall_seconds": 0.778107
+        },
+        "mode": "optimized_f12",
+        "recovery_status": {
+          "audit_round": 3,
+          "clock_rollback_count": 0,
+          "counts": {
+            "active": 3,
+            "archived_exchange": 1000,
+            "archived_terminal": 1000,
+            "economic_incomplete": 0,
+            "local_rejected": 0,
+            "unknown": 0
+          },
+          "has_unknown": false,
+          "history_audit_error": null,
+          "history_audit_status": "OK",
+          "last_history_audit_at": "2026-11-11T12:00:04+00:00",
+          "last_realtime_reconcile_at": "2026-11-11T12:00:06+00:00",
+          "pruned_by_exchange_retention": 0,
+          "realtime_rounds": 7,
+          "rounds_since_audit": 1,
+          "watermarks": {
+            "income:*:FUNDING_FEE": {
+              "complete": true,
+              "covered_from_ms": 1794394800000,
+              "covered_through_ms": 1794398406000,
+              "detail": {
+                "events_seen": 1,
+                "max_window_ms": 604800000,
+                "newly_recorded": 0,
+                "overlap_ms": 3600000,
+                "pages": 1,
+                "ranges": [
+                  [
+                    1794394804000,
+                    1794398406000
+                  ]
+                ],
+                "windows": 1
+              },
+              "scope": "FUNDING_FEE",
+              "updated_at": "2026-11-11T12:00:06+00:00"
+            },
+            "trades:NVDAUSDT": {
+              "coverage_complete": true,
+              "coverage_note": null,
+              "last_scan_at": "2026-11-11T12:00:04+00:00",
+              "last_trade_id": 668,
+              "last_trade_time_ms": 1794394809980,
+              "overlap_ids": 50
+            }
+          }
+        },
+        "restart_recovery": {
+          "get_total": 12,
+          "idempotent": true,
+          "income_gets": 1,
+          "order_gets": 4,
+          "user_trades_gets": 2,
+          "wall_seconds": 0.414339
+        },
+        "scheduled_history_audit": {
+          "batch_size": 5,
+          "full_rolling_cycle_audits": 200,
+          "get_total": 11,
+          "income_gets": 1,
+          "order_gets": 5,
+          "overlap_ids": 50,
+          "rolling_orders_audited": 5,
+          "trades_scanned": 50,
+          "user_trades_gets": 5,
+          "wall_seconds": 0.250632
+        },
+        "steady_per_round": {
+          "account_gets": 5.0,
+          "active_order_gets": 2.0,
+          "cpu_seconds": 0.171875,
+          "get_total": 9.0,
+          "income_gets": 1.0,
+          "max_snapshot_age_seconds": 0.0,
+          "order_gets": 2.0,
+          "user_trades_gets": 1.0,
+          "wall_seconds": 0.358227,
+          "within_5s_freshness": true
+        },
+        "steady_rounds": 1,
+        "unknown_recovery": {
+          "get_total": 10,
+          "order_gets": 3,
+          "post_count": 1,
+          "recovered_status": "SUBMITTED",
+          "user_trades_gets": 1,
+          "wall_seconds": 0.740816
+        }
+      },
+      "reduction": {
+        "steady_get_reduction_pct": 99.73,
+        "steady_order_get_reduction_pct": 99.9,
+        "steady_wall_speedup_x": 48.86
+      }
+    }
+  ],
+  "safety": "NO_LIVE_MONEY_OFFLINE_DETERMINISTIC"
+}

@@ -1,0 +1,66 @@
+{
+  "task": "PR #226 P2 pagination fixes",
+  "original_head": "5344aa08aecb91d5ab3885e9f3015edca58f6119",
+  "safety": "OFFLINE_FIXTURES_AND_TEMPORARY_SQLITE_ONLY",
+  "original_minimal_reproductions": {
+    "tests": 2,
+    "failures": 2,
+    "trade_actual_times": [
+      10,
+      20,
+      30
+    ],
+    "income_failure": "pagination did not advance before page=2"
+  },
+  "suites": [
+    {
+      "python": "Python 3.13.9",
+      "command": "python -m pytest tests/integrations/test_demo_recovery_pagination_f12.py tests/integrations/test_demo_incremental_recovery_f12.py -q --tb=short",
+      "tests": 54,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "by_module": {
+        "tests.integrations.test_demo_recovery_pagination_f12": 35,
+        "tests.integrations.test_demo_incremental_recovery_f12": 19
+      }
+    },
+    {
+      "python": "Python 3.13.9",
+      "command": "python -m pytest tests/integrations/test_demo_get_recovery.py tests/integrations/test_demo_get_recovery_window.py tests/integrations/test_demo_reconciliation_m14.py tests/integrations/test_binance_futures_trading.py tests/integrations/test_binance_demo_execution.py tests/integrations/test_binance_demo_fill_closed_loop.py tests/integrations/test_binance_demo_fill_faults.py tests/integrations/test_demo_receipts_m19.py tests/integrations/test_forward_recovery_scheduling.py tests/integrations/test_demo_constructor_clock.py -q --tb=short",
+      "tests": 219,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "by_module": {
+        "tests.integrations.test_demo_get_recovery": 16,
+        "tests.integrations.test_demo_get_recovery_window": 11,
+        "tests.integrations.test_demo_reconciliation_m14": 11,
+        "tests.integrations.test_binance_futures_trading": 50,
+        "tests.integrations.test_binance_demo_execution": 26,
+        "tests.integrations.test_binance_demo_fill_closed_loop": 6,
+        "tests.integrations.test_binance_demo_fill_faults": 14,
+        "tests.integrations.test_demo_receipts_m19": 23,
+        "tests.integrations.test_forward_recovery_scheduling": 11,
+        "tests.integrations.test_demo_constructor_clock": 51
+      }
+    },
+    {
+      "python": "Python 3.14.0",
+      "command": "python -m pytest tests/integrations/test_demo_recovery_pagination_f12.py -q --tb=short",
+      "tests": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "by_module": {
+        "tests.integrations.test_demo_recovery_pagination_f12": 35
+      }
+    }
+  ],
+  "benchmark_command": "python docs/validation/p7-m19-f12/benchmark.py --rounds 1 --output docs/validation/p7-m19-f12/p2-measurements.json",
+  "benchmark_artifact": "p2-measurements.json",
+  "benchmark_note": "GET counts and ledger parity are authoritative; concurrent offline tests make wall time unsuitable for before/after speed claims.",
+  "diff_check": "passed",
+  "compileall": "passed",
+  "f10_integration": "Keep branch boundary; select one authoritative funding entry after PR #225 enters main. Do not wire both sync_income_incremental and sync_funding."
+}

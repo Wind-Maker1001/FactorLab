@@ -233,6 +233,8 @@ def worker_metrics(session, feed, runtime, requests):
         last_valid_market_at=datetime.fromtimestamp(quote_ms / 1000, timezone.utc).isoformat() if quote_ms is not None else None,
         last_reconciled_at=session.last_reconciled_at,
         last_recovery_seconds=session.last_recovery_seconds,
+        last_audit_seconds=getattr(session, 'last_audit_seconds', None),
+        incremental_recovery=session.adapter.recovery_status(),
         unknown_count=sum(record.snapshot.reconcile_required for record in session.gateway.state.orders.values()),
         journals=dict(controller=storage_snapshot(session.controller.store),
                       protocol=storage_snapshot(session.adapter.store, protocol=True)),
