@@ -762,6 +762,8 @@ def fetch_user_trades_paginated(adapter, symbol, *, from_id=None, start_time=Non
     - startTime..endTime windows cannot exceed 7 days; longer ranges are chunked explicitly.
     - Intra-page duplicate trade IDs fail closed.
     - Cross-page overlapping trade IDs deduplicate only when payloads are identical; conflicts fail closed.
+    - Time bounds survive the switch to fromId; bounded scans require increasing IDs
+      and nondecreasing timestamps, including every row in the final page.
     - Non-advancing saturated pages or exceeding max_pages fail closed.
     """
     target_symbol = symbol_name(symbol)
@@ -777,11 +779,17 @@ def fetch_user_trades_paginated(adapter, symbol, *, from_id=None, start_time=Non
     seen = {}
     ordered = []
     pages = 0
+    time_bounded = start_time is not None or end_time is not None
+    last_new_id = None
+    last_new_time = None
 
     def ingest_page(rows):
+        nonlocal last_new_id, last_new_time
         if not isinstance(rows, list) or len(rows) > limit:
             raise DataQualityError('invalid userTrades page shape')
         page_ids = set()
+        page_last_id = None
+        page_last_time = None
         for row in rows:
             canon = canonical_trade(row)
             if canon[0] != target_symbol:
@@ -790,12 +798,29 @@ def fetch_user_trades_paginated(adapter, symbol, *, from_id=None, start_time=Non
             if trade_id in page_ids:
                 raise DataQualityError('duplicate actual trades')
             page_ids.add(trade_id)
+            time_ms = row.get('time')
+            if time_bounded and time_ms is None:
+                raise DataQualityError('missing trade timestamp in bounded history')
+            if page_last_id is not None and trade_id <= page_last_id:
+                raise DataQualityError('trade history incomplete; trade IDs are not ordered')
+            if time_bounded and page_last_time is not None and time_ms < page_last_time:
+                raise DataQualityError('trade history incomplete; timestamps are not monotonic')
+            page_last_id, page_last_time = trade_id, time_ms
+            value = (canon, time_ms)
             if trade_id in seen:
-                if seen[trade_id] != canon:
+                if seen[trade_id] != value:
                     raise DataQualityError('conflicting duplicate trade across pages')
             else:
-                seen[trade_id] = canon
-                ordered.append(row)
+                if ((last_new_id is not None and trade_id <= last_new_id)
+                        or (from_id is not None and trade_id < from_id)):
+                    raise DataQualityError('trade history incomplete; pagination did not advance')
+                if time_bounded and last_new_time is not None and time_ms < last_new_time:
+                    raise DataQualityError('trade history incomplete; timestamps are not monotonic')
+                seen[trade_id] = value
+                last_new_id, last_new_time = trade_id, time_ms
+                if ((start_time is None or time_ms >= start_time)
+                        and (end_time is None or time_ms <= end_time)):
+                    ordered.append(row)
         return page_ids
 
     if start_time is not None and end_time is not None and end_time - start_time > MAX_QUERY_WINDOW_MS:
@@ -810,11 +835,14 @@ def fetch_user_trades_paginated(adapter, symbol, *, from_id=None, start_time=Non
             for row in chunk_rows:
                 canon = canonical_trade(row)
                 trade_id = canon[1]
+                value = (canon, row['time'])
                 if trade_id in seen:
-                    if seen[trade_id] != canon:
+                    if seen[trade_id] != value:
                         raise DataQualityError('conflicting duplicate trade across windows')
                 else:
-                    seen[trade_id] = canon
+                    if ordered and trade_id <= ordered[-1]['id']:
+                        raise DataQualityError('trade history incomplete; trade IDs are not ordered across windows')
+                    seen[trade_id] = value
                     ordered.append(row)
             cursor_start = chunk_end + 1
             if pages >= max_pages and cursor_start <= end_time:
@@ -841,6 +869,12 @@ def fetch_user_trades_paginated(adapter, symbol, *, from_id=None, start_time=Non
         rows = adapter.client.request('GET', '/fapi/v1/userTrades', params)
         pages += 1
         page_ids = ingest_page(rows)
+        # Validate the WHOLE page before stopping: a later row with an earlier
+        # timestamp invalidates this proof of coverage. Equality is insufficient
+        # because further IDs can share end_time. No time bound is invented for
+        # pure fromId scans.
+        if end_time is not None and rows and rows[-1]['time'] > end_time:
+            break
         if len(rows) < limit:
             break
         max_id = max(page_ids)
@@ -919,6 +953,12 @@ def fetch_income_paginated(adapter, symbol=None, *, income_type=None, start_time
             if identity in page_keys:
                 raise DataQualityError('duplicate income entries within single page')
             page_keys.add(identity)
+            time_ms = canonical[5]
+            if ((cursor_start is not None and time_ms < cursor_start)
+                    or (end_time is not None and time_ms > end_time)):
+                raise DataQualityError('income timestamp outside requested window')
+            if times and time_ms < times[-1]:
+                raise DataQualityError('income history incomplete; timestamps are not monotonic')
             times.append(canonical[5])
             if identity in seen:
                 if seen[identity] != canonical:
@@ -927,10 +967,17 @@ def fetch_income_paginated(adapter, symbol=None, *, income_type=None, start_time
                 seen[identity] = canonical
                 ordered.append(row)
                 new_in_page += 1
+        # Re-reading page 1 at the inclusive timestamp boundary is expected.
+        # Try page 2 before declaring a stall. A short page proves exhaustion,
+        # including the already seen tail of an inclusive boundary window.
         if len(rows) < limit:
             break
+        if new_in_page == 0 and page_num is not None:
+            raise DataQualityError('income window incomplete; pagination did not advance')
         max_time = max(times)
-        if new_in_page == 0:
+        if previous_max_time is not None and max_time < previous_max_time:
+            raise DataQualityError('income window incomplete; pagination did not advance')
+        if new_in_page == 0 and max_time != previous_max_time:
             raise DataQualityError('income window incomplete; pagination did not advance')
         if previous_max_time is not None and max_time == previous_max_time:
             page_num = 2 if page_num is None else page_num + 1

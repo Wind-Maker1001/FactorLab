@@ -56,7 +56,7 @@
    - Binance 限制单次 `limit <= 1000`；`startTime` 与 `endTime` 跨度不得超过 **7 天**；**`fromId` 不能与 `startTime` / `endTime` 或 `orderId` 同时传入**。
    - `fetch_user_trades_paginated()` 严格遵守上述约束：
      - 当使用 `fromId` 增量拉取时，绝不附带 `startTime` / `endTime`，通过 `fromId = max(1, last_trade_id - overlap_ids + 1)` 建立有界重叠窗口，单页满 `page_limit` 时以 `last_id + 1` 自动翻页。
-     - 当使用 `startTime..endTime` 范围查询且跨度超过 7 天时，自动切分为 `<= 7 天` 的子窗口，子窗口内部若满页则推进 `cursor_start = last_time_ms` 并依赖跨页 `(id)` 去重。
+     - 当使用 `startTime..endTime` 范围查询且跨度超过 7 天时，自动切分为 `<= 7 天` 的不重叠子窗口；窗口首请求使用时间参数，满页后仅用 `fromId = last_id + 1` 继续。原始时间上下界始终保留并在本地过滤，验证整页 ID 递增、时间不递减以及跨页游标后，遇到严格晚于窗口结束时间的记录才停止；等于结束时间时继续，避免漏掉同毫秒成交。
      - **防静默截断（Fail-Closed）**：单页内部若出现重复 `trade.id`，或跨页重叠区同一 `trade.id` 的关键经济字段（`orderId`、`qty`、`price`、`commission`、`commissionAsset`）不一致，或达到 `max_pages` 仍未读尽，或游标停滞，立即抛出 `DataQualityError`，拒绝推进水位并阻断交易准入。
 2. **`GET /fapi/v1/order` 历史保留期边界**：
    - Binance USD-M Futures 会自动清理 **超过 3 天且无成交（`executedQty == 0`）的 `CANCELED` / `EXPIRED` 订单**（查询返回 `-2013 Order does not exist`），且标准 REST 接口仅保留 **最近 90 天** 的历史订单与成交。
@@ -105,7 +105,7 @@
      - `global`：`realtime_rounds`、`audit_round`、`rounds_since_audit`、`last_realtime_reconcile_at`、`last_history_audit_at`、`history_audit_status`、`history_audit_error`、`rolling_cursor_client_order_id`、`clock_rollback_count`、`pruned_by_exchange_retention`。
      - `account_baseline`：上次实时恢复确认的 `wallet_balance` 与 `positions` JSON。
      - `trades:<SYMBOL>`：`last_trade_id`、`last_trade_time_ms`、`last_scan_at`、`coverage_complete`、`coverage_note`。
-     - `income:<SYMBOL>:<INCOME_TYPE>`：`last_tran_id`、`last_income_time_ms`、`last_scan_at`、`cumulative_income`、`event_count`。
+     - `income:<SYMBOL>:<INCOME_TYPE>`：`last_income_time_ms`、`seen_boundary_keys`、`last_scan_at`、`coverage_complete`、`events_seen`；此为当前 F12 分支实际保存的字段，F10 集成时统一权威入口与水位。
 
 **崩溃一致性保证（Atomic Event-Before-Watermark Contract）**：
 - `sync_order_recovery_on_save()` 与 `sync_order_recovery_on_apply()` 与 `futures_orders`、`futures_events`、`futures_receipts` 的写入处于**同一个 SQLite 事务（`with self._connect() as conn:`）**中。
@@ -131,6 +131,7 @@
 ### 3.4 F12-05：与 F10 / F11 / F08 / C04 的边界兼容性
 
 - **F10（资金费率恢复）**：在 `recovery.py` 与 `adapter.py` 中提供独立的 `income()`、`income_paginated()` 与 `sync_income_incremental(symbol=..., income_type='FUNDING_FEE', handler=...)`，维护独立的 `income:<SYMBOL>:FUNDING_FEE` 水位（按 `(incomeType, tranId)` 重叠去重），**绝不将资金费混入 `OrderEvent.cumulative_fee`**。
+  - 本轮只修复分页，不提前引入 PR #225 的 `sync_funding()` 或修改 F10 的覆盖水位持久化。F10 合入 main 后，F12 最终集成必须选定一个权威资金费恢复入口，禁止同时通过 `sync_income_incremental()` 和 `sync_funding()` 重复读取、落账或维护相互矛盾的覆盖水位；分页成功后仍通过既有 handler 路径处理事件，handler 成功后才推进当前 F12 水位。
 - **F11（活动 `reduce-only SELL` 对账优先级）**：`classify_orders()` 对 `ACTIVE` 订单按 `is_reduce_only and side == 'SELL'` 置顶排序。
 - **F08（Grid 轮换判定）& C04（独占进程锁与停止语义）**：未修改任何网格轮换、风险预算、持续授权或进程锁逻辑。
 
@@ -172,7 +173,7 @@
 | --- | --- | --- | --- |
 | **实时交易准入恢复（Tier-1）** | 每一轮实时轮询（或每次下单前准入） | `5` 次账户读集（`account`, `balance`, `positionRisk`, `openOrders`, `leverageBracket`）+ `2` 次活动订单 `/fapi/v1/order` + `1` 次部分成交活动订单 `/fapi/v1/userTrades` = **8 次 GET** | $O(A + U + I)$，与已归档历史订单总数 $N_{\text{archived}}$ **完全无关（$O(1)$）** |
 | **异常驱动增量审计（Tier-1 Reactive）** | 仅当账户钱包/持仓基线发生实时层未解释变动时立即触发 | 在 Tier-1 的 `8` 次 GET 基础上，增加 `1` 次增量 `/fapi/v1/userTrades(fromId=...)` + 受影响订单的 `/fapi/v1/order` + `/fapi/v1/userTrades(orderId=...)` + `5` 笔滚动抽检 = **17 次 GET**（耗时 `0.738s`，而原实现需 `3352 次 GET`） | $O(\Delta_{\text{changed}} + B)$ |
-| **周期性历史账本审计（Tier-2 Scheduled）** | 默认每 12 轮实时恢复或每 300 秒触发 1 次 | `1` 次增量 `/fapi/v1/userTrades(fromId=...)`（重叠窗口 50 条）+ `5` 笔滚动抽检已归档订单（`5` 次 `/fapi/v1/order` + 对应的 `/fapi/v1/userTrades`）= **10 次 GET**（折合每轮实时恢复均摊仅 **~0.83 次 GET**） | $O(B)$，其中 $B = \text{rolling\_order\_batch\_size} = 5$ |
+| **周期性历史账本审计（Tier-2 Scheduled）** | 默认累计 30 轮实时恢复或经过 300 秒，在下一次检查时由先满足者触发 | `1` 次增量 `/fapi/v1/userTrades(fromId=...)`（重叠窗口 50 条）+ `5` 笔滚动抽检已归档订单（`5` 次 `/fapi/v1/order` + 对应的 `/fapi/v1/userTrades`）= 此基准 **10 次 GET**（若由 30 轮阈值触发，均摊 **~0.33 次 GET/轮**；时间或异常提前触发时需按实际频率计算） | $O(B)$，其中 $B = \text{rolling\_order\_batch\_size} = 5$ |
 
 ---
 
@@ -191,7 +192,7 @@
 | 7. 独立进程重启幂等性与稳态 $O(1)$ 查询保持 | `test_f12_process_restart_preserves_archived_skip_and_idempotency` | **PASS**（重启后已归档终态订单保持归档跳过，仅重核活动订单，且不产生重复 `recovery:...` 事件） |
 | 8. 历史审计发现持久记录与交易所不一致（留存期内 `-2013` vs 3 天/90 天留存期外正常清理） | `test_f12_archived_order_retention_pruned_vs_in_window_2013` | **PASS**（留存期外 `-2013` 记录 `pruned_by_exchange_retention` 保持归档；留存期内 `-2013` 立即反归档为 `UNKNOWN` 并使控制器进入 `RECONCILIATION_REQUIRED`） |
 | 9. 历史审计发现已归档订单成交量倒退/篡改 + 账户活动挂单与本地归档状态不匹配 | `test_f12_history_audit_persistent_mismatch_and_open_order_resurrection` | **PASS**（成交量倒退立即触发 `DataQualityError` 并标记 `UNKNOWN`；本地已归档订单若出现在交易所 `openOrders` 中立即在 Tier-1 反归档修复） |
-| 10. F10 独立资金费（`GET /fapi/v1/income`）增量恢复与水位幂等 | `test_f12_independent_funding_fee_incremental_recovery_f10_boundary` | **PASS**（分页与重叠去重拉取 `FUNDING_FEE`，崩溃不推进 `last_tran_id`，且绝不混入订单 `cumulative_fee`） |
+| 10. F10 独立资金费（`GET /fapi/v1/income`）增量恢复与水位幂等 | `test_f12_active_reduce_only_sell_priority_and_independent_funding_income` | **PASS**（分页与重叠去重拉取 `FUNDING_FEE`，handler 失败不推进 `last_income_time_ms`，且绝不混入订单 `cumulative_fee`；F10 最终集成另见 3.4） |
 | 11. F11 活动 `reduce-only SELL` 对账优先级 | `test_f12_reduce_only_sell_priority_preserved_f11_boundary` | **PASS**（活动 `reduce-only SELL` 订单始终排在 `ACTIVE` 对账队列首位） |
 | 12. 超过 90 天离线且账户发生未解释变动的完整性边界保护 | `test_f12_90_day_retention_gap_with_unexplained_account_change_fails_closed` | **PASS**（拒绝静默漏账，标记 `coverage_complete = False` 并抛出 `DataQualityError` 阻断准入） |
 | 13. 6 / 100 / 1000 历史订单规模下的请求复杂度与账本一致性回归 | `test_f12_scale_6_100_1000_orders[6]`, `[100]`, `[1000]` | **PASS**（三种规模下稳态每轮均为 `8 GET`、`/fapi/v1/order = 2`、`/fapi/v1/userTrades = 1`，账本 100% 一致） |
@@ -239,10 +240,49 @@
 - **稳态每轮 `/fapi/v1/order` 请求数**：从 **2004.0 次** 降至 **2.0 次**（**减少 99.90%**）；
 - **稳态每轮 `/fapi/v1/userTrades` 请求数**：从 **1334.0 次** 降至 **1.0 次**（**减少 99.93%**）；
 - **稳态单轮恢复耗时**：离线本地执行从 **12.7215 秒** 降至 **0.2486 秒**（**提速 51.17 倍**）；若按 F09 实测网络 RTT（~1.25 秒/GET）折算，单轮网络请求耗时从 **~4185 秒（约 70 分钟）** 降至 **~10 秒**；
-- **周期性历史审计开销**：单次计划审计仅需 **10 次 GET**（耗时 `0.1294 秒`），按默认 12 轮触发 1 次折算，每轮均摊仅增加 **0.83 次 GET**。
+- **周期性历史审计开销**：原始基准中单次计划审计为 **10 次 GET**（耗时 `0.1294 秒`）；默认阈值实际为 **30 轮或 300 秒先到者**。仅按轮数阈值触发折算为 **0.33 次 GET/轮**，不能将该均摊值用于时间或异常更早触发的情形。首次从 `first_archive_at`、后续从 `last_history_audit_at` 计时，`elapsed >= 300` 即满足条件，时钟回拨单独触发审计。
 
 ### 7. 是否仍存在不能证明历史完整性的交易所接口边界？
 存在以下三项由 Binance USD-M Futures 官方 REST 接口自身限制决定的物理边界，已在代码中全部实现 **Fail-Closed（拒绝静默漏账）** 处理：
 1. **超过 90 天的历史离线断档**：Binance 标准 REST 接口（`/fapi/v1/order`、`/fapi/v1/userTrades`、`/fapi/v1/income`）仅保留最近 90 天数据。若系统停机超过 90 天且期间账户持仓或余额发生变动，REST 接口无法取回 90 天前的成交明细。此时 `audit_history()` 会将 `coverage_complete` 置为 `False` 并抛出 `DataQualityError`，使系统保持可恢复的拒绝交易状态（`RECONCILIATION_REQUIRED`）。
 2. **超过 3 天的无成交撤单/过期单清理**：Binance 会在 3 天后清理 `executedQty == 0` 的 `CANCELED` / `EXPIRED` 订单（查询返回 `-2013`）。因此这类订单必须在 3 天留存期内完成至少 2 次权威 `GET` 确认并归档；若一笔 `UNKNOWN` 订单在停机超过 3 天后才首次恢复且返回 `-2013`，系统无法仅凭 `-2013` 证明其“从未成交”还是“从未上链”，因此继续保持 `UNKNOWN` 拒绝交易，直到结合 `userTrades` 与账户基线核实。
-3. **同一毫秒内超过 1000 笔成交的极端时间窗分页**：当使用 `startTime..endTime`（而非 `fromId`）首次引导历史成交且同一毫秒内成交超过 `limit = 1000` 时，基于时间戳的游标无法在同毫秒内切分。因此日常增量恢复全部采用单调递增的 **`fromId` 游标**（不受同毫秒条数限制），且分页器内置了游标停滞与 `max_pages` 截断检测，一旦触及上限立即 Fail-Closed 报错。
+3. **分页完整性与上限边界**：时间范围首批满页后采用 **`fromId` 游标**，可以继续读取同一毫秒的成交；只有严格越过结束时间且整页及跨页的排序假设通过校验才停止，排序、时间戳、冲突或游标异常立即 Fail-Closed。`income` 在同一时间戳下使用接口的 `page` 参数，时间向前时重置到第一页。两者达到 `max_pages` 仍不能证明完成时均拒绝返回不完整结果。
+
+---
+
+## 七、PR #226 两条 Codex P2 分页修复（2026-11-22）
+
+### 根因与最小修复
+
+- **P2-1**：时间参数只用于首请求，切换 `fromId` 后丢失本地边界。修复保留不可变的查询上下界，仅将范围内成交返回给经济事件计算；校验完整回包的 ID 严格递增、时间不递减及跨页新 ID/时间进展后，严格越过结束时间即可有界停止。同 ID 跨页重叠仍去重，经济载荷或时间冲突明确拒绝；同页重复、排序异常、缺失/非法时间、页数耗尽仍 Fail-Closed。纯 `fromId` 不增加未请求的时间上界。七天子窗口各自过滤并共用总页数预算。
+- **P2-2**：在 inclusive 时间边界重读第一页时，`new_in_page == 0` 提前判停，未尝试合法的 `page=2`。修复允许该边界满页先继续编号分页；已经编号的满页若仍无新身份则拒绝，页数上限继续生效。时间前进时重置第一页，避免跳过新时间戳的前部记录；短尾页（包括已见边界尾记录）表示耗尽。时间上下界、页内重复与 `(incomeType, tranId)` 金额/时间/资产冲突均校验。
+- 本轮生产代码仅改动上述两个分页函数；归档、Tier-1、优先级、账本 handler 与持久水位路径保持原有语义，未引入交易所 POST/DELETE，也未启动官方 Demo Execute 或访问私有运行状态。F10 集成约束见 3.4。
+
+### 确定性复现与验证
+
+新增 `tests/integrations/test_demo_recovery_pagination_f12.py`，共 **35 个参数化用例**。
+
+| 验证项 | 实际结果 |
+| --- | --- |
+| 原 HEAD `5344aa08` 的两项最小复现 | **2 failed**：成交 `[10,20]` 实际返回 `[10,20,30]`；三条同毫秒 income 在第二次请求抛出 `pagination did not advance` |
+| 修复后的成交最小复现 | 仅返回 `10,20`，**2 次 GET**；窗口后另有 9998 条成交时仍为 2 次 GET |
+| 同毫秒三条 income，limit=2 | 全部返回、无重复，**3 次 GET**；七条同毫秒流水及混合时间戳亦完整、有界 |
+| 新分页用例 + 原 `test_demo_incremental_recovery_f12.py` 全部测试，Python 3.13 | **54 passed**（35 新增 + 19 原有，含 6/100/1000 规模与迟到成交、手续费修正、重启、UNKNOWN、reduce-only SELL 回归） |
+| 新分页用例，Python 3.14 | **35 passed** |
+| 直接受影响的 10 个 Demo 恢复/对账/成交闭环模块，Python 3.13 | **219 passed**（具体模块与命令见 `p2-validation.json`） |
+| 收入分页中途网络中断、重复页、页数耗尽 | 均拒绝不完整查询；handler 未收到部分事件，旧持久水位原样保留，重启重试后七条流水累计仅入账一次（合计 `-0.14 USDT`） |
+| 默认历史审计触发 | 29 轮且 299 秒不触发；第 30 轮或达到 300 秒触发，首次归档与已有审计两种计时基线均通过 |
+
+命令与机器可读结果见本目录的 `p2-validation.json`；性能复测见 `p2-measurements.json`。XML 中间结果仅用于生成汇总，不作为交付文件。
+
+### 核心 GET 性能复核
+
+以原离线脚本执行 `python docs/validation/p7-m19-f12/benchmark.py --rounds 1 --output docs/validation/p7-m19-f12/p2-measurements.json`，三种规模均完成；每个模式每种规模采样一个稳态轮次。
+
+| 历史订单数 | 原全量恢复 GET/轮 | 修复后 F12 GET/轮 | F12 order / userTrades GET/轮 | 计划审计 GET | 重启幂等 |
+| --- | --- | --- | --- | --- | --- |
+| 6 | 36 | **8** | 2 / 1 | 10 | True |
+| 100 | 348 | **8** | 2 / 1 | 10 | True |
+| 1000 | 3348 | **8** | 2 / 1 | 10 | True |
+
+三种规模的成交量、手续费、持仓、钱包、权益和控制器成交事件均与原全量恢复精确一致；UNKNOWN 恢复各仅一次模拟 POST（ACK 丢失测试），无重发。新增分页代码只有 GET。请求计数与原 F12 基准一致，无 GET 性能退化。本次性能脚本与测试套件并行执行，离线耗时受本机竞争影响，保留原始耗时数据但不据此宣称额外提速。
