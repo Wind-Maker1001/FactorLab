@@ -228,8 +228,7 @@ class CloudFeed:
                 except SafetyBlocked:
                     self.last_exception = 'BOUND_ACCOUNT_CONFIGURATION_REFUSED'
                     raise ValueError(self.last_exception) from None
-            # TODO: reuse incremental GET recovery once late-fill/commission coverage
-            # is proven; the existing full journal recovery must not be shortened here.
+            # Two-tier incremental recovery (Tier-1 real-time admission + scheduled Tier-2 historical audit).
             account = self.session.recover()
             self.status = 'RECOVERING'
             if not account['reconciled']:

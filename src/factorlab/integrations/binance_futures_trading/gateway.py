@@ -31,6 +31,7 @@ class FuturesPaperGateway(PaperBroker):
         super().__init__(Market.BINANCE_USDM, adapter.account_id, instruments, balances, fee_rate=fee_rate)
         self.adapter, self.rules = adapter, rules
         self.leverage, self.max_leverage = leverage, max_leverage
+        self._reusable_exchange = None
 
     def _accepts_network_transport(self, client):
         from .network import demo_network_permitted
@@ -93,6 +94,16 @@ class FuturesPaperGateway(PaperBroker):
         # Controller's duplicate-intent path must not replay already booked fills.
         return self.state.confirmations[client_order_id]
 
+    def _consume_reusable_exchange(self):
+        exchange, self._reusable_exchange = self._reusable_exchange, None
+        if (exchange is not None and self.adapter.reconciled
+                and self.adapter.facts is not None):
+            facts = self.adapter.facts
+            self.adapter._require_fresh_account_read(
+                facts.observed_at, facts.read_started_monotonic, self.adapter.clock())
+            return exchange
+        return self.adapter.reconcile()
+
     def recover(self, controller):
         """Replay only REST-confirmed missing deltas after a disconnected/restarted run.
 
@@ -100,8 +111,11 @@ class FuturesPaperGateway(PaperBroker):
         trades must have reconciled first. The shared journal supplies the
         already-booked notional, rather than estimating from position cost.
         """
-        self.adapter.reconcile()
-        remote_ids = {row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders')}
+        if self.adapter.audit_due():
+            self.adapter.audit_if_due()
+        exchange = self.adapter.reconcile()
+        remote_index = self.adapter.order_consistency_index()
+        remote_ids = set(remote_index)
         if set(self.state.orders) - remote_ids:
             raise SafetyBlocked('RECONCILE_REQUIRED: paper order lacks protocol identity')
         missing = remote_ids - set(self.state.orders)
@@ -116,42 +130,69 @@ class FuturesPaperGateway(PaperBroker):
                 self.state.reconciled = False
             # Import already-sent, REST-confirmed identities only, not submit.
             controller._atomic(import_confirmed_intents)
-        booked = {}
-        for raw, in controller.store.db.execute('SELECT payload FROM events ORDER BY rowid'):
-            event = decode(json.loads(raw))
-            if not isinstance(event, OrderEvent):
-                continue
-            qty, quote = booked.get(event.client_order_id, (ZERO, ZERO))
-            delta = event.cumulative_filled_quantity - qty
-            if delta > 0:
-                quote += delta * event.fill_price
-                qty = event.cumulative_filled_quantity
-            booked[event.client_order_id] = qty, quote
-        def replay_confirmed():
-            for key in tuple(self.state.orders):
-                remote, remote_quote = self.adapter._load(key)
-                local = self.state.orders[key]
-                qty, quote = booked.get(key, (ZERO, ZERO))
-                delta = remote.snapshot.cumulative_filled_quantity - qty
-                if delta < 0 or remote_quote < quote:
-                    raise ValueError('paper/adapter cumulative execution mismatch')
-                fingerprint = hashlib.sha256(dumps([remote, remote_quote]).encode()).hexdigest()
-                event = OrderEvent(key, remote.snapshot.exchange_order_id, remote.snapshot.status,
-                    remote.snapshot.cumulative_filled_quantity, (remote_quote - quote) / delta if delta else None,
-                    remote.observed_at, 'binance-rest-recovery', 'recovery:' + fingerprint,
-                    remote.snapshot.cumulative_fee)
-                if local.confirmed_status == S.NEW:
-                    # The timeout placeholder has a local timestamp, not a confirmed
-                    # exchange time; server clock offset must not reject recovery.
-                    self.state.orders[key] = replace(local, observed_at=event.event_time)
-                if local.confirmed_status == S.NEW and event.status not in {S.SUBMITTED, S.REJECTED}:
-                    self.apply(replace(event, event_id=event.event_id + ':accept', status=S.SUBMITTED,
-                                           cumulative_filled_quantity=ZERO, cumulative_fee=ZERO, fill_price=None))
-                existing = controller.store.db.execute('SELECT payload FROM events WHERE id=?', (event.event_id,)).fetchone()
-                self.apply(decode(json.loads(existing[0])) if existing is not None else event)
-            self._replay_funding_in_transaction(controller)
-        controller._atomic(replay_confirmed)
-        return controller.reconcile()
+
+        dirty_keys = []
+        for key in tuple(self.state.orders):
+            local = self.state.orders[key]
+            conf = self.state.confirmations.get(key)
+            r_status, r_filled, r_fee, r_req, r_ex_id = remote_index[key]
+            snap = local.snapshot
+            if (key in missing or conf is None or r_req
+                    or local.confirmed_status != r_status
+                    or snap.cumulative_filled_quantity != r_filled
+                    or snap.cumulative_fee != r_fee
+                    or snap.exchange_order_id != r_ex_id
+                    or conf.status != r_status
+                    or conf.cumulative_filled_quantity != r_filled
+                    or conf.cumulative_fee != r_fee
+                    or conf.exchange_order_id != r_ex_id):
+                dirty_keys.append(key)
+
+        if dirty_keys:
+            dirty_set = set(dirty_keys)
+            booked = {}
+            for raw, in controller.store.db.execute('SELECT payload FROM events ORDER BY rowid'):
+                event = decode(json.loads(raw))
+                if not isinstance(event, OrderEvent) or event.client_order_id not in dirty_set:
+                    continue
+                qty, quote = booked.get(event.client_order_id, (ZERO, ZERO))
+                delta = event.cumulative_filled_quantity - qty
+                if delta > 0:
+                    quote += delta * event.fill_price
+                    qty = event.cumulative_filled_quantity
+                booked[event.client_order_id] = qty, quote
+
+            def replay_confirmed():
+                for key in dirty_keys:
+                    remote, remote_quote = self.adapter._load(key)
+                    local = self.state.orders[key]
+                    qty, quote = booked.get(key, (ZERO, ZERO))
+                    delta = remote.snapshot.cumulative_filled_quantity - qty
+                    if delta < 0 or remote_quote < quote:
+                        raise ValueError('paper/adapter cumulative execution mismatch')
+                    fingerprint = hashlib.sha256(dumps([remote, remote_quote]).encode()).hexdigest()
+                    event = OrderEvent(key, remote.snapshot.exchange_order_id, remote.snapshot.status,
+                        remote.snapshot.cumulative_filled_quantity, (remote_quote - quote) / delta if delta else None,
+                        remote.observed_at, 'binance-rest-recovery', 'recovery:' + fingerprint,
+                        remote.snapshot.cumulative_fee)
+                    if local.confirmed_status == S.NEW:
+                        # The timeout placeholder has a local timestamp, not a confirmed
+                        # exchange time; server clock offset must not reject recovery.
+                        self.state.orders[key] = replace(local, observed_at=event.event_time)
+                    if local.confirmed_status == S.NEW and event.status not in {S.SUBMITTED, S.REJECTED}:
+                        self.apply(replace(event, event_id=event.event_id + ':accept', status=S.SUBMITTED,
+                                               cumulative_filled_quantity=ZERO, cumulative_fee=ZERO, fill_price=None))
+                    existing = controller.store.db.execute('SELECT payload FROM events WHERE id=?', (event.event_id,)).fetchone()
+                    self.apply(decode(json.loads(existing[0])) if existing is not None else event)
+
+            controller._atomic(replay_confirmed)
+
+        if exchange.reconciled:
+            self._reusable_exchange = exchange
+        try:
+            return controller.reconcile()
+        finally:
+            self._reusable_exchange = None
 
     def _replay_funding_in_transaction(self, controller):
         for event in self.adapter.funding_events():
@@ -167,14 +208,14 @@ class FuturesPaperGateway(PaperBroker):
                 self.apply(event)
 
     def reconcile(self):
-        exchange = self.adapter.reconcile()
-        remote_ids = {row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders')}
-        if remote_ids != set(self.state.orders):
+        exchange = self._consume_reusable_exchange()
+        remote_index = self.adapter.order_consistency_index()
+        if set(remote_index) != set(self.state.orders):
             self.state.reconciled = False
             return self.read_account()
         for key, record in tuple(self.state.orders.items()):
-            remote = self.adapter.order(key)
-            if (remote.cumulative_filled_quantity, remote.cumulative_fee) != (
+            _, r_filled, r_fee, _, _ = remote_index[key]
+            if (r_filled, r_fee) != (
                 record.snapshot.cumulative_filled_quantity, record.snapshot.cumulative_fee
             ):
                 # Cannot reconstruct missing execution prices by assuming a fill.

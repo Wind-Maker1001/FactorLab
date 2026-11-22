@@ -10,7 +10,7 @@ import json
 
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.market import _decimal, symbol_name
-from factorlab.trading import FundingEvent, OrderEvent, OrderSnapshot, OrderStatus as S
+from factorlab.trading import FundingEvent, OrderEvent, OrderSnapshot, OrderStatus as S, Side
 from factorlab.trading.contracts import TERMINAL, funding_event_id, funding_identity_key, utc
 from factorlab.trading.state import OrderRecord, advance, unknown
 from factorlab.trading.storage import dumps, decode
@@ -19,6 +19,14 @@ from .account import AccountFacts, instant
 from .protocol import (
     Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport,
     AccountReadExpired, AccountReadWindow, ReadOnlyNetworkTransport, credential_account_id,
+)
+from .recovery import (
+    MAX_QUERY_WINDOW_MS, OrderRecoveryClass, OrderRecoveryConfig,
+    account_baseline, audit_due, audit_history, baseline_deltas, classify_orders,
+    ensure_global_state, fetch_income_paginated, fetch_user_trades_paginated,
+    init_recovery_schema, load_state, mark_order_unarchived, order_consistency_rows,
+    recovery_status, save_state, sync_income_incremental,
+    sync_order_recovery_on_apply, sync_order_recovery_on_save,
 )
 from .rules import order_parameters
 
@@ -161,13 +169,15 @@ class FuturesAdapter:
     GET reads may be explicitly authorized. Submit/cancel never use real network.
     Restart/disconnect require full REST account/order reconciliation.
     """
-    def __init__(self, client, store, *, account_id='offline', clock=lambda: datetime.now(timezone.utc)):
+    def __init__(self, client, store, *, account_id='offline', clock=lambda: datetime.now(timezone.utc),
+                 recovery_config=None):
         if client.environment is not None:
             if account_id != client.environment.account_id:
                 raise SafetyBlocked('explicit environment account identity required')
             account_id = (f'{client.environment.name}:{account_id}' if client.credentials is None
                           else credential_account_id(client.environment, client.credentials.key))
         self.client, self.store, self.account_id, self.clock = client, store, account_id, clock
+        self.recovery_config = recovery_config if recovery_config is not None else OrderRecoveryConfig()
         self.get_confirmed_writes = False
         self.facts = None
         self.quantitative_observation = None
@@ -175,6 +185,8 @@ class FuturesAdapter:
         self._funding_synced = False
         self._last_funding_sync_ms = None
         self._funding_coverage_cache = None
+        self.last_reconcile_summary = None
+        self.last_audit_summary = None
         self.db = store.db
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_orders (id TEXT PRIMARY KEY, payload TEXT NOT NULL, quote TEXT NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
@@ -191,15 +203,24 @@ class FuturesAdapter:
             complete INTEGER NOT NULL, updated_at TEXT NOT NULL, detail TEXT NOT NULL
         )''')
         self.db.execute('CREATE TABLE IF NOT EXISTS futures_meta (id INTEGER PRIMARY KEY CHECK(id=1), account TEXT NOT NULL, reconciled INTEGER NOT NULL)')
+        init_recovery_schema(self.db)
         with store.transaction():
             row = self.db.execute('SELECT account FROM futures_meta WHERE id=1').fetchone()
             if row is not None and row[0] != account_id:
                 raise ValueError('persisted adapter account mismatch')
             self.db.execute('INSERT INTO futures_meta VALUES(1,?,0) ON CONFLICT(id) DO UPDATE SET reconciled=0', (account_id,))
-            for key, raw in self.db.execute('SELECT id,payload FROM futures_orders').fetchall():
-                record = decode(json.loads(raw))
-                if record.snapshot.status not in TERMINAL:
-                    self._save(unknown(record), self._load(key)[1])
+            self._mark_non_terminal_unknown_in_tx()
+
+    def _mark_non_terminal_unknown_in_tx(self):
+        rows = self.db.execute('''SELECT o.id, o.payload, o.quote FROM futures_orders o
+            LEFT JOIN futures_order_recovery r ON o.id = r.client_order_id
+            WHERE r.client_order_id IS NULL OR r.archived = 0
+               OR r.reconcile_required != 0
+               OR r.confirmed_status NOT IN ('FILLED', 'CANCELED', 'REJECTED')''').fetchall()
+        for key, raw, quote_raw in rows:
+            record = decode(json.loads(raw))
+            if record.snapshot.status not in TERMINAL:
+                self._save(unknown(record), Decimal(quote_raw))
 
     @property
     def reconciled(self):
@@ -214,6 +235,7 @@ class FuturesAdapter:
     def _save(self, record, quote):
         self.db.execute('INSERT INTO futures_orders VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,quote=excluded.quote',
                         (record.snapshot.intent.client_order_id, dumps(record), str(quote)))
+        sync_order_recovery_on_save(self.db, record, quote)
 
     def order(self, order_id):
         return self._load(order_id)[0].snapshot
@@ -221,10 +243,7 @@ class FuturesAdapter:
     def disconnect(self):
         with self.store.transaction():
             self.db.execute('UPDATE futures_meta SET reconciled=0')
-            for key, raw in self.db.execute('SELECT id,payload FROM futures_orders').fetchall():
-                record = decode(json.loads(raw))
-                if record.snapshot.status not in TERMINAL:
-                    self._save(unknown(record), self._load(key)[1])
+            self._mark_non_terminal_unknown_in_tx()
 
     def _uncertain(self, order_id):
         with self.store.transaction():
@@ -250,8 +269,13 @@ class FuturesAdapter:
                 # Query is safe; never POST the same client ID again.
                 existing = True
             else:
-                unresolved = any(decode(json.loads(r[0])).snapshot.reconcile_required
-                                 for r in self.db.execute('SELECT payload FROM futures_orders'))
+                unresolved = any(
+                    decode(json.loads(r[0])).snapshot.reconcile_required
+                    for r in self.db.execute('''SELECT o.payload FROM futures_orders o
+                        LEFT JOIN futures_order_recovery r ON o.id = r.client_order_id
+                        WHERE r.client_order_id IS NULL OR r.archived = 0
+                           OR r.reconcile_required != 0''')
+                )
                 if not self.reconciled or unresolved:
                     raise SafetyBlocked('RECONCILE_REQUIRED')
                 if (self.store.max_orders is not None and
@@ -270,6 +294,7 @@ class FuturesAdapter:
             # Only this call's placeholder exists, and the transport never attempted HTTP.
             with self.store.transaction():
                 self.db.execute('DELETE FROM futures_orders WHERE id=?', (intent.client_order_id,))
+                self.db.execute('DELETE FROM futures_order_recovery WHERE client_order_id=?', (intent.client_order_id,))
             raise
         except ExchangeError as exc:
             if exc.category not in {'RATE_LIMIT', 'ORDER_NOT_FOUND'} and exc.status < 500:
@@ -369,18 +394,29 @@ class FuturesAdapter:
             if sum((_decimal(t['quoteQty']) for t in matching), ZERO) != quote:
                 raise DataQualityError('trade notional does not match order cumulative quote')
             fee = sum((_decimal(t['commission']) for t in matching), ZERO)
-        event = OrderEvent(expected_id, str(row['orderId']), STATUS[row['status']], filled,
-                           delta_quote / delta if delta else None, instant(row['updateTime']),
+        raw_status = row['status']
+        if raw_status == 'PENDING_CANCEL':
+            mapped_status = S.PARTIALLY_FILLED if filled > ZERO else S.SUBMITTED
+        elif raw_status in STATUS:
+            mapped_status = STATUS[raw_status]
+        else:
+            raise DataQualityError('unrecognized exchange order status')
+        updated_at = instant(row['updateTime'])
+        event = OrderEvent(expected_id, str(row['orderId']), mapped_status, filled,
+                           delta_quote / delta if delta else None, updated_at,
                            'binance-rest', 'rest:' + hashlib.sha256(json.dumps(row, sort_keys=True).encode()).hexdigest(), fee)
         payload = json.dumps(dict(source=source, order=row, trades=matching), sort_keys=True)
         receipt_id = hashlib.sha256(payload.encode()).hexdigest()
-        return self._apply(event, quote, receipt=(receipt_id, expected_id, self.clock().isoformat(), payload))
+        recovery_meta = dict(source=source, raw_status=raw_status, trades=matching, exchange_updated_at=updated_at)
+        return self._apply(event, quote, receipt=(receipt_id, expected_id, self.clock().isoformat(), payload),
+                           recovery_meta=recovery_meta)
 
-    def _apply(self, event, quote, *, rejection=None, receipt=None):
+    def _apply(self, event, quote, *, rejection=None, receipt=None, recovery_meta=None):
         with self.store.transaction():
             if receipt is not None:
                 self.db.execute('''INSERT INTO futures_receipts VALUES (?,?,?,?)
-                    ON CONFLICT(id) DO UPDATE SET observed_at=excluded.observed_at''', receipt)
+                    ON CONFLICT(id) DO UPDATE SET observed_at=excluded.observed_at
+                    WHERE futures_receipts.observed_at != excluded.observed_at''', receipt)
             if rejection is not None:
                 self.db.execute('INSERT INTO futures_rejections VALUES(?,?)',
                                 (event.client_order_id, json.dumps(rejection)))
@@ -397,7 +433,12 @@ class FuturesAdapter:
                 if (record.snapshot.reconcile_required and previous.status == record.confirmed_status
                         and previous.cumulative_filled_quantity == record.snapshot.cumulative_filled_quantity
                         and previous.cumulative_fee == record.snapshot.cumulative_fee):
-                    self._save(advance(record, previous), quote)
+                    record = advance(record, previous)
+                    self._save(record, quote)
+                sync_order_recovery_on_apply(
+                    self.db, record, quote, now=self.clock(),
+                    config=self.recovery_config, recovery_meta=recovery_meta,
+                )
                 return previous
             if (self.store.max_events is not None and
                     self.db.execute('SELECT count(*) FROM futures_events').fetchone()[0] >= self.store.max_events):
@@ -412,6 +453,10 @@ class FuturesAdapter:
             updated = advance(record, event)
             self._save(updated, quote)
             self.db.execute('INSERT INTO futures_events VALUES(?,?)', (event.event_id, payload))
+            sync_order_recovery_on_apply(
+                self.db, updated, quote, now=self.clock(),
+                config=self.recovery_config, recovery_meta=recovery_meta,
+            )
         return event
 
     def open_orders(self, symbol=None):
@@ -420,17 +465,41 @@ class FuturesAdapter:
     def all_orders(self, symbol, *, limit=100):
         return self.client.request('GET', '/fapi/v1/allOrders', {'symbol': symbol_name(symbol), 'limit': limit})
 
-    def user_trades(self, symbol, *, order_id=None):
-        params = {'symbol': symbol_name(symbol), 'limit': 1000}
+    def user_trades(self, symbol, *, order_id=None, from_id=None, start_time=None, end_time=None, limit=1000):
+        if type(limit) is not int or not 1 <= limit <= 1000:
+            raise ValueError('userTrades limit must be in 1..1000')
+        if from_id is not None and (start_time is not None or end_time is not None):
+            raise ValueError('Binance userTrades forbids combining fromId with startTime/endTime')
+        if order_id is not None and (from_id is not None or start_time is not None or end_time is not None):
+            raise ValueError('Binance userTrades forbids combining orderId with fromId/startTime/endTime')
+        if start_time is not None and end_time is not None:
+            if end_time < start_time or end_time - start_time > MAX_QUERY_WINDOW_MS:
+                raise ValueError('userTrades time window must be within 0..7 days')
+        params = {'symbol': symbol_name(symbol), 'limit': limit}
         if order_id is not None:
             params['orderId'] = order_id
+        if from_id is not None:
+            params['fromId'] = from_id
+        if start_time is not None:
+            params['startTime'] = start_time
+        if end_time is not None:
+            params['endTime'] = end_time
         rows = self.client.request('GET', '/fapi/v1/userTrades', params)
-        if not isinstance(rows, list) or len(rows) >= 1000:
+        if not isinstance(rows, list) or len(rows) >= limit:
             raise DataQualityError('trade history incomplete; explicit pagination required')
         keys = [(t['symbol'], t['id']) for t in rows]
         if len(keys) != len(set(keys)):
             raise DataQualityError('duplicate actual trades')
         return tuple(rows)
+
+    def user_trades_paginated(self, symbol, *, from_id=None, start_time=None, end_time=None,
+                              limit=None, max_pages=None):
+        rows, _ = fetch_user_trades_paginated(
+            self, symbol, from_id=from_id, start_time=start_time, end_time=end_time,
+            limit=self.recovery_config.trade_page_limit if limit is None else limit,
+            max_pages=self.recovery_config.trade_max_pages if max_pages is None else max_pages,
+        )
+        return rows
 
     def income(self, symbol=None, *, start_time=None, end_time=None, income_type=None, limit=INCOME_PAGE_LIMIT):
         """Raw single-page /fapi/v1/income read; unwindowed reads never prove history coverage."""
@@ -805,6 +874,54 @@ class FuturesAdapter:
             complete=True,
         )
 
+    def income_paginated(self, symbol=None, *, income_type=None, start_time=None, end_time=None,
+                         limit=None, max_pages=None):
+        rows, _ = fetch_income_paginated(
+            self, symbol=symbol, income_type=income_type, start_time=start_time, end_time=end_time,
+            limit=self.recovery_config.income_page_limit if limit is None else limit,
+            max_pages=self.recovery_config.income_max_pages if max_pages is None else max_pages,
+        )
+        return rows
+
+    def sync_income_incremental(self, symbol=None, *, income_type='FUNDING_FEE',
+                                overlap_ms=None, limit=None, max_pages=None, handler=None):
+        return sync_income_incremental(
+            self, symbol=symbol, income_type=income_type,
+            overlap_ms=self.recovery_config.income_overlap_ms if overlap_ms is None else overlap_ms,
+            limit=self.recovery_config.income_page_limit if limit is None else limit,
+            max_pages=self.recovery_config.income_max_pages if max_pages is None else max_pages,
+            handler=handler,
+        )
+
+    def classify_orders(self):
+        return classify_orders(self.db)
+
+    def order_consistency_index(self):
+        return order_consistency_rows(self.db)
+
+    def recovery_status(self):
+        return recovery_status(self.db)
+
+    def audit_due(self):
+        return audit_due(self.db, now=self.clock(), config=self.recovery_config)[0]
+
+    def audit_history(self, *, symbols=None, audit_batch_size=None, include_income=False,
+                      force=False, reason='EXPLICIT', expand_full_trades=False,
+                      income_handler=None):
+        return audit_history(
+            self, symbols=symbols, audit_batch_size=audit_batch_size,
+            include_income=include_income, force=force, reason=reason,
+            expand_full_trades=expand_full_trades, income_handler=income_handler,
+        )
+
+    def audit_if_due(self, *, include_income=False, income_handler=None):
+        due, reason, _ = audit_due(self.db, now=self.clock(), config=self.recovery_config)
+        if not due:
+            return None
+        return self.audit_history(
+            include_income=include_income, reason=reason, income_handler=income_handler,
+        )
+
     def read_activity(self, symbol):
         facts = self.read_facts()
         return replace(facts, trades=self.user_trades(symbol), income=self.income(symbol))
@@ -953,39 +1070,166 @@ class FuturesAdapter:
     def read_account(self):
         return self._account_snapshot(self.read_facts())
 
+    def _open_order_snapshots(self):
+        rows = self.db.execute('''SELECT o.payload FROM futures_orders o
+            LEFT JOIN futures_order_recovery r ON o.id = r.client_order_id
+            WHERE r.client_order_id IS NULL OR r.archived = 0
+               OR r.reconcile_required != 0
+               OR r.confirmed_status NOT IN ('FILLED', 'CANCELED', 'REJECTED')''').fetchall()
+        return [snap for (raw,) in rows if (snap := decode(json.loads(raw)).snapshot).status not in TERMINAL]
+
     def _account_snapshot(self, facts):
-        records = [decode(json.loads(row[0])).snapshot for row in self.db.execute('SELECT payload FROM futures_orders')]
-        known = {o.intent.client_order_id for o in records if o.status not in TERMINAL}
+        open_orders = self._open_order_snapshots()
+        known = {o.intent.client_order_id for o in open_orders}
         actual = {o['clientOrderId'] for o in facts.open_orders}
-        return facts.shared([o for o in records if o.status not in TERMINAL], reconciled=self.reconciled and known == actual)
+        return facts.shared(open_orders, reconciled=self.reconciled and known == actual)
 
-    def reconcile(self):
-        return self._reconcile()
+    def reconcile(self, *, full_history=False):
+        return self._reconcile(full_history=full_history)
 
-    def _reconcile(self, *, initial_facts=None):
+    def _reconcile(self, *, initial_facts=None, full_history=False):
         # Any failure leaves the durable global risk gate closed.
         self.disconnect()
-        # TODO: replace lifetime polling only with a contract proving history
-        # coverage and visibility of late fills/commission corrections. Neither
-        # terminal status nor a forward-only trade ID proves that completeness.
-        keys = [row[0] for row in self.db.execute('SELECT id FROM futures_orders')]
         if initial_facts is not None:
             self._validate_network_identity()
-            if keys or initial_facts is not self.facts:
+            has_orders = self.db.execute('SELECT 1 FROM futures_orders LIMIT 1').fetchone() is not None
+            if has_orders or initial_facts is not self.facts:
                 raise SafetyBlocked('initial Demo facts require an unchanged empty order journal')
-        for key in keys:
-            order = self.order(key)
-            if order.status == S.REJECTED and order.exchange_order_id is None:
-                continue
+            facts = initial_facts
+            snapshot = facts.shared(reconciled=not facts.open_orders)
+            if not snapshot.reconciled:
+                raise DataQualityError('account incomplete, hedge mode or unmanaged open orders: reconciliation blocked')
+            self._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic, self.clock())
+            now_iso = self.clock().isoformat()
+            with self.store.transaction():
+                self.db.execute('UPDATE futures_meta SET reconciled=1')
+                base = account_baseline(facts)
+                if base is not None:
+                    save_state(self.db, 'account_baseline', base, now_iso)
+                gstate = ensure_global_state(self.db, now_iso)
+                gstate.update(
+                    has_unknown=False, unknown_count=0, active_count=0, incomplete_count=0,
+                    archived_count=0, realtime_rounds=int(gstate.get('realtime_rounds', 0)) + 1,
+                    last_realtime_reconcile_at=now_iso,
+                )
+                save_state(self.db, 'global', gstate, now_iso)
+            self.last_reconcile_summary = dict(
+                mode='INITIAL_EMPTY', unknown_queried=0, active_queried=0,
+                incomplete_queried=0, archived_skipped=0, archived_queried=0,
+                reactive_audit_triggered=False, reopened_archived=0,
+            )
+            return self._account_snapshot(facts)
+
+        # Tier-1 real-time trading admission recovery: check latched historical conflicts first.
+        global_state = load_state(self.db, 'global')
+        if global_state and global_state.get('history_audit_status') in {'CONFLICT', 'DEGRADED_GAP'} and not full_history:
+            self.audit_history(force=True, reason='RESOLVE_LATCHED_CONFLICT')
+
+        buckets = classify_orders(self.db)
+        to_query = list(buckets['unknown']) + list(buckets['active']) + list(buckets['economic_incomplete'])
+        archived_queried = 0
+        if full_history:
+            to_query.extend(buckets['archived_exchange'])
+            archived_queried = len(buckets['archived_exchange'])
+
+        pre_tier1 = {}
+        for key in to_query:
+            snap = self.order(key)
+            pre_tier1[key] = (snap.intent.instrument_id, snap.intent.side,
+                              snap.cumulative_filled_quantity, snap.cumulative_fee)
+
+        for key in to_query:
             self.query_order(key)
-        facts = self.read_facts() if initial_facts is None else initial_facts
-        known = {key for key in keys if self.order(key).status not in TERMINAL}
+
+        expected_pos_deltas = {}
+        tier1_economic_changed = False
+        for key, (sym, side, before_filled, before_fee) in pre_tier1.items():
+            snap = self.order(key)
+            fill_delta = snap.cumulative_filled_quantity - before_filled
+            fee_delta = snap.cumulative_fee - before_fee
+            if fill_delta != ZERO or fee_delta != ZERO:
+                tier1_economic_changed = True
+            if fill_delta != ZERO:
+                signed = fill_delta if side is Side.BUY else -fill_delta
+                expected_pos_deltas[sym] = expected_pos_deltas.get(sym, ZERO) + signed
+                if expected_pos_deltas[sym] == ZERO:
+                    del expected_pos_deltas[sym]
+
+        facts = self.read_facts()
         actual = {o['clientOrderId'] for o in facts.open_orders}
+
+        # Live openOrders cross-check: never let an archived order remain open on exchange.
+        reopened = [cid for cid in buckets['archived'] if cid in actual]
+        if reopened:
+            for cid in reopened:
+                with self.store.transaction():
+                    mark_order_unarchived(self.db, cid, 'OPEN_ON_EXCHANGE')
+                self.query_order(cid)
+            facts = self.read_facts()
+            actual = {o['clientOrderId'] for o in facts.open_orders}
+
+        # Reactive late-fill / fee-drift check when archived exchange orders exist and account baseline shifted.
+        reactive_audit_triggered = False
+        current_baseline = account_baseline(facts)
+        if buckets['archived_exchange'] and not full_history and current_baseline is not None:
+            previous_baseline = load_state(self.db, 'account_baseline')
+            if previous_baseline is not None and current_baseline != previous_baseline:
+                pos_deltas, wallet_delta = baseline_deltas(previous_baseline, current_baseline)
+                if pos_deltas != expected_pos_deltas or (wallet_delta != ZERO and not tier1_economic_changed):
+                    reactive_audit_triggered = True
+                    audit = self.audit_history(
+                        force=True, reason='ACCOUNT_BASELINE_DELTA', audit_batch_size=0,
+                    )
+                    if not audit['late_discoveries'] and not audit['expanded_scan']:
+                        # Expand trade scan across retained history if narrow overlap did not explain delta.
+                        self.audit_history(
+                            force=True, reason='ACCOUNT_BASELINE_EXPANDED',
+                            audit_batch_size=0, expand_full_trades=True,
+                        )
+                    facts = self.read_facts()
+                    actual = {o['clientOrderId'] for o in facts.open_orders}
+                    current_baseline = account_baseline(facts)
+
+        open_orders = self._open_order_snapshots()
+        known = {o.intent.client_order_id for o in open_orders}
         snapshot = facts.shared(reconciled=known == actual)
         if not snapshot.reconciled:
             raise DataQualityError('account incomplete, hedge mode or unmanaged open orders: reconciliation blocked')
-        if initial_facts is not None:
-            self._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic, self.clock())
+
+        final_buckets = classify_orders(self.db)
+        if final_buckets['unknown']:
+            raise DataQualityError('unresolved UNKNOWN orders remain; reconciliation blocked')
+
+        now_iso = self.clock().isoformat()
         with self.store.transaction():
+            gstate = ensure_global_state(self.db, now_iso)
+            if gstate.get('history_audit_status') in {'CONFLICT', 'DEGRADED_GAP'}:
+                raise DataQualityError('historical audit conflict/gap unresolved; reconciliation blocked')
             self.db.execute('UPDATE futures_meta SET reconciled=1')
+            if current_baseline is not None:
+                save_state(self.db, 'account_baseline', current_baseline, now_iso)
+            gstate.update(
+                has_unknown=False,
+                unknown_count=0,
+                active_count=len(final_buckets['active']),
+                incomplete_count=len(final_buckets['economic_incomplete']),
+                archived_count=len(final_buckets['archived']),
+                realtime_rounds=int(gstate.get('realtime_rounds', 0)) + 1,
+                rounds_since_audit=(0 if reactive_audit_triggered
+                                    else int(gstate.get('rounds_since_audit', 0)) + 1),
+                last_realtime_reconcile_at=now_iso,
+            )
+            save_state(self.db, 'global', gstate, now_iso)
+
+        self.last_reconcile_summary = dict(
+            mode='FULL_HISTORY' if full_history else 'INCREMENTAL_REALTIME',
+            unknown_queried=len(buckets['unknown']),
+            active_queried=len(buckets['active']),
+            incomplete_queried=len(buckets['economic_incomplete']),
+            archived_skipped=0 if full_history else len(buckets['archived_exchange']),
+            archived_queried=archived_queried,
+            local_rejected_skipped=len(buckets['local_rejected']),
+            reactive_audit_triggered=reactive_audit_triggered,
+            reopened_archived=len(reopened),
+        )
         return self._account_snapshot(facts)

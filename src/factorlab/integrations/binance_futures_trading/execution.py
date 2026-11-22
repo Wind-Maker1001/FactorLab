@@ -108,9 +108,9 @@ class DemoFuturesAdapter(FuturesAdapter):
         finally:
             self._initial_facts = None
 
-    def reconcile(self):
+    def reconcile(self, *, full_history=False):
         facts, self._initial_facts = self._initial_facts, None
-        return self._reconcile(initial_facts=facts)
+        return self._reconcile(initial_facts=facts, full_history=full_history)
 
     def submit_order(self, intent):
         if intent is not self._admitted_intent:
@@ -232,15 +232,15 @@ class DemoExecutionGateway(FuturesPaperGateway):
         orders = tuple(r.snapshot for key, r in self.state.orders.items()
                        if key != exclude_order_id and r.snapshot.status not in TERMINAL)
         local = super().read_account(exclude_order_id=exclude_order_id)
-        remote_ids = {row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders')}
-        consistent = remote_ids == set(self.state.orders)
+        remote_index = self.adapter.order_consistency_index()
+        consistent = set(remote_index) == set(self.state.orders)
         if consistent:
             for key, record in self.state.orders.items():
-                confirmed = self.adapter.order(key)
+                r_status, r_filled, r_fee, r_req, _ = remote_index[key]
                 local_order = record.snapshot
-                if (local_order.reconcile_required or confirmed.reconcile_required
+                if (local_order.reconcile_required or r_req
                         or (local_order.status, local_order.cumulative_filled_quantity, local_order.cumulative_fee)
-                        != (confirmed.status, confirmed.cumulative_filled_quantity, confirmed.cumulative_fee)):
+                        != (r_status, r_filled, r_fee)):
                     consistent = False
                     break
         if consistent:
@@ -297,14 +297,14 @@ class DemoExecutionGateway(FuturesPaperGateway):
 
     def reconcile(self):
         """Import authenticated account authority after all execution deltas are booked."""
-        exchange = self.adapter.reconcile()
-        remote_ids = {row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders')}
-        if remote_ids != set(self.state.orders):
+        exchange = self._consume_reusable_exchange()
+        remote_index = self.adapter.order_consistency_index()
+        if set(remote_index) != set(self.state.orders):
             self.state.reconciled = False
             return self.read_account()
         for key, record in tuple(self.state.orders.items()):
-            remote = self.adapter.order(key)
-            if (remote.cumulative_filled_quantity, remote.cumulative_fee) != (
+            _, r_filled, r_fee, _, _ = remote_index[key]
+            if (r_filled, r_fee) != (
                     record.snapshot.cumulative_filled_quantity, record.snapshot.cumulative_fee):
                 self.state.reconciled = False
                 return self.read_account()
@@ -313,7 +313,12 @@ class DemoExecutionGateway(FuturesPaperGateway):
             return self.read_account()
         from dataclasses import replace
         for key, record in tuple(self.state.orders.items()):
-            self.state.orders[key] = replace(record, snapshot=self.adapter.order(key))
+            r_status, r_filled, r_fee, r_req, r_ex_id = remote_index[key]
+            snap = record.snapshot
+            if (snap.status != r_status or snap.cumulative_filled_quantity != r_filled
+                    or snap.cumulative_fee != r_fee or snap.reconcile_required != r_req
+                    or snap.exchange_order_id != r_ex_id):
+                self.state.orders[key] = replace(record, snapshot=self.adapter.order(key))
         self.state.cash = {a.currency: a.total for a in exchange.assets}
         self.state.positions = {p.instrument_id: p for p in exchange.positions}
         self.state.reconciled = exchange.reconciled

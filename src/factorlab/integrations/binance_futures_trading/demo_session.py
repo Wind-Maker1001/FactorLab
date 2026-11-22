@@ -1,6 +1,6 @@
 """Compose authenticated Demo sessions over the existing controller and journals."""
 
-from contextlib import closing
+from contextlib import closing, nullcontext
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
@@ -22,7 +22,7 @@ from .execution import DemoExecutionGateway, DemoFuturesAdapter, observe_demo_ru
 from .network import DemoNetworkTransport
 from .protocol import ExchangeError, SafetyBlocked, credential_account_id, rejection_message
 from .rules import symbol_row
-from .observability import ObservedClient
+from .observability import ObservedClient, RequestCounts
 
 
 def _new_request_counts():
@@ -92,6 +92,7 @@ class DemoSession:
         self._count_lock = Lock()
         self.last_reconciled_at = None
         self.last_recovery_seconds = None
+        self.last_audit_seconds = None
         self.receipts = []
         self._recovered_receipt_count = 0
         self.receipt_error = False
@@ -220,6 +221,23 @@ class DemoSession:
     def _protocol_ids(self):
         return tuple(row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders ORDER BY rowid'))
 
+    def recovery_status(self):
+        """Return incremental order classification, watermarks, and historical audit status."""
+        return self.adapter.recovery_status()
+
+    def audit_history(self, *, force=False, include_income=False, reason='EXPLICIT'):
+        """Run Tier-2 historical economic ledger audit outside the 5-second account read window."""
+        started = perf_counter()
+        measure = (self.requests.measure('history_audit')
+                   if isinstance(self.requests, RequestCounts) else nullcontext())
+        try:
+            with measure, self.client.recover_get_clock():
+                return self.adapter.audit_history(
+                    force=force, include_income=include_income, reason=reason,
+                )
+        finally:
+            self.last_audit_seconds = perf_counter() - started
+
     def recover(self):
         """Reconcile the existing journals and account via GET only."""
         return self._recover()
@@ -228,6 +246,8 @@ class DemoSession:
         if self.gateway.state.quotes.get(SYMBOL) is None and self._protocol_ids():
             book = self._fresh_book()
             self.controller.quote(Quote(SYMBOL, book['askPrice'], book['time_utc']))
+        if initial_facts is None and self.adapter.audit_due():
+            self.audit_history(reason='SCHEDULED')
         started = perf_counter()
         try:
             with self.client.recover_get_clock():
