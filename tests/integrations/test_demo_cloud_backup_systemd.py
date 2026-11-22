@@ -14,6 +14,10 @@ import pytest
 from factorlab.integrations.binance_futures_trading import demo_cloud_backup as backup
 
 
+if not hasattr(signal, 'SIGKILL'):
+    pytest.skip('SIGKILL is required for the systemd termination tests', allow_module_level=True)
+
+
 pytestmark = pytest.mark.skipif(
     sys.platform != 'linux' or os.environ.get('FACTORLAB_TEST_SYSTEMD') != '1',
     reason='requires opt-in on an isolated Linux systemd host with root privileges',
