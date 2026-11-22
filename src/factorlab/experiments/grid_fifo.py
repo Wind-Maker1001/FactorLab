@@ -46,18 +46,21 @@ def attribution(directory):
     store = PaperStore(directory/'paper.sqlite')
     try:
         events = [event for _, event in store.order_events() if event.fill_price is not None]
+        funding = [event for _, event in store.funding_events()] if hasattr(store, 'funding_events') else []
         state = store.load()
     finally:
         store.close()
-    return attribute_events(result, rows, closes, events, state)
+    return attribute_events(result, rows, closes, events, state, funding_events=funding or None)
 
 
-def attribute_events(result, rows, closes, events, state):
+def attribute_events(result, rows, closes, events, state, *, funding_events=None):
     """Attribute exported authoritative fills without opening a research account.
 
     ``closes`` supplies each fill's explicit reference price, keyed by its export
     timestamp. Using execution prices as references attributes execution P/L only;
-    it does not establish market slippage.
+    it does not establish market slippage. Confirmed ``funding_events``, when
+    supplied, enter account/strategy net P/L independently without altering fill
+    quantities, fill prices, FIFO lot cost basis or order fees.
     """
     if len(rows) != len(events) or len({r['event_id'] for r in rows}) != len(rows):
         raise ValueError('fill log differs from authoritative Paper events')
@@ -138,12 +141,40 @@ def attribute_events(result, rows, closes, events, state):
     normal = total(m for m in matches if m['purpose'] != 'RISK_EXIT')
     exits = total(m for m in matches if m['purpose'] == 'RISK_EXIT')
     residual_total = total(residual)
-    economic_net = normal['net'] + exits['net'] + residual_total['net']
+    if funding_events is not None:
+        from factorlab.trading.contracts import FundingEvent
+        funding_list = list(funding_events)
+        if any(not isinstance(event, FundingEvent) for event in funding_list):
+            raise ValueError('funding_events must contain FundingEvent instances')
+        if len({event.event_id for event in funding_list}) != len(funding_list):
+            raise ValueError('duplicate funding event_id in attribution')
+        realized_funding = sum((event.amount for event in funding_list), ZERO)
+        funding_by_symbol, funding_by_asset = {}, {}
+        for event in funding_list:
+            funding_by_symbol[event.symbol] = funding_by_symbol.get(event.symbol, ZERO) + event.amount
+            funding_by_asset[event.asset] = funding_by_asset.get(event.asset, ZERO) + event.amount
+        funding_summary = dict(
+            source='AUTHORITATIVE_FUNDING_LEDGER',
+            event_count=len(funding_list),
+            realized_funding=realized_funding,
+            by_symbol=funding_by_symbol,
+            by_asset=funding_by_asset,
+        )
+    else:
+        realized_funding = ZERO
+        funding_summary = 'NOT_SIMULATED'
+    realized_trade_pnl = normal['execution_gross'] + exits['execution_gross']
+    realized_trade_net = normal['net'] + exits['net']
+    trading_net = normal['net'] + exits['net'] + residual_total['net']
+    strategy_net_pnl = trading_net + realized_funding
+    economic_net = strategy_net_pnl
     quantity = sum((lot['remaining'] for lot in queue), ZERO)
     position = state.positions.get(result['instrument_id'])
     valuation_adjustment = quantity * (position.mark_price-mark) if position else ZERO
     capital = D(result['capital'])
-    final_equity = sum(state.cash.values(), ZERO)
+    final_wallet = sum(state.cash.values(), ZERO)
+    wallet_change = final_wallet - capital
+    final_equity = final_wallet
     if result['market'] == 'BINANCE_EQUITY':
         final_equity += sum((p.quantity*p.mark_price for p in state.positions.values()), ZERO)
     else:
@@ -152,12 +183,21 @@ def attribute_events(result, rows, closes, events, state):
                    normal_sell=normal, risk_exit=exits, residual=residual_total,
                    completed_cycle=total(m for m in matches if m['buy_event_id'] in completed),
                    residual_inventory=quantity, actual_fees=total_fees,
-                   actual_slippage=total_slippage, economic_net=economic_net,
-                   valuation_adjustment=valuation_adjustment, final_equity=final_equity,
+                   actual_slippage=total_slippage,
+                   realized_trade_pnl=realized_trade_pnl,
+                   realized_trade_net=realized_trade_net,
+                   realized_funding=realized_funding,
+                   trading_net=trading_net,
+                   strategy_net_pnl=strategy_net_pnl,
+                   economic_net=economic_net,
+                   valuation_adjustment=valuation_adjustment,
+                   final_wallet=final_wallet,
+                   wallet_change=wallet_change,
+                   final_equity=final_equity,
                    final_nav=final_equity/capital,
                    reconciliation_residual=final_equity-capital-economic_net-valuation_adjustment,
                    reported_equity_difference=D(result['final']['equity'])-final_equity,
-                   funding='NOT_SIMULATED')
+                   funding=funding_summary)
     for lot in lots:
         lot['completed_grid_cycle'] = lot['event_id'] in completed and not lot['endowed']
     return dict(summary=summary, matches=matches, lots=lots)

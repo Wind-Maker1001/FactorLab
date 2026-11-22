@@ -45,6 +45,19 @@ def decimal_value(value: Decimal, name: str, *, positive: bool = False) -> None:
         raise ValueError(f"{name} must be a finite {'positive' if positive else 'nonnegative'} Decimal")
 
 
+def signed_decimal_value(value: Decimal, name: str) -> None:
+    if not isinstance(value, Decimal) or not value.is_finite():
+        raise ValueError(f"{name} must be a finite Decimal")
+
+
+def funding_event_id(income_type: str, tran_id: str) -> str:
+    if not isinstance(income_type, str) or not income_type.strip():
+        raise ValueError("income_type must be a nonempty string")
+    if not isinstance(tran_id, str) or not tran_id.strip():
+        raise ValueError("tran_id must be a nonempty string")
+    return f"funding:{income_type}:{tran_id}"
+
+
 def utc(value: datetime) -> None:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() != timedelta(0):
         raise ValueError("timestamps must be timezone-aware UTC")
@@ -104,6 +117,52 @@ class OrderEvent:
             decimal_value(self.fill_price, "fill_price", positive=True)
         if not isinstance(self.status, OrderStatus) or not self.client_order_id or not self.source or not self.event_id:
             raise ValueError("status, order identity, source and event_id required")
+
+
+@dataclass(frozen=True)
+class FundingEvent:
+    """Exchange-confirmed funding settlement; never an order fill or trade fee.
+
+    event_id is the stable exchange event identity within an account.
+    amount is signed in the explicit settlement asset (negative = paid, positive = received).
+    """
+    account_id: str
+    tran_id: str
+    symbol: str
+    asset: str
+    income_type: str
+    amount: Decimal
+    event_time: datetime
+    source: str
+    event_id: str
+    metadata: dict[str, str | int | bool | None] = field(default_factory=dict)
+
+    def __post_init__(self):
+        utc(self.event_time)
+        signed_decimal_value(self.amount, "amount")
+        for name in ("account_id", "tran_id", "symbol", "asset", "income_type", "source", "event_id"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or not value.strip() or len(value) > 256:
+                raise ValueError(f"{name} must be a bounded nonempty string")
+        if self.income_type != "FUNDING_FEE":
+            raise ValueError("FundingEvent supports FUNDING_FEE income_type only")
+        if not isinstance(self.metadata, dict):
+            raise ValueError("metadata must be a dict")
+        for key, value in self.metadata.items():
+            if not isinstance(key, str) or not key or not isinstance(value, (str, int, bool, type(None))):
+                raise ValueError("metadata requires string keys and scalar values")
+
+
+def funding_identity_key(event: FundingEvent):
+    return (
+        event.account_id,
+        event.tran_id,
+        event.symbol,
+        event.asset,
+        event.income_type,
+        event.amount,
+        event.event_time,
+    )
 
 
 @dataclass(frozen=True)

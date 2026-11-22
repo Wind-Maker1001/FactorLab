@@ -3,7 +3,9 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 
 from factorlab.errors import DataQualityError
-from .adapter import FuturesAdapter
+from factorlab.trading import FundingEvent
+from factorlab.trading.contracts import ZERO, funding_identity_key
+from .adapter import FuturesAdapter, _to_ms
 from .gateway import FuturesPaperGateway
 from .protocol import Environment, OfflineTransport, SafetyBlocked, WRITE_PATHS, READ_PATHS
 from .rules import RuleObservation, SUPPORTED_NETWORK_FILTERS, order_parameters, symbol_row
@@ -201,6 +203,24 @@ class DemoExecutionGateway(FuturesPaperGateway):
     def _accepts_network_transport(self, client):
         return type(client.transport) is DemoNetworkTransport
 
+    def _funding_consistent(self):
+        coverage = self.adapter.funding_coverage()
+        if coverage is None or not coverage['complete']:
+            return False
+        adapter_funding = self.adapter.funding_events()
+        if len(adapter_funding) != len(self.state.funding_events):
+            return False
+        totals = {}
+        for event in adapter_funding:
+            booked = self.state.funding_events.get(event.event_id)
+            if booked is None or funding_identity_key(booked) != funding_identity_key(event):
+                return False
+            totals[event.asset] = totals.get(event.asset, ZERO) + event.amount
+        for currency in set(totals) | set(self.state.funding):
+            if totals.get(currency, ZERO) != self.state.funding.get(currency, ZERO):
+                return False
+        return True
+
     def read_account(self, *, exclude_order_id=None):
         from dataclasses import replace
         from factorlab.trading.contracts import TERMINAL
@@ -223,6 +243,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
                         != (confirmed.status, confirmed.cumulative_filled_quantity, confirmed.cumulative_fee)):
                     consistent = False
                     break
+        if consistent:
+            consistent = self._funding_consistent()
         remote = facts.shared(orders, reconciled=self.state.reconciled and self.adapter.reconciled and consistent)
         from factorlab.trading.contracts import AssetBalance
         assets = tuple(AssetBalance(a.currency, a.total,
@@ -230,13 +252,47 @@ class DemoExecutionGateway(FuturesPaperGateway):
             for a in local.assets)
         return replace(local, assets=assets, reconciled=remote.reconciled)
 
+    def _sync_and_replay_funding(self, controller, *, end_time=None):
+        self.adapter.sync_funding(end_time=end_time)
+        adapter_events = self.adapter.funding_events()
+        if (len(adapter_events) != len(self.state.funding_events)
+                or any(self.state.funding_events.get(e.event_id) is None
+                       or funding_identity_key(self.state.funding_events[e.event_id]) != funding_identity_key(e)
+                       for e in adapter_events)):
+            controller._atomic(lambda: self._replay_funding_in_transaction(controller))
+
     def recover(self, controller, *, initial_facts=None):
-        # No order identity means there is nothing to import, replay or verify
-        # on both sides of replay. Reconcile once with current exchange facts.
-        if not self.state.orders and self.adapter.db.execute(
-                'SELECT 1 FROM futures_orders LIMIT 1').fetchone() is None:
-            with self.adapter._initial_reconciliation(initial_facts):
-                return controller.reconcile()
+        # No order identity means there are no order deltas to import or replay.
+        # Confirmed funding settlements are still synchronized and replayed atomically.
+        empty_orders = (not self.state.orders and self.adapter.db.execute(
+            'SELECT 1 FROM futures_orders LIMIT 1').fetchone() is None)
+        if empty_orders:
+            if initial_facts is not None:
+                self.adapter._validate_network_identity()
+                if initial_facts is not self.adapter.facts:
+                    raise SafetyBlocked('initial Demo facts require an unchanged empty order journal')
+                self.adapter._require_fresh_account_read(
+                    initial_facts.observed_at, initial_facts.read_started_monotonic, self.adapter.clock())
+                self._sync_and_replay_funding(controller, end_time=initial_facts.observed_at)
+                with self.adapter._initial_reconciliation(initial_facts):
+                    return controller.reconcile()
+            now_ms = _to_ms(self.adapter.clock())
+            previous_cash = dict(self.state.cash)
+            need_sync = (
+                type(self.adapter.client.transport) is not DemoNetworkTransport
+                or not self.adapter._funding_synced
+                or self.adapter._last_funding_sync_ms != now_ms
+                or bool(self.state.positions)
+                or bool(self.adapter.funding_events())
+            )
+            if need_sync:
+                self._sync_and_replay_funding(controller, end_time=now_ms)
+            account = controller.reconcile()
+            if not need_sync and (self.state.cash != previous_cash or bool(self.state.positions)):
+                self._sync_and_replay_funding(controller)
+                account = controller.reconcile()
+            return account
+        self.adapter.sync_funding()
         return super().recover(controller)
 
     def reconcile(self):
@@ -252,6 +308,9 @@ class DemoExecutionGateway(FuturesPaperGateway):
                     record.snapshot.cumulative_filled_quantity, record.snapshot.cumulative_fee):
                 self.state.reconciled = False
                 return self.read_account()
+        if not self._funding_consistent():
+            self.state.reconciled = False
+            return self.read_account()
         from dataclasses import replace
         for key, record in tuple(self.state.orders.items()):
             self.state.orders[key] = replace(record, snapshot=self.adapter.order(key))
@@ -261,7 +320,9 @@ class DemoExecutionGateway(FuturesPaperGateway):
         return self.read_account()
 
     def apply(self, event):
-        """Book exchange-confirmed fees rather than the Paper fee estimate."""
+        """Book exchange-confirmed fees or funding settlements rather than estimates."""
+        if isinstance(event, FundingEvent):
+            return self.apply_funding(event)
         from factorlab.trading.state import advance
         if not self.record_event(event):
             return False

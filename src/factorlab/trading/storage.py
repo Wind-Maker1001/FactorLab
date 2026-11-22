@@ -8,12 +8,14 @@ import json
 import sqlite3
 import time
 
+from factorlab.errors import DataQualityError
+
 from . import contracts
 from .paper import Instrument, PaperState, Quote
 from .state import OrderRecord
 
 _TYPES = {c.__name__: c for c in (
-    contracts.OrderIntent, contracts.OrderEvent, contracts.OrderSnapshot,
+    contracts.OrderIntent, contracts.OrderEvent, contracts.FundingEvent, contracts.OrderSnapshot,
     contracts.Position, Instrument, PaperState, Quote, OrderRecord,
 )}
 _ENUMS = {c.__name__: c for c in (contracts.Market, contracts.Side, contracts.OrderType, contracts.OrderStatus)}
@@ -134,6 +136,14 @@ class PaperStore:
                         (contracts.CONTRACT_VERSION, payload))
 
     def record_event(self, event):
+        if isinstance(event, contracts.FundingEvent):
+            saved = self.event_payload(event.event_id)
+            if saved is not None:
+                previous = decode(json.loads(saved))
+                if (not isinstance(previous, contracts.FundingEvent)
+                        or contracts.funding_identity_key(previous) != contracts.funding_identity_key(event)):
+                    raise DataQualityError("funding event identity conflict")
+                return False
         return self.record_metadata(event.event_id, event)
 
     def event_payload(self, event_id):
@@ -148,6 +158,13 @@ class PaperStore:
         for cursor, payload in self.db.execute("SELECT rowid, payload FROM events ORDER BY rowid"):
             event = decode(json.loads(payload))
             if isinstance(event, contracts.OrderEvent):
+                yield cursor, event
+
+    def funding_events(self):
+        """Yield authoritative confirmed funding settlements in journal insertion order."""
+        for cursor, payload in self.db.execute("SELECT rowid, payload FROM events ORDER BY rowid"):
+            event = decode(json.loads(payload))
+            if isinstance(event, contracts.FundingEvent):
                 yield cursor, event
 
     def record_metadata(self, event_id, value):

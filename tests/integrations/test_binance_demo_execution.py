@@ -24,6 +24,10 @@ from factorlab.trading.storage import PaperStore
 
 
 class DemoFixture(FakeTransport):
+    def __init__(self):
+        super().__init__()
+        self.income = []
+
     def __call__(self, request, timeout):
         if request.path == '/fapi/v1/exchangeInfo':
             self.calls.append((request.method, request.path, {}))
