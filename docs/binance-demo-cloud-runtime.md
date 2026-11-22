@@ -231,7 +231,7 @@ sudo systemctl restart systemd-journald
 journalctl --disk-usage
 ```
 
-This enforces `Storage=persistent`, `Compress=yes`, `SystemMaxUse=512M`, `SystemKeepFree=4G`, `SystemMaxFileSize=32M`, `RuntimeMaxUse=32M` (protecting a 1 GiB VM), and `MaxRetentionSec=14day`.
+This enforces `Storage=persistent`, `Compress=yes`, `SystemMaxUse=512M`, `SystemKeepFree=4G`, `SystemMaxFileSize=32M`, `RuntimeMaxUse=32M` (protecting a 1 GiB VM), and `MaxRetentionSec=14day`. Note that `SystemMaxUse=512M` and `SystemKeepFree=4G` take precedence over `MaxRetentionSec=14day`: `14day` is a maximum age cap, not a guarantee of 14-day journal retention when high-frequency Execute logs fill the 512 MiB quota earlier. Long-window (`24h`/`72h`/`7d`) availability and metric summaries therefore rely on the dedicated bounded `samples.jsonl` (`48 MiB` cap, 8-day retention).
 
 ### Automated health sampling, alerting, and daily reports
 
@@ -246,7 +246,8 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now factorlab-demo-health.timer factorlab-demo-daily-report.timer
 ```
 
-- `demo_cloud_runtime monitor` runs every minute via `factorlab-demo-health.timer`, preserves the health JSON stdout and exit code (`0` ready / `1` unhealthy), appends a redacted sample to `/var/lib/factorlab-demo/monitoring/samples.jsonl` (8-day retention, 16 MiB cap), and evaluates 7 alert classes: process exit, sustained health failure, order UNKNOWN, account recovery failure, low disk space, budget near exhaustion (read-only accounting, never resetting or expanding budgets), and unexpected restarts.
+- `demo_cloud_runtime monitor` runs every minute via `factorlab-demo-health.timer`, preserves the health JSON stdout and exit code (`0` ready / `1` unhealthy), appends a redacted sample to `/var/lib/factorlab-demo/monitoring/samples.jsonl` (8-day retention, `48 MiB` cap — sufficient for 11,520 realistic 1-minute samples without premature truncation of 7-day metrics), and evaluates 7 alert classes plus C07 maintenance health: process exit, sustained health failure, order UNKNOWN, account recovery failure, low disk space, budget near exhaustion (read-only accounting, never resetting or expanding budgets), unexpected restarts, and failed/timed-out backup maintenance.
+- Read-only C07 backup maintenance correlation (`FACTORLAB_DEMO_BACKUP_ROOT`, default `/var/backups/factorlab-demo`): a non-crash stop/start whose unit, pre/post PID, timestamp, `status=SUCCEEDED`, `restart_succeeded=true`, `reconcile_verified=true`, and bounded downtime (`<= 120s`) strictly match `backup-status.json` is recorded as `MAINTENANCE_RESTART` (no false `unexpected_restart` alert). Any backup failure, reconciliation timeout, downtime overrun, crash (`NRestarts` increment), or unrecovered service continues to alert (`CRITICAL`).
 - Alerts support deduplication, cooldown reminders, severity escalation, rate limiting, and recovery notifications (`ALERT_RESOLVED`) persisted in `alert-state.json` and `alert-events.jsonl` (14-day retention, 2 MiB cap).
 - `demo_cloud_runtime report --write-report --markdown` runs daily via `factorlab-demo-daily-report.timer` (00:05 UTC), summarizing `24h`, `72h`, and `7d` windows, POST consumption rate and remaining budget, and explicitly separating **Service Liveness**, **Trading Readiness**, and **Real Order Execution**.
 - `demo_cloud_runtime test-alert` runs an isolated end-to-end trigger, deduplication, and recovery test against a local loopback receiver without affecting live state.

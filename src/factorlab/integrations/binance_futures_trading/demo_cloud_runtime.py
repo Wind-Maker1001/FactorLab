@@ -527,6 +527,7 @@ def main(argv=None):
                                            'handoff-export', 'handoff-import'))
     parser.add_argument('--state-root', type=Path)
     parser.add_argument('--monitor-dir', type=Path)
+    parser.add_argument('--backup-root', type=Path)
     parser.add_argument('--alert-config', type=Path)
     parser.add_argument('--offline', action='store_true')
     parser.add_argument('--seconds', type=float)
@@ -591,7 +592,9 @@ def main(argv=None):
             monitor_dir = _resolve_monitor_dir(root, args.monitor_dir)
             result, ready = evaluate_health(root, unit=args.unit, allow_missing=True)
             cfg = load_alert_config(args.alert_config)
-            mon_summary = run_monitor_cycle(result, monitor_dir, alert_config=cfg)
+            mon_summary = run_monitor_cycle(
+                result, monitor_dir, alert_config=cfg, backup_root=args.backup_root,
+            )
             print(json.dumps(dict(result, monitoring=mon_summary)), flush=True)
             return 0 if ready else 1
         if args.action == 'report':
@@ -604,7 +607,7 @@ def main(argv=None):
             cfg = load_alert_config(args.alert_config)
             report = generate_daily_report(
                 monitor_dir, current_health=current_health, alert_config=cfg,
-                write_files=args.write_report,
+                write_files=args.write_report, backup_root=args.backup_root,
             )
             if args.markdown:
                 print(render_daily_report_markdown(report), end='', flush=True)

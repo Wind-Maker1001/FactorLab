@@ -34,10 +34,14 @@ WINDOWS = (
 
 DEFAULT_SAMPLE_INTERVAL_SECONDS = 60
 DEFAULT_SAMPLE_RETENTION_DAYS = 8
-DEFAULT_MAX_SAMPLES_BYTES = 16 * 1024 * 1024  # 16 MiB cap (~20k samples > 14 days @ 1/min)
+# 8 days @ 1/min = 11,520 samples; at ~2.1-2.6 KiB/sample this needs ~24-29 MiB.
+# 48 MiB provides ~1.6x-2x headroom so byte capping never truncates the 7-day window early.
+DEFAULT_MAX_SAMPLES_BYTES = 48 * 1024 * 1024
 DEFAULT_ALERT_EVENT_RETENTION_DAYS = 14
 DEFAULT_MAX_ALERT_EVENTS_BYTES = 2 * 1024 * 1024  # 2 MiB cap
 DEFAULT_DAILY_REPORT_RETENTION_DAYS = 14
+DEFAULT_BACKUP_ROOT = '/var/backups/factorlab-demo'
+DEFAULT_MAINTENANCE_MAX_DOWNTIME_SECONDS = 120.0
 
 _SENSITIVE_KEY_FRAGMENTS = (
     'secret',
@@ -71,6 +75,7 @@ class MonitorThresholds:
     restart_burst_window_seconds: int = 1800
     restart_burst_threshold: int = 2
     restart_recovery_healthy_samples: int = 5
+    maintenance_max_downtime_seconds: float = DEFAULT_MAINTENANCE_MAX_DOWNTIME_SECONDS
     renotify_seconds: int = 3600
     rate_limit_window_seconds: int = 300
     rate_limit_max_deliveries: int = 10
@@ -95,6 +100,217 @@ def _iso_utc(ts: float | None) -> str | None:
     if ts is None:
         return None
     return datetime.fromtimestamp(float(ts), timezone.utc).isoformat()
+
+
+def _parse_iso_ts(value) -> float | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    raw = value.strip()
+    if raw.endswith('Z'):
+        raw = raw[:-1] + '+00:00'
+    try:
+        dt = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.timestamp()
+
+
+def load_c07_backup_records(backup_root: Path | str | None = None) -> dict | None:
+    """Read-only inspection of C07 backup-status.json and backup-history.jsonl metadata."""
+    raw = backup_root if backup_root is not None else os.environ.get('FACTORLAB_DEMO_BACKUP_ROOT')
+    if raw:
+        root = Path(raw)
+    elif os.name != 'nt':
+        root = Path(DEFAULT_BACKUP_ROOT)
+    else:
+        return None
+    try:
+        if not root.exists() or not root.is_dir():
+            return None
+    except OSError:
+        return None
+
+    latest_status = None
+    status_path = root / 'backup-status.json'
+    try:
+        if status_path.exists() and status_path.is_file() and not status_path.is_symlink():
+            parsed = json.loads(status_path.read_text(encoding='utf-8'))
+            if isinstance(parsed, dict):
+                latest_status = parsed
+    except (OSError, ValueError):
+        latest_status = None
+
+    history: list[dict] = []
+    history_path = root / 'backup-history.jsonl'
+    try:
+        if history_path.exists() and history_path.is_file() and not history_path.is_symlink():
+            history = load_jsonl(history_path)
+    except OSError:
+        history = []
+
+    if latest_status is None and not history:
+        return None
+    return dict(backup_root=str(root), latest_status=latest_status, history=history)
+
+
+def _match_planned_maintenance(
+    backup_records: dict | None,
+    *,
+    unit: str | None,
+    prev_pid: int | None,
+    curr_pid: int | None,
+    prev_observed_at: float | None,
+    curr_observed_at: float | None,
+    n_restarts_increased: bool,
+    starts_delta: int,
+    service_recovered: bool,
+    max_downtime_seconds: float = DEFAULT_MAINTENANCE_MAX_DOWNTIME_SECONDS,
+    allow_history_fallback: bool = False,
+) -> dict | None:
+    """Return verified C07 maintenance info iff this restart strictly matches a succeeded backup window."""
+    if backup_records is None or n_restarts_increased or not service_recovered or starts_delta > 1:
+        return None
+    if prev_observed_at is None or curr_observed_at is None:
+        return None
+
+    win_lo = prev_observed_at - 30.0
+    win_hi = curr_observed_at + 30.0
+
+    latest = backup_records.get('latest_status')
+    if isinstance(latest, dict):
+        mw = latest.get('maintenance_window') if isinstance(latest.get('maintenance_window'), dict) else {}
+        downtime = _safe_float(mw.get('downtime_seconds'))
+        restarted_ts = _parse_iso_ts(mw.get('restarted_at')) or _parse_iso_ts(mw.get('stopped_at'))
+        interrupted_unit = mw.get('interrupted_unit')
+        pre_pid = _safe_int((mw.get('pre_health') or {}).get('pid')) if isinstance(mw.get('pre_health'), dict) else None
+        post_pid = _safe_int((mw.get('post_health') or {}).get('pid')) if isinstance(mw.get('post_health'), dict) else None
+
+        unit_ok = not (unit and interrupted_unit) or unit == interrupted_unit
+        pid_ok = (
+            (pre_pid is None or prev_pid is None or pre_pid == prev_pid)
+            and (post_pid is None or curr_pid is None or post_pid == curr_pid)
+        )
+        if (
+            latest.get('status') == 'SUCCEEDED'
+            and latest.get('error_category') is None
+            and mw.get('service_control_enabled') is True
+            and mw.get('restart_succeeded') is True
+            and mw.get('reconcile_verified') is True
+            and downtime is not None
+            and 0.0 <= downtime <= max_downtime_seconds
+            and restarted_ts is not None
+            and win_lo <= restarted_ts <= win_hi
+            and unit_ok
+            and pid_ok
+        ):
+            return dict(
+                source='c07_backup_status',
+                backup_name=latest.get('backup_name'),
+                started_at=latest.get('started_at'),
+                completed_at=latest.get('completed_at'),
+                stopped_at=mw.get('stopped_at'),
+                restarted_at=mw.get('restarted_at'),
+                downtime_seconds=downtime,
+                interrupted_unit=interrupted_unit,
+                pre_pid=pre_pid,
+                post_pid=post_pid,
+                reconcile_verified=True,
+            )
+
+    if allow_history_fallback:
+        for entry in reversed(backup_records.get('history') or []):
+            if not isinstance(entry, dict):
+                continue
+            downtime = _safe_float(entry.get('downtime_seconds'))
+            started_ts = _parse_iso_ts(entry.get('started_at'))
+            completed_ts = _parse_iso_ts(entry.get('completed_at')) or started_ts
+            interrupted_unit = entry.get('interrupted_unit')
+            unit_ok = not (unit and interrupted_unit) or unit == interrupted_unit
+            if (
+                entry.get('status') == 'SUCCEEDED'
+                and entry.get('error_category') is None
+                and entry.get('reconcile_verified') is True
+                and downtime is not None
+                and 0.0 <= downtime <= max_downtime_seconds
+                and started_ts is not None
+                and completed_ts is not None
+                and started_ts <= win_hi
+                and completed_ts >= win_lo
+                and unit_ok
+            ):
+                return dict(
+                    source='c07_backup_history',
+                    backup_name=entry.get('backup_name'),
+                    started_at=entry.get('started_at'),
+                    completed_at=entry.get('completed_at'),
+                    downtime_seconds=downtime,
+                    interrupted_unit=interrupted_unit,
+                    reconcile_verified=True,
+                )
+    return None
+
+
+def _evaluate_maintenance_failure(
+    backup_records: dict | None,
+    *,
+    sample: dict,
+    maintenance_alert_active: bool,
+    max_downtime_seconds: float,
+    now_ts: float,
+) -> dict | None:
+    """Detect failed, timed-out, unreconciled, or unrecovered C07 backup maintenance windows."""
+    if not isinstance(backup_records, dict):
+        return None
+    latest = backup_records.get('latest_status')
+    if not isinstance(latest, dict):
+        return None
+    completed_ts = _parse_iso_ts(latest.get('completed_at')) or _parse_iso_ts(latest.get('started_at'))
+    if completed_ts is not None and (now_ts - completed_ts) > 48 * 3600:
+        return None
+
+    mw = latest.get('maintenance_window') if isinstance(latest.get('maintenance_window'), dict) else {}
+    downtime = _safe_float(mw.get('downtime_seconds'))
+    restarted_ts = _parse_iso_ts(mw.get('restarted_at')) or completed_ts
+    service_running = bool(sample.get('alive')) and sample.get('status') == 'RUNNING'
+    reasons: list[str] = []
+    if latest.get('status') != 'SUCCEEDED':
+        reasons.append(f"backup_status={latest.get('status')}")
+    if latest.get('error_category') is not None:
+        reasons.append(f"error_category={latest.get('error_category')}")
+    if mw.get('service_control_enabled') is True:
+        if mw.get('restart_succeeded') is False:
+            reasons.append('restart_succeeded=False')
+        if mw.get('reconcile_verified') is False:
+            reasons.append(f"reconcile_verified=False({mw.get('reconcile_reason')})")
+        if downtime is not None and downtime > max_downtime_seconds:
+            reasons.append(f"downtime_exceeded={downtime:.2f}s>{max_downtime_seconds:.1f}s")
+        recent_maint = restarted_ts is not None and -30.0 <= (now_ts - restarted_ts) <= 600.0
+        if not service_running and (recent_maint or maintenance_alert_active):
+            reasons.append(f"service_not_recovered(alive={sample.get('alive')},status={sample.get('status')})")
+    if not reasons:
+        return None
+    return dict(
+        severity='CRITICAL',
+        summary=(
+            f"C07 backup maintenance failed or exceeded bounds "
+            f"(backup={latest.get('backup_name')}, {', '.join(reasons)})"
+        ),
+        details=dict(
+            backup_name=latest.get('backup_name'),
+            status=latest.get('status'),
+            error_category=latest.get('error_category'),
+            started_at=latest.get('started_at'),
+            completed_at=latest.get('completed_at'),
+            downtime_seconds=downtime,
+            max_downtime_seconds=max_downtime_seconds,
+            restart_succeeded=mw.get('restart_succeeded'),
+            reconcile_verified=mw.get('reconcile_verified'),
+            reconcile_reason=mw.get('reconcile_reason'),
+            reasons=reasons,
+        ),
+    )
 
 
 def _parse_decimal(value) -> Decimal | None:
@@ -219,7 +435,6 @@ def sanitize_sample(health_payload: dict, *, observed_at: float | None = None) -
         systemd = dict(
             unit=systemd_raw.get('unit'),
             available=bool(systemd_raw.get('available')),
-            load_state=systemd_raw.get('load_state'),
             active_state=systemd_raw.get('active_state'),
             sub_state=systemd_raw.get('sub_state'),
             main_pid=_safe_int(systemd_raw.get('main_pid')),
@@ -289,9 +504,6 @@ def sanitize_sample(health_payload: dict, *, observed_at: float | None = None) -
             running=bool(grid_raw.get('running')),
             live_bar=bool(grid_raw.get('live_bar')),
             reason=grid_raw.get('reason'),
-            grid_reason=grid_raw.get('grid_reason'),
-            last_bar=grid_raw.get('last_bar'),
-            reservations_count=_safe_int(grid_raw.get('reservations_count')) or 0,
             breakout_phase=breakout.get('phase') if breakout else None,
         )
 
@@ -300,9 +512,7 @@ def sanitize_sample(health_payload: dict, *, observed_at: float | None = None) -
         state=recovery_raw.get('state'),
         consecutive_failures=_safe_int(recovery_raw.get('consecutive_failures')) or 0,
         recovery_attempts=_safe_int(recovery_raw.get('recovery_attempts')) or 0,
-        last_failure_at=recovery_raw.get('last_failure_at'),
         last_failure_reason=recovery_raw.get('last_failure_reason'),
-        last_recovered_at=recovery_raw.get('last_recovered_at'),
         startup_recovered=bool(recovery_raw.get('startup_recovered', False)),
     )
 
@@ -665,6 +875,8 @@ def summarize_window(
     window_seconds: int,
     now: float | None = None,
     expected_interval_seconds: int = DEFAULT_SAMPLE_INTERVAL_SECONDS,
+    backup_records: dict | None = None,
+    max_maintenance_downtime_seconds: float = DEFAULT_MAINTENANCE_MAX_DOWNTIME_SECONDS,
 ) -> dict:
     """Compute availability, coverage, restarts, recovery, market freshness, latency, UNKNOWN, and budget metrics."""
     now_ts = float(time() if now is None else now)
@@ -703,7 +915,7 @@ def summarize_window(
             ),
             restarts=dict(
                 systemd_n_restarts_delta=0, starts_delta=0, pid_changes=0,
-                unexpected_restarts=0, process_segments=0,
+                unexpected_restarts=0, planned_maintenance_restarts=0, process_segments=0,
             ),
             account_recovery=dict(
                 account_recovered_samples=0, account_recovered_ratio=None,
@@ -768,35 +980,57 @@ def summarize_window(
     execute_healthy_samples = sum(1 for row in in_window if row.get('execute_healthy'))
     dispatch_eligible_samples = sum(1 for row in in_window if row.get('dispatch_eligible'))
 
-    # Restarts accounting
+    # Restarts accounting (separating verified C07 maintenance restarts from unexpected restarts)
     pid_changes = 0
     unexpected_restarts = 0
+    planned_maintenance_restarts = 0
     n_restarts_delta = 0
     starts_delta = 0
     prev_pid = None
     prev_starts = None
     prev_n_restarts = None
     prev_desired = None
+    prev_obs = None
     for row in in_window:
         pid = row.get('pid')
         starts = _safe_int(row.get('starts'))
         sd = row.get('systemd') if isinstance(row.get('systemd'), dict) else {}
         n_res = _safe_int(sd.get('n_restarts'))
         desired = row.get('desired')
+        obs = _safe_float(row.get('observed_at'))
 
-        if prev_n_restarts is not None and n_res is not None and n_res > prev_n_restarts:
+        n_res_inc = prev_n_restarts is not None and n_res is not None and n_res > prev_n_restarts
+        starts_inc = (starts - prev_starts) if (prev_starts is not None and starts is not None and starts > prev_starts) else 0
+        pid_changed = prev_pid is not None and pid is not None and pid != prev_pid
+
+        if n_res_inc:
             delta = n_res - prev_n_restarts
             n_restarts_delta += delta
             unexpected_restarts += delta
-        if prev_starts is not None and starts is not None and starts > prev_starts:
-            delta_s = starts - prev_starts
-            starts_delta += delta_s
-            if prev_desired not in {'STOPPED', 'HALTED'} and not (
-                prev_n_restarts is not None and n_res is not None and n_res > prev_n_restarts
-            ):
-                unexpected_restarts += delta_s
-        if prev_pid is not None and pid is not None and pid != prev_pid:
+        if starts_inc > 0:
+            starts_delta += starts_inc
+        if pid_changed:
             pid_changes += 1
+
+        if (starts_inc > 0 or pid_changed) and not n_res_inc and prev_desired not in {'STOPPED', 'HALTED'}:
+            is_marked_maint = bool(row.get('planned_maintenance_restart'))
+            matched_maint = None if is_marked_maint else _match_planned_maintenance(
+                backup_records,
+                unit=row.get('systemd_unit'),
+                prev_pid=prev_pid,
+                curr_pid=pid,
+                prev_observed_at=prev_obs,
+                curr_observed_at=obs,
+                n_restarts_increased=False,
+                starts_delta=max(1, starts_inc),
+                service_recovered=bool(row.get('alive')) and row.get('status') == 'RUNNING',
+                max_downtime_seconds=max_maintenance_downtime_seconds,
+                allow_history_fallback=True,
+            )
+            if is_marked_maint or matched_maint is not None:
+                planned_maintenance_restarts += 1
+            elif starts_inc > 0:
+                unexpected_restarts += starts_inc
 
         if pid is not None:
             prev_pid = pid
@@ -806,6 +1040,8 @@ def summarize_window(
             prev_n_restarts = n_res
         if desired is not None:
             prev_desired = desired
+        if obs is not None:
+            prev_obs = obs
 
     # Account recovery
     account_recovered_samples = sum(1 for row in in_window if row.get('account_recovered'))
@@ -957,6 +1193,7 @@ def summarize_window(
             starts_delta=starts_delta,
             pid_changes=pid_changes,
             unexpected_restarts=unexpected_restarts,
+            planned_maintenance_restarts=planned_maintenance_restarts,
             process_segments=segments_count,
         ),
         account_recovery=dict(
@@ -1034,12 +1271,16 @@ def summarize_all_windows(
     *,
     now: float | None = None,
     expected_interval_seconds: int = DEFAULT_SAMPLE_INTERVAL_SECONDS,
+    backup_records: dict | None = None,
+    max_maintenance_downtime_seconds: float = DEFAULT_MAINTENANCE_MAX_DOWNTIME_SECONDS,
 ) -> dict[str, dict]:
     now_ts = float(time() if now is None else now)
     return {
         label: summarize_window(
             samples, label=label, window_seconds=seconds, now=now_ts,
             expected_interval_seconds=expected_interval_seconds,
+            backup_records=backup_records,
+            max_maintenance_downtime_seconds=max_maintenance_downtime_seconds,
         )
         for label, seconds in WINDOWS
     }
@@ -1085,6 +1326,7 @@ def evaluate_alerts(
     thresholds: MonitorThresholds = MonitorThresholds(),
     alert_config: AlertDeliveryConfig = AlertDeliveryConfig(),
     now: float | None = None,
+    backup_records: dict | None = None,
 ) -> tuple[dict, list[dict]]:
     """Evaluate all 7 alert classes with deduplication, cooldown/rate limiting, and recovery notifications."""
     now_ts = float(sample.get('observed_at') if now is None else now)
@@ -1282,9 +1524,10 @@ def evaluate_alerts(
                 ),
             )
 
-    # 7. Unexpected restart detection (with recovery stabilization period)
+    # 7. Unexpected restart detection vs verified C07 planned maintenance restart
     restart_detected = False
     restart_reason = None
+    planned_maintenance: dict | None = None
     if prev_sample is not None:
         prev_sd = prev_sample.get('systemd') if isinstance(prev_sample.get('systemd'), dict) else {}
         prev_n_res = _safe_int(prev_sd.get('n_restarts'))
@@ -1293,18 +1536,41 @@ def evaluate_alerts(
         curr_pid = _safe_int(sample.get('pid'))
         prev_starts = _safe_int(prev_sample.get('starts'))
         curr_starts = _safe_int(sample.get('starts'))
-        if prev_n_res is not None and curr_n_res is not None and curr_n_res > prev_n_res:
+        n_res_increased = prev_n_res is not None and curr_n_res is not None and curr_n_res > prev_n_res
+        starts_inc = (curr_starts - prev_starts) if (prev_starts is not None and curr_starts is not None and curr_starts > prev_starts) else 0
+        pid_changed = prev_pid is not None and curr_pid is not None and curr_pid != prev_pid
+
+        if n_res_increased:
             restart_detected = True
             restart_reason = f'systemd NRestarts increased {prev_n_res}->{curr_n_res}'
-        elif (
-            prev_sample.get('desired') not in {'STOPPED', 'HALTED'}
-            and (
-                (prev_pid is not None and curr_pid is not None and curr_pid != prev_pid)
-                or (prev_starts is not None and curr_starts is not None and curr_starts > prev_starts)
+        elif prev_sample.get('desired') not in {'STOPPED', 'HALTED'} and (pid_changed or starts_inc > 0):
+            planned_maintenance = _match_planned_maintenance(
+                backup_records,
+                unit=sample.get('systemd_unit'),
+                prev_pid=prev_pid,
+                curr_pid=curr_pid,
+                prev_observed_at=_safe_float(prev_sample.get('observed_at')),
+                curr_observed_at=now_ts,
+                n_restarts_increased=False,
+                starts_delta=max(1, starts_inc),
+                service_recovered=bool(sample.get('alive')) and sample.get('status') == 'RUNNING',
+                max_downtime_seconds=thresholds.maintenance_max_downtime_seconds,
+                allow_history_fallback=False,
             )
-        ):
-            restart_detected = True
-            restart_reason = f'worker restarted (pid {prev_pid}->{curr_pid}, starts {prev_starts}->{curr_starts})'
+            if planned_maintenance is None:
+                restart_detected = True
+                restart_reason = f'worker restarted (pid {prev_pid}->{curr_pid}, starts {prev_starts}->{curr_starts})'
+
+    # 7b. Failed, timed-out, unreconciled, or unrecovered C07 backup maintenance window must alert
+    maint_failure = _evaluate_maintenance_failure(
+        backup_records,
+        sample=sample,
+        maintenance_alert_active=('maintenance_failure' in new_state['active_alerts']),
+        max_downtime_seconds=thresholds.maintenance_max_downtime_seconds,
+        now_ts=now_ts,
+    )
+    if maint_failure is not None:
+        detected['maintenance_failure'] = maint_failure
 
     restart_ts = [
         float(ts) for ts in (new_state.get('restart_timestamps') or [])
@@ -1356,6 +1622,24 @@ def evaluate_alerts(
 
     events: list[dict] = []
     active = new_state['active_alerts']
+
+    if planned_maintenance is not None:
+        events.append(dict(
+            event='MAINTENANCE_RESTART',
+            alert_key='planned_maintenance_restart',
+            severity='INFO',
+            summary=(
+                f"Planned C07 backup maintenance restart verified: backup={planned_maintenance.get('backup_name')}, "
+                f"downtime={planned_maintenance.get('downtime_seconds')}s "
+                f"(pid {planned_maintenance.get('pre_pid')}->{planned_maintenance.get('post_pid')})"
+            ),
+            details=planned_maintenance,
+            observed_at=now_ts,
+            observed_at_utc=_iso_utc(now_ts),
+            unit=sample.get('systemd_unit'),
+            mode=sample.get('mode'),
+            suppressed_by_rate_limit=False,
+        ))
 
     def _can_deliver(is_high_priority: bool) -> bool:
         if len(delivery_ts) < rate_max:
@@ -1562,13 +1846,27 @@ def run_monitor_cycle(
     now: float | None = None,
     max_samples_bytes: int = DEFAULT_MAX_SAMPLES_BYTES,
     retention_days: int = DEFAULT_SAMPLE_RETENTION_DAYS,
+    backup_root: Path | str | None = None,
 ) -> dict:
     """Record one health sample, evaluate alerts, deliver webhook if configured, and persist state."""
     monitor_path = ensure_monitor_dir(monitor_dir)
     now_ts = float(time() if now is None else now)
     cfg = load_alert_config() if alert_config is None else alert_config
+    backup_records = load_c07_backup_records(backup_root)
 
     sample = sanitize_sample(health_payload, observed_at=now_ts)
+    state = load_alert_state(monitor_path)
+    new_state, events = evaluate_alerts(
+        sample, state, thresholds=thresholds, alert_config=cfg, now=now_ts,
+        backup_records=backup_records,
+    )
+
+    for event in events:
+        if event.get('event') == 'MAINTENANCE_RESTART':
+            sample['planned_maintenance_restart'] = True
+            sample['maintenance_backup_name'] = (event.get('details') or {}).get('backup_name')
+            break
+
     samples_file = monitor_path / 'samples.jsonl'
     storage_info = append_bounded_jsonl(
         samples_file,
@@ -1579,15 +1877,18 @@ def run_monitor_cycle(
         now=now_ts,
     )
 
-    state = load_alert_state(monitor_path)
-    new_state, events = evaluate_alerts(
-        sample, state, thresholds=thresholds, alert_config=cfg, now=now_ts,
-    )
-
     events_file = monitor_path / 'alert-events.jsonl'
     dispatched: list[dict] = []
     for event in events:
-        delivery = deliver_webhook(event, cfg)
+        if event.get('event') == 'MAINTENANCE_RESTART':
+            delivery = dict(
+                configured=bool(cfg.webhook_url),
+                mobile_push_configured=False,
+                status='MAINTENANCE_RECORDED_ONLY',
+                delivered=False,
+            )
+        else:
+            delivery = deliver_webhook(event, cfg)
         record = dict(event, delivery=delivery)
         append_bounded_jsonl(
             events_file,
@@ -1620,11 +1921,13 @@ def generate_daily_report(
     now: float | None = None,
     write_files: bool = False,
     expected_interval_seconds: int = DEFAULT_SAMPLE_INTERVAL_SECONDS,
+    backup_root: Path | str | None = None,
 ) -> dict:
     """Generate a daily operations report explicitly separating liveness, readiness, and real order execution."""
     monitor_path = ensure_monitor_dir(monitor_dir)
     now_ts = float(time() if now is None else now)
     cfg = load_alert_config() if alert_config is None else alert_config
+    backup_records = load_c07_backup_records(backup_root)
 
     samples = load_jsonl(monitor_path / 'samples.jsonl')
     alert_state = load_alert_state(monitor_path)
@@ -1633,12 +1936,16 @@ def generate_daily_report(
     latest_sample = sanitize_sample(current_health, observed_at=now_ts) if current_health is not None else (
         samples[-1] if samples else None
     )
-    windows = summarize_all_windows(samples, now=now_ts, expected_interval_seconds=expected_interval_seconds)
+    windows = summarize_all_windows(
+        samples, now=now_ts, expected_interval_seconds=expected_interval_seconds,
+        backup_records=backup_records,
+    )
     w24 = windows['24h']
 
     events_24h = [e for e in alert_events if (_safe_float(e.get('observed_at')) or 0.0) >= now_ts - 86400]
     fired_24h = sum(1 for e in events_24h if e.get('event') in {'ALERT_FIRING', 'ALERT_ESCALATED'})
     resolved_24h = sum(1 for e in events_24h if e.get('event') == 'ALERT_RESOLVED')
+    maintenance_events_24h = sum(1 for e in events_24h if e.get('event') == 'MAINTENANCE_RESTART')
 
     # Three explicitly separated pillars
     service_liveness = dict(
@@ -1713,6 +2020,7 @@ def generate_daily_report(
             active_keys=sorted((alert_state.get('active_alerts') or {}).keys()),
             fired_24h=fired_24h,
             resolved_24h=resolved_24h,
+            maintenance_events_24h=maintenance_events_24h,
             external_webhook_configured=bool(cfg.webhook_url),
             mobile_push_configured=False,
         ),
@@ -1786,7 +2094,7 @@ def render_daily_report_markdown(report: dict) -> str:
         '## 1. Service Liveness (服务存活)',
         f"- Classification: `{live['classification']}`",
         f"- Alive: `{live['current_alive']}` | Status: `{live['current_status']}` | PID: `{live['current_pid']}` | Uptime: `{_fmt_num(live['uptime_seconds'], 's')}`",
-        f"- 24h Alive Ratio: `{_fmt_pct(live['availability_24h_ratio'])}` | 24h Unexpected Restarts: `{live['restarts_24h']['unexpected_restarts']}` (systemd NRestarts delta: `{live['restarts_24h']['systemd_n_restarts_delta']}`)",
+        f"- 24h Alive Ratio: `{_fmt_pct(live['availability_24h_ratio'])}` | 24h Unexpected Restarts: `{live['restarts_24h']['unexpected_restarts']}` | Planned Maintenance Restarts: `{live['restarts_24h'].get('planned_maintenance_restarts', 0)}` (systemd NRestarts delta: `{live['restarts_24h']['systemd_n_restarts_delta']}`)",
         '',
         '## 2. Trading Readiness (交易就绪)',
         f"- Classification: `{ready['classification']}`",
@@ -1801,8 +2109,8 @@ def render_daily_report_markdown(report: dict) -> str:
         f"- Current Open Orders: `{orders['current_open_orders_count']}` | Current Positions: `{orders['current_positions_count']}`",
         '',
         '## 4. Rolling Window Metrics (24h / 72h / 7d)',
-        '| Window | Samples | Window Complete | Span Coverage | Full Coverage | Alive | Ready | Unexpected Restarts | Account Recovered | Market Fresh | API Avg / Max Lat (s) | Max UNKNOWN |',
-        '| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: |',
+        '| Window | Samples | Window Complete | Span Coverage | Full Coverage | Alive | Ready | Unexpected / Maint Restarts | Account Recovered | Market Fresh | API Avg / Max Lat (s) | Max UNKNOWN |',
+        '| --- | ---: | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | --- | ---: |',
     ]
     for label in ('24h', '72h', '7d'):
         w = report['windows'][label]
@@ -1816,7 +2124,7 @@ def render_daily_report_markdown(report: dict) -> str:
             f"| {label} | {w['sample_count']} | {w['window_complete']} | "
             f"{_fmt_pct(cov['observed_span_coverage_ratio'])} | {_fmt_pct(cov['full_window_coverage_ratio'])} | "
             f"{_fmt_pct(avail['alive_ratio'])} | {_fmt_pct(avail['ready_ratio'])} | "
-            f"{w['restarts']['unexpected_restarts']} | {_fmt_pct(acc['account_recovered_ratio'])} | "
+            f"{w['restarts']['unexpected_restarts']} / {w['restarts'].get('planned_maintenance_restarts', 0)} | {_fmt_pct(acc['account_recovered_ratio'])} | "
             f"{_fmt_pct(mkt['market_fresh_ratio'])} | {_fmt_num(lat['avg_request_seconds'])} / {_fmt_num(lat['observed_max_request_seconds'])} | "
             f"{_fmt_num(unk['max_unknown_count'])} |"
         )
@@ -1834,7 +2142,7 @@ def render_daily_report_markdown(report: dict) -> str:
         f"- Policy: `{budget['policy']}`",
         '',
         '## 6. Alerts & Storage',
-        f"- Active Alerts: `{alerts['active_count']}` (`{alerts['active_keys']}`) | 24h Fired: `{alerts['fired_24h']}` | 24h Resolved: `{alerts['resolved_24h']}`",
+        f"- Active Alerts: `{alerts['active_count']}` (`{alerts['active_keys']}`) | 24h Fired: `{alerts['fired_24h']}` | 24h Resolved: `{alerts['resolved_24h']}` | 24h Maintenance Events: `{alerts.get('maintenance_events_24h', 0)}`",
         f"- Disk Free: `{_fmt_num(disk_free_gib, ' GiB')}` | Trading State Size: `{storage['state_bytes']}` B | Monitor Samples Size: `{storage['monitor_samples_bytes']}` B",
     ])
     return '\n'.join(lines) + '\n'
