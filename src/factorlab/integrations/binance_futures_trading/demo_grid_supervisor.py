@@ -398,7 +398,8 @@ def _is_recoverable_startup_safety_error(error):
     return text.startswith('STALE_QUOTE') or text in {'RECONCILE_REQUIRED', 'STALE_ACCOUNT'}
 
 
-def _preflight_local_state(directory, runtime, store, settings, *, execute, new_deployment):
+def _preflight_local_state(directory, runtime, store, settings, *, execute, new_deployment,
+                           require_saved_grid=False):
     if settings is not None:
         GridConfig(**settings)
     binding = private_binding(store)
@@ -426,18 +427,20 @@ def _preflight_local_state(directory, runtime, store, settings, *, execute, new_
     if controller_path.exists():
         with closing(PaperStore(controller_path, continuous_capacity=True)) as controller_store:
             saved = saved_grid_deployment(controller_store)
-            if saved is None:
+            if saved is not None:
+                deployment = decode(json.loads(saved))
+                if new_deployment:
+                    if campaign is not None and deployment['campaign'] == campaign['id']:
+                        raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
+                else:
+                    if not runtime.grid_deployment_matches(controller_store, deployment, campaign, continuous_auth):
+                        raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
+                    grid = restore_grid(deployment['deployment'])
+                    if settings is not None and grid.config != GridConfig(**settings):
+                        raise SafetyBlocked('persisted Grid configuration differs')
                 return binding
-            deployment = decode(json.loads(saved))
-            if new_deployment:
-                if campaign is not None and deployment['campaign'] == campaign['id']:
-                    raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
-            else:
-                if not runtime.grid_deployment_matches(controller_store, deployment, campaign, continuous_auth):
-                    raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
-                grid = restore_grid(deployment['deployment'])
-                if settings is not None and grid.config != GridConfig(**settings):
-                    raise SafetyBlocked('persisted Grid configuration differs')
+    if require_saved_grid:
+        raise SafetyBlocked('the bound Grid deployment is missing from transferred state')
     return binding
 
 
@@ -863,9 +866,12 @@ def run(args, *, root=None, credentials=None):
             if args.action != 'status':
                 desired = dict(pause='PAUSED', resume='RUNNING', stop='STOPPED')[args.action]
                 if args.execute:
+                    from .demo_cloud_storage import assert_source_controls_available
+
                     # Share the write order with Grid promotion and order reservation.
                     with closing(DemoRuntime(directory)) as runtime, runtime.db:
                         runtime.db.execute('BEGIN IMMEDIATE')
+                        assert_source_controls_available(directory)
                         control.request(desired)
                 else:
                     control.request(desired)

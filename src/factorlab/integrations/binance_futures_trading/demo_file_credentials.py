@@ -14,11 +14,11 @@ from .protocol import Credentials, Environment
 
 
 class DemoFileCredentialStore:
-    def __init__(self, *, namespace='FactorLab'):
+    def __init__(self, *, namespace='FactorLab', root=None):
         self.reference = f'{namespace}/Binance/USD-M/Demo/credentials'
         try:
             self._secret = Path(os.environ['FACTORLAB_DEMO_SECRET_FILE'])
-            self._root = Path(os.environ['FACTORLAB_DEMO_STATE_ROOT'])
+            self._root = Path(os.environ['FACTORLAB_DEMO_STATE_ROOT']) if root is None else Path(root)
             if not self._secret.is_absolute() or not self._root.is_absolute():
                 raise ValueError
             if self._secret == self._root / 'binding.json':

@@ -56,7 +56,7 @@ def load_bound_credential(store):
 
 
 @contextmanager
-def open_session(root, store, runtime, requests, *, campaign=None):
+def open_session(root, store, runtime, requests, *, campaign=None, require_bound_configuration=False):
     binding, credential = load_bound_credential(store)
     authorization = runtime.authority(binding, campaign) if campaign is not None else None
     expected = None
@@ -78,7 +78,8 @@ def open_session(root, store, runtime, requests, *, campaign=None):
         session = DemoSession(credential, protocol_store=protocol_store, controller_store=controller_store,
             account_id=binding['account_id'], configuration=binding['configuration'], authorization=authorization,
             limits=DEMO_LIMITS, write_guard=guard if campaign is not None else None,
-            receipt_sink=record if campaign is not None else None, request_counts=requests)
+            receipt_sink=record if campaign is not None else None, request_counts=requests,
+            require_bound_configuration=require_bound_configuration)
         yield session, expect
 
 
