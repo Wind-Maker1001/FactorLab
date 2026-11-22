@@ -451,7 +451,9 @@ def test_restart_preserves_budget_consumption_and_deployment(execute_harness):
     assert len(_writes(h.requests, 'POST')) == 1
 
 
-def test_execute_rotates_after_breakout_and_preserves_feed_budget_and_ledger(execute_harness, capsys):
+def test_execute_rotates_after_breakout_and_preserves_feed_budget_and_ledger(execute_harness, capsys, monkeypatch):
+    # The Actions runner can itself be a systemd service, separate from this Execute worker.
+    monkeypatch.setattr(grid_mod, 'detect_systemd_unit', lambda: None)
     h = execute_harness
     policy = _start_continuous(h.root, h.store, orders=2, total_orders=3)
     with open_grid_session(h.root, h.store, h.factory, continuous=True) as old:
