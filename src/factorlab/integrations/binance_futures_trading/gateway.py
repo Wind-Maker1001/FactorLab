@@ -3,7 +3,8 @@ from dataclasses import replace
 from decimal import Decimal
 from datetime import timedelta
 
-from factorlab.trading import Market, OrderEvent, OrderSnapshot, OrderStatus as S
+from factorlab.trading import FundingEvent, Market, OrderEvent, OrderSnapshot, OrderStatus as S
+from factorlab.trading.contracts import funding_identity_key
 from factorlab.trading.storage import decode, dumps
 import json
 import hashlib
@@ -148,8 +149,22 @@ class FuturesPaperGateway(PaperBroker):
                                            cumulative_filled_quantity=ZERO, cumulative_fee=ZERO, fill_price=None))
                 existing = controller.store.db.execute('SELECT payload FROM events WHERE id=?', (event.event_id,)).fetchone()
                 self.apply(decode(json.loads(existing[0])) if existing is not None else event)
+            self._replay_funding_in_transaction(controller)
         controller._atomic(replay_confirmed)
         return controller.reconcile()
+
+    def _replay_funding_in_transaction(self, controller):
+        for event in self.adapter.funding_events():
+            existing = controller.store.db.execute('SELECT payload FROM events WHERE id=?', (event.event_id,)).fetchone()
+            if existing is not None:
+                saved = decode(json.loads(existing[0]))
+                if (not isinstance(saved, FundingEvent)
+                        or funding_identity_key(saved) != funding_identity_key(event)):
+                    from factorlab.errors import DataQualityError
+                    raise DataQualityError(f'funding event identity conflict for tranId={event.tran_id}')
+                self.apply(saved)
+            else:
+                self.apply(event)
 
     def reconcile(self):
         exchange = self.adapter.reconcile()

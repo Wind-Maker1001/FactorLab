@@ -6,9 +6,12 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Callable
 
+from factorlab.errors import DataQualityError
+
 from .contracts import (
-    AccountSnapshot, AssetBalance, Market, OrderEvent, OrderIntent, OrderSnapshot,
-    OrderStatus as S, OrderType, Position, Side, TERMINAL, ZERO, decimal_value, utc,
+    AccountSnapshot, AssetBalance, FundingEvent, Market, OrderEvent, OrderIntent, OrderSnapshot,
+    OrderStatus as S, OrderType, Position, Side, TERMINAL, ZERO, decimal_value,
+    funding_identity_key, utc,
 )
 from .state import OrderRecord, advance, unknown
 
@@ -54,6 +57,8 @@ class PaperState:
     kill_switch: bool = False
     sequence: int = 0
     runtime: dict = field(default_factory=dict)
+    funding: dict[str, Decimal] = field(default_factory=dict)
+    funding_events: dict[str, FundingEvent] = field(default_factory=dict)
 
 
 class PaperBroker:
@@ -102,8 +107,10 @@ class PaperBroker:
         return OrderEvent(order_id, f"paper:{order_id}", status, filled, price,
                           self.clock(), "paper", f"paper:{self.state.sequence}", fee)
 
-    def apply(self, event: OrderEvent) -> bool:
+    def apply(self, event: OrderEvent | FundingEvent) -> bool:
         """Replay a confirmed paper report atomically with the account projection."""
+        if isinstance(event, FundingEvent):
+            return self.apply_funding(event)
         if not self.record_event(event):
             return False
         record = self.state.orders[event.client_order_id]
@@ -125,6 +132,27 @@ class PaperBroker:
         self.state.confirmations[event.client_order_id] = event
         if any(asset.available < 0 for asset in self.read_account().assets):
             raise InsufficientCollateral("insufficient collateral at simulated fill price")
+        return True
+
+    def apply_funding(self, event: FundingEvent) -> bool:
+        """Book a confirmed funding settlement without altering fills, fees or positions."""
+        if not isinstance(event, FundingEvent):
+            raise ValueError("FundingEvent required")
+        if event.account_id != self.state.account_id:
+            raise DataQualityError("funding event account mismatch")
+        if event.asset not in self.state.cash:
+            raise DataQualityError(f"unsupported funding asset: {event.asset}")
+        existing = self.state.funding_events.get(event.event_id)
+        if existing is not None:
+            if funding_identity_key(existing) != funding_identity_key(event):
+                raise DataQualityError("funding event identity conflict")
+            self.record_event(existing)
+            return False
+        if not self.record_event(event):
+            raise DataQualityError("funding journal and account snapshot diverged")
+        self.state.cash[event.asset] += event.amount
+        self.state.funding[event.asset] = self.state.funding.get(event.asset, ZERO) + event.amount
+        self.state.funding_events[event.event_id] = event
         return True
 
     def _account_fill(self, intent: OrderIntent, quantity: Decimal, price: Decimal, fee: Decimal) -> None:

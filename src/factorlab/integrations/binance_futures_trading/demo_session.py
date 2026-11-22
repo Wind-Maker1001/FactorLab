@@ -354,4 +354,7 @@ class DemoSession:
             position_mode=None if facts is None or facts.hedge_mode is None else 'HEDGE' if facts.hedge_mode else 'ONE_WAY',
             balances=facts.usdt() if facts is not None else None, positions=positions, open_orders=open_orders,
             orders=orders, unknown=[key for key, value in orders.items() if value['reconcile_required']],
+            funding=dict(realized_usdt=self.gateway.state.funding.get('USDT', Decimal('0')),
+                         event_count=len(self.gateway.state.funding_events),
+                         coverage=self.adapter.funding_coverage()),
             requests=dict(self.requests), receipt_error=self.receipt_error)

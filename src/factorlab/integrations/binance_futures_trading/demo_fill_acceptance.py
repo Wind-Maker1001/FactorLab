@@ -9,8 +9,11 @@ from pathlib import Path
 
 from factorlab.errors import DataQualityError
 from factorlab.experiments.grid_fifo import attribute_events
+from factorlab.trading.contracts import funding_event_id, funding_identity_key
 from factorlab.trading.storage import dumps, decode
 
+from .account import instant
+from .adapter import INCOME_MAX_WINDOW_MS, _to_ms, canonical_tran_id
 from .demo_cli import open_session, recover
 from .demo_credentials import DemoCredentialStore
 from .demo_runtime import DemoRuntime, operator_lock, state_root
@@ -53,6 +56,7 @@ def fifo_evidence(session, opening_wallet):
     """Adapt journal exports to the existing FIFO attribution engine."""
     state = session.gateway.state
     events = [event for _, event in session.controller.store.order_events() if event.fill_price is not None]
+    funding_events = [event for _, event in session.controller.store.funding_events()]
     previous, rows, closes = {}, [], {}
     # Export keys distinguish fills sharing an exchange timestamp; event_time remains original.
     epoch = datetime(2000, 1, 1)
@@ -76,12 +80,16 @@ def fifo_evidence(session, opening_wallet):
     result = dict(config=dict(initial_inventory=0, initial_price=0), rules=dict(quantity_unit=1),
         orders={key: {} for key in state.orders}, instrument_id='NVDAUSDT', market='BINANCE_USDM',
         capital=opening_wallet, final=dict(close=mark, equity=equity))
-    attributed = attribute_events(result, rows, closes, events, state)
+    attributed = attribute_events(result, rows, closes, events, state, funding_events=funding_events)
     return dict(source='AUTHORITATIVE_CONTROLLER_EVENTS', attribution=attributed,
         slippage='NOT_OBSERVED; execution prices are attribution references',
         economic_events=[dict(event_id=e.event_id, client_order_id=e.client_order_id,
             cumulative_quantity=e.cumulative_filled_quantity, cumulative_fee=e.cumulative_fee,
-            fill_price=e.fill_price, event_time=e.event_time) for e in events])
+            fill_price=e.fill_price, event_time=e.event_time) for e in events],
+        funding_events=[dict(event_id=e.event_id, tran_id=e.tran_id, account_id=e.account_id,
+            symbol=e.symbol, asset=e.asset, income_type=e.income_type, amount=e.amount,
+            event_time=e.event_time, source=e.source, metadata=dict(e.metadata))
+            for e in funding_events])
 
 
 def _unknown_dispatch(dispatch):
@@ -99,14 +107,62 @@ def _unknown_dispatch(dispatch):
         Response(receipt['http_status'], {}, json.dumps(payload).encode()))
 
 
-def capture(session, runtime, opening_wallet):
+def capture(session, runtime, opening_wallet, *, history_start=None):
     account = recover(session)
     mapping = receipt_mapping(session.adapter)
     fifo = fifo_evidence(session, opening_wallet)
+    funding_coverage = session.adapter.funding_coverage()
+    end_ms = (_to_ms(account['account_observed_at'])
+              if account.get('account_observed_at') is not None else _to_ms(session.adapter.clock()))
+    explicit_start_ms = None if history_start is None else _to_ms(history_start)
+    earliest_activity_ms = session.adapter._earliest_activity_ms()
+    origin_candidates = [x for x in (explicit_start_ms, earliest_activity_ms) if x is not None and x > 0]
+    if origin_candidates:
+        required_start_ms = min(origin_candidates)
+    elif funding_coverage is not None:
+        required_start_ms = funding_coverage['covered_from_ms']
+    else:
+        required_start_ms = max(0, end_ms - INCOME_MAX_WINDOW_MS)
+    required_start_ms = min(required_start_ms, end_ms)
+    window_start_ms = (min(required_start_ms, funding_coverage['covered_from_ms'])
+                       if funding_coverage is not None else required_start_ms)
+    window_end_ms = (max(end_ms, funding_coverage['covered_through_ms'])
+                     if funding_coverage is not None else end_ms)
+    income_window = session.adapter.income_window(
+        start_time=window_start_ms, end_time=window_end_ms, symbol=None, income_type=None)
     income_fields = {'symbol', 'incomeType', 'income', 'asset', 'time', 'tranId', 'tradeId'}
     income = [{key: value for key, value in row.items() if key in income_fields}
-              for row in session.adapter.income()]
-    funding = [row for row in income if row['incomeType'] == 'FUNDING_FEE']
+              for row in income_window.rows]
+    funding_rows = [row for row in income if row['incomeType'] == 'FUNDING_FEE']
+    non_funding_rows = [row for row in income if row['incomeType'] != 'FUNDING_FEE']
+
+    booked_funding = [event for _, event in session.controller.store.funding_events()]
+    adapter_funding = list(session.adapter.funding_events())
+    state_funding = session.gateway.state.funding_events
+    booked_by_id = {event.event_id: event for event in booked_funding}
+    booked_funding_total = sum((event.amount for event in booked_funding), ZERO)
+    state_funding_usdt = session.gateway.state.funding.get('USDT', ZERO)
+
+    matched_funding_ids = set()
+    unbooked_funding = []
+    funding_mismatches = []
+    for row in funding_rows:
+        tran_id = canonical_tran_id(row['tranId'])
+        event_id = funding_event_id('FUNDING_FEE', tran_id)
+        booked = booked_by_id.get(event_id)
+        if booked is None:
+            unbooked_funding.append(row)
+        elif (row['asset'] != 'USDT' or booked.asset != 'USDT'
+              or booked.account_id != session.adapter.account_id
+              or booked.symbol != row['symbol']
+              or booked.amount != Decimal(str(row['income']))
+              or booked.event_time != instant(row['time'])):
+            funding_mismatches.append(row)
+        else:
+            matched_funding_ids.add(event_id)
+    phantom_booked_funding = [event.event_id for event in booked_funding
+                              if event.event_id not in matched_funding_ids]
+
     trade_income = {}
     for receipt in mapping:
         for trade in receipt['trades']:
@@ -115,13 +171,44 @@ def capture(session, runtime, opening_wallet):
             if 'realizedPnl' in trade:
                 trade_income[('REALIZED_PNL', *key)] = Decimal(trade['realizedPnl'])
     income_groups = {}
-    for row in income:
+    for row in non_funding_rows:
         key = (row['incomeType'], row['symbol'], str(row.get('tradeId', '')), row['asset'])
         income_groups.setdefault(key, []).append(row)
-    unaccounted_income = [row for key, rows in income_groups.items()
-                          if sum((Decimal(row['income']) for row in rows), ZERO) != trade_income.get(key)
-                          for row in rows if Decimal(row['income']) != ZERO]
+    unaccounted_non_funding = [row for key, rows in income_groups.items()
+                               if sum((Decimal(row['income']) for row in rows), ZERO) != trade_income.get(key)
+                               for row in rows if Decimal(row['income']) != ZERO]
+    unaccounted_income = (
+        [row for row in unbooked_funding if Decimal(str(row['income'])) != ZERO]
+        + funding_mismatches
+        + unaccounted_non_funding
+    )
     summary = fifo['attribution']['summary']
+    funding_coverage_complete = bool(
+        funding_coverage is not None
+        and funding_coverage['complete']
+        and income_window.complete
+        and funding_coverage['covered_from_ms'] <= required_start_ms
+        and income_window.start_ms <= required_start_ms
+        and funding_coverage['covered_through_ms'] <= income_window.end_ms
+        and income_window.end_ms >= end_ms
+    )
+    funding_ledger_consistent = (
+        len(booked_by_id) == len(booked_funding) == len(state_funding) == len(adapter_funding)
+        and set(state_funding) == set(booked_by_id) == {event.event_id for event in adapter_funding}
+        and all(funding_identity_key(state_funding[key]) == funding_identity_key(event)
+                for key, event in booked_by_id.items())
+        and all(funding_identity_key(event) == funding_identity_key(booked_by_id[event.event_id])
+                for event in adapter_funding)
+        and state_funding_usdt == booked_funding_total == summary['realized_funding']
+        and all(event.asset == 'USDT' for event in booked_funding)
+    )
+    funding_ok = (
+        funding_coverage_complete
+        and funding_ledger_consistent
+        and not unbooked_funding
+        and not funding_mismatches
+        and not phantom_booked_funding
+    )
     filled = [row for row in mapping if row['trade_quantity_sum'] > 0]
     inventory = sum((p['quantity'] for p in account['positions']), ZERO)
     fees = sum((row['actual_fee'] for row in mapping), ZERO)
@@ -130,10 +217,16 @@ def capture(session, runtime, opening_wallet):
     position_ok = bool(filled) and inventory == summary['residual_inventory']
     wallet = account['balances']['walletBalance']
     equity = wallet + account['balances']['unrealizedProfit']
-    # TODO: attribute confirmed funding settlements through the authoritative ledger before accepting funded accounts.
-    account_ok = (fee_ok and position_ok and account['reconciled']
-                  and summary['reconciliation_residual'] == 0
-                  and summary['final_equity'] == equity and not funding and not unaccounted_income)
+    account_ok = (
+        fee_ok
+        and position_ok
+        and funding_ok
+        and account['reconciled']
+        and summary['reconciliation_residual'] == 0
+        and summary['reported_equity_difference'] == 0
+        and summary['final_equity'] == equity
+        and not unaccounted_income
+    )
     dispatches = [dict(campaign=c, method=m, client_order_id=i, parameters=json.loads(p),
                        receipt=json.loads(r) if r is not None else None)
                   for c, m, i, p, r in runtime.db.execute(
@@ -146,21 +239,52 @@ def capture(session, runtime, opening_wallet):
         d['method'] == 'POST' and d['receipt'] is not None and d['receipt']['http_status'] == 200
         and d['receipt'].get('order_id') is not None and not _unknown_dispatch(d) for d in dispatches),
         DEMO_TRADE_RECEIPT_VERIFIED=bool(filled), DEMO_FEE_RECONCILED=fee_ok,
+        DEMO_FUNDING_RECONCILED=funding_ok,
         DEMO_POSITION_RECONCILED=position_ok, DEMO_ACCOUNT_RECONCILED=account_ok,
         DEMO_RESTART_RECOVERY_VERIFIED=False, DEMO_LIFECYCLE_VERIFIED=lifecycle_ok)
+    funding_booking = (
+        'AUTHORITATIVE_LEDGER_RECONCILED' if (funding_rows and funding_ok)
+        else 'UNBOOKED_OR_MISMATCHED' if (funding_rows or phantom_booked_funding) and not funding_ok
+        else 'NO_EVENT_OBSERVED_IN_WINDOW' if funding_ok
+        else 'COVERAGE_INCOMPLETE'
+    )
     return dict(observed_at=datetime.now(timezone.utc), source='BINANCE_DEMO_ACTUAL_GET_RECEIPTS',
         scope='ALL_PERSISTED_ACCOUNT_HISTORY; not proof of a new experiment',
         opening_wallet=opening_wallet, statuses=statuses, account=account,
         order_trade_mapping=mapping, dispatches=dispatches, fifo=fifo,
         wallet=wallet, equity=equity, actual_fees=fees, income=income,
         unaccounted_income=unaccounted_income,
-        funding=dict(events=funding, booking='NOT_SUPPORTED' if funding else 'NO_EVENT_OBSERVED_IN_RESPONSE'),
+        funding=dict(
+            events=funding_rows,
+            booked_events=fifo['funding_events'],
+            unbooked_events=unbooked_funding,
+            mismatched_events=funding_mismatches,
+            phantom_booked_event_ids=phantom_booked_funding,
+            realized_funding=summary['realized_funding'],
+            booking=funding_booking,
+            reconciled=funding_ok,
+            coverage=dict(
+                protocol=funding_coverage,
+                income_window=dict(
+                    start_ms=income_window.start_ms,
+                    end_ms=income_window.end_ms,
+                    windows=income_window.windows,
+                    pages=income_window.pages,
+                    complete=income_window.complete,
+                ),
+                required_start_ms=required_start_ms,
+            ),
+        ),
         observed_order_statuses=sorted({row['order_query']['status'] for row in mapping}),
         receipt_history=history, lifecycle=lifecycle,
         recovery_proof=dict(account_id=session.adapter.account_id, process_id=os.getpid(),
             protocol_events=session.adapter.db.execute(
             'SELECT count(*) FROM futures_events').fetchone()[0],
-            economic_events=fifo['economic_events'], state=dumps(session.gateway.state),
+            protocol_funding_events=session.adapter.db.execute(
+            'SELECT count(*) FROM futures_funding').fetchone()[0],
+            economic_events=fifo['economic_events'],
+            funding_events=fifo['funding_events'],
+            state=dumps(session.gateway.state),
             dispatch_count=len(dispatches)),
         safety='NO LIVE MONEY')
 
@@ -266,13 +390,18 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
         classifications.append('HISTORICAL_ACTUAL_VERIFIED')
     if not statuses['DEMO_LIFECYCLE_VERIFIED']:
         classifications.append('REAL_EXCHANGE_NOT_OBSERVED')
+    baseline_funding_ids = {event['event_id'] for event in baseline['fifo'].get('funding_events', [])}
+    new_funding = [event for event in current['fifo'].get('funding_events', [])
+                   if event['event_id'] not in baseline_funding_ids]
+    funding_change = sum((Decimal(str(event['amount'])) for event in new_funding), ZERO)
     return dict(scope='NEW_POST_IDENTITIES_AFTER_FROZEN_BASELINE',
         evidence_classifications=classifications,
         order_identity_status='NEW_POST_IDENTITIES_PRESENT' if new_ids else 'NO_NEW_POST_IDENTITIES',
         baseline_observed_at=baseline['observed_at'], observed_at=current['observed_at'],
         historical_order_ids=sorted(old_ids), new_client_order_ids=sorted(new_ids),
         statuses=statuses, dispatches=dispatches, order_trade_mapping=mapping,
-        economic_events=events, actual_fees=fees, lifecycle=lifecycle,
+        economic_events=events, new_funding_events=new_funding,
+        actual_fees=fees, funding_change=funding_change, lifecycle=lifecycle,
         account_fifo=current['fifo']['attribution'],
         wallet_change=Decimal(str(current['wallet'])) - Decimal(str(baseline['wallet'])),
         equity_change=Decimal(str(current['equity'])) - Decimal(str(baseline['equity'])),
@@ -283,12 +412,19 @@ def experiment_evidence(baseline, current, *, previous_recovery=None):
 
 
 def recovery_fill_delta(previous, current, old_state, new_state):
-    """Validate natural GET-confirmed fills without weakening unchanged-state facts."""
+    """Validate natural GET-confirmed fills and/or funding without weakening unchanged-state facts."""
     old_events = previous['fifo']['economic_events']
     events = current['fifo']['economic_events']
-    if events[:len(old_events)] != old_events or len(events) == len(old_events):
+    old_funding = previous['fifo'].get('funding_events', [])
+    new_funding = current['fifo'].get('funding_events', [])
+    if events[:len(old_events)] != old_events or new_funding[:len(old_funding)] != old_funding:
+        return None
+    if len(events) == len(old_events) and len(new_funding) == len(old_funding):
         return None
     if len({event['event_id'] for event in events}) != len(events):
+        return None
+    if (len({event['event_id'] for event in new_funding}) != len(new_funding)
+            or len({event['tran_id'] for event in new_funding}) != len(new_funding)):
         return None
     if not current['statuses']['DEMO_ACCOUNT_RECONCILED']:
         return None
@@ -307,8 +443,16 @@ def recovery_fill_delta(previous, current, old_state, new_state):
     rows, wallet_delta, fee_delta = [], ZERO, ZERO
     inventory_delta = {}
     appended = events[len(old_events):]
+    appended_funding = new_funding[len(old_funding):]
     if any(event['client_order_id'] not in after for event in appended):
         return None
+    funding_delta = ZERO
+    for event in appended_funding:
+        booked = new_state.funding_events.get(event['event_id'])
+        if (booked is None or event['asset'] != 'USDT' or event['income_type'] != 'FUNDING_FEE'
+                or booked.tran_id != event['tran_id'] or booked.amount != Decimal(str(event['amount']))):
+            return None
+        funding_delta += Decimal(str(event['amount']))
     for key, row in after.items():
         old, new = old_state.orders[key].snapshot, new_state.orders[key].snapshot
         earlier = before[key]
@@ -360,6 +504,7 @@ def recovery_fill_delta(previous, current, old_state, new_state):
             quantity if new.intent.side.value == 'BUY' else -quantity)
         wallet_delta += sum((Decimal(trade['realizedPnl']) for trade in added), ZERO) - fee
         fee_delta += fee
+    wallet_delta += funding_delta
     for symbol in old_state.positions.keys() | new_state.positions.keys() | inventory_delta.keys():
         old_position, new_position = old_state.positions.get(symbol), new_state.positions.get(symbol)
         if ((new_position.quantity if new_position else ZERO)
@@ -369,6 +514,7 @@ def recovery_fill_delta(previous, current, old_state, new_state):
             or Decimal(current['actual_fees']) - Decimal(previous['actual_fees']) != fee_delta):
         return None
     return dict(source='ACTUAL_GET_USER_TRADES_AND_CONTROLLER_DELTAS', orders=rows,
+                funding_events=appended_funding, funding_change=funding_delta,
                 wallet_change=wallet_delta, actual_fee_change=fee_delta)
 
 
@@ -396,6 +542,11 @@ def compare_recovery(previous, current):
         order_facts_unchanged=order_facts(old_state) == order_facts(new_state),
         position_facts_unchanged=position_facts(old_state) == position_facts(new_state),
         economic_events_unchanged=previous['fifo']['economic_events'] == current['fifo']['economic_events'],
+        funding_events_unchanged=(
+            previous['fifo'].get('funding_events', []) == current['fifo'].get('funding_events', [])
+            and old_state.funding == new_state.funding
+            and old_state.funding_events == new_state.funding_events
+        ),
         no_new_dispatch=(previous['recovery_proof']['dispatch_count'] == current['recovery_proof']['dispatch_count']
                          and previous['dispatches'] == current['dispatches']),
         wallet_unchanged=previous['wallet'] == current['wallet'],

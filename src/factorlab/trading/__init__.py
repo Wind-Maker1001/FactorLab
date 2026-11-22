@@ -3,13 +3,13 @@
 PIT_UNVERIFIED / HFQ_UNVERIFIED / FORMAL_ADMISSION_BLOCKED
 """
 from .contracts import (
-    CONTRACT_VERSION, SAFETY_LABELS, AccountSnapshot, AssetBalance, Market,
+    CONTRACT_VERSION, SAFETY_LABELS, AccountSnapshot, AssetBalance, FundingEvent, Market,
     OrderEvent, OrderIntent, OrderSnapshot, OrderStatus, OrderType, Position,
     RiskDecision, Side, TradingAdapter,
 )
 
 __all__ = [
-    "CONTRACT_VERSION", "SAFETY_LABELS", "AccountSnapshot", "AssetBalance", "Market",
+    "CONTRACT_VERSION", "SAFETY_LABELS", "AccountSnapshot", "AssetBalance", "FundingEvent", "Market",
     "OrderEvent", "OrderIntent", "OrderSnapshot", "OrderStatus", "OrderType", "Position",
     "RiskDecision", "Side", "TradingAdapter",
 ]

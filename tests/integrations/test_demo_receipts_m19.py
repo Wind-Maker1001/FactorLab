@@ -123,7 +123,6 @@ def test_experiment_excludes_historical_fills_and_requires_new_recovery(network_
     root, store, factory, enable, fake, requests = network_grid
     enable()
     with open_grid_session(root, store, factory) as bridge:
-        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: ())
         bridge.recover()
         baseline = capture(bridge.session, bridge.runtime, D('1000'))
         observe(bridge)
@@ -296,13 +295,21 @@ def test_complete_export_requires_actual_trades_and_reconciles_fee_nav(network_g
         sell = bridge.grid.active[0].intent
         fake.trade_update(sell.client_order_id, '.04', '154')
         bridge.recover()
-        funded = capture(bridge.session, bridge.runtime, D('1000'))
-        assert funded['funding']['booking'] == 'NOT_SUPPORTED'
-        assert not funded['statuses']['DEMO_ACCOUNT_RECONCILED']
-        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: ())
+        # Unbooked funding (e.g. settled after recovery or bypassed booking) must fail account acceptance.
+        fake.income.append(dict(symbol='NVDAUSDT', incomeType='FUNDING_FEE', income='-0.02',
+                                asset='USDT', time=int(NOW.timestamp() * 1000), tranId=77, tradeId=''))
+        with monkeypatch.context() as patch:
+            patch.setattr('factorlab.integrations.binance_futures_trading.demo_fill_acceptance.recover',
+                          lambda session: session.status())
+            unbooked_funded = capture(bridge.session, bridge.runtime, D('1000'))
+            assert unbooked_funded['funding']['booking'] == 'UNBOOKED_OR_MISMATCHED'
+            assert not unbooked_funded['statuses']['DEMO_FUNDING_RECONCILED']
+            assert not unbooked_funded['statuses']['DEMO_ACCOUNT_RECONCILED']
+        fake.income.clear()
         report = capture(bridge.session, bridge.runtime, D('1000'))
         assert report['statuses']['DEMO_TRADE_RECEIPT_VERIFIED']
         assert report['statuses']['DEMO_FEE_RECONCILED']
+        assert report['statuses']['DEMO_FUNDING_RECONCILED']
         assert report['statuses']['DEMO_POSITION_RECONCILED']
         assert report['statuses']['DEMO_ACCOUNT_RECONCILED']
         assert report['actual_fees'] == D('.012')
@@ -310,38 +317,35 @@ def test_complete_export_requires_actual_trades_and_reconciles_fee_nav(network_g
         assert report['fifo']['attribution']['summary']['normal_sell']['net'] == D('.308')
         assert len(report['order_trade_mapping']) == 2
         assert report['funding']['events'] == []
+        ms = int(NOW.timestamp() * 1000)
         for income_type, symbol, asset in [
                 ('TRANSFER', '', 'USDT'), ('INSURANCE_CLEAR', 'NVDAUSDT', 'USDT'),
                 ('REALIZED_PNL', 'BTCUSDT', 'USDT'), ('COMMISSION', 'NVDAUSDT', 'BNB'),
                 ('COMMISSION', 'NVDAUSDT', 'USDT'), ('REALIZED_PNL', 'NVDAUSDT', 'USDT')]:
             unbooked = [dict(symbol=symbol, incomeType=income_type, income=value,
-                             asset=asset, time=1, tranId=index, tradeId='')
+                             asset=asset, time=ms, tranId=index + 1, tradeId='')
                         for index, value in enumerate(['1', '-1'])]
-            queried = []
-
-            def income(self, symbol=None):
-                queried.append(symbol)
-                return unbooked
-
-            monkeypatch.setattr(type(bridge.session.adapter), 'income', income)
+            fake.income = list(unbooked)
+            before_calls = len(fake.calls)
             offsetting = capture(bridge.session, bridge.runtime, D('1000'))
-            assert queried == [None]
+            income_calls = [params for _, path, params in fake.calls[before_calls:] if path == '/fapi/v1/income']
+            assert any('symbol' not in params and 'incomeType' not in params for params in income_calls)
             assert offsetting['unaccounted_income'] == unbooked
             assert offsetting['wallet'] == report['wallet']
             assert not offsetting['statuses']['DEMO_ACCOUNT_RECONCILED']
         trade = report['order_trade_mapping'][0]['trades'][0]
         commission = dict(symbol=trade['symbol'], incomeType='COMMISSION',
                           income=str(-D(trade['commission'])), asset='USDT',
-                          time=1, tranId=99, tradeId=str(trade['id']))
-        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: (commission,))
+                          time=ms, tranId=99, tradeId=str(trade['id']))
+        fake.income = [commission]
         recognized = capture(bridge.session, bridge.runtime, D('1000'))
         assert not recognized['unaccounted_income']
         assert recognized['statuses']['DEMO_ACCOUNT_RECONCILED']
-        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: (commission, commission))
+        fake.income = [commission, dict(commission)]
         duplicated = capture(bridge.session, bridge.runtime, D('1000'))
         assert duplicated['unaccounted_income'] == [commission, commission]
         assert not duplicated['statuses']['DEMO_ACCOUNT_RECONCILED']
-        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: ())
+        fake.income = []
         assert not report['statuses']['DEMO_LIFECYCLE_VERIFIED']
         assert not report['statuses']['DEMO_RESTART_RECOVERY_VERIFIED']
     with open_grid_session(root, store, factory) as bridge:
@@ -371,7 +375,6 @@ def test_restart_attributes_natural_fill_without_claiming_unchanged(network_grid
     root, store, factory, enable, fake, requests = network_grid
     enable()
     with open_grid_session(root, store, factory) as bridge:
-        monkeypatch.setattr(type(bridge.session.adapter), 'income', lambda self, symbol=None: ())
         bridge.recover()
         baseline = capture(bridge.session, bridge.runtime, D('1000'))
         observe(bridge)

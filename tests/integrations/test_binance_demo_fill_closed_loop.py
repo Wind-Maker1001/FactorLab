@@ -194,8 +194,9 @@ def test_partial_buy_sell_fees_fifo_equity_and_restart(network_grid, monkeypatch
         assert list(bridge.controller.store.order_events()) == final_events
         bridge.recover()
         assert list(bridge.controller.store.order_events()) == final_events
+        assert not list(bridge.controller.store.funding_events())
     assert len(writes(requests)) == 2 and not writes(requests, 'DELETE')
-    assert not [call for call in fake.calls if call[1] == '/fapi/v1/income']
+    assert all(call[0] == 'GET' for call in fake.calls if call[1] == '/fapi/v1/income')
     evidence['http_requests'] = [(request.get_method(), request.full_url.split('?')[0])
                                 for request in requests]
     evidence['write_parameters'] = writes(requests)
