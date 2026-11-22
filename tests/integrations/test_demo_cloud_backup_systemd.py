@@ -1,5 +1,6 @@
-"""Exercise the backup recovery hook under a real systemd manager."""
+"""Check the backup recovery unit and exercise it under an opt-in systemd manager."""
 
+from configparser import ConfigParser
 import json
 import os
 from pathlib import Path
@@ -14,14 +15,29 @@ import pytest
 from factorlab.integrations.binance_futures_trading import demo_cloud_backup as backup
 
 
-if not hasattr(signal, 'SIGKILL'):
-    pytest.skip('SIGKILL is required for the systemd termination tests', allow_module_level=True)
+def test_backup_unit_preserves_recovery_after_cgroup_termination():
+    unit_path = Path(__file__).resolve().parents[2] / 'deploy' / 'systemd' / 'factorlab-demo-backup.service'
+    unit = ConfigParser(interpolation=None, strict=False)
+    unit.read(unit_path, encoding='utf-8')
+    service = unit['Service']
 
+    start = shlex.split(service['ExecStart'])
+    recover = shlex.split(service['ExecStopPost'])
+    assert start[1:4] == ['-m', backup.__name__, 'run-scheduled']
+    assert recover[1:4] == ['-m', backup.__name__, 'recover-scheduled']
+    for command in (start, recover):
+        checkpoint_path = command[command.index('--recovery-directory') + 1]
+        assert checkpoint_path == '${RUNTIME_DIRECTORY}'
 
-pytestmark = pytest.mark.skipif(
-    sys.platform != 'linux' or os.environ.get('FACTORLAB_TEST_SYSTEMD') != '1',
-    reason='requires opt-in on an isolated Linux systemd host with root privileges',
-)
+    assert service['Type'] == 'oneshot'
+    assert service['RuntimeDirectory'] == 'factorlab-demo-backup'
+    assert service['RuntimeDirectoryMode'] == '0700'
+    assert service['TimeoutStartSec'] == '20min'
+    assert service['TimeoutStartFailureMode'] == 'abort'
+    assert service['WatchdogSignal'] == 'SIGTERM'
+    assert service['TimeoutAbortSec'] == '15s'
+    assert service['KillMode'] == 'control-group'
+    assert service['TimeoutStopSec'] == '6min'
 
 
 def _systemctl(*arguments):
@@ -105,13 +121,7 @@ def transient_units():
         subprocess.run(['systemctl', 'reset-failed', backup_unit], check=False, capture_output=True, timeout=30)
 
 
-@pytest.mark.parametrize(('mode', 'expected_result', 'expected_signal'), [
-    ('sigterm', 'signal', signal.SIGTERM),
-    ('timeout', 'timeout', signal.SIGKILL),
-])
-def test_systemd_restores_original_unit_after_backup_process_is_killed(
-    tmp_path, transient_units, mode, expected_result, expected_signal,
-):
+def _exercise_systemd_termination(tmp_path, transient_units, mode, expected_result, expected_signal):
     import fcntl
 
     backup_unit, owner_unit = transient_units
@@ -170,6 +180,17 @@ def test_systemd_restores_original_unit_after_backup_process_is_killed(
     assert maintenance['post_health']['unknown_count'] == 0
     assert maintenance['post_health']['consumed_posts'] == 7
     assert maintenance['post_health']['consumed_submitted_notional'] == '41.3308000'
+
+
+if sys.platform == 'linux' and os.environ.get('FACTORLAB_TEST_SYSTEMD') == '1':
+    @pytest.mark.parametrize(('mode', 'expected_result', 'expected_signal'), [
+        ('sigterm', 'signal', signal.SIGTERM),
+        ('timeout', 'timeout', signal.SIGKILL),
+    ])
+    def test_systemd_restores_original_unit_after_backup_process_is_killed(
+        tmp_path, transient_units, mode, expected_result, expected_signal,
+    ):
+        _exercise_systemd_termination(tmp_path, transient_units, mode, expected_result, expected_signal)
 
 
 if __name__ == '__main__':
