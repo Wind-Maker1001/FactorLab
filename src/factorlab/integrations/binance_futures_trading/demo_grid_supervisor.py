@@ -32,6 +32,7 @@ from .demo_runtime import (
     state_root,
 )
 from .demo_session import DEMO
+from .demo_preflight import _book
 from .demo_strategy_supervisor import MarketClient, StrategyControl
 from .demo_supervisor import DemoSupervisor
 from .protocol import ExchangeError, SafetyBlocked, credential_account_id
@@ -92,6 +93,8 @@ class GridConsumer:
         self.running = False
         self.reason = 'STARTING'
         self.last_bar = None
+        self.latest_book = None
+        self._exit_dispatch_active = False
 
     def gate(self):
         if self.supervisor is not None and self.supervisor.collection is not None:
@@ -100,11 +103,27 @@ class GridConsumer:
             raise SafetyBlocked('Grid control prohibits submission')
         if not self.authority():
             raise SafetyBlocked('AUTHORIZATION_REQUIRED')
-        if not self.running or not self.live_bar:
+        if not self.running:
+            raise SafetyBlocked('FRESH_CLOSED_BAR_REQUIRED')
+        if self._exit_dispatch_active:
+            if not self.bridge.grid.closed_by_breakout:
+                raise SafetyBlocked('FRESH_CLOSED_BAR_REQUIRED')
+            return
+        if not self.live_bar:
             raise SafetyBlocked('FRESH_CLOSED_BAR_REQUIRED')
 
     def recovered(self):
         """Complete consumer recovery before withdrawing any unsubmitted proposals."""
+
+    def _refresh_reason(self, desired, allowed):
+        if not allowed:
+            self.reason = 'PAUSED' if desired == 'PAUSED' else 'AUTHORIZATION_REQUIRED'
+            return
+        exit_status = self.bridge.breakout_exit_status(desired=desired, authorized=allowed)
+        if exit_status is not None and exit_status['phase'] != 'FLAT_CONFIRMED':
+            self.reason = exit_status['reason'] or exit_status['phase']
+        else:
+            self.reason = None if self.live_bar else 'FRESH_CLOSED_BAR_REQUIRED'
 
     def before_poll(self):
         desired = self.control.desired()
@@ -131,6 +150,7 @@ class GridConsumer:
                     self.activated_at = replacement.activated_at
                     self.running = self.live_bar = False
                     self.last_bar = None
+                    self.latest_book = None
         except SafetyBlocked as error:
             raise FeedPaused(str(error)) from error
         desired = self.control.desired()
@@ -141,8 +161,7 @@ class GridConsumer:
             self.eligible_after = self.clock()
         self.initialized = True
         self.running = allowed
-        self.reason = (None if self.live_bar else 'FRESH_CLOSED_BAR_REQUIRED') if allowed else (
-            'PAUSED' if desired == 'PAUSED' else 'AUTHORIZATION_REQUIRED')
+        self._refresh_reason(desired, allowed)
 
     def _rotation_allowed(self):
         return (self.control.desired() == 'RUNNING'
@@ -158,6 +177,7 @@ class GridConsumer:
     def disconnect(self):
         self.bridge.ready = False
         self.running = self.live_bar = False
+        self.latest_book = None
         self.eligible_after = self.clock()
         self.reason = 'RECONCILE_REQUIRED'
 
@@ -210,9 +230,36 @@ class GridConsumer:
             self.bridge.withdraw_unsubmitted()
         else:
             self.live_bar = True
-            self.reason = None
+            self._refresh_reason(self.control.desired(), self.running)
         self.last_bar = bar.closed_at
         return saved is None
+
+    def set_latest_book(self, raw):
+        # The feed already checked freshness against its exchange-time range.
+        # Parse here; execution checks freshness against its own clock at use.
+        self.latest_book = _book(dict(raw))
+        self.bridge.last_book = self.latest_book
+
+    def _step_breakout_exit(self):
+        if not self.running or self.control.desired() != 'RUNNING' or self.bridge.preview:
+            return None
+        if not self.bridge.grid.closed_by_breakout:
+            return None
+        self._exit_dispatch_active = True
+        try:
+            self.gate()
+            result = self.bridge.step_breakout_exit(book=self.latest_book)
+        except SafetyBlocked as error:
+            self.reason = str(error)
+            raise FeedPaused(self.reason) from error
+        finally:
+            self._exit_dispatch_active = False
+        self._refresh_reason(self.control.desired(), self.running)
+        return result
+
+    def maintain(self, raw):
+        self.set_latest_book(raw)
+        return self._step_breakout_exit()
 
     def quote(self, quote):
         previous = self.bridge.gateway.state.quotes.get(quote.instrument_id)
@@ -220,7 +267,11 @@ class GridConsumer:
             self.bridge.controller.quote(quote)
         if not self.running or self.control.desired() != 'RUNNING':
             return None
-        if self.bridge.preview or not self.live_bar:
+        if self.bridge.preview:
+            return None
+        if self.bridge.grid.closed_by_breakout:
+            return self._step_breakout_exit()
+        if not self.live_bar:
             return None
         try:
             self.gate()
@@ -234,8 +285,11 @@ class GridConsumer:
         account = self.bridge.session.status()
         effective = ('STOPPED' if self.control.desired() == 'STOPPED' else
                      'PAUSED' if not self.running or self.reason else self.bridge.grid.state)
+        breakout_exit = self.bridge.breakout_exit_status(
+            desired=self.control.desired(), authorized=self.running or self.authority())
         return dict(reason=self.reason, effective=effective, deployment=self.bridge.grid.deployment(),
             grid_state=self.bridge.grid.state, grid_reason=self.bridge.grid.reason,
+            breakout_exit=breakout_exit,
             last_bar=self.last_bar, inventory=(sum(
                 (position['quantity'] for position in account['positions']), D(0))
                 if account['positions'] is not None else None),
@@ -688,6 +742,7 @@ class GridSupervisorRuntime:
                 deployment_id=consumer_status['deployment']['deployment_id'],
                 state=consumer_status['grid_state'],
                 grid_reason=consumer_status['grid_reason'],
+                breakout_exit=consumer_status.get('breakout_exit'),
                 effective=consumer_status['effective'],
                 reason=consumer_status['reason'],
                 running=self.consumer.running,

@@ -400,10 +400,42 @@ class DemoExecutionGateway(FuturesPaperGateway):
     def reject(self, *args, **kwargs):
         raise SafetyBlocked('Demo rejection requires exchange confirmation')
 
+    def fresh_mark_price(self, symbol):
+        """Read an official mark with the same five-second bound as admission."""
+        from decimal import Decimal, DecimalException
+        from datetime import timedelta
+        from .account import instant
+        mark = self.adapter.client.request('GET', '/fapi/v1/premiumIndex', {'symbol': symbol}, signed=False)
+        try:
+            if (mark.get('symbol') != symbol or type(mark.get('time')) is not int
+                    or not timedelta(0) <= self.clock() - instant(mark['time']) <= timedelta(seconds=5)):
+                raise SafetyBlocked('UNKNOWN or stale Demo mark')
+            reference = Decimal(mark['markPrice'])
+            if not reference.is_finite() or reference <= 0:
+                raise SafetyBlocked('UNKNOWN or stale Demo mark')
+        except (AttributeError, KeyError, TypeError, ValueError, DecimalException, OverflowError, DataQualityError):
+            raise SafetyBlocked('UNKNOWN or stale Demo mark') from None
+        return reference
+
+    def check_price_band(self, symbol, price, reference, *, quote_price=None):
+        """Shared check for replacement planning and formal POST admission."""
+        from decimal import Decimal
+        band = self.rules.filters.get('PERCENT_PRICE', {})
+        if any(band.get(k) is None for k in ('multiplierUp', 'multiplierDown')):
+            raise SafetyBlocked('UNKNOWN price band')
+        low, high = reference * Decimal(band['multiplierDown']), reference * Decimal(band['multiplierUp'])
+        price = price if price is not None else high
+        if not reference.is_finite() or reference <= 0 or not low <= price <= high:
+            raise SafetyBlocked('Demo price band')
+        quote = self.state.quotes.get(symbol)
+        if quote_price is None:
+            quote_price = quote.price if quote is not None else None
+        if quote_price is None or not low <= quote_price <= high:
+            raise SafetyBlocked('Demo quote outside mark band')
+
     def _network_admission(self, intent):
         from decimal import Decimal
         from datetime import timedelta
-        from .account import instant
         from factorlab.trading.contracts import TERMINAL
         adapter, state = self.adapter, self.state
         transport = adapter.client.transport
@@ -451,26 +483,16 @@ class DemoExecutionGateway(FuturesPaperGateway):
                 raise SafetyBlocked('shared quote differs from bounded observation')
             self.quote_receipt = receipt
         else:
-            mark = adapter.client.request('GET', '/fapi/v1/premiumIndex', {'symbol': plan.symbol}, signed=False)
-            if (mark.get('symbol') != plan.symbol or type(mark.get('time')) is not int
-                    or not timedelta(0) <= self.clock() - instant(mark['time']) <= timedelta(seconds=5)):
-                raise SafetyBlocked('UNKNOWN or stale Demo mark')
-            reference = Decimal(mark['markPrice'])
+            reference = self.fresh_mark_price(plan.symbol)
         filters = self.rules.filters
         if set(filters) - SUPPORTED_NETWORK_FILTERS:
             raise SafetyBlocked('unsupported exchange filter')
         if filters.get('POSITION_RISK_CONTROL', {}).get('positionControlSide') not in (None, 'NONE'):
             raise SafetyBlocked('position risk restriction')
-        band = filters.get('PERCENT_PRICE', {})
-        if any(band.get(k) is None for k in ('multiplierUp', 'multiplierDown')):
-            raise SafetyBlocked('UNKNOWN price band')
-        low, high = reference * Decimal(band['multiplierDown']), reference * Decimal(band['multiplierUp'])
-        price = intent.limit_price if intent.limit_price is not None else high
-        if not reference.is_finite() or reference <= 0 or not low <= price <= high:
-            raise SafetyBlocked('Demo price band')
+        self.check_price_band(plan.symbol, intent.limit_price, reference)
+        price = intent.limit_price if intent.limit_price is not None else (
+            reference * Decimal(filters['PERCENT_PRICE']['multiplierUp']))
         quote = state.quotes.get(plan.symbol)
-        if quote is None or not low <= quote.price <= high:
-            raise SafetyBlocked('Demo quote outside mark band')
         reservation_price = max(price, quote.price)
         if transport.write_guard is not None:
             reservation_price = max(reservation_price, reference)

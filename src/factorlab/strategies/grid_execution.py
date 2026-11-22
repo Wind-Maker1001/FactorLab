@@ -35,7 +35,7 @@ _DECISION_FIELDS = (
     'rebuilds', 'previous_close', 'issued_orders', 'delivery', 'last_input', 'conflict',
     'expiry_reseeds', 'last_expiry_reseed', 'pending_expiry_reseed', 'reseed_bar_ready',
     'expiry_seed_submitting', 'reverse_remainders',
-    'withdrawn_orders', 'seed_needed', 'reseed_bar_pending',
+    'withdrawn_orders', 'seed_needed', 'reseed_bar_pending', 'exit_orders',
 )
 
 
@@ -233,6 +233,7 @@ class GridExecution:
         self.reverse_remainders = {}
         self.orders, self.targets, self.levels, self.created = {}, {}, {}, {}
         self.cancellations, self.expirations = set(), set()
+        self.exit_orders, self.exit_cancellations = [], set()
         self.pending_rebuild = None
         self.expiry_reseeds = self.last_expiry_reseed = 0
         self.pending_expiry_reseed = None
@@ -247,7 +248,8 @@ class GridExecution:
     def _stage(self):
         staged = copy(self)
         for name in ('records', 'orders', 'targets', 'levels', 'created',
-                     'cancellations', 'expirations', 'true_ranges', 'reverse_remainders', 'withdrawn_orders'):
+                     'cancellations', 'expirations', 'exit_orders', 'exit_cancellations',
+                     'true_ranges', 'reverse_remainders', 'withdrawn_orders'):
             setattr(staged, name, getattr(self, name).copy())
         return staged
 
@@ -444,6 +446,10 @@ class GridExecution:
                     raise ValueError('confirmation outside Grid deployment')
             elif action == 'withdraw':
                 staged._withdraw_unsubmitted(command, account)
+            elif action == 'exit_limit':
+                staged._propose_limit_exit(command, account)
+            elif action == 'exit_cancel':
+                staged._cancel_exit(command, account)
             elif action == 'unknown':
                 staged._mark_unknown(command)
             else:
@@ -453,6 +459,60 @@ class GridExecution:
 
     def observe(self, event, account, *, delivery):
         self._apply_external(delivery, 'observe', _observation(event), account)
+
+    def propose_limit_exit(self, spec, account, *, delivery):
+        """Propose one reduce-only SELL LIMIT exit within the breakout deployment."""
+        if not isinstance(spec, dict) or set(spec) != {'price', 'quantity'}:
+            raise ValueError('limit exit requires price and quantity')
+        price, quantity = D(spec['price']), D(spec['quantity'])
+        decimal_value(price, 'price', positive=True)
+        decimal_value(quantity, 'quantity', positive=True)
+        self._apply_external(delivery, 'exit_limit', dict(price=price, quantity=quantity), account)
+
+    def _propose_limit_exit(self, spec, account):
+        self._validate_account(account)
+        if not self.closed_by_breakout:
+            raise ValueError('limit exit requires breakout termination')
+        if (self.conflict is not None or not account.reconciled
+                or any(o.reconcile_required or o.status == OrderStatus.UNKNOWN for o in self.active)):
+            raise ValueError('RECONCILE_REQUIRED')
+        if self.active:
+            raise ValueError('limit exit requires no active Grid orders')
+        r, c = self.rules, self.config
+        price, quantity = spec['price'], spec['quantity']
+        if quantity % r.step_size or quantity < r.min_quantity or quantity > account.inventory:
+            raise ValueError('limit exit quantity violates rules or confirmed inventory')
+        if price % r.tick_size or price < D(c.minimum_price) or quantity * price < r.min_notional:
+            raise ValueError('limit exit price or notional violates exchange rules')
+        if not self.continuous_capacity and len(self.orders) >= _MAX_WORKING_ORDERS:
+            raise ValueError('Grid working order budget exhausted')
+        self.account = account
+        next_order = self.issued_orders + 1
+        identity = f'{self.deployment_id}-{next_order:08d}'
+        intent = OrderIntent(self.market, self.instrument_id, Side.SELL, OrderType.LIMIT,
+                             quantity, price, identity, reduce_only=True)
+        self.issued_orders = next_order
+        self.orders[identity] = OrderSnapshot(intent)
+        self.targets[identity], self.levels[identity], self.created[identity] = price, -1, self.sequence
+        self.exit_orders.append(identity)
+
+    def cancel_exit(self, order_id, account, *, delivery):
+        """Request cancellation of a working reduce-only SELL during breakout exit."""
+        validate_identity(order_id)
+        self._apply_external(delivery, 'exit_cancel', order_id, account)
+
+    def _cancel_exit(self, order_id, account):
+        self._validate_account(account)
+        if not self.closed_by_breakout:
+            raise ValueError('exit cancel requires breakout termination')
+        if (self.conflict is not None or not account.reconciled
+                or any(o.reconcile_required or o.status == OrderStatus.UNKNOWN for o in self.active)):
+            raise ValueError('RECONCILE_REQUIRED')
+        if order_id not in self.orders:
+            raise ValueError('unknown exit order')
+        self.account = account
+        self.cancellations.add(order_id)
+        self.exit_cancellations.add(order_id)
 
     def withdraw_unsubmitted(self, order_ids, account, *, delivery):
         """Withdraw local proposals, retaining evidence without an exchange report."""
@@ -467,6 +527,8 @@ class GridExecution:
         for key in order_ids:
             self.withdrawn_orders[key] = [self.orders[key], self.targets[key],
                                           self.levels[key], self.created[key]]
+            if key in self.exit_orders:
+                self.exit_orders.remove(key)
             self._forget(key)
         self.account = account
         self.seed_needed = True
@@ -515,7 +577,8 @@ class GridExecution:
                 self._risk('BREAKOUT_REBUILD_INTERVAL' if c.breakout == 'rebuild' else 'BREAKOUT',
                            c.breakout == 'exit')
         for key, order in self.orders.items():
-            if order.intent.order_type == OrderType.LIMIT and self.sequence - self.created[key] >= c.order_ttl:
+            if (key not in self.exit_orders and order.intent.order_type == OrderType.LIMIT
+                    and self.sequence - self.created[key] >= c.order_ttl):
                 self.cancellations.add(key)
                 self.expirations.add(key)
         if event['completed_bar'] and c.mode == 'atr':
@@ -607,12 +670,14 @@ class GridExecution:
         self.records.pop(key, None)
         self.cancellations.discard(key)
         self.expirations.discard(key)
+        self.exit_cancellations.discard(key)
 
     def _accept_confirmation(self, record, account, *, defer_decision=False):
         self._validate_account(account)
         updated = record.snapshot
         key = updated.intent.client_order_id
         old = self.orders[key]
+        is_exit = key in self.exit_orders
         cancel_requested = key in self.cancellations
         level = self.levels[key] + (1 if old.intent.side == Side.BUY else -1)
         delta = updated.cumulative_filled_quantity - old.cumulative_filled_quantity
@@ -624,6 +689,9 @@ class GridExecution:
         else:
             self.records[key], self.orders[key] = record, updated
         self.account = account
+        if (is_exit and updated.status in TERMINAL and self.closed_by_breakout
+                and not self.active and self.account.inventory == ZERO):
+            self.state = 'EXITED'
         reverse = (cancel_requested, level, old.intent.side, delta)
         if defer_decision:
             return reverse
@@ -712,7 +780,7 @@ class GridExecution:
                 broker.state, store.event_cursor(), staged._paper_deployment(controller))
             staged._baseline = payload['baseline']
             for name in _DECISION_FIELDS:
-                if name in {'withdrawn_orders', 'seed_needed', 'reseed_bar_pending'}:
+                if name in {'withdrawn_orders', 'seed_needed', 'reseed_bar_pending', 'exit_orders'}:
                     setattr(staged, name, payload['decision'].get(name, getattr(staged, name)))
                 else:
                     setattr(staged, name, payload['decision'][name])
