@@ -215,3 +215,42 @@ For each incident record UTC onset/detection/recovery, last successful reconcili
 24h requires the first complete real cloud GET-only window, accounted-for interruptions/restarts, reconciliation/quote continuity, recovery latency, intact SQLite/cursors and zero writes. Schedule controlled fault experiments separately and label their intervals. Begin 72h only after reviewing 24h incidents; additionally compare state/log growth, backlog catch-up, intermittent outages and repeated reconciliation cost. Begin 7d only after 72h acceptance; review retention, disk trends, account drift and multiple restart recovery. At each completed window perform the offline coherent backup and quarantine-preserving restore validation in a declared maintenance window. A missing interval, unknown request loss or unexplained state drift must be resolved before acceptance; never fill it with offline CI evidence.
 
 Cloud acceptance is separate from offline Linux and systemd evidence. Without an existing authorized host and Demo credential, report `CLOUD_NOT_DEPLOYED`. `CLOUD_DEMO_EXECUTION_READY` remains false until the M19 execution loop and a later cloud execution integration are accepted.
+
+## Operations monitoring, bounded logging, alerting, and daily reports (P8-C06)
+
+C06 reuses the existing private `cloud-health.json`, `demo_cloud_runtime`, `factorlab-demo-health.timer`, and `journald` without adding a new trading database or heavy monitoring platform. Monitoring state lives in a separate private directory (`/var/lib/factorlab-demo/monitoring`, owner `factorlab-demo:factorlab-demo`, mode `0700`) so `/var/lib/factorlab-demo/execute-state` remains strictly read-only to health and reporting units.
+
+### Persistent bounded journald configuration
+
+Install `deploy/systemd/journald-factorlab-demo.conf` to `/etc/systemd/journald.conf.d/factorlab-demo.conf` and restart `systemd-journald` (this does not restart `factorlab-demo-execute.service`):
+
+```sh
+sudo install -d -o root -g root -m 755 /etc/systemd/journald.conf.d /var/log/journal
+sudo install -o root -g root -m 644 deploy/systemd/journald-factorlab-demo.conf /etc/systemd/journald.conf.d/factorlab-demo.conf
+sudo systemctl restart systemd-journald
+journalctl --disk-usage
+```
+
+This enforces `Storage=persistent`, `Compress=yes`, `SystemMaxUse=512M`, `SystemKeepFree=4G`, `SystemMaxFileSize=32M`, `RuntimeMaxUse=32M` (protecting a 1 GiB VM), and `MaxRetentionSec=14day`.
+
+### Automated health sampling, alerting, and daily reports
+
+Install the updated `factorlab-demo-health.service`, `factorlab-demo-daily-report.service`, and `factorlab-demo-daily-report.timer` alongside the existing `10-state-root.conf` drop-in:
+
+```sh
+sudo install -d -o factorlab-demo -g factorlab-demo -m 700 /var/lib/factorlab-demo/monitoring
+sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-health.service /etc/systemd/system/factorlab-demo-health.service
+sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-daily-report.service /etc/systemd/system/factorlab-demo-daily-report.service
+sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-daily-report.timer /etc/systemd/system/factorlab-demo-daily-report.timer
+sudo systemctl daemon-reload
+sudo systemctl enable --now factorlab-demo-health.timer factorlab-demo-daily-report.timer
+```
+
+- `demo_cloud_runtime monitor` runs every minute via `factorlab-demo-health.timer`, preserves the health JSON stdout and exit code (`0` ready / `1` unhealthy), appends a redacted sample to `/var/lib/factorlab-demo/monitoring/samples.jsonl` (8-day retention, 16 MiB cap), and evaluates 7 alert classes: process exit, sustained health failure, order UNKNOWN, account recovery failure, low disk space, budget near exhaustion (read-only accounting, never resetting or expanding budgets), and unexpected restarts.
+- Alerts support deduplication, cooldown reminders, severity escalation, rate limiting, and recovery notifications (`ALERT_RESOLVED`) persisted in `alert-state.json` and `alert-events.jsonl` (14-day retention, 2 MiB cap).
+- `demo_cloud_runtime report --write-report --markdown` runs daily via `factorlab-demo-daily-report.timer` (00:05 UTC), summarizing `24h`, `72h`, and `7d` windows, POST consumption rate and remaining budget, and explicitly separating **Service Liveness**, **Trading Readiness**, and **Real Order Execution**.
+- `demo_cloud_runtime test-alert` runs an isolated end-to-end trigger, deduplication, and recovery test against a local loopback receiver without affecting live state.
+
+### Optional private HTTPS webhook configuration
+
+External alert delivery is configured outside the repository (template: `deploy/systemd/alert-config.example.json`). Provision `/etc/factorlab-demo/alert-config.json` as root-owned mode `0600` with an `https://` `webhook_url`, and expose it to `factorlab-demo-health.service` via a systemd drop-in using `LoadCredential=alert-config:/etc/factorlab-demo/alert-config.json` and `Environment=FACTORLAB_DEMO_ALERT_CONFIG=%d/alert-config`. When no external webhook is configured, monitoring continues recording local alert events and journald logs and explicitly reports `external_webhook_configured=false` and `mobile_push_configured=false`.

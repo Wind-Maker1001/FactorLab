@@ -1,0 +1,11 @@
+[Unit]
+Description=Generate FactorLab Demo daily operations report
+
+[Timer]
+OnCalendar=*-*-* 00:05:00 UTC
+Persistent=true
+AccuracySec=60
+Unit=factorlab-demo-daily-report.service
+
+[Install]
+WantedBy=timers.target

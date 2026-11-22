@@ -358,8 +358,61 @@ def _has_global_execute_budget(budget):
     return amount.is_finite() and amount > 0
 
 
-def health(root, *, max_age=90, unit=None):
-    payload = json.loads((root / 'cloud-health.json').read_text(encoding='utf-8'))
+def _missing_health_payload(root, *, unit=None, error='HEALTH_SNAPSHOT_UNAVAILABLE'):
+    target_unit = unit or os.environ.get('FACTORLAB_DEMO_SYSTEMD_UNIT')
+    systemd = systemd_unit_state(target_unit) if target_unit else None
+    disk_free = disk_total = None
+    try:
+        usage = shutil.disk_usage(root)
+        disk_free, disk_total = usage.free, usage.total
+    except OSError:
+        pass
+    return dict(
+        version=1,
+        pid=None,
+        heartbeat_at=None,
+        started_at=None,
+        starts=None,
+        restart_count=None,
+        systemd_unit=target_unit,
+        systemd=systemd,
+        mode=None,
+        status='MISSING',
+        desired=None,
+        reason=error,
+        alive=False,
+        ready=False,
+        uptime_seconds=None,
+        market_fresh=False,
+        market_batch_age_seconds=None,
+        account_recovered=False,
+        account_age_seconds=None,
+        positions=None,
+        equity=None,
+        nav_usdt=None,
+        open_orders=None,
+        unknown_count=None,
+        unknown_orders=None,
+        offline_heartbeat_healthy=False,
+        get_only_healthy=False,
+        execute_healthy=False,
+        dispatch_eligible=False,
+        cloud_get_only_accepted=False,
+        demo_execution_ready=False,
+        disk_free_bytes=disk_free,
+        disk_bytes=disk_total,
+        snapshot_error=error,
+    )
+
+
+def evaluate_health(root, *, max_age=90, unit=None, allow_missing=False):
+    health_path = Path(root) / 'cloud-health.json'
+    try:
+        payload = json.loads(health_path.read_text(encoding='utf-8'))
+    except (OSError, ValueError) as exc:
+        if not allow_missing:
+            raise
+        return _missing_health_payload(root, unit=unit, error=type(exc).__name__), False
     now = time()
     elapsed = now - payload['heartbeat_at']
     fresh = 0 <= elapsed <= max_age
@@ -417,7 +470,7 @@ def health(root, *, max_age=90, unit=None):
     dispatch_eligible = execute_healthy and bool(grid.get('live_bar'))
     demo_execution_ready = execute_healthy
     ready = offline_healthy or get_only_healthy or execute_healthy
-    print(json.dumps(dict(payload,
+    result = dict(payload,
         systemd=systemd,
         alive=alive, ready=ready,
         uptime_seconds=now - payload['started_at'] if alive else None,
@@ -429,20 +482,61 @@ def health(root, *, max_age=90, unit=None):
         open_orders=payload.get('open_orders') if account_recovered else None,
         offline_heartbeat_healthy=offline_healthy, get_only_healthy=get_only_healthy,
         execute_healthy=execute_healthy, dispatch_eligible=dispatch_eligible,
-        cloud_get_only_accepted=False, demo_execution_ready=demo_execution_ready)))
+        cloud_get_only_accepted=False, demo_execution_ready=demo_execution_ready)
+    return result, ready
+
+
+def health(root, *, max_age=90, unit=None):
+    result, ready = evaluate_health(root, max_age=max_age, unit=unit, allow_missing=False)
+    print(json.dumps(result))
     return 0 if ready else 1
+
+
+def _resolve_readonly_root():
+    configured = os.environ.get('FACTORLAB_DEMO_STATE_ROOT')
+    if configured:
+        root = Path(configured)
+        if not root.is_absolute():
+            raise SafetyBlocked('absolute state root required')
+        return root
+    if os.name == 'nt':
+        return Path(os.environ['LOCALAPPDATA']) / 'FactorLab' / 'BinanceDemo'
+    raise SafetyBlocked('explicit state root required')
+
+
+def _resolve_monitor_dir(state_dir, configured_monitor_dir=None):
+    raw = configured_monitor_dir or os.environ.get('FACTORLAB_DEMO_MONITOR_DIR')
+    if raw:
+        monitor_dir = Path(raw)
+        if not monitor_dir.is_absolute():
+            raise SafetyBlocked('absolute monitor dir required')
+    else:
+        monitor_dir = Path(state_dir).parent / 'monitoring'
+    resolved_state = Path(os.path.abspath(state_dir))
+    resolved_monitor = Path(os.path.abspath(monitor_dir))
+    if resolved_monitor == resolved_state or resolved_state in resolved_monitor.parents:
+        raise SafetyBlocked('monitor dir must be outside the trading state root')
+    return resolved_monitor
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('run', 'health', 'backup', 'restore',
+    parser.add_argument('action', choices=('run', 'health', 'monitor', 'report',
+                                           'backfill-monitor', 'test-alert',
+                                           'backup', 'restore',
                                            'handoff-export', 'handoff-import'))
     parser.add_argument('--state-root', type=Path)
+    parser.add_argument('--monitor-dir', type=Path)
+    parser.add_argument('--alert-config', type=Path)
     parser.add_argument('--offline', action='store_true')
     parser.add_argument('--seconds', type=float)
     parser.add_argument('--poll-seconds', type=float, default=10)
     parser.add_argument('--min-free-bytes', type=int, default=MIN_FREE_BYTES)
     parser.add_argument('--unit')
+    parser.add_argument('--health-unit', default='factorlab-demo-health.service')
+    parser.add_argument('--since-days', type=int, default=7)
+    parser.add_argument('--write-report', action='store_true')
+    parser.add_argument('--markdown', action='store_true')
     parser.add_argument('--destination', type=Path)
     parser.add_argument('--backup', type=Path)
     parser.add_argument('--package', type=Path)
@@ -457,6 +551,11 @@ def main(argv=None):
         os.umask(0o077)
     try:
         from .demo_cloud_storage import backup_state, restore_state
+        if args.action == 'test-alert':
+            from .demo_cloud_monitor import run_alert_self_test
+            summary = run_alert_self_test(work_dir=args.monitor_dir)
+            print(json.dumps(summary, sort_keys=True), flush=True)
+            return 0 if summary['passed'] else 1
         if args.action == 'handoff-export':
             if os.name != 'nt' or not all((args.destination, args.target_machine_id, args.target_state_root)):
                 parser.error('handoff-export requires Windows, --destination, --target-machine-id and --target-state-root')
@@ -484,16 +583,43 @@ def main(argv=None):
             restore_state(args.backup, args.destination)
             return 0
         if args.action == 'health':
-            configured = os.environ.get('FACTORLAB_DEMO_STATE_ROOT')
-            if configured:
-                root = Path(configured)
-                if not root.is_absolute():
-                    raise SafetyBlocked('absolute state root required')
-            elif os.name == 'nt':
-                root = Path(os.environ['LOCALAPPDATA']) / 'FactorLab' / 'BinanceDemo'
-            else:
-                raise SafetyBlocked('explicit state root required')
+            root = _resolve_readonly_root()
             return health(root, unit=args.unit)
+        if args.action == 'monitor':
+            from .demo_cloud_monitor import load_alert_config, run_monitor_cycle
+            root = _resolve_readonly_root()
+            monitor_dir = _resolve_monitor_dir(root, args.monitor_dir)
+            result, ready = evaluate_health(root, unit=args.unit, allow_missing=True)
+            cfg = load_alert_config(args.alert_config)
+            mon_summary = run_monitor_cycle(result, monitor_dir, alert_config=cfg)
+            print(json.dumps(dict(result, monitoring=mon_summary)), flush=True)
+            return 0 if ready else 1
+        if args.action == 'report':
+            from .demo_cloud_monitor import (
+                generate_daily_report, load_alert_config, render_daily_report_markdown,
+            )
+            root = _resolve_readonly_root()
+            monitor_dir = _resolve_monitor_dir(root, args.monitor_dir)
+            current_health, _ = evaluate_health(root, unit=args.unit, allow_missing=True)
+            cfg = load_alert_config(args.alert_config)
+            report = generate_daily_report(
+                monitor_dir, current_health=current_health, alert_config=cfg,
+                write_files=args.write_report,
+            )
+            if args.markdown:
+                print(render_daily_report_markdown(report), end='', flush=True)
+            else:
+                print(json.dumps(report, sort_keys=True), flush=True)
+            return 0
+        if args.action == 'backfill-monitor':
+            from .demo_cloud_monitor import backfill_from_journald
+            root = _resolve_readonly_root()
+            monitor_dir = _resolve_monitor_dir(root, args.monitor_dir)
+            summary = backfill_from_journald(
+                monitor_dir, health_unit=args.health_unit, since_days=args.since_days,
+            )
+            print(json.dumps(summary, sort_keys=True), flush=True)
+            return 0
         root = state_root()
         if args.action == 'run':
             return run(root, offline=args.offline, seconds=args.seconds,
