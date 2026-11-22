@@ -74,6 +74,10 @@ USDT_EQUITY_QUANTUM = Decimal("0.00000001")
 DEFAULT_JOURNAL_ID = "eb66189ca89a5d1f8253a4e35c66bd12"
 DEFAULT_OPENING_WALLET = Decimal("5000.00000000")
 DEFAULT_STRATEGY_CAP_USDT = Decimal("7.00000000")
+NO_F11_NO_F08_STRANDED_POSITION_BASELINE = "NO_F11_NO_F08_STRANDED_POSITION_BASELINE"
+PAPER_FEE_RATE = Decimal("0.0003")
+PAPER_SLIPPAGE = Decimal("0.0002")
+SYNTHETIC_CAPACITY_PER_BAR = Decimal("0.10")
 
 EVIDENCE_BOUNDARIES = {
     "empirical": "EMPIRICAL_OFFICIAL_DEMO",
@@ -1678,140 +1682,167 @@ def evaluate_benchmarks(
     opening_wallet: Decimal = DEFAULT_OPENING_WALLET,
     strategy_cap_usdt: Decimal = DEFAULT_STRATEGY_CAP_USDT,
 ) -> list[dict[str, Any]]:
-    """Compare Demo Grid against NVDAUSDT Buy-and-Hold across aligned windows and capital bases.
-
-    Reuses ``grid_exposure_benchmark.simulate`` / ``fifo_control`` / ``stats`` and
-    ``grid_funding.drawdown`` for methodological parity with FactorLab R06/R09.
-    """
+    """Compare official Demo cash flows and benchmark returns within the same UTC windows."""
     rows: list[dict[str, Any]] = []
-    g0_bars = merged["bars_by_deployment"].get("fl-d7345f8795464a65-g", [])
-    g1_bars = merged["bars_by_deployment"].get("fl-d7345f8795464a65-g-00001", [])
-    g2_bars = merged["bars_by_deployment"].get("fl-d7345f8795464a65-g-00002", [])
-
+    family_id = "fl-d7345f8795464a65-g"
+    g1_id = f"{family_id}-00001"
+    bars_by_deployment = merged["bars_by_deployment"]
+    g1_bars = bars_by_deployment.get(g1_id, [])
     qty = Decimal("0.04")
-    g1_funding_total = Decimal(empirical["cohorts"]["all_grid"]["realized_funding_usdt"])
-    latest_quote = merged["state"].quotes.get("NVDAUSDT")
-    latest_px = latest_quote.price if latest_quote else (g2_bars[-1]["close"] if g2_bars else g1_bars[-1]["close"])
+    ledger = [
+        (_parse_utc(record["timestamp_utc"]), record)
+        for record in empirical["fills_and_funding"]
+    ]
 
-    def _bh_drawdown_pct(prices: list[Decimal], capital: Decimal, units: Decimal, entry_px: Decimal) -> float:
-        if not prices or capital <= ZERO:
-            return 0.0
-        peak = capital
-        worst = ZERO
-        for px in prices:
-            eq = capital + units * (px - entry_px)
-            peak = max(peak, eq)
-            if peak > ZERO:
-                worst = max(worst, (peak - eq) / peak)
-        return round(float(worst * Decimal("100")), 6)
+    def _signed_qty(fill: dict[str, Any]) -> Decimal:
+        quantity = Decimal(fill["quantity"])
+        return quantity if fill["side"] == "BUY" else -quantity
 
-    # Window 1: Active Gen 1 Window (2026-11-21T19:01Z -> 2026-11-22T16:24Z, 1,284 1m bars)
+    def _window_pnl(
+        records: list[tuple[datetime, dict[str, Any]]],
+        start: datetime,
+        end: datetime,
+        start_price: Decimal,
+        end_price: Decimal,
+    ) -> Decimal:
+        net = ZERO
+        for ts, record in records:
+            if ts > end:
+                break
+            if record["record_type"] == "TRADE_FILL":
+                quantity = _signed_qty(record)
+                if ts < start:
+                    net += quantity * (end_price - start_price)
+                else:
+                    net += quantity * (end_price - Decimal(record["price"])) - Decimal(record["fee_usdt"])
+            elif ts >= start:
+                net += Decimal(record["funding_usdt"])
+        return net
+
+    def _buy_and_hold(
+        window: str,
+        name: str,
+        prices: dict[datetime, Decimal],
+        units: Decimal,
+        capital: Decimal,
+        strategy_net: Decimal,
+        notes: str,
+        *,
+        funding: dict[datetime, Decimal] | None = None,
+        endpoint_only: bool = False,
+    ) -> dict[str, Any]:
+        start, end = min(prices), max(prices)
+        p0, p1 = prices[start], prices[end]
+        gross = units * (p1 - p0)
+        funding = funding or {}
+        funding_total = sum(funding.values(), ZERO)
+        net = gross + funding_total
+        mean_notional = None
+        drawdown = None
+        if not endpoint_only:
+            mean_notional = round(float(units * sum(prices.values(), ZERO) / len(prices)), 4)
+            price, cumulative_funding, peak, worst = p0, ZERO, capital, ZERO
+            for ts in sorted(prices.keys() | funding.keys()):
+                price = prices.get(ts, price)
+                cumulative_funding += funding.get(ts, ZERO)
+                equity = capital + units * (price - p0) + cumulative_funding
+                peak = max(peak, equity)
+                worst = max(worst, (peak - equity) / peak)
+            drawdown = round(float(worst * 100), 6)
+        return {
+            "window": window,
+            "benchmark_name": name,
+            "evidence_class": EVIDENCE_BOUNDARIES["empirical"] + "_MARKET_PATH",
+            "start_utc": start.isoformat(),
+            "end_utc": end.isoformat(),
+            "start_price": _dec_str(p0, 5),
+            "end_price": _dec_str(p1, 5),
+            "price_return_pct": round(float((p1 - p0) / p0 * 100), 4),
+            "capital_basis_usdt": _dec_str(capital, 4),
+            "position_qty": _dec_str(units, 4),
+            "mean_notional_usdt": mean_notional,
+            "effective_leverage_on_basis_x": round(float(units * p0 / capital), 4),
+            "holding_fraction": 1.0,
+            "gross_pnl_usdt": _dec_str(gross, 8),
+            "funding_usdt": _dec_str(funding_total, 8),
+            "fees_usdt": _dec_str(ZERO, 8),
+            "net_pnl_usdt": _dec_str(net, 8),
+            "return_on_basis_pct": round(float(net / capital * 100), 4),
+            "max_drawdown_on_basis_pct": drawdown,
+            "grid_net_pnl_same_window_usdt": _dec_str(strategy_net, 8),
+            "grid_minus_benchmark_usdt": _dec_str(strategy_net - net, 8),
+            "notes": notes,
+        }
+
     if g1_bars:
-        p0 = Decimal("130.90")  # Gen 1 anchor initial price
-        p1 = Decimal("132.89")  # Gen 1 exit / end close
-        prices = [b["close"] for b in g1_bars]
-        bh_price_ret_pct = float((p1 - p0) / p0 * Decimal("100"))
-        # 1a. Equal-quantity 0.04 NVDAUSDT B&H (ex-funding) on 7.00 USDT strategy cap
-        bh_004_gross = qty * (p1 - p0)
-        bh_004_notional = qty * p0
-        rows.append(
-            {
-                "window": "GEN1_ACTIVE_21.4H",
-                "benchmark_name": "NVDAUSDT_BH_0.04_EX_FUNDING",
-                "evidence_class": EVIDENCE_BOUNDARIES["empirical"] + "_MARKET_PATH",
-                "start_utc": g1_bars[0]["time"].isoformat(),
-                "end_utc": g1_bars[-1]["time"].isoformat(),
-                "start_price": _dec_str(p0, 5),
-                "end_price": _dec_str(p1, 5),
-                "price_return_pct": round(bh_price_ret_pct, 4),
-                "capital_basis_usdt": _dec_str(strategy_cap_usdt, 4),
-                "position_qty": _dec_str(qty, 4),
-                "mean_notional_usdt": round(float(qty * sum(prices, ZERO) / Decimal(len(prices))), 4),
-                "effective_leverage_on_basis_x": round(float(bh_004_notional / strategy_cap_usdt), 4),
-                "holding_fraction": 1.0,
-                "gross_pnl_usdt": _dec_str(bh_004_gross, 8),
-                "funding_usdt": _dec_str(ZERO, 8),
-                "fees_usdt": _dec_str(ZERO, 8),
-                "net_pnl_usdt": _dec_str(bh_004_gross, 8),
-                "return_on_basis_pct": round(float(bh_004_gross / strategy_cap_usdt * Decimal("100")), 4),
-                "max_drawdown_on_basis_pct": _bh_drawdown_pct(prices, strategy_cap_usdt, qty, p0),
-                "grid_net_pnl_same_window_usdt": empirical["cohorts"]["all_grid"]["net_pnl_usdt"],
-                "grid_minus_benchmark_usdt": _dec_str(
-                    Decimal(empirical["cohorts"]["all_grid"]["net_pnl_usdt"]) - bh_004_gross, 8
-                ),
-                "notes": "Equal 0.04 qty, 7.00 USDT strategy cap, excludes funding & entry/exit fees.",
-            }
-        )
-        # 1b. Equal-quantity 0.04 NVDAUSDT B&H WITH observed Gen 1 Demo funding (lower bound: only 09:00-16:00Z)
-        bh_004_with_fund = bh_004_gross + g1_funding_total
-        rows.append(
-            {
-                "window": "GEN1_ACTIVE_21.4H",
-                "benchmark_name": "NVDAUSDT_BH_0.04_WITH_OBSERVED_FUNDING",
-                "evidence_class": EVIDENCE_BOUNDARIES["empirical"] + "_MARKET_PATH",
-                "start_utc": g1_bars[0]["time"].isoformat(),
-                "end_utc": g1_bars[-1]["time"].isoformat(),
-                "start_price": _dec_str(p0, 5),
-                "end_price": _dec_str(p1, 5),
-                "price_return_pct": round(bh_price_ret_pct, 4),
-                "capital_basis_usdt": _dec_str(strategy_cap_usdt, 4),
-                "position_qty": _dec_str(qty, 4),
-                "mean_notional_usdt": round(float(qty * sum(prices, ZERO) / Decimal(len(prices))), 4),
-                "effective_leverage_on_basis_x": round(float(bh_004_notional / strategy_cap_usdt), 4),
-                "holding_fraction": 1.0,
-                "gross_pnl_usdt": _dec_str(bh_004_gross, 8),
-                "funding_usdt": _dec_str(g1_funding_total, 8),
-                "fees_usdt": _dec_str(ZERO, 8),
-                "net_pnl_usdt": _dec_str(bh_004_with_fund, 8),
-                "return_on_basis_pct": round(float(bh_004_with_fund / strategy_cap_usdt * Decimal("100")), 4),
-                "max_drawdown_on_basis_pct": _bh_drawdown_pct(prices, strategy_cap_usdt, qty, p0),
-                "grid_net_pnl_same_window_usdt": empirical["cohorts"]["all_grid"]["net_pnl_usdt"],
-                "grid_minus_benchmark_usdt": _dec_str(
-                    Decimal(empirical["cohorts"]["all_grid"]["net_pnl_usdt"]) - bh_004_with_fund, 8
-                ),
-                "notes": (
-                    "Applies the exact 8 observed Demo funding charges (-0.09763384 USDT); "
-                    "conservative lower bound because pre-09:00Z funding rates are not booked while flat."
-                ),
-            }
-        )
-        # 1c. R06 grid_exposure_benchmark.simulate parity control on hourly-resampled Gen 1 bars
-        df_g1 = pd.DataFrame(
-            [
-                {
-                    "time": b["time"],
-                    "close": float(b["close"]),
-                    "volume": float(b["volume"]),
-                }
-                for b in g1_bars
-            ]
-        ).set_index("time")
-        hourly_df = df_g1.resample("1h").agg({"close": "last", "volume": "sum"}).dropna()
-        if len(hourly_df) >= 2:
+        g1_ledger = [(ts, record) for ts, record in ledger if record["deployment_id"] == g1_id]
+        g1_fills = [(ts, record) for ts, record in g1_ledger if record["record_type"] == "TRADE_FILL"]
+        g1_prices = {bar["time"]: bar["close"] for bar in g1_bars}
+        start, end = min(g1_prices), max(g1_prices)
+        # The terminal F11 receipt can follow the final completed bar within the same minute.
+        if (
+            g1_fills
+            and g1_fills[-1][1]["purpose"] == "RISK_EXIT"
+            and sum((_signed_qty(fill) for _, fill in g1_fills), ZERO) == ZERO
+        ):
+            end, exit_fill = g1_fills[-1]
+            g1_prices = {ts: price for ts, price in g1_prices.items() if ts <= end}
+            g1_prices[end] = Decimal(exit_fill["price"])
+        p0, p1 = g1_prices[start], g1_prices[end]
+        g1_net = _window_pnl(g1_ledger, start, end, p0, p1)
+        observed_funding: dict[datetime, Decimal] = defaultdict(Decimal)
+        for ts, record in g1_ledger:
+            if start <= ts <= end and record["record_type"] == "FUNDING_SETTLEMENT":
+                held = Decimal(record["quantity"])
+                observed_funding[ts] += Decimal(record["funding_usdt"]) * qty / held
+
+        window = "GEN1_ACTIVE"
+        rows.append(_buy_and_hold(
+            window, "NVDAUSDT_BH_0.04_EX_FUNDING", g1_prices, qty, strategy_cap_usdt, g1_net,
+            "Equal 0.04 qty. Excludes benchmark funding and entry/exit fees.",
+        ))
+        rows.append(_buy_and_hold(
+            window, "NVDAUSDT_BH_0.04_WITH_OBSERVED_FUNDING", g1_prices, qty, strategy_cap_usdt, g1_net,
+            "Applies only the Gen 1 settlements observed within these bounds, scaled to 0.04 NVDAUSDT. "
+            "The hypothetical holding has no settlement evidence during the remaining hours.",
+            funding=observed_funding,
+        ))
+
+        # Preserve observation times inside each bucket and sample the actual window endpoints.
+        hourly_bars: dict[datetime, dict[str, Any]] = {}
+        for bar in g1_bars:
+            ts = bar["time"]
+            if start < ts < end:
+                hour = ts.replace(minute=0, second=0, microsecond=0)
+                bucket = hourly_bars.setdefault(hour, {"volume": 0.0})
+                bucket.update(
+                    time=ts.isoformat(),
+                    close=float(bar["close"]),
+                    volume=bucket["volume"] + float(bar["volume"]),
+                )
+        if hourly_bars:
             sim_bars = [
-                {
-                    "time": ts.isoformat(),
-                    "close": float(row["close"]),
-                    "volume": max(100.0, float(row["volume"])),
-                }
-                for ts, row in hourly_df.iterrows()
+                {"time": start.isoformat(), "close": float(p0), "volume": 0.0},
+                *hourly_bars.values(),
+                {"time": end.isoformat(), "close": float(p1), "volume": 0.0},
             ]
             nav_df, fills_df = benchmark_simulate(sim_bars, fee_bps=3, slip_bps=2, quantity=qty)
             st = benchmark_stats(nav_df, fills_df)
             fc = benchmark_fifo_control(fills_df, nav_df["close"].iloc[-1])
             sim_net = Decimal(str(round(st["net_pnl"], 8)))
+            nav = nav_df["equity"].to_numpy()
+            equity = nav - nav[0] + float(strategy_cap_usdt)
+            peak = np.maximum.accumulate(equity)
             rows.append(
                 {
-                    "window": "GEN1_ACTIVE_21.4H",
+                    "window": window,
                     "benchmark_name": "R06_EXPOSURE_CONTROL_0.04_HOURLY_SIM",
                     "evidence_class": EVIDENCE_BOUNDARIES["historical_replay"],
-                    "start_utc": sim_bars[0]["time"],
-                    "end_utc": sim_bars[-1]["time"],
-                    "start_price": _dec_str(Decimal(str(sim_bars[0]["close"])), 5),
-                    "end_price": _dec_str(Decimal(str(sim_bars[-1]["close"])), 5),
-                    "price_return_pct": round(
-                        (sim_bars[-1]["close"] - sim_bars[0]["close"]) / sim_bars[0]["close"] * 100.0, 4
-                    ),
+                    "start_utc": start.isoformat(),
+                    "end_utc": end.isoformat(),
+                    "start_price": _dec_str(p0, 5),
+                    "end_price": _dec_str(p1, 5),
+                    "price_return_pct": round(float((p1 - p0) / p0 * 100), 4),
                     "capital_basis_usdt": _dec_str(strategy_cap_usdt, 4),
                     "position_qty": _dec_str(qty, 4),
                     "mean_notional_usdt": round(st["mean_notional"], 4),
@@ -1823,166 +1854,70 @@ def evaluate_benchmarks(
                     "funding_usdt": _dec_str(ZERO, 8),
                     "fees_usdt": _dec_str(Decimal(str(round(st["fees"], 8))), 8),
                     "net_pnl_usdt": _dec_str(sim_net, 8),
-                    "return_on_basis_pct": round(float(sim_net / strategy_cap_usdt * Decimal("100")), 4),
-                    "max_drawdown_on_basis_pct": round(st["max_drawdown"] * 1000.0 / float(strategy_cap_usdt) * 100.0, 4),
-                    "grid_net_pnl_same_window_usdt": empirical["cohorts"]["all_grid"]["net_pnl_usdt"],
-                    "grid_minus_benchmark_usdt": _dec_str(
-                        Decimal(empirical["cohorts"]["all_grid"]["net_pnl_usdt"]) - sim_net, 8
-                    ),
-                    "notes": "Reuses factorlab.experiments.grid_exposure_benchmark.simulate (fee=3bps, slip=2bps, ex-funding).",
+                    "return_on_basis_pct": round(float(sim_net / strategy_cap_usdt * 100), 4),
+                    "max_drawdown_on_basis_pct": round(float(np.max((peak - equity) / peak)) * 100, 6),
+                    "grid_net_pnl_same_window_usdt": _dec_str(g1_net, 8),
+                    "grid_minus_benchmark_usdt": _dec_str(g1_net - sim_net, 8),
+                    "notes": "R06 simulation on hourly observations with recorded volume. "
+                    "Endpoint prices are marks, with no execution capacity. Fee 3 bps, slippage 2 bps, excludes funding.",
                 }
             )
 
-        # 1d. Full 7.00 USDT 1x Buy-and-Hold (theoretical continuous 7/130.90 = 0.053476 units)
-        units_cap = strategy_cap_usdt / p0
-        bh_cap_gross = units_cap * (p1 - p0)
-        rows.append(
-            {
-                "window": "GEN1_ACTIVE_21.4H",
-                "benchmark_name": "NVDAUSDT_BH_FULL_7USDT_1X_EX_FUNDING",
-                "evidence_class": EVIDENCE_BOUNDARIES["empirical"] + "_MARKET_PATH",
-                "start_utc": g1_bars[0]["time"].isoformat(),
-                "end_utc": g1_bars[-1]["time"].isoformat(),
-                "start_price": _dec_str(p0, 5),
-                "end_price": _dec_str(p1, 5),
-                "price_return_pct": round(bh_price_ret_pct, 4),
-                "capital_basis_usdt": _dec_str(strategy_cap_usdt, 4),
-                "position_qty": _dec_str(units_cap, 4),
-                "mean_notional_usdt": round(float(units_cap * sum(prices, ZERO) / Decimal(len(prices))), 4),
-                "effective_leverage_on_basis_x": 1.0,
-                "holding_fraction": 1.0,
-                "gross_pnl_usdt": _dec_str(bh_cap_gross, 8),
-                "funding_usdt": _dec_str(ZERO, 8),
-                "fees_usdt": _dec_str(ZERO, 8),
-                "net_pnl_usdt": _dec_str(bh_cap_gross, 8),
-                "return_on_basis_pct": round(bh_price_ret_pct, 4),
-                "max_drawdown_on_basis_pct": _bh_drawdown_pct(prices, strategy_cap_usdt, units_cap, p0),
-                "grid_net_pnl_same_window_usdt": empirical["cohorts"]["all_grid"]["net_pnl_usdt"],
-                "grid_minus_benchmark_usdt": _dec_str(
-                    Decimal(empirical["cohorts"]["all_grid"]["net_pnl_usdt"]) - bh_cap_gross, 8
-                ),
-                "notes": "100% deployed 7.00 USDT 1x exposure (higher capital utilization than Grid 0.04 qty).",
-            }
-        )
+        rows.append(_buy_and_hold(
+            window, "NVDAUSDT_BH_FULL_7USDT_1X_EX_FUNDING", g1_prices, strategy_cap_usdt / p0,
+            strategy_cap_usdt, g1_net, "Deploys the entire strategy cap at 1x. Excludes funding and fees.",
+        ))
 
-    # Window 2: Continuous Grid Family Window (Gen 0 start -> latest snapshot, 7.31 days)
+    latest_quote = merged["state"].quotes.get("NVDAUSDT")
+    if latest_quote is None:
+        return rows
+    latest_obs = _parse_utc(latest_quote.observed_at)
+    latest_px = latest_quote.price
+
+    g0_bars = bars_by_deployment.get(family_id, [])
     if g0_bars:
-        cont_all = sorted(g0_bars + g1_bars + g2_bars, key=lambda b: b["time"])
-        p0_cont = Decimal("161.09")  # Gen 0 anchor initial price
-        p1_cont = latest_px
-        prices_cont = [b["close"] for b in cont_all]
-        ret_cont_pct = float((p1_cont - p0_cont) / p0_cont * Decimal("100"))
-        bh_cont_004 = qty * (p1_cont - p0_cont)
-        rows.append(
-            {
-                "window": "CONTINUOUS_GRID_7.3D",
-                "benchmark_name": "NVDAUSDT_BH_0.04_EX_FUNDING",
-                "evidence_class": EVIDENCE_BOUNDARIES["empirical"] + "_MARKET_PATH",
-                "start_utc": cont_all[0]["time"].isoformat(),
-                "end_utc": empirical["sample_window"]["last_observation_utc"],
-                "start_price": _dec_str(p0_cont, 5),
-                "end_price": _dec_str(p1_cont, 5),
-                "price_return_pct": round(ret_cont_pct, 4),
-                "capital_basis_usdt": _dec_str(strategy_cap_usdt, 4),
-                "position_qty": _dec_str(qty, 4),
-                "mean_notional_usdt": round(float(qty * sum(prices_cont, ZERO) / Decimal(len(prices_cont))), 4),
-                "effective_leverage_on_basis_x": round(float(qty * p0_cont / strategy_cap_usdt), 4),
-                "holding_fraction": 1.0,
-                "gross_pnl_usdt": _dec_str(bh_cont_004, 8),
-                "funding_usdt": _dec_str(ZERO, 8),
-                "fees_usdt": _dec_str(ZERO, 8),
-                "net_pnl_usdt": _dec_str(bh_cont_004, 8),
-                "return_on_basis_pct": round(float(bh_cont_004 / strategy_cap_usdt * Decimal("100")), 4),
-                "max_drawdown_on_basis_pct": _bh_drawdown_pct(prices_cont, strategy_cap_usdt, qty, p0_cont),
-                "grid_net_pnl_same_window_usdt": empirical["cohorts"]["continuous_grid"]["net_pnl_usdt"],
-                "grid_minus_benchmark_usdt": _dec_str(
-                    Decimal(empirical["cohorts"]["continuous_grid"]["net_pnl_usdt"]) - bh_cont_004, 8
-                ),
-                "notes": (
-                    "CRITICAL CAVEAT: Grid avoided the -17.6% drop during Gen 0 ONLY because its BUY order "
-                    "was canceled on Nov 15 and the Windows runner was offline for ~6 days, NOT because of active hedge alpha."
-                ),
-            }
-        )
-        # Full-account 5000 USDT 1x B&H (to make the ~950x leverage/exposure gap unmistakable)
-        grid_start_eq = opening_wallet + Decimal(empirical["cohorts"]["pre_grid_smoke"]["net_pnl_usdt"])
-        units_acct = grid_start_eq / p0_cont
-        bh_acct_gross = units_acct * (p1_cont - p0_cont)
-        rows.append(
-            {
-                "window": "CONTINUOUS_GRID_7.3D",
-                "benchmark_name": "NVDAUSDT_BH_FULL_ACCOUNT_5000USDT_1X",
-                "evidence_class": EVIDENCE_BOUNDARIES["empirical"] + "_MARKET_PATH",
-                "start_utc": cont_all[0]["time"].isoformat(),
-                "end_utc": empirical["sample_window"]["last_observation_utc"],
-                "start_price": _dec_str(p0_cont, 5),
-                "end_price": _dec_str(p1_cont, 5),
-                "price_return_pct": round(ret_cont_pct, 4),
-                "capital_basis_usdt": _dec_str(grid_start_eq, 4),
-                "position_qty": _dec_str(units_acct, 4),
-                "mean_notional_usdt": round(float(units_acct * sum(prices_cont, ZERO) / Decimal(len(prices_cont))), 2),
-                "effective_leverage_on_basis_x": 1.0,
-                "holding_fraction": 1.0,
-                "gross_pnl_usdt": _dec_str(bh_acct_gross, 4),
-                "funding_usdt": _dec_str(ZERO, 8),
-                "fees_usdt": _dec_str(ZERO, 8),
-                "net_pnl_usdt": _dec_str(bh_acct_gross, 4),
-                "return_on_basis_pct": round(ret_cont_pct, 4),
-                "max_drawdown_on_basis_pct": _bh_drawdown_pct(prices_cont, grid_start_eq, units_acct, p0_cont),
-                "grid_net_pnl_same_window_usdt": empirical["cohorts"]["continuous_grid"]["net_pnl_usdt"],
-                "grid_minus_benchmark_usdt": _dec_str(
-                    Decimal(empirical["cohorts"]["continuous_grid"]["net_pnl_usdt"]) - bh_acct_gross, 4
-                ),
-                "notes": (
-                    "NOT risk-matched: 1.000x account leverage vs Demo Grid's ~0.0010x effective account leverage "
-                    "(~960x exposure disparity). Included solely to prevent naive account-% comparisons."
-                ),
-            }
-        )
+        start = g0_bars[0]["time"]
+        cont_prices = {
+            bar["time"]: bar["close"]
+            for dep_id, bars in bars_by_deployment.items()
+            if dep_id == family_id or dep_id.startswith(f"{family_id}-")
+            for bar in bars
+            if start <= bar["time"] <= latest_obs
+        }
+        p0 = cont_prices[start]
+        cont_prices[latest_obs] = latest_px
+        cont_ledger = [(ts, record) for ts, record in ledger if record["cohort"] == "CONTINUOUS_GRID"]
+        cont_net = _window_pnl(cont_ledger, start, latest_obs, p0, latest_px)
+        rows.append(_buy_and_hold(
+            "CONTINUOUS_GRID", "NVDAUSDT_BH_0.04_EX_FUNDING", cont_prices, qty, strategy_cap_usdt, cont_net,
+            "Gen 0 through the latest account quote. Drawdown uses observed marks. "
+            "Includes the period after the Gen 0 buy cancellation when Grid was offline.",
+        ))
+        prior_ledger = [(ts, record) for ts, record in ledger if ts < start]
+        grid_start_eq = opening_wallet
+        if prior_ledger:
+            grid_start_eq += _window_pnl(prior_ledger, prior_ledger[0][0], start, p0, p0)
+        rows.append(_buy_and_hold(
+            "CONTINUOUS_GRID", "NVDAUSDT_BH_FULL_ACCOUNT_5000USDT_1X", cont_prices, grid_start_eq / p0,
+            grid_start_eq, cont_net,
+            "Uses the full opening account equity at 1x, with substantially higher exposure than Grid.",
+        ))
 
-    # Window 3: Full Account Window (first smoke fill 2026-11-14T11:15Z -> latest snapshot, 8.23 days)
-    first_fill = next(
-        (o for o in empirical["order_lifecycle"] if Decimal(o["filled_qty"]) > ZERO),
-        None,
-    )
+    first_fill = next(((ts, record) for ts, record in ledger if record["record_type"] == "TRADE_FILL"), None)
     if first_fill is not None:
-        p0_full = Decimal(first_fill["avg_fill_price"])
-        p1_full = latest_px
-        ret_full_pct = float((p1_full - p0_full) / p0_full * Decimal("100"))
-        bh_full_004 = qty * (p1_full - p0_full)
-        rows.append(
-            {
-                "window": "FULL_ACCOUNT_8.2D",
-                "benchmark_name": "NVDAUSDT_BH_0.04_EX_FUNDING",
-                "evidence_class": EVIDENCE_BOUNDARIES["empirical"] + "_MARKET_PATH",
-                "start_utc": first_fill["updated_at_utc"],
-                "end_utc": empirical["sample_window"]["last_observation_utc"],
-                "start_price": _dec_str(p0_full, 5),
-                "end_price": _dec_str(p1_full, 5),
-                "price_return_pct": round(ret_full_pct, 4),
-                "capital_basis_usdt": _dec_str(strategy_cap_usdt, 4),
-                "position_qty": _dec_str(qty, 4),
-                "mean_notional_usdt": None,
-                "effective_leverage_on_basis_x": round(float(qty * p0_full / strategy_cap_usdt), 4),
-                "holding_fraction": 1.0,
-                "gross_pnl_usdt": _dec_str(bh_full_004, 8),
-                "funding_usdt": _dec_str(ZERO, 8),
-                "fees_usdt": _dec_str(ZERO, 8),
-                "net_pnl_usdt": _dec_str(bh_full_004, 8),
-                "return_on_basis_pct": round(float(bh_full_004 / strategy_cap_usdt * Decimal("100")), 4),
-                "max_drawdown_on_basis_pct": None,
-                "grid_net_pnl_same_window_usdt": empirical["cohorts"]["full_account"]["net_pnl_usdt"],
-                "grid_minus_benchmark_usdt": _dec_str(
-                    Decimal(empirical["cohorts"]["full_account"]["net_pnl_usdt"]) - bh_full_004, 8
-                ),
-                "notes": "Full account span includes Pre-Grid smoke round-trip (-0.0289 USDT) + Grid (+0.0344 USDT).",
-            }
-        )
+        start, fill = first_fill
+        p0 = Decimal(fill["price"])
+        full_net = _window_pnl(ledger, start, latest_obs, p0, latest_px)
+        rows.append(_buy_and_hold(
+            "FULL_ACCOUNT", "NVDAUSDT_BH_0.04_EX_FUNDING", {start: p0, latest_obs: latest_px}, qty,
+            strategy_cap_usdt, full_net, "Includes the Pre-Grid smoke fills and subsequent Grid activity.",
+            endpoint_only=True,
+        ))
     return rows
 
 
 def _demo_grid_config_for_anchor(anchor_price: float, *, max_cash_committed: float) -> GridConfig:
-    """Construct the exact online Demo single-level arithmetic ±1% GridConfig for any anchor."""
+    """Configure the single-level ±1% Paper control with breakout pause."""
     lower = round(anchor_price * 0.99, 2)
     upper = round(anchor_price * 1.01, 2)
     return GridConfig(
@@ -2005,8 +1940,8 @@ def _demo_grid_config_for_anchor(anchor_price: float, *, max_cash_committed: flo
         max_drawdown=0.2,
         minimum_price=0.01,
         minimum_quantity=1,
-        fee_bps=3.0,
-        slippage_bps=2.0,
+        fee_bps=float(PAPER_FEE_RATE * 10_000),
+        slippage_bps=float(PAPER_SLIPPAGE * 10_000),
         order_ttl=100,
         center_rule="last_close",
         expiry_reseed_limit=0,
@@ -2034,13 +1969,26 @@ def _load_r04b_funding_events(funding_csv: Path | None) -> list[tuple[datetime, 
     return sorted(events)
 
 
+def _paper_funding_stress(nav: pd.DataFrame, hourly_bps: float, capital: Decimal) -> tuple[float, float]:
+    """Return cumulative funding paid and peak-to-trough loss under the same hourly overlay."""
+    hourly_cost = (nav["inventory"] * nav["close"]) * (hourly_bps / 10_000.0)
+    funding_cost = hourly_cost.cumsum()
+    equity = nav["equity"] - funding_cost
+    peak = equity.cummax().clip(lower=float(capital))
+    return float(funding_cost.iloc[-1]), float((1.0 - equity / peak).max())
+
+
+def _paused_inventory_hours(nav: pd.DataFrame) -> int:
+    return int((nav["inventory"].gt(0) & nav["state"].eq("PAUSED") & nav["state_reason"].eq("BREAKOUT")).sum())
+
+
 def run_historical_window_replay(
     r04b_snapshot: Path,
     *,
     funding_csv: Path | None = None,
     observed_demo_hourly_funding_bps: float = 22.97,
 ) -> dict[str, Any]:
-    """Replay the Demo ±1% single-level Grid across 11 predeclared 7-day R04B windows."""
+    """Replay the no-F11/no-F08 Paper control across predeclared R04B windows."""
     bars, identity = load_hourly(r04b_snapshot)
     funding_events = _load_r04b_funding_events(funding_csv)
     windows = candidate_windows()
@@ -2070,8 +2018,8 @@ def run_historical_window_replay(
                 config=cfg,
                 rules=rules,
                 capital=replay_capital,
-                fee_rate=D("0.0003"),
-                slippage=D("0.0002"),
+                fee_rate=PAPER_FEE_RATE,
+                slippage=PAPER_SLIPPAGE,
                 interval="1h",
                 market=Market.BINANCE_USDM,
                 instrument_id="NVDAUSDT",
@@ -2092,8 +2040,10 @@ def run_historical_window_replay(
                 hist_funding = sum((f["funding"] for f in flows), ZERO)
 
             # Demo-stress hourly funding overlay (observed ~22.97 bps/h) on held position-hours
-            pos_notional_hours = float((nav_df["inventory"] * nav_df["close"]).sum())
-            demo_stress_funding = -pos_notional_hours * (observed_demo_hourly_funding_bps / 10000.0)
+            stress_cost, stress_drawdown = _paper_funding_stress(
+                nav_df, observed_demo_hourly_funding_bps, replay_capital
+            )
+            demo_stress_funding = -stress_cost
 
             net_ex_funding = float(fifo["strategy_net_pnl"])
             net_with_hist_funding = net_ex_funding + float(hist_funding)
@@ -2109,6 +2059,7 @@ def run_historical_window_replay(
                     "window_id": win["id"],
                     "sample_type": win["sample"],
                     "evidence_class": EVIDENCE_BOUNDARIES["historical_replay"],
+                    "execution_model": NO_F11_NO_F08_STRANDED_POSITION_BASELINE,
                     "start_utc": win["start"],
                     "end_utc": win["end_exclusive"],
                     "hours": len(w_bars),
@@ -2120,6 +2071,7 @@ def run_historical_window_replay(
                     "grid_cycles": int(fifo["grid_cycles"]),
                     "final_state": life["final_state"],
                     "holding_hours": int(nav_df["inventory"].gt(0).sum()),
+                    "paused_with_inventory_hours": _paused_inventory_hours(nav_df),
                     "position_share_hours": round(float(life["position_hours"]), 4),
                     "residual_inventory": float(fifo["residual_inventory"]),
                     "realized_trade_gross_usdt": round(float(fifo["realized_trade_pnl"]), 6),
@@ -2128,6 +2080,7 @@ def run_historical_window_replay(
                     "net_pnl_ex_funding_usdt": round(net_ex_funding, 6),
                     "net_return_on_10usdt_pct": round(net_ex_funding / float(replay_capital) * 100.0, 4),
                     "max_drawdown_pct": round(float(nav_df["drawdown"].max()) * 100.0, 4),
+                    "max_drawdown_demo_stress_funding_pct": round(stress_drawdown * 100.0, 4),
                     "hist_r04b_funding_usdt": round(float(hist_funding), 6),
                     "net_pnl_with_hist_funding_usdt": round(net_with_hist_funding, 6),
                     "demo_stress_funding_usdt": round(demo_stress_funding, 6),
@@ -2140,6 +2093,8 @@ def run_historical_window_replay(
     indep = [r for r in rows if r["sample_type"] == "INDEPENDENT_HISTORICAL_WINDOW"]
     return {
         "evidence_class": EVIDENCE_BOUNDARIES["historical_replay"],
+        "execution_model": NO_F11_NO_F08_STRANDED_POSITION_BASELINE,
+        "observed_demo_hourly_funding_bps_stress": observed_demo_hourly_funding_bps,
         "dataset_identity": {
             "instrument_id": identity["instrument_id"],
             "data_version": identity["data_version"],
@@ -2181,6 +2136,9 @@ def run_historical_window_replay(
             else 0.0,
             "worst_window_net_ex_funding_usdt": min((r["net_pnl_ex_funding_usdt"] for r in rows), default=0.0),
             "worst_window_drawdown_pct": max((r["max_drawdown_pct"] for r in rows), default=0.0),
+            "worst_window_drawdown_demo_stress_funding_pct": max(
+                (r["max_drawdown_demo_stress_funding_pct"] for r in rows), default=0.0
+            ),
             "independent_mean_net_ex_funding_usdt": round(
                 float(np.mean([r["net_pnl_ex_funding_usdt"] for r in indep])), 6
             )
@@ -2210,13 +2168,13 @@ def _evaluate_demo_grid_path(
         config=config,
         rules=rules,
         capital=capital,
-        fee_rate=D("0.0003"),
-        slippage=D("0.0002"),
+        fee_rate=PAPER_FEE_RATE,
+        slippage=PAPER_SLIPPAGE,
         interval="1h",
         market=Market.BINANCE_USDM,
         instrument_id="NVDAUSDT",
         scenario=MC_SCENARIO,
-        synthetic_capacity="0.10",
+        synthetic_capacity=SYNTHETIC_CAPACITY_PER_BAR,
         research_wal=True,
         account_id=f"r08-mc-{tag}",
         provenance=provenance,
@@ -2231,9 +2189,13 @@ def _evaluate_demo_grid_path(
     pos_notional_hours = float((nav_df["inventory"] * nav_df["close"]).sum())
     # Normal perp funding ~1 bps/8h = 0.125 bps/h; Demo stress funding = observed ~22.97 bps/h
     normal_fund_drag = pos_notional_hours * (0.125 / 10000.0)
-    demo_stress_fund_drag = pos_notional_hours * (observed_demo_hourly_funding_bps / 10000.0)
+    demo_stress_fund_drag, demo_stress_drawdown = _paper_funding_stress(
+        nav_df, observed_demo_hourly_funding_bps, capital
+    )
     loss_normal_fund = 1.0 - (terminal_eq - normal_fund_drag) / cap_f
     loss_demo_stress_fund = 1.0 - (terminal_eq - demo_stress_fund_drag) / cap_f
+    bh_equity = cap_f + 0.04 * (prices - prices[0])
+    bh_drawdown = min(1.0, np.max(1.0 - bh_equity / np.maximum.accumulate(bh_equity)))
 
     # Clean up temporary per-path SQLite immediately to bound disk usage
     for p in sorted(out_dir.rglob("*"), reverse=True):
@@ -2250,13 +2212,16 @@ def _evaluate_demo_grid_path(
         "loss_normal_funding": loss_normal_fund,
         "loss_demo_stress_funding": loss_demo_stress_fund,
         "max_drawdown": min(1.0, max(0.0, max_dd)),
+        "max_drawdown_demo_stress_funding": min(1.0, max(0.0, demo_stress_drawdown)),
         "grid_cycles": int(fifo["grid_cycles"]),
         "holding_hours": int(nav_df["inventory"].gt(0).sum()),
+        "paused_with_inventory_hours": _paused_inventory_hours(nav_df),
         "position_share_hours": round(float(life["position_hours"]), 4),
         "residual_inventory": float(fifo["residual_inventory"]),
         "final_state": life["final_state"],
         "paused_breakout": life["final_state"] == "PAUSED",
-        "bh_0.04_loss": -(0.04 * (float(prices[-1]) - float(prices[0]))) / cap_f,
+        "bh_0.04_loss": 1.0 - float(bh_equity[-1]) / cap_f,
+        "bh_0.04_drawdown": float(bh_drawdown),
     }
 
 
@@ -2295,7 +2260,7 @@ def run_tail_risk_analysis(
     observed_demo_hourly_funding_bps: float = 22.97,
     max_workers: int | None = None,
 ) -> dict[str, Any]:
-    """Run multi-volatility Monte Carlo, Moving Block Bootstrap, Regime/Jump & Deterministic Stress.
+    """Run the no-F11/no-F08 control across stochastic and deterministic stress paths.
 
     Reuses ``grid_monte_carlo.historical_input``, ``MonteCarloRunner``,
     ``RegimeBootstrap``, ``JumpStress``, ``stress_paths``, and ``reliability.summarize_paths``.
@@ -2321,7 +2286,7 @@ def run_tail_risk_analysis(
         ("gbm_high_vol_2.0x", 2.0),
     ):
         scaled_vol = base_vol * mult
-        # Zero-drift stress around calibrated mean for pure volatility regime isolation
+        # Hold calibrated drift fixed while varying volatility.
         scaled_input = MonteCarloInput(
             weights=base_input.weights,
             drift=[base_drift],
@@ -2437,17 +2402,20 @@ def run_tail_risk_analysis(
                 losses_norm_f = np.asarray([m["loss_normal_funding"] for m in path_metrics], dtype=float)
                 losses_demo_f = np.asarray([m["loss_demo_stress_funding"] for m in path_metrics], dtype=float)
                 dds = np.asarray([m["max_drawdown"] for m in path_metrics], dtype=float)
+                stress_dds = np.asarray([m["max_drawdown_demo_stress_funding"] for m in path_metrics], dtype=float)
                 bh_losses = np.asarray([m["bh_0.04_loss"] for m in path_metrics], dtype=float)
+                bh_dds = np.asarray([m["bh_0.04_drawdown"] for m in path_metrics], dtype=float)
 
                 rel_ex = summarize_paths(losses_ex, dds, threshold=0.05, confidences=(0.95, 0.99), resamples=499, bootstrap_seed=seed)
-                rel_demo_f = summarize_paths(losses_demo_f, dds, threshold=0.05, confidences=(0.95, 0.99), resamples=499, bootstrap_seed=seed)
-                rel_bh = summarize_paths(bh_losses, np.clip(np.maximum(bh_losses, 0.0), 0.0, 1.0), threshold=0.05, confidences=(0.95, 0.99), resamples=499, bootstrap_seed=seed)
+                rel_demo_f = summarize_paths(losses_demo_f, stress_dds, threshold=0.05, confidences=(0.95, 0.99), resamples=499, bootstrap_seed=seed)
+                rel_bh = summarize_paths(bh_losses, bh_dds, threshold=0.05, confidences=(0.95, 0.99), resamples=499, bootstrap_seed=seed)
 
                 scenario_summaries.append(
                     {
                         "scenario": key,
                         "description": description,
                         "evidence_class": EVIDENCE_BOUNDARIES["synthetic_simulation"],
+                        "execution_model": NO_F11_NO_F08_STRANDED_POSITION_BASELINE,
                         "n_paths": len(path_metrics),
                         "horizon_hours": n_steps,
                         "capital_basis_usdt": str(capital),
@@ -2471,15 +2439,24 @@ def run_tail_risk_analysis(
                         "mean_net_return_demo_stress_funding_pct": round(float(-np.mean(losses_demo_f) * 100.0), 4),
                         "var_95_demo_stress_funding_pct": round(rel_demo_f["tails"]["0.95"]["var"] * 100.0, 4),
                         "cvar_95_demo_stress_funding_pct": round(rel_demo_f["tails"]["0.95"]["cvar"] * 100.0, 4),
+                        "var_99_demo_stress_funding_pct": round(rel_demo_f["tails"]["0.99"]["var"] * 100.0, 4),
+                        "cvar_99_demo_stress_funding_pct": round(rel_demo_f["tails"]["0.99"]["cvar"] * 100.0, 4),
                         "loss_prob_demo_stress_funding": round(rel_demo_f["loss_probability"]["estimate"], 4),
                         "max_dd_median_pct": round(rel_ex["maximum_drawdown_quantiles"]["0.5"]["estimate"] * 100.0, 4),
                         "max_dd_p95_pct": round(rel_ex["maximum_drawdown_quantiles"]["0.95"]["estimate"] * 100.0, 4),
+                        "max_dd_demo_stress_funding_p95_pct": round(
+                            rel_demo_f["maximum_drawdown_quantiles"]["0.95"]["estimate"] * 100.0, 4
+                        ),
                         "breakout_pause_rate": round(float(np.mean([m["paused_breakout"] for m in path_metrics])), 4),
                         "mean_grid_cycles": round(float(np.mean([m["grid_cycles"] for m in path_metrics])), 4),
                         "mean_holding_hours": round(float(np.mean([m["holding_hours"] for m in path_metrics])), 2),
+                        "max_paused_with_inventory_hours": max(m["paused_with_inventory_hours"] for m in path_metrics),
                         "mean_position_share_hours": round(float(np.mean([m["position_share_hours"] for m in path_metrics])), 4),
                         "bh_0.04_var_95_pct": round(rel_bh["tails"]["0.95"]["var"] * 100.0, 4),
                         "bh_0.04_cvar_95_pct": round(rel_bh["tails"]["0.95"]["cvar"] * 100.0, 4),
+                        "bh_0.04_max_drawdown_p95_pct": round(
+                            rel_bh["maximum_drawdown_quantiles"]["0.95"]["estimate"] * 100.0, 4
+                        ),
                     }
                 )
 
@@ -2509,6 +2486,7 @@ def run_tail_risk_analysis(
                     {
                         "stress_name": s_name,
                         "evidence_class": EVIDENCE_BOUNDARIES["synthetic_simulation"] + "_DETERMINISTIC",
+                        "execution_model": NO_F11_NO_F08_STRANDED_POSITION_BASELINE,
                         "start_price": round(float(s_prices[0]), 4),
                         "end_price": round(float(s_prices[-1]), 4),
                         "price_change_pct": round((float(s_prices[-1]) - float(s_prices[0])) / float(s_prices[0]) * 100.0, 2),
@@ -2516,12 +2494,15 @@ def run_tail_risk_analysis(
                         "return_ex_funding_pct": round(-m["loss_ex_funding"] * 100.0, 4),
                         "return_demo_stress_funding_pct": round(-m["loss_demo_stress_funding"] * 100.0, 4),
                         "max_drawdown_pct": round(m["max_drawdown"] * 100.0, 4),
+                        "max_drawdown_demo_stress_funding_pct": round(m["max_drawdown_demo_stress_funding"] * 100.0, 4),
                         "grid_cycles": m["grid_cycles"],
                         "holding_hours": m["holding_hours"],
+                        "paused_with_inventory_hours": m["paused_with_inventory_hours"],
                         "position_share_hours": m["position_share_hours"],
                         "residual_inventory": m["residual_inventory"],
                         "final_state": m["final_state"],
                         "bh_0.04_return_on_7usdt_pct": round(-m["bh_0.04_loss"] * 100.0, 4),
+                        "bh_0.04_max_drawdown_pct": round(m["bh_0.04_drawdown"] * 100.0, 4),
                     }
                 )
         finally:
@@ -2530,12 +2511,14 @@ def run_tail_risk_analysis(
 
     return {
         "evidence_class": EVIDENCE_BOUNDARIES["synthetic_simulation"],
+        "execution_model": NO_F11_NO_F08_STRANDED_POSITION_BASELINE,
         "calibration_receipt": receipt,
         "anchor_price": anchor_price,
         "capital_basis_usdt": str(capital),
         "n_paths_per_scenario": n_paths,
         "n_steps_hours": n_steps,
         "seed": seed,
+        "paper_capacity_per_bar": float(SYNTHETIC_CAPACITY_PER_BAR),
         "observed_demo_hourly_funding_bps_stress": observed_demo_hourly_funding_bps,
         "stochastic_scenarios": scenario_summaries,
         "deterministic_stress": deterministic_rows,
@@ -2568,7 +2551,7 @@ def render_report_markdown(analysis: dict[str, Any]) -> str:
     lines: list[str] = []
     lines.append("# FactorLab R08：Binance Demo Grid 实证绩效分析报告")
     lines.append("")
-    lines.append("> **研究边界声明**：`NO LIVE MONEY`。本报告严格区分**官方 Binance Demo 实证**（`EMPIRICAL_OFFICIAL_DEMO`）、**历史行情离线回放**（`HISTORICAL_OFFLINE_REPLAY`）、**Monte Carlo / Bootstrap 模拟路径**（`SYNTHETIC_MONTE_CARLO_BOOTSTRAP`）与**尚未验证结论**（`UNVERIFIED_OPEN_CLAIM`）。所有 SQLite 账本均以只读快照（SQLite Backup API + `?mode=ro`）分析，未对在线数据库执行任何写操作，未修改在线 Grid 参数或执行路径，未扩大交易预算。**当前实证样本极短（仅 1 次完整网格持仓闭环与 1 次 F11 突破退出），短时间小幅正收益绝不代表策略已被证明具备长期正期望或风险调整优势。**")
+    lines.append("> `NO LIVE MONEY`。实证来自官方 Binance Demo 的只读 SQLite 快照。历史回放与合成路径使用 Paper 执行模型。Gen 1 的实际 F11 退出和 F08 轮换见第 4 节，含 F11/F08 的策略尾部风险见第 6 节。")
     lines.append("")
 
     # 1. Executive Summary & Sample Coverage
@@ -2580,7 +2563,7 @@ def render_report_markdown(analysis: dict[str, Any]) -> str:
     lines.append(f"- **连续授权 Grid 家族区间（UTC）**：`{sw['continuous_grid_start_utc']}` → `{sw['last_observation_utc']}`（共 `{sw['continuous_grid_days']:.2f}` 天，账本内置 `{sw['total_completed_1m_bars_in_ledger']}` 根已完成 1m K 线）。")
     lines.append(f"- **云端迁移与受控重启**：C05 于 `{cons.get('handoff_reconciled_at')}` 完成 Windows→Azure 封存交接与签名 GET 对账（`snapshot_verified={cons.get('handoff_snapshot_verified')}`，`unknown_orders={cons.get('unknown_orders')}`）；云端 systemd 服务 `factorlab-demo-execute.service` 实测受控重启（`PID 3323 → 3792`，`NRestarts=0`），重启后 `POST=0`（无重复下单）。")
     lines.append("")
-    lines.append("| 指标维度（官方 Demo 实证） | 全账户（含烟雾测试） | 仅 Grid 策略（全部代际） | 仅连续 Grid 家族（Gen 0–2） |")
+    lines.append("| 指标维度（官方 Demo 实证） | 全账户（含烟雾测试） | Grid 策略（全部代际） | 连续 Grid 家族 |")
     lines.append("| --- | ---: | ---: | ---: |")
     for label, key in [
         ("提交订单数 / 交易所接受数", ("orders_total", "orders_accepted")),
@@ -2638,7 +2621,7 @@ def render_report_markdown(analysis: dict[str, Any]) -> str:
     lines.append("### 3.1 权威 FIFO 盈亏归因（全账户 vs 仅 Grid）")
     lines.append("")
     lines.append("- **Pre-Grid 烟雾测试阶段（2026-11-14）**：买入 `0.04 @ 162.94`（Taker 手续费 `0.00162940 USDT`，2.5 bps）并平仓 `0.04 @ 162.30`（Taker 手续费 `0.00162300 USDT`，2.5 bps），已实现交易毛损 `-0.02560000 USDT`，手续费 `-0.00325240 USDT`，合计 `-0.02885240 USDT`，使 Grid 启动时期初账户权益为 `4999.97114760 USDT`。")
-    lines.append(f"- **Grid 策略阶段（2026-11-14 → 2026-11-22）**：已实现交易毛利 `{cohorts['all_grid']['realized_trade_gross_usdt']} USDT`（全部来自 Gen 1 的 F11 突破退出 `RISK_EXIT`，常规网格完成循环 `completed_grid_cycles = {fifo['completed_grid_cycles']}`），实际交易手续费 `{cohorts['all_grid']['fees_usdt']} USDT`（入场与 F11 出场均为 `Maker=True`，Demo Maker 费率为 `0`），已实现资金费 `{cohorts['all_grid']['realized_funding_usdt']} USDT`（8 笔整点资金费），未实现盈亏 `{cohorts['all_grid']['unrealized_pnl_usdt']} USDT`（当前空仓，Gen 2 限价买单挂单中），**Grid 净收益 `{cohorts['all_grid']['net_pnl_usdt']} USDT`**。")
+    lines.append(f"- **Grid 策略累计**已实现交易毛利 `{cohorts['all_grid']['realized_trade_gross_usdt']} USDT`，交易手续费 `{cohorts['all_grid']['fees_usdt']} USDT`，已实现资金费 `{cohorts['all_grid']['realized_funding_usdt']} USDT`，未实现盈亏 `{cohorts['all_grid']['unrealized_pnl_usdt']} USDT`，净收益 `{cohorts['all_grid']['net_pnl_usdt']} USDT`。网格常规成交闭环共 `{fifo['completed_grid_cycles']}` 次，分代损益见第 4 节。")
     lines.append("")
     lines.append("### 3.2 严格区分三种资金口径（严禁混淆账户余额、网格本金与累计换手）")
     lines.append("")
@@ -2675,47 +2658,66 @@ def render_report_markdown(analysis: dict[str, Any]) -> str:
     if f11:
         lines.append(f"1. **F11 突破退出成交表现**：Gen 1 买单（`0.04 @ 129.59`）于 `2026-11-22T05:18:48Z` 分两笔 Maker 成交后，价格于 `{cf.get('first_breakout_bar_utc')}` 首次收破上界 `132.21`（收盘 `{cf.get('first_breakout_close')}`），触发 `BREAKOUT`。在 C05 切换至 Azure 并激活 F11 后，系统于 `16:24:30.656Z` 提交减仓限价卖单 `{f11['client_order_id']}`（`@ {f11['exit_fill_price']}`），仅用 **`{f11['exit_submit_to_fill_ms']} ms`** 即以 `Maker=True`、**`0` 手续费**全额成交，实现交易毛利 **`+{f11['actual_gross_pnl_usdt']} USDT`**（高于原网格上界 `132.21` 目标毛利 `+{f11['grid_upper_target_gross_pnl_usdt']} USDT` 约 `+{f11['extra_gross_above_upper_bound_usdt']} USDT`）。")
         lines.append(f"2. **高额资金费侵蚀与退出延迟成本（核心经济发现）**：在 `08:42Z` 突破至 `16:24Z` F11 成交的 **`{cf.get('delay_hours_from_breakout_to_f11_fill')} 小时`**滞留窗口内（恰逢美股周末休市期），持仓连续支付了 **8 笔整点资金费**，合计 **`{f11['funding_paid_usdt']} USDT`**，吞噬了交易毛利的 **`{f11['funding_share_of_gross_pct']}%`**！隐含小时资金费率高达 **`{f11['mean_observed_hourly_funding_bps']} bps/h`**（年化约 `{f11['annualized_observed_funding_pct']}%`）。反事实测算显示：")
-        lines.append(f"   - 若在首次突破时（`08:42Z @ {cf.get('first_breakout_close')}`）即刻触发 F11 退出（0 笔资金费），理论净收益约为 `+{cf.get('counterfactual_immediate_net_usdt')} USDT`；延迟 7.7 小时虽多赚价差 `+{cf.get('extra_price_gain_during_delay_usdt')} USDT`，但多付资金费 `{cf.get('funding_paid_during_delay_usdt')} USDT`，**退出滞留净成本约 `{cf.get('net_economic_cost_of_exit_delay_usdt')} USDT`**。")
-        lines.append(f"   - 反之，若云端未部署 F11 而继续滞留，按最后 3 小时均值 `{f11['recent_hourly_funding_bleed_usdt']} USDT/h` 失血速度，剩余 `+{f11['actual_net_pnl_usdt']} USDT` 净利将在 **`{f11['hours_until_bleed_erases_remaining_net']} 小时`**内完全归零转负。因此 F11 在云端上线具有直接且显著的止血价值。")
+        lines.append(f"   - 价格敏感性测算假设在首次突破时按收盘价 `{cf.get('first_breakout_close')}` 立即全额平仓且无费用，情景净收益为 `{cf.get('counterfactual_immediate_net_usdt')} USDT`。它与实际净收益的差额为 `{cf.get('net_economic_cost_of_exit_delay_usdt')} USDT`（实际减假设）。成交概率、排队和滑点均未纳入该测算。")
+        lines.append(f"   - 在价格及仓位固定、资金费延续最后 3 小时均值 `{f11['recent_hourly_funding_bleed_usdt']} USDT/h` 的情景中，再持有约 `{f11['hours_until_bleed_erases_remaining_net']} 小时` 会耗尽实际剩余净利 `{f11['actual_net_pnl_usdt']} USDT`。")
         lines.append(f"3. **F08 自动轮换表现**：F11 平仓归零后仅 **`{f08.get('rotation_to_new_order_seconds')} 秒`**，F08 即自动创建 Gen 2（`{f08.get('to_deployment')}`，`[131.56, 134.22]`，锚定 `132.89`）并挂出新限价买单 `{f08.get('new_generation_order_id')}`（`0.04 @ {f08.get('new_generation_buy_price')}`，当前 `{f08.get('new_generation_status')}`），未出现空转或重复下单。")
     lines.append("")
 
     # 5. Benchmarks
-    lines.append("## 5. 对比 `NVDAUSDT` 买入持有基准（明确杠杆与资金占用差异）")
+    lines.append("## 5. 同窗 `NVDAUSDT` 基准比较")
     lines.append("")
-    lines.append("| 观测窗口 | 基准名称 | 证据类别 | 价格变动 | 资金口径 (USDT) | 基准有效杠杆 | 基准净盈亏 (USDT) | 基准口径收益率 | 同窗 Grid 净盈亏 | Grid − 基准 (USDT) |")
-    lines.append("| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+    lines.append("| 观测窗口 | 基准名称 | 证据类别 | 价格变动 | 资金口径 (USDT) | 基准杠杆 | 基准净盈亏 (USDT) | 基准收益率 | 基准最大回撤 | 同窗策略或账户净盈亏 | 超额收益 (USDT) |")
+    lines.append("| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
     for b in benchmarks:
+        drawdown = b["max_drawdown_on_basis_pct"]
+        drawdown_text = "—" if drawdown is None else f"{drawdown:.4f}%"
         lines.append(
             f"| {b['window']} | `{b['benchmark_name']}` | `{b['evidence_class']}` | "
             f"{b['price_return_pct']:+.2f}% | {b['capital_basis_usdt']} | {b['effective_leverage_on_basis_x']:.4f}x | "
-            f"{b['net_pnl_usdt']} | {b['return_on_basis_pct']:+.4f}% | {b['grid_net_pnl_same_window_usdt']} | {b['grid_minus_benchmark_usdt']} |"
+            f"{b['net_pnl_usdt']} | {b['return_on_basis_pct']:+.4f}% | {drawdown_text} | "
+            f"{b['grid_net_pnl_same_window_usdt']} | {b['grid_minus_benchmark_usdt']} |"
         )
     lines.append("")
-    lines.append("- **Gen 1 活跃窗口（21.4h）**：`NVDAUSDT` 上涨 `+1.52%`（`130.90 → 132.89`）。等量 `0.04` 买入持有（不含资金费）净利 `+0.0796 USDT`（7U 口径 `+1.14%`），但计入相同 8 笔实证资金费后转为 **`-0.0180 USDT`**（`-0.26%`）；Grid Gen 1 因在低位 `129.59` 逢跌买入且延迟了 10.3 小时才进入多头敞口，净利 `+0.0344 USDT`（`+0.49%`），跑赢含资费等量 B&H `+0.0524 USDT`，但**落后于无资费等量 B&H `-0.0452 USDT` 与满仓 7U B&H `-0.0720 USDT`**。")
-    lines.append("- **7.3 天连续家族窗口重要纠偏**：`NVDAUSDT` 从 `161.09` 大跌 `-17.61%` 至 `132.73`，而 Grid 未承受下跌回撤，但这**绝非网格具备择时或下行保护 Alpha 的证据**——真实原因是 Gen 0 买单在 11-15 仅挂单 87 分钟即被撤单，随后 Windows 端离线约 6 天（期间 K 线由重启回补），策略根本未在下跌途中挂单。")
-    lines.append("- **杠杆与敞口不可直接按账户百分比对比**：5000 USDT 满仓 1x B&H 的名义敞口约为 Demo Grid（`~5.18 USDT`）的 **~960 倍**（`1.000x` vs `0.0010x` 账户有效杠杆），必须按同资金口径（7.00 USDT）与等量敞口（`0.04 NVDAUSDT`）分别对照。")
+    windows = {b["window"]: (b["start_utc"], b["end_utc"]) for b in benchmarks}
+    for window, (start, end) in windows.items():
+        lines.append(f"- `{window}` 的起止时点为 `{start}` 至 `{end}`。")
+    lines.append(
+        "- Gen 1 窗口使用首根观测 K 线收盘价起算，有已平仓的 F11 回执时用该回执的时间和成交价结算。"
+        "实证侧只使用同窗 Gen 1 的成交、手续费和资金费。等量买入持有的资金费对照仅叠加窗内已记录的结算，"
+        "并按 0.04 单位折算。基准回撤按观测价格与适用的资金费计算。"
+    )
+    lines.append(
+        "- 连续 Grid 窗口涵盖 Gen 0 至最新报价的连续部署家族，包括 Gen 0 买单撤销后的停机时段。"
+        "满账户 1x 买入持有承担更高的名义敞口。全账户窗口从第一笔成交持续到最新报价，包括 Pre-Grid 烟雾测试。"
+    )
     lines.append("")
 
     # 6. Historical Replay & Tail Risk (Monte Carlo / Bootstrap)
-    lines.append("## 6. 独立历史时间窗口回放与多波动情景尾部风险（离线研究，非 Demo 实证）")
+    lines.append("## 6. 历史回放与合成压力路径")
+    lines.append("")
+    lines.append(f"本节离线结果均采用 `{NO_F11_NO_F08_STRANDED_POSITION_BASELINE}`。Paper 网格在突破后暂停，保留剩余持仓并逐小时盯市。当前含 F11/F08 的策略尾部风险状态为 `{EVIDENCE_BOUNDARIES['unverified']}`。")
+    lines.append("")
+    lines.append("Paper 回放复用 `GridExecution`，线上 F11 和 F08 还需要执行桥接层与 supervisor 的输入。F11 根据新鲜买价和合约约束提交减仓限价单，可能部分成交、撤单或重挂。F08 在撤单终态、确认空仓、剩余授权与预算等条件满足后，使用新鲜卖价设立下一代。历史小时线与合成收盘路径缺少可执行的盘口、成交顺序和账户对账事件，本节没有给这些转换分配假设成交或轮换结果。")
+    lines.append("")
+    lines.append(f"对照采用固定 `±1%` 单层网格、`0.04 NVDAUSDT` 数量单位、每笔 `{PAPER_FEE_RATE * 10_000:g} bps` 费用与 `{PAPER_SLIPPAGE * 10_000:g} bps` 滑点。Paper 对先前挂出的订单按后续小时收盘价、限价条件和容量上限模拟成交。资金费压力按每小时收盘持仓名义额累计扣除，并据此重算权益峰值和回撤。")
     lines.append("")
     if hist is not None:
         hs = hist["summary"]
         lines.append("### 6.1 预声明 11 个 7 天历史窗口离线回放（`HISTORICAL_OFFLINE_REPLAY`）")
         lines.append("")
-        lines.append(f"复用认证 R04B `NVDAUSDT` 1h 行情（`{hist['dataset_identity']['window'][0]}` → `{hist['dataset_identity']['window'][1]}`，`{hist['dataset_identity']['total_bars']}` 根小时线）与 `mc_grid_tail_f04c_windows.candidate_windows()`（3 个独立窗口 `I1–I3` + 8 个条件窗口 `C1–C8`），在 `grid_paper.run_experiment` + `grid_fifo` + `grid_funding` 上回放当前 Demo 单层 `±1%` 网格规则（因 5–8 月股价 170–225 USDT 下 `0.04` 份名义额达 6.8–9.0 USDT 超过当前 Demo `7.00 USDT` 上限，回放采用 `10.00 USDT` 1x 抵押本金并标记触发上限窗口）。")
+        lines.append(f"R04B `NVDAUSDT` 1h 行情覆盖 `{hist['dataset_identity']['window'][0]}` 至 `{hist['dataset_identity']['window'][1]}`，共 `{hist['dataset_identity']['total_bars']}` 根。回放按小时成交量限制 Paper 成交，采用 `{hist['replay_capital_usdt']} USDT` 1x 抵押本金，并标记原 `7.00 USDT` 上限无法容纳初始买单的窗口。R04B 历史结算与 Demo 小时资金费压力分别计算。")
         lines.append("")
-        lines.append(f"- **跨窗口总体结果**：11 个 7 天窗口中，不含资金费正收益 `{hs['positive_net_windows_ex_funding']}/11`（均值 `{hs['mean_net_pnl_ex_funding_usdt']:+.4f} USDT`，独立窗口 `I1–I3` 均值 `{hs['independent_mean_net_ex_funding_usdt']:+.4f} USDT`），叠加 R04B 真实历史资金费后正收益 `{hs['positive_net_windows_with_hist_funding']}/11`（均值 `{hs['mean_net_pnl_with_hist_funding_usdt']:+.4f} USDT`），**若叠加本次 Demo 观测到的异常小时资金费压力（`-22.97 bps/h`）则正收益骤降至 `{hs['positive_net_windows_with_demo_stress_funding']}/11`（均值 `{hs['mean_net_pnl_with_demo_stress_funding_usdt']:+.4f} USDT`）**。")
-        lines.append(f"- **突破暂停频率与最差回撤**：`{hs['breakout_paused_windows']}/11` 个窗口在 7 天内触发 `BREAKOUT` 暂停；单窗最差不含资费净损 `{hs['worst_window_net_ex_funding_usdt']:+.4f} USDT`，最大回撤 `{hs['worst_window_drawdown_pct']:.2f}%`（明细见 `historical_windows.csv`）。")
+        n_windows = hs["windows_total"]
+        lines.append(f"- 不含资金费的正收益窗口为 `{hs['positive_net_windows_ex_funding']}/{n_windows}`，平均盈亏 `{hs['mean_net_pnl_ex_funding_usdt']:+.4f} USDT`。按 R04B 历史结算为 `{hs['positive_net_windows_with_hist_funding']}/{n_windows}`，平均 `{hs['mean_net_pnl_with_hist_funding_usdt']:+.4f} USDT`。按 `{hist['observed_demo_hourly_funding_bps_stress']:.4f} bps/h` 多头资金费压力为 `{hs['positive_net_windows_with_demo_stress_funding']}/{n_windows}`，平均 `{hs['mean_net_pnl_with_demo_stress_funding_usdt']:+.4f} USDT`。")
+        lines.append(f"- `{hs['breakout_paused_windows']}/{n_windows}` 个窗口在暂停状态结束。不含资金费的最差单窗净损为 `{hs['worst_window_net_ex_funding_usdt']:+.4f} USDT`，最大回撤为 `{hs['worst_window_drawdown_pct']:.2f}%`，Demo 资金费压力下最大回撤为 `{hs['worst_window_drawdown_demo_stress_funding_pct']:.2f}%`。")
         lines.append("")
 
     if tail is not None:
         lines.append("### 6.2 多波动情景 Monte Carlo、Bootstrap 与跳跃压力尾部风险（`SYNTHETIC_MONTE_CARLO_BOOTSTRAP`）")
         lines.append("")
-        lines.append(f"基于 R04B 认证小时收益率校准（基准小时波动率 `sigma = {tail['calibration_receipt']['volatility']*100:.3f}%/h`，锚定 Gen 2 当前价 `{tail['anchor_price']}`，资金口径 `{tail['capital_basis_usdt']} USDT`，步长 `{tail['n_steps_hours']}` 小时 = 7 天，每情景 `{tail['n_paths_per_scenario']}` 条路径），复用 `MonteCarloRunner`、`RegimeBootstrap`、`JumpStress` 与 `reliability.summarize_paths` 计算条件尾部风险：")
+        lines.append(f"合成路径从 `{tail['anchor_price']}` 起步，按 R04B 小时收益率校准（基准波动率 `{tail['calibration_receipt']['volatility']*100:.3f}%/h`）。每情景 `{tail['n_paths_per_scenario']}` 条路径，每条 `{tail['n_steps_hours']}` 小时，初始本金及资金上限为 `{tail['capital_basis_usdt']} USDT`。每小时 Paper 成交容量为 `{tail['paper_capacity_per_bar']} NVDAUSDT`，资金费压力为多头每小时 `{tail['observed_demo_hourly_funding_bps_stress']:.4f} bps`。")
         lines.append("")
-        lines.append("| 模拟情景 | 不含资费均值收益 | 亏损概率 (Wilson 95% CI) | VaR95 (不含资费) | CVaR95 (Bootstrap 95% CI) | VaR95 (Demo 资费压力) | CVaR95 (Demo 资费压力) | 中位/P95 最大回撤 | 突破暂停率 | 等量 B&H VaR95 |")
+        lines.append("| 模拟情景 | 不含资费均值收益 | 亏损概率 (Wilson 95% CI) | VaR95 (不含资费) | CVaR95 (Bootstrap 95% CI) | VaR95 (Demo 资费压力) | CVaR95 (Demo 资费压力) | P95 最大回撤（不含资费 / 压力） | 突破暂停率 | 等量 B&H VaR95 |")
         lines.append("| --- | ---: | --- | ---: | --- | ---: | ---: | --- | ---: | ---: |")
         for s in tail["stochastic_scenarios"]:
             lines.append(
@@ -2723,22 +2725,24 @@ def render_report_markdown(analysis: dict[str, Any]) -> str:
                 f"{s['loss_prob_ex_funding']*100:.1f}% (`[{s['loss_prob_wilson_95'][0]*100:.1f}%, {s['loss_prob_wilson_95'][1]*100:.1f}%]`) | "
                 f"{s['var_95_ex_funding_pct']:.2f}% | {s['cvar_95_ex_funding_pct']:.2f}% (`[{s['cvar_95_boot_ci_pct'][0]:.2f}%, {s['cvar_95_boot_ci_pct'][1]:.2f}%]`) | "
                 f"{s['var_95_demo_stress_funding_pct']:.2f}% | {s['cvar_95_demo_stress_funding_pct']:.2f}% | "
-                f"{s['max_dd_median_pct']:.2f}% / {s['max_dd_p95_pct']:.2f}% | "
+                f"{s['max_dd_p95_pct']:.2f}% / {s['max_dd_demo_stress_funding_p95_pct']:.2f}% | "
                 f"{s['breakout_pause_rate']*100:.1f}% | {s['bh_0.04_var_95_pct']:.2f}% |"
             )
         lines.append("")
-        lines.append("- **确定性压力路径**（不计入随机概率分布，复用 `grid_monte_carlo.stress_paths`）：")
+        lines.append("确定性压力路径展示各自的条件结果。上表的概率与分位数来自随机路径。")
         lines.append("")
-        lines.append("| 确定性压力路径 | 标的价格变动 | Grid 7U 收益率 (不含资费) | Grid 7U 收益率 (Demo 资费压力) | 最大回撤 | 持仓小时 | 终态 | 等量 B&H 7U 收益率 |")
+        lines.append("| 确定性压力路径 | 标的价格变动 | 收益率 (不含资费) | 收益率 (Demo 资费压力) | 最大回撤（不含资费 / 压力） | 持仓小时（总计 / 突破暂停） | 终态 | 等量 B&H 收益率 |")
         lines.append("| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |")
         for d in tail["deterministic_stress"]:
             lines.append(
                 f"| `{d['stress_name']}` | {d['price_change_pct']:+.1f}% | {d['return_ex_funding_pct']:+.2f}% | "
-                f"{d['return_demo_stress_funding_pct']:+.2f}% | {d['max_drawdown_pct']:.2f}% | "
-                f"{d['holding_hours']} | `{d['final_state']}` | {d['bh_0.04_return_on_7usdt_pct']:+.2f}% |"
+                f"{d['return_demo_stress_funding_pct']:+.2f}% | {d['max_drawdown_pct']:.2f}% / "
+                f"{d['max_drawdown_demo_stress_funding_pct']:.2f}% | {d['holding_hours']} / "
+                f"{d['paused_with_inventory_hours']} | `{d['final_state']}` | {d['bh_0.04_return_on_7usdt_pct']:+.2f}% |"
             )
         lines.append("")
-        lines.append("- **尾部风险核心洞察**：单层 `±1%` 网格在下行单边趋势（`continuous_decline`、`range_then_gap`、`jump_stress_downside`）中呈现典型的**负偏态/截断上行、敞开下行**特征——买单在下轨成交后若持续破位，7U 资金口径下 7 天 95% CVaR 可达高波动/跳跃情景的两位数百分比回撤；更致命的是**资金费与滞留持仓的乘数效应**：当出现 Demo 观测到的高资金费环境且多头被套或延迟退出时，原本温和的震荡收益会迅速转为大幅亏损。")
+        decline = next(d for d in tail["deterministic_stress"] if d["stress_name"] == "continuous_decline")
+        lines.append(f"`continuous_decline` 中，对照模型在 `{decline['holding_hours']}` 个小时观测点仍有仓位，其中 `{decline['paused_with_inventory_hours']}` 个观测点同时处于突破暂停状态。期末残仓为 `{decline['residual_inventory']}`。这些观测属于 Paper 对照，官方 Demo 已观测到的 F11 成交及 F08 轮换见第 4 节。")
         lines.append("")
 
     # 7. Strict Epistemic Boundary Table
@@ -2746,19 +2750,15 @@ def render_report_markdown(analysis: dict[str, Any]) -> str:
     lines.append("")
     lines.append("| 证据层级 | 标签 | 本报告对应内容 | 可支持结论 | 禁止越界外推 |")
     lines.append("| --- | --- | --- | --- | --- |")
-    lines.append("| 官方 Demo 实证 | `EMPIRICAL_OFFICIAL_DEMO` | 10 笔订单、4 笔成交、8 笔资金费、3 代连续 Grid、F11 成交、F08 轮换、Azure 受控重启、零残差对账 | 迁移连续性、F11 止血与 F08 轮换可工作、高资金费可吞噬 74% 交易毛利 | **不可**将 1 次闭环的 `+0.0344 USDT` 解释为策略具备长期正期望或实盘优势 |")
-    lines.append("| 历史离线回放 | `HISTORICAL_OFFLINE_REPLAY` | R04B 认证 1h 行情上 11 个 7 天窗口的 PaperEngine + FIFO + 资金费回放 | 单层 `±1%` 网格在不同历史市况下的突破暂停率、残余库存风险与 7U 上限在高价区间的不可行性 | 不代表 Binance Demo/实盘真实撮合队列或未来行情分布 |")
-    lines.append("| 模拟生成路径 | `SYNTHETIC_MONTE_CARLO_BOOTSTRAP` | GBM (0.5x/1x/2x)、MBB (24h)、Regime Bootstrap、Jump Stress、6 条确定性压力路径 | 不同波动率/跳跃/高资费情景下的条件 VaR/CVaR 与回撤量级 | 条件区间仅反映模拟器抽样不确定性，**不是**市场预测置信区间 |")
-    lines.append("| 尚未验证结论 | `UNVERIFIED_OPEN_CLAIM` | 24h/72h/7d 连续云端稳定性、常规网格多轮完整买卖循环正期望、下行突破（止损方向）F11 实盘成交滑点、真实资金市场深度 | 明确列为待验证项，需随后续云端运行样本自动重跑本脚本更新 | 在获得多轮独立完整循环与下行突破实证前，禁止宣称策略稳健盈利 |")
+    lines.append("| 官方 Demo 实证 | `EMPIRICAL_OFFICIAL_DEMO` | 只读订单、成交、资金费与轮换账本 | 观测期内的损益、迁移连续性及已观察的 F11/F08 成交和轮换 | 观测样本覆盖范围见第 1 节 |")
+    lines.append(f"| 历史离线回放 | `HISTORICAL_OFFLINE_REPLAY` | R04B 小时线，执行模型 `{NO_F11_NO_F08_STRANDED_POSITION_BASELINE}` | 历史路径上的暂停、残仓及资金费敏感性 | 结论限于该对照模型 |")
+    lines.append(f"| 模拟生成路径 | `SYNTHETIC_MONTE_CARLO_BOOTSTRAP` | GBM、两种 Bootstrap、Jump Stress 与确定性路径，执行模型 `{NO_F11_NO_F08_STRANDED_POSITION_BASELINE}` | 对照模型的条件 VaR、CVaR 和回撤 | 条件区间反映所选模型下的抽样不确定性 |")
+    lines.append("| 当前 F11/F08 离线生命周期 | `UNVERIFIED_OPEN_CLAIM` | 可执行盘口、退出回报与轮换对账证据不足 | 当前策略的离线 VaR、CVaR 及持仓时长待验证 | 官方 Demo 记录支持对单次已观测生命周期的归因 |")
     lines.append("")
 
-    # 8. Next-Round Strategy Improvement Recommendations
-    lines.append("## 8. 下一轮策略与工程改进建议（按证据优先级排序）")
+    lines.append("## 8. 复现当前策略所需数据")
     lines.append("")
-    lines.append("1. **【P0 / 最高优先级】引入资金费率感知风控（Funding-Aware Holding / Weekend Guard）**：本次实证最核心的经济发现是，仅 8 小时高资金费（`-0.0976 USDT`，均率 `22.97 bps/h`）就吞噬了 Gen 1 `73.96%` 的交易毛利。建议下一轮研究在**不改当前在线参数的前提下**先做离线对照：监控交易所实时/预测资金费率（`/fapi/v1/premiumIndex`），当正资金费率超过阈值（如 `> 5 bps/h` 或美股休市周末溢价期）时禁止新开多头网格或缩短持仓最大账龄上限（`max_inventory_age_hours`）。")
-    lines.append("2. **【P0】核查并消除 F11 在低流动性/下行突破时的退出延迟与成交风险**：本次 F11 实证为**上行突破**（买在 `129.59`、退出在 `132.89` 盈利平仓），尚未观测到**下行突破**（亏损方向）时的减仓限价单成交率与滑点；同时应确保云端 systemd 持续在线，避免再次出现 Windows 时代的 7.7 小时离线滞留。")
-    lines.append("3. **【P1】评估单层 `±1%` 网格的盈亏比与 `max_cash_committed = 7.00 USDT` 价格上限脆弱性**：历史回放显示，当 `NVDAUSDT > 175 USDT` 时，最小交易量 `0.04` 的名义额即突破 `7.00 USDT` 硬上限导致无法下单；且单层 `±1%` 网格在 7 天内高频触发 `BREAKOUT` 暂停。下一轮离线研究应评估：① 按价格自适应 `quantity_unit` 或明确定义预算与最小名义额的耦合告警；② 对比 `±1%` vs `±1.5%~2.0%` 与多档位（2–3 levels）在相同 7–10 USDT 风险预算下的循环完成率与尾部 CVaR。")
-    lines.append("4. **【P1】建立按日/按周增量自动更新流水线**：复用本次交付的只读快照抓取脚本 `tools/research/capture_demo_ro_snapshot.py` 与绩效报告脚本 `tools/research/run_demo_grid_r08.py`，待 Azure 跑满 24h / 72h / 7d 观察窗并积累多轮常规网格循环（含下行突破样本）后，一键重跑更新本报告，不手工重新核算。")
+    lines.append("对应同一回放时间轴的可执行买卖价及可成交量、订单和撤单回报、资金费结算，以及空仓与轮换预算的对账结果，可用于验证 F11/F08 的完整生命周期。现有官方 Demo 样本覆盖一次上行突破，尚缺下行突破时的成交及延迟分布。")
     lines.append("")
 
     # 9. Reproducibility
@@ -2878,6 +2878,20 @@ def run_full_r08_analysis(
         "ops_evidence": merged["ops_evidence"],
         "empirical": empirical,
         "benchmarks": benchmarks,
+        "paper_control_assumptions": {
+            "execution_model": NO_F11_NO_F08_STRANDED_POSITION_BASELINE,
+            "fee_bps": float(PAPER_FEE_RATE * 10_000),
+            "slippage_bps": float(PAPER_SLIPPAGE * 10_000),
+            "funding_stress_basis": "hourly close-marked long inventory notional",
+        },
+        "deployed_f11_f08_offline_tail_risk": {
+            "status": EVIDENCE_BOUNDARIES["unverified"],
+            "missing_execution_evidence": [
+                "fresh executable bid/ask and available size",
+                "authoritative reduce-only fills, cancellations and reconciliation",
+                "flat confirmation, rotation authorization and cumulative budget",
+            ],
+        },
         "historical_replay": historical_replay,
         "tail_risk": tail_risk,
     }

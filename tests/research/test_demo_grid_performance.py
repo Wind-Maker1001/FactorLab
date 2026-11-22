@@ -35,7 +35,9 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bool) -> Path:
+def _build_synthetic_demo_snapshot(
+    root: Path, *, include_azure_post_handoff: bool, gen2_traded: bool = False
+) -> Path:
     db_root = root / "databases"
     acct_dir = db_root / JID
     acct_dir.mkdir(parents=True, exist_ok=True)
@@ -116,6 +118,11 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
     t_g1_exit = datetime(2026, 11, 22, 16, 24, 30, 811000, tzinfo=timezone.utc)
     t_g2_buy = datetime(2026, 11, 22, 16, 25, 3, 471000, tzinfo=timezone.utc)
 
+    t_g2_funding = datetime(2026, 11, 22, 17, 0, tzinfo=timezone.utc)
+    t_g2_sell = datetime(2026, 11, 22, 17, 15, tzinfo=timezone.utc)
+    g2_buy_id = "fl-d7345f8795464a65-g-00002-00000001"
+    g2_sell_id = "fl-d7345f8795464a65-g-00002-00000002"
+
     def _make_record(cid, ex_id, side, price, filled, fee, status, ts, reduce_only=False):
         intent = OrderIntent(
             client_order_id=cid,
@@ -156,6 +163,15 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
             "fl-d7345f8795464a65-g-00002-00000001", "203", Side.BUY, "131.56000", "0.00", "0", OrderStatus.SUBMITTED, t_g2_buy
         )
 
+    if gen2_traded:
+        orders_map[g2_buy_id] = _make_record(
+            g2_buy_id, "203", Side.BUY, "131.56000", "0.04", "0", OrderStatus.FILLED, t_g2_buy
+        )
+        orders_map[g2_sell_id] = _make_record(
+            g2_sell_id, "204", Side.SELL, "132.89000", "0.04", "0", OrderStatus.FILLED, t_g2_sell,
+            reduce_only=True,
+        )
+
     funding_list = [
         FundingEvent(
             account_id=ACCOUNT_ID,
@@ -182,6 +198,22 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
                 event_time=t_fund_2,
                 source="binance-rest-income",
                 event_id="funding:FUNDING_FEE:10002",
+                metadata={"endpoint": "/fapi/v1/income"},
+            )
+        )
+
+    if gen2_traded:
+        funding_list.append(
+            FundingEvent(
+                account_id=ACCOUNT_ID,
+                tran_id="10003",
+                symbol="NVDAUSDT",
+                asset="USDT",
+                income_type="FUNDING_FEE",
+                amount=Decimal("-0.01000000"),
+                event_time=t_g2_funding,
+                source="binance-rest-income",
+                event_id="funding:FUNDING_FEE:10003",
                 metadata={"endpoint": "/fapi/v1/income"},
             )
         )
@@ -224,6 +256,16 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
                 ("rcpt-4", "fl-d7345f8795464a65-g-00001-00000006", "202", "SELL", "132.89000", "0.04", "5.3156000", "0", "0.13200000", True, t_g1_exit, 4),
                 ("rcpt-5", "fl-d7345f8795464a65-g-00002-00000001", "203", "BUY", "131.56000", "0.00", "0", "0", "0", True, t_g2_buy, None),
             ]
+        )
+    if gen2_traded:
+        quote_map.update({g2_buy_id: "5.2624000", g2_sell_id: "5.3156000"})
+        receipt_specs[-1] = (
+            "rcpt-5", g2_buy_id, "203", "BUY", "131.56000", "0.04", "5.2624000",
+            "0", "0", True, t_g2_buy, 5,
+        )
+        receipt_specs.append(
+            ("rcpt-6", g2_sell_id, "204", "SELL", "132.89000", "0.04", "5.3156000",
+             "0", "0.05320000", True, t_g2_sell, 6)
         )
     for cid, rec in orders_map.items():
         pcon.execute("INSERT INTO futures_orders VALUES (?, ?, ?)", (cid, dumps(rec), quote_map[cid]))
@@ -305,6 +347,10 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
         if include_azure_post_handoff
         else Decimal("4999.97114760") + total_funding
     )
+    quote_time = datetime(2026, 11, 22, 16, 44, 46, tzinfo=timezone.utc)
+    if gen2_traded:
+        final_cash += Decimal("0.04320000")
+        quote_time = datetime(2026, 11, 22, 17, 30, tzinfo=timezone.utc)
     state = PaperState(
         market=Market.BINANCE_USDM,
         account_id=ACCOUNT_ID,
@@ -312,7 +358,7 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
         fee_rate=Decimal("0"),
         orders=orders_map,
         positions={},
-        quotes={"NVDAUSDT": Quote("NVDAUSDT", Decimal("132.73000"), datetime(2026, 11, 22, 16, 44, 46, tzinfo=timezone.utc))},
+        quotes={"NVDAUSDT": Quote("NVDAUSDT", Decimal("132.73000"), quote_time)},
         cash={"USDT": final_cash},
         funding={"USDT": total_funding},
         funding_events={f.event_id: f for f in funding_list},
@@ -346,6 +392,13 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
         oe_list.append(
             OrderEvent("fl-d7345f8795464a65-g-00001-00000006", "202", OrderStatus.FILLED, Decimal("0.04"), Decimal("132.89000"), t_g1_exit, "binance-rest", "rest:g1-exit", Decimal("0"))
         )
+    if gen2_traded:
+        oe_list.extend([
+            OrderEvent(g2_buy_id, "203", OrderStatus.FILLED, Decimal("0.04"), Decimal("131.56000"),
+                       t_g2_buy, "binance-rest", "rest:g2-buy", Decimal("0")),
+            OrderEvent(g2_sell_id, "204", OrderStatus.FILLED, Decimal("0.04"), Decimal("132.89000"),
+                       t_g2_sell, "binance-rest", "rest:g2-sell", Decimal("0")),
+        ])
     for oe in oe_list:
         ccon.execute("INSERT INTO events VALUES (?, ?)", (oe.event_id, dumps(oe)))
     for fev in funding_list:
@@ -388,7 +441,7 @@ def _build_synthetic_demo_snapshot(root: Path, *, include_azure_post_handoff: bo
         (root / "cloud-health.json").write_text(
             json.dumps(
                 {
-                    "nav_usdt": "5000.00551376",
+                    "nav_usdt": str(final_cash),
                     "unknown_orders": [],
                     "grid": {"deployment_id": "fl-d7345f8795464a65-g-00002"},
                     "campaign": {"post_budget": 4, "posts_consumed": 2, "remaining_posts": 2},
@@ -489,10 +542,38 @@ def test_r08_readonly_dedup_attribution_and_report(tmp_path: Path):
     assert (out_dir / "benchmarks.csv").is_file()
 
 
+def test_r08_closed_gen1_benchmarks_survive_gen2_trades_and_funding(tmp_path: Path):
+    closed_g1 = _build_synthetic_demo_snapshot(tmp_path / "closed_g1", include_azure_post_handoff=True)
+    traded_g2 = _build_synthetic_demo_snapshot(
+        tmp_path / "traded_g2", include_azure_post_handoff=True, gen2_traded=True
+    )
+    before = run_full_r08_analysis(closed_g1)
+    after = run_full_r08_analysis(traded_g2)
+
+    before_gen1 = [row for row in before["benchmarks"] if row["window"] == "GEN1_ACTIVE"]
+    after_gen1 = [row for row in after["benchmarks"] if row["window"] == "GEN1_ACTIVE"]
+    assert len(after_gen1) == 4
+    assert after_gen1 == before_gen1
+    assert {row["end_utc"] for row in after_gen1} == {"2026-11-22T16:24:30.811000+00:00"}
+    assert {row["grid_net_pnl_same_window_usdt"] for row in after_gen1} == {"0.03436616"}
+    with_funding = next(row for row in after_gen1 if row["benchmark_name"].endswith("WITH_OBSERVED_FUNDING"))
+    assert with_funding["funding_usdt"] == "-0.09763384"
+    assert with_funding["grid_minus_benchmark_usdt"] == "0.05040000"
+
+    assert after["empirical"]["cohorts"]["all_grid"]["net_pnl_usdt"] == "0.07756616"
+    assert after["empirical"]["cohorts"]["all_grid"]["realized_funding_usdt"] == "-0.10763384"
+    account_benchmark = next(row for row in after["benchmarks"] if row["window"] == "FULL_ACCOUNT")
+    assert account_benchmark["end_utc"] == "2026-11-22T17:30:00+00:00"
+    assert account_benchmark["grid_net_pnl_same_window_usdt"] == "0.04871376"
+
+
 def test_r08_tail_risk_and_stress_smoke(tmp_path: Path):
     import numpy as np
     import pandas as pd
-    from factorlab.experiments.demo_grid_performance import run_tail_risk_analysis
+    from factorlab.experiments.demo_grid_performance import (
+        NO_F11_NO_F08_STRANDED_POSITION_BASELINE,
+        run_tail_risk_analysis,
+    )
 
     snap_dir = tmp_path / "r04b_mini"
     snap_dir.mkdir(parents=True)
@@ -552,3 +633,11 @@ def test_r08_tail_risk_and_stress_smoke(tmp_path: Path):
     assert {"gbm_low_vol_0.5x", "gbm_base_vol_1.0x", "gbm_high_vol_2.0x", "moving_block_bootstrap_24h", "jump_stress_downside"}.issubset(scenario_keys)
     assert len(tail["deterministic_stress"]) == 6
     assert "NO LIVE MONEY" in tail["boundaries"]
+    for row in [*tail["stochastic_scenarios"], *tail["deterministic_stress"]]:
+        assert row["execution_model"] == NO_F11_NO_F08_STRANDED_POSITION_BASELINE
+
+    decline = next(row for row in tail["deterministic_stress"] if row["stress_name"] == "continuous_decline")
+    assert decline["final_state"] == "PAUSED"
+    assert decline["residual_inventory"] == 0.04
+    assert 0 < decline["paused_with_inventory_hours"] <= decline["holding_hours"]
+    assert decline["max_drawdown_demo_stress_funding_pct"] > decline["max_drawdown_pct"]
