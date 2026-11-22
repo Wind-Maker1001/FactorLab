@@ -661,10 +661,15 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
                     or not bridge.grid.closed_by_breakout or not running()):
                 return bridge
             status = session.status()
+            terminal_values = {item.value for item in TERMINAL}
             if (not bridge.ready or not status['reconciled'] or status['positions']
+                    or bridge.gateway.state.positions
                     or status['open_orders'] or status['unknown'] or session.write_uncertain
                     or session.receipt_error or runtime._get('continuous_recovery')
-                    or bridge.gateway.read_account().open_orders):
+                    or bridge.gateway.read_account().open_orders
+                    or any(order['status'] not in terminal_values for order in status['orders'].values())
+                    or any(order.intent.client_order_id in bridge.gateway.state.orders
+                           for order in bridge.grid.active)):
                 return bridge
             # A lost HTTP receipt may remain absent after GET has resolved
             # its order. Only reservations without a terminal order block rotation.

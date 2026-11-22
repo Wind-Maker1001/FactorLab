@@ -289,12 +289,17 @@ class DemoMarketFeed:
         if last_quote is None or raw['time'] > last_quote:
             quote = Quote(SYMBOL, (bid + ask) / 2, observed)
             self._validate_quote_age(raw['time'], self.exchange_time(allow_refresh=False))
+            if hasattr(self.consumer, 'set_latest_book'):
+                self.consumer.set_latest_book(raw)
             self.consumer.quote(quote)
             if hasattr(self.consumer, 'observe_book'):
                 self.consumer.observe_book(raw, book_received_at)
             self._ack('quote', raw['time'])
             self._last_live_quote_received = received.observed_monotonic
             delivered = 1
+        elif hasattr(self.consumer, 'maintain'):
+            self._validate_quote_age(raw['time'], self.exchange_time(allow_refresh=False))
+            self.consumer.maintain(raw)
         self.status, self.reason = 'RUNNING', None
         return dict(bars=len(bars), quotes=delivered)
 

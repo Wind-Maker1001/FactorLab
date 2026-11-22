@@ -1,21 +1,47 @@
 """Serial delivery of Grid proposals through the existing Demo controller."""
 from copy import copy
 from dataclasses import asdict
-from decimal import Decimal, ROUND_CEILING
+from datetime import timedelta
+from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 import json
 
 from factorlab.strategies.grid_execution import GridAccount, GridExecution
 from factorlab.trading import Market, OrderEvent, OrderStatus, OrderType, Side
 from factorlab.trading.contracts import TERMINAL
+from factorlab.trading.control import RiskRejected
 from factorlab.trading.storage import decode, dumps
 from factorlab.trading.paper import Quote
 
+from .demo_preflight import _book
 from .demo_runtime import MAX_NOTIONAL, MAX_QUANTITY
 from .execution import DemoExecutionGateway, DemoExecutionTransport
 from .protocol import SafetyBlocked
 from .demo_session import DemoSession
 
 ZERO = Decimal(0)
+EXIT_REPRICE_SECONDS = 180
+EXIT_MAX_ATTEMPTS = 5
+
+
+def _classify_exit_block(error):
+    text = str(error)
+    if 'price band' in text or 'mark band' in text:
+        return 'EXIT_PRICE_BAND'
+    if 'plan notional limit' in text or 'plan margin limit' in text:
+        return 'EXIT_MAX_NOTIONAL'
+    if 'global Demo trading budget exhausted' in text or 'plan total order limit' in text:
+        return 'EXIT_GLOBAL_BUDGET_EXHAUSTED'
+    if 'persistent Demo POST budget exhausted' in text:
+        return 'EXIT_WINDOW_BUDGET_EXHAUSTED'
+    if 'PRICE_FILTER' in text:
+        return 'EXIT_PRICE_FILTER'
+    if 'QUANTITY_FILTER' in text:
+        return 'EXIT_MIN_QUANTITY'
+    if 'MIN_NOTIONAL' in text:
+        return 'EXIT_MIN_NOTIONAL'
+    if 'RISK_BRACKET_LIMIT' in text:
+        return 'EXIT_RULE_REJECTED'
+    return None
 
 
 def minimum_quantity(rules, price):
@@ -77,6 +103,11 @@ class DemoGridBridge:
         self.seen = set()
         self.terminal_reports = set()
         self.ready = False
+        self.last_book = None
+        self.exit_reprice_seconds = EXIT_REPRICE_SECONDS
+        self.exit_max_attempts = EXIT_MAX_ATTEMPTS
+        self.exit_block_reason = None
+        self._exit_awaiting_reconcile = False
         saved = controller.store.event_payload(self.prefix + 'deployment')
         binding = grid.deployment()
         if saved is not None and saved != dumps(binding):
@@ -103,7 +134,14 @@ class DemoGridBridge:
             grid.complete_bar(delivery=grid.delivery + 1)
         else:
             account = GridAccount(**command['account'])
-            method = grid.withdraw_unsubmitted if action == 'withdraw' else getattr(grid, action)
+            if action == 'withdraw':
+                method = grid.withdraw_unsubmitted
+            elif action == 'exit_limit':
+                method = grid.propose_limit_exit
+            elif action == 'exit_cancel':
+                method = grid.cancel_exit
+            else:
+                method = getattr(grid, action)
             method(value, account, delivery=grid.delivery + 1)
 
     def _command(self, action, value=None, *, source_id=None):
@@ -184,6 +222,7 @@ class DemoGridBridge:
                 market_after = 0 if previous is None else round(previous.observed_at.timestamp() * 1000)
                 receipt = collection.receive_recent(collection.clock(), market_after=market_after)
                 book = self.session._fresh_book(dict(receipt.payload))
+            self.last_book = book
             self.controller.quote(Quote(self.grid.instrument_id, book['askPrice'], book['time_utc']))
         return self.restore_reconciled()
 
@@ -196,8 +235,37 @@ class DemoGridBridge:
         self._sync()
         if self.grid.pending_bar is not None:
             self._command('bar')
+        self._exit_awaiting_reconcile = False
+        if not self.grid.closed_by_breakout or self.account().inventory == ZERO:
+            self.exit_block_reason = None
         self.ready = True
         return self.account()
+
+    def _protocol_order_ids(self):
+        return {row[0] for row in self.gateway.adapter.db.execute('SELECT id FROM futures_orders')}
+
+    def _delete_already_consumed(self, client_order_id):
+        runtime = getattr(self, 'runtime', None)
+        if runtime is None:
+            return False
+        return runtime.db.execute(
+            "SELECT 1 FROM dispatches WHERE method='DELETE' AND client_id=?",
+            (client_order_id,),
+        ).fetchone() is not None
+
+    def _has_unconfirmed_dispatch(self):
+        runtime = getattr(self, 'runtime', None)
+        if runtime is None:
+            return False
+        for (client_id,) in runtime.db.execute('SELECT client_id FROM dispatches WHERE receipt IS NULL'):
+            order = self.gateway.state.orders.get(client_id)
+            if order is None or order.snapshot.status not in TERMINAL:
+                return True
+        return False
+
+    def _dispatched_exit_attempts(self):
+        sent = set(self.gateway.state.orders) | self._protocol_order_ids()
+        return sum(1 for key in self.grid.exit_orders if key in sent)
 
     def _events_after(self, after):
         rows = self.controller.store.db.execute(
@@ -216,10 +284,298 @@ class DemoGridBridge:
 
     def withdraw_unsubmitted(self):
         """Withdraw only local reservations; never change an exchange order."""
+        sent = set(self.gateway.state.orders) | self._protocol_order_ids()
         keys = [order.intent.client_order_id for order in self.grid.active
-                if order.intent.client_order_id not in self.gateway.state.orders]
+                if order.intent.client_order_id not in sent]
         if keys:
             self._command('withdraw', keys)
+
+    def _fresh_exit_book(self, book=None):
+        now = self.gateway.clock()
+        previous = self.gateway.state.quotes.get(self.grid.instrument_id)
+
+        def usable(candidate):
+            if candidate is None:
+                return None
+            parsed = candidate if 'time_utc' in candidate else _book(dict(candidate))
+            if (not timedelta(0) <= now - parsed['time_utc'] <= timedelta(seconds=5)
+                    or parsed['bidPrice'] <= 0 or parsed['bidPrice'] > parsed['askPrice']):
+                return None
+            if previous is not None and parsed['time_utc'] < previous.observed_at:
+                return None
+            return parsed
+
+        for candidate in (book, self.last_book):
+            parsed = usable(candidate)
+            if parsed is not None:
+                self.last_book = parsed
+                return parsed
+        if self.session is not None:
+            fresh = self.session._fresh_book()
+            if previous is not None and fresh['time_utc'] < previous.observed_at:
+                raise SafetyBlocked('STALE_QUOTE: Demo exit book regression')
+            self.last_book = fresh
+            return fresh
+        if previous is None or not timedelta(0) <= now - previous.observed_at <= timedelta(seconds=5):
+            raise SafetyBlocked('STALE_QUOTE: Demo exit book')
+        return dict(bidPrice=previous.price, askPrice=previous.price, time_utc=previous.observed_at)
+
+    def _plan_limit_exit(self, inventory, book):
+        filters = self.gateway.rules.filters
+        price_filter = filters.get('PRICE_FILTER') or {}
+        tick = Decimal(price_filter['tickSize'])
+        if tick <= 0:
+            return None, None, 'EXIT_PRICE_FILTER'
+        price = (book['bidPrice'] / tick).to_integral_value(rounding=ROUND_FLOOR) * tick
+        min_price = Decimal(price_filter['minPrice']) if price_filter.get('minPrice') is not None else ZERO
+        max_price = Decimal(price_filter['maxPrice']) if price_filter.get('maxPrice') is not None else ZERO
+        if (price <= 0 or price < Decimal(str(self.grid.config.minimum_price))
+                or (min_price and price < min_price) or (max_price and price > max_price)
+                or price % tick):
+            return None, None, 'EXIT_PRICE_FILTER'
+
+        lot = filters.get('LOT_SIZE') or {}
+        step = self.grid.rules.step_size
+        min_qty = max(self.grid.rules.min_quantity, Decimal(lot['minQty']))
+        max_qty = min(MAX_QUANTITY, Decimal(lot['maxQty']))
+        min_notional = self.grid.rules.min_notional
+        available_qty = (inventory / step).to_integral_value(rounding=ROUND_FLOOR) * step
+        if available_qty <= 0 or available_qty < min_qty:
+            return None, None, 'EXIT_MIN_QUANTITY'
+        if available_qty * price < min_notional:
+            return None, None, 'EXIT_MIN_NOTIONAL'
+
+        quote = self.gateway.state.quotes[self.grid.instrument_id].price
+        quote_price = max(price, book['askPrice'], quote)
+        max_by_notional = (MAX_NOTIONAL / quote_price / step).to_integral_value(rounding=ROUND_FLOOR) * step
+        cap = min(max_qty, max_by_notional)
+        if available_qty <= cap:
+            quantity = available_qty
+        else:
+            minimum = (max(min_qty, min_notional / price) / step).to_integral_value(rounding=ROUND_CEILING) * step
+            if cap < minimum:
+                return None, None, 'EXIT_MAX_NOTIONAL' if max_by_notional < minimum else 'EXIT_MAX_QUANTITY'
+            chunks = (available_qty / cap).to_integral_value(rounding=ROUND_CEILING)
+            quantity = (min(cap, available_qty - (chunks - 1) * minimum) / step).to_integral_value(
+                rounding=ROUND_FLOOR) * step
+            if quantity < minimum:
+                return None, None, 'EXIT_MAX_NOTIONAL'
+
+        if quantity <= 0 or quantity > inventory or quantity < min_qty or quantity > max_qty:
+            return None, None, 'EXIT_MIN_QUANTITY'
+        if quantity * price < min_notional:
+            return None, None, 'EXIT_MIN_NOTIONAL'
+        if quantity * quote_price > MAX_NOTIONAL:
+            return None, None, 'EXIT_MAX_NOTIONAL'
+        if self._dispatched_exit_attempts() >= self.exit_max_attempts:
+            return None, None, 'EXIT_RETRY_LIMIT_EXCEEDED'
+
+        runtime = getattr(self, 'runtime', None)
+        if runtime is not None:
+            continuous = runtime.continuous_authorization()
+            campaign = runtime.active_campaign()
+            if continuous is not None:
+                if continuous['state'] == 'HALTED' or runtime._get('continuous_diagnostic') is not None:
+                    return None, None, 'HALTED'
+                if continuous['state'] != 'RUNNING':
+                    return None, None, continuous['state']
+                funds = self.gateway.adapter.facts.usdt()
+                loss = Decimal(continuous['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit'])
+                if loss >= Decimal(continuous['max_loss']):
+                    return None, None, 'EXIT_LOSS_BUDGET_EXHAUSTED'
+                consumed = runtime.consumption(continuous)
+                if (consumed['posts'] >= continuous['total_orders']
+                        or Decimal(consumed['submitted_notional']) + quantity * price
+                        > Decimal(continuous['total_notional'])):
+                    return None, None, 'EXIT_GLOBAL_BUDGET_EXHAUSTED'
+            if campaign is None or campaign['smoke']:
+                return None, None, 'AUTHORIZATION_REQUIRED'
+            if runtime.post_count(campaign['id']) >= campaign['orders']:
+                return None, None, 'EXIT_WINDOW_BUDGET_EXHAUSTED'
+        return price, quantity, None
+
+    def breakout_exit_status(self, *, desired='RUNNING', authorized=True):
+        """Return bounded breakout exit lifecycle diagnostics, or None outside breakout."""
+        if not self.grid.closed_by_breakout:
+            return None
+        facts = self.gateway.adapter.facts
+        attempts = self._dispatched_exit_attempts()
+        status = self.session.status() if self.session is not None else None
+        unknown = (status['unknown'] if status is not None
+                   else [k for k, r in self.gateway.state.orders.items() if r.snapshot.reconcile_required])
+        uncertain = bool(self.session is not None and (self.session.write_uncertain or self.session.receipt_error))
+        runtime = getattr(self, 'runtime', None)
+        pending_recovery = bool(runtime is not None and runtime._get('continuous_recovery'))
+        if (facts is None or not self.ready or unknown or uncertain or pending_recovery
+                or self._exit_awaiting_reconcile or self._has_unconfirmed_dispatch()):
+            reason = ('ORDER_UNKNOWN' if unknown else
+                      'WRITE_UNCERTAIN' if uncertain or pending_recovery else 'RECONCILE_REQUIRED')
+            return dict(phase='EXIT_RECONCILING', reason=reason, entry_blocked=True,
+                        inventory=None if facts is None else sum((p.quantity for p in facts.shared().positions), ZERO),
+                        active_exit_order_id=None, attempts=attempts, max_attempts=self.exit_max_attempts)
+        reconciled = bool(status['reconciled'] if status is not None else self.controller.account().reconciled)
+        if not reconciled:
+            return dict(phase='EXIT_RECONCILING', reason='RECONCILE_REQUIRED', entry_blocked=True,
+                        inventory=None, active_exit_order_id=None,
+                        attempts=attempts, max_attempts=self.exit_max_attempts)
+        account = self.account()
+        inventory = account.inventory
+        open_orders = self.controller.account().open_orders
+        open_buys = [o for o in open_orders if o.intent.side is Side.BUY]
+        open_sells = [o for o in open_orders if o.intent.side is Side.SELL and o.intent.reduce_only]
+        active_exit_id = open_sells[0].intent.client_order_id if open_sells else None
+        if inventory == ZERO and not open_orders:
+            phase, reason = 'FLAT_CONFIRMED', None
+        elif open_buys:
+            if desired != 'RUNNING':
+                phase, reason = 'EXIT_BLOCKED', 'USER_PAUSED' if desired == 'PAUSED' else desired
+            elif self.read_only or self.preview:
+                phase, reason = 'EXIT_BLOCKED', 'PREVIEW_OR_READ_ONLY'
+            elif not authorized:
+                phase, reason = 'EXIT_BLOCKED', 'AUTHORIZATION_REQUIRED'
+            else:
+                phase, reason = 'ENTRY_BLOCKED', self.exit_block_reason or 'CANCEL_OPEN_BUY'
+        elif inventory > ZERO and open_sells:
+            phase = 'EXIT_WORKING'
+            if desired == 'PAUSED':
+                reason = 'USER_PAUSED'
+            elif desired in {'STOPPED', 'HALTED'}:
+                reason = desired
+            else:
+                reason = self.exit_block_reason
+        elif inventory > ZERO:
+            if desired in {'STOPPED', 'HALTED'}:
+                phase, reason = 'EXIT_BLOCKED', desired
+            elif desired == 'PAUSED':
+                phase, reason = 'EXIT_BLOCKED', 'USER_PAUSED'
+            elif self.read_only or self.preview:
+                phase, reason = 'EXIT_BLOCKED', 'PREVIEW_OR_READ_ONLY'
+            elif self.exit_block_reason is not None:
+                phase, reason = 'EXIT_BLOCKED', self.exit_block_reason
+            elif not authorized:
+                phase, reason = 'EXIT_BLOCKED', 'AUTHORIZATION_REQUIRED'
+            else:
+                phase, reason = 'EXIT_PENDING', 'BREAKOUT_POSITION_EXIT'
+        else:
+            phase, reason = 'EXIT_RECONCILING', 'OPEN_ORDER_RECONCILE'
+        return dict(phase=phase, reason=reason, entry_blocked=True, inventory=inventory,
+                    active_exit_order_id=active_exit_id, attempts=attempts, max_attempts=self.exit_max_attempts)
+
+    def step_breakout_exit(self, *, book=None):
+        """Advance breakout reduce-only LIMIT exit by at most one exchange action."""
+        if not self.grid.closed_by_breakout or self.read_only or self.preview:
+            return None
+        if not self.ready or not self.account().reconciled:
+            raise SafetyBlocked('RECONCILE_REQUIRED')
+        if self._exit_awaiting_reconcile:
+            return None
+        if self.session is not None and (self.session.write_uncertain or self.session.receipt_error):
+            raise SafetyBlocked('RECONCILE_REQUIRED')
+        runtime = getattr(self, 'runtime', None)
+        if runtime is not None and runtime._get('continuous_recovery'):
+            raise SafetyBlocked('RECONCILE_REQUIRED')
+        if self._has_unconfirmed_dispatch():
+            raise SafetyBlocked('RECONCILE_REQUIRED')
+        self._sync()
+        if any(r.snapshot.reconcile_required for r in self.gateway.state.orders.values()):
+            raise SafetyBlocked('RECONCILE_REQUIRED')
+
+        self.withdraw_unsubmitted()
+        open_orders = self.controller.account().open_orders
+
+        # Cancel any resting BUY order first so entry stays blocked and the single open-order slot is freed.
+        for order in open_orders:
+            if order.intent.side is Side.BUY:
+                key = order.intent.client_order_id
+                if self._delete_already_consumed(key):
+                    self.exit_block_reason = 'EXIT_CANCEL_ALREADY_CONSUMED'
+                    return None
+                result = self.controller.cancel(key) if self.session is None else self.session.cancel(key)
+                self._exit_awaiting_reconcile = True
+                self.ready = result is not None and not (self.session and self.session.write_uncertain)
+                self._sync()
+                return result
+
+        account = self.account()
+        if account.inventory == ZERO:
+            self.exit_block_reason = None
+            for order in open_orders:
+                key = order.intent.client_order_id
+                if self._delete_already_consumed(key):
+                    self.exit_block_reason = 'EXIT_CANCEL_ALREADY_CONSUMED'
+                    return None
+                result = self.controller.cancel(key) if self.session is None else self.session.cancel(key)
+                self._exit_awaiting_reconcile = True
+                self.ready = result is not None and not (self.session and self.session.write_uncertain)
+                self._sync()
+                return result
+            return None
+
+        # Existing working reduce-only SELL: monitor, and only cancel/reprice under bounded rules.
+        if open_orders:
+            sell = open_orders[0]
+            key = sell.intent.client_order_id
+            if not (sell.intent.side is Side.SELL and sell.intent.reduce_only):
+                self.exit_block_reason = 'EXIT_UNEXPECTED_OPEN_ORDER'
+                return None
+            if self._delete_already_consumed(key):
+                self.exit_block_reason = 'EXIT_CANCEL_ALREADY_CONSUMED'
+                return None
+            if key in self.grid.exit_cancellations:
+                result = self.controller.cancel(key) if self.session is None else self.session.cancel(key)
+                self._exit_awaiting_reconcile = True
+                self.ready = result is not None and not (self.session and self.session.write_uncertain)
+                self._sync()
+                return result
+            if key not in self.grid.orders:
+                self.exit_block_reason = None
+                return None
+            current_book = self._fresh_exit_book(book=book)
+            target_price, _, block_reason = self._plan_limit_exit(account.inventory, current_book)
+            record = self.gateway.state.orders[key]
+            age_seconds = (self.gateway.clock() - record.observed_at).total_seconds()
+            if (block_reason is None and age_seconds >= self.exit_reprice_seconds
+                    and sell.intent.limit_price is not None and target_price < sell.intent.limit_price):
+                self._command('exit_cancel', key)
+                result = self.controller.cancel(key) if self.session is None else self.session.cancel(key)
+                self._exit_awaiting_reconcile = True
+                self.ready = result is not None and not (self.session and self.session.write_uncertain)
+                self._sync()
+                return result
+            self.exit_block_reason = None
+            return None
+
+        # No open exchange order and confirmed long inventory > 0: propose one legal reduce-only SELL LIMIT.
+        current_book = self._fresh_exit_book(book=book)
+        price, quantity, block_reason = self._plan_limit_exit(account.inventory, current_book)
+        if block_reason is not None:
+            self.exit_block_reason = block_reason
+            return None
+        self.exit_block_reason = None
+        self._command('exit_limit', dict(price=price, quantity=quantity))
+        intent = self.grid.active[0].intent
+        if (intent.side is not Side.SELL or intent.order_type is not OrderType.LIMIT
+                or not intent.reduce_only or intent.quantity > account.inventory):
+            self.withdraw_unsubmitted()
+            raise SafetyBlocked('breakout exit requires reduce-only SELL LIMIT within confirmed inventory')
+        try:
+            if self.session is None:
+                result = self.controller.submit(intent)
+            else:
+                self.expect(intent)
+                result = self.session.submit_intent(intent, book=current_book)
+        except (SafetyBlocked, RiskRejected) as error:
+            self.withdraw_unsubmitted()
+            reason = _classify_exit_block(error)
+            if reason is not None:
+                self.exit_block_reason = reason
+                return None
+            raise
+        self.ready = result is not None and not (self.session and self.session.write_uncertain)
+        if not self.ready or getattr(result, 'status', None) == OrderStatus.REJECTED:
+            self._exit_awaiting_reconcile = True
+        self._sync()
+        return result
 
     def observe(self, event, *, dispatch=True, source_id=None):
         if self.read_only:
