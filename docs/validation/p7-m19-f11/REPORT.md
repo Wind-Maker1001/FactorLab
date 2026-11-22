@@ -129,9 +129,9 @@ Windows / Python 3.12.7，全部使用临时 SQLite 和离线 HTTP 模拟器。�
 
 - F07：**11 passed**。
 - F11：**40 passed**（原 30 项加新增 10 项）。
-- 受影响套测：**534 passed, 1 deselected**。覆盖 MarketFeed / MarketCollection / GridConsumer、Demo 网关执行及准入、bounded quote / preparation、Grid bridge / network、GET recovery / window、runtime / constructor clock / continuous campaign、fill faults、离线 Execute systemd / cloud runtime、receipts / reconciliation、forward observation 及 GridExecution；本次合计 **585 passed**。
+- 受影响套测：**534 passed, 1 deselected**，随后在恢复 Full access 的会话中独立补跑凭据测试 **1 passed**。覆盖 MarketFeed / MarketCollection / GridConsumer、Demo 网关执行及准入、bounded quote / preparation、Grid bridge / network、GET recovery / window、runtime / constructor clock / continuous campaign、fill faults、离线 Execute systemd / cloud runtime、receipts / reconciliation、forward observation 及 GridExecution；本次合计 **586 passed**，无待验证的本地排除项。
 - 本地默认 pytest 临时目录不可访问，使用 `D:/Code/f11-test-temp/`；子进程通过显式 `PYTHONPATH=<worktree>/src` 导入本次源码。
-- `test_current_user_credential_available_in_independent_process` 需要真实 Windows Credential Manager，本机登录会话返回 Windows 错误 `1312`；明确从本地定向批次排除，保留测试源码，由新 HEAD 的 GitHub Windows CI 执行，不以 mock 或放宽准入代替。
+- `test_current_user_credential_available_in_independent_process` 需要真实 Windows Credential Manager；首次受限会话返回 Windows 错误 `1312`，故从该批次排除。恢复 Full access 后使用原测试独立补跑 **1 passed**，未使用 mock 或放宽准入；GitHub Windows CI 仍执行完整原测试。
 - GitHub 上的双 Python Extended software、实际分片覆盖、离线 systemd 和 `FactorLab trusted merge gate` 必须绑定推送后的新 HEAD 核对；本报告的本地结果不代替该门禁。
 
 未操作原台式机私有交易状态，未启动官方 Demo Execute，未合并 PR。
