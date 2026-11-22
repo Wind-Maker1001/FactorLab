@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily FactorLab Binance Demo coherent backup (NO LIVE MONEY)
+
+[Timer]
+OnCalendar=*-*-* 03:15:00 UTC
+AccuracySec=1min
+Persistent=true
+Unit=factorlab-demo-backup.service
+
+[Install]
+WantedBy=timers.target

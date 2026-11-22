@@ -1,0 +1,25 @@
+[Unit]
+Description=FactorLab Binance Demo coherent backup and retention (NO LIVE MONEY)
+After=local-fs.target
+RequiresMountsFor=/var/lib/factorlab-demo /var/backups/factorlab-demo
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/factorlab
+Environment=PYTHONUNBUFFERED=1
+Environment=FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo
+Environment=FACTORLAB_DEMO_BACKUP_ROOT=/var/backups/factorlab-demo
+Environment=FACTORLAB_DEMO_BACKUP_RETENTION_DAYS=14
+Environment=FACTORLAB_DEMO_BACKUP_MIN_VALID_COPIES=1
+ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_backup run-scheduled --state-root ${FACTORLAB_DEMO_STATE_ROOT} --backup-root ${FACTORLAB_DEMO_BACKUP_ROOT} --retention-days ${FACTORLAB_DEMO_BACKUP_RETENTION_DAYS} --min-valid-copies ${FACTORLAB_DEMO_BACKUP_MIN_VALID_COPIES}
+TimeoutStartSec=300
+UMask=0077
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+InaccessiblePaths=/etc/factorlab-demo
+ReadWritePaths=/var/lib/factorlab-demo /var/backups/factorlab-demo
