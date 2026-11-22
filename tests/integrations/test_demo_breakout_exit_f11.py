@@ -277,18 +277,40 @@ def _setup_breakout_with_position(h, *, fill_qty='.04', fill_price='146', breako
 # F10 funding recovery through F11 exit, restart, fill and rotation
 # ---------------------------------------------------------------------------
 
-def test_f11_f10_funding_exit_recovery_and_rotation(f11_harness):
+def test_f12_funding_exit_recovery_archive_and_rotation(f11_harness):
     h = f11_harness
     h.state.use_dynamic_factory = True
+    funding = D('-.00469722')
+
+    def fill(key, quantity, price):
+        h.fake.trade_update(key, quantity, price)
+        timestamp = MS + round(h.state.seconds * 1000)
+        h.fake.orders[key]['updateTime'] = timestamp
+        h.fake.trades[-1]['time'] = timestamp
+
     policy = _start_continuous(h.root, h.store, orders=1, total_orders=5, total_notional=D('100'))
     with open_grid_session(h.root, h.store, h.factory, continuous=True) as bridge:
         bridge.recover()
         observe(bridge)
         buy_id = bridge.grid.active[0].intent.client_order_id
-        h.fake.trade_update(buy_id, '.04', '146')
-        h.fake.funding_update('-.01', tran_id=1101, time_ms=MS)
+        fill(buy_id, '.04', '146')
         bridge.recover()
-        assert bridge.gateway.state.funding['USDT'] == D('-.01')
+        adapter = bridge.session.adapter
+        h.state.seconds += adapter.recovery_config.terminal_settle_seconds + 1
+        bridge.recover()
+        assert buy_id in adapter.classify_orders()['archived_exchange']
+
+        h.fake.funding_update(funding, tran_id=1101, time_ms=MS + round(h.state.seconds * 1000))
+        call_start = len(h.fake.calls)
+        bridge.recover()
+        income_calls = [params for method, path, params in h.fake.calls[call_start:]
+                        if method == 'GET' and path == '/fapi/v1/income']
+        assert len(income_calls) == 1
+        assert income_calls[0]['incomeType'] == ['FUNDING_FEE']
+        assert income_calls[0]['startTime'] and income_calls[0]['endTime']
+        assert not adapter.last_reconcile_summary['reactive_audit_triggered']
+        assert adapter.last_reconcile_summary['archived_queried'] == 0
+        assert bridge.gateway.state.funding['USDT'] == funding
         assert bridge.session.adapter.order(buy_id).cumulative_fee == D('.00584')
         bridge.observe(dict(id='funded-breakout', time=NOW.replace(tzinfo=None).isoformat(),
                             price='143', volume=0), dispatch=False)
@@ -301,17 +323,17 @@ def test_f11_f10_funding_exit_recovery_and_rotation(f11_harness):
     h.state.bar_close, h.state.bar_high, h.state.bar_low = D('143'), D('144'), D('142')
     saved = {}
 
-    def verify_ledger(bridge, expected_funding, expected_count):
+    def verify_ledger(bridge):
         report = capture(bridge.session, bridge.runtime, D('1000'))
         for status in ('DEMO_FUNDING_RECONCILED', 'DEMO_FEE_RECONCILED',
                        'DEMO_POSITION_RECONCILED', 'DEMO_ACCOUNT_RECONCILED'):
             assert report['statuses'][status]
         summary = report['fifo']['attribution']['summary']
-        assert summary['realized_funding'] == expected_funding
+        assert summary['realized_funding'] == funding
         assert summary['reconciliation_residual'] == summary['reported_equity_difference'] == 0
-        assert len(list(bridge.controller.store.funding_events())) == expected_count
+        assert len(list(bridge.controller.store.funding_events())) == 1
         assert bridge.session.adapter.db.execute('SELECT count(*) FROM futures_funding').fetchone() == (
-            expected_count,)
+            1,)
         assert bridge.session.adapter.order(buy_id).cumulative_fee == D('.00584')
         coverage = bridge.session.adapter.funding_coverage()
         assert coverage['complete']
@@ -332,52 +354,93 @@ def test_f11_f10_funding_exit_recovery_and_rotation(f11_harness):
         assert worker.bridge.breakout_exit_status()['phase'] == 'EXIT_WORKING'
         assert [p['side'][0] for p in writes(h.requests, 'POST')] == ['BUY', 'SELL']
         assert writes(h.requests, 'POST')[-1]['reduceOnly'] == ['true']
-        verify_ledger(worker.bridge, D('-.01'), 1)
+        assert saved['exit_id'] in worker.bridge.session.adapter.classify_orders()['active']
+        verify_ledger(worker.bridge)
 
     h.state.on_report, h.state.stop_after_polls = submitted, 1
     assert h.start_execute() == 0
 
-    # A new settlement while the exit is working must survive a worker restart
-    # without changing the SELL identity, charging an order fee, or resetting coverage.
     h.state.seconds += 2
-    h.fake.funding_update('.005', tran_id=1102, time_ms=MS + 1000)
     h.state.polls = 0
-    phases = []
 
     def resumed(supervisor, raw, state):
         worker, key = supervisor.feed, saved['exit_id']
         bridge = worker.bridge
-        report = verify_ledger(bridge, D('-.005'), 2)
+        adapter = bridge.session.adapter
+        verify_ledger(bridge)
         assert len(writes(h.requests, 'POST')) == 2
         assert not writes(h.requests, 'DELETE')
         assert worker.watermarks()[0] == saved['watermarks'][0]
-        assert bridge.feed_deployment_id == old_id
-        if state.polls <= 2:
-            assert bridge.grid.deployment_id == old_id
-            assert bridge.breakout_exit_status()['active_exit_order_id'] == key
-            phases.append(bridge.session.adapter.order(key).status)
-            assert bridge.step_breakout_exit() is None
-            h.fake.trade_update(key, '.02', '143')
+        assert bridge.feed_deployment_id == bridge.grid.deployment_id == old_id
+        assert bridge.breakout_exit_status()['active_exit_order_id'] == key
+        assert key in adapter.classify_orders()['active']
+        assert bridge.step_breakout_exit() is None
+        order = adapter.order(key)
+        if state.polls == 1:
+            assert order.status is S.SUBMITTED
+            fill(key, '.02', '143')
             state.seconds += 1
         else:
-            assert bridge.grid.deployment_id == old_id + '-00001'
-            assert not bridge.gateway.state.positions
-            assert not bridge.controller.account().open_orders
-            assert not bridge.session.status()['unknown']
-            assert not worker.consumer.live_bar
-            assert bridge.session.adapter.order(key).status is S.FILLED
-            summary = report['fifo']['attribution']['summary']
-            assert summary['residual_inventory'] == 0
-            assert summary['actual_fees'] == report['actual_fees'] == D('.01156')
-            assert summary['realized_trade_pnl'] == D('-.12')
-            assert report['wallet'] == report['equity'] == h.fake.cash == D('999.86344')
-            assert summary['final_nav'] == D('999.86344') / D('1000')
-            assert {row['order_query']['status'] for row in report['order_trade_mapping']} == {'FILLED'}
-            assert all(row['receipt_source'] == 'GET' for row in report['order_trade_mapping'])
+            assert order.status is S.PARTIALLY_FILLED
+            assert order.intent.quantity - order.cumulative_filled_quantity == D('.02')
+            assert order.cumulative_fee == D('.00286')
+            assert bridge.account().inventory == D('.02')
 
-    h.state.on_report, h.state.stop_after_polls = resumed, 3
+    h.state.on_report, h.state.stop_after_polls = resumed, 2
     assert h.start_execute() == 0
-    assert phases == [S.SUBMITTED, S.PARTIALLY_FILLED]
+
+    exit_id = saved['exit_id']
+    h.state.seconds += 1
+    fill(exit_id, '.02', '143')
+    with open_grid_session(h.root, h.store, grid_factory(None), continuous=True) as bridge:
+        bridge.recover()
+        adapter = bridge.session.adapter
+        assert adapter.order(exit_id).status is S.FILLED
+        assert exit_id in adapter.classify_orders()['economic_incomplete']
+        assert not bridge.account().inventory
+        assert bridge.grid.deployment_id == old_id
+        h.state.seconds += adapter.recovery_config.terminal_settle_seconds + 1
+        bridge.recover()
+        assert exit_id in adapter.classify_orders()['archived_exchange']
+        audit = bridge.session.audit_history(force=True, include_income=True)
+        assert audit['income_sync']['newly_recorded'] == 0
+        saved['exit_order'] = adapter.order(exit_id)
+
+    def rotated(supervisor, raw, state):
+        worker = supervisor.feed
+        bridge = worker.bridge
+        adapter = bridge.session.adapter
+        report = verify_ledger(bridge)
+        assert bridge.grid.deployment_id == old_id + '-00001'
+        assert bridge.feed_deployment_id == old_id
+        expected_next_bar = saved['watermarks'][0] + 60_000
+        assert worker.watermarks()[0] == expected_next_bar
+        bar_queries = [params for _, path, params in h.fake.calls[restart_calls:]
+                       if path == '/fapi/v1/klines']
+        assert int(bar_queries[0]['startTime'][0]) == saved['watermarks'][0]
+        assert worker.consumer.last_bar is None
+        assert not bridge.gateway.state.positions
+        assert not bridge.controller.account().open_orders
+        assert not bridge.session.status()['unknown']
+        assert not worker.consumer.live_bar
+        assert adapter.order(exit_id) == saved['exit_order']
+        assert exit_id in adapter.classify_orders()['archived_exchange']
+        assert adapter.last_reconcile_summary['archived_queried'] == 0
+        assert len(writes(h.requests, 'POST')) == 2
+        assert not writes(h.requests, 'DELETE')
+        summary = report['fifo']['attribution']['summary']
+        assert summary['residual_inventory'] == 0
+        assert summary['actual_fees'] == report['actual_fees'] == D('.01156')
+        assert summary['realized_trade_pnl'] == D('-.12')
+        assert report['wallet'] == report['equity'] == h.fake.cash == D('999.86374278')
+        assert summary['final_nav'] == D('999.86374278') / D('1000')
+        assert {row['order_query']['status'] for row in report['order_trade_mapping']} == {'FILLED'}
+        assert all(row['receipt_source'] == 'GET' for row in report['order_trade_mapping'])
+
+    restart_calls = len(h.fake.calls)
+    h.state.polls = 0
+    h.state.on_report, h.state.stop_after_polls = rotated, 1
+    assert h.start_execute() == 0
 
 
 # ---------------------------------------------------------------------------

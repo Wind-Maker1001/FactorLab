@@ -2,8 +2,50 @@
 
 - **任务编号**：`P7-M19-F12`
 - **分支**：`perf/p7-m19-f12-incremental-recovery`
-- **基线提交（`origin/main`）**：`ef9d50734f35338b40c6f4a7413f6763be7e9b53`
-- **验收结论**：`F12_ENGINEERING_ACCEPTED`
+- **最终集成基线** `b2211117dd530ccfcb389a5554d12e6fc7563d67`，包含 F10 #225 和 F11 #224
+- **验收环境** 离线交易所模拟器与临时 SQLite，NO LIVE MONEY。
+
+## PR #226 最终集成
+
+离线 C04 Execute 用例从 `0.04 NVDA` 多头仓位开始。交易所确认 `-0.00469722 USDT` 资金费后，Tier-1 以单次有界资金费 GET 解释钱包变化，跳过已归档 BUY 的逐笔查询。BREAKOUT 产生一笔 reduce-only SELL；挂单和第一次 `0.02 NVDA` 成交期间都归为 `ACTIVE`，Grid 保持在原部署。最后一笔成交后，订单先等待终态复核和归档，再由重启后的 Execute 在权威平仓对账后轮换 Grid。
+
+| 联合场景 | 经济结果 |
+| --- | ---: |
+| 资金费事件数（协议日志和控制器各自记录同一事件） | 1 |
+| 买卖手续费合计 | 0.01156 USDT |
+| 已实现交易损益 | -0.12 USDT |
+| 平仓钱包与权益 | 999.86374278 USDT |
+| FIFO 最终 NAV（初值 1000 USDT） | 0.99986374278 |
+| 最终 UNKNOWN / 未成交订单 | 0 / 0 |
+| 全局预算累计提交（BUY + SELL） | 2 笔 / 11.56 USDT 名义金额 |
+
+归档后显式审计再次读取该资金费，新增事件为零。轮换时旧成交、手续费和订单身份仍可查询。持续授权和全局用量延续，行情从旧游标续读，新 Grid 等待自己的收盘 K 线。
+
+### 集成基准
+
+Python 3.14.0，运行 `python docs/validation/p7-m19-f12/benchmark.py --rounds 3 --output docs/validation/p7-m19-f12/measurements.json`。基准使用注入式 Demo 网关、临时 SQLite 和相同的离线交易所数据。对照组强制双遍全量恢复，两组均启用 F10。6 笔和 100 笔取三轮均值，1000 笔取一轮。
+
+| 历史订单 | 全量 GET / 轮 | 增量 GET / 轮 | 活动订单 / 资金费 GET | 增量恢复秒 / 轮 | 含资金费审计 GET / 秒 | 构造资金费到账后的恢复秒 |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 6 | 38 | 9 | 2 / 1 | 0.142 | 11 / 0.118 | 0.188 |
+| 100 | 350 | 9 | 2 / 1 | 0.099 | 11 / 0.119 | 0.145 |
+| 1000 | 3350 | 9 | 2 / 1 | 0.358 | 11 / 0.251 | 0.414 |
+
+每个增量稳态轮还有 5 个账户 GET 和 1 个活动订单成交明细 GET。三档的资金费到账轮都是 9 个 GET，历史归档订单逐笔查询为零。单独计时的 Tier-2 审计由 5 个订单 GET、5 个成交 GET 和 1 个显式选择的资金费 GET 组成。生产计划按 30 轮或 300 秒先到者触发，单次滚动抽查 5 笔。通常计划审计的资金费由 Tier-1 同步。基准放宽调度阈值以单独测量审计。
+
+| 历史订单 | 成交量 NVDA | 手续费 USDT | 已入账资金费 USDT | 重启后账户权益 USDT |
+| ---: | ---: | ---: | ---: | ---: |
+| 6 | 5.0 | 0.5000 | -0.00469722 | 499999.49530278 |
+| 100 | 59.5 | 5.9500 | -0.00469722 | 499994.04530278 |
+| 1000 | 584.5 | 58.4500 | -0.00469722 | 499941.54530278 |
+
+三档的权益与离线交易所逐分厘相等，对照与增量恢复的经济结果相等。每档重开 SQLite 后都是 12 个 GET，保留同一笔资金费和原有成交事件。1000 笔场景的全量对照为 17.503 秒。本次 0.358 秒的增量时间高于原 F12 的单轮点测值，已将 F10 每轮构造历史对象的开销改为 SQLite 直接提取时间字段。历史 F12 的 8 GET 来自通用 Paper 基准，集成后的 9 GET 包含有界的资金费查询。原始数据见 [measurements.json](measurements.json)。
+
+### 定向回归
+
+- 联合用例 `test_f12_funding_exit_recovery_archive_and_rotation` 在 Python 3.14 通过，覆盖真实格式交易所回执、两次部分成交、重启、归档和轮换。
+- F10 账本和 F12 分页在 Python 3.14 的 68 个定向用例验证了同毫秒分页、空区间覆盖、分页失败保持原水位、历史回填和独立进程幂等。Python 3.13 的 37 个定向用例验证了分页、空同步与历史回填。
+- F11 既有 41 个用例通过，包含 DELETE 与成交竞态、POST/DELETE 结果未知以及进程中断恢复。构造时钟、云运行时、GET 恢复窗口和成交验收回归也通过。
 
 ---
 
@@ -47,8 +89,8 @@
 | --- | --- | --- |
 | **订单状态终态** | Binance 订单状态 `FILLED`、`CANCELED`、`EXPIRED`、`REJECTED` 为状态机终态；`NEW`、`PARTIALLY_FILLED`、`PENDING_CANCEL` 为非终态。 | `PENDING_CANCEL` 显式映射为本地非终态 `SUBMITTED` 并置 `reconcile_required=True`，绝不提前归档。 |
 | **仅凭写响应 / WS 推送的终态不可信** | `POST /fapi/v1/order` 的同步 `WRITE_ACK` 或单次 WebSocket 推送可能尚未落盘完整 `userTrades` 手续费明细，或存在取消与成交竞态（cancel-fill race）。 | 订单进入 `ARCHIVED_TERMINAL` 必须满足 `last_authority_source == 'GET'`，即至少经过权威 `GET /fapi/v1/order` 对账确认；仅由 `WRITE_ACK` 或 WS 推进的终态订单归为 `ECONOMIC_INCOMPLETE`，继续留在实时对账队列。 |
-| **迟到成交与取消竞态** | 撤单请求返回 `CANCELED` 前后，撮合引擎可能刚刚产生成交；或者 `/fapi/v1/order` 已显示 `executedQty > 0`，但 `/fapi/v1/userTrades` 尚未返回完整成交明细。 | 归档必须同时满足：<br>1. `trades_reconciled == 1`：当 `executedQty > 0` 时，`/fapi/v1/userTrades` 返回的成交数量之和必须精确等于 `executedQty`，且所有成交均含有效 `USDT` 手续费；<br>2. **多次权威确认（`min_terminal_confirmations = 2`）**：连续至少 2 次权威 `GET` 观测到完全一致的终态、`executedQty` 和 `cumulative_fee`；<br>3. **终态驻留窗口（Dwell Window）**：自首次权威 `GET` 观测到终态起，经过至少 `terminal_dwell_seconds = 60s`（对于 `CANCELED` / `EXPIRED` 为 `cancel_race_dwell_seconds = 120s`）且期间无任何状态/成交/费用漂移，才允许置 `archived = 1`。 |
-| **迟到成交或手续费事后修正** | 若归档后交易所罕见地迟到补录成交或修正手续费，会导致账户钱包余额（`walletBalance`）或持仓数量（`positionAmt`）与本地已知成交变化不符，或在增量成交流中出现新 `tradeId` / 修改后的 `commission`。 | 双重发现机制：<br>1. **实时层账户基线突变触发（Reactive Account-Delta Trigger）**：每轮实时恢复比对权威账户快照（`wallet_balance` + `positions`）与上轮基线 `account_baseline`；若发生变动且当前实时层未捕获新成交，**立即在同一轮次触发增量历史审计**；<br>2. **历史层重叠窗口与滚动抽检（Scheduled Overlap & Rolling Audit）**：周期性回扫最近 `trade_overlap_ids = 50` 条 `userTrades`（校验 `qty` / `price` / `commission` / `commissionAsset` 是否与已存收据一致），并按 `rolling_order_batch_size` 滚动抽检已归档订单。一旦发现差异，立即将该订单反归档（`archived = 0, reconcile_required = 1`），生成修正 `OrderEvent` 入账。 |
+| **迟到成交与取消竞态** | 撤单请求返回 `CANCELED` 前后，撮合引擎可能刚刚产生成交；或者 `/fapi/v1/order` 已显示 `executedQty > 0`，但 `/fapi/v1/userTrades` 尚未返回完整成交明细。 | 归档必须同时满足：<br>1. `trades_reconciled == 1`：当 `executedQty > 0` 时，`/fapi/v1/userTrades` 返回的成交数量之和必须精确等于 `executedQty`，且所有成交均含有效 `USDT` 手续费；<br>2. **多次权威确认（`min_terminal_confirmations = 2`）**：连续至少 2 次权威 `GET` 观测到完全一致的终态、`executedQty` 和 `cumulative_fee`；<br>3. **终态驻留窗口（Dwell Window）**：从交易所 `updateTime` 起，经过至少 `terminal_settle_seconds = 60s`（本地 `CANCELED` 为 `cancel_settle_seconds = 120s`）且期间无任何状态/成交/费用漂移，才允许置 `archived = 1`。 |
+| **迟到成交或手续费事后修正** | 若归档后交易所罕见地迟到补录成交或修正手续费，会导致账户钱包余额（`walletBalance`）或持仓数量（`positionAmt`）与本地已知成交变化不符，或在增量成交流中出现新 `tradeId` / 修改后的 `commission`。 | 双重发现机制：<br>1. **实时层账户基线突变触发（Reactive Account-Delta Trigger）**：每轮实时恢复比对权威账户快照（`wallet_balance` + `positions`）与上轮基线 `account_baseline`；若持仓变化与本轮成交不符，或钱包变化无法由已确认资金费、本轮成交及手续费解释，当轮触发增量历史审计；<br>2. **历史层重叠窗口与滚动抽检（Scheduled Overlap & Rolling Audit）**：周期性回扫最近 `trade_overlap_ids = 50` 条 `userTrades`（校验 `qty` / `price` / `commission` / `commissionAsset` 是否与已存收据一致），并按 `rolling_order_batch_size` 滚动抽检已归档订单。一旦发现差异，立即将该订单反归档（`archived = 0, reconcile_required = 1`），补录可确认的迟到成交。若交易所回执身份相同但经济字段冲突，标记 `UNKNOWN` 并阻断交易准入。 |
 
 ### 2.2 接口查询窗口、分页与保留期边界
 
@@ -103,43 +145,42 @@
 2. **`futures_recovery_state`**：
    - 持久化全局与分品种水位：
      - `global`：`realtime_rounds`、`audit_round`、`rounds_since_audit`、`last_realtime_reconcile_at`、`last_history_audit_at`、`history_audit_status`、`history_audit_error`、`rolling_cursor_client_order_id`、`clock_rollback_count`、`pruned_by_exchange_retention`。
-     - `account_baseline`：上次实时恢复确认的 `wallet_balance` 与 `positions` JSON。
+     - `account_baseline` 保存上次权威钱包、持仓和该读集时间内已确认的 USDT 资金费累计额。
      - `trades:<SYMBOL>`：`last_trade_id`、`last_trade_time_ms`、`last_scan_at`、`coverage_complete`、`coverage_note`。
-     - `income:<SYMBOL>:<INCOME_TYPE>`：`last_income_time_ms`、`seen_boundary_keys`、`last_scan_at`、`coverage_complete`、`events_seen`；此为当前 F12 分支实际保存的字段，F10 集成时统一权威入口与水位。
+     - `recovery_status()` 的 `income:*:FUNDING_FEE` 直接显示 F10 `futures_income_coverage` 的账户级区间。
 
 **崩溃一致性保证（Atomic Event-Before-Watermark Contract）**：
 - `sync_order_recovery_on_save()` 与 `sync_order_recovery_on_apply()` 与 `futures_orders`、`futures_events`、`futures_receipts` 的写入处于**同一个 SQLite 事务（`with self._connect() as conn:`）**中。
-- 在 `audit_history()` 与 `sync_income_incremental()` 中，所有发现的迟到成交、费用修正或资金费事件**必须先完成 `OrderEvent` 入账 / `handler` 落盘，最后才更新 `futures_recovery_state` 水位**。若中途进程崩溃或写入中断，重启后水位仍停留在旧位置，重放具有幂等性，绝不会出现“水位已前进但经济事件未入账”。
+- 历史成交审计在订单回执和经济事件成功后提交成交水位。资金费事件和账户级覆盖区间在同一个 SQLite 事务里提交。进程重开后，控制器以同一事件标识恢复已持久化的资金费。
 
 ### 3.3 F12-03 & F12-04：双层恢复分离与增量历史查询
 
 1. **第一层：实时交易准入恢复（Tier-1 Real-Time Trading Admission Recovery）**
    - 每次调用 `adapter.reconcile()` / `gateway.recover()` 时执行：
-     - 拉取 5 个实时账户读集接口（`account`、`balance`、`positionRisk`、`openOrders`、`leverageBracket`），保持 **5 秒新鲜度约束（`max_snapshot_age_seconds <= 5.0`）**；
+     - 拉取 5 个实时账户读集接口（`account`、`positionRisk`、`positionSide/dual`、`openOrders`、`symbolConfig`），保持 **5 秒新鲜度约束（`max_snapshot_age_seconds <= 5.0`）**；
      - 交叉核对交易所 `openOrders` 与本地已归档订单：若任何本地 `ARCHIVED_TERMINAL` 订单意外出现在交易所 `openOrders` 中，立即反归档并优先执行 `query_order()`；
      - 仅对 `UNKNOWN`、`ACTIVE`（优先 `reduce-only SELL`）与 `ECONOMIC_INCOMPLETE` 订单执行 `GET /fapi/v1/order` 及必要的 `GET /fapi/v1/userTrades`；
-     - 检查 `account_baseline` 是否发生无法由本轮实时成交解释的持仓或钱包变化，若有则立即触发增量 `audit_history()`；
-     - **消除网关层双遍冗余网络请求**：`FuturesPaperGateway.recover()` 在 Pass 1 获取权威 `exchange` 快照并重放 `dirty_keys` 后，将新鲜的 `exchange` 快照直接传入 `controller.reconcile(exchange=exchange)`（Pass 2 在 5 秒窗口内直接复用同一快照完成一致性校验），使稳态账户接口每轮从 10 次降至 5 次，活动订单查询不再翻倍。
-     - **SQL 级一致性索引（`order_consistency_index`）**：`gateway.recover()` 与 `DemoExecutionGateway.reconcile()` 通过单条 SQL 直接读取全部订单的轻量摘要（状态、累计成交量、均价、累计手续费、最后序列号），无需在每轮恢复中反序列化上千条已归档订单的完整 JSON 与历史事件列表。
+     - 检查 `account_baseline` 是否发生无法由本轮实时成交和已确认资金费解释的持仓或钱包变化，若有则立即触发增量 `audit_history()`；
+     - **消除网关层双遍冗余网络请求**：`FuturesPaperGateway.recover()` 在 Pass 1 获取权威 `exchange` 快照并重放 `dirty_keys` 后，将新鲜的 `exchange` 快照直接传入 `controller.reconcile()`（Pass 2 在 5 秒窗口内直接复用同一快照完成一致性校验），使稳态账户接口每轮从 10 次降至 5 次，活动订单查询不再翻倍。
+     - **SQL 级一致性索引（`order_consistency_index`）**：`gateway.recover()` 与 `DemoExecutionGateway.reconcile()` 通过单条 SQL 直接读取全部订单的轻量摘要（状态、累计成交量、累计手续费、对账标记和交易所订单 ID），无需在每轮恢复中反序列化上千条已归档订单的完整 JSON 与历史事件列表。
 
 2. **第二层：历史经济账本复核（Tier-2 Historical Economic Ledger Audit）**
-   - 由 `adapter.audit_if_due()` 按有界周期（默认每 `audit_interval_rounds = 12` 轮或 `audit_interval_seconds = 300s`，或当 `history_audit_status != 'OK'` 时）在后台/准入前按计划触发：
+   - 由 `adapter.audit_if_due()` 按有界周期（30 个实时恢复轮次或 300 秒先到者。时钟回拨和已记录的审计冲突也可以触发恢复）在后台/准入前按计划触发：
      - **增量成交流扫描**：通过 `GET /fapi/v1/userTrades` 以 `fromId = max(1, last_trade_id - 50 + 1)` 扫描增量与重叠窗口成交；比对每笔成交的 `qty`、`commission`、`commissionAsset` 与本地收据，若发现迟到成交或手续费修正，立即定位所属订单并调用权威 `query_order()` 更新账本；
      - **有界滚动抽检**：每次审计仅抽取 `rolling_order_batch_size`（默认 5 笔）已归档交易所订单调用 `GET /fapi/v1/order`，以游标 `rolling_cursor_client_order_id` 循环覆盖全量历史，单次审计开销恒为 $O(\text{batch\_size})$。
      - **准入联动（无第二套 Supervisor）**：若历史审计发现无法自动修复的账本冲突，自动将目标订单置为 `UNKNOWN`（`reconcile_required = True`）并将 `history_audit_status` 置为 `FAILED`，直接复用现有 `TradingController` 的 `RECONCILIATION_REQUIRED` 机制阻断交易准入。
 
 ### 3.4 F12-05：与 F10 / F11 / F08 / C04 的边界兼容性
 
-- **F10（资金费率恢复）**：在 `recovery.py` 与 `adapter.py` 中提供独立的 `income()`、`income_paginated()` 与 `sync_income_incremental(symbol=..., income_type='FUNDING_FEE', handler=...)`，维护独立的 `income:<SYMBOL>:FUNDING_FEE` 水位（按 `(incomeType, tranId)` 重叠去重），**绝不将资金费混入 `OrderEvent.cumulative_fee`**。
-  - 本轮只修复分页，不提前引入 PR #225 的 `sync_funding()` 或修改 F10 的覆盖水位持久化。F10 合入 main 后，F12 最终集成必须选定一个权威资金费恢复入口，禁止同时通过 `sync_income_incremental()` 和 `sync_funding()` 重复读取、落账或维护相互矛盾的覆盖水位；分页成功后仍通过既有 handler 路径处理事件，handler 成功后才推进当前 F12 水位。
+- **F10 资金费**。实时恢复与显式 `audit_history(include_income=True)` 共用 `sync_funding()`。同毫秒满页通过 `page` 翻页，正常增量查询沿用 F10 的一小时重叠，按账户筛选 `FUNDING_FEE`。分页完成后才按 `tranId` 入库并提交覆盖，可成功推进空区间。控制器在对账事务中回放资金费事件，随后采用交易所钱包余额。
 - **F11（活动 `reduce-only SELL` 对账优先级）**：`classify_orders()` 对 `ACTIVE` 订单按 `is_reduce_only and side == 'SELL'` 置顶排序。
 - **F08（Grid 轮换判定）& C04（独占进程锁与停止语义）**：未修改任何网格轮换、风险预算、持续授权或进程锁逻辑。
 
 ---
 
-## 四、6 / 100 / 1000 历史订单性能与正确性对比
+## 四、F10／F11 集成前的 F12 性能基线
 
-使用确定性离线交易所传输层与临时 SQLite 数据库（脚本：`docs/validation/p7-m19-f12/benchmark.py`，原始数据：`docs/validation/p7-m19-f12/measurements.json`），在 **6 笔、100 笔、1000 笔历史终态订单** 三种规模下进行完整对比。
+使用确定性离线交易所传输层与临时 SQLite 数据库（脚本：`docs/validation/p7-m19-f12/benchmark.py`，P2 基线复测数据：`docs/validation/p7-m19-f12/p2-measurements.json`），在 **6 笔、100 笔、1000 笔历史终态订单** 三种规模下进行完整对比。
 
 每种规模均包含：
 - 已成交终态订单（`FILLED`，占历史订单的 $2/3$，均含 `USDT` 成交费用）
@@ -177,7 +218,7 @@
 
 ---
 
-## 五、13 类故障与边界场景回归验证
+## 五、集成前的 13 类故障与边界场景回归验证
 
 在 `tests/integrations/test_demo_incremental_recovery_f12.py` 中新增了 16 个确定性回归测试，完整覆盖全部 13 类故障场景与规模不变式：
 
@@ -208,7 +249,7 @@
 
 ### 2. 优化后每轮实际查询哪些订单？
 在实时交易准入恢复（Tier-1）中，每轮仅查询：
-1. **5 个实时账户读集接口**（`account`、`balance`、`positionRisk`、`openOrders`、`leverageBracket`），且在 `gateway.recover()` 的 5 秒窗口内复用同一权威快照，不再双遍请求；
+1. **5 个实时账户读集接口**（`account`、`positionRisk`、`positionSide/dual`、`openOrders`、`symbolConfig`），且在 `gateway.recover()` 的 5 秒窗口内复用同一权威快照，不再双遍请求；
 2. **`UNKNOWN` / 写入不确定订单**（`reconcile_required == True` 或状态未知）；
 3. **`ACTIVE` 活动挂单**（`NEW`、`PARTIALLY_FILLED`、`PENDING_CANCEL`，其中 `reduce-only SELL` 优先）；
 4. **`ECONOMIC_INCOMPLETE` 经济信息尚不完整的终态订单**（尚未经过至少 2 次权威 `GET` 确认、成交明细或 `USDT` 手续费未对齐、或尚未渡过 60s/120s 终态驻留窗口的订单）；
@@ -221,7 +262,7 @@
 3. 成交与手续费明细已完整对齐（`trades_reconciled == 1`：当 `executedQty > 0` 时，`/fapi/v1/userTrades` 累计成交量精确等于 `executedQty`，且所有成交手续费均为有效 `USDT` 金额）；
 4. 连续权威 `GET` 观测到相同终态、成交量与手续费的次数 `terminal_confirmations >= 2`；
 5. `clock_rollback_count == 0`（无未恢复的时钟回拨）；
-6. 自首次权威 `GET` 观测到该终态起已渡过驻留窗口（`FILLED` / `REJECTED` $\ge 60\text{s}$；`CANCELED` / `EXPIRED` $\ge 120\text{s}$ 以覆盖撤单与成交竞态）。
+6. 从交易所 `updateTime` 起已渡过驻留窗口（`FILLED` / `REJECTED` $\ge 60\text{s}$；`CANCELED` / `EXPIRED` $\ge 120\text{s}$ 以覆盖撤单与成交竞态）。
 
 ### 4. 迟到成交和手续费如何发现？
 通过两层互补机制发现并入账：
@@ -234,7 +275,7 @@
 3. 恢复路径对 `UNKNOWN` 订单仅调用只读的 `GET /fapi/v1/order(origClientOrderId=...)`，绝不重新调用 `POST`；
 4. 若某次 `GET /fapi/v1/order` 暂时返回 `-2013`（订单尚未在交易所查询节点可见），`query_order()` 捕获异常并继续保持该订单为 `UNKNOWN`（`reconcile_required = 1`），绝不自行判定为“无此订单”或“已撤单”。在基准测试与故障回归中，所有 `UNKNOWN` 场景的 `POST` 总次数严格恒为 `1`。
 
-### 6. 对 1000 笔历史订单的性能改善是多少？
+### 6. 集成前 1000 笔历史订单的 F12 性能基线
 在 1000 笔历史终态订单（含 667 笔历史成交单、333 笔历史撤单）+ 2 笔活动挂单场景下：
 - **稳态每轮总 `GET` 请求数**：从 **3348.0 次** 降至 **8.0 次**（**减少 99.76%**）；
 - **稳态每轮 `/fapi/v1/order` 请求数**：从 **2004.0 次** 降至 **2.0 次**（**减少 99.90%**）；
@@ -256,7 +297,7 @@
 
 - **P2-1**：时间参数只用于首请求，切换 `fromId` 后丢失本地边界。修复保留不可变的查询上下界，仅将范围内成交返回给经济事件计算；校验完整回包的 ID 严格递增、时间不递减及跨页新 ID/时间进展后，严格越过结束时间即可有界停止。同 ID 跨页重叠仍去重，经济载荷或时间冲突明确拒绝；同页重复、排序异常、缺失/非法时间、页数耗尽仍 Fail-Closed。纯 `fromId` 不增加未请求的时间上界。七天子窗口各自过滤并共用总页数预算。
 - **P2-2**：在 inclusive 时间边界重读第一页时，`new_in_page == 0` 提前判停，未尝试合法的 `page=2`。修复允许该边界满页先继续编号分页；已经编号的满页若仍无新身份则拒绝，页数上限继续生效。时间前进时重置第一页，避免跳过新时间戳的前部记录；短尾页（包括已见边界尾记录）表示耗尽。时间上下界、页内重复与 `(incomeType, tranId)` 金额/时间/资产冲突均校验。
-- 本轮生产代码仅改动上述两个分页函数；归档、Tier-1、优先级、账本 handler 与持久水位路径保持原有语义，未引入交易所 POST/DELETE，也未启动官方 Demo Execute 或访问私有运行状态。F10 集成约束见 3.4。
+- 两项 P2 修复先在原 F12 分支验证。最终集成沿用相同的成交窗口边界和收入分页机制，并由 F10 统一入账和提交覆盖。
 
 ### 确定性复现与验证
 
@@ -270,7 +311,7 @@
 | 新分页用例 + 原 `test_demo_incremental_recovery_f12.py` 全部测试，Python 3.13 | **54 passed**（35 新增 + 19 原有，含 6/100/1000 规模与迟到成交、手续费修正、重启、UNKNOWN、reduce-only SELL 回归） |
 | 新分页用例，Python 3.14 | **35 passed** |
 | 直接受影响的 10 个 Demo 恢复/对账/成交闭环模块，Python 3.13 | **219 passed**（具体模块与命令见 `p2-validation.json`） |
-| 收入分页中途网络中断、重复页、页数耗尽 | 均拒绝不完整查询；handler 未收到部分事件，旧持久水位原样保留，重启重试后七条流水累计仅入账一次（合计 `-0.14 USDT`） |
+| 收入分页中途网络中断、重复页、页数耗尽 | 均拒绝不完整查询。集成回归验证 F10 的事件及权威覆盖原样保留，重启重试后七条流水累计仅入账一次（合计 `-0.14 USDT`） |
 | 默认历史审计触发 | 29 轮且 299 秒不触发；第 30 轮或达到 300 秒触发，首次归档与已有审计两种计时基线均通过 |
 
 命令与机器可读结果见本目录的 `p2-validation.json`；性能复测见 `p2-measurements.json`。XML 中间结果仅用于生成汇总，不作为交付文件。

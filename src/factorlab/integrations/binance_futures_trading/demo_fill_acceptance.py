@@ -13,7 +13,8 @@ from factorlab.trading.contracts import funding_event_id, funding_identity_key
 from factorlab.trading.storage import dumps, decode
 
 from .account import instant
-from .adapter import INCOME_MAX_WINDOW_MS, _to_ms, canonical_tran_id
+from .adapter import INCOME_MAX_WINDOW_MS, _to_ms
+from .recovery import canonical_tran_id
 from .demo_cli import open_session, recover
 from .demo_credentials import DemoCredentialStore
 from .demo_runtime import DemoRuntime, operator_lock, state_root

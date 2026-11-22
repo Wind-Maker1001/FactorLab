@@ -24,10 +24,13 @@ SRC = ROOT / 'src'
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from factorlab.integrations.binance_futures_trading.adapter import ACCOUNT_READ_SECONDS, FuturesAdapter
+from factorlab.integrations.binance_futures_trading.adapter import ACCOUNT_READ_SECONDS
 from factorlab.integrations.binance_futures_trading.fake import FakeTransport, MS, NOW, synthetic_rules
-from factorlab.integrations.binance_futures_trading.gateway import FuturesPaperGateway
-from factorlab.integrations.binance_futures_trading.protocol import Credentials, FuturesClient, OutcomeUnknown
+from factorlab.integrations.binance_futures_trading.execution import (
+    DemoExecutionAuthorization, DemoExecutionGateway, DemoExecutionTransport,
+    DemoFuturesAdapter, DemoRuleObservation,
+)
+from factorlab.integrations.binance_futures_trading.protocol import Credentials, Environment, FuturesClient
 from factorlab.integrations.binance_futures_trading.recovery import OrderRecoveryConfig
 from factorlab.trading import Market, OrderIntent, OrderSnapshot, OrderStatus as S, OrderType, Side
 from factorlab.trading.control import RiskLimits, TradingController
@@ -148,6 +151,27 @@ def bind_baseline_behavior(adapter, gateway):
     gateway._consume_reusable_exchange = lambda: adapter.reconcile(full_history=True)
 
 
+def open_stack(protocol_path, controller_path, fake, clock, config):
+    demo = Environment.DEMO
+    transport = DemoExecutionTransport(delegate=fake, authorization=DemoExecutionAuthorization())
+    client = FuturesClient(Credentials('fixture-key', 'fixture-secret', demo), environment=demo,
+                           transport=transport, clock=clock.epoch)
+    adapter = DemoFuturesAdapter(
+        client, PaperStore(protocol_path, continuous_capacity=True, research_wal=True),
+        clock=clock.utc, recovery_config=config,
+    )
+    observation = DemoRuleObservation(synthetic_rules(), adapter.account_id, client)
+    gateway = DemoExecutionGateway(adapter, observation, (Instrument('NVDAUSDT', 'USDT'),),
+                                   {'USDT': D('500000')})
+    controller = TradingController(
+        gateway, PaperStore(controller_path, continuous_capacity=True, research_wal=True),
+        clock=clock.utc, limits=RiskLimits(D('500000'), D('500000'), D('800000'), 10000),
+    )
+    gateway.bind_controller(controller)
+    controller.quote(Quote('NVDAUSDT', D('100'), clock.utc()))
+    return adapter, gateway, controller
+
+
 def economic_snapshot(adapter, controller, fake):
     account = controller.account()
     events = list(controller.store.order_events())
@@ -158,6 +182,8 @@ def economic_snapshot(adapter, controller, fake):
     wallet = next(a.total for a in account.assets if a.currency == 'USDT')
     unrealized = sum((p.quantity * (p.mark_price - p.entry_price) for p in account.positions), D('0'))
     equity = wallet + unrealized
+    exchange_equity = fake.cash + fake.quantity * (D('100') - fake.entry)
+    assert equity == exchange_equity
     return dict(
         reconciled=account.reconciled,
         controller_order_events=len(events),
@@ -165,10 +191,13 @@ def economic_snapshot(adapter, controller, fake):
         protocol_events=adapter.db.execute('SELECT count(*) FROM futures_events').fetchone()[0],
         total_filled_quantity=str(total_filled),
         total_fee_usdt=str(total_fee),
+        funding_events=len(controller.broker.state.funding_events),
+        funding_usdt=str(controller.broker.state.funding.get('USDT', D('0'))),
         position_qty=str(pos_qty),
         wallet_usdt=str(wallet),
         equity_usdt=str(equity),
         exchange_wallet_usdt=str(fake.cash),
+        exchange_equity_usdt=str(exchange_equity),
         exchange_position_qty=str(fake.quantity),
         events_digest=dumps(events),
     )
@@ -182,19 +211,13 @@ def measure_mode(size, *, mode, steady_rounds=5):
         controller_path = root / 'controller.sqlite'
         clock = MutableClock()
         fake = FakeTransport()
+        fake.income = []
         config = OrderRecoveryConfig(
             history_audit_interval_rounds=1000,  # Trigger scheduled audit explicitly to separate costs cleanly.
             history_audit_interval_seconds=3600,
             history_audit_batch_size=5,
         )
-        client = FuturesClient(Credentials('fixture-key', 'fixture-secret'), transport=fake, clock=clock.epoch)
-        adapter = FuturesAdapter(client, PaperStore(protocol_path, continuous_capacity=True, research_wal=True),
-                                 account_id='offline', clock=clock.utc, recovery_config=config)
-        gateway = FuturesPaperGateway(adapter, synthetic_rules(),
-                                      (Instrument('NVDAUSDT', 'USDT'),), {'USDT': D('500000')})
-        controller = TradingController(gateway, PaperStore(controller_path, continuous_capacity=True, research_wal=True),
-                                       clock=clock.utc, limits=RiskLimits(D('500000'), D('500000'), D('800000'), 10000))
-        controller.quote(Quote('NVDAUSDT', D('100'), clock.utc()))
+        adapter, gateway, controller = open_stack(protocol_path, controller_path, fake, clock, config)
         try:
             late_target = seed_dataset(adapter, fake, size, clock=clock)
             # Bootstrap & confirm all seeded orders so both modes start from identical confirmed steady state.
@@ -218,7 +241,25 @@ def measure_mode(size, *, mode, steady_rounds=5):
                 freshness_ages.append((clock.utc() - adapter.facts.observed_at).total_seconds())
             steady_wall = perf_counter() - t0
             steady_cpu = process_time() - c0
-            steady_counts = Counter(path for m, path, _ in fake.calls[steady_call_start:] if m == 'GET')
+            steady_calls = fake.calls[steady_call_start:]
+            steady_counts = Counter(path for m, path, _ in steady_calls if m == 'GET')
+            steady_active_gets = sum(
+                1 for method, path, params in steady_calls
+                if method == 'GET' and path == '/fapi/v1/order'
+                and params.get('origClientOrderId', [''])[0].startswith('active-')
+            )
+
+            # A normal settlement changes the wallet without an order or trade change.
+            clock.advance(1)
+            funding = D('-0.00469722')
+            fake.funding_update(funding, time_ms=round(clock.epoch() * 1000))
+            funding_start = len(fake.calls)
+            ft0 = perf_counter()
+            assert gateway.recover(controller).reconciled
+            funding_wall = perf_counter() - ft0
+            funding_counts = Counter(path for m, path, _ in fake.calls[funding_start:] if m == 'GET')
+            assert not adapter.last_reconcile_summary['reactive_audit_triggered']
+            assert gateway.state.funding['USDT'] == funding
 
             # ---- 2. UNKNOWN (lost POST ACK) recovery ----
             controller.quote(Quote('NVDAUSDT', D('100'), clock.utc()))
@@ -250,13 +291,14 @@ def measure_mode(size, *, mode, steady_rounds=5):
             if mode == 'optimized_f12':
                 audit_start = len(fake.calls)
                 at0 = perf_counter()
-                audit_summary = adapter.audit_history(force=True)
+                audit_summary = adapter.audit_history(force=True, include_income=True)
                 audit_wall = perf_counter() - at0
                 audit_counts = Counter(path for m, path, _ in fake.calls[audit_start:] if m == 'GET')
                 audit_report = dict(
                     get_total=sum(audit_counts.values()),
                     order_gets=audit_counts['/fapi/v1/order'],
                     user_trades_gets=audit_counts['/fapi/v1/userTrades'],
+                    income_gets=audit_counts['/fapi/v1/income'],
                     wall_seconds=round(audit_wall, 6),
                     trades_scanned=audit_summary['trades_scanned'],
                     rolling_orders_audited=audit_summary['rolling_orders_audited'],
@@ -272,14 +314,7 @@ def measure_mode(size, *, mode, steady_rounds=5):
 
         # ---- 5. Independent reopen / restart idempotence ----
         clock.advance(2)
-        client2 = FuturesClient(Credentials('fixture-key', 'fixture-secret'), transport=fake, clock=clock.epoch)
-        adapter2 = FuturesAdapter(client2, PaperStore(protocol_path, continuous_capacity=True, research_wal=True),
-                                  account_id='offline', clock=clock.utc, recovery_config=config)
-        gateway2 = FuturesPaperGateway(adapter2, synthetic_rules(),
-                                       (Instrument('NVDAUSDT', 'USDT'),), {'USDT': D('500000')})
-        controller2 = TradingController(gateway2, PaperStore(controller_path, continuous_capacity=True, research_wal=True),
-                                        clock=clock.utc, limits=RiskLimits(D('500000'), D('500000'), D('800000'), 10000))
-        controller2.quote(Quote('NVDAUSDT', D('100'), clock.utc()))
+        adapter2, gateway2, controller2 = open_stack(protocol_path, controller_path, fake, clock, config)
         try:
             if mode == 'baseline_on':
                 bind_baseline_behavior(adapter2, gateway2)
@@ -293,6 +328,8 @@ def measure_mode(size, *, mode, steady_rounds=5):
                 econ_after_restart['events_digest'] == econ_before_restart['events_digest']
                 and econ_after_restart['total_filled_quantity'] == econ_before_restart['total_filled_quantity']
                 and econ_after_restart['total_fee_usdt'] == econ_before_restart['total_fee_usdt']
+                and econ_after_restart['funding_events'] == econ_before_restart['funding_events'] == 1
+                and econ_after_restart['funding_usdt'] == econ_before_restart['funding_usdt']
                 and econ_after_restart['position_qty'] == econ_before_restart['position_qty']
                 and econ_after_restart['wallet_usdt'] == econ_before_restart['wallet_usdt']
                 and econ_after_restart['equity_usdt'] == econ_before_restart['equity_usdt']
@@ -311,11 +348,23 @@ def measure_mode(size, *, mode, steady_rounds=5):
                 get_total=sum(steady_counts.values()) / steady_rounds,
                 order_gets=steady_counts['/fapi/v1/order'] / steady_rounds,
                 user_trades_gets=steady_counts['/fapi/v1/userTrades'] / steady_rounds,
-                account_gets=(sum(steady_counts.values()) - steady_counts['/fapi/v1/order'] - steady_counts['/fapi/v1/userTrades']) / steady_rounds,
+                active_order_gets=steady_active_gets / steady_rounds,
+                income_gets=steady_counts['/fapi/v1/income'] / steady_rounds,
+                account_gets=sum(count for path, count in steady_counts.items()
+                                 if path.startswith('/fapi/v3/') or path in {
+                                     '/fapi/v1/openOrders', '/fapi/v1/positionSide/dual',
+                                     '/fapi/v1/symbolConfig',
+                                 }) / steady_rounds,
                 wall_seconds=round(steady_wall / steady_rounds, 6),
                 cpu_seconds=round(steady_cpu / steady_rounds, 6),
                 max_snapshot_age_seconds=max(freshness_ages),
                 within_5s_freshness=all(0 <= age <= ACCOUNT_READ_SECONDS for age in freshness_ages),
+            ),
+            funding_recovery=dict(
+                get_total=sum(funding_counts.values()),
+                order_gets=funding_counts['/fapi/v1/order'],
+                income_gets=funding_counts['/fapi/v1/income'],
+                wall_seconds=round(funding_wall, 6),
             ),
             unknown_recovery=dict(
                 get_total=sum(unk_counts.values()),
@@ -337,6 +386,7 @@ def measure_mode(size, *, mode, steady_rounds=5):
                 get_total=sum(restart_counts.values()),
                 order_gets=restart_counts['/fapi/v1/order'],
                 user_trades_gets=restart_counts['/fapi/v1/userTrades'],
+                income_gets=restart_counts['/fapi/v1/income'],
                 wall_seconds=round(restart_wall, 6),
                 idempotent=restart_idempotent,
             ),
@@ -359,7 +409,7 @@ def main():
         optimized = measure_mode(size, mode='optimized_f12', steady_rounds=steady_rounds)
         # Assert exact economic parity between original O(N) and optimized F12!
         for field in ('reconciled', 'controller_fill_events', 'total_filled_quantity',
-                      'total_fee_usdt', 'position_qty', 'wallet_usdt', 'equity_usdt'):
+                      'total_fee_usdt', 'funding_events', 'funding_usdt', 'position_qty', 'wallet_usdt', 'equity_usdt'):
             assert baseline['economics'][field] == optimized['economics'][field], (
                 f'Parity mismatch at size={size} field={field}: '
                 f"{baseline['economics'][field]} != {optimized['economics'][field]}"

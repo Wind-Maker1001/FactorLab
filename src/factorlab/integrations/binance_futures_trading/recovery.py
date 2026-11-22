@@ -1,4 +1,5 @@
 """Incremental order recovery classification, archive contract, and historical audit."""
+from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -11,6 +12,7 @@ from factorlab.integrations.binance.market import _decimal, symbol_name
 from factorlab.trading import OrderStatus as S, Side
 from factorlab.trading.contracts import TERMINAL
 from factorlab.trading.storage import decode
+from .account import instant
 
 from .protocol import ExchangeError
 
@@ -24,7 +26,6 @@ TRADE_OVERLAP_IDS = 50
 TRADE_PAGE_LIMIT = 1000
 TRADE_MAX_PAGES = 50
 
-INCOME_OVERLAP_MS = 300_000
 INCOME_PAGE_LIMIT = 1000
 INCOME_MAX_PAGES = 50
 
@@ -55,9 +56,6 @@ class OrderRecoveryConfig:
     trade_overlap_ids: int = TRADE_OVERLAP_IDS
     trade_page_limit: int = TRADE_PAGE_LIMIT
     trade_max_pages: int = TRADE_MAX_PAGES
-    income_overlap_ms: int = INCOME_OVERLAP_MS
-    income_page_limit: int = INCOME_PAGE_LIMIT
-    income_max_pages: int = INCOME_MAX_PAGES
     history_audit_interval_seconds: int | float = HISTORY_AUDIT_INTERVAL_SECONDS
     history_audit_interval_rounds: int = HISTORY_AUDIT_INTERVAL_ROUNDS
     history_audit_batch_size: int = HISTORY_AUDIT_BATCH_SIZE
@@ -73,12 +71,6 @@ class OrderRecoveryConfig:
             raise ValueError('trade_page_limit must be in 1..1000')
         if type(self.trade_max_pages) is not int or self.trade_max_pages < 1:
             raise ValueError('trade_max_pages must be >= 1')
-        if type(self.income_overlap_ms) is not int or self.income_overlap_ms < 0:
-            raise ValueError('income_overlap_ms must be nonnegative')
-        if type(self.income_page_limit) is not int or not 1 <= self.income_page_limit <= 1000:
-            raise ValueError('income_page_limit must be in 1..1000')
-        if type(self.income_max_pages) is not int or self.income_max_pages < 1:
-            raise ValueError('income_max_pages must be >= 1')
         if self.history_audit_interval_seconds <= 0:
             raise ValueError('history_audit_interval_seconds must be positive')
         if type(self.history_audit_interval_rounds) is not int or self.history_audit_interval_rounds < 1:
@@ -887,26 +879,52 @@ def fetch_user_trades_paginated(adapter, symbol, *, from_id=None, start_time=Non
     return tuple(ordered), pages
 
 
-def _canonical_income(row):
+INCOME_BUSINESS_FIELDS = ('symbol', 'incomeType', 'income', 'asset', 'time', 'tranId', 'tradeId', 'info')
+
+
+def canonical_tran_id(value):
+    if type(value) is int and value > 0:
+        return str(value)
+    if isinstance(value, str):
+        text = value.strip()
+        if text and text == value and len(text) <= 128:
+            return text
+    raise DataQualityError('invalid income tranId')
+
+
+def sanitize_income_row(row):
+    return {key: row[key] for key in INCOME_BUSINESS_FIELDS if key in row}
+
+
+def validate_income_row(row):
     if not isinstance(row, dict):
-        raise DataQualityError('invalid income row shape')
-    income_type = row.get('incomeType')
-    asset = row.get('asset')
+        raise DataQualityError('invalid income response row')
     time_ms = row.get('time')
-    tran_id = row.get('tranId')
-    if (not isinstance(income_type, str) or not income_type
-            or not isinstance(asset, str) or not asset
-            or type(time_ms) is not int or time_ms < 0
-            or tran_id is None or type(tran_id) is bool):
-        raise DataQualityError('invalid income entry fields')
-    amount = _decimal(row['income'])
-    symbol = row.get('symbol', '')
+    instant(time_ms)
+    income_type = row.get('incomeType')
+    if not isinstance(income_type, str) or not income_type.strip():
+        raise DataQualityError('invalid income type')
+    raw_amount = row.get('income')
+    if type(raw_amount) is bool or raw_amount is None:
+        raise DataQualityError('invalid income amount')
+    amount = _decimal(raw_amount)
+    asset = row.get('asset')
+    if not isinstance(asset, str) or not asset.strip():
+        raise DataQualityError('invalid income asset')
+    symbol = row.get('symbol')
     if not isinstance(symbol, str):
         raise DataQualityError('invalid income symbol')
-    # Binance tranId is unique within incomeType, not globally across types.
-    identity = (income_type, str(tran_id))
-    value = (income_type, str(tran_id), symbol, asset, str(amount), time_ms)
-    return identity, value
+    if income_type == 'FUNDING_FEE' and not symbol.strip():
+        raise DataQualityError('funding income requires nonempty symbol')
+    tran_id = canonical_tran_id(row.get('tranId'))
+    raw_trade_id = row.get('tradeId', '')
+    if raw_trade_id is None:
+        trade_id = ''
+    elif type(raw_trade_id) is bool or not isinstance(raw_trade_id, (str, int)):
+        raise DataQualityError('invalid income tradeId')
+    else:
+        trade_id = str(raw_trade_id)
+    return time_ms, income_type, amount, asset, symbol, tran_id, trade_id, sanitize_income_row(row)
 
 
 def fetch_income_paginated(adapter, symbol=None, *, income_type=None, start_time=None, end_time=None,
@@ -921,15 +939,19 @@ def fetch_income_paginated(adapter, symbol=None, *, income_type=None, start_time
         raise ValueError('endTime precedes startTime')
 
     seen = {}
+    non_funding_seen = Counter()
+    non_funding_scan = Counter()
     ordered = []
     pages = 0
     cursor_start = start_time
     page_num = None
     previous_max_time = None
+    boundary_keys = set()
+    boundary_non_funding = Counter()
 
     while True:
         if pages >= max_pages:
-            raise DataQualityError('income history incomplete; pagination page cap exceeded')
+            raise DataQualityError('income history incomplete; max pages (page cap) exceeded')
         params = {'limit': limit}
         if target_symbol is not None:
             params['symbol'] = target_symbol
@@ -946,27 +968,49 @@ def fetch_income_paginated(adapter, symbol=None, *, income_type=None, start_time
         if not isinstance(rows, list) or len(rows) > limit:
             raise DataQualityError('invalid income page shape')
         page_keys = set()
+        page_non_funding = set()
         times = []
         new_in_page = 0
         for row in rows:
-            identity, canonical = _canonical_income(row)
-            if identity in page_keys:
-                raise DataQualityError('duplicate income entries within single page')
-            page_keys.add(identity)
-            time_ms = canonical[5]
+            time_ms, row_type, amount, asset, row_symbol, tran_id, trade_id, sanitized = validate_income_row(row)
+            if income_type is not None and row_type != income_type:
+                raise DataQualityError('unexpected incomeType in filtered income response')
+            if target_symbol is not None and row_symbol != target_symbol:
+                raise DataQualityError('unexpected symbol in filtered income response')
             if ((cursor_start is not None and time_ms < cursor_start)
                     or (end_time is not None and time_ms > end_time)):
                 raise DataQualityError('income timestamp outside requested window')
             if times and time_ms < times[-1]:
                 raise DataQualityError('income history incomplete; timestamps are not monotonic')
-            times.append(canonical[5])
+            times.append(time_ms)
+            identity = (row_type, tran_id)
+            canonical = (time_ms, amount, asset, row_symbol, trade_id)
+            if row_type != 'FUNDING_FEE':
+                # Mixed income reads are also evidence for fee reconciliation.
+                # Preserve multiplicity while removing the inclusive rescan.
+                key = (identity, canonical)
+                page_non_funding.add(key)
+                non_funding_scan[key] += 1
+                if non_funding_scan[key] > non_funding_seen[key]:
+                    non_funding_seen[key] += 1
+                    ordered.append(sanitized)
+                    new_in_page += 1
+                continue
+            if identity in page_keys:
+                raise DataQualityError('duplicate income entries within single page')
+            page_keys.add(identity)
             if identity in seen:
                 if seen[identity] != canonical:
                     raise DataQualityError('conflicting duplicate income entry across pages')
             else:
                 seen[identity] = canonical
-                ordered.append(row)
+                ordered.append(sanitized)
                 new_in_page += 1
+        boundary_keys.difference_update(page_keys)
+        if boundary_keys or boundary_non_funding:
+            crossed_boundary = len(rows) < limit or times[-1] > cursor_start
+            if crossed_boundary and (boundary_keys or boundary_non_funding - non_funding_scan):
+                raise DataQualityError('income pagination incomplete: boundary rows missing between pages')
         # Re-reading page 1 at the inclusive timestamp boundary is expected.
         # Try page 2 before declaring a stall. A short page proves exhaustion,
         # including the already seen tail of an inclusive boundary window.
@@ -982,90 +1026,17 @@ def fetch_income_paginated(adapter, symbol=None, *, income_type=None, start_time
         if previous_max_time is not None and max_time == previous_max_time:
             page_num = 2 if page_num is None else page_num + 1
         else:
+            boundary_keys = {identity for identity in page_keys if seen[identity][0] == max_time}
+            boundary_non_funding = Counter({
+                key: non_funding_seen[key] for key in page_non_funding if key[1][0] == max_time
+            })
             cursor_start = max_time
+            non_funding_scan.clear()
             page_num = None
             previous_max_time = max_time
 
-    ordered.sort(key=lambda row: (row['time'], str(row['incomeType']), str(row['tranId'])))
+    ordered.sort(key=lambda row: (row['time'], str(row['tranId']), row['incomeType']))
     return tuple(ordered), pages
-
-
-def sync_income_incremental(adapter, symbol=None, *, income_type='FUNDING_FEE',
-                            overlap_ms=INCOME_OVERLAP_MS, limit=INCOME_PAGE_LIMIT,
-                            max_pages=INCOME_MAX_PAGES, handler=None):
-    """Independent incremental income/funding recovery path (F10-compatible).
-
-    Never folds funding into OrderEvent.cumulative_fee, and never advances the
-    persisted watermark until the optional handler completes without error.
-    """
-    target_symbol = symbol_name(symbol) if symbol is not None else '*'
-    scope = f'income:{target_symbol}:{income_type or "ALL"}'
-    now = adapter.clock()
-    now_iso = now.isoformat()
-    now_ms = int(now.timestamp() * 1000)
-
-    cursor = load_state(adapter.db, scope) or dict(
-        last_income_time_ms=None,
-        seen_boundary_keys=[],
-        last_scan_at=None,
-        coverage_complete=True,
-        events_seen=0,
-    )
-    last_time_ms = cursor.get('last_income_time_ms')
-    seen_keys = {tuple(item) for item in cursor.get('seen_boundary_keys', ())}
-    start_time = max(0, last_time_ms - overlap_ms) if last_time_ms is not None else None
-    coverage_complete = True
-    if last_time_ms is not None and now_ms - last_time_ms > EXCHANGE_HISTORY_RETENTION_SECONDS * 1000:
-        coverage_complete = False
-
-    rows, pages = fetch_income_paginated(
-        adapter, symbol=symbol, income_type=income_type,
-        start_time=start_time, end_time=None, limit=limit, max_pages=max_pages,
-    )
-    new_events = []
-    for row in rows:
-        identity, canonical = _canonical_income(row)
-        if last_time_ms is not None and canonical[5] < last_time_ms:
-            if identity in seen_keys:
-                continue
-        if identity in seen_keys:
-            continue
-        new_events.append(row)
-
-    if handler is not None and new_events:
-        handler(tuple(new_events))
-
-    # Advance watermark only after handler succeeds.
-    updated_last_time = last_time_ms
-    if rows:
-        max_time = max(row['time'] for row in rows)
-        updated_last_time = max_time if updated_last_time is None else max(updated_last_time, max_time)
-    if updated_last_time is not None:
-        cutoff = max(0, updated_last_time - overlap_ms)
-        retained_keys = {
-            _canonical_income(row)[0] for row in rows if row['time'] >= cutoff
-        }
-        retained_keys |= {key for key in seen_keys if not rows}
-    else:
-        retained_keys = set()
-
-    next_cursor = dict(
-        last_income_time_ms=updated_last_time,
-        seen_boundary_keys=[list(item) for item in sorted(retained_keys)],
-        last_scan_at=now_iso,
-        coverage_complete=coverage_complete,
-        events_seen=int(cursor.get('events_seen', 0)) + len(new_events),
-    )
-    with adapter.store.transaction():
-        save_state(adapter.db, scope, next_cursor, now_iso)
-    return dict(
-        scope=scope,
-        pages=pages,
-        fetched_count=len(rows),
-        new_events=tuple(new_events),
-        last_income_time_ms=updated_last_time,
-        coverage_complete=coverage_complete,
-    )
 
 
 def _latch_audit_failure(adapter, status, error_text):
@@ -1095,8 +1066,7 @@ def _is_exchange_retention_pruned(row_meta, now):
 
 
 def audit_history(adapter, *, symbols=None, audit_batch_size=None, include_income=False,
-                  force=False, reason='SCHEDULED', expand_full_trades=False,
-                  income_handler=None):
+                  force=False, reason='SCHEDULED', expand_full_trades=False):
     """Tier-2 historical economic ledger audit.
 
     Discovers late fills, fee/commission corrections, and persisted-record conflicts
@@ -1411,16 +1381,14 @@ def audit_history(adapter, *, symbols=None, audit_batch_size=None, include_incom
                 ))
 
     if include_income:
-        income_results = {}
-        for sym in (symbol_list or [None]):
-            income_results[sym or '*'] = sync_income_incremental(
-                adapter, symbol=sym, income_type='FUNDING_FEE',
-                overlap_ms=config.income_overlap_ms,
-                limit=config.income_page_limit,
-                max_pages=config.income_max_pages,
-                handler=income_handler,
-            )
-        summary['income_sync'] = income_results
+        funding = adapter.sync_funding()
+        summary['income_sync'] = dict(
+            covered_from_ms=funding.covered_from_ms,
+            covered_through_ms=funding.covered_through_ms,
+            complete=funding.complete,
+            pages=funding.pages,
+            newly_recorded=len(funding.newly_recorded),
+        )
 
     # Commit watermarks & global audit state atomically AFTER all economic events succeeded.
     buckets = classify_orders(adapter.db)
@@ -1454,7 +1422,7 @@ def recovery_status(db):
     global_state = load_state(db, 'global') or default_global_state()
     watermarks = {}
     for scope, payload in db.execute('SELECT scope, payload FROM futures_recovery_state ORDER BY scope').fetchall():
-        if scope.startswith(('trades:', 'income:')):
+        if scope.startswith('trades:'):
             watermarks[scope] = json.loads(payload)
     return dict(
         counts=dict(

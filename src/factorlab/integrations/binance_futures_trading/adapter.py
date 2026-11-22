@@ -1,5 +1,4 @@
 """Persistent offline execution adapter implementing the shared one-way contract."""
-from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, wait
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
@@ -21,11 +20,11 @@ from .protocol import (
     AccountReadExpired, AccountReadWindow, ReadOnlyNetworkTransport, credential_account_id,
 )
 from .recovery import (
-    MAX_QUERY_WINDOW_MS, OrderRecoveryClass, OrderRecoveryConfig,
-    account_baseline, audit_due, audit_history, baseline_deltas, classify_orders,
+    INCOME_MAX_PAGES, INCOME_PAGE_LIMIT, MAX_QUERY_WINDOW_MS, OrderRecoveryClass, OrderRecoveryConfig,
+    account_baseline, audit_due, audit_history, baseline_deltas, canonical_tran_id, classify_orders,
     ensure_global_state, fetch_income_paginated, fetch_user_trades_paginated,
     init_recovery_schema, load_state, mark_order_unarchived, order_consistency_rows,
-    recovery_status, save_state, sync_income_incremental,
+    recovery_status, save_state, validate_income_row,
     sync_order_recovery_on_apply, sync_order_recovery_on_save,
 )
 from .rules import order_parameters
@@ -37,13 +36,10 @@ ACCOUNT_PATHS = (ACCOUNT_PATH, '/fapi/v3/positionRisk', '/fapi/v1/positionSide/d
 ACCOUNT_PERMISSION_PATH = '/fapi/v2/account'
 QUANTITATIVE_PATH = '/fapi/v1/apiTradingStatus'
 
-INCOME_PAGE_LIMIT = 1000
 INCOME_MAX_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 INCOME_OVERLAP_MS = 60 * 60 * 1000
-INCOME_MAX_PAGES_PER_WINDOW = 50
 INCOME_MAX_WINDOWS = 100
 SUPPORTED_FUNDING_ASSETS = frozenset({'USDT'})
-INCOME_BUSINESS_FIELDS = ('symbol', 'incomeType', 'income', 'asset', 'time', 'tranId', 'tradeId', 'info')
 
 
 ZERO = Decimal('0')
@@ -91,53 +87,8 @@ def _to_ms(value):
     raise DataQualityError('invalid income timestamp bound')
 
 
-def canonical_tran_id(value):
-    if type(value) is int and value > 0:
-        return str(value)
-    if isinstance(value, str):
-        text = value.strip()
-        if text and text == value and len(text) <= 128:
-            return text
-    raise DataQualityError('invalid income tranId')
-
-
-def sanitize_income_row(row):
-    return {key: row[key] for key in INCOME_BUSINESS_FIELDS if key in row}
-
-
-def _validate_income_row(row):
-    if not isinstance(row, dict):
-        raise DataQualityError('invalid income response row')
-    time_ms = row.get('time')
-    instant(time_ms)
-    income_type = row.get('incomeType')
-    if not isinstance(income_type, str) or not income_type.strip():
-        raise DataQualityError('invalid income type')
-    raw_amount = row.get('income')
-    if type(raw_amount) is bool or raw_amount is None:
-        raise DataQualityError('invalid income amount')
-    amount = _decimal(raw_amount)
-    asset = row.get('asset')
-    if not isinstance(asset, str) or not asset.strip():
-        raise DataQualityError('invalid income asset')
-    symbol = row.get('symbol')
-    if not isinstance(symbol, str):
-        raise DataQualityError('invalid income symbol')
-    if income_type == 'FUNDING_FEE' and not symbol.strip():
-        raise DataQualityError('funding income requires nonempty symbol')
-    tran_id = canonical_tran_id(row.get('tranId'))
-    raw_trade_id = row.get('tradeId', '')
-    if raw_trade_id is None:
-        trade_id = ''
-    elif type(raw_trade_id) is bool or not isinstance(raw_trade_id, (str, int)):
-        raise DataQualityError('invalid income tradeId')
-    else:
-        trade_id = str(raw_trade_id)
-    return time_ms, income_type, amount, asset, symbol, tran_id, trade_id, sanitize_income_row(row)
-
-
 def _funding_event_from_row(account_id, row):
-    time_ms, income_type, amount, asset, symbol, tran_id, trade_id, sanitized = _validate_income_row(row)
+    time_ms, income_type, amount, asset, symbol, tran_id, trade_id, sanitized = validate_income_row(row)
     if income_type != 'FUNDING_FEE':
         raise DataQualityError(f'unexpected non-funding incomeType: {income_type}')
     if asset not in SUPPORTED_FUNDING_ASSETS:
@@ -525,7 +476,7 @@ class FuturesAdapter:
 
     def income_window(self, *, start_time, end_time, symbol=None, income_type=None,
                       limit=INCOME_PAGE_LIMIT, max_window_ms=INCOME_MAX_WINDOW_MS,
-                      max_pages=INCOME_MAX_PAGES_PER_WINDOW):
+                      max_pages=INCOME_MAX_PAGES):
         """Read a bounded, chunked, paginated /fapi/v1/income interval with explicit coverage checks."""
         self._validate_network_identity()
         if start_time is None or end_time is None:
@@ -553,97 +504,26 @@ class FuturesAdapter:
             cursor = chunk_end + 1
 
         collected = []
-        seen_funding = {}
+        funding_ids = set()
         pages = 0
         for chunk_start, chunk_end in chunks:
-            page_cursor = chunk_start
-            pages_in_chunk = 0
-            prev_boundary_signatures = None
-            prev_boundary_non_funding = None
-            while True:
-                pages_in_chunk += 1
-                if pages_in_chunk > max_pages:
-                    raise DataQualityError('income pagination incomplete: max pages exceeded')
-                pages += 1
-                params = {'startTime': page_cursor, 'endTime': chunk_end, 'limit': limit}
-                if expected_symbol is not None:
-                    params['symbol'] = expected_symbol
-                if income_type is not None:
-                    params['incomeType'] = income_type
-                rows = self.client.request('GET', '/fapi/v1/income', params)
-                if not isinstance(rows, list):
-                    raise DataQualityError('invalid income response shape')
-                if len(rows) > limit:
-                    raise DataQualityError('income response exceeded requested page limit')
+            rows, page_count = fetch_income_paginated(
+                self, symbol=expected_symbol, income_type=income_type,
+                start_time=chunk_start, end_time=chunk_end, limit=limit, max_pages=max_pages,
+            )
+            for row in rows:
+                if row['incomeType'] == 'FUNDING_FEE':
+                    tran_id = canonical_tran_id(row['tranId'])
+                    if tran_id in funding_ids:
+                        raise DataQualityError(f'funding event identity conflict for tranId={tran_id}')
+                    funding_ids.add(tran_id)
+            collected.extend(rows)
+            pages += page_count
 
-                validated = []
-                for row in rows:
-                    item = _validate_income_row(row)
-                    time_ms, row_type, amount, asset, row_symbol, tran_id, trade_id, sanitized = item
-                    if income_type is not None and row_type != income_type:
-                        raise DataQualityError('unexpected incomeType in filtered income response')
-                    if expected_symbol is not None and row_symbol != expected_symbol:
-                        raise DataQualityError('unexpected symbol in filtered income response')
-                    if not page_cursor <= time_ms <= chunk_end:
-                        raise DataQualityError('income row timestamp outside requested window')
-                    signature = (row_symbol, asset, row_type, amount, time_ms, trade_id)
-                    validated.append((time_ms, row_type, tran_id, signature, sanitized))
-
-                if prev_boundary_signatures is not None:
-                    current_at_cursor = {}
-                    for time_ms, row_type, tran_id, signature, _ in validated:
-                        if time_ms != page_cursor:
-                            continue
-                        key = (row_type, tran_id)
-                        if key in current_at_cursor and current_at_cursor[key] != signature:
-                            raise DataQualityError('conflicting income row for same tranId')
-                        current_at_cursor[key] = signature
-                    for key, expected_sig in prev_boundary_signatures.items():
-                        if key not in current_at_cursor:
-                            raise DataQualityError('income pagination incomplete: boundary rows missing between pages')
-                        if current_at_cursor[key] != expected_sig:
-                            raise DataQualityError('conflicting income row for same tranId')
-
-                skip_non_funding = Counter(prev_boundary_non_funding) if prev_boundary_non_funding is not None else Counter()
-                for time_ms, row_type, tran_id, signature, sanitized in validated:
-                    if row_type == 'FUNDING_FEE':
-                        existing = seen_funding.get(tran_id)
-                        if existing is not None:
-                            if existing[0] != signature:
-                                raise DataQualityError(f'funding event identity conflict for tranId={tran_id}')
-                            continue
-                        seen_funding[tran_id] = (signature, sanitized)
-                        collected.append((time_ms, tran_id, row_type, sanitized))
-                    else:
-                        non_funding_key = (row_type, tran_id, signature)
-                        if time_ms == page_cursor and skip_non_funding[non_funding_key] > 0:
-                            skip_non_funding[non_funding_key] -= 1
-                            continue
-                        collected.append((time_ms, tran_id, row_type, sanitized))
-
-                if len(rows) < limit:
-                    break
-                last_time = max(item[0] for item in validated)
-                if last_time == page_cursor:
-                    raise DataQualityError('income pagination incomplete: page saturated at single timestamp')
-                prev_boundary_signatures = {}
-                prev_boundary_non_funding = Counter()
-                for time_ms, row_type, tran_id, signature, _ in validated:
-                    if time_ms != last_time:
-                        continue
-                    key = (row_type, tran_id)
-                    if key in prev_boundary_signatures and prev_boundary_signatures[key] != signature:
-                        raise DataQualityError('conflicting income row for same tranId')
-                    prev_boundary_signatures[key] = signature
-                    if row_type != 'FUNDING_FEE':
-                        prev_boundary_non_funding[(row_type, tran_id, signature)] += 1
-                page_cursor = last_time
-
-        collected.sort(key=lambda item: (item[0], item[1], item[2]))
         return IncomeWindowResult(
             start_ms=start_ms,
             end_ms=end_ms,
-            rows=tuple(item[3] for item in collected),
+            rows=tuple(collected),
             windows=len(chunks),
             pages=pages,
             symbol=expected_symbol,
@@ -657,6 +537,13 @@ class FuturesAdapter:
             'SELECT payload FROM futures_funding ORDER BY event_time_ms, tran_id'
         ).fetchall()
         return tuple(decode(json.loads(raw)) for (raw,) in rows)
+
+    def _confirmed_funding_usdt(self, observed_at):
+        return sum(
+            (event.amount for event in self.funding_events()
+             if event.asset == 'USDT' and event.event_time <= observed_at),
+            ZERO,
+        )
 
     def funding_coverage(self, scope='FUNDING_FEE'):
         row = self.db.execute(
@@ -683,37 +570,36 @@ class FuturesAdapter:
         return persisted
 
     def _earliest_activity_ms(self):
-        candidates = []
-        for (raw,) in self.db.execute('SELECT payload FROM futures_events'):
-            event = decode(json.loads(raw))
-            if isinstance(event, OrderEvent):
-                ms = _to_ms(event.event_time)
-                if ms > 0:
-                    candidates.append(ms)
-        for (raw,) in self.db.execute('SELECT payload FROM futures_orders'):
-            record = decode(json.loads(raw))
-            ms = _to_ms(record.observed_at)
-            if ms > 0:
-                candidates.append(ms)
-        for (raw,) in self.db.execute('SELECT payload FROM futures_receipts'):
-            receipt = json.loads(raw)
-            order = receipt.get('order', {})
-            for field in ('time', 'updateTime'):
-                value = order.get(field)
-                if type(value) is int and value > 0:
-                    candidates.append(value)
-            for trade in receipt.get('trades', ()):
-                value = trade.get('time')
-                if type(value) is int and value > 0:
-                    candidates.append(value)
-        row = self.db.execute('SELECT MIN(event_time_ms) FROM futures_funding').fetchone()
-        if row is not None and type(row[0]) is int and row[0] > 0:
-            candidates.append(row[0])
-        return min(candidates) if candidates else None
+        # Read the time fields directly from SQLite instead of rebuilding each
+        # archived order, receipt and event on every funding poll.
+        earliest, = self.db.execute('''
+            SELECT MIN(ms) FROM (
+                SELECT CAST(ROUND(unixepoch(payload ->> '$.fields.event_time.utc', 'subsec') * 1000)
+                            AS INTEGER) AS ms
+                FROM futures_events WHERE payload ->> '$.type' = 'OrderEvent'
+                UNION ALL
+                SELECT CAST(ROUND(unixepoch(payload ->> '$.fields.observed_at.utc', 'subsec') * 1000)
+                            AS INTEGER)
+                FROM futures_orders
+                UNION ALL
+                SELECT payload ->> '$.order.time' FROM futures_receipts
+                WHERE json_type(payload, '$.order.time') = 'integer'
+                UNION ALL
+                SELECT payload ->> '$.order.updateTime' FROM futures_receipts
+                WHERE json_type(payload, '$.order.updateTime') = 'integer'
+                UNION ALL
+                SELECT trade.value ->> '$.time'
+                FROM futures_receipts, json_each(futures_receipts.payload, '$.trades') AS trade
+                WHERE json_type(trade.value, '$.time') = 'integer'
+                UNION ALL
+                SELECT event_time_ms FROM futures_funding
+            ) WHERE ms > 0
+        ''').fetchone()
+        return earliest
 
     def sync_funding(self, *, start_time=None, end_time=None, overlap_ms=INCOME_OVERLAP_MS,
                      page_limit=INCOME_PAGE_LIMIT, max_window_ms=INCOME_MAX_WINDOW_MS,
-                     max_pages=INCOME_MAX_PAGES_PER_WINDOW):
+                     max_pages=INCOME_MAX_PAGES):
         """Read, validate, and durably persist confirmed FUNDING_FEE settlements via GET only."""
         try:
             return self._sync_funding(
@@ -874,25 +760,6 @@ class FuturesAdapter:
             complete=True,
         )
 
-    def income_paginated(self, symbol=None, *, income_type=None, start_time=None, end_time=None,
-                         limit=None, max_pages=None):
-        rows, _ = fetch_income_paginated(
-            self, symbol=symbol, income_type=income_type, start_time=start_time, end_time=end_time,
-            limit=self.recovery_config.income_page_limit if limit is None else limit,
-            max_pages=self.recovery_config.income_max_pages if max_pages is None else max_pages,
-        )
-        return rows
-
-    def sync_income_incremental(self, symbol=None, *, income_type='FUNDING_FEE',
-                                overlap_ms=None, limit=None, max_pages=None, handler=None):
-        return sync_income_incremental(
-            self, symbol=symbol, income_type=income_type,
-            overlap_ms=self.recovery_config.income_overlap_ms if overlap_ms is None else overlap_ms,
-            limit=self.recovery_config.income_page_limit if limit is None else limit,
-            max_pages=self.recovery_config.income_max_pages if max_pages is None else max_pages,
-            handler=handler,
-        )
-
     def classify_orders(self):
         return classify_orders(self.db)
 
@@ -900,26 +767,29 @@ class FuturesAdapter:
         return order_consistency_rows(self.db)
 
     def recovery_status(self):
-        return recovery_status(self.db)
+        result = recovery_status(self.db)
+        coverage = self.funding_coverage()
+        if coverage is not None:
+            result['watermarks']['income:*:FUNDING_FEE'] = coverage
+        return result
 
     def audit_due(self):
         return audit_due(self.db, now=self.clock(), config=self.recovery_config)[0]
 
     def audit_history(self, *, symbols=None, audit_batch_size=None, include_income=False,
-                      force=False, reason='EXPLICIT', expand_full_trades=False,
-                      income_handler=None):
+                      force=False, reason='EXPLICIT', expand_full_trades=False):
         return audit_history(
             self, symbols=symbols, audit_batch_size=audit_batch_size,
             include_income=include_income, force=force, reason=reason,
-            expand_full_trades=expand_full_trades, income_handler=income_handler,
+            expand_full_trades=expand_full_trades,
         )
 
-    def audit_if_due(self, *, include_income=False, income_handler=None):
+    def audit_if_due(self, *, include_income=False):
         due, reason, _ = audit_due(self.db, now=self.clock(), config=self.recovery_config)
         if not due:
             return None
         return self.audit_history(
-            include_income=include_income, reason=reason, income_handler=income_handler,
+            include_income=include_income, reason=reason,
         )
 
     def read_activity(self, symbol):
@@ -1087,7 +957,7 @@ class FuturesAdapter:
     def reconcile(self, *, full_history=False):
         return self._reconcile(full_history=full_history)
 
-    def _reconcile(self, *, initial_facts=None, full_history=False):
+    def _reconcile(self, *, initial_facts=None, full_history=False, sync_funding=False):
         # Any failure leaves the durable global risk gate closed.
         self.disconnect()
         if initial_facts is not None:
@@ -1105,6 +975,7 @@ class FuturesAdapter:
                 self.db.execute('UPDATE futures_meta SET reconciled=1')
                 base = account_baseline(facts)
                 if base is not None:
+                    base['funding_usdt'] = str(self._confirmed_funding_usdt(facts.observed_at))
                     save_state(self.db, 'account_baseline', base, now_iso)
                 gstate = ensure_global_state(self.db, now_iso)
                 gstate.update(
@@ -1168,6 +1039,10 @@ class FuturesAdapter:
             facts = self.read_facts()
             actual = {o['clientOrderId'] for o in facts.open_orders}
 
+        if sync_funding and self.db.execute('SELECT 1 FROM futures_orders LIMIT 1').fetchone() is not None:
+            self.sync_funding(end_time=facts.observed_at)
+        funding_total = self._confirmed_funding_usdt(facts.observed_at)
+
         # Reactive late-fill / fee-drift check when archived exchange orders exist and account baseline shifted.
         reactive_audit_triggered = False
         current_baseline = account_baseline(facts)
@@ -1175,7 +1050,10 @@ class FuturesAdapter:
             previous_baseline = load_state(self.db, 'account_baseline')
             if previous_baseline is not None and current_baseline != previous_baseline:
                 pos_deltas, wallet_delta = baseline_deltas(previous_baseline, current_baseline)
-                if pos_deltas != expected_pos_deltas or (wallet_delta != ZERO and not tier1_economic_changed):
+                funding_delta = funding_total - Decimal(previous_baseline.get('funding_usdt', '0'))
+                unexplained_wallet = (wallet_delta != ZERO and wallet_delta != funding_delta
+                                      and not tier1_economic_changed)
+                if pos_deltas != expected_pos_deltas or unexplained_wallet:
                     reactive_audit_triggered = True
                     audit = self.audit_history(
                         force=True, reason='ACCOUNT_BASELINE_DELTA', audit_batch_size=0,
@@ -1207,6 +1085,7 @@ class FuturesAdapter:
                 raise DataQualityError('historical audit conflict/gap unresolved; reconciliation blocked')
             self.db.execute('UPDATE futures_meta SET reconciled=1')
             if current_baseline is not None:
+                current_baseline['funding_usdt'] = str(funding_total)
                 save_state(self.db, 'account_baseline', current_baseline, now_iso)
             gstate.update(
                 has_unknown=False,

@@ -770,7 +770,7 @@ def test_f12_open_orders_mismatch_reopens_archived_or_blocks_unmanaged(tmp_path)
 def test_f12_active_reduce_only_sell_priority_and_independent_funding_income(tmp_path):
     clock = MutableClock()
     fake = FakeTransport()
-    fake.incomes = [
+    fake.income = [
         {'symbol': 'NVDAUSDT', 'incomeType': 'FUNDING_FEE', 'income': '-0.02', 'asset': 'USDT', 'time': MS, 'tranId': 101},
         {'symbol': 'NVDAUSDT', 'incomeType': 'FUNDING_FEE', 'income': '-0.03', 'asset': 'USDT', 'time': MS + 1000, 'tranId': 102},
         {'symbol': 'NVDAUSDT', 'incomeType': 'FUNDING_FEE', 'income': '0.01', 'asset': 'USDT', 'time': MS + 2000, 'tranId': 103},
@@ -784,22 +784,14 @@ def test_f12_active_reduce_only_sell_priority_and_independent_funding_income(tmp
         # F11 compatibility: active reduce-only SELL is prioritized ahead of BUY!
         assert adapter.classify_orders()['active'] == ('active-reduce-sell', 'active-buy')
 
-        # F10 compatibility: incremental income recovery is independent and crash-safe.
-        received = []
+        clock.advance(2)
+        result = adapter.sync_funding(page_limit=2)
+        assert [event.tran_id for event in result.newly_recorded] == ['101', '102', '103']
 
-        def failing_handler(events):
-            raise RuntimeError('funding ledger write interrupted')
-
-        with pytest.raises(RuntimeError, match='funding ledger write interrupted'):
-            adapter.sync_income_incremental('NVDAUSDT', limit=2, handler=failing_handler)
-        assert 'income:NVDAUSDT:FUNDING_FEE' not in adapter.recovery_status()['watermarks']
-
-        result = adapter.sync_income_incremental('NVDAUSDT', limit=2, handler=lambda evs: received.extend(evs))
-        assert len(result['new_events']) == 3
-        assert [e['tranId'] for e in received] == [101, 102, 103]
-        # Second call with overlapping window returns zero duplicate funding events.
-        second = adapter.sync_income_incremental('NVDAUSDT', limit=2, handler=lambda evs: received.extend(evs))
-        assert len(second['new_events']) == 0
+        audit = adapter.audit_history(force=True, include_income=True, audit_batch_size=0)
+        assert audit['income_sync']['newly_recorded'] == 0
+        assert adapter.funding_events() == result.events
+        assert audit['income_sync']['covered_through_ms'] == adapter.funding_coverage()['covered_through_ms']
         # Funding NEVER leaks into order fees!
         assert adapter.order('active-buy').cumulative_fee == D('0')
         assert adapter.order('active-reduce-sell').cumulative_fee == D('0')

@@ -3,8 +3,7 @@ from dataclasses import replace
 from decimal import Decimal
 from datetime import timedelta
 
-from factorlab.trading import FundingEvent, Market, OrderEvent, OrderSnapshot, OrderStatus as S
-from factorlab.trading.contracts import funding_identity_key
+from factorlab.trading import Market, OrderEvent, OrderSnapshot, OrderStatus as S
 from factorlab.trading.storage import decode, dumps
 import json
 import hashlib
@@ -194,18 +193,9 @@ class FuturesPaperGateway(PaperBroker):
         finally:
             self._reusable_exchange = None
 
-    def _replay_funding_in_transaction(self, controller):
+    def _replay_funding(self):
         for event in self.adapter.funding_events():
-            existing = controller.store.db.execute('SELECT payload FROM events WHERE id=?', (event.event_id,)).fetchone()
-            if existing is not None:
-                saved = decode(json.loads(existing[0]))
-                if (not isinstance(saved, FundingEvent)
-                        or funding_identity_key(saved) != funding_identity_key(event)):
-                    from factorlab.errors import DataQualityError
-                    raise DataQualityError(f'funding event identity conflict for tranId={event.tran_id}')
-                self.apply(saved)
-            else:
-                self.apply(event)
+            self.apply(event)
 
     def reconcile(self):
         exchange = self._consume_reusable_exchange()
@@ -221,6 +211,7 @@ class FuturesPaperGateway(PaperBroker):
                 # Cannot reconstruct missing execution prices by assuming a fill.
                 self.state.reconciled = False
                 return self.read_account()
+        self._replay_funding()
         local = super().reconcile()
         remote_positions = {p.instrument_id: (p.quantity, p.entry_price) for p in exchange.positions}
         local_positions = {p.instrument_id: (p.quantity, p.entry_price) for p in local.positions}

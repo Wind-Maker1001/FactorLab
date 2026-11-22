@@ -606,16 +606,17 @@ def test_income_incomplete_pagination_and_insufficient_coverage(network_grid, tm
         assert synced.pages == 3
         assert [e.tran_id for e in synced.events] == ['1', '2', '3', '4', '5']
 
-        # 3. Saturated page (all rows at identical millisecond) -> explicit pagination failure.
+        # 3. Saturated timestamp boundary continues with numbered pages.
         with adapter.store.transaction():
             adapter.db.execute('DELETE FROM futures_income_coverage')
         fake.income = [
             dict(symbol='NVDAUSDT', incomeType='FUNDING_FEE', income='-0.01', asset='USDT', time=MS, tranId=10),
             dict(symbol='NVDAUSDT', incomeType='FUNDING_FEE', income='-0.02', asset='USDT', time=MS, tranId=11),
         ]
-        with pytest.raises(DataQualityError, match='saturated'):
-            adapter.sync_funding(start_time=MS, end_time=MS, page_limit=2)
-        assert adapter.funding_coverage() is None
+        synced = adapter.sync_funding(start_time=MS, end_time=MS, page_limit=2)
+        assert [event.tran_id for event in synced.newly_recorded] == ['10', '11']
+        with adapter.store.transaction():
+            adapter.db.execute('DELETE FROM futures_income_coverage')
 
         # 4. Max pages exceeded -> explicit pagination failure.
         fake.income = [

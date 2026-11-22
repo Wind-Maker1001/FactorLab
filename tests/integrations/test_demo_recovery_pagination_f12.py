@@ -68,9 +68,9 @@ def test_trade_time_boundary_minimal_repro():
 
 
 def test_income_same_millisecond_minimal_repro():
-    client = HistoryClient([income(i) for i in range(3)])
+    client = HistoryClient([income(i) for i in range(1, 4)])
     rows, pages = fetch_income(client, start_time=10, end_time=10, limit=2)
-    assert [r['tranId'] for r in rows] == [0, 1, 2]
+    assert [r['tranId'] for r in rows] == [1, 2, 3]
     assert pages == len(client.calls) == 3
 
 
@@ -149,10 +149,10 @@ def test_trade_one_sided_requested_bounds(bounds, expected):
 @pytest.mark.parametrize('times', [[10] * 7, [10, 10, 11, 11, 11, 12, 12],
                                   [9, 10, 10, 10, 11, 12, 12, 13]])
 def test_income_many_boundary_pages_and_time_cursor_resets(times):
-    client = HistoryClient([income(i, t) for i, t in enumerate(times)])
+    client = HistoryClient([income(i, t) for i, t in enumerate(times, 1)])
     rows, pages = fetch_income(client, start_time=10, end_time=12, limit=2, max_pages=12)
     assert [(r['tranId'], r['time']) for r in rows] == [
-        (i, t) for i, t in enumerate(times) if 10 <= t <= 12]
+        (i, t) for i, t in enumerate(times, 1) if 10 <= t <= 12]
     assert pages <= 10
     for _, p in client.calls:
         assert p['endTime'] == 12
@@ -198,40 +198,35 @@ def test_income_repeated_server_page_has_bounded_rejection(max_pages, match, exp
 
 
 @pytest.mark.parametrize('failure', ['network', 'stall', 'cap'])
-def test_income_partial_failure_preserves_persisted_watermark_and_handler(tmp_path, failure):
+def test_income_partial_failure_preserves_authoritative_watermark_and_events(tmp_path, failure):
     clock = MutableClock()
     fake = FakeTransport()
-    fake.incomes = [income(1, MS)]
+    fake.income = [income(1, MS)]
     adapter = make_adapter(tmp_path / 'protocol.sqlite', fake, clock)
-    scope = 'income:NVDAUSDT:FUNDING_FEE'
-    received = []
     try:
-        adapter.sync_income_incremental('NVDAUSDT', handler=received.extend)
-        old_state = load_state(adapter.db, scope)
+        adapter.sync_funding()
+        old_state = adapter.funding_coverage()
         repeated = [income(1, MS), income(2, MS)]
         script = [repeated, OSError('offline interruption')] if failure == 'network' else [repeated] * 10
         client = HistoryClient(scripted=script)
-        adapter.client = client
+        adapter.client.request = client.request
         with pytest.raises((OSError, DataQualityError)):
-            adapter.sync_income_incremental('NVDAUSDT', limit=2,
-                                            max_pages=2 if failure == 'cap' else 10,
-                                            handler=received.extend)
-        assert load_state(adapter.db, scope) == old_state
-        assert [r['tranId'] for r in received] == [1]
+            adapter.sync_funding(page_limit=2, max_pages=2 if failure == 'cap' else 10)
+        assert adapter.funding_coverage() == old_state
+        assert [event.tran_id for event in adapter.funding_events()] == ['1']
     finally:
         adapter.store.close()
     reopened = make_adapter(tmp_path / 'protocol.sqlite', fake, clock)
     try:
-        assert load_state(reopened.db, scope) == old_state
-        fake.incomes = [income(i, MS) for i in range(1, 8)]
-        result = reopened.sync_income_incremental('NVDAUSDT', limit=2, handler=received.extend)
-        assert result['fetched_count'] == 7
-        assert result['last_income_time_ms'] == MS
-        assert reopened.sync_income_incremental('NVDAUSDT', limit=2,
-                                                handler=received.extend)['new_events'] == ()
-        assert [r['tranId'] for r in received] == list(range(1, 8))
-        assert sum(Decimal(r['income']) for r in received) == Decimal('-0.14')
-        assert load_state(reopened.db, scope)['events_seen'] == 7
+        assert reopened.funding_coverage() == old_state
+        fake.income = [income(i, MS) for i in range(1, 8)]
+        result = reopened.sync_funding(page_limit=2)
+        assert len(result.events) == 7
+        assert result.covered_through_ms == MS
+        assert [event.tran_id for event in result.newly_recorded] == [str(i) for i in range(2, 8)]
+        assert not reopened.sync_funding(page_limit=2).newly_recorded
+        assert sum(event.amount for event in result.events) == Decimal('-0.14')
+        assert reopened.recovery_status()['watermarks']['income:*:FUNDING_FEE'] == reopened.funding_coverage()
         assert all(method == 'GET' for method, _, _ in fake.calls)
     finally:
         reopened.store.close()

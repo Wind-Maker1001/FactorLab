@@ -110,7 +110,7 @@ class DemoFuturesAdapter(FuturesAdapter):
 
     def reconcile(self, *, full_history=False):
         facts, self._initial_facts = self._initial_facts, None
-        return self._reconcile(initial_facts=facts, full_history=full_history)
+        return self._reconcile(initial_facts=facts, full_history=full_history, sync_funding=True)
 
     def submit_order(self, intent):
         if intent is not self._admitted_intent:
@@ -252,15 +252,6 @@ class DemoExecutionGateway(FuturesPaperGateway):
             for a in local.assets)
         return replace(local, assets=assets, reconciled=remote.reconciled)
 
-    def _sync_and_replay_funding(self, controller, *, end_time=None):
-        self.adapter.sync_funding(end_time=end_time)
-        adapter_events = self.adapter.funding_events()
-        if (len(adapter_events) != len(self.state.funding_events)
-                or any(self.state.funding_events.get(e.event_id) is None
-                       or funding_identity_key(self.state.funding_events[e.event_id]) != funding_identity_key(e)
-                       for e in adapter_events)):
-            controller._atomic(lambda: self._replay_funding_in_transaction(controller))
-
     def recover(self, controller, *, initial_facts=None):
         # No order identity means there are no order deltas to import or replay.
         # Confirmed funding settlements are still synchronized and replayed atomically.
@@ -273,7 +264,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
                     raise SafetyBlocked('initial Demo facts require an unchanged empty order journal')
                 self.adapter._require_fresh_account_read(
                     initial_facts.observed_at, initial_facts.read_started_monotonic, self.adapter.clock())
-                self._sync_and_replay_funding(controller, end_time=initial_facts.observed_at)
+                self.adapter.sync_funding(end_time=initial_facts.observed_at)
                 with self.adapter._initial_reconciliation(initial_facts):
                     return controller.reconcile()
             now_ms = _to_ms(self.adapter.clock())
@@ -286,13 +277,12 @@ class DemoExecutionGateway(FuturesPaperGateway):
                 or bool(self.adapter.funding_events())
             )
             if need_sync:
-                self._sync_and_replay_funding(controller, end_time=now_ms)
+                self.adapter.sync_funding(end_time=now_ms)
             account = controller.reconcile()
             if not need_sync and (self.state.cash != previous_cash or bool(self.state.positions)):
-                self._sync_and_replay_funding(controller)
+                self.adapter.sync_funding()
                 account = controller.reconcile()
             return account
-        self.adapter.sync_funding()
         return super().recover(controller)
 
     def reconcile(self):
@@ -309,8 +299,10 @@ class DemoExecutionGateway(FuturesPaperGateway):
                 self.state.reconciled = False
                 return self.read_account()
         if not self._funding_consistent():
-            self.state.reconciled = False
-            return self.read_account()
+            self._replay_funding()
+            if not self._funding_consistent():
+                self.state.reconciled = False
+                return self.read_account()
         from dataclasses import replace
         for key, record in tuple(self.state.orders.items()):
             r_status, r_filled, r_fee, r_req, r_ex_id = remote_index[key]
