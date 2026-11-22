@@ -35,6 +35,10 @@ SQLite 原生 `backup()` API 仅保证**单个 SQLite 数据库文件内部**的
 - `deploy/systemd/factorlab-demo-backup.service`（`Type=oneshot`）
 - `deploy/systemd/factorlab-demo-backup.timer`（每日 `03:15:00 UTC`，避开 Binance 永续 `00:00 / 08:00 / 16:00 UTC` 资金费结算整点及美股交易高峰，`Persistent=true`）
 
+备份服务的 `TimeoutStartSec=20min` 覆盖健康采集、停止、最长 300 秒的快照、启动、GET 对账、校验和保留清理。触及整体上限时，systemd 发送 SIGTERM，15 秒后仍未退出则强制终止整个备份 cgroup。`ExecStopPost` 随后读取本次调用在 root 私有运行目录中登记的恢复意图，并使用现有 Execute unit 启动与 GET 对账路径。原本未运行的 unit 无恢复意图，持久化 `STOPPED` 或 `HALTED` 会阻止恢复启动。
+
+备份 unit 在退出钩子中写入最终状态，排在 C06 健康采样之前。异常结束即使恢复成功也会保留 `FAILED` 记录。若记录显示 `SERVICE_RESTART_FAILED` 或对账未完成，应先查看备份与原服务 journal，再确认原服务的控制状态和 GET 对账结果。
+
 关键安全边界：
 
 - **禁止访问 Secret**：`factorlab-demo-backup.service` 不配置 `LoadCredential`，并声明 `InaccessiblePaths=/etc/factorlab-demo`，从 mount namespace 层面阻断备份进程读取 Binance API Secret。

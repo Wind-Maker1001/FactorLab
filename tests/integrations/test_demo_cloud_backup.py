@@ -346,12 +346,16 @@ def test_verify_rejects_broken_funding_continuity_and_secret_files(tmp_path):
 
 class _FakeRunner:
     def __init__(self, *, active_unit='factorlab-demo-execute.service', pre_health=None,
-                 post_health_sequence=None, fail_backup=False):
+                 post_health_sequence=None, fail_backup=False,
+                 stop_error=None, backup_error=None, start_error=None):
         self.active_unit = active_unit
         self.currently_active = active_unit
         self.pre_health = pre_health
         self.post_health_sequence = list(post_health_sequence or [])
         self.fail_backup = fail_backup
+        self.stop_error = stop_error
+        self.backup_error = backup_error
+        self.start_error = start_error
         self.events = []
 
     def is_unit_active(self, unit):
@@ -361,9 +365,13 @@ class _FakeRunner:
         self.events.append(('stop', unit))
         if self.currently_active == unit:
             self.currently_active = None
+        if self.stop_error is not None:
+            raise self.stop_error
 
     def start_unit(self, unit):
         self.events.append(('start', unit))
+        if self.start_error is not None:
+            raise self.start_error
         self.currently_active = unit
 
     def read_health(self, state_root, *, unit=None):
@@ -380,6 +388,8 @@ class _FakeRunner:
         self.events.append(('module', module.rsplit('.', 1)[-1], args[0]))
         if args[0] == 'backup' and self.fail_backup:
             return subprocess.CompletedProcess(args, 78, stdout='', stderr='simulated backup failure')
+        if args[0] == 'backup' and self.backup_error is not None:
+            raise self.backup_error
         cmd = [sys.executable, '-m', module, *args]
         env = dict(storage.os.environ)
         src_root = str(Path(__file__).resolve().parents[2] / 'src')
@@ -495,6 +505,7 @@ def test_scheduled_backup_failure_restarts_service_and_skips_prune(tmp_path):
     runner = _FakeRunner(
         active_unit='factorlab-demo-execute.service',
         pre_health=_health_fixture(pid=1001),
+        post_health_sequence=[_health_fixture(pid=2002)],
         fail_backup=True,
     )
 
@@ -516,6 +527,96 @@ def test_scheduled_backup_failure_restarts_service_and_skips_prune(tmp_path):
     assert ('module', 'demo_cloud_backup', 'prune') not in runner.events
     # Existing backup MUST remain intact after failed backup!
     assert expired.is_dir()
+
+
+@pytest.mark.parametrize('stop_error', [
+    subprocess.TimeoutExpired('systemctl stop', 120),
+    subprocess.CalledProcessError(1, 'systemctl stop'),
+])
+def test_partial_stop_failure_restores_and_reconciles_before_publishing(tmp_path, stop_error):
+    state = _seed_execute_state(tmp_path / 'execute-state')
+    backup_root = _make_private_dir(tmp_path / 'backups')
+    runner = _FakeRunner(
+        pre_health=_health_fixture(pid=1001),
+        post_health_sequence=[_health_fixture(pid=2002)],
+        stop_error=stop_error,
+    )
+
+    result = backup_mod.run_scheduled_backup(state, backup_root, min_free_bytes=0, runner=runner)
+
+    assert result['error_category'] == 'SERVICE_STOP_FAILED'
+    assert result['maintenance_window']['reconcile_verified'] is True
+    assert result['maintenance_window']['post_health']['pid'] == 2002
+    assert ('module', 'demo_cloud_runtime', 'backup') not in runner.events
+    assert runner.currently_active == 'factorlab-demo-execute.service'
+
+
+def test_backup_child_timeout_reconciles_and_never_prunes(tmp_path):
+    state = _seed_execute_state(tmp_path / 'execute-state')
+    backup_root = _make_private_dir(tmp_path / 'backups')
+    runner = _FakeRunner(
+        pre_health=_health_fixture(pid=1001),
+        post_health_sequence=[
+            _health_fixture(pid=2002, unknown_count=1),
+            _health_fixture(pid=2002),
+        ],
+        backup_error=subprocess.TimeoutExpired('backup', 300),
+    )
+
+    result = backup_mod.run_scheduled_backup(
+        state, backup_root, min_free_bytes=0, runner=runner, sleep_fn=lambda _: None,
+    )
+
+    assert result['error_category'] == 'BACKUP_TIMEOUT'
+    assert result['maintenance_window']['reconcile_verified'] is True
+    assert result['maintenance_window']['post_health']['unknown_count'] == 0
+    assert ('module', 'demo_cloud_backup', 'prune') not in runner.events
+
+
+@pytest.mark.parametrize('retry_works', [False, True])
+def test_start_failure_leaves_recovery_for_stop_hook(tmp_path, retry_works):
+    state = _seed_execute_state(tmp_path / 'execute-state')
+    backup_root = _make_private_dir(tmp_path / 'backups')
+    recovery_file = _make_private_dir(tmp_path / 'run') / 'invocation'
+    runner = _FakeRunner(
+        pre_health=_health_fixture(pid=1001),
+        post_health_sequence=[_health_fixture(pid=2002)],
+        fail_backup=True,
+        start_error=subprocess.CalledProcessError(1, 'systemctl start'),
+    )
+    result = backup_mod.run_scheduled_backup(
+        state, backup_root, min_free_bytes=0, runner=runner, recovery_file=recovery_file,
+    )
+    assert result['error_category'] == 'SERVICE_RESTART_FAILED'
+    assert runner.currently_active is None
+
+    if retry_works:
+        runner.start_error = None
+    backup_mod.recover_scheduled_backup(state, backup_root, recovery_file, runner=runner)
+    published = json.loads((backup_root / backup_mod.STATUS_FILENAME).read_text(encoding='utf-8'))
+    assert published['status'] == 'FAILED'
+    assert published['error_category'] == 'SERVICE_RESTART_FAILED'
+    assert published['maintenance_window']['reconcile_verified'] is retry_works
+    assert (runner.currently_active is not None) is retry_works
+
+
+@pytest.mark.parametrize('control', ['STOPPED', 'HALTED'])
+@pytest.mark.parametrize('active', [False, True])
+def test_stopped_or_halted_state_never_arms_recovery(tmp_path, control, active):
+    state = _seed_execute_state(tmp_path / 'execute-state', control_desired=control, auth_state=control)
+    backup_root = _make_private_dir(tmp_path / 'backups')
+    recovery_file = _make_private_dir(tmp_path / 'run') / 'invocation'
+    unit = 'factorlab-demo-execute.service'
+    runner = _FakeRunner(active_unit=unit if active else None, pre_health=_health_fixture(pid=1001))
+
+    result = backup_mod.run_scheduled_backup(
+        state, backup_root, min_free_bytes=0, runner=runner, recovery_file=recovery_file,
+    )
+    backup_mod.recover_scheduled_backup(state, backup_root, recovery_file, runner=runner)
+
+    assert result['error_category'] == ('CONTROL_STATE_BLOCKED' if active else None)
+    assert ('stop', unit) not in runner.events
+    assert ('start', unit) not in runner.events
 
 
 def test_scheduled_backup_low_disk_refuses_before_stopping_execute(tmp_path):

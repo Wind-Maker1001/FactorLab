@@ -12,7 +12,7 @@
 | 是否需要中断 Execute 及中断时长 | **需要极短维护窗口**（跨 12 个 SQLite 数据库一致性约束）；实测中断 **`2.045` 秒**（`16:55:48.363Z` → `16:55:50.407Z`） |
 | 恢复验证是否通过 | **全部通过**（独立隔离目录 9/9 项一致性核验通过，restore quarantine 与 C05 交接拦截验证通过） |
 | 备份位置、大小与保留情况 | `/var/backups/factorlab-demo/backup-20261122T165547Z`；原始 **`16,770,025` 字节（15.99 MiB，12 个 SQLite DB）**；`zstd -3` 压缩体量 `825,978` 字节（0.79 MiB）；当前保留 **1 份**有效副本（受唯一可恢复副本保护 `protected_min_copy=true`，每日 1 次保留 14 天） |
-| Azure Execute 当前状态 | **持续健康运行**（`active (running)`，PID `9745`，`NRestarts=0`，`execute_healthy=true`，`demo_execution_ready=true`，`unknown_count=0`，预算与控制状态零重置） |
+| Azure Execute 复验状态 | **健康运行**（`active (running)`，PID `18797`，`NRestarts=0`，`execute_healthy=true`，`demo_execution_ready=true`，`unknown_count=0`）。P1 修复后的对账与预算见第 8 节。 |
 | 异地备份是否真正启用 | **未启用**（`offsite_enabled=false`）；已完成 Azure Blob 免费额度/费用评估与客户端加密接入设计，未默认创建任何收费云资源 |
 | 密钥安全核查 | **零泄露**（`InaccessiblePaths=/etc/factorlab-demo`，无 `LoadCredential`，真实密钥字节扫描 `/var/backups/factorlab-demo` 命中数 `0`） |
 
@@ -41,7 +41,7 @@
 1. 停服前先做只读 `health` 基线采集和可用磁盘空间预检（空间不足直接失败，**不停止 Execute**）。
 2. 使用正常 `systemctl stop factorlab-demo-execute.service`（纯 `SIGTERM`，**绝不调用** `factorlab-demo stop`）停止写入。
 3. 降权为 `factorlab-demo` 调用现有 `demo_cloud_runtime backup`（SQLite Backup API）生成快照。
-4. 在 `finally` 保护块内**立即** `systemctl start factorlab-demo-execute.service` 恢复在线（即使备份失败也必恢复）。
+4. 在发出停服请求前登记恢复意图。停服或备份失败时检查 systemd 实际状态并恢复原 unit。若备份进程被 systemd 终止，独立的 `ExecStopPost` 接手恢复和状态记录。
 5. 恢复在线后再执行重对账校验、备份深度校验与条件清理，将停机时长压缩至物理下限。
 
 ---
@@ -131,3 +131,18 @@
   1. **异地 Azure Blob 自动上传未启用（`offsite_enabled=false`）**：遵循“不默认创建收费云资源”原则，且当前 VM 未安装 Azure CLI（`az`）、未分配 Azure Storage Account / Blob Container 写入授权（Managed Identity / SAS），亦未供应离线保管的 GPG 加密公钥。已提供完整客户端加密（`tar + zstd + gpg`）与 Managed Identity 接入方案，待订阅额度确认与授权配置后即可启用。
   2. **独立数据盘未拆分**：当前 Azure VM 仅挂载一块 64 GiB 系统盘（`/dev/sda1`），`/var/lib/factorlab-demo` 与 `/var/backups/factorlab-demo` 同盘存放；在启用异地加密备份前，建议按需通过 SSH 定期离线拉取加密快照作为异地副本。
   3. **多日定时自动触发观察**：`factorlab-demo-backup.timer` 已启用并计划于 `2026-11-23 03:15:00 UTC` 首次按时钟自动触发；本次已通过 `systemctl start factorlab-demo-backup.service` 验证端到端执行路径，连续 14 天滚动清理的实际线上观察待后续自然周期积累（保留与唯一副本保护逻辑已通过离线测试严格验证）。
+
+## 8. PR #229 两条 P1 的修复与 Azure 复验
+
+2026-11-23（北京时间）先确认 Azure Demo Execute 健康，PID 为 `9745`，`UNKNOWN=0`，随后暂停每日 Timer。部署前发现 Timer 被重新启用，重新停用后才替换 Azure 上的备份模块和备份 unit。隔离故障测试期间，实际 Execute 继续由原 PID 运行。
+
+- **P1-1**。停服操作进入恢复保护区。即使 `systemctl stop` 在提交停止任务后报错或超时，恢复逻辑也会根据 unit 的实际状态及挂起任务判断是否需要启动原 unit，然后等待现有 Execute 启动流程完成 GET 对账。只有维护前运行的 unit 才登记恢复意图，持久化 `STOPPED` / `HALTED` 会禁止恢复启动。
+- **P1-2**。备份 unit 的 `TimeoutStartSec=20min` 覆盖全部维护步骤，备份子进程保留单独 300 秒超时。整体超时时先发送 SIGTERM，超过 `TimeoutAbortSec=15s` 则强制终止 cgroup。systemd 随后运行 `ExecStopPost`，由钩子读取私有 `RuntimeDirectory` 内本次调用的恢复记录。恢复阶段有独立的 `TimeoutStopSec=6min`。若首次启动失败，退出钩子会重新判断是否仍需启动。故障维护即使恢复成功也记录 `FAILED`，C06 读取退出钩子发布的最终记录。
+
+| 验证 | 实测结果 |
+| --- | --- |
+| 定向回归 | Windows 81 项通过。Debian WSL 备份和存储 35 项通过，覆盖部分停服后报错或超时、备份子进程超时、启动失败后重试或持续失败，以及 `STOPPED` / `HALTED`。C06 计划与异常维护分类 2 项通过。 |
+| 真实 systemd 故障注入 | Debian WSL 和 Azure 各 2 项通过。分别注入 SIGTERM 和整体超时后升级为 SIGKILL，验证备份子进程退出并释放锁、退出钩子恢复隔离 unit、对账检查通过且失败状态落盘。隔离用例使用模拟健康响应。 |
+| Azure 实际配置与备份 | `systemd-analyze verify` 通过。有效配置包括恢复钩子、`20min / 15s / 6min` 超时、`KillMode=control-group`、私有运行目录和原有状态目录 drop-in。正常备份 `backup-20261122T174307Z` 已校验，12 个数据库共 `16,843,753` 字节，备份 unit 退出码 `0`。 |
+| Azure Execute 与累计预算 | 单次计划维护窗口 `2.474s`，PID `9745 → 18797`，`NRestarts=0`。GET 对账通过，`execute_healthy=true`，`demo_execution_ready=true`，`UNKNOWN=0`，Grid 部署及 `RUNNING` 控制状态一致。已用预算为 7 笔、`41.3308000` USDT，剩余 93 笔、`658.6692000` USDT。备用 unit 仍为 `inactive`，`MainPID=0`。 |
+| C06 与 Timer | 实际监控日志将本次备份记录为 `MAINTENANCE_RESTART`（`planned_maintenance_restart`，INFO）。每日 Timer 已恢复为 `enabled` / `active`，下一次调度为 2026-11-23 11:15（北京时间）。 |

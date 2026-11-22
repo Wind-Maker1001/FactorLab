@@ -815,14 +815,15 @@ def _extract_health_summary(raw_health):
     )
 
 
-def _reconcile_matches(pre_health, post_health, *, unit):
+def _reconcile_matches(pre_health, post_health, *, unit, require_new_pid):
     if not isinstance(post_health, dict):
         return False, 'POST_HEALTH_UNAVAILABLE'
     if post_health.get('systemd_active_state') not in (None, 'active'):
         return False, 'SERVICE_NOT_ACTIVE'
     if post_health.get('systemd_sub_state') not in (None, 'running'):
         return False, 'SERVICE_NOT_RUNNING'
-    if pre_health and pre_health.get('pid') is not None and post_health.get('pid') == pre_health.get('pid'):
+    if (require_new_pid and pre_health and pre_health.get('pid') is not None
+            and post_health.get('pid') == pre_health.get('pid')):
         return False, 'WAITING_FOR_NEW_HEARTBEAT'
     if post_health.get('unknown_count') not in (0, None):
         return False, 'ORDER_UNKNOWN'
@@ -865,13 +866,15 @@ class SystemdRunner:
 
     def is_unit_active(self, unit):
         result = subprocess.run(
-            ['systemctl', 'is-active', unit],
+            ['systemctl', 'show', '--property=ActiveState,Job', unit],
             capture_output=True,
             text=True,
             timeout=15,
-            check=False,
+            check=True,
         )
-        return result.returncode == 0 and result.stdout.strip() == 'active'
+        properties = dict(line.split('=', 1) for line in result.stdout.splitlines())
+        # A timed-out systemctl client does not cancel the manager's stop job.
+        return properties['ActiveState'] == 'active' and not properties['Job']
 
     def stop_unit(self, unit):
         subprocess.run(
@@ -891,33 +894,30 @@ class SystemdRunner:
             check=True,
         )
 
-    def _wrap_as_service_user(self, cmd):
-        if os.name == 'nt' or not self.service_user:
-            return list(cmd)
-        import pwd
-        current_user = pwd.getpwuid(os.getuid()).pw_name
-        if current_user == self.service_user:
-            return list(cmd)
-        if shutil.which('runuser'):
-            return ['runuser', '-u', self.service_user, '--', *cmd]
-        return ['sudo', '-u', self.service_user, '--', *cmd]
-
     def run_python_module(self, module, args, *, state_root=None, timeout=300, stdin_text=None):
         cmd = [self.python_executable, '-m', module, *args]
+        env = dict(os.environ)
         if state_root is not None:
-            cmd = ['env', f'FACTORLAB_DEMO_STATE_ROOT={state_root}', *cmd] if os.name != 'nt' else cmd
-        wrapped = self._wrap_as_service_user(cmd)
-        env = None
-        if os.name == 'nt' and state_root is not None:
-            env = dict(os.environ, FACTORLAB_DEMO_STATE_ROOT=str(state_root))
+            env['FACTORLAB_DEMO_STATE_ROOT'] = str(state_root)
+        identity = {}
+        if os.name != 'nt' and self.service_user:
+            import pwd
+            account = pwd.getpwnam(self.service_user)
+            if account.pw_uid != os.getuid():
+                identity = dict(user=account.pw_uid, group=account.pw_gid,
+                                extra_groups=os.getgrouplist(account.pw_name, account.pw_gid))
+                env.update(HOME=account.pw_dir, USER=account.pw_name, LOGNAME=account.pw_name)
+        # The timed child is the Python worker itself, so no privilege wrapper
+        # can leave the SQLite backup worker holding the session lock.
         return subprocess.run(
-            wrapped,
+            cmd,
             input=stdin_text,
             capture_output=True,
             text=True,
             timeout=timeout,
             check=False,
             env=env,
+            **identity,
         )
 
     def read_health(self, state_root, *, unit=None):
@@ -959,6 +959,102 @@ def _preflight_backup_space(state_root, backup_root, *, min_free_bytes=MIN_FREE_
     return state_bytes, free_bytes
 
 
+def _control_blocks_restart(state_root, health=None):
+    blocked = {'STOPPED', 'HALTED'}
+    if health and (health['status'] in blocked or health['desired'] in blocked):
+        return True
+    runtime = _read_runtime_summary(state_root / 'runtime.sqlite3')
+    control = _read_grid_control_summary(state_root, runtime['durable_control_state'])
+    return control['durable_control_state'] in blocked or control['grid_control_desired'] in blocked
+
+
+def _restore_maintenance(runner, state_root, window, *, reconcile_timeout,
+                         now_fn=utc_now, sleep_fn=time.sleep, monotonic_fn=time.monotonic,
+                         stopped_mono=None):
+    unit = window['interrupted_unit']
+    window['restart_succeeded'] = False
+    window['reconcile_verified'] = False
+    try:
+        if _control_blocks_restart(state_root):
+            window['reconcile_reason'] = 'CONTROL_STATE_BLOCKED'
+            return 'CONTROL_STATE_BLOCKED'
+        needs_start = not runner.is_unit_active(unit)
+        if needs_start:
+            runner.start_unit(unit)
+        window['restart_succeeded'] = True
+        restarted_at = now_fn()
+        window['restarted_at'] = restarted_at.isoformat()
+        if stopped_mono is not None:
+            elapsed = monotonic_fn() - stopped_mono
+        else:
+            elapsed = (restarted_at - datetime.fromisoformat(window['stopped_at'])).total_seconds()
+        window['downtime_seconds'] = round(max(0.0, elapsed), 3)
+    except Exception:
+        window['reconcile_reason'] = 'SERVICE_RESTART_FAILED'
+        return 'SERVICE_RESTART_FAILED'
+
+    deadline = monotonic_fn() + reconcile_timeout
+    try:
+        while True:
+            post_health = _extract_health_summary(runner.read_health(state_root, unit=unit))
+            reconciled, reason = _reconcile_matches(
+                window['pre_health'], post_health, unit=unit, require_new_pid=needs_start,
+            )
+            window['post_health'] = post_health
+            window['reconcile_verified'] = reconciled
+            window['reconcile_reason'] = reason
+            if reconciled:
+                return None
+            remaining = deadline - monotonic_fn()
+            if remaining <= 0:
+                return 'RECONCILE_TIMEOUT'
+            sleep_fn(min(2.0, remaining))
+    except Exception:
+        window['reconcile_reason'] = 'POST_HEALTH_UNAVAILABLE'
+        return 'RECONCILE_FAILED'
+
+
+def _publish_status(runner, backup_root, payload):
+    runner.run_python_module(
+        'factorlab.integrations.binance_futures_trading.demo_cloud_backup',
+        ['record-status', '--backup-root', str(backup_root), '--payload-stdin'],
+        timeout=30,
+        stdin_text=json.dumps(payload, default=str),
+    ).check_returncode()
+
+
+def _checkpoint_recovery(path, payload, pending):
+    if path is not None:
+        storage.atomic_json(path, dict(status=payload, recovery_pending=pending))
+
+
+def recover_scheduled_backup(
+    state_root, backup_root, recovery_file, *, runner=None, service_user='factorlab-demo',
+    reconcile_timeout=DEFAULT_RECONCILE_TIMEOUT, termination=None,
+):
+    """Complete recovery and publish the result after systemd stops the backup cgroup."""
+    try:
+        checkpoint = json.loads(recovery_file.read_text(encoding='utf-8'))
+    except FileNotFoundError:
+        return None
+    payload = checkpoint['status']
+    window = payload['maintenance_window']
+    runner = runner or SystemdRunner(service_user=service_user)
+    error = payload['error_category']
+    pending = checkpoint['recovery_pending']
+    if pending:
+        recovery_error = _restore_maintenance(runner, state_root, window, reconcile_timeout=reconcile_timeout)
+        error = recovery_error or error
+    if pending or payload['completed_at'] is None or (termination and termination['SERVICE_RESULT'] != 'success'):
+        payload.update(status='FAILED', error_category=error or 'BACKUP_INTERRUPTED',
+                       systemd_termination=termination)
+    if pending or payload['completed_at'] is None:
+        payload['completed_at'] = utc_now().isoformat()
+    _publish_status(runner, backup_root, payload)
+    recovery_file.unlink()
+    return payload
+
+
 def run_scheduled_backup(
     state_root,
     backup_root,
@@ -971,6 +1067,7 @@ def run_scheduled_backup(
     reconcile_timeout=DEFAULT_RECONCILE_TIMEOUT,
     drill=False,
     skip_service_control=False,
+    recovery_file=None,
     runner=None,
     now_fn=utc_now,
     sleep_fn=time.sleep,
@@ -1018,12 +1115,12 @@ def run_scheduled_backup(
     )
 
     active_unit = None
-    pre_health = None
-    backup_name = None
-    backup_dest = None
+    window = status_payload['maintenance_window']
     backup_succeeded = False
-    restart_error = None
+    recovery_pending = False
+    operation_error = None
 
+    _checkpoint_recovery(recovery_file, status_payload, recovery_pending)
     try:
         # 1. Inspect currently active unit and capture pre-backup health baseline without stopping anything.
         if not skip_service_control:
@@ -1031,11 +1128,13 @@ def run_scheduled_backup(
                 if runner.is_unit_active(unit):
                     active_unit = unit
                     break
-            status_payload['maintenance_window']['interrupted_unit'] = active_unit
 
         raw_pre = runner.read_health(state_root, unit=active_unit)
         pre_health = _extract_health_summary(raw_pre)
-        status_payload['maintenance_window']['pre_health'] = pre_health
+        window['pre_health'] = pre_health
+        if active_unit is not None and _control_blocks_restart(state_root, pre_health):
+            operation_error = 'CONTROL_STATE_BLOCKED'
+            raise SafetyBlocked('active unit has STOPPED or HALTED control state')
 
         # 2. Check free disk space BEFORE stopping Execute to avoid pointless downtime.
         _preflight_backup_space(state_root, backup_root, min_free_bytes=min_free_bytes)
@@ -1045,14 +1144,19 @@ def run_scheduled_backup(
         status_payload['backup_name'] = backup_name
         status_payload['backup_path'] = str(backup_dest)
 
-        # 3. Shortest possible maintenance window: stop -> backup_state -> immediately start in finally.
-        stop_mono = None
-        if active_unit is not None:
-            status_payload['maintenance_window']['stopped_at'] = now_fn().isoformat()
-            stop_mono = monotonic_fn()
-            runner.stop_unit(active_unit)
-
+        # Persist recovery intent before the stop request reaches systemd.
+        stopped_mono = None
         try:
+            if active_unit is not None:
+                window['interrupted_unit'] = active_unit
+                window['stopped_at'] = now_fn().isoformat()
+                stopped_mono = monotonic_fn()
+                _checkpoint_recovery(recovery_file, status_payload, True)
+                recovery_pending = True
+                operation_error = 'SERVICE_STOP_FAILED'
+                runner.stop_unit(active_unit)
+                operation_error = None
+
             proc = runner.run_python_module(
                 'factorlab.integrations.binance_futures_trading.demo_cloud_runtime',
                 ['backup', '--state-root', str(state_root), '--destination', str(backup_dest)],
@@ -1063,38 +1167,24 @@ def run_scheduled_backup(
                 detail = (proc.stderr or proc.stdout or '').strip()
                 raise SafetyBlocked(f'backup command failed (rc={proc.returncode}): {detail}')
             backup_succeeded = True
+        except subprocess.TimeoutExpired:
+            operation_error = operation_error or 'BACKUP_TIMEOUT'
+            raise
         finally:
-            if active_unit is not None:
-                try:
-                    runner.start_unit(active_unit)
-                    status_payload['maintenance_window']['restarted_at'] = now_fn().isoformat()
-                    status_payload['maintenance_window']['downtime_seconds'] = round(
-                        max(0.0, monotonic_fn() - stop_mono), 3
-                    )
-                    status_payload['maintenance_window']['restart_succeeded'] = True
-                except Exception as exc:
-                    status_payload['maintenance_window']['restart_succeeded'] = False
-                    restart_error = exc
+            if recovery_pending:
+                recovery_error = _restore_maintenance(
+                    runner, state_root, window, reconcile_timeout=reconcile_timeout,
+                    now_fn=now_fn, sleep_fn=sleep_fn, monotonic_fn=monotonic_fn,
+                    stopped_mono=stopped_mono,
+                )
+                recovery_pending = recovery_error not in (None, 'CONTROL_STATE_BLOCKED')
+                if recovery_error is not None:
+                    status_payload['operation_error_category'] = operation_error
+                    operation_error = recovery_error
+                _checkpoint_recovery(recovery_file, status_payload, recovery_pending)
 
-        if restart_error is not None:
-            raise SafetyBlocked(f'failed to restart {active_unit} after backup: {restart_error}')
-
-        # 4. Verify post-restart reconciliation if we interrupted a live unit.
-        if active_unit is not None:
-            deadline = monotonic_fn() + reconcile_timeout
-            reconcile_ok = False
-            reconcile_reason = 'RECONCILE_TIMEOUT'
-            latest_post = None
-            while True:
-                raw_post = runner.read_health(state_root, unit=active_unit)
-                latest_post = _extract_health_summary(raw_post)
-                reconcile_ok, reconcile_reason = _reconcile_matches(pre_health, latest_post, unit=active_unit)
-                if reconcile_ok or monotonic_fn() >= deadline:
-                    break
-                sleep_fn(2.0)
-            status_payload['maintenance_window']['post_health'] = latest_post
-            status_payload['maintenance_window']['reconcile_verified'] = reconcile_ok
-            status_payload['maintenance_window']['reconcile_reason'] = reconcile_reason
+        if operation_error is not None:
+            raise SafetyBlocked('maintenance recovery failed')
 
         # 5. Deep-verify the newly created backup snapshot while service is already back online.
         verify_proc = runner.run_python_module(
@@ -1141,31 +1231,17 @@ def run_scheduled_backup(
             retention_result['skipped_reason'] = None
             status_payload['retention'] = retention_result
 
-        if active_unit is not None and not status_payload['maintenance_window']['reconcile_verified']:
-            status_payload['status'] = 'FAILED'
-            status_payload['error_category'] = 'RECONCILE_TIMEOUT'
-        else:
-            status_payload['status'] = 'SUCCEEDED'
-            status_payload['error_category'] = None
+        status_payload['status'] = 'SUCCEEDED'
     except Exception as exc:
-        status_payload['status'] = 'FAILED'
-        if restart_error is not None:
-            status_payload['error_category'] = 'SERVICE_RESTART_FAILED'
-        else:
-            status_payload['error_category'] = classify_backup_error(exc)
+        status_payload['error_category'] = operation_error or classify_backup_error(exc)
         if not backup_succeeded:
             status_payload['retention']['skipped_reason'] = 'backup_failed'
-    finally:
-        status_payload['completed_at'] = now_fn().isoformat()
-        try:
-            runner.run_python_module(
-                'factorlab.integrations.binance_futures_trading.demo_cloud_backup',
-                ['record-status', '--backup-root', str(backup_root), '--payload-stdin'],
-                timeout=30,
-                stdin_text=json.dumps(status_payload, default=str),
-            )
-        except Exception:
-            pass
+
+    status_payload['completed_at'] = now_fn().isoformat()
+    if recovery_file is None:
+        _publish_status(runner, backup_root, status_payload)
+    else:
+        _checkpoint_recovery(recovery_file, status_payload, recovery_pending)
 
     return status_payload
 
@@ -1204,6 +1280,14 @@ def main(argv=None):
     p_sched.add_argument('--reconcile-timeout', type=float, default=DEFAULT_RECONCILE_TIMEOUT)
     p_sched.add_argument('--drill-restore', action='store_true')
     p_sched.add_argument('--skip-service-control', action='store_true')
+    p_sched.add_argument('--recovery-directory', type=Path)
+
+    p_recover = subparsers.add_parser('recover-scheduled', help='Recover a backup interrupted by systemd')
+    p_recover.add_argument('--state-root', type=Path, required=True)
+    p_recover.add_argument('--backup-root', type=Path, required=True)
+    p_recover.add_argument('--recovery-directory', type=Path, required=True)
+    p_recover.add_argument('--service-user', default='factorlab-demo')
+    p_recover.add_argument('--reconcile-timeout', type=float, default=DEFAULT_RECONCILE_TIMEOUT)
 
     args = parser.parse_args(argv)
     if os.name != 'nt':
@@ -1242,10 +1326,22 @@ def main(argv=None):
                 reconcile_timeout=args.reconcile_timeout,
                 drill=args.drill_restore,
                 skip_service_control=args.skip_service_control,
+                recovery_file=(args.recovery_directory / os.environ['INVOCATION_ID']
+                               if args.recovery_directory is not None else None),
             )
             print(json.dumps(result, default=str), flush=True)
             return 0 if result['status'] == 'SUCCEEDED' else 1
-    except (SafetyBlocked, ValueError, KeyError, TypeError, OSError, sqlite3.DatabaseError) as exc:
+        if args.action == 'recover-scheduled':
+            result = recover_scheduled_backup(
+                args.state_root, args.backup_root, args.recovery_directory / os.environ['INVOCATION_ID'],
+                service_user=args.service_user, reconcile_timeout=args.reconcile_timeout,
+                termination={key: os.environ.get(key) for key in ('SERVICE_RESULT', 'EXIT_CODE', 'EXIT_STATUS')},
+            )
+            if result is not None:
+                print(json.dumps(result, default=str), flush=True)
+                return 1 if result['maintenance_window']['reconcile_verified'] is False else 0
+    except (SafetyBlocked, ValueError, KeyError, TypeError, OSError, sqlite3.DatabaseError,
+            subprocess.SubprocessError) as exc:
         print(json.dumps(dict(
             event='cloud_backup_error',
             error_category=classify_backup_error(exc),
