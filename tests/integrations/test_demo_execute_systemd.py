@@ -475,51 +475,49 @@ def test_handoff_seals_before_release_and_retries_the_same_snapshot(handoff_sour
     assert json.loads((package / handoff._RELEASE).read_text())['id'] == release_id
 
 
-@pytest.mark.skipif(sys.platform != 'linux', reason='handoff receiver is Linux')
-@pytest.mark.parametrize('desired', ['PAUSED', 'STOPPED', 'HALTED'])
-def test_handoff_installs_only_after_get_recovers_unknown(handoff_source, monkeypatch, desired):
-    h, transfer = handoff_source
-    with closing(DemoRuntime(h.root)) as runtime:
-        if desired == 'STOPPED':
+if sys.platform == 'linux':
+    @pytest.mark.parametrize('desired', ['PAUSED', 'STOPPED', 'HALTED'])
+    def test_handoff_installs_only_after_get_recovers_unknown(handoff_source, monkeypatch, desired):
+        h, transfer = handoff_source
+        with closing(DemoRuntime(h.root)) as runtime:
+            if desired == 'STOPPED':
+                runtime.stop()
+            if desired == 'HALTED':
+                runtime.halt('test halted state')
+        destination = transfer / 'execute-state'
+        package = transfer / 'package'
+        machine = Path('/etc/machine-id').read_text().strip()
+        handoff.export_handoff(h.root, package, machine_id=machine, state_root=destination.as_posix())
+        credentials = h.store.read()
+        secret = transfer / 'secret.json'
+        atomic_json(secret, dict(environment='DEMO', key=credentials.key, secret=credentials.secret))
+        monkeypatch.setenv('FACTORLAB_DEMO_SECRET_FILE', str(secret))
+        h.state.fail_endpoints['/time'] = [OSError('account GET unavailable')]
+        with pytest.raises(DataQualityError, match='account read failed'):
+            handoff.import_handoff(package, destination, min_free_bytes=0)
+        assert not destination.exists()
+        result = handoff.import_handoff(package, destination, min_free_bytes=0)
+        assert result['snapshot_verified'] and result['desired'] == desired
+        assert result['unknown'] == 0 and result['requests']['GET'] > 0
+        assert result['consumed']['posts'] == 1
+        assert len(_writes(h.requests, 'POST')) == 1 and not _writes(h.requests, 'DELETE')
+        with pytest.raises(FileExistsError):
+            handoff.import_handoff(package, destination, min_free_bytes=0)
+
+    def test_handoff_refuses_another_path_and_a_modified_valid_database(handoff_source):
+        h, transfer = handoff_source
+        destination = transfer / 'execute-state'
+        package = transfer / 'package'
+        machine = Path('/etc/machine-id').read_text().strip()
+        handoff.export_handoff(h.root, package, machine_id=machine, state_root=destination.as_posix())
+        reads_before_import = len(h.requests)
+        with pytest.raises(SafetyBlocked, match='another Linux host or state path'):
+            handoff.import_handoff(package, transfer / 'different-state', min_free_bytes=0)
+        with closing(DemoRuntime(package / 'databases')) as runtime:
             runtime.stop()
-        if desired == 'HALTED':
-            runtime.halt('test halted state')
-    destination = transfer / 'execute-state'
-    package = transfer / 'package'
-    machine = Path('/etc/machine-id').read_text().strip()
-    handoff.export_handoff(h.root, package, machine_id=machine, state_root=destination.as_posix())
-    credentials = h.store.read()
-    secret = transfer / 'secret.json'
-    atomic_json(secret, dict(environment='DEMO', key=credentials.key, secret=credentials.secret))
-    monkeypatch.setenv('FACTORLAB_DEMO_SECRET_FILE', str(secret))
-    h.state.fail_endpoints['/time'] = [OSError('account GET unavailable')]
-    with pytest.raises(DataQualityError, match='account read failed'):
-        handoff.import_handoff(package, destination, min_free_bytes=0)
-    assert not destination.exists()
-    result = handoff.import_handoff(package, destination, min_free_bytes=0)
-    assert result['snapshot_verified'] and result['desired'] == desired
-    assert result['unknown'] == 0 and result['requests']['GET'] > 0
-    assert result['consumed']['posts'] == 1
-    assert len(_writes(h.requests, 'POST')) == 1 and not _writes(h.requests, 'DELETE')
-    with pytest.raises(FileExistsError):
-        handoff.import_handoff(package, destination, min_free_bytes=0)
-
-
-@pytest.mark.skipif(sys.platform != 'linux', reason='handoff receiver is Linux')
-def test_handoff_refuses_another_path_and_a_modified_valid_database(handoff_source):
-    h, transfer = handoff_source
-    destination = transfer / 'execute-state'
-    package = transfer / 'package'
-    machine = Path('/etc/machine-id').read_text().strip()
-    handoff.export_handoff(h.root, package, machine_id=machine, state_root=destination.as_posix())
-    reads_before_import = len(h.requests)
-    with pytest.raises(SafetyBlocked, match='another Linux host or state path'):
-        handoff.import_handoff(package, transfer / 'different-state', min_free_bytes=0)
-    with closing(DemoRuntime(package / 'databases')) as runtime:
-        runtime.stop()
-    with pytest.raises(SafetyBlocked, match='differs from the sealed snapshot'):
-        handoff.import_handoff(package, destination, min_free_bytes=0)
-    assert len(h.requests) == reads_before_import and not destination.exists()
+        with pytest.raises(SafetyBlocked, match='differs from the sealed snapshot'):
+            handoff.import_handoff(package, destination, min_free_bytes=0)
+        assert len(h.requests) == reads_before_import and not destination.exists()
 
 
 def test_restart_preserves_budget_consumption_and_deployment(execute_harness):

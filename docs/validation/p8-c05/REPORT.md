@@ -24,3 +24,15 @@ Windows 将原账本中的所有 SQLite 数据库作为同一份冻结快照导�
 离线验证使用合成账户和被测试夹具拦截的 HTTP。验证覆盖发布中断后沿用原封存包、源端拒绝重新取得执行锁、目标路径及内容校验、GET 失败时目标路径保持缺失、以及对账后保持原累计预算与 PAUSED、STOPPED、HALTED。UNKNOWN 使用原订单 ID 恢复，夹具中的 POST 数保持不变。
 
 Debian WSL2 上以 Python 3.13.18 运行 Execute、云存储、云运行时和凭据四组测试，80 项通过。Windows 上以 Python 3.12.7 定向实测了导出、封存及发布重试，1 项通过，4 项 Linux 接收测试按平台跳过。测试覆盖的是本地软件行为。
+
+## F01 Windows Fast CI 测试收集修复
+
+PR #228 初始提交 `2b8f8fc` 的 Windows Fast Python 3.13 收集了 32 项测试，28 项通过、4 项跳过。四项 Linux 接收场景由 `skipif` 标记，仍进入 Windows 收集清单，可信 targeted 回执因此记录 `required_execution_observed=false` 并判定 FAIL。[原 Fast CI 运行](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45031466384/job/137235953145)
+
+两个 Linux 接收测试现在仅在 `sys.platform == 'linux'` 时定义，原测试断言、交接实现及可信验证规则保持原样。
+
+| 本地验证 | 修复后结果 |
+| --- | --- |
+| Windows，Python 3.13.9，原 Execute 测试文件 | 28 项通过，0 项跳过。 |
+| Windows，原可信基线的 `integration_checks.py --suite targeted` | `targeted PASS`，28 项通过，0 项跳过、失败或错误，`required_execution_observed=true`。 |
+| Debian 13.7 WSL2，Python 3.13.18，Execute 与 C05 集成回归 | 80 项通过。PAUSED、STOPPED、HALTED 和错误目标／篡改快照共四个 Linux 专属场景均收集并执行。 |
