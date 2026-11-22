@@ -796,15 +796,15 @@ class FuturesAdapter:
         facts = self.read_facts()
         return replace(facts, trades=self.user_trades(symbol), income=self.income(symbol))
 
-    def read_facts(self):
+    def read_facts(self, *, sync_funding=False):
         try:
-            return self._read_facts()
+            return self._read_facts(sync_funding=sync_funding)
         except (DataQualityError, ValueError, KeyError, TypeError, SafetyBlocked):
             self.facts = None
             self.disconnect()
             raise
 
-    def _read_facts(self):
+    def _read_facts(self, *, sync_funding):
         from .network import DemoNetworkTransport
         parallel = type(self.client.transport) is DemoNetworkTransport
         self._validate_network_identity()
@@ -815,7 +815,7 @@ class FuturesAdapter:
         observed_at = self.clock()
         error = None
         try:
-            with self._account_reads(observed_at, started, parallel=parallel) as read:
+            with self._account_reads(observed_at, started, parallel=parallel, sync_funding=sync_funding) as read:
                 facts = self._assemble_facts(observed_at, started, read)
             if parallel:
                 facts.confirmed_position_amounts()
@@ -836,13 +836,15 @@ class FuturesAdapter:
         return facts
 
     @contextmanager
-    def _account_reads(self, observed_at, started, *, parallel):
+    def _account_reads(self, observed_at, started, *, parallel, sync_funding):
         if not parallel:
             def read(path):
                 payload = self.client.request('GET', path)
                 self._require_fresh_account_read(observed_at, started, self.clock())
                 return payload
             yield read
+            if sync_funding:
+                self.sync_funding(end_time=observed_at)
             return
 
         window = AccountReadWindow(started + ACCOUNT_READ_SECONDS)
@@ -863,6 +865,10 @@ class FuturesAdapter:
             endpoints = (ACCOUNT_PERMISSION_PATH, *endpoints)
         with ThreadPoolExecutor(max_workers=6, thread_name_prefix='demo-account') as pool:
             pending = {path: pool.submit(fetch, path) for path in endpoints}
+            if sync_funding:
+                # Funding uses the same cutoff as the account read set. Keep its SQLite work
+                # on the owner thread while the account workers wait for network responses.
+                self.sync_funding(end_time=observed_at)
             _, unfinished = wait(pending.values(), timeout=max(0, window.deadline - self.client.monotonic()))
             if unfinished:
                 for future in unfinished:
@@ -1026,7 +1032,8 @@ class FuturesAdapter:
                 if expected_pos_deltas[sym] == ZERO:
                     del expected_pos_deltas[sym]
 
-        facts = self.read_facts()
+        sync_funding = sync_funding and self.db.execute('SELECT 1 FROM futures_orders LIMIT 1').fetchone() is not None
+        facts = self.read_facts(sync_funding=sync_funding)
         actual = {o['clientOrderId'] for o in facts.open_orders}
 
         # Live openOrders cross-check: never let an archived order remain open on exchange.
@@ -1036,11 +1043,8 @@ class FuturesAdapter:
                 with self.store.transaction():
                     mark_order_unarchived(self.db, cid, 'OPEN_ON_EXCHANGE')
                 self.query_order(cid)
-            facts = self.read_facts()
+            facts = self.read_facts(sync_funding=sync_funding)
             actual = {o['clientOrderId'] for o in facts.open_orders}
-
-        if sync_funding and self.db.execute('SELECT 1 FROM futures_orders LIMIT 1').fetchone() is not None:
-            self.sync_funding(end_time=facts.observed_at)
         funding_total = self._confirmed_funding_usdt(facts.observed_at)
 
         # Reactive late-fill / fee-drift check when archived exchange orders exist and account baseline shifted.

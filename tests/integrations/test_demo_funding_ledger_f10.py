@@ -862,6 +862,7 @@ def test_f09_deterministic_funding_residual_reconciliation(network_grid, monkeyp
     opening_wallet = D('4999.97114760')
     expected_wallet = D('4999.96645038')
     fake.cash = opening_wallet
+    mark_price = D('129.59')
     base_call = NetworkFixture.__call__
 
     def f09_market(self, request, timeout):
@@ -878,8 +879,7 @@ def test_f09_deterministic_funding_residual_reconciliation(network_grid, monkeyp
             return Response(response.status, response.headers, json.dumps(payload).encode())
         if request.path in {'/fapi/v3/account', '/fapi/v3/positionRisk'}:
             payload = json.loads(response.body)
-            mark = D('129.59')
-            pnl = self.quantity * (mark - self.entry)
+            pnl = (self.quantity * (mark_price - self.entry)).quantize(D('0.00000001'))
             if request.path == '/fapi/v3/account':
                 payload['assets'][0].update(
                     unrealizedProfit=str(pnl),
@@ -889,7 +889,7 @@ def test_f09_deterministic_funding_residual_reconciliation(network_grid, monkeyp
                     position['unrealizedProfit'] = str(pnl)
             else:
                 for position in payload:
-                    position.update(markPrice=str(mark), notional=str(self.quantity * mark))
+                    position.update(markPrice=str(mark_price), notional=str(self.quantity * mark_price))
             return Response(response.status, response.headers, json.dumps(payload).encode())
         return response
 
@@ -991,6 +991,12 @@ def test_f09_deterministic_funding_residual_reconciliation(network_grid, monkeyp
         assert restarted['statuses']['DEMO_ACCOUNT_RECONCILED'] is True
         assert restarted['statuses']['DEMO_RESTART_RECOVERY_VERIFIED'] is True
         assert restarted['fifo']['attribution']['summary']['reconciliation_residual'] == D('0')
+
+        # F13 observed this mark with 0.04 NVDA and exchange PnL rounded to eight places.
+        mark_price = D('132.80974812')
+        marked = capture(bridge.session, bridge.runtime, opening_wallet)
+        assert marked['official_equity_difference'] == D('0.0000000048')
+        assert marked['statuses']['DEMO_ACCOUNT_RECONCILED'] is True
 
 
 def test_pre_f10_persisted_journals_upgrade_and_backfill_funding(network_grid):

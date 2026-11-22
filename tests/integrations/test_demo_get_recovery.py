@@ -104,6 +104,44 @@ def test_account_read_set_uses_five_second_window(wired, monkeypatch, endpoint, 
         assert all(request.get_method() == 'GET' for request in wired[1])
 
 
+@pytest.mark.parametrize('funding_delay', [3.0, 5.001])
+def test_funding_overlaps_account_reads_with_the_same_cutoff(wired, monkeypatch, funding_delay):
+    clock = NetworkClock()
+    subject = client(clock)
+    subject.sync_time()
+    observed_at = datetime.fromtimestamp(clock.wall(), timezone.utc)
+    together = Barrier(2)
+    account_path, *_ = ACCOUNT_PATHS
+    income_path = '/fapi/v1/income'
+    original = NetworkFixture.__call__
+
+    def routes(fixture, request, timeout):
+        if request.path in (account_path, income_path):
+            started = clock.elapsed
+            delay = funding_delay if request.path == income_path else 3.0
+            together.wait(timeout=2)
+            clock.elapsed = max(clock.elapsed, started + delay)
+        if request.path == income_path:
+            return Response(200, {}, b'[]')
+        return original(fixture, request, timeout)
+
+    monkeypatch.setattr(NetworkFixture, '__call__', routes)
+    with closing(PaperStore(':memory:')) as store:
+        adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id,
+            clock=lambda: datetime.fromtimestamp(clock.wall(), timezone.utc))
+        cutoff_ms = round(observed_at.timestamp() * 1000)
+        monkeypatch.setattr(adapter, '_earliest_activity_ms', lambda: cutoff_ms - 60_000)
+        if funding_delay > 5:
+            with pytest.raises(DataQualityError, match='STALE_ACCOUNT'):
+                adapter.read_facts(sync_funding=True)
+            assert adapter.facts is None
+        else:
+            facts = adapter.read_facts(sync_funding=True)
+            assert facts.observed_at == observed_at
+            assert adapter.funding_coverage()['covered_through_ms'] == cutoff_ms
+        assert paths(wired[1]).count(income_path) == 1
+
+
 @pytest.mark.parametrize('endpoint', ['/fapi/v3/account', '/fapi/v1/openOrders'])
 def test_consecutive_get_timeouts_leave_gate_closed_and_do_not_retry(wired, monkeypatch, endpoint):
     subject = client()
@@ -151,8 +189,8 @@ def test_parallel_account_matches_serial_and_starts_known_v2_read_with_v3(wired,
         adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id)
         read_set = adapter._account_reads
         with monkeypatch.context() as patch:
-            patch.setattr(adapter, '_account_reads', lambda observed_at, started, *, parallel:
-                read_set(observed_at, started, parallel=False))
+            patch.setattr(adapter, '_account_reads', lambda observed_at, started, *, parallel, sync_funding:
+                read_set(observed_at, started, parallel=False, sync_funding=sync_funding))
             serial = adapter.reconcile()
             serial_facts = adapter.facts
         permission_read.clear()
