@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import struct
 import uuid
 
 from .demo_credentials import DemoCredentialStoreError
@@ -34,6 +35,59 @@ class DemoFileCredentialStore:
             raise ValueError
 
     @staticmethod
+    def _systemd_credential_acl_ok(descriptor, *, directory=False):
+        """Accept root-owned read-only systemd LoadCredential ACLs limited strictly to current uid."""
+        info = os.fstat(descriptor)
+        expected = stat.S_ISDIR if directory else stat.S_ISREG
+        max_perm = 5 if directory else 4
+        if (not expected(info.st_mode) or info.st_uid != 0
+                or info.st_mode & 0o227 or (not directory and info.st_nlink != 1)):
+            return False
+        if info.st_mode & 0o070 == 0:
+            return os.getuid() == 0
+        try:
+            raw = os.getxattr(descriptor, 'system.posix_acl_access')
+        except (AttributeError, OSError):
+            return False
+        if len(raw) < 4 or (len(raw) - 4) % 8 != 0:
+            return False
+        version, = struct.unpack_from('<I', raw, 0)
+        if version != 2:
+            return False
+        uid = os.getuid()
+        granted_self = False
+        for offset in range(4, len(raw), 8):
+            tag, perm, qualifier = struct.unpack_from('<HHI', raw, offset)
+            if tag == 0x01:  # ACL_USER_OBJ
+                if perm > max_perm:
+                    return False
+            elif tag == 0x02:  # ACL_USER
+                if qualifier != uid or not (4 <= perm <= max_perm):
+                    return False
+                granted_self = True
+            elif tag == 0x04:  # ACL_GROUP_OBJ
+                if perm != 0:
+                    return False
+            elif tag == 0x08:  # ACL_GROUP
+                return False
+            elif tag == 0x10:  # ACL_MASK
+                if perm > max_perm:
+                    return False
+            elif tag == 0x20:  # ACL_OTHER
+                if perm != 0:
+                    return False
+            else:
+                return False
+        return granted_self
+
+    def _is_systemd_credential_path(self):
+        cred_dir = os.environ.get('CREDENTIALS_DIRECTORY')
+        if not cred_dir:
+            return False
+        cred_path = Path(cred_dir)
+        return cred_path.is_absolute() and self._secret.parent == cred_path
+
+    @staticmethod
     def _open_directory(path):
         descriptor = os.open(path.anchor, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         try:
@@ -55,17 +109,29 @@ class DemoFileCredentialStore:
         finally:
             os.close(descriptor)
 
-    def _json(self, path, *, directory=None):
+    def _json(self, path, *, directory=None, allow_systemd_credential=False):
         descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
         with os.fdopen(descriptor, 'r', encoding='utf-8') as stream:
-            self._private(stream.fileno())
+            try:
+                self._private(stream.fileno())
+            except ValueError:
+                if not (allow_systemd_credential and self._systemd_credential_acl_ok(stream.fileno())):
+                    raise
             return json.load(stream)
 
     def read(self):
         try:
+            systemd_cred = self._is_systemd_credential_path()
             directory = self._open_directory(self._secret.parent)
             try:
-                payload = self._json(self._secret.name, directory=directory)
+                if systemd_cred:
+                    try:
+                        self._private(directory, directory=True)
+                    except ValueError:
+                        if not self._systemd_credential_acl_ok(directory, directory=True):
+                            raise
+                payload = self._json(self._secret.name, directory=directory,
+                                     allow_systemd_credential=systemd_cred)
             finally:
                 os.close(directory)
             if (not isinstance(payload, dict) or payload.get('environment') != 'DEMO'

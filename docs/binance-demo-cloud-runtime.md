@@ -1,6 +1,11 @@
 # Linux Demo cloud runtime — NO LIVE MONEY
 
-The systemd service is a GET-only account recovery and market observation process, not an unattended trading worker. It cannot create or cancel exchange orders, create execution authorization, resume an existing Grid deployment, or replenish a campaign. Offline mode does not construct a network client. Docker is not a second supported deployment path.
+This deployment covers two mutually exclusive systemd units over the same private persistent state root (`/var/lib/factorlab-demo`):
+
+- `factorlab-demo.service`: GET-only account recovery and market observation (`demo_cloud_runtime run`). It cannot create or cancel exchange orders. Offline mode does not construct a network client.
+- `factorlab-demo-execute.service`: Existing Binance Demo Grid Execute worker (`factorlab-demo grid-supervisor start --execute`), retaining the existing `DemoRuntime`, `DemoSupervisor`, `TradingController`, `DemoExecutionGateway`, `DemoGridBridge`, persistent budgets, account binding, UNKNOWN protection, 5-second account/market freshness bounds, and continuous Campaign window rotation.
+
+The two units declare bidirectional `Conflicts=` and share `/var/lib/factorlab-demo/session.lock` (`flock`) so GET-only and Execute cannot simultaneously hold ownership of the same account. Docker and Kubernetes are not supported deployment paths.
 
 ## Storage and installation
 
@@ -24,7 +29,7 @@ Keep the entire root together: `runtime.sqlite3`, deterministic account journal 
 
 Provision `/etc/factorlab-demo/demo-secret.json` through a protected administrative editor or your existing secret delivery mechanism, root-owned mode 0600. Do not put real values in shell arguments, environment files, Git, CI, logs, or support reports. Its schema is JSON with explicit `environment: "DEMO"`, `key`, and `secret` fields. Production credentials are not accepted as a different environment, and requests always target the fixed official Demo host.
 
-The unit uses systemd `LoadCredential` to deliver a private read-only credential copy; `FACTORLAB_DEMO_SECRET_FILE` contains only its pathname. The binding is separate private state, not the Secret. For an existing account, migrate the existing binding and all journal files through the approved offline state-transfer process; do not fabricate another binding or run setup over a different account. Inspect migrated Linux ownership and modes before starting.
+The unit uses systemd `LoadCredential` to deliver a private read-only credential copy; `FACTORLAB_DEMO_SECRET_FILE` contains only its pathname. `DemoFileCredentialStore` enforces regular non-symlink single-link files owned by the service user with mode `0600`, or root-owned read-only systemd `LoadCredential` mounts inside `$CREDENTIALS_DIRECTORY` whose Linux POSIX ACL strictly limits read access to root and the current service UID (zero group or world access). The binding is separate private state, not the Secret. For an existing account, migrate the existing binding and all journal files through the approved offline state-transfer process; do not fabricate another binding or run setup over a different account. Inspect migrated Linux ownership and modes before starting.
 
 For a previously provisioned dedicated Demo identity with no existing binding, perform the existing **GET-only** setup command as the service user with the explicit root and Secret path; setup observes the account before binding. Do not run `enable-demo`, continuous authorization, agreement signing, Grid execution, or any order command as part of this installation.
 
@@ -105,6 +110,27 @@ sudo -u factorlab-demo /opt/factorlab/venv/bin/python \
 | Stale heartbeat / failed service | Check journal and exact exit category; do not interpret absence as healthy. |
 
 The default free-space threshold is 256 MiB, checked before network recovery/journal activity each poll; tune `--min-free-bytes` to expected data growth. It is a reserve threshold, not a filesystem quota or guarantee against concurrent disk consumption. Keep backups on separately provisioned persistent storage.
+
+## Execute service wiring (P8-C04)
+
+`deploy/systemd/factorlab-demo-execute.service` runs `/opt/factorlab/venv/bin/factorlab-demo grid-supervisor start --execute` under the same `factorlab-demo` user, `/var/lib/factorlab-demo` state root, `LoadCredential=demo-secret:/etc/factorlab-demo/demo-secret.json`, `UMask=0077`, hardening directives, `Restart=on-failure`, `RestartSec=15`, and `RestartPreventExitStatus=78`.
+
+Control state is read authoritatively from the persisted SQLite databases (`runtime.sqlite3` and `grid-supervisor.sqlite3`):
+
+- Startup never overwrites persisted `STOPPED`, `HALTED`, or `PAUSED` to `RUNNING`. Initial `RUNNING` state is created only when no control row exists yet and the runtime is neither `STOPPED` nor `HALTED`.
+- Durable `STOPPED` or `HALTED` is detected before credential/network access and exits `0` cleanly without modifying budgets or order history; `Restart=on-failure` does not revive it.
+- Persisted `PAUSED` remains `PAUSED` across restarts (GET monitoring only, no window creation/rotation, no order submission) until explicit `factorlab-demo grid-supervisor resume --execute`.
+- Recoverable startup network, clock calibration, staleness, and UNKNOWN reconciliation failures enter the existing `DemoSupervisor` exponential backoff and recovery loop without creating duplicate Grid deployments, Campaigns, or ledgers, and without submitting orders during recovery.
+- Fatal credential, binding/identity, exchange `AUTH`/`SIGNATURE`, SQLite corruption, lock contention, restore-quarantine, and low-disk errors fail explicitly with exit code `78` (`RestartPreventExitStatus=78`) and sanitized JSON refusal logs containing zero secrets.
+
+To switch an account from GET-only to Execute (after exclusive account ownership is coordinated with any external F05 runner):
+
+```sh
+sudo systemctl disable --now factorlab-demo.service
+sudo systemctl enable --now factorlab-demo-execute.service factorlab-demo-health.timer
+```
+
+The existing `factorlab-demo-health.service` and `factorlab-demo-health.timer` reuse `/var/lib/factorlab-demo/cloud-health.json` for `OFFLINE`, `GET_ONLY`, and `EXECUTE` modes. `demo_cloud_runtime health` reports real systemd unit state (`systemctl show`), mode, last valid account reconciliation and market timestamps, Grid state, positions/wallet/NAV (suppressed when account recovery is not fresh), GET/POST/DELETE counts, remaining campaign and global budgets, desired `STOPPED`/`HALTED`/`PAUSED`/`RUNNING` state, recent orders and UNKNOWN orders, and automatic recovery state. `ready` / `execute_healthy` / `demo_execution_ready` are never inferred from systemd `active` alone.
 
 ## Stability observation profiles
 

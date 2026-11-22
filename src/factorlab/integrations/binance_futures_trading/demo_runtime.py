@@ -1,6 +1,6 @@
 """Current-user Demo runtime and restart-safe write budgets."""
 
-from contextlib import closing, contextmanager
+from contextlib import ExitStack, closing, contextmanager
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import json
@@ -495,9 +495,24 @@ class DemoRuntime:
 DEMO_LIMITS = RiskLimits(MAX_NOTIONAL, MAX_NOTIONAL, MAX_NOTIONAL, orders_per_minute=20)
 
 
+def durable_control_state(runtime):
+    """Return persisted account-wide STOP/HALTED state, or None when not stopped/halted."""
+    authorization = runtime.continuous_authorization()
+    if authorization is not None:
+        if authorization['state'] == 'HALTED' or runtime._get('continuous_diagnostic') is not None:
+            return 'HALTED'
+        if authorization['state'] == 'STOPPED':
+            return 'STOPPED'
+        return None
+    if runtime._get('stop_epoch') and not runtime._get('active') and not runtime._get('continuous_window'):
+        return 'STOPPED'
+    return None
+
+
 @contextmanager
 def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_deployment=False,
-                      preview=False, continuous=False, request_counts=None, dispatch_gate=None):
+                      preview=False, continuous=False, request_counts=None, dispatch_gate=None,
+                      runtime=None, ensure_on_open=True):
     """Open one campaign-bound Grid bridge over the shared Demo journals."""
     from factorlab.trading.storage import PaperStore, dumps, decode
 
@@ -507,14 +522,18 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
     if preview:
         root = root / 'grid-preview'
         root.mkdir(parents=True, exist_ok=True)
-    with operator_lock(root), closing(DemoRuntime(root)) as runtime:
+    with ExitStack() as stack:
+        if runtime is None:
+            stack.enter_context(operator_lock(root))
+            runtime = stack.enter_context(closing(DemoRuntime(root)))
         binding = private_binding(store)
         credential = store.read()
         if credential is None:
             raise SafetyBlocked('saved Demo credential missing; run setup')
         campaign = dict(id='grid-preview', prefix='preview') if preview else runtime.active_campaign()
         writes = not read_only and not preview
-        automatic = writes and continuous and runtime.continuous_authorization() is not None
+        continuous_auth = runtime.continuous_authorization()
+        automatic = writes and continuous and continuous_auth is not None
         if writes and not automatic and (campaign is None or campaign['smoke']):
             raise SafetyBlocked('no persistent Demo authorization; run start-continuous')
         authorization = runtime.authority(binding, campaign) if writes and not automatic else None
@@ -536,76 +555,82 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
         journal = root / journal_id(binding['account_id'])
         journal.mkdir(exist_ok=True)
         capacity = dict(continuous_capacity=True) if continuous else {}
-        with (closing(PaperStore(journal / 'protocol.sqlite3', **capacity)) as protocol_store,
-              closing(PaperStore(journal / 'controller.sqlite3', **capacity)) as controller_store):
-            saved = saved_grid_deployment(controller_store)
-            reconcile_on_open = not read_only and (automatic or new_deployment
-                or (saved is None and grid_factory is not None))
-            session = DemoSession(credential, protocol_store=protocol_store, controller_store=controller_store,
-                account_id=binding['account_id'], configuration=binding['configuration'],
-                authorization=authorization, limits=DEMO_LIMITS,
-                write_guard=guard if writes and not automatic else None,
-                receipt_sink=record if writes and not automatic else None,
-                request_counts=request_counts, get_confirmed_writes=continuous, reconcile_on_open=reconcile_on_open)
+        protocol_store = stack.enter_context(closing(PaperStore(journal / 'protocol.sqlite3', **capacity)))
+        controller_store = stack.enter_context(closing(PaperStore(journal / 'controller.sqlite3', **capacity)))
+        saved = saved_grid_deployment(controller_store)
+        reconcile_on_open = not read_only and ((automatic and ensure_on_open) or new_deployment
+            or (saved is None and grid_factory is not None))
+        session = DemoSession(credential, protocol_store=protocol_store, controller_store=controller_store,
+            account_id=binding['account_id'], configuration=binding['configuration'],
+            authorization=authorization, limits=DEMO_LIMITS,
+            write_guard=guard if writes and not automatic else None,
+            receipt_sink=record if writes and not automatic else None,
+            request_counts=request_counts, get_confirmed_writes=continuous, reconcile_on_open=reconcile_on_open,
+            require_bound_configuration=automatic)
 
-            def ensure_campaign():
-                nonlocal campaign
-                if not automatic:
-                    return campaign
-                epoch = runtime.stop_epoch()
-                status = session.status()
-                recovery_required = bool(runtime._get('continuous_recovery'))
-                selected = runtime.ensure_window(binding, facts=session.adapter.facts,
-                    reconciled=status['reconciled'] and not status['unknown'], stop_epoch=epoch)
-                if (campaign is None or selected['id'] != campaign['id']
-                        or not session.client.transport.permitted()
-                        or session.write_uncertain or session.receipt_error
-                        or recovery_required):
-                    session.refresh_authorization(runtime.authority(binding, selected),
-                        write_guard=guard, receipt_sink=record)
-                campaign = selected
+        def ensure_campaign():
+            nonlocal campaign
+            if not automatic:
                 return campaign
+            epoch = runtime.stop_epoch()
+            status = session.status()
+            recovery_required = bool(runtime._get('continuous_recovery'))
+            selected = runtime.ensure_window(binding, facts=session.adapter.facts,
+                reconciled=status['reconciled'] and not status['unknown'], stop_epoch=epoch)
+            if (campaign is None or selected['id'] != campaign['id']
+                    or not session.client.transport.permitted()
+                    or session.write_uncertain or session.receipt_error
+                    or recovery_required):
+                session.refresh_authorization(runtime.authority(binding, selected),
+                    write_guard=guard, receipt_sink=record)
+            campaign = selected
+            return campaign
 
-            if automatic:
-                ensure_campaign()
-            key = 'demo-grid:deployment'
-            if new_deployment:
-                if read_only:
-                    raise SafetyBlocked('new Grid deployment requires explicit write mode')
-                if saved is not None and decode(json.loads(saved))['campaign'] == campaign['id']:
-                    raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
-                status = session.status()
-                if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
-                    raise SafetyBlocked('new Grid deployment requires a reconciled flat account without open or UNKNOWN orders')
-                saved = None
-            if saved is not None:
-                deployment = decode(json.loads(saved))
-                if ((writes or preview) and deployment['campaign'] != campaign['id']
-                        and not (automatic and deployment['deployment']['deployment_id'] == campaign['prefix'] + '-g')):
-                    raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
-                if grid_factory is None or read_only:
-                    grid = restore_grid(deployment['deployment'])
-                else:
-                    grid = grid_factory(session, campaign['prefix'] + '-g')
-                    if dumps(grid.deployment()) != dumps(deployment['deployment']):
-                        raise SafetyBlocked('persisted Grid deployment differs')
+        if automatic and (ensure_on_open or saved is None or new_deployment):
+            ensure_campaign()
+        key = 'demo-grid:deployment'
+        if new_deployment:
+            if read_only:
+                raise SafetyBlocked('new Grid deployment requires explicit write mode')
+            if saved is not None and decode(json.loads(saved))['campaign'] == campaign['id']:
+                raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
+            status = session.status()
+            if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
+                raise SafetyBlocked('new Grid deployment requires a reconciled flat account without open or UNKNOWN orders')
+            saved = None
+        expected_prefix = (campaign['prefix'] if campaign is not None
+            else continuous_auth['prefix'] if automatic else None)
+        if saved is not None:
+            deployment = decode(json.loads(saved))
+            if ((writes or preview)
+                    and (campaign is None or deployment['campaign'] != campaign['id'])
+                    and not (automatic and deployment['deployment']['deployment_id'] == expected_prefix + '-g')):
+                raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
+            if grid_factory is None or read_only:
+                grid = restore_grid(deployment['deployment'])
             else:
-                if read_only or grid_factory is None:
-                    raise SafetyBlocked('no persisted Grid deployment')
-                deployment_id = campaign['prefix'] + '-g'
-                grid = grid_factory(session, deployment_id)
-                if grid.deployment_id != deployment_id:
-                    raise SafetyBlocked('Grid deployment identity differs from the active Demo campaign')
-                deployment = dict(campaign=campaign['id'], deployment=grid.deployment())
-            if continuous:
-                grid.enable_continuous_capacity()
-            bridge = DemoGridBridge(grid, session, expect=expect if writes else None,
-                read_only=read_only, preview=preview)
-            with controller_store.transaction():
-                controller_store.record_metadata(key + ':' + deployment['campaign'], deployment)
-            bridge.runtime = runtime
-            bridge.ensure_campaign = ensure_campaign
-            yield bridge
+                grid = grid_factory(session, expected_prefix + '-g')
+                if dumps(grid.deployment()) != dumps(deployment['deployment']):
+                    raise SafetyBlocked('persisted Grid deployment differs')
+        else:
+            if read_only or grid_factory is None:
+                raise SafetyBlocked('no persisted Grid deployment')
+            deployment_id = campaign['prefix'] + '-g'
+            grid = grid_factory(session, deployment_id)
+            if grid.deployment_id != deployment_id:
+                raise SafetyBlocked('Grid deployment identity differs from the active Demo campaign')
+            deployment = dict(campaign=campaign['id'], deployment=grid.deployment())
+        if continuous:
+            grid.enable_continuous_capacity()
+        deferred_admission = automatic and not ensure_on_open and session._write_guard is None
+        bridge = DemoGridBridge(grid, session, expect=expect if writes else None,
+            read_only=read_only, preview=preview, deferred_admission=deferred_admission,
+            expected_prefix=expected_prefix)
+        with controller_store.transaction():
+            controller_store.record_metadata(key + ':' + deployment['campaign'], deployment)
+        bridge.runtime = runtime
+        bridge.ensure_campaign = ensure_campaign
+        yield bridge
 
 
 def saved_grid_deployment(store):

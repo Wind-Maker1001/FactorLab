@@ -317,8 +317,8 @@ def parse_args(argv):
 def main(argv=None):
     args = parse_args(argv)
     if args.command == 'grid-supervisor':
-        from .demo_grid_supervisor import run
-        return run(args)
+        from .demo_grid_supervisor import run_cli
+        return run_cli(args)
     smoke_id = 'smoke-' + args.approval_id.hex if args.command == 'smoke-test' and args.approval_id else SMOKE_CAMPAIGN
     requests = dict(GET=0, POST=0, DELETE=0)
     result = dict(status='DEMO_BLOCKED')

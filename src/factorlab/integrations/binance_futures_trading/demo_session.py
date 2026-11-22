@@ -85,7 +85,7 @@ class DemoSession:
 
     def __init__(self, credential, *, protocol_store, controller_store, account_id, configuration,
                  authorization=None, limits=RiskLimits(), write_guard=None, receipt_sink=None, request_counts=None,
-                 get_confirmed_writes=False, reconcile_on_open=False):
+                 get_confirmed_writes=False, reconcile_on_open=False, require_bound_configuration=False):
         if (authorization is None) != (write_guard is None):
             raise SafetyBlocked('Demo writes require authorization and a persistent guard')
         self.requests = _new_request_counts() if request_counts is None else request_counts
@@ -111,7 +111,8 @@ class DemoSession:
         with self.client.recover_get_clock():
             observation = observe_demo_rules(self.adapter, source_version=DEMO.host, on_symbol=self._check_symbol)
             facts = self.adapter.read_facts()
-        if (authorization is not None or reconcile_on_open) and demo_account_configuration(facts) != configuration:
+        if ((authorization is not None or reconcile_on_open or require_bound_configuration)
+                and demo_account_configuration(facts) != configuration):
             raise SafetyBlocked('persisted Demo account configuration mismatch')
         balance = facts.usdt()['walletBalance']
         if balance is None:

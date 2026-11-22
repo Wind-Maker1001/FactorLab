@@ -1,8 +1,9 @@
 [Unit]
 Description=FactorLab Binance Demo GET-only runtime (NO LIVE MONEY)
 Wants=network-online.target
-After=network-online.target
+After=network-online.target factorlab-demo-execute.service
 RequiresMountsFor=/var/lib/factorlab-demo
+Conflicts=factorlab-demo-execute.service
 StartLimitIntervalSec=300
 StartLimitBurst=5
 
