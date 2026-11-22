@@ -292,6 +292,11 @@ class DemoGridBridge:
 
     def _fresh_exit_book(self, book=None):
         now = self.gateway.clock()
+        facts = self.gateway.adapter.facts
+        if facts is None:
+            raise SafetyBlocked('STALE_ACCOUNT: Demo exit requires account evidence')
+        self.gateway.adapter._require_fresh_account_read(
+            facts.observed_at, facts.read_started_monotonic, now)
         previous = self.gateway.state.quotes.get(self.grid.instrument_id)
 
         def usable(candidate):
@@ -521,12 +526,6 @@ class DemoGridBridge:
             if self._delete_already_consumed(key):
                 self.exit_block_reason = 'EXIT_CANCEL_ALREADY_CONSUMED'
                 return None
-            if key in self.grid.exit_cancellations:
-                result = self.controller.cancel(key) if self.session is None else self.session.cancel(key)
-                self._exit_awaiting_reconcile = True
-                self.ready = result is not None and not (self.session and self.session.write_uncertain)
-                self._sync()
-                return result
             if key not in self.grid.orders:
                 self.exit_block_reason = None
                 return None
@@ -534,9 +533,20 @@ class DemoGridBridge:
             target_price, _, block_reason = self._plan_limit_exit(account.inventory, current_book)
             record = self.gateway.state.orders[key]
             age_seconds = (self.gateway.clock() - record.observed_at).total_seconds()
-            if (block_reason is None and age_seconds >= self.exit_reprice_seconds
-                    and sell.intent.limit_price is not None and target_price < sell.intent.limit_price):
-                self._command('exit_cancel', key)
+            if (block_reason is None and (key in self.grid.exit_cancellations
+                    or (age_seconds >= self.exit_reprice_seconds
+                        and sell.intent.limit_price is not None and target_price < sell.intent.limit_price))):
+                # A pending cancel command is also rechecked after replay. Keep
+                # the working SELL unless today's replacement is admissible.
+                try:
+                    reference = self.gateway.fresh_mark_price(self.grid.instrument_id)
+                    self.gateway.check_price_band(self.grid.instrument_id, target_price, reference,
+                                                  quote_price=current_book['askPrice'])
+                except SafetyBlocked as error:
+                    self.exit_block_reason = _classify_exit_block(error) or 'EXIT_MARK_UNAVAILABLE'
+                    return None
+                if key not in self.grid.exit_cancellations:
+                    self._command('exit_cancel', key)
                 result = self.controller.cancel(key) if self.session is None else self.session.cancel(key)
                 self._exit_awaiting_reconcile = True
                 self.ready = result is not None and not (self.session and self.session.write_uncertain)

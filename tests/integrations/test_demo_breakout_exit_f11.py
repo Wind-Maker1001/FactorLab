@@ -1,5 +1,5 @@
 """Offline deterministic regressions for P7-M19-F11: BREAKOUT auto-exit and post-flat Grid rotation."""
-from contextlib import closing
+from contextlib import ExitStack, closing
 from dataclasses import replace
 from datetime import timedelta
 from decimal import Decimal as D
@@ -28,7 +28,7 @@ from factorlab.integrations.binance_futures_trading.demo_runtime import (
 from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
 from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import StrategyControl
 from factorlab.integrations.binance_futures_trading.fake import MS, NOW
-from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
+from factorlab.integrations.binance_futures_trading.protocol import AccountReadExpired, SafetyBlocked
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, GridRules
 from factorlab.trading import Market, OrderStatus as S, Side
@@ -519,6 +519,143 @@ def test_f11_04_unfilled_exit_monitors_and_reprices_bounded(f11_harness):
         # Both exit attempts are counted in cumulative budget!
         assert consumed['posts'] == 3
         assert D(consumed['submitted_notional']) == D('0.04') * (D('146') + D('143') + D('141'))
+
+
+# ---------------------------------------------------------------------------
+# P2. Replacement admission before DELETE and again before POST
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize('blocked', ['price_band', 'missing_mark', 'stale_mark', 'future_mark',
+                                    'quote_band', 'missing_rule', 'replayed_cancel'])
+def test_f11_reprice_preserves_working_sell_until_band_recovers(f11_harness, blocked):
+    """P2: a valid 143 SELL must survive an inadmissible 140 replacement."""
+    h = f11_harness
+    _setup_breakout_with_position(h, breakout_price='143')
+    with ExitStack() as stack:
+        bridge = stack.enter_context(open_grid_session(h.root, h.store, h.factory, continuous=True))
+        bridge.recover()
+        original = bridge.step_breakout_exit()
+        key = original.intent.client_order_id
+        assert original.intent.limit_price == D('143')
+        h.state.seconds += 181
+        h.state.bid, h.state.ask, h.state.mark = D('140'), D('145.10'), D('145')
+        bridge.recover()
+        if blocked == 'replayed_cancel':
+            bridge._command('exit_cancel', key)
+            stack.close()
+            bridge = stack.enter_context(open_grid_session(h.root, h.store, h.factory, continuous=True))
+            bridge.recover()
+        if blocked == 'quote_band':
+            h.state.bid, h.state.ask, h.state.mark = D('141'), D('146'), D('141')
+        band = bridge.gateway.rules.filters['PERCENT_PRICE']
+        down = band['multiplierDown']
+        assert D(down) == D('.97') and D('145') * D(down) == D('140.65')
+        if blocked == 'missing_rule':
+            band.pop('multiplierDown')
+
+        marks = []
+
+        def mark_response(exchange, request, timeout, original_request, state):
+            if request.path.endswith('/premiumIndex'):
+                marks.append(request)
+                ms = round((NOW.timestamp() + state.seconds) * 1000)
+                payload = dict(symbol='NVDAUSDT', markPrice=str(state.mark), time=ms)
+                if blocked == 'missing_mark':
+                    payload.pop('markPrice')
+                elif blocked == 'stale_mark':
+                    payload['time'] -= 5001
+                elif blocked == 'future_mark':
+                    payload['time'] += 1
+                return Response(200, {}, json.dumps(payload).encode())
+            return None
+
+        h.state.on_request = mark_response
+        assert bridge.step_breakout_exit(book=bridge.session._fresh_book()) is None
+        assert len(marks) == 1
+        assert not writes(h.requests, 'DELETE')
+        assert len(writes(h.requests, 'POST')) == 2
+        assert bridge.session.adapter.order(key).status is S.SUBMITTED
+        assert bridge.breakout_exit_status()['active_exit_order_id'] == key
+        assert bridge.exit_block_reason == ('EXIT_MARK_UNAVAILABLE' if blocked in (
+            'missing_mark', 'stale_mark', 'future_mark') else 'EXIT_PRICE_BAND')
+        assert (key in bridge.grid.exit_cancellations) is (blocked == 'replayed_cancel')
+
+        # New market evidence permits one DELETE, GET reconciliation, then one POST.
+        h.state.on_request = None
+        band['multiplierDown'] = down
+        h.state.bid, h.state.ask, h.state.mark = D('141'), D('141.10'), D('141.05')
+        bridge.recover()
+        mark_gets = lambda: sum(m == 'GET' and p.endswith('/premiumIndex') for m, p, _ in h.fake.calls)
+        before_cancel = mark_gets()
+        assert bridge.step_breakout_exit().status is S.CANCELED
+        assert mark_gets() == before_cancel + 1
+        assert len(writes(h.requests, 'DELETE')) == 1
+        assert len(writes(h.requests, 'POST')) == 2
+        assert bridge.step_breakout_exit() is None
+        assert mark_gets() == before_cancel + 1
+        bridge.recover()
+        before_post = mark_gets()
+        replacement = bridge.step_breakout_exit()
+        assert mark_gets() == before_post + 1
+        assert replacement.intent.limit_price == D('141')
+        assert replacement.intent.quantity == D('.04')
+        assert replacement.intent.reduce_only
+        assert len(writes(h.requests, 'DELETE')) == 1
+        assert len(writes(h.requests, 'POST')) == 3
+
+
+def test_f11_replacement_post_rechecks_market_after_cancel(f11_harness, monkeypatch):
+    h = f11_harness
+    _setup_breakout_with_position(h, breakout_price='143')
+    with open_grid_session(h.root, h.store, h.factory, continuous=True) as bridge:
+        bridge.recover()
+        bridge.step_breakout_exit()
+        h.state.seconds += 181
+        h.state.bid, h.state.ask, h.state.mark = D('141'), D('141.10'), D('141.05')
+        bridge.recover()
+        assert bridge.step_breakout_exit().status is S.CANCELED
+        bridge.recover()
+        submit = bridge.session.submit_intent
+
+        def changed_market(intent, **kwargs):
+            h.state.mark = D('150')  # Even 141 is now outside the formal POST band.
+            return submit(intent, **kwargs)
+
+        monkeypatch.setattr(bridge.session, 'submit_intent', changed_market)
+        assert bridge.step_breakout_exit() is None
+        assert bridge.exit_block_reason == 'EXIT_PRICE_BAND'
+        assert len(writes(h.requests, 'POST')) == 2
+        assert len(writes(h.requests, 'DELETE')) == 1
+        assert bridge.account().inventory == D('.04')
+        assert bridge._dispatched_exit_attempts() == 1
+        monkeypatch.setattr(bridge.session, 'submit_intent', submit)
+        h.state.mark = D('141.05')
+        bridge.recover()
+        assert bridge.step_breakout_exit().intent.limit_price == D('141')
+        assert len(writes(h.requests, 'POST')) == 3
+        assert len(writes(h.requests, 'DELETE')) == 1
+
+
+@pytest.mark.parametrize('stale', ['account', 'book'])
+def test_f11_exit_still_requires_fresh_account_and_book(f11_harness, stale):
+    h = f11_harness
+    _setup_breakout_with_position(h, breakout_price='143')
+    with open_grid_session(h.root, h.store, h.factory, continuous=True) as bridge:
+        bridge.recover()
+        consumer = GridConsumer(bridge, Control())
+        if stale == 'account':
+            h.state.seconds += 5.001
+        else:
+            h.state.quote_age = 5001
+        raw = bridge.session.client.request('GET', '/fapi/v1/ticker/bookTicker',
+                                            {'symbol': 'NVDAUSDT'}, signed=False)
+        consumer.set_latest_book(raw)
+        with pytest.raises(AccountReadExpired if stale == 'account' else SafetyBlocked,
+                           match='STALE_ACCOUNT' if stale == 'account' else 'STALE_QUOTE'):
+            bridge.step_breakout_exit(book=consumer.latest_book)
+        assert len(writes(h.requests, 'POST')) == 1
+        assert not writes(h.requests, 'DELETE')
 
 
 # ---------------------------------------------------------------------------

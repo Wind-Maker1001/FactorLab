@@ -21,7 +21,7 @@ F09 官方验收中，Grid 部署 `fl-d7345f8795464a65-g-00001`（区间 `[129.5
 
 ## 二、最小架构改动与目标状态机
 
-遵循“停止策略开仓”与“既有持仓受控退出”解耦原则，不新建审批状态机、不绕过累计授权、不重写 Demo 网关或订单引擎，仅在既有 5 个模块进行最小必要扩展：
+遵循“停止策略开仓”与“既有持仓受控退出”解耦原则，不新建审批状态机、不绕过累计授权、不重写 Demo 网关或订单引擎，仅在既有 6 个模块进行最小必要扩展：
 
 | 模块 | 最小变更 | 职责与不变量 |
 | --- | --- | --- |
@@ -30,6 +30,7 @@ F09 官方验收中，Grid 部署 `fl-d7345f8795464a65-g-00001`（区间 `[129.5
 | `src/factorlab/integrations/binance_futures_trading/demo_market_feed.py` | 补齐 5 行可选消费钩子 `set_latest_book(raw)` 与 `maintain(raw)` | 将已通过 5 秒新鲜度校验的真实 `bookTicker`（含精确 `bidPrice`/`askPrice`）透传给 `GridConsumer`，无额外 HTTP GET；即便盘口时间戳未跳变也可推进退出生命周期 |
 | `src/factorlab/integrations/binance_futures_trading/demo_grid_supervisor.py` | 扩展 `GridConsumer`（`gate()`、`before_poll()`、`_accept_bar()`、`quote()`、`maintain()`、`status()`）与 `GridSupervisorRuntime.health_snapshot()` | `BREAKOUT` 后持续进行 GET 恢复与窗口自动续期；仅在 `closed_by_breakout` 受控退出路径上解除对普通开仓 `live_bar` 的依赖，同时仍强制 `desired=='RUNNING'`、`authority()`、5 秒账户/盘口新鲜度与 `collection.check()`；在 `cloud-health.json` 的 `grid.breakout_exit` 中诚实输出退出阶段与阻断诊断 |
 | `src/factorlab/integrations/binance_futures_trading/demo_runtime.py` | 强化 `rotate_if_terminal()` | 除原有官方 GET `positions`/`open_orders`/`unknown` 与未回执 `dispatches` 校验外，额外核验本地权威账本 `gateway.state.positions` 为空、所有历史订单均已达终态且 `grid.active` 中无已发往交易所的活动单，确保仅在完全平仓并落账后才生成下一代 Grid |
+| `src/factorlab/integrations/binance_futures_trading/execution.py` | 抽出 `fresh_mark_price()` 与 `check_price_band()`，供撤单前预检与原 `_network_admission()` 共用 | 官方标记价仍须在五秒内；预检不缓存或授权后续 POST，实际提交继续取得新标记价并执行全部正式准入 |
 
 ### 业务状态映射
 
@@ -99,3 +100,38 @@ RUNNING
    - Demo 网关禁止 `MARKET` 订单，限价卖单依赖真实买盘成交；单部署最多尝试 `EXIT_MAX_ATTEMPTS = 5` 次（冷却 `180s`），超限后触发 `EXIT_BLOCKED:EXIT_RETRY_LIMIT_EXCEEDED`（或保留最后一笔活动挂单继续监测），防止无界 `POST`/`DELETE` 消耗预算。若某笔 `DELETE` 预留已消耗但网络丢包导致原单仍在交易所，则标记 `EXIT_CANCEL_ALREADY_CONSUMED` 并继续监测原单，不重复发 `DELETE`。
 6. **对 F09 真实持仓的可执行区间结论**：
    - 在当前 F09 持仓（`0.04 NVDA @ 129.59 USDT`）下，只要合并主线后重启独占官方 Execute 进程时实时 `NVDAUSDT` 买一价处于 `[125.00, 175.00]` USDT 且位于 `PERCENT_PRICE` 保护带内、累计授权与 `1 USDT` 亏损预算仍有余量，F11 即可无需人工审批地自动提交合法 reduce-only `SELL LIMIT GTC` 退出单，并在官方 GET 确认平仓落账后自动轮换至 `fl-d7345f8795464a65-g-00002`。
+
+---
+
+## 五、PR #224：Extended CI 四项回归与 Codex P2 修复（2026-11-22）
+
+### F07 独立时钟回归
+
+原 HEAD `f624deeeb0e247df1559764adb251b9b7d460332` 对应 [失败 CI](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45010767011)：Python 3.13、3.14 的 shard 0 分别在 `test_forward_recovery_scheduling.py` 失败四项。本机先在未修改代码时复现 **4 failed, 7 passed**，调用链均为 `DemoMarketFeed._poll()` → `GridConsumer.set_latest_book()` → `DemoSession._fresh_book()` → `STALE_QUOTE`。
+
+Feed 已根据自己的交易所时间范围验证五秒新鲜度、单调行情水位、标的和合法买卖价。新增钩子再次套用 Session 的另一时钟，错误拒绝 F07 的独立时钟模拟。现改为 `set_latest_book()` 复用 `_book()` 解析结构、标的、正数买卖价及非交叉盘口；Feed 代码和五秒时限均未改动。实际退出时 `_fresh_exit_book()` 仍检查五秒账户读集（墙钟及单调时钟）与盘口新鲜度、水位；最终 POST 仍经过 `DemoSession.submit_intent()`、原 controller、网关及 dispatch guard 的正式准入。
+
+修复后原文件 **11 passed**，四项参数案例全部通过，包含 `fewer_gets[False/True]`、`full_round[ordinary/exchange_pending]`。保留原有 GET 优化断言，普通行情路径无新增 GET。
+
+### P2：保留无法合法替代的工作 SELL
+
+撤改候选满足原有冷却、尝试次数、数量、反碎仓及预算条件后，在写入 `exit_cancel` 和发出 DELETE 之前读取一次官方 `/fapi/v1/premiumIndex`。撤单前和正式 POST 共用网关 `check_price_band()`，使用当前规则 `PERCENT_PRICE` 同时检查替代限价和提交时采用的 ask。标记价缺失、未来或超过五秒、价格带规则缺失或价格越界时保留原 SELL。重启重放的待撤命令也必须重新通过此检查。
+
+- 审查原例：原 SELL `143`，bid `140`、ask `145.10`、mark `145`、`multiplierDown=0.97`，下限 `140.65`；结果 **DELETE=0、无替代 POST、原 SELL 持续工作**。
+- 价格恢复至 bid `141`、ask `141.10`、mark `141.05` 后：一次合法 DELETE → GET 确认 → 一次替代 POST，不重复撤单。
+- 撤单确认后、最终提交前将 mark 再变为 `150`：原正式网关拒绝替代 POST，保留真实持仓并报告 `EXIT_PRICE_BAND`；条件恢复后可重新提交。
+- 新增十项回归覆盖上述情形、ask 越带、缺失价格带规则、标记价缺失/过期/未来、重启待撤命令、账户和盘口过期。
+- 请求计数断言：仅在可撤改候选上增加必要的一次标记价 GET；等待 GET 对账期间零额外标记价 GET，实际 POST 保留原来的一次标记价 GET；每次最多一个写动作。180 秒、最多五次尝试、部分成交防碎仓、UNKNOWN 恢复均保留。
+
+### 本次定向验证与环境边界
+
+Windows / Python 3.12.7，全部使用临时 SQLite 和离线 HTTP 模拟器。先运行 F07，再运行 F11，然后运行相关套测。未重复全部研究回测。
+
+- F07：**11 passed**。
+- F11：**40 passed**（原 30 项加新增 10 项）。
+- 受影响套测：**534 passed, 1 deselected**。覆盖 MarketFeed / MarketCollection / GridConsumer、Demo 网关执行及准入、bounded quote / preparation、Grid bridge / network、GET recovery / window、runtime / constructor clock / continuous campaign、fill faults、离线 Execute systemd / cloud runtime、receipts / reconciliation、forward observation 及 GridExecution；本次合计 **585 passed**。
+- 本地默认 pytest 临时目录不可访问，使用 `D:/Code/f11-test-temp/`；子进程通过显式 `PYTHONPATH=<worktree>/src` 导入本次源码。
+- `test_current_user_credential_available_in_independent_process` 需要真实 Windows Credential Manager，本机登录会话返回 Windows 错误 `1312`；明确从本地定向批次排除，保留测试源码，由新 HEAD 的 GitHub Windows CI 执行，不以 mock 或放宽准入代替。
+- GitHub 上的双 Python Extended software、实际分片覆盖、离线 systemd 和 `FactorLab trusted merge gate` 必须绑定推送后的新 HEAD 核对；本报告的本地结果不代替该门禁。
+
+未操作原台式机私有交易状态，未启动官方 Demo Execute，未合并 PR。

@@ -32,6 +32,7 @@ from .demo_runtime import (
     state_root,
 )
 from .demo_session import DEMO
+from .demo_preflight import _book
 from .demo_strategy_supervisor import MarketClient, StrategyControl
 from .demo_supervisor import DemoSupervisor
 from .protocol import ExchangeError, SafetyBlocked, credential_account_id
@@ -234,11 +235,9 @@ class GridConsumer:
         return saved is None
 
     def set_latest_book(self, raw):
-        if self.bridge.session is not None:
-            self.latest_book = self.bridge.session._fresh_book(dict(raw))
-        else:
-            from .demo_preflight import _book
-            self.latest_book = _book(dict(raw))
+        # The feed already checked freshness against its exchange-time range.
+        # Parse here; execution checks freshness against its own clock at use.
+        self.latest_book = _book(dict(raw))
         self.bridge.last_book = self.latest_book
 
     def _step_breakout_exit(self):
