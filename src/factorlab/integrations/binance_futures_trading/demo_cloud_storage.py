@@ -1,6 +1,6 @@
 """Private offline maintenance of the Demo journals (never credential storage)."""
 
-from contextlib import ExitStack, closing
+from contextlib import ExitStack, closing, contextmanager
 import ctypes
 import errno
 import json
@@ -17,6 +17,8 @@ from .protocol import SafetyBlocked
 _DB_SUFFIXES = {'.sqlite', '.sqlite3', '.db'}
 _SIDECARS = ('-wal', '-shm', '-journal')
 _QUARANTINE = 'restore-quarantine.json'
+_BACKUP_MANIFEST = 'backup-manifest.json'
+_HANDOFF_SOURCE = 'windows-execute-source-sealed'
 
 
 def _private(path, *, directory=False):
@@ -143,7 +145,7 @@ def _sync_directory(path):
             os.close(descriptor)
 
 
-def atomic_json(path, payload):
+def atomic_json(path, payload, *, windows_write_through=False):
     """Durably replace a JSON snapshot with a private same-directory temporary file."""
     path = Path(os.path.abspath(path))
     _root(path.parent)
@@ -158,14 +160,24 @@ def atomic_json(path, payload):
             stream.write(encoded)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
+        if windows_write_through and os.name == 'nt':
+            move = ctypes.WinDLL('kernel32', use_last_error=True).MoveFileExW
+            move.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint)
+            move.restype = ctypes.c_int
+            if not move(str(temporary), str(path), 0x8):  # MOVEFILE_WRITE_THROUGH
+                raise ctypes.WinError(ctypes.get_last_error())
+        else:
+            os.replace(temporary, path)
         _sync_directory(path.parent)
     finally:
         temporary.unlink(missing_ok=True)
 
 
 def _binding(path):
-    value = json.loads(path.read_text(encoding='utf-8'))
+    return _validate_binding(json.loads(path.read_text(encoding='utf-8')))
+
+
+def _validate_binding(value):
     def check(item):
         if isinstance(item, dict):
             for key, child in item.items():
@@ -180,6 +192,12 @@ def _binding(path):
         raise SafetyBlocked('binding.json must be a JSON object')
     check(value)
     return value
+
+
+def assert_source_controls_available(root):
+    marker = root / _QUARANTINE
+    if marker.exists() and json.loads(marker.read_text(encoding='utf-8')).get('reason') == _HANDOFF_SOURCE:
+        raise SafetyBlocked('Demo Execute source is sealed; send controls to the current owner')
 
 
 def _publish(staging, destination):
@@ -208,30 +226,34 @@ def _destination(source, destination):
     return destination
 
 
+def _copy_databases(root, staging, databases):
+    for source in databases:
+        target = staging / source.relative_to(root)
+        _root(target.parent, create=True)
+        descriptor = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.close(descriptor)
+        # The writer-freezing connection must not be the backup source: SQLite's
+        # backup API waits for a source write transaction to finish.
+        with closing(_connect(source)) as reader, closing(sqlite3.connect(target)) as writer:
+            reader.backup(writer)
+        _integrity(target)
+        with target.open('r+b') as stream:
+            os.fsync(stream.fileno())
+    for directory, _, _ in os.walk(staging, topdown=False, onerror=_walk_error):
+        _sync_directory(Path(directory))
+
+
 def _snapshot(root, destination, databases, *, quarantine):
     staging = Path(tempfile.mkdtemp(prefix='.' + destination.name + '-', dir=destination.parent))
     try:
-        for source in databases:
-            target = staging / source.relative_to(root)
-            _root(target.parent, create=True)
-            descriptor = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            os.close(descriptor)
-            # The writer-freezing connection must not be the backup source: SQLite's
-            # backup API waits for a source write transaction to finish.
-            with closing(_connect(source)) as reader, closing(sqlite3.connect(target)) as writer:
-                reader.backup(writer)
-            _integrity(target)
-            with target.open('r+b') as stream:
-                os.fsync(stream.fileno())
+        _copy_databases(root, staging, databases)
         binding = root / 'binding.json'
         if binding.exists():
             atomic_json(staging / 'binding.json', _binding(binding))
         if quarantine or (root / _QUARANTINE).exists():
             atomic_json(staging / _QUARANTINE, {'version': 1, 'reason': 'restored-state-requires-GET-only-recovery'})
-        atomic_json(staging / 'backup-manifest.json', dict(version=1,
+        atomic_json(staging / _BACKUP_MANIFEST, dict(version=1,
             databases=[path.relative_to(root).as_posix() for path in databases], binding=binding.exists()))
-        for directory, _, _ in os.walk(staging, topdown=False, onerror=_walk_error):
-            _sync_directory(Path(directory))
         _publish(staging, destination)
     finally:
         if staging.exists():
@@ -239,29 +261,34 @@ def _snapshot(root, destination, databases, *, quarantine):
     return destination
 
 
-def _frozen_snapshot(root, destination, *, quarantine):
-    from .demo_runtime import operator_lock
-
-    root = _root(root)
-    destination = _destination(root, destination)
-    # Offline maintenance only: cooperating operators are excluded by session.lock;
-    # BEGIN IMMEDIATE also excludes STOP and other writers bypassing that lock.
-    with operator_lock(root, allow_quarantined=True), ExitStack() as stack:
+@contextmanager
+def _freeze_databases(root, destination):
+    # The caller owns session.lock. SQLite reservations also exclude concurrent STOP.
+    with ExitStack() as stack:
         databases, _ = _inventory(root)
         required = sum(path.stat().st_size for path in databases)
         if shutil.disk_usage(destination.parent).free < required + 256 * 1024 * 1024:
             raise SafetyBlocked('insufficient backup destination space')
-        if quarantine:
-            manifest = json.loads((root / 'backup-manifest.json').read_text())
-            expected = dict(version=1, databases=[path.relative_to(root).as_posix() for path in databases],
-                            binding=(root / 'binding.json').exists())
-            if manifest != expected:
-                raise SafetyBlocked('incomplete backup inventory')
         for path in databases:
             connection = stack.enter_context(closing(_connect(path, writable=True)))
             connection.execute('BEGIN IMMEDIATE')
         for path in databases:
             _integrity(path)
+        yield databases
+
+
+def _frozen_snapshot(root, destination, *, quarantine):
+    from .demo_runtime import operator_lock
+
+    root = _root(root)
+    destination = _destination(root, destination)
+    with operator_lock(root, allow_quarantined=True), _freeze_databases(root, destination) as databases:
+        if quarantine:
+            manifest = json.loads((root / _BACKUP_MANIFEST).read_text())
+            expected = dict(version=1, databases=[path.relative_to(root).as_posix() for path in databases],
+                            binding=(root / 'binding.json').exists())
+            if manifest != expected:
+                raise SafetyBlocked('incomplete backup inventory')
         return _snapshot(root, destination, databases, quarantine=quarantine)
 
 

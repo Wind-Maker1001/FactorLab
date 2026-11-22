@@ -55,8 +55,11 @@ def state_root():
 def operator_lock(root, *, allow_quarantined=False):
     """Serialize sessions opening both ledgers, across terminals and worktrees."""
     root = Path(root)
-    if not allow_quarantined and (root / 'restore-quarantine.json').exists():
-        raise SafetyBlocked('restored Demo state is restricted to cloud GET-only recovery')
+
+    def check_quarantine():
+        if not allow_quarantined and (root / 'restore-quarantine.json').exists():
+            raise SafetyBlocked('restored Demo state is restricted to cloud GET-only recovery')
+
     if os.name == 'nt':
         import msvcrt
         with (root / 'session.lock').open('a+b') as lock:
@@ -65,6 +68,7 @@ def operator_lock(root, *, allow_quarantined=False):
                 msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
             except OSError:
                 raise SafetyBlocked('another Demo session is active') from None
+            check_quarantine()
             yield
     else:
         import fcntl
@@ -75,6 +79,7 @@ def operator_lock(root, *, allow_quarantined=False):
             except BlockingIOError:
                 raise SafetyBlocked('another Demo session is active') from None
             try:
+                check_quarantine()
                 yield
             finally:
                 fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
@@ -107,6 +112,7 @@ class DemoRuntime:
     """SQLite journals consumed dispatches before network IO and keeps a stable smoke budget."""
 
     def __init__(self, root):
+        self.root = root
         self.db = sqlite3.connect(root / 'runtime.sqlite3', isolation_level='IMMEDIATE')
         self.db.execute('PRAGMA synchronous=FULL')
         self.db.executescript('''
@@ -130,8 +136,11 @@ class DemoRuntime:
         self.db.execute('INSERT OR REPLACE INTO runtime VALUES (?, ?)', (key, value))
 
     def stop(self):
+        from .demo_cloud_storage import assert_source_controls_available
+
         with self.db:
             self.db.execute('BEGIN IMMEDIATE')
+            assert_source_controls_available(self.root)
             authorization = self.continuous_authorization()
             if authorization is not None and authorization['state'] != 'HALTED':
                 authorization['state'] = 'STOPPED'

@@ -123,7 +123,7 @@ Control state is read authoritatively from the persisted SQLite databases (`runt
 - Recoverable startup network, clock calibration, staleness, and UNKNOWN reconciliation failures enter the existing `DemoSupervisor` exponential backoff and recovery loop without creating duplicate Grid deployments, Campaigns, or ledgers, and without submitting orders during recovery.
 - Fatal credential, binding/identity, exchange `AUTH`/`SIGNATURE`, SQLite corruption, lock contention, restore-quarantine, and low-disk errors fail explicitly with exit code `78` (`RestartPreventExitStatus=78`) and sanitized JSON refusal logs containing zero secrets.
 
-To switch an account from GET-only to Execute (after exclusive account ownership is coordinated with any external F05 runner):
+On the same Linux state root, switch from GET-only to Execute after coordinating exclusive account ownership with any external runner.
 
 ```sh
 sudo systemctl disable --now factorlab-demo.service
@@ -132,9 +132,40 @@ sudo systemctl enable --now factorlab-demo-execute.service factorlab-demo-health
 
 The existing `factorlab-demo-health.service` and `factorlab-demo-health.timer` reuse `/var/lib/factorlab-demo/cloud-health.json` for `OFFLINE`, `GET_ONLY`, and `EXECUTE` modes. `demo_cloud_runtime health` reports real systemd unit state (`systemctl show`), mode, last valid account reconciliation and market timestamps, Grid state, positions/wallet/NAV (suppressed when account recovery is not fresh), GET/POST/DELETE counts, remaining campaign and global budgets, desired `STOPPED`/`HALTED`/`PAUSED`/`RUNNING` state, recent orders and UNKNOWN orders, and automatic recovery state. `ready` / `execute_healthy` / `demo_execution_ready` are never inferred from systemd `active` alone.
 
+## Transfer an existing Windows Execute owner to Linux
+
+Use this procedure with the same official Demo API identity and the existing continuous authorization. Ordinary `backup` and `restore` remain disaster-recovery operations. A restored root stays quarantined.
+
+1. Prepare the service identity, package, units, persistent local disk and `LoadCredential` as above. Keep both worker units stopped and disabled on the receiver. In this example, `/var/lib/factorlab-demo` is the private parent directory and `/var/lib/factorlab-demo/execute-state` is the absent destination. Set `Environment=FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo/execute-state` in a drop-in for each worker and the health service. Their existing mount and write-path settings cover this subdirectory. Obtain the target's `/etc/machine-id` over the verified administrative connection. Keep that identity private.
+2. Stop the Windows Execute process without setting a trading STOP. Disable any scheduler, restart wrapper or outstanding runner that can restart it. Verify exit and stop all maintenance writers and previews using its state. Retain the original and take a separate ordinary backup before exporting. Export from the original state as the Windows user that owns the Credential Manager binding. Supply the actual target machine ID in `$targetMachineId`.
+
+   ```powershell
+   python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime handoff-export --destination "$env:LOCALAPPDATA\FactorLab\p8-c05-transfer" --target-machine-id $targetMachineId --target-state-root /var/lib/factorlab-demo/execute-state
+   ```
+
+3. Export freezes the SQLite writers, snapshots every database, and reads the non-secret binding from Credential Manager. It durably seals the Windows state before publishing `execute-handoff.json`. Keep the sealed Windows directory and disable its launchers after the transfer. If release publication fails after sealing, rerun the same command with the same arguments to publish the original package. The seal leaves the trading controls intact. While the source is sealed and the target has yet to pass GET, both Execute workers stay off.
+4. Transfer the entire package via authenticated SSH to a private directory owned by the Linux service user. Keep directories mode 0700 and files mode 0600. Provision the original key pair separately through the existing systemd credential mechanism. On the target, run the following transient unit with the same service identity and credential delivery as Execute.
+
+   ```sh
+   sudo systemd-run --wait --pipe --collect --unit=factorlab-demo-handoff \
+     --property=User=factorlab-demo --property=Group=factorlab-demo \
+     --property=UMask=0077 \
+     --property=LoadCredential=demo-secret:/etc/factorlab-demo/demo-secret.json \
+     /bin/sh -c 'export FACTORLAB_DEMO_SECRET_FILE="$CREDENTIALS_DIRECTORY/demo-secret"
+       exec /opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime \
+         handoff-import --package /var/lib/factorlab-demo/incoming \
+         --destination /var/lib/factorlab-demo/execute-state'
+   ```
+
+5. Import verifies the complete snapshot before opening the account using the existing signed GET recovery path. It recovers UNKNOWN by original client order ID and reconciles the existing order, fill and funding ledgers. A failed GET or unresolved order leaves the destination absent and can be retried against the same package. Successful import atomically publishes the destination with `execute-handoff-result.json`. Retain the original, package and receipt privately. Never replay the package to replace a ledger that has already taken ownership.
+6. Match the unit arguments to the existing Grid configuration in the import receipt. If the source used a custom interval, backfill limit or Grid settings, use an `ExecStart` override with those same values and the existing `grid-supervisor start --execute` command. Keep both account access and control commands pointed at the new state path. Reload systemd and enable `factorlab-demo-execute.service` and `factorlab-demo-health.timer` only after successful import. The service inherits STOPPED, HALTED and PAUSED. A confirmed recovery can therefore coexist with a deliberate trading stop.
+7. Retain the target's unit status, PID and `NRestarts`, the first healthy Execute snapshot, and the result of a controlled systemd restart test. Keep persistent journald records for the 24-hour, 72-hour and seven-day windows. Use the timer snapshots for Worker, account and market freshness, request counts, positions, equity, Grid, budget, UNKNOWN, restart and storage metrics. Use the protocol and controller journals for complete order, fill, funding and fee records. Keep financial snapshots and account identifiers private. Observe the windows while the existing authorization and risk controls govern Execute.
+
+After sealing, resolve a failed transfer from the retained package and the designated receiver. After Linux takes ownership, returning to Windows requires a separate handoff of the latest surviving ledger. The Windows pre-transfer directory is a historical record.
+
 ## Stability observation profiles
 
-Use the same GET-only unit and health timer for 24 hours, 72 hours and seven days. Retain the full observation window's journald records and periodic private health snapshots outside the active state volume. Do not enable execution to conduct a stability observation.
+For GET-only deployments, use the GET-only unit and health timer for 24 hours, 72 hours and seven days. Retain the full observation window's journald records and periodic private health snapshots outside the active state volume.
 
 For each window require: zero POST and DELETE; no binding/cursor/budget reset; zero unexpected readiness during failed reconciliation or UNKNOWN; intentional STOP remains effective; disk free stays above reserve; backup restores validate and remain quarantined; every crash/restart is accounted for. Track maximum market and reconciliation age (alert at 90 seconds), request error rate (alert for sustained nonzero rates across five minutes), UNKNOWN immediately, restart bursts immediately, and any integrity/low-space/credential failure immediately. Document network outages separately from process crashes and retain recovery latency. Progress from 24h to 72h to 7d only after investigating each unexpected incident. Passing a startup smoke test is not passing these windows.
 

@@ -10,6 +10,7 @@ import signal
 import shutil
 import sqlite3
 import subprocess
+import sys
 from time import time
 
 from .demo_cli import load_bound_credential, open_session
@@ -297,9 +298,10 @@ class CloudFeed:
 
 
 def run(root, *, offline=False, seconds=None, poll_seconds=10, min_free_bytes=MIN_FREE_BYTES):
-    from .demo_cloud_storage import atomic_json, validate_state
+    from .demo_cloud_storage import assert_source_controls_available, atomic_json, validate_state
     with ExitStack() as stack:
         stack.enter_context(operator_lock(root, allow_quarantined=True))
+        assert_source_controls_available(root)
         validate_state(root, min_free_bytes=min_free_bytes, recover=True)
         sqlite_integrity_checked_at = time()
         runtime = stack.enter_context(closing(DemoRuntime(root)))
@@ -433,7 +435,8 @@ def health(root, *, max_age=90, unit=None):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('run', 'health', 'backup', 'restore'))
+    parser.add_argument('action', choices=('run', 'health', 'backup', 'restore',
+                                           'handoff-export', 'handoff-import'))
     parser.add_argument('--state-root', type=Path)
     parser.add_argument('--offline', action='store_true')
     parser.add_argument('--seconds', type=float)
@@ -442,6 +445,9 @@ def main(argv=None):
     parser.add_argument('--unit')
     parser.add_argument('--destination', type=Path)
     parser.add_argument('--backup', type=Path)
+    parser.add_argument('--package', type=Path)
+    parser.add_argument('--target-machine-id')
+    parser.add_argument('--target-state-root')
     args = parser.parse_args(argv)
     if args.min_free_bytes < 0:
         parser.error('min-free-bytes cannot be negative')
@@ -451,6 +457,27 @@ def main(argv=None):
         os.umask(0o077)
     try:
         from .demo_cloud_storage import backup_state, restore_state
+        if args.action == 'handoff-export':
+            if os.name != 'nt' or not all((args.destination, args.target_machine_id, args.target_state_root)):
+                parser.error('handoff-export requires Windows, --destination, --target-machine-id and --target-state-root')
+            from .demo_cloud_handoff import export_handoff
+            transfer = export_handoff(state_root(), args.destination, machine_id=args.target_machine_id,
+                                      state_root=args.target_state_root)
+            print(json.dumps(dict(event='handoff_source_sealed', id=transfer)), flush=True)
+            return 0
+        if args.action == 'handoff-import':
+            if sys.platform != 'linux' or not all((args.package, args.destination)):
+                parser.error('handoff-import requires Linux, --package and --destination')
+            from .demo_cli import OPERATING_ERRORS
+            from .demo_cloud_handoff import import_handoff
+            try:
+                result = import_handoff(args.package, args.destination, min_free_bytes=args.min_free_bytes)
+            except OPERATING_ERRORS:
+                print(json.dumps(dict(event='handoff_refused', reason='ADMISSION_OR_RECONCILIATION_FAILED')),
+                      flush=True)
+                return CONFIG_ERROR
+            print(json.dumps(dict(event='handoff_reconciled', **result), default=str), flush=True)
+            return 0
         if args.action == 'restore':
             if args.backup is None or args.destination is None:
                 parser.error('restore requires --backup and --destination')
@@ -475,7 +502,7 @@ def main(argv=None):
             parser.error('backup requires --destination')
         backup_state(root, args.destination)
         return 0
-    except (SafetyBlocked, DemoCredentialStoreError, ValueError, OSError, sqlite3.DatabaseError):
+    except (SafetyBlocked, DemoCredentialStoreError, ValueError, KeyError, TypeError, OSError, sqlite3.DatabaseError):
         print(json.dumps(dict(event='cloud_start_refused', reason='STATE_OR_CONFIGURATION_ERROR')), flush=True)
         return CONFIG_ERROR
 

@@ -3,7 +3,9 @@ from contextlib import closing
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D
 import json
+from pathlib import Path
 import sqlite3
+import sys
 from time import time
 from types import SimpleNamespace
 from urllib.parse import parse_qs
@@ -12,6 +14,7 @@ import pytest
 
 from factorlab.integrations.binance.client import Response
 from factorlab.integrations.binance_futures_trading import demo_cloud_runtime as cloud
+from factorlab.integrations.binance_futures_trading import demo_cloud_handoff as handoff
 from factorlab.integrations.binance_futures_trading import demo_grid_supervisor as grid_mod
 from factorlab.integrations.binance_futures_trading import demo_strategy_supervisor as strat_mod
 from factorlab.integrations.binance_futures_trading import network, protocol
@@ -24,7 +27,7 @@ from factorlab.integrations.binance_futures_trading.demo_session import DemoSess
 from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import StrategyControl
 from factorlab.integrations.binance_futures_trading.fake import NOW
 from factorlab.integrations.binance_futures_trading.protocol import (
-    Credentials, Environment, SafetyBlocked,
+    Credentials, DataQualityError, Environment, SafetyBlocked,
 )
 from factorlab.trading.storage import decode
 from test_binance_demo_grid_network import network_grid
@@ -420,6 +423,103 @@ def test_execute_and_get_only_share_lock_exclusivity_and_quarantine(execute_harn
     assert h.start_execute(use_cli=True) == 78
     out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
     assert out == dict(event='grid_start_refused', reason='RESTORE_QUARANTINE')
+
+
+@pytest.fixture
+def handoff_source(execute_harness, tmp_path_factory, monkeypatch):
+    h = execute_harness
+    h.store.reference = 'FactorLab/Binance/USD-M/Demo/credentials'
+    h.store.config['credential_reference'] = h.store.reference
+    _start_continuous(h.root, h.store, total_orders=10, total_notional=D('100'))
+    with open_grid_session(h.root, h.store, h.factory, continuous=True) as bridge:
+        bridge.recover()
+        h.fake.timeout_next = True
+        bridge.observe(dict(id='initial', time=NOW.replace(tzinfo=None).isoformat(), price='150', volume=0))
+        assert bridge.session.status()['unknown']
+    with closing(StrategyControl(h.root / 'grid-supervisor.sqlite3',
+                                 dict(mode='execute', settings=None))) as control:
+        control.request('PAUSED')
+    for path in (h.root, *h.root.rglob('*')):
+        path.chmod(0o700 if path.is_dir() else 0o600)
+    transfer = tmp_path_factory.mktemp('transfer')
+    transfer.chmod(0o700)
+    monkeypatch.setattr(handoff, 'DemoCredentialStore', lambda: h.store)
+    return h, transfer
+
+
+def test_handoff_seals_before_release_and_retries_the_same_snapshot(handoff_source, monkeypatch):
+    h, transfer = handoff_source
+    package = transfer / 'package'
+    target = dict(machine_id='1' * 32, state_root='/var/lib/factorlab-demo/execute-state')
+    original = handoff.storage.atomic_json
+
+    def fail_release(path, payload, **kwargs):
+        if path.name == handoff._RELEASE:
+            raise OSError('release publication interrupted')
+        original(path, payload, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(handoff.storage, 'atomic_json', fail_release)
+        with pytest.raises(OSError, match='publication interrupted'):
+            handoff.export_handoff(h.root, package, **target)
+    assert not (package / handoff._RELEASE).exists()
+    with pytest.raises(SafetyBlocked, match='GET-only'):
+        with operator_lock(h.root):
+            pytest.fail('Windows cannot reacquire the Execute lock after the handoff seal')
+    with closing(DemoRuntime(h.root)) as runtime:
+        with pytest.raises(SafetyBlocked, match='current owner'):
+            runtime.stop()
+    with pytest.raises(SafetyBlocked, match='different handoff'):
+        handoff.export_handoff(h.root, transfer / 'another-package', **target)
+    release_id = handoff.export_handoff(h.root, package, **target)
+    assert json.loads((package / handoff._RELEASE).read_text())['id'] == release_id
+
+
+@pytest.mark.skipif(sys.platform != 'linux', reason='handoff receiver is Linux')
+@pytest.mark.parametrize('desired', ['PAUSED', 'STOPPED', 'HALTED'])
+def test_handoff_installs_only_after_get_recovers_unknown(handoff_source, monkeypatch, desired):
+    h, transfer = handoff_source
+    with closing(DemoRuntime(h.root)) as runtime:
+        if desired == 'STOPPED':
+            runtime.stop()
+        if desired == 'HALTED':
+            runtime.halt('test halted state')
+    destination = transfer / 'execute-state'
+    package = transfer / 'package'
+    machine = Path('/etc/machine-id').read_text().strip()
+    handoff.export_handoff(h.root, package, machine_id=machine, state_root=destination.as_posix())
+    credentials = h.store.read()
+    secret = transfer / 'secret.json'
+    atomic_json(secret, dict(environment='DEMO', key=credentials.key, secret=credentials.secret))
+    monkeypatch.setenv('FACTORLAB_DEMO_SECRET_FILE', str(secret))
+    h.state.fail_endpoints['/time'] = [OSError('account GET unavailable')]
+    with pytest.raises(DataQualityError, match='account read failed'):
+        handoff.import_handoff(package, destination, min_free_bytes=0)
+    assert not destination.exists()
+    result = handoff.import_handoff(package, destination, min_free_bytes=0)
+    assert result['snapshot_verified'] and result['desired'] == desired
+    assert result['unknown'] == 0 and result['requests']['GET'] > 0
+    assert result['consumed']['posts'] == 1
+    assert len(_writes(h.requests, 'POST')) == 1 and not _writes(h.requests, 'DELETE')
+    with pytest.raises(FileExistsError):
+        handoff.import_handoff(package, destination, min_free_bytes=0)
+
+
+@pytest.mark.skipif(sys.platform != 'linux', reason='handoff receiver is Linux')
+def test_handoff_refuses_another_path_and_a_modified_valid_database(handoff_source):
+    h, transfer = handoff_source
+    destination = transfer / 'execute-state'
+    package = transfer / 'package'
+    machine = Path('/etc/machine-id').read_text().strip()
+    handoff.export_handoff(h.root, package, machine_id=machine, state_root=destination.as_posix())
+    reads_before_import = len(h.requests)
+    with pytest.raises(SafetyBlocked, match='another Linux host or state path'):
+        handoff.import_handoff(package, transfer / 'different-state', min_free_bytes=0)
+    with closing(DemoRuntime(package / 'databases')) as runtime:
+        runtime.stop()
+    with pytest.raises(SafetyBlocked, match='differs from the sealed snapshot'):
+        handoff.import_handoff(package, destination, min_free_bytes=0)
+    assert len(h.requests) == reads_before_import and not destination.exists()
 
 
 def test_restart_preserves_budget_consumption_and_deployment(execute_harness):
