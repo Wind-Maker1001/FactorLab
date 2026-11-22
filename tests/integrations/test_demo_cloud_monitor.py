@@ -590,3 +590,39 @@ def test_rate_limiting_suppresses_excess_warning_deliveries():
     assert delivery['status'] == 'RATE_LIMITED'
     assert delivery['delivered'] is False
 
+
+def test_backfill_from_journald_passes_all_flag_and_deduplicates(tmp_path, monkeypatch):
+    from factorlab.integrations.binance_futures_trading import demo_cloud_monitor as mon
+
+    now = 1_800_000_000.0
+    monkeypatch.setattr(mon, 'time', lambda: now)
+    captured_cmd = []
+
+    p1 = _make_health_payload(now=now - 120)
+    p2 = _make_health_payload(now=now - 60)
+    stdout = '\n'.join([
+        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 120) * 1_000_000)), 'MESSAGE': json.dumps(p1)}),
+        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 60) * 1_000_000)), 'MESSAGE': list(json.dumps(p2).encode('utf-8'))}),
+        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 60) * 1_000_000)), 'MESSAGE': json.dumps(p2)}),  # duplicate
+        json.dumps({'__REALTIME_TIMESTAMP': str(int((now - 30) * 1_000_000)), 'MESSAGE': 'Finished health check.'}),
+    ])
+
+    class _FakeProc:
+        returncode = 0
+
+    _FakeProc.stdout = stdout
+
+    def _fake_run(cmd, **kwargs):
+        captured_cmd.extend(cmd)
+        return _FakeProc()
+
+    res = mon.backfill_from_journald(tmp_path / 'monitoring', _runner=_fake_run)
+    assert '--all' in captured_cmd
+    assert res['imported'] == 2
+    assert res['total_samples'] == 2
+    # Second run deduplicates all
+    res2 = mon.backfill_from_journald(tmp_path / 'monitoring', _runner=_fake_run)
+    assert res2['imported'] == 0
+    assert res2['total_samples'] == 2
+
+

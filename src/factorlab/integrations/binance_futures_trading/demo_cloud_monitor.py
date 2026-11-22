@@ -504,6 +504,7 @@ def backfill_from_journald(
     since_days: int = 7,
     max_bytes: int = DEFAULT_MAX_SAMPLES_BYTES,
     retention_days: int = DEFAULT_SAMPLE_RETENTION_DAYS,
+    _runner=None,
 ) -> dict:
     """Import existing health timer JSON snapshots from journald into samples.jsonl without duplicates."""
     monitor_dir = ensure_monitor_dir(monitor_dir)
@@ -518,12 +519,13 @@ def backfill_from_journald(
         for row in existing if row.get('heartbeat_at') is not None
     }
 
-    if os.name == 'nt':
+    if _runner is None and os.name == 'nt':
         return dict(imported=0, total_samples=len(existing), source='journald_unavailable_on_windows')
 
+    run_cmd = subprocess.run if _runner is None else _runner
     try:
-        proc = subprocess.run(
-            ['journalctl', '--no-pager', '-o', 'json', '--since', f'{max(1, int(since_days))} days ago',
+        proc = run_cmd(
+            ['journalctl', '--no-pager', '--all', '-o', 'json', '--since', f'{max(1, int(since_days))} days ago',
              '-u', health_unit],
             capture_output=True, text=True, timeout=30, check=False,
         )
@@ -543,6 +545,8 @@ def backfill_from_journald(
         except ValueError:
             continue
         msg = entry.get('MESSAGE')
+        if isinstance(msg, list) and all(type(b) is int and 0 <= b <= 255 for b in msg):
+            msg = bytes(msg).decode('utf-8', errors='replace')
         if not isinstance(msg, str) or not msg.startswith('{'):
             continue
         try:
