@@ -117,6 +117,94 @@ def test_new_campaign_rejects_existing_activity(network_grid):
     assert sum(request.get_method() == 'POST' for request in requests) == 1
 
 
+def test_continuous_breakout_rotates_after_flat_recovery_and_restarts(network_grid):
+    from contextlib import closing
+
+    from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import grid_factory
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
+    from test_binance_demo_grid_network import observe, writes
+
+    root, store, original_factory, _, _, requests = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        policy = runtime.start_continuous(store.read_config(), opening_equity=D('1000'),
+                                          stop_epoch=runtime.stop_epoch(), orders=1)
+    with open_grid_session(root, store, original_factory, continuous=True) as old:
+        old.recover()
+        observe(old)
+        old.observe(dict(id='breakout', time=NOW.replace(tzinfo=None).isoformat(), price='155', volume=0),
+                    dispatch=False)
+        assert old.grid.closed_by_breakout
+        assert old.rotate_if_terminal(old, running=lambda: True) is old
+        assert not writes(requests, 'DELETE')
+        old.dispatch()
+        original_id = old.grid.deployment_id
+        assert len(writes(requests)) == len(writes(requests, 'DELETE')) == 1
+
+    with open_grid_session(root, store, grid_factory(None), continuous=True) as old:
+        old.recover()
+        events = old.controller.store.event_cursor()
+        consumed = old.runtime.consumption(policy)
+        old_window = old.runtime.active_campaign()
+        consumer = GridConsumer(old, Control(), clock=lambda: NOW,
+                                ensure_campaign=old.ensure_campaign, rotate=old.rotate_if_terminal)
+        consumer.before_poll()
+        new = consumer.bridge
+        new_id = new.grid.deployment_id
+        assert (new.grid.config.lower, new.grid.config.upper) == (148.5, 151.5)
+        assert old.grid.closed_by_breakout and old.grid.deployment_id == original_id
+        assert new_id != original_id and len(new_id + '-00000001') <= 36
+        assert new.prefix != old.prefix and new.feed_deployment_id == original_id
+        assert new.runtime.active_campaign() == old_window
+        assert new.runtime.continuous_authorization() == policy
+        assert new.runtime.consumption(policy) == consumed
+        assert consumed['posts'] == 1 and D(consumed['submitted_notional']) == D('5.84')
+        assert new.controller.store.event_cursor() == events + 2
+        assert consumer.historical_bar(bar(0, close=D('145'), low=D('144'))) is False
+        assert not new.grid.delivery
+
+    with open_grid_session(root, store, grid_factory(None), continuous=True) as new:
+        consumer, _ = worker(new)
+        consumer.rotate = new.rotate_if_terminal
+        consumer.before_poll()
+        assert consumer.bridge.grid.deployment_id == new_id
+        assert new.feed_deployment_id == original_id
+        consumer.closed_bar(bar(1))
+        consumer.quote(Quote('NVDAUSDT', D('150'), NOW))
+        assert [row['newClientOrderId'][0].rsplit('-', 1)[0] for row in writes(requests)] == [original_id, new_id]
+
+
+@pytest.mark.parametrize('state', ['STOPPED', 'HALTED'])
+def test_continuous_breakout_rechecks_control_before_persisting_replacement(network_grid, state):
+    from contextlib import closing
+
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
+    from test_binance_demo_grid_network import writes
+
+    root, store, factory, _, _, requests = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.start_continuous(store.read_config(), opening_equity=D('1000'),
+                                 stop_epoch=runtime.stop_epoch())
+
+    def terminate_during_factory(session, deployment_id):
+        if deployment_id.endswith('-00001'):
+            with closing(DemoRuntime(root)) as runtime:
+                if state == 'STOPPED':
+                    runtime.stop()
+                else:
+                    runtime.halt('test loss limit')
+        return factory(session, deployment_id)
+
+    with open_grid_session(root, store, terminate_during_factory, continuous=True) as old:
+        old.recover()
+        old.observe(dict(id='breakout', time=NOW.replace(tzinfo=None).isoformat(), price='155', volume=0),
+                    dispatch=False)
+        events = old.controller.store.event_cursor()
+        assert old.rotate_if_terminal(old, running=lambda: True) is old
+        assert old.controller.store.event_cursor() == events
+        assert old.runtime.continuous_authorization()['state'] == state
+    assert not writes(requests)
+
+
 def test_contiguous_bars_warm_atr_without_quote_time_regression():
     b, fake = bridge(mode='atr', atr_window=2, atr_multiplier=1)
     consumer, _ = worker(b)

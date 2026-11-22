@@ -18,7 +18,7 @@ from factorlab.integrations.binance_futures_trading import network, protocol
 from factorlab.integrations.binance_futures_trading.demo_cli import open_session, parse_args
 from factorlab.integrations.binance_futures_trading.demo_cloud_storage import atomic_json
 from factorlab.integrations.binance_futures_trading.demo_runtime import (
-    DemoRuntime, durable_control_state, open_grid_session, operator_lock,
+    DemoRuntime, durable_control_state, open_grid_session, operator_lock, saved_grid_deployment,
 )
 from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
 from factorlab.integrations.binance_futures_trading.demo_strategy_supervisor import StrategyControl
@@ -26,6 +26,7 @@ from factorlab.integrations.binance_futures_trading.fake import NOW
 from factorlab.integrations.binance_futures_trading.protocol import (
     Credentials, Environment, SafetyBlocked,
 )
+from factorlab.trading.storage import decode
 from test_binance_demo_grid_network import network_grid
 from test_binance_demo_network import NetworkFixture, wired
 
@@ -448,6 +449,129 @@ def test_restart_preserves_budget_consumption_and_deployment(execute_harness):
     assert second['global_budget']['remaining_posts'] == 9
     assert second['grid']['deployment_id'] == deployment_id
     assert len(_writes(h.requests, 'POST')) == 1
+
+
+def test_execute_rotates_after_breakout_and_preserves_feed_budget_and_ledger(execute_harness, capsys, monkeypatch):
+    # The Actions runner can itself be a systemd service, separate from this Execute worker.
+    monkeypatch.setattr(grid_mod, 'detect_systemd_unit', lambda: None)
+    h = execute_harness
+    policy = _start_continuous(h.root, h.store, orders=2, total_orders=3)
+    with open_grid_session(h.root, h.store, h.factory, continuous=True) as old:
+        old.recover()
+        old.observe(dict(id='initial', time=NOW.replace(tzinfo=None).isoformat(), price='150', volume=0))
+        buy = old.grid.active[0].intent
+        h.fake.trade_update(buy.client_order_id, '.04', '146')
+        old.recover()
+        old.dispatch()
+        sell = old.grid.active[0].intent
+        old_id = old.grid.deployment_id
+        original_window = old.runtime.active_campaign()['id']
+        old.observe(dict(id='breakout', time=NOW.replace(tzinfo=None).isoformat(), price='155', volume=0),
+                    dispatch=False)
+        assert old.grid.closed_by_breakout
+
+    trace = []
+
+    def track(supervisor, raw, state):
+        worker = supervisor.feed
+        health = worker.health_snapshot()
+        trace.append((worker.bridge.grid.deployment_id, worker.watermarks()[0],
+                      worker.consumer.last_bar, health['grid'], health['global_budget']))
+        assert worker.bridge is worker.consumer.bridge
+        assert health['grid']['deployment_id'] == worker.bridge.grid.deployment_id
+        if state.polls <= 2:
+            assert worker.bridge.grid.closed_by_breakout
+            assert worker.bridge.session.status()['open_orders']
+            assert len(_writes(h.requests, 'POST')) == 2
+            if state.polls == 2:
+                h.fake.trade_update(sell.client_order_id, '.04', '154')
+        elif state.polls == 3:
+            assert worker.bridge.generation == 1
+            assert not worker.consumer.live_bar
+            assert worker.bridge.runtime.active_campaign()['id'] != original_window
+            assert worker.bridge.runtime.continuous_authorization() == policy
+            state.seconds += 1.2
+        elif state.polls == 4:
+            capsys.readouterr()
+            assert cloud.health(h.root) == 1
+            observed = json.loads(capsys.readouterr().out)
+            assert observed['alive'] and observed['market_fresh'] and observed['account_recovered']
+            assert not observed['dispatch_eligible'] and not observed['demo_execution_ready']
+
+    h.state.seconds = 59.2
+    h.state.on_report = track
+    h.state.stop_after_polls = 4
+    assert h.start_execute() == 0
+    new_id = old_id + '-00001'
+    assert [row[0] for row in trace] == [old_id, old_id, new_id, new_id]
+    assert trace[1][1] == trace[2][1]
+    assert trace[2][2] is None
+    assert trace[3][1] == trace[2][1] + 60000
+    assert trace[3][3]['live_bar']
+    assert trace[2][4]['consumed']['posts'] == 2
+    assert D(trace[2][4]['consumed']['submitted_notional']) == D('12')
+    assert trace[3][4]['consumed']['posts'] == 3
+    assert trace[3][4]['remaining_posts'] == 0
+
+    h.state.polls = 0
+    h.state.stop_after_polls = 1
+
+    def resumed(supervisor, raw, state):
+        worker = supervisor.feed
+        assert worker.bridge.grid.deployment_id == new_id
+        assert worker.bridge.feed_deployment_id == old_id
+        assert worker.watermarks()[0] == trace[3][1]
+        orders = worker.bridge.session.status()['orders']
+        assert orders[buy.client_order_id]['fee_usdt'] == D('.00584')
+        assert orders[sell.client_order_id]['fee_usdt'] == D('.00616')
+        assert [order['client_order_id'] for order in worker.bridge.session.status()['open_orders']] == [
+            new_id + '-00000001']
+        assert worker.health_snapshot()['global_budget'] == trace[3][4]
+        journal = worker.bridge.controller.store
+        assert journal.event_payload(f'demo-grid:deployment:{old_id}') is not None
+        assert decode(json.loads(saved_grid_deployment(journal)))['replaces'] == old_id
+
+    h.state.on_report = resumed
+    assert h.start_execute() == 0
+    assert len(_writes(h.requests, 'POST')) == 3
+    assert not _writes(h.requests, 'DELETE')
+
+
+def test_execute_user_pause_blocks_breakout_rotation_and_preflight_rejects_unknown_identity(
+        execute_harness, capsys):
+    h = execute_harness
+    _start_continuous(h.root, h.store)
+    with open_grid_session(h.root, h.store, h.factory, continuous=True) as old:
+        old.recover()
+        old.observe(dict(id='breakout', time=NOW.replace(tzinfo=None).isoformat(), price='155', volume=0),
+                    dispatch=False)
+        old_id = old.grid.deployment_id
+
+    path = h.root / 'grid-supervisor.sqlite3'
+    config = dict(mode='execute', interval='1m', source=grid_mod.SOURCE, max_backfill=120, settings=None)
+    with closing(StrategyControl(path, config)) as control:
+        control.request('PAUSED')
+    h.state.stop_after_polls = 1
+    assert h.start_execute() == 0
+    snapshot = json.loads((h.root / 'cloud-health.json').read_text())
+    assert snapshot['desired'] == 'PAUSED'
+    assert snapshot['grid']['deployment_id'] == old_id
+    assert snapshot['grid']['grid_reason'] == 'BREAKOUT'
+
+    with open_grid_session(h.root, h.store, read_only=True) as inspect:
+        journal = inspect.controller.store
+        forged = decode(json.loads(saved_grid_deployment(journal)))
+        forged['deployment']['deployment_id'] = old_id + '-00001'
+        forged.update(generation=1, feed_deployment_id=old_id, replaces=old_id,
+                      terminal_reason='BREAKOUT', activated_at=NOW)
+        with journal.transaction():
+            journal.record_metadata('demo-grid:deployment:' + forged['deployment']['deployment_id'], forged)
+    before_requests = len(h.requests)
+    capsys.readouterr()
+    assert h.start_execute(use_cli=True) == 78
+    assert json.loads(capsys.readouterr().out)['event'] == 'grid_start_refused'
+    assert len(h.requests) == before_requests
+    assert not _writes(h.requests)
 
 
 # ---------------------------------------------------------------------------

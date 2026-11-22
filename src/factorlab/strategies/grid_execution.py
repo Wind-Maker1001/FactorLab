@@ -255,6 +255,11 @@ class GridExecution:
     def active(self):
         return list(self.orders.values())
 
+    @property
+    def closed_by_breakout(self):
+        """A latched range termination can be replaced once external exposure is settled."""
+        return self.state in ('PAUSED', 'EXITED') and self.reason in ('BREAKOUT', 'BREAKOUT_REBUILD_INTERVAL')
+
     def estimated_cost(self, side, price, quantity):
         """Reserve one minimum-fee execution per quantity step, not one per order."""
         unit = self.rules.step_size

@@ -44,12 +44,11 @@ def grid_factory(settings, *, new_deployment=False):
         saved = None if new_deployment else saved_grid_deployment(session.controller.store)
         if saved is not None:
             deployment = decode(json.loads(saved))['deployment']
-            if deployment['deployment_id'] != deployment_id:
-                raise SafetyBlocked('Grid deployment belongs to another campaign')
-            grid = restore_grid(deployment)
-            if settings is not None and grid.config != GridConfig(**settings):
-                raise SafetyBlocked('persisted Grid configuration differs')
-            return grid
+            if deployment['deployment_id'] == deployment_id:
+                grid = restore_grid(deployment)
+                if settings is not None and grid.config != GridConfig(**settings):
+                    raise SafetyBlocked('persisted Grid configuration differs')
+                return grid
         status = session.status()
         if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
             raise SafetyBlocked('initial Grid deployment requires a reconciled flat dedicated account')
@@ -79,10 +78,12 @@ class GridConsumer:
     """Bars advance Grid; GET reports alone advance economic state."""
     def __init__(self, bridge, control, *, authority=lambda: True,
                  clock=lambda: datetime.now(timezone.utc), proposal_observer=None, ensure_campaign=None,
-                 request_counts=None):
+                 request_counts=None, rotate=None):
         self.request_counts = request_counts
         self.ensure_campaign = ensure_campaign
         self.proposal_observer = proposal_observer
+        self.rotate = rotate
+        self.activated_at = getattr(bridge, 'activated_at', None)
         self.bridge, self.control, self.authority, self.clock = bridge, control, authority, clock
         self.supervisor = None
         self.eligible_after = clock()
@@ -123,8 +124,16 @@ class GridConsumer:
             self.recovered()
             if desired == 'RUNNING' and self.ensure_campaign is not None:
                 self.ensure_campaign()
+            if desired == 'RUNNING' and self.rotate is not None:
+                replacement = self.rotate(self.bridge, running=self._rotation_allowed)
+                if replacement is not self.bridge:
+                    self.bridge = replacement
+                    self.activated_at = replacement.activated_at
+                    self.running = self.live_bar = False
+                    self.last_bar = None
         except SafetyBlocked as error:
             raise FeedPaused(str(error)) from error
+        desired = self.control.desired()
         allowed = desired == 'RUNNING' and self.authority()
         if not self.initialized or not allowed or not self.running:
             self.bridge.withdraw_unsubmitted()
@@ -134,6 +143,10 @@ class GridConsumer:
         self.running = allowed
         self.reason = (None if self.live_bar else 'FRESH_CLOSED_BAR_REQUIRED') if allowed else (
             'PAUSED' if desired == 'PAUSED' else 'AUTHORIZATION_REQUIRED')
+
+    def _rotation_allowed(self):
+        return (self.control.desired() == 'RUNNING'
+                and (self.supervisor is None or not self.supervisor.stopped.is_set()))
 
     def require_fresh_bar(self):
         """A long owner interruption cannot promote its accumulated bars."""
@@ -162,6 +175,8 @@ class GridConsumer:
             raise FeedPaused('INVALID_CLOSED_BAR')
         if self.control.desired() == 'STOPPED':
             raise FeedPaused('STOPPED')
+        if self.activated_at is not None and bar.closed_at <= self.activated_at:
+            return False
         identity = f'{bar.source}:{bar.interval_seconds}:{int(bar.closed_at.timestamp())}'
         # Eligibility is not part of source identity: replay after a crash retains
         # the original decision rather than promoting a historical bar to live.
@@ -346,6 +361,8 @@ def _preflight_local_state(directory, runtime, store, settings, *, execute, new_
     if execute:
         if automatic:
             runtime._validate_continuous(binding, continuous_auth)
+            if new_deployment:
+                raise SafetyBlocked('continuous Grid deployments rotate automatically after a reconciled breakout')
         else:
             if campaign is None or campaign['smoke']:
                 raise SafetyBlocked('no persistent Demo authorization; run start-continuous')
@@ -355,16 +372,14 @@ def _preflight_local_state(directory, runtime, store, settings, *, execute, new_
     if controller_path.exists():
         with closing(PaperStore(controller_path, continuous_capacity=True)) as controller_store:
             saved = saved_grid_deployment(controller_store)
-        if saved is not None:
+            if saved is None:
+                return binding
             deployment = decode(json.loads(saved))
             if new_deployment:
                 if campaign is not None and deployment['campaign'] == campaign['id']:
                     raise SafetyBlocked('current campaign already has a Grid deployment; reuse it')
             else:
-                expected_prefix = (campaign['prefix'] if campaign is not None
-                    else continuous_auth['prefix'] if automatic else None)
-                if ((campaign is None or deployment['campaign'] != campaign['id'])
-                        and not (automatic and deployment['deployment']['deployment_id'] == expected_prefix + '-g')):
+                if not runtime.grid_deployment_matches(controller_store, deployment, campaign, continuous_auth):
                     raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
                 grid = restore_grid(deployment['deployment'])
                 if settings is not None and grid.config != GridConfig(**settings):
@@ -398,7 +413,6 @@ class GridSupervisorRuntime:
         self.strict_permissions = strict_permissions
         self.min_free_bytes = min_free_bytes
         self.systemd_unit = detect_systemd_unit()
-        self.bridge = None
         self.consumer = None
         self.feed = None
         self._collection = None
@@ -416,6 +430,10 @@ class GridSupervisorRuntime:
         self.last_recovered_at = None
         self.startup_recovered = False
         self._pending_startup_error = None
+
+    @property
+    def bridge(self):
+        return self.consumer.bridge if self.consumer is not None else None
 
     @property
     def collection(self):
@@ -467,20 +485,27 @@ class GridSupervisorRuntime:
             def authority():
                 if not self.execute:
                     return True
-                campaign = bridge.runtime.active_campaign()
-                return (campaign is not None and not campaign['smoke']
-                    and bridge.grid.deployment_id == campaign['prefix'] + '-g'
-                    and bridge.runtime.post_count(campaign['id']) < campaign['orders']
-                    and not bridge.session.receipt_error and not bridge.session.write_uncertain)
+                current = consumer.bridge
+                campaign = self.runtime.active_campaign()
+                if (campaign is None or campaign['smoke'] or self._effective_desired() != 'RUNNING'
+                        or self.runtime.post_count(campaign['id']) >= campaign['orders']
+                        or current.session.receipt_error or current.session.write_uncertain):
+                    return False
+                store = current.controller.store
+                deployment = decode(json.loads(saved_grid_deployment(store)))
+                return (current.grid.deployment_id == deployment['deployment']['deployment_id']
+                        and self.runtime.grid_deployment_matches(
+                            store, deployment, campaign, self.runtime.continuous_authorization()))
 
             consumer = GridConsumer(bridge, self.control, authority=authority,
                 clock=bridge.session._now, ensure_campaign=bridge.ensure_campaign,
-                request_counts=self.requests)
+                request_counts=self.requests,
+                rotate=bridge.rotate_if_terminal if self.execute and self.settings is None else None)
             client = MarketClient(self.requests)
             initial_bars = max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1)
             feed = attempt.enter_context(closing(DemoMarketFeed(
                 client, consumer, state_path=self.path,
-                consumer_id='grid-' + self.mode + ':' + bridge.grid.deployment_id,
+                consumer_id='grid-' + self.mode + ':' + bridge.feed_deployment_id,
                 interval=self.args.interval, max_backfill=self.args.max_backfill,
                 initial_bars=initial_bars, catch_up=True,
                 exchange_time=bridge.session.client.demo_time,
@@ -505,7 +530,6 @@ class GridSupervisorRuntime:
                 raise
             raise
         self.stack.enter_context(attempt.pop_all())
-        self.bridge = bridge
         self.consumer = consumer
         self.feed = feed
         self.collection_requests = collection_requests
@@ -782,7 +806,14 @@ def run(args, *, root=None, credentials=None):
             raise SafetyBlocked('Grid supervisor has not been started')
         with closing(StrategyControl(path)) as control:
             if args.action != 'status':
-                control.request(dict(pause='PAUSED', resume='RUNNING', stop='STOPPED')[args.action])
+                desired = dict(pause='PAUSED', resume='RUNNING', stop='STOPPED')[args.action]
+                if args.execute:
+                    # Share the write order with Grid promotion and order reservation.
+                    with closing(DemoRuntime(directory)) as runtime, runtime.db:
+                        runtime.db.execute('BEGIN IMMEDIATE')
+                        control.request(desired)
+                else:
+                    control.request(desired)
             print(json.dumps(control.snapshot(), default=str), flush=True)
         return 0
     min_free_bytes = getattr(args, 'min_free_bytes', MIN_FREE_BYTES)

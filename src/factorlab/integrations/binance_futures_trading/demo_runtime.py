@@ -338,6 +338,40 @@ class DemoRuntime:
         row = self.db.execute('SELECT payload FROM campaigns WHERE id = ?', (key,)).fetchone()
         return json.loads(row[0]) if row else None
 
+    def grid_deployment_matches(self, store, deployment, campaign, authorization=None):
+        """Check the active Grid's identity against its journal and campaign lineage."""
+        from factorlab.trading.storage import dumps
+
+        identity = deployment['deployment']['deployment_id']
+        generation = deployment.get('generation', 0)
+        if type(generation) is not int or not 0 <= generation <= 0xfffff:
+            return False
+        if authorization is None:
+            return (campaign is not None and deployment['campaign'] == campaign['id']
+                    and generation == 0 and identity == grid_deployment_id(campaign['prefix']))
+        origin = self.campaign(deployment['campaign'])
+        prefix = authorization['prefix']
+        if (origin is None or origin['smoke'] or origin['prefix'] != prefix
+                or origin['journal_id'] != authorization['journal_id']
+                or origin.get('authorization', authorization['id']) != authorization['id']
+                or origin['policy'] != authorization['policy']
+                or origin['account_configuration'] != authorization['account_configuration']
+                or (campaign is not None and (campaign['prefix'] != prefix
+                    or campaign.get('authorization') != authorization['id']))
+                or identity != grid_deployment_id(prefix, generation)):
+            return False
+        if generation == 0:
+            return deployment.get('feed_deployment_id', identity) == identity
+        previous = grid_deployment_id(prefix, generation - 1)
+        activated = deployment.get('activated_at')
+        return (deployment.get('feed_deployment_id') == grid_deployment_id(prefix)
+                and deployment.get('replaces') == previous
+                and deployment.get('terminal_reason') in ('BREAKOUT', 'BREAKOUT_REBUILD_INTERVAL')
+                and isinstance(activated, datetime) and activated.tzinfo is not None
+                and store.event_payload('demo-grid:deployment:' + identity) == dumps(deployment)
+                and store.event_payload(f'demo-grid:{identity}:deployment') == dumps(deployment['deployment'])
+                and store.event_payload(f'demo-grid:{previous}:deployment') is not None)
+
     def tradfi_receipt(self, account_id):
         saved = self._get('tradfi-agreement:' + journal_id(account_id))
         return json.loads(saved) if saved is not None else None
@@ -415,7 +449,7 @@ class DemoRuntime:
                 "SELECT campaign, client_id FROM dispatches WHERE method='POST'") if owner in owners]
         return DemoNetworkAuthorization(plan, cancellation_ids=cancellation_ids)
 
-    def reserve(self, campaign, method, params, plan, *, expected, facts):
+    def reserve(self, campaign, method, params, plan, *, expected, facts, dispatch_gate=None):
         """Consume each admitted POST/DELETE exactly once, including unknown responses."""
         client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
         continuous = campaign.get('authorization') is not None
@@ -435,6 +469,8 @@ class DemoRuntime:
                         or authorization['id'] != campaign['authorization']
                         or authorization['stop_epoch'] != self.stop_epoch())):
                 raise SafetyBlocked('Demo authorization stopped or expired')
+            if dispatch_gate is not None:
+                dispatch_gate()
             if method == 'POST':
                 actual = (client_id, params['side'], Decimal(params['quantity']), params['reduceOnly'])
                 if expected is not None and len(expected) == 5:
@@ -509,11 +545,16 @@ def durable_control_state(runtime):
     return None
 
 
+def grid_deployment_id(prefix, generation=0):
+    return f'{prefix}-g-{generation:05x}' if generation else f'{prefix}-g'
+
+
 @contextmanager
 def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_deployment=False,
                       preview=False, continuous=False, request_counts=None, dispatch_gate=None,
                       runtime=None, ensure_on_open=True):
     """Open one campaign-bound Grid bridge over the shared Demo journals."""
+    from factorlab.trading.contracts import TERMINAL
     from factorlab.trading.storage import PaperStore, dumps, decode
 
     from .demo_grid_bridge import DemoGridBridge
@@ -534,6 +575,8 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
         writes = not read_only and not preview
         continuous_auth = runtime.continuous_authorization()
         automatic = writes and continuous and continuous_auth is not None
+        if automatic and new_deployment:
+            raise SafetyBlocked('continuous Grid deployments rotate automatically after a reconciled breakout')
         if writes and not automatic and (campaign is None or campaign['smoke']):
             raise SafetyBlocked('no persistent Demo authorization; run start-continuous')
         authorization = runtime.authority(binding, campaign) if writes and not automatic else None
@@ -545,9 +588,16 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
                 'true' if intent.reduce_only else 'false', intent.limit_price)
 
         def guard(method, params, plan):
-            if dispatch_gate is not None:
-                dispatch_gate()
-            runtime.reserve(campaign, method, params, plan, expected=expected, facts=session.adapter.facts)
+            deployment = decode(json.loads(saved_grid_deployment(controller_store)))
+            client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
+            identity, _, sequence = client_id.rpartition('-')
+            if (identity != deployment['deployment']['deployment_id']
+                    or len(sequence) < 8 or not sequence.isascii() or not sequence.isdecimal()
+                    or not runtime.grid_deployment_matches(
+                        controller_store, deployment, campaign, continuous_auth if automatic else None)):
+                raise SafetyBlocked('order is outside the active Grid deployment')
+            runtime.reserve(campaign, method, params, plan, expected=expected,
+                            facts=session.adapter.facts, dispatch_gate=dispatch_gate)
 
         def record(receipt):
             runtime.record_receipt(campaign, receipt)
@@ -586,9 +636,76 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
             campaign = selected
             return campaign
 
-        if automatic and (ensure_on_open or saved is None or new_deployment):
+        if automatic and (ensure_on_open or saved is None):
             ensure_campaign()
-        key = 'demo-grid:deployment'
+        expected_prefix = (campaign['prefix'] if campaign is not None
+                           else continuous_auth['prefix'] if automatic else None)
+
+        def build_bridge(grid, deployment, *, create=False):
+            if continuous:
+                grid.enable_continuous_capacity()
+            deferred_admission = automatic and not ensure_on_open and session._write_guard is None
+            bridge = DemoGridBridge(grid, session, expect=expect if writes else None,
+                read_only=read_only, preview=preview, deferred_admission=deferred_admission,
+                expected_prefix=expected_prefix, new_deployment=deployment if create else None)
+            bridge.runtime = runtime
+            bridge.ensure_campaign = ensure_campaign
+            bridge.feed_deployment_id = deployment.get('feed_deployment_id', grid.deployment_id)
+            bridge.activated_at = deployment.get('activated_at')
+            bridge.generation = deployment.get('generation', 0)
+            bridge.rotate_if_terminal = rotate_if_terminal
+            return bridge
+
+        def rotate_if_terminal(bridge, *, running):
+            if (not automatic or grid_factory is None or campaign is None
+                    or not bridge.grid.closed_by_breakout or not running()):
+                return bridge
+            status = session.status()
+            if (not bridge.ready or not status['reconciled'] or status['positions']
+                    or status['open_orders'] or status['unknown'] or session.write_uncertain
+                    or session.receipt_error or runtime._get('continuous_recovery')
+                    or bridge.gateway.read_account().open_orders):
+                return bridge
+            # A lost HTTP receipt may remain absent after GET has resolved
+            # its order. Only reservations without a terminal order block rotation.
+            for (client_id,) in runtime.db.execute('SELECT client_id FROM dispatches WHERE receipt IS NULL'):
+                order = bridge.gateway.state.orders.get(client_id)
+                if order is None or order.snapshot.status not in TERMINAL:
+                    return bridge
+
+            epoch = runtime.stop_epoch()
+            generation = bridge.generation + 1
+            if generation > 0xfffff:
+                raise SafetyBlocked('continuous Grid deployment identity exhausted')
+            deployment_id = grid_deployment_id(campaign['prefix'], generation)
+            grid = grid_factory(session, deployment_id)
+            if grid.deployment_id != deployment_id:
+                raise SafetyBlocked('Grid deployment identity differs from the active Demo campaign')
+            facts = session.adapter.facts
+            activated_at = session._now()
+            session.adapter._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic, activated_at)
+            deployment = dict(campaign=campaign['id'], deployment=grid.deployment(),
+                feed_deployment_id=bridge.feed_deployment_id, activated_at=activated_at, generation=generation,
+                replaces=bridge.grid.deployment_id, terminal_reason=bridge.grid.reason)
+            # The owner lock serializes Grid sessions. The runtime write
+            # transaction also serializes promotion with account-wide STOP.
+            with runtime.db:
+                runtime.db.execute('BEGIN IMMEDIATE')
+                policy = runtime.continuous_authorization()
+                if (policy is None or policy['state'] != 'RUNNING' or runtime.stop_epoch() != epoch
+                        or runtime.active_campaign() != campaign or not running()
+                        or decode(json.loads(saved_grid_deployment(controller_store)))['deployment']['deployment_id']
+                        != bridge.grid.deployment_id):
+                    return bridge
+                consumed = runtime.consumption(policy)
+                entry_notional = grid.rules.quantity_unit * Decimal(str(grid.config.lower))
+                if (consumed['posts'] >= policy['total_orders']
+                        or Decimal(consumed['submitted_notional']) + entry_notional > Decimal(policy['total_notional'])):
+                    raise SafetyBlocked('global Demo trading budget exhausted')
+                replacement = build_bridge(grid, deployment, create=True)
+            replacement.restore_reconciled()
+            return replacement
+
         if new_deployment:
             if read_only:
                 raise SafetyBlocked('new Grid deployment requires explicit write mode')
@@ -598,39 +715,27 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
             if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
                 raise SafetyBlocked('new Grid deployment requires a reconciled flat account without open or UNKNOWN orders')
             saved = None
-        expected_prefix = (campaign['prefix'] if campaign is not None
-            else continuous_auth['prefix'] if automatic else None)
         if saved is not None:
             deployment = decode(json.loads(saved))
-            if ((writes or preview)
-                    and (campaign is None or deployment['campaign'] != campaign['id'])
-                    and not (automatic and deployment['deployment']['deployment_id'] == expected_prefix + '-g')):
+            deployment_id = deployment['deployment']['deployment_id']
+            if ((writes or preview) and not runtime.grid_deployment_matches(
+                    controller_store, deployment, campaign, continuous_auth if automatic else None)):
                 raise SafetyBlocked('persisted Grid deployment or Demo campaign differs')
             if grid_factory is None or read_only:
                 grid = restore_grid(deployment['deployment'])
             else:
-                grid = grid_factory(session, expected_prefix + '-g')
+                grid = grid_factory(session, deployment_id)
                 if dumps(grid.deployment()) != dumps(deployment['deployment']):
                     raise SafetyBlocked('persisted Grid deployment differs')
         else:
             if read_only or grid_factory is None:
                 raise SafetyBlocked('no persisted Grid deployment')
-            deployment_id = campaign['prefix'] + '-g'
+            deployment_id = grid_deployment_id(campaign['prefix'])
             grid = grid_factory(session, deployment_id)
             if grid.deployment_id != deployment_id:
                 raise SafetyBlocked('Grid deployment identity differs from the active Demo campaign')
             deployment = dict(campaign=campaign['id'], deployment=grid.deployment())
-        if continuous:
-            grid.enable_continuous_capacity()
-        deferred_admission = automatic and not ensure_on_open and session._write_guard is None
-        bridge = DemoGridBridge(grid, session, expect=expect if writes else None,
-            read_only=read_only, preview=preview, deferred_admission=deferred_admission,
-            expected_prefix=expected_prefix)
-        with controller_store.transaction():
-            controller_store.record_metadata(key + ':' + deployment['campaign'], deployment)
-        bridge.runtime = runtime
-        bridge.ensure_campaign = ensure_campaign
-        yield bridge
+        yield build_bridge(grid, deployment, create=saved is None)
 
 
 def saved_grid_deployment(store):
