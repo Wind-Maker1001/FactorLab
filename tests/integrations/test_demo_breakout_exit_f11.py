@@ -19,7 +19,7 @@ from factorlab.integrations.binance_futures_trading import demo_grid_supervisor 
 from factorlab.integrations.binance_futures_trading import demo_runtime as runtime_mod
 from factorlab.integrations.binance_futures_trading import network, protocol
 from factorlab.integrations.binance_futures_trading.demo_cli import open_session, parse_args
-from factorlab.integrations.binance_futures_trading.demo_fill_acceptance import fifo_evidence, receipt_mapping
+from factorlab.integrations.binance_futures_trading.demo_fill_acceptance import capture, fifo_evidence, receipt_mapping
 from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import GridConsumer, grid_factory
 from factorlab.integrations.binance_futures_trading.demo_market_feed import FeedPaused, SOURCE
 from factorlab.integrations.binance_futures_trading.demo_runtime import (
@@ -171,8 +171,6 @@ def f11_harness(network_grid, monkeypatch):
                 position.pop('entryPrice', None)
                 position['unrealizedProfit'] = str(unrealized)
             return Response(200, {}, json.dumps(payload).encode())
-        if request.path == '/fapi/v1/income':
-            return Response(200, {}, b'[]')
         return result
 
     monkeypatch.setattr(protocol.FuturesClient, '__init__', initialize)
@@ -273,6 +271,113 @@ def _setup_breakout_with_position(h, *, fill_qty='.04', fill_price='146', breako
     h.state.bar_high = D(breakout_price) + D('1')
     h.state.bar_low = D(breakout_price) - D('1')
     return policy, old_id, buy
+
+
+# ---------------------------------------------------------------------------
+# F10 funding recovery through F11 exit, restart, fill and rotation
+# ---------------------------------------------------------------------------
+
+def test_f11_f10_funding_exit_recovery_and_rotation(f11_harness):
+    h = f11_harness
+    h.state.use_dynamic_factory = True
+    policy = _start_continuous(h.root, h.store, orders=1, total_orders=5, total_notional=D('100'))
+    with open_grid_session(h.root, h.store, h.factory, continuous=True) as bridge:
+        bridge.recover()
+        observe(bridge)
+        buy_id = bridge.grid.active[0].intent.client_order_id
+        h.fake.trade_update(buy_id, '.04', '146')
+        h.fake.funding_update('-.01', tran_id=1101, time_ms=MS)
+        bridge.recover()
+        assert bridge.gateway.state.funding['USDT'] == D('-.01')
+        assert bridge.session.adapter.order(buy_id).cumulative_fee == D('.00584')
+        bridge.observe(dict(id='funded-breakout', time=NOW.replace(tzinfo=None).isoformat(),
+                            price='143', volume=0), dispatch=False)
+        bridge.withdraw_unsubmitted()
+        old_id = bridge.grid.deployment_id
+        assert bridge.grid.closed_by_breakout and bridge.account().inventory == D('.04')
+        assert not bridge.controller.account().open_orders
+
+    h.state.bid = h.state.ask = h.state.mark = D('143')
+    h.state.bar_close, h.state.bar_high, h.state.bar_low = D('143'), D('144'), D('142')
+    saved = {}
+
+    def verify_ledger(bridge, expected_funding, expected_count):
+        report = capture(bridge.session, bridge.runtime, D('1000'))
+        for status in ('DEMO_FUNDING_RECONCILED', 'DEMO_FEE_RECONCILED',
+                       'DEMO_POSITION_RECONCILED', 'DEMO_ACCOUNT_RECONCILED'):
+            assert report['statuses'][status]
+        summary = report['fifo']['attribution']['summary']
+        assert summary['realized_funding'] == expected_funding
+        assert summary['reconciliation_residual'] == summary['reported_equity_difference'] == 0
+        assert len(list(bridge.controller.store.funding_events())) == expected_count
+        assert bridge.session.adapter.db.execute('SELECT count(*) FROM futures_funding').fetchone() == (
+            expected_count,)
+        assert bridge.session.adapter.order(buy_id).cumulative_fee == D('.00584')
+        coverage = bridge.session.adapter.funding_coverage()
+        assert coverage['complete']
+        if 'coverage' in saved:
+            assert coverage['covered_from_ms'] == saved['coverage']['covered_from_ms']
+            assert coverage['covered_through_ms'] >= saved['coverage']['covered_through_ms']
+        saved['coverage'] = coverage
+        consumed = bridge.runtime.consumption(policy)
+        assert consumed['posts'] == 2
+        assert D(consumed['submitted_notional']) == D('.04') * (D('146') + D('143'))
+        assert bridge.runtime.continuous_authorization() == policy
+        return report
+
+    def submitted(supervisor, raw, state):
+        worker = supervisor.feed
+        saved['exit_id'] = worker.bridge.breakout_exit_status()['active_exit_order_id']
+        saved['watermarks'] = worker.watermarks()
+        assert worker.bridge.breakout_exit_status()['phase'] == 'EXIT_WORKING'
+        assert [p['side'][0] for p in writes(h.requests, 'POST')] == ['BUY', 'SELL']
+        assert writes(h.requests, 'POST')[-1]['reduceOnly'] == ['true']
+        verify_ledger(worker.bridge, D('-.01'), 1)
+
+    h.state.on_report, h.state.stop_after_polls = submitted, 1
+    assert h.start_execute() == 0
+
+    # A new settlement while the exit is working must survive a worker restart
+    # without changing the SELL identity, charging an order fee, or resetting coverage.
+    h.state.seconds += 2
+    h.fake.funding_update('.005', tran_id=1102, time_ms=MS + 1000)
+    h.state.polls = 0
+    phases = []
+
+    def resumed(supervisor, raw, state):
+        worker, key = supervisor.feed, saved['exit_id']
+        bridge = worker.bridge
+        report = verify_ledger(bridge, D('-.005'), 2)
+        assert len(writes(h.requests, 'POST')) == 2
+        assert not writes(h.requests, 'DELETE')
+        assert worker.watermarks()[0] == saved['watermarks'][0]
+        assert bridge.feed_deployment_id == old_id
+        if state.polls <= 2:
+            assert bridge.grid.deployment_id == old_id
+            assert bridge.breakout_exit_status()['active_exit_order_id'] == key
+            phases.append(bridge.session.adapter.order(key).status)
+            assert bridge.step_breakout_exit() is None
+            h.fake.trade_update(key, '.02', '143')
+            state.seconds += 1
+        else:
+            assert bridge.grid.deployment_id == old_id + '-00001'
+            assert not bridge.gateway.state.positions
+            assert not bridge.controller.account().open_orders
+            assert not bridge.session.status()['unknown']
+            assert not worker.consumer.live_bar
+            assert bridge.session.adapter.order(key).status is S.FILLED
+            summary = report['fifo']['attribution']['summary']
+            assert summary['residual_inventory'] == 0
+            assert summary['actual_fees'] == report['actual_fees'] == D('.01156')
+            assert summary['realized_trade_pnl'] == D('-.12')
+            assert report['wallet'] == report['equity'] == h.fake.cash == D('999.86344')
+            assert summary['final_nav'] == D('999.86344') / D('1000')
+            assert {row['order_query']['status'] for row in report['order_trade_mapping']} == {'FILLED'}
+            assert all(row['receipt_source'] == 'GET' for row in report['order_trade_mapping'])
+
+    h.state.on_report, h.state.stop_after_polls = resumed, 3
+    assert h.start_execute() == 0
+    assert phases == [S.SUBMITTED, S.PARTIALLY_FILLED]
 
 
 # ---------------------------------------------------------------------------
@@ -964,10 +1069,13 @@ with pytest.MonkeyPatch.context() as patch:
 # 11. STOP, HALT, PAUSED priority during exit
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize('control_mode', ['USER_PAUSED', 'USER_STOPPED', 'RUNTIME_STOPPED', 'ACCOUNT_HALTED', 'LOSS_HALT'])
+@pytest.mark.parametrize('control_mode', ['USER_PAUSED', 'USER_STOPPED', 'RUNTIME_STOPPED',
+                                        'ACCOUNT_HALTED', 'LOSS_HALT', 'FUNDING_LOSS_HALT'])
 def test_f11_11_stop_halt_paused_priority_during_exit(f11_harness, control_mode):
     h = f11_harness
     _setup_breakout_with_position(h, breakout_price='143')
+    h.fake.funding_update('-1.1' if control_mode == 'FUNDING_LOSS_HALT' else '-.01',
+                          tran_id=1110, time_ms=MS)
     h.state.bid, h.state.ask, h.state.mark = D('143.00'), D('143.10'), D('143.05')
     before_posts = len(writes(h.requests, 'POST'))
     before_deletes = len(writes(h.requests, 'DELETE'))
@@ -1180,6 +1288,8 @@ def test_f11_15_rule_precision_and_budget_violations_block_safely(f11_harness, c
         limits['total_notional'] = D('6')
 
     _, old_id, _ = _setup_breakout_with_position(h, fill_qty=fill_qty, breakout_price='143', **limits)
+    if case in {'global_posts_exhausted', 'global_notional_exhausted'}:
+        h.fake.funding_update('-.01', tran_id=1115, time_ms=MS)
     before_posts = len(writes(h.requests, 'POST'))
 
     if case == 'min_notional_low_price':

@@ -135,3 +135,40 @@ Windows / Python 3.12.7，全部使用临时 SQLite 和离线 HTTP 模拟器。�
 - GitHub 上的双 Python Extended software、实际分片覆盖、离线 systemd 和 `FactorLab trusted merge gate` 必须绑定推送后的新 HEAD 核对；本报告的本地结果不代替该门禁。
 
 未操作原台式机私有交易状态，未启动官方 Demo Execute，未合并 PR。
+
+---
+
+## 六、集成 F10 主线与 F10 × F11 联合验收（2026-11-22）
+
+### Git 集成与保留边界
+
+集成前本地和远端 F11 均为 `2be03b4362ad0c9804235c5b15c7626ac13eaf16`，工作区干净。Fetch 后实际最新主线为 `3a13d68f648cf617b541b0b28fc818e2e6fe8592`（已合并 PR #225）。原三条提交完整 rebase 到该主线，无冲突；`git range-diff` 三条均为 `=`，包含原 F11、价格带 P2 / F07 时钟修复以及验收记录。
+
+本轮未改写 F10 的 `adapter.py`、`demo_session.py`、`demo_fill_acceptance.py`、`gateway.py`、共享 `trading` 账本或 `grid_fifo.py`；这些文件与最新主线完全一致。网关同时保留 F10 的资金费同步 / 幂等重放和 F11 的撤单前价格带预检。正式准入、180 秒冷却、五次尝试、防碎仓、UNKNOWN、控制面优先级和持久恢复机制继续使用原实现。
+
+### 最小跨模块离线回归
+
+新增 `test_f11_f10_funding_exit_recovery_and_rotation`，使用临时 SQLite 和离线 HTTP 模拟器。移除 F11 夹具中固定空 `/income` 的覆盖，直接复用 F10 既有的收入筛选与资金费模拟，不修改生产资金费逻辑。
+
+验证链路：
+
+1. BUY `0.04 @ 146` GET 成交，成交手续费 `0.00584`；独立资金费事件 `tranId=1101` 扣款 `-0.01`，然后触发 BREAKOUT。
+2. 原累计授权内提交一次 reduce-only SELL LIMIT GTC `0.04 @ 143`，无额外 BUY。
+3. 退出单工作期间重启 Worker，新资金费事件 `tranId=1102` 收入 `+0.005` 经 GET 恢复；退出单身份不变，资金费覆盖起点不重置、终点单调推进，两个权威资金费事件各只入账一次。
+4. SELL 分两次 `0.02 @ 143` 成交；GET 确认 `SUBMITTED → PARTIALLY_FILLED → FILLED`，原 BUY / SELL 最终均为官方 GET `FILLED`。成交手续费总计 `0.01156`，独立资金费合计 `-0.005`，交易损益 `-0.12`。
+5. 最终钱包与权益均为 `999.86344`，NAV 为 `999.86344 / 1000`；FIFO 剩余仓位、资金费 / 账户残差及 reported equity difference 均为零。
+6. 完全平仓并落账后轮换 `g-00001`，继承原 `feed_deployment_id` 与行情水位，新 Bar 尚未合格时不派新 BUY。连续授权完全不变，累计 POST=2、DELETE=0、submitted notional=`0.04 × (146+143)=11.56`，窗口切换和重启均不重置累计预算。
+
+原 STOP / HALT / PAUSED 优先级场景加入正常资金费结算；另增 `FUNDING_LOSS_HALT` 参数，证明资金费使实际亏损触及硬限制时零退出写入。两项全局预算耗尽场景也在存在资金费时继续阻断。
+
+### 本轮定向验证
+
+Rebase 后、修改夹具前，原 F11 专项 **40 passed**。最终本轮两批定向回归合计 **721 passed, 0 failed, 0 skipped**：
+
+- 优先套测 **145 passed**：F11 **42**、F10 **33**、F07 scheduling **11**、Grid supervisor **38**、cloud runtime **21**。
+- 直接影响的账户 / 网关 / FIFO / 账本与恢复套测 **576 passed**：`test_binance_futures_trading`、Demo execution / network / grid bridge / grid network / fill closed loop / fill faults / runtime、GET recovery / window、receipts / reconciliation、constructor clock、continuous campaign、离线 Execute systemd、MarketFeed / collection、bounded quote / preparation、paper control、grid FIFO / GridExecution、forward observation。
+- 使用 `PYTHONPATH=<worktree>/src`、工作区临时 pytest 目录、原确定性时钟与原准入限制。资金费权威事件、实际手续费和预算断言均未放宽。
+
+完整研究回测交由 GitHub 可信 CI 覆盖。新 HEAD 的 CI、Review 与门禁证据记录在原 PR #224，不以旧 HEAD 的 CI 结果代替。
+
+本轮未启动官方 Demo Execute，未修改原账户私有 SQLite，未向真实交易所发送 POST / DELETE，不创建新 PR，不自动合并。
