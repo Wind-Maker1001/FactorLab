@@ -37,13 +37,13 @@ SQLite 原生 `backup()` API 仅保证**单个 SQLite 数据库文件内部**的
 
 备份服务的 `TimeoutStartSec=20min` 覆盖健康采集、停止、最长 300 秒的快照、启动、GET 对账、校验和保留清理。触及整体上限时，systemd 发送 SIGTERM，15 秒后仍未退出则强制终止整个备份 cgroup。`ExecStopPost` 随后读取本次调用在 root 私有运行目录中登记的恢复意图，并使用现有 Execute unit 启动与 GET 对账路径。原本未运行的 unit 无恢复意图，持久化 `STOPPED` 或 `HALTED` 会阻止恢复启动。
 
-备份 unit 在退出钩子中写入最终状态，排在 C06 健康采样之前。异常结束即使恢复成功也会保留 `FAILED` 记录。若记录显示 `SERVICE_RESTART_FAILED` 或对账未完成，应先查看备份与原服务 journal，再确认原服务的控制状态和 GET 对账结果。
+备份 unit 在退出钩子中写入最终状态，排在同时等待运行的 C06 健康采样和日报之前。异常结束即使恢复成功也会保留 `FAILED` 记录。若记录显示 `SERVICE_RESTART_FAILED` 或对账未完成，应先查看备份与原服务 journal，再确认原服务的控制状态和 GET 对账结果。
 
 关键安全边界：
 
 - **禁止访问 Secret**：`factorlab-demo-backup.service` 不配置 `LoadCredential`，并声明 `InaccessiblePaths=/etc/factorlab-demo`，从 mount namespace 层面阻断备份进程读取 Binance API Secret。
 - **最小权限数据操作**：备份、校验、隔离演练与清理全部降权为 `factorlab-demo` 用户执行，所有文件权限严格 `0700`/`0600`。
-- **备份目录隔离**：默认存放于 `/var/backups/factorlab-demo`（`factorlab-demo:factorlab-demo 0700`），位于状态目录之外；通过 `/etc/systemd/system/factorlab-demo-backup.service.d/10-state-root.conf` 指定实际状态目录 `/var/lib/factorlab-demo/execute-state`。
+- **备份目录隔离**：默认存放于 `/var/backups/factorlab-demo`（`factorlab-demo:factorlab-demo 0700`）。备份 unit 默认读取 `/var/lib/factorlab-demo/execute-state`，现有指向同一目录的 `10-state-root.conf` 可保留。
 
 ### 2.2 保留策略与不可变护栏
 
@@ -52,7 +52,7 @@ SQLite 原生 `backup()` API 仅保证**单个 SQLite 数据库文件内部**的
 - 新备份校验通过后才允许清理超过保留期的旧备份；备份或校验失败时跳过清理。
 - 每次运行均将脱敏元数据持久化到：
   - `/var/backups/factorlab-demo/backup-status.json`（最近一次状态）
-  - `/var/backups/factorlab-demo/backup-history.jsonl`（创建时间、数据库数量、校验结果、大小、停机秒数、错误分类）
+  - `/var/backups/factorlab-demo/backup-history.jsonl`（创建时间、校验结果、大小、错误分类及供 C06 对齐的 unit、实际重启时间和前后 PID）
 
 ### 2.3 安装与常用运维命令
 
@@ -60,11 +60,6 @@ SQLite 原生 `backup()` API 仅保证**单个 SQLite 数据库文件内部**的
 sudo install -d -o factorlab-demo -g factorlab-demo -m 700 /var/backups/factorlab-demo
 sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-backup.service /etc/systemd/system/factorlab-demo-backup.service
 sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-backup.timer /etc/systemd/system/factorlab-demo-backup.timer
-sudo install -d -m 755 /etc/systemd/system/factorlab-demo-backup.service.d
-printf '%s\n' '[Service]' \
-  'Environment=FACTORLAB_DEMO_STATE_ROOT=/var/lib/factorlab-demo/execute-state' \
-  'Environment=FACTORLAB_DEMO_BACKUP_ROOT=/var/backups/factorlab-demo' \
-  | sudo tee /etc/systemd/system/factorlab-demo-backup.service.d/10-state-root.conf > /dev/null
 sudo systemctl daemon-reload
 sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-backup.service /etc/systemd/system/factorlab-demo-backup.timer
 sudo systemctl enable --now factorlab-demo-backup.timer

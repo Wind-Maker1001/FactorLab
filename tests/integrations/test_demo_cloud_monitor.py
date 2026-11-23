@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from factorlab.integrations.binance_futures_trading.demo_cloud_backup import record_backup_metadata
 from factorlab.integrations.binance_futures_trading.demo_cloud_monitor import (
     AlertDeliveryConfig,
     DEFAULT_MAX_SAMPLES_BYTES,
@@ -796,30 +797,19 @@ def _write_c07_backup_status(
             post_health=dict(pid=post_pid, status='RUNNING', desired='RUNNING'),
         ),
     )
-    atomic_json(backup_root / 'backup-status.json', payload)
-    hist_entry = dict(
-        started_at=payload['started_at'],
-        completed_at=payload['completed_at'],
-        status=status,
-        error_category=error_category,
-        backup_name=backup_name,
-        downtime_seconds=downtime_seconds,
-        interrupted_unit='factorlab-demo-execute.service',
-        reconcile_verified=reconcile_verified,
-    )
-    with (backup_root / 'backup-history.jsonl').open('a', encoding='utf-8') as stream:
-        stream.write(json.dumps(hist_entry, sort_keys=True) + '\n')
+    record_backup_metadata(backup_root, payload)
     return payload
 
 
-def test_c07_planned_maintenance_restart_records_event_without_unexpected_alert(tmp_path):
+@pytest.mark.parametrize('status', ['RUNNING', 'PAUSED'])
+def test_c07_planned_maintenance_restart_records_event_without_unexpected_alert(tmp_path, status):
     monitor_dir = tmp_path / 'monitoring'
     backup_root = tmp_path / 'backups'
     now = 1_800_000_000.0
 
     # Tick 1: healthy before backup (PID 3792, starts 2)
     r1 = run_monitor_cycle(
-        _make_health_payload(now=now, pid=3792, starts=2, n_restarts=0),
+        _make_health_payload(now=now, pid=3792, starts=2, status=status, desired=status),
         monitor_dir, now=now, backup_root=backup_root,
     )
     assert r1['active_alert_count'] == 0
@@ -833,7 +823,7 @@ def test_c07_planned_maintenance_restart_records_event_without_unexpected_alert(
 
     # Tick 2: healthy after backup (PID 9745, starts 3, n_restarts still 0)
     r2 = run_monitor_cycle(
-        _make_health_payload(now=now + 60, pid=9745, starts=3, n_restarts=0),
+        _make_health_payload(now=now + 60, pid=9745, starts=3, status=status, desired=status),
         monitor_dir, now=now + 60, backup_root=backup_root,
     )
     assert r2['active_alert_count'] == 0
@@ -862,6 +852,32 @@ def test_c07_planned_maintenance_restart_records_event_without_unexpected_alert(
     assert 'unexpected_restart' in r3['active_alert_keys']
     assert any(e['event'] == 'ALERT_FIRING' and e['alert_key'] == 'unexpected_restart' and e['severity'] == 'CRITICAL'
                for e in r3['events'])
+
+    report = generate_daily_report(monitor_dir, now=now + 120, backup_root=backup_root)
+    assert report['windows']['24h']['restarts']['unexpected_restarts'] == 1
+    assert report['windows']['24h']['restarts']['planned_maintenance_restarts'] == 1
+
+
+def test_report_correlates_historical_backup_by_restart_identity(tmp_path):
+    now = 1_800_000_000.0
+    _write_c07_backup_status(
+        tmp_path, started_ts=now + 10, stopped_ts=now + 11,
+        restarted_ts=now + 13, completed_ts=now + 145,
+    )
+    _write_c07_backup_status(
+        tmp_path, started_ts=now + 200, stopped_ts=now + 201,
+        restarted_ts=now + 203, completed_ts=now + 210, pre_pid=9999, post_pid=10000,
+    )
+    # Simulate journal backfill, which has no explicit maintenance marker.
+    samples = [
+        sanitize_sample(_make_health_payload(pid=3792, starts=2), observed_at=now),
+        sanitize_sample(_make_health_payload(pid=9745, starts=3), observed_at=now + 60),
+        sanitize_sample(_make_health_payload(pid=9999, starts=3), observed_at=now + 120),
+    ]
+    report = summarize_all_windows(samples, now=now + 220, backup_records=load_c07_backup_records(tmp_path))
+    for window in report.values():
+        assert window['restarts']['planned_maintenance_restarts'] == 1
+        assert window['restarts']['unexpected_restarts'] == 1
 
 
 def test_c07_maintenance_failure_timeout_or_unrecovered_must_alert(tmp_path):
@@ -945,3 +961,5 @@ def test_c07_maintenance_failure_timeout_or_unrecovered_must_alert(tmp_path):
     assert 'process_exited' not in r_ok['active_alert_keys']
     assert any(e['event'] == 'ALERT_RESOLVED' and e['alert_key'] == 'maintenance_failure' for e in r_ok['events'])
     assert load_c07_backup_records(backup_root)['latest_status']['backup_name'] == 'backup-clean-04'
+    events = load_jsonl(monitor_dir / 'alert-events.jsonl')
+    assert any(e['event'] == 'ALERT_FIRING' and e['alert_key'] == 'unexpected_restart' for e in events)

@@ -1,6 +1,6 @@
 # P8-C06 Azure Demo 运行监控与异常告警验证报告
 
-**状态：已在 Azure VM 部署并持续运行；外部 Webhook 凭据未配置（手机推送未开通）；24h / 72h / 7d 长窗口正在持续累积采样。**
+**以下为 C06 初次 Azure 部署和 PR 复验的历史记录。C07 集成基线与最新实机观测见第 7 节。**
 **验证日期：2026-11-22 UTC（2026-11-23 Asia/Shanghai）**
 **独立分支 / 基线：`p8-c06-demo-monitoring`（基于 `origin/main` `85076f6`）**
 
@@ -112,3 +112,31 @@
 - **历史重启。** 报告的 `Unexpected / Maint Restarts: 1 / 1` 对应两次独立的同 unit 停启。2026-11-22 16:25:49 UTC 是 PID `3323 → 3792`、`starts 1 → 2`；C07 成功备份 `backup-20261122T165547Z` 对应 16:55:50 UTC 的 PID `3792 → 9745`、`starts 2 → 3`，对账通过，停机 2.045 秒。生成的报告保持两类各计一次，原始 `unexpected_restart` 的触发和恢复事件仍在审计文件。
 - **Execute 与排程。** 部署前后 PID 均为 `9745`，进程启动时间、`NRestarts=0`、Execute Owner 和 `desired=RUNNING` 一致。累计 POST 为 `7/100`，名义额已用 `41.3308000/700` USDT，剩余 `658.6692000` USDT，预算状态 `RUNNING`。健康和日报 timer 均在等待正常触发。发现备份 timer 已禁用后，核对了持久化触发记录并恢复原有每日排程，启用时没有补跑。最近一份备份为 `SUCCEEDED`、`verified=true`；下一次计划触发是北京时间 11:15，日报为 08:05。
 - **回归。** 首次运行 CI 同款 9 文件套件得到 154 通过、2 失败，分别暴露了账户恢复计数在脱敏时被补成 0，以及 Windows 子进程缺少源码导入路径。修正脱敏并设置子进程可继承的 `PYTHONPATH` 后，监控全模块与 Windows 凭据独立进程用例合计 15 项全部通过。最终提交的自动化结果见 [PR #230 Checks](https://github.com/Wind-Maker1001/FactorLab/pull/230/checks)。
+
+## 7. 集成已合并的 C07（2026-11-23 Asia/Shanghai）
+
+原验收提交 `3ff4907b350e8a10e600723adaa628d38684a97c` 的六个提交顺利 rebase 到
+`660c54a17394753fb2c12fd22aecfe09f53b5bea`（C07 / PR #229），没有 Git 冲突。
+C05 Execute 所有权与状态目录保留。备份 unit 默认使用 Execute 子目录，并在退出钩子发布结果后才放行同时排队的健康检查和日报。
+健康及日报能读取交易快照和备份元数据，写权限限于监控目录。
+
+健康监控和日报使用相同的 unit、重启时间和前后 PID 关联已经成功且对账完成的备份。
+已恢复原 `PAUSED` 状态并完成账户对账的 Execute 同样可记为计划维护。历史备份记录追加关联字段，原有告警审计和标记继续保留。
+旧记录如果只有备份开始与完成时间，日报不会仅凭时间重叠判定计划维护。
+
+Windows Python 3.14 定向回归覆盖 11 个模块。首次运行 176 项通过，唯一失败是本地 Windows
+凭据用例的独立进程未继承 pytest 的源码导入路径；将当前 worktree 的 `src` 加入
+`PYTHONPATH` 后该用例通过。其余用例覆盖自动备份、隔离恢复、部分停服、超时恢复、
+维护重启分类、告警恢复与完整八天采样。Ubuntu 验收在隔离的临时 systemd unit 中额外运行
+SIGTERM 与超时升级 SIGKILL 用例，分别验证退出钩子恢复原 Owner 后 C06 仍收到备份故障告警。
+自动化结果见 [PR #230 Checks](https://github.com/Wind-Maker1001/FactorLab/pull/230/checks)。
+
+北京时间 16:31 的 Azure 只读观测中，Execute 已在 05:48 以 `78/CONFIG` 退出，脱敏 journal 原因是
+`STATE_OR_CONFIGURATION_ERROR`，`MainPID=0`；GET-only Worker 未运行。健康、日报、备份三个 Timer
+均为 `active (waiting)`。当天 11:15 的计划备份状态为 `SUCCEEDED`、`verified=true`。
+实机取证只读取 systemd 与既有元数据，未操作服务或排程。
+
+同次观测的全机 journal 占用为 `57.6 MiB`。第 2.1 节的约 `545 MiB/天` 是 45 分钟原始文本
+速率的外推，压缩后的增长和轮转天数是估算。journal 的 `512 MiB` 配额独立于
+`samples.jsonl` 的 `48 MiB` 上限。以实测 `2,296 B` 每分钟一条计算，11,520 条样本约占
+`25.22 MiB`，24h、72h 和 7d 汇总使用该采样文件。

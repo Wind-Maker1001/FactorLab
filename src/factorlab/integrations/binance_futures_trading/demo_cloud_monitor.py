@@ -175,81 +175,68 @@ def _match_planned_maintenance(
     if prev_observed_at is None or curr_observed_at is None:
         return None
 
-    win_lo = prev_observed_at - 30.0
-    win_hi = curr_observed_at + 30.0
-
+    if unit is None or prev_pid is None or curr_pid is None or prev_pid == curr_pid:
+        return None
     latest = backup_records.get('latest_status')
+    candidates = []
     if isinstance(latest, dict):
-        mw = latest.get('maintenance_window') if isinstance(latest.get('maintenance_window'), dict) else {}
-        downtime = _safe_float(mw.get('downtime_seconds'))
-        restarted_ts = _parse_iso_ts(mw.get('restarted_at')) or _parse_iso_ts(mw.get('stopped_at'))
-        interrupted_unit = mw.get('interrupted_unit')
-        pre_pid = _safe_int((mw.get('pre_health') or {}).get('pid')) if isinstance(mw.get('pre_health'), dict) else None
-        post_pid = _safe_int((mw.get('post_health') or {}).get('pid')) if isinstance(mw.get('post_health'), dict) else None
+        window = latest.get('maintenance_window')
+        if isinstance(window, dict) and window.get('service_control_enabled') is True:
+            pre_health = window.get('pre_health')
+            post_health = window.get('post_health')
+            candidates.append(('c07_backup_status', dict(
+                latest, **window,
+                pre_pid=pre_health.get('pid') if isinstance(pre_health, dict) else None,
+                post_pid=post_health.get('pid') if isinstance(post_health, dict) else None,
+            )))
+    if allow_history_fallback:
+        candidates.extend(('c07_backup_history', entry) for entry in reversed(backup_records['history']))
 
-        unit_ok = not (unit and interrupted_unit) or unit == interrupted_unit
-        pid_ok = (
-            (pre_pid is None or prev_pid is None or pre_pid == prev_pid)
-            and (post_pid is None or curr_pid is None or post_pid == curr_pid)
-        )
+    for source, entry in candidates:
+        downtime = _safe_float(entry.get('downtime_seconds'))
+        restarted_ts = _parse_iso_ts(entry.get('restarted_at'))
         if (
-            latest.get('status') == 'SUCCEEDED'
-            and latest.get('error_category') is None
-            and mw.get('service_control_enabled') is True
-            and mw.get('restart_succeeded') is True
-            and mw.get('reconcile_verified') is True
+            entry.get('status') == 'SUCCEEDED'
+            and entry.get('error_category') is None
+            and entry.get('restart_succeeded') is True
+            and entry.get('reconcile_verified') is True
             and downtime is not None
             and 0.0 <= downtime <= max_downtime_seconds
             and restarted_ts is not None
-            and win_lo <= restarted_ts <= win_hi
-            and unit_ok
-            and pid_ok
+            and prev_observed_at - 30.0 <= restarted_ts <= curr_observed_at + 30.0
+            and entry.get('interrupted_unit') == unit
+            and _safe_int(entry.get('pre_pid')) == prev_pid
+            and _safe_int(entry.get('post_pid')) == curr_pid
         ):
             return dict(
-                source='c07_backup_status',
-                backup_name=latest.get('backup_name'),
-                started_at=latest.get('started_at'),
-                completed_at=latest.get('completed_at'),
-                stopped_at=mw.get('stopped_at'),
-                restarted_at=mw.get('restarted_at'),
+                source=source,
+                backup_name=entry.get('backup_name'),
+                started_at=entry.get('started_at'),
+                completed_at=entry.get('completed_at'),
+                stopped_at=entry.get('stopped_at'),
+                restarted_at=entry.get('restarted_at'),
                 downtime_seconds=downtime,
-                interrupted_unit=interrupted_unit,
-                pre_pid=pre_pid,
-                post_pid=post_pid,
+                interrupted_unit=unit,
+                pre_pid=prev_pid,
+                post_pid=curr_pid,
                 reconcile_verified=True,
             )
-
-    if allow_history_fallback:
-        for entry in reversed(backup_records.get('history') or []):
-            if not isinstance(entry, dict):
-                continue
-            downtime = _safe_float(entry.get('downtime_seconds'))
-            started_ts = _parse_iso_ts(entry.get('started_at'))
-            completed_ts = _parse_iso_ts(entry.get('completed_at')) or started_ts
-            interrupted_unit = entry.get('interrupted_unit')
-            unit_ok = not (unit and interrupted_unit) or unit == interrupted_unit
-            if (
-                entry.get('status') == 'SUCCEEDED'
-                and entry.get('error_category') is None
-                and entry.get('reconcile_verified') is True
-                and downtime is not None
-                and 0.0 <= downtime <= max_downtime_seconds
-                and started_ts is not None
-                and completed_ts is not None
-                and started_ts <= win_hi
-                and completed_ts >= win_lo
-                and unit_ok
-            ):
-                return dict(
-                    source='c07_backup_history',
-                    backup_name=entry.get('backup_name'),
-                    started_at=entry.get('started_at'),
-                    completed_at=entry.get('completed_at'),
-                    downtime_seconds=downtime,
-                    interrupted_unit=interrupted_unit,
-                    reconcile_verified=True,
-                )
     return None
+
+
+def _maintenance_service_recovered(sample: dict) -> bool:
+    if sample.get('alive') is not True or sample.get('snapshot_error') is not None:
+        return False
+    status = sample.get('status')
+    return (
+        status == 'RUNNING'
+        or (status == 'READ_ONLY' and sample.get('ready') is True)
+        or (
+            status == 'PAUSED'
+            and sample.get('desired') == 'PAUSED'
+            and sample.get('account_recovered') is True
+        )
+    )
 
 
 def _evaluate_maintenance_failure(
@@ -273,13 +260,13 @@ def _evaluate_maintenance_failure(
     mw = latest.get('maintenance_window') if isinstance(latest.get('maintenance_window'), dict) else {}
     downtime = _safe_float(mw.get('downtime_seconds'))
     restarted_ts = _parse_iso_ts(mw.get('restarted_at')) or completed_ts
-    service_running = bool(sample.get('alive')) and sample.get('status') == 'RUNNING'
+    service_running = _maintenance_service_recovered(sample)
     reasons: list[str] = []
     if latest.get('status') != 'SUCCEEDED':
         reasons.append(f"backup_status={latest.get('status')}")
     if latest.get('error_category') is not None:
         reasons.append(f"error_category={latest.get('error_category')}")
-    if mw.get('service_control_enabled') is True:
+    if mw.get('service_control_enabled') is True and mw.get('interrupted_unit'):
         if mw.get('restart_succeeded') is False:
             reasons.append('restart_succeeded=False')
         if mw.get('reconcile_verified') is False:
@@ -1025,14 +1012,14 @@ def summarize_window(
                 curr_observed_at=obs,
                 n_restarts_increased=False,
                 starts_delta=max(1, starts_inc),
-                service_recovered=bool(row.get('alive')) and row.get('status') == 'RUNNING',
+                service_recovered=_maintenance_service_recovered(row),
                 max_downtime_seconds=max_maintenance_downtime_seconds,
                 allow_history_fallback=True,
             )
             if is_marked_maint or matched_maint is not None:
                 planned_maintenance_restarts += 1
-            elif starts_inc > 0:
-                unexpected_restarts += starts_inc
+            else:
+                unexpected_restarts += max(1, starts_inc)
 
         if pid is not None:
             prev_pid = pid
@@ -1569,7 +1556,7 @@ def evaluate_alerts(
                 curr_observed_at=now_ts,
                 n_restarts_increased=False,
                 starts_delta=max(1, starts_inc),
-                service_recovered=bool(sample.get('alive')) and sample.get('status') == 'RUNNING',
+                service_recovered=_maintenance_service_recovered(sample),
                 max_downtime_seconds=thresholds.maintenance_max_downtime_seconds,
                 allow_history_fallback=False,
             )
