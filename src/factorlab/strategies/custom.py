@@ -89,12 +89,20 @@ def load_strategy(config_path):
     return strategy, validated, normalized
 
 
-def run_custom_strategy(bars, calendar, config_path, *, fee_schedule=None, source_kind="REAL_CANDIDATE"):
+def run_custom_strategy(bars, calendar, config_path, *, fee_schedule=None, source_kind="REAL_CANDIDATE",
+                        fit_bars=None):
     """SOFTWARE_ONLY research. Each invocation receives history through its close only."""
     strategy, config, normalized = load_strategy(config_path)
     frame, research = prepare_inputs(bars, calendar, config)
     if not set(strategy.required_fields) <= set(frame):
         raise SchemaError("bars missing strategy required_fields")
+    if fit_bars is not None and callable(getattr(strategy, "fit", None)):
+        # Optional minimal research adapter: no validation/test rows or labels.
+        dates = daily_dates(fit_bars.date, "fit bars")
+        if dates.empty or dates.max() >= research[0]:
+            raise SchemaError("fit bars must precede the evaluation window")
+        columns = list(dict.fromkeys(("date", "symbol", *strategy.required_fields)))
+        strategy.fit(fit_bars.loc[:, columns].copy(), dates.copy())
     ratio = frame.adj_close / frame.raw_close
     if not np.allclose(ratio, ratio.iloc[0], rtol=1e-10, atol=1e-12):
         raise SchemaError("variable adjustment ratio requires qualified execution ledger")
@@ -120,6 +128,8 @@ def run_custom_strategy(bars, calendar, config_path, *, fee_schedule=None, sourc
         current = targets.loc[dates == day, ["date", "symbol", "target_weight"]]
         if len(current) != 1:
             raise SchemaError("strategy must explicitly output the current session; no interpolation")
+        if current.target_weight.gt(config.max_weight).any():
+            raise SchemaError("strategy target exceeds the shared max_weight risk budget")
         rows.append(current)
     signals = pd.concat(rows, ignore_index=True)
     fees = fee_schedule or FeeSchedule.a_share_default()

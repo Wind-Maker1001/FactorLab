@@ -1,0 +1,527 @@
+{
+  "artifact_kind": "PORTABLE_SYNTHETIC_EXPERIMENT_SUMMARY",
+  "candidates": [
+    {
+      "candidate": {
+        "candidate_id": "c-e6b0d748191fb67033994937",
+        "class_name": "Cash",
+        "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+        "parameters": {},
+        "strategy": {
+          "class": "Cash",
+          "file": "examples/research/champion_strategies.py",
+          "parameters": {},
+          "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+        },
+        "strategy_id": "cash"
+      },
+      "stages": {
+        "test": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": 0.0,
+            "annual_volatility": 0.0,
+            "capacity_cny": null,
+            "daily_cvar": 0.0,
+            "days": 260,
+            "max_drawdown": -0.0,
+            "max_participation": 0.0,
+            "net_return": 0.0,
+            "score": 0.0,
+            "tail_observations": 13.00000000000001,
+            "trade_count": 0,
+            "transaction_cost": 0.0
+          },
+          "record_sha256": "cacb027e6e4fc75027c30e6c416d2c459db47326613ae553011f7d379c514722",
+          "run_id": "synthetic-paired-v1-c-e6b0d748191fb67033994937-test",
+          "status": "SUCCEEDED"
+        }
+      },
+      "status": "INCUMBENT_EVALUATED"
+    },
+    {
+      "candidate": {
+        "candidate_id": "c-904b07a1043fd684d48777cf",
+        "class_name": "Trend",
+        "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+        "parameters": {
+          "weight": 0.8,
+          "window": 5
+        },
+        "strategy": {
+          "class": "Trend",
+          "file": "examples/research/champion_strategies.py",
+          "parameters": {
+            "weight": 0.8,
+            "window": 5
+          },
+          "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+        },
+        "strategy_id": "trend"
+      },
+      "reasons": [
+        "net_return_below_floor"
+      ],
+      "stages": {
+        "validation": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": -0.08466106668715268,
+            "annual_volatility": 0.07300617043350713,
+            "capacity_cny": 2551933.319620625,
+            "daily_cvar": 0.012071388960346742,
+            "days": 140,
+            "max_drawdown": 0.05731819601254706,
+            "max_participation": 0.0003918597685572215,
+            "net_return": -0.04735651644002925,
+            "score": -0.1576672371206598,
+            "tail_observations": 7.000000000000006,
+            "trade_count": 41,
+            "transaction_cost": 3270.633783408916
+          },
+          "record_sha256": "99315b5dcbc5b7beb9a8b758da59f18fc3319635fce2ad09a6f8cfb5bf19f4fa",
+          "run_id": "synthetic-paired-v1-c-904b07a1043fd684d48777cf-validation",
+          "status": "SUCCEEDED"
+        }
+      },
+      "status": "VALIDATION_REJECTED"
+    },
+    {
+      "candidate": {
+        "candidate_id": "c-ea57f5afff0cf7c531795920",
+        "class_name": "Trend",
+        "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+        "parameters": {
+          "weight": 0.8,
+          "window": 10
+        },
+        "strategy": {
+          "class": "Trend",
+          "file": "examples/research/champion_strategies.py",
+          "parameters": {
+            "weight": 0.8,
+            "window": 10
+          },
+          "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+        },
+        "strategy_id": "trend"
+      },
+      "reasons": [
+        "score_improvement_insufficient",
+        "oos_advantage_statistically_uncertain",
+        "risk_adjusted_advantage_statistically_uncertain",
+        "oos_block_consistency_insufficient"
+      ],
+      "stages": {
+        "test": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": 0.07572836300651856,
+            "annual_volatility": 0.07445371596727023,
+            "capacity_cny": 2880301.88989327,
+            "daily_cvar": 0.010473287407737066,
+            "days": 260,
+            "max_drawdown": 0.07050970253372901,
+            "max_participation": 0.0003471858292038461,
+            "net_return": 0.07818254060579477,
+            "score": 0.0012746470392483306,
+            "tail_observations": 13.00000000000001,
+            "trade_count": 47,
+            "transaction_cost": 3914.7981734415634
+          },
+          "record_sha256": "1a4290ffdaffb7fcfa68e5b7224fed0d982ff68665099f72c15f46b8d809d38c",
+          "run_id": "synthetic-paired-v1-c-ea57f5afff0cf7c531795920-test",
+          "status": "SUCCEEDED"
+        },
+        "validation": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": 0.04988747650440522,
+            "annual_volatility": 0.07815675076066067,
+            "capacity_cny": 2565027.985894356,
+            "daily_cvar": 0.010091011794436307,
+            "days": 140,
+            "max_drawdown": 0.030287394025869108,
+            "max_participation": 0.0003898592941282576,
+            "net_return": 0.02637210076069696,
+            "score": -0.02826927425625545,
+            "tail_observations": 7.000000000000006,
+            "trade_count": 22,
+            "transaction_cost": 1840.982701524015
+          },
+          "record_sha256": "9ee0a24f9943d920218248af64e0ad8f04f967a5396f8da57f4140adfcdeaba8",
+          "run_id": "synthetic-paired-v1-c-ea57f5afff0cf7c531795920-validation",
+          "status": "SUCCEEDED"
+        }
+      },
+      "status": "OOS_REJECTED"
+    },
+    {
+      "candidate": {
+        "candidate_id": "c-addce2899d627e0cc43ba39b",
+        "class_name": "Trend",
+        "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+        "parameters": {
+          "weight": 0.8,
+          "window": 20
+        },
+        "strategy": {
+          "class": "Trend",
+          "file": "examples/research/champion_strategies.py",
+          "parameters": {
+            "weight": 0.8,
+            "window": 20
+          },
+          "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+        },
+        "strategy_id": "trend"
+      },
+      "reasons": [
+        "net_return_below_floor"
+      ],
+      "stages": {
+        "validation": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": -0.01594441412363672,
+            "annual_volatility": 0.08288160457077745,
+            "capacity_cny": 2572660.0660491013,
+            "daily_cvar": 0.012540654690085215,
+            "days": 140,
+            "max_drawdown": 0.056122724262812396,
+            "max_participation": 0.0003887027334846166,
+            "net_return": -0.010696319807562804,
+            "score": -0.09882601869441417,
+            "tail_observations": 7.000000000000006,
+            "trade_count": 19,
+            "transaction_cost": 1555.4076423441195
+          },
+          "record_sha256": "ba93adfbde37a908524def8eafca0c4c364b1cd313933b0718ef72eb7bb13d03",
+          "run_id": "synthetic-paired-v1-c-addce2899d627e0cc43ba39b-validation",
+          "status": "SUCCEEDED"
+        }
+      },
+      "status": "VALIDATION_REJECTED"
+    },
+    {
+      "candidate": {
+        "candidate_id": "c-dd7b930a4dbcba84091ed910",
+        "class_name": "TrainMean",
+        "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+        "parameters": {
+          "multiplier": 0.95,
+          "weight": 0.6
+        },
+        "strategy": {
+          "class": "TrainMean",
+          "file": "examples/research/champion_strategies.py",
+          "parameters": {
+            "multiplier": 0.95,
+            "weight": 0.6
+          },
+          "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+        },
+        "strategy_id": "trainmean"
+      },
+      "reasons": [],
+      "stages": {
+        "validation": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": 0.09285021490082071,
+            "annual_volatility": 0.07388136875932531,
+            "capacity_cny": 3384878.5929484153,
+            "daily_cvar": 0.009766575833230085,
+            "days": 140,
+            "max_drawdown": 0.028864233172668508,
+            "max_participation": 0.0002954315708939342,
+            "net_return": 0.051343784101413714,
+            "score": 0.018968846141495396,
+            "tail_observations": 7.000000000000006,
+            "trade_count": 1,
+            "transaction_cost": 46.118066942524784
+          },
+          "record_sha256": "c0d7d51c71bc0c65d194a3003afa31d5b6ef9b35ab358ce22aaa37ee2429dec1",
+          "run_id": "synthetic-paired-v1-c-dd7b930a4dbcba84091ed910-validation",
+          "status": "SUCCEEDED"
+        }
+      },
+      "status": "VALIDATION_PASSED_NOT_SHORTLISTED"
+    },
+    {
+      "candidate": {
+        "candidate_id": "c-d489d0e5e535f15ba9973638",
+        "class_name": "TrainMean",
+        "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+        "parameters": {
+          "multiplier": 1.0,
+          "weight": 0.6
+        },
+        "strategy": {
+          "class": "TrainMean",
+          "file": "examples/research/champion_strategies.py",
+          "parameters": {
+            "multiplier": 1.0,
+            "weight": 0.6
+          },
+          "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+        },
+        "strategy_id": "trainmean"
+      },
+      "reasons": [
+        "oos_advantage_statistically_uncertain",
+        "risk_adjusted_advantage_statistically_uncertain"
+      ],
+      "stages": {
+        "test": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": 0.13231675382642777,
+            "annual_volatility": 0.07788630714100292,
+            "capacity_cny": 3764835.6273190747,
+            "daily_cvar": 0.009353147166231717,
+            "days": 260,
+            "max_drawdown": 0.056320550017696314,
+            "max_participation": 0.0002656158459465324,
+            "net_return": 0.14267107782498378,
+            "score": 0.05443044668542485,
+            "tail_observations": 13.00000000000001,
+            "trade_count": 1,
+            "transaction_cost": 46.985148628942056
+          },
+          "record_sha256": "a2ece6c1fd7e5e8d11c23108e0f24cd2f0ce47c7c0fdc2842b9f667e18b73eec",
+          "run_id": "synthetic-paired-v1-c-d489d0e5e535f15ba9973638-test",
+          "status": "SUCCEEDED"
+        },
+        "validation": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": 0.09285021490082071,
+            "annual_volatility": 0.07388136875932531,
+            "capacity_cny": 3384878.5929484153,
+            "daily_cvar": 0.009766575833230085,
+            "days": 140,
+            "max_drawdown": 0.028864233172668508,
+            "max_participation": 0.0002954315708939342,
+            "net_return": 0.051343784101413714,
+            "score": 0.018968846141495396,
+            "tail_observations": 7.000000000000006,
+            "trade_count": 1,
+            "transaction_cost": 46.118066942524784
+          },
+          "record_sha256": "67cad7a477158a0bb4e305008910eb2847ff0de60c2bca3edc7c2b2988430327",
+          "run_id": "synthetic-paired-v1-c-d489d0e5e535f15ba9973638-validation",
+          "status": "SUCCEEDED"
+        }
+      },
+      "status": "OOS_REJECTED"
+    },
+    {
+      "candidate": {
+        "candidate_id": "c-ec7a6456a6a37f40a60229d1",
+        "class_name": "TrainMean",
+        "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+        "parameters": {
+          "multiplier": 1.05,
+          "weight": 0.6
+        },
+        "strategy": {
+          "class": "TrainMean",
+          "file": "examples/research/champion_strategies.py",
+          "parameters": {
+            "multiplier": 1.05,
+            "weight": 0.6
+          },
+          "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+        },
+        "strategy_id": "trainmean"
+      },
+      "reasons": [],
+      "stages": {
+        "validation": {
+          "failure": null,
+          "metrics": {
+            "annual_mean_net_return": 0.09285021490082071,
+            "annual_volatility": 0.07388136875932531,
+            "capacity_cny": 3384878.5929484153,
+            "daily_cvar": 0.009766575833230085,
+            "days": 140,
+            "max_drawdown": 0.028864233172668508,
+            "max_participation": 0.0002954315708939342,
+            "net_return": 0.051343784101413714,
+            "score": 0.018968846141495396,
+            "tail_observations": 7.000000000000006,
+            "trade_count": 1,
+            "transaction_cost": 46.118066942524784
+          },
+          "record_sha256": "d35f92262674682181cc6801d64acd81a2801c49057aae970e2f827999ea9d8f",
+          "run_id": "synthetic-paired-v1-c-ec7a6456a6a37f40a60229d1-validation",
+          "status": "SUCCEEDED"
+        }
+      },
+      "status": "VALIDATION_PASSED_NOT_SHORTLISTED"
+    }
+  ],
+  "common": {
+    "board_lot": 100,
+    "execution": "a_share_daily_long_only_next_open_t1",
+    "fee_rules": [
+      {
+        "commission_bps": 3.0,
+        "effective_from": "2020-01-01",
+        "minimum_commission_cny": 5.0,
+        "slippage_bps": 5.0,
+        "stamp_duty_bps": 5.0
+      }
+    ],
+    "funding_bps": 0,
+    "initial_cash": 100000.0,
+    "max_weight": 1.0,
+    "symbol": "601857.SH"
+  },
+  "dataset_sha256": "b7ea9cc96ad988c8ef618b12bb60386e9c611362ab395a47fe98c0dec4025817",
+  "decisions": [
+    {
+      "candidate_id": "c-d489d0e5e535f15ba9973638",
+      "eligible": false,
+      "evidence": {
+        "annual_mean_improvement": 0.13231675382642777,
+        "bootstrap_ci_lower": -0.00040840996140331464,
+        "bootstrap_ci_upper": 0.001331904770683125,
+        "bootstrap_seed": 2636991976,
+        "bootstrap_status": "OK",
+        "bootstrap_tail_replicates": 8.333333333333304,
+        "bootstrap_valid_repetitions": 2000,
+        "calendar_slots": 260,
+        "confidence": 0.9916666666666667,
+        "coverage": 1.0,
+        "family_size": 6,
+        "hac_ci_lower": -0.00030503090266907845,
+        "hac_ci_upper": 0.0013551638695454894,
+        "hac_p_value": 0.09515846737958246,
+        "hac_standard_error": 0.00031463852841514736,
+        "hac_statistic": 1.6687927129681033,
+        "interpretation": "conditional historical OOS evidence; weak dependence and stability assumed; no profit guarantee",
+        "mean": 0.0005250664834382054,
+        "missing_metric_dates": 0,
+        "positive_block_fraction": 0.6153846153846154,
+        "score_ci_lower": -0.1860588768415521,
+        "score_ci_upper": 0.2512518937109795,
+        "score_interval_method": "paired_moving_block_percentile_bootstrap",
+        "signal_dates": 260,
+        "status": "OK",
+        "valid_dates": 260
+      },
+      "reasons": [
+        "oos_advantage_statistically_uncertain",
+        "risk_adjusted_advantage_statistically_uncertain"
+      ]
+    },
+    {
+      "candidate_id": "c-ea57f5afff0cf7c531795920",
+      "eligible": false,
+      "evidence": {
+        "annual_mean_improvement": 0.07572836300651856,
+        "bootstrap_ci_lower": -0.0005419587497993093,
+        "bootstrap_ci_upper": 0.0012638310496542455,
+        "bootstrap_seed": 2636991976,
+        "bootstrap_status": "OK",
+        "bootstrap_tail_replicates": 8.333333333333304,
+        "bootstrap_valid_repetitions": 2000,
+        "calendar_slots": 260,
+        "confidence": 0.9916666666666667,
+        "coverage": 1.0,
+        "family_size": 6,
+        "hac_ci_lower": -0.0006152335116708858,
+        "hac_ci_upper": 0.0012162522656908742,
+        "hac_p_value": 0.3866173048761452,
+        "hac_standard_error": 0.00034710143619696906,
+        "hac_statistic": 0.8657681751551863,
+        "interpretation": "conditional historical OOS evidence; weak dependence and stability assumed; no profit guarantee",
+        "mean": 0.00030050937700999426,
+        "missing_metric_dates": 0,
+        "positive_block_fraction": 0.5,
+        "score_ci_lower": -0.23467854542016495,
+        "score_ci_upper": 0.21434692013699802,
+        "score_interval_method": "paired_moving_block_percentile_bootstrap",
+        "signal_dates": 260,
+        "status": "OK",
+        "valid_dates": 260
+      },
+      "reasons": [
+        "score_improvement_insufficient",
+        "oos_advantage_statistically_uncertain",
+        "risk_adjusted_advantage_statistically_uncertain",
+        "oos_block_consistency_insufficient"
+      ]
+    }
+  ],
+  "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+  "frozen_search_sha256": "b3ccc64afe328bfd3f1b68d44da4c3887db280c26aed56f152a04e9596621ec9",
+  "interpretation": "historical OOS conditional evidence; statistical uncertainty remains; synthetic inputs prove software only",
+  "policy": {
+    "block_days": 10,
+    "confidence": 0.95,
+    "cooldown_days": 30,
+    "cvar_confidence": 0.95,
+    "max_candidates": 32,
+    "max_daily_cvar": 0.03,
+    "max_drawdown": 0.2,
+    "max_finalists": 4,
+    "min_annual_net_improvement": 0.01,
+    "min_capacity_cny": 100000.0,
+    "min_net_return": 0.0,
+    "min_oos_days": 120,
+    "min_positive_blocks": 0.6,
+    "min_score_improvement": 0.02,
+    "min_tail_observations": 5,
+    "objective": "risk_adjusted_net_return",
+    "participation_limit": 0.01,
+    "periods_per_year": 252,
+    "resamples": 2000,
+    "risk_aversion": 1.0,
+    "seed": 42,
+    "volume_lookback": 20
+  },
+  "promoted": false,
+  "reason": "retain_champion_no_qualified_challenger",
+  "research_code": {
+    "commit": "b66feb73002d729e7988d6db90d4e1db4e92b403",
+    "git_diff_sha256": null,
+    "git_dirty": false,
+    "source_sha256": "48d5b35f1dbfffd1678695551e8946e22bade65eeb490b635fa670374edd8967",
+    "tree": "5df239fa46898c4725853703a4fbd3444f71997e"
+  },
+  "schema": "FACTORLAB_CHAMPION_SELECTION_V1",
+  "selected": {
+    "candidate_id": "c-e6b0d748191fb67033994937",
+    "class_name": "Cash",
+    "code_version": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0",
+    "parameters": {},
+    "strategy": {
+      "class": "Cash",
+      "file": "examples/research/champion_strategies.py",
+      "parameters": {},
+      "sha256": "4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0"
+    },
+    "strategy_id": "cash"
+  },
+  "source_kind": "SYNTHETIC",
+  "source_path_mapping": "Runtime absolute strategy paths replaced with repository-relative source; authoritative tracker and input snapshots remain in local run output.",
+  "study_id": "synthetic-paired-v1",
+  "version": 0,
+  "windows": {
+    "test": [
+      "2022-05-20",
+      "2023-05-18"
+    ],
+    "train": [
+      "2021-02-12",
+      "2021-11-04"
+    ],
+    "validation": [
+      "2021-11-05",
+      "2022-05-19"
+    ]
+  }
+}
