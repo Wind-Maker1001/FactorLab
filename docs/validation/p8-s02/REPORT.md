@@ -108,4 +108,5 @@ python -I tools/research/select_champion.py --config D:/research/s02-reproduce/r
 
 发布使用当前用户的本机 Git / gh keyring 认证，已确认仓库写权限。此前受限
 会话无法使用该认证，连接器另有 HTTP 403 权限限制；本机认证可以正常发布。
-独立 PR 以 main 为目标，不启用自动合并。
+独立 PR：[#235](https://github.com/Wind-Maker1001/FactorLab/pull/235)，以 main 为目标，
+不启用自动合并。已与发布时的 main 检查合并兼容性，无冲突。
