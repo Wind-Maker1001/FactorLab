@@ -40,7 +40,7 @@ class RestingLimit:
         state = {'quotes': count, 'opened_at': opened, 'inventory': str(event['account']['inventory'])}
         entry = event['deployment_id'] + '-entry'
         if quote.observed_at >= datetime.fromisoformat(opened) + timedelta(seconds=3):
-            return Decision(cancellations=(entry,), state=state)
+            return Decision(cancellations=(entry, event['deployment_id'] + '-extra'), state=state)
         identity = entry if count == 1 else event['deployment_id'] + '-extra'
         quantity = D('.04') if count == 1 else D('.01')
         intent = OrderIntent(event['account']['market'], quote.instrument_id, Side.BUY,

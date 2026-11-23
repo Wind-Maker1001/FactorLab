@@ -107,4 +107,20 @@ python -m pytest tests/integrations/test_demo_strategy_budget.py tests/trading/t
 python -m pytest tests/integrations/test_protocol_demo_working_order.py tests/integrations/test_protocol_research_outstanding.py -q
 ```
 
+## PR #237 P2 审查回归（2026-11-24）
+
+修复基于 `24a9b561067135c99ceafad49b52bc0f05b68f45`。GridAdapter 在生成派单决策前用原生 `withdraw_unsubmitted()` 撤回已取消的本地 NEW 提议，把撤回按交付顺序写入策略命令。首个报价为 160 和 150 的收盘 Bar 已排队、随后报价触发突破这两种场景，在 Paper 和离线 Demo 中都没有订单事件或写请求。已提交且部分成交的订单仍由控制器撤销余量，原成交和库存进入重启后的账本。
+
+订单策略在处理当前报价后派发有效意图。Outbox 保存每笔意图的原客户订单 ID、首次有效期和等待状态。Demo 中首单处于 NEW 或部分成交时，第二笔意图保留为 `DEFERRED`；首单成交或取消后，第二笔按原身份通过盘口、预算、授权和账户准入。Paper 使用同一 Outbox，账户允许时在同一报价派发两笔。
+
+本地撤回、过期和风控拒绝分别保存 `WITHDRAWN`、`EXPIRED` 和 `RISK_REJECTED` 终态。重放决策沿用首次有效期。断线后先恢复订单与账户，再释放仍有效的待提交记录；主动暂停会撤回未派发意图。POST 派发记录、DELETE 尝试记录与控制器订单快照保留写入和对账身份，未确认结果按原客户订单 ID 恢复。
+
+Windows、Python 3.13.9 上共通过 **260 项**，包括 P1 交付的 248 项和新增的 12 项（Grid 撤回 5 项、持久 Outbox 7 项）。Grid、DualMA、CloseMomentum 和 LimitOnce 通过隔离加载，既有凭据访问限制测试继续通过。`compileall` 与 `git diff --check` 通过。测试进程使用白名单环境和离线凭据桩。
+
+新增用例的复现命令如下。
+
+```powershell
+python -m pytest tests/integrations/test_protocol_grid_withdrawal.py tests/integrations/test_protocol_order_outbox.py -q
+```
+
 本任务交付为独立 PR，不自动合并；没有变更生产交易、账户记账或现有 Demo 授权流程。

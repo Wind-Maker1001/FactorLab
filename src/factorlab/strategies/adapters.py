@@ -61,6 +61,8 @@ class GridAdapter:
             event = command['value']
             event = replace(event, event_id=identity(event.event_id))
             grid.confirm(event, account, delivery=grid.delivery + 1)
+        elif command['kind'] == 'withdraw':
+            grid.withdraw_unsubmitted(command['value'], account, delivery=grid.delivery + 1)
         else:
             grid.observe(command['value'], account, delivery=grid.delivery + 1)
             if grid.pending_bar is not None:
@@ -84,5 +86,17 @@ class GridAdapter:
         command = dict(kind=event['kind'], value=value, account=event['account'])
         self._apply(grid, command)
         commands.append(command)
-        return Decision(orders=tuple(o.intent for o in grid.active if o.status is OrderStatus.NEW),
-            cancellations=tuple(sorted(grid.cancellations)), state={'commands': dumps(commands)})
+        execution = event.get('execution', {})
+        submitted = set(execution.get('submitted_order_ids', ()))
+        withdrawn = sorted(o.intent.client_order_id for o in grid.active
+            if o.status is OrderStatus.NEW and o.intent.client_order_id in grid.cancellations
+            and o.intent.client_order_id not in submitted)
+        if withdrawn:
+            command = dict(kind='withdraw', value=withdrawn, account=event['account'])
+            self._apply(grid, command)
+            commands.append(command)
+        pending = set(execution.get('pending_order_ids', ()))
+        cancellations = grid.cancellations | pending.intersection(withdrawn)
+        return Decision(orders=tuple(o.intent for o in grid.active if o.status is OrderStatus.NEW
+                                     and o.intent.client_order_id not in grid.cancellations),
+            cancellations=tuple(sorted(cancellations)), state={'commands': dumps(commands)})

@@ -55,7 +55,8 @@ class ResearchTargetRuntime:
             intent = OrderIntent(c.broker.state.market, self.journal.symbol, side, OrderType.LIMIT,
                 abs(quantity), quote.price, self.journal.deployment_id + '-' + s.signal_id[:16],
                 position_side='BOTH', reduce_only=side is Side.SELL)
-            return self.execution.dispatch(Decision(orders=(intent,)))
+            result, _ = self.execution.dispatch(Decision(orders=(intent,)))
+            return result
 
 
 def run_protocol_research(strategy, controller, events, *, symbol, interval_seconds,

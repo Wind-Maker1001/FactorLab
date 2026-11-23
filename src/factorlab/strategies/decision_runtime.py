@@ -77,17 +77,19 @@ class DecisionJournal:
                 or event['now'] > self.controller.clock()):
             raise ValueError('event exceeds declared deployment data requirements')
         key = self.prefix + 'event:' + identity(event['event_id'])
+        input_identity = identity({k: v for k, v in event.items()
+                                   if k not in {'now', 'account', 'execution'}})
         with (nullcontext() if self.controller.store.db.in_transaction else self.controller.store.transaction()):
             saved = self._read(key)
             if saved is not None:
                 record = saved
                 # Receipt time may differ after restart; observations may not.
-                if record['input_identity'] != identity({k: v for k, v in event.items() if k not in {'now', 'account'}}):
+                if record['input_identity'] != input_identity:
                     raise PersistenceConflict('strategy event identity conflict')
                 return Decision(**record['decision'])
             decision = self.strategy.decide(event, self._latest()).validate(self.spec, self.symbol)
             self._write(key, dict(
-                input_identity=identity({k: v for k, v in event.items() if k not in {'now', 'account'}}),
+                input_identity=input_identity,
                 event=event, decision=decision_payload(decision), state_version=self.spec.state_version))
             return decision
 
@@ -133,9 +135,10 @@ class ControllerExecution:
         self.prefix = 'strategy-dispatch:' + deployment_id + ':'
         self.max_notional, self.max_quantity = max_notional, max_quantity
 
-    def dispatch(self, decision):
+    def dispatch(self, decision, *, deadlines=None, cancellation_receipts=None):
         c = self.controller
         results = []
+        deferred = set()
         for key in decision.cancellations:
             self._owned(key)
             record = c.broker.state.orders.get(key)
@@ -144,6 +147,12 @@ class ControllerExecution:
             if record.snapshot.status in TERMINAL:
                 continue
             if not self.preview:
+                if cancellation_receipts is not None:
+                    receipt = cancellation_receipts[key]
+                    if c.store.event_payload(receipt) is not None:
+                        continue
+                    with c.store.transaction():
+                        c.store.record_metadata(receipt, dict(client_order_id=key, at=c.clock()))
                 results.append(self.session.cancel(key) if self.session else c.cancel(key))
         for intent in decision.orders:
             self._owned(intent.client_order_id)
@@ -162,9 +171,13 @@ class ControllerExecution:
                 if decode(json.loads(saved))['intent'] != intent:
                     raise PersistenceConflict('strategy dispatch identity changed')
                 raise PersistenceConflict('unresolved strategy dispatch attempt; reconcile before continuing')
+            if self.retired(intent.client_order_id, intent):
+                continue
             if self.preview:
                 continue
-            if self.session and any(r.snapshot.status not in TERMINAL for r in c.broker.state.orders.values()):
+            if not c.broker.state.reconciled or (self.session and any(
+                    r.snapshot.status not in TERMINAL for r in c.broker.state.orders.values())):
+                deferred.add(intent.client_order_id)
                 continue
             price = max(intent.limit_price or D(0), c.broker.state.quotes[intent.instrument_id].price)
             position = c.broker.state.positions.get(intent.instrument_id)
@@ -177,18 +190,47 @@ class ControllerExecution:
                     or intent.side is Side.BUY and inventory + reserved + intent.quantity > self.max_quantity))
                     or self.max_notional is not None and (intent.quantity * price > self.max_notional
                     or intent.side is Side.BUY and (inventory + reserved + intent.quantity) * price > self.max_notional)):
+                if deadlines is not None:
+                    c._atomic(lambda: self.retire(intent, 'RISK_REJECTED', 'EXECUTION_BUDGET'))
                 raise ValueError('strategy order exceeds execution budget')
             # Existing risk admission precedes the durable dispatch attempt.
             book = self.session.prepare_limit_book() if self.session else None
+            if deadlines is not None and (c.clock() >= deadlines[intent.client_order_id]
+                    or book is not None and book['time_utc'] >= deadlines[intent.client_order_id]):
+                c._atomic(lambda: self.retire(intent, 'EXPIRED'))
+                continue
             risk = c.assess(intent)
             if not risk.approved:
+                if deadlines is not None:
+                    c._atomic(lambda: self.retire(intent, 'RISK_REJECTED', risk.reason))
                 raise RiskRejected(risk)
             with c.store.transaction():
                 c.store.record_metadata(key, dict(intent=intent, at=c.clock()))
             if self.expect:
                 self.expect(intent.client_order_id, intent.side, intent.quantity)
-            results.append(self.session.submit_intent(intent, book=book) if self.session else c.submit(intent))
-        return results[-1] if results else None
+            try:
+                result = self.session.submit_intent(intent, book=book) if self.session else c.submit(intent)
+            except RiskRejected as error:
+                if deadlines is not None:
+                    c._atomic(lambda: self.retire(intent, 'RISK_REJECTED', error.decision.reason))
+                raise
+            results.append(result)
+        return (results[-1] if results else None), deferred
+
+    def attempted(self, key):
+        return self.controller.store.event_payload(self.prefix + key) is not None
+
+    def retired(self, key, intent=None):
+        raw = self.controller.store.event_payload(self.prefix + key + ':outcome')
+        if raw is None:
+            return False
+        if intent is not None and decode(json.loads(raw))['intent'] != intent:
+            raise PersistenceConflict('strategy reused a retired order identity')
+        return True
+
+    def retire(self, intent, status, reason=None):
+        self.controller.store.record_metadata(self.prefix + intent.client_order_id + ':outcome',
+            dict(intent=intent, status=status, reason=reason, at=self.controller.clock()))
 
     def _owned(self, key):
         if not key.startswith(self.deployment_id + '-') or len(key) > 36:
@@ -216,7 +258,7 @@ class OrderStrategyRuntime:
             if saved is not None and saved != configuration:
                 raise PersistenceConflict('strategy execution configuration changed')
             self.gateway.state.runtime['configuration'] = configuration
-            self.gateway.state.runtime.setdefault('status', 'PAUSED')
+            self.gateway.state.runtime.setdefault('status', 'STARTING')
             self.gateway.state.runtime.setdefault('pending', None)
             self.gateway.state.runtime.setdefault('bars', [])
         self.controller._atomic(initialize)
@@ -229,9 +271,15 @@ class OrderStrategyRuntime:
         return asdict(project_paper_account(self.controller, self.symbol))
 
     def _event(self, kind, event_id, **value):
+        state = self.gateway.state
+        pending = state.runtime['pending']
+        pending_ids = [offer['intent'].client_order_id for offer in pending['orders']] if pending else []
+        submitted = {key for key in state.orders if key.startswith(self.execution.deployment_id + '-')}
+        submitted.update(key for key in pending_ids if self.execution.attempted(key))
         return self.journal.decide(dict(kind=kind, event_id=event_id, symbol=self.symbol,
             now=self.controller.clock(), deployment_id=self.journal.deployment_id,
-            account=self._account(), **value))
+            account=self._account(), execution=dict(submitted_order_ids=sorted(submitted),
+                                                    pending_order_ids=pending_ids), **value))
 
     def closed_bar(self, bar):
         if (not isinstance(bar, ClosedBar) or bar.symbol != self.symbol
@@ -251,6 +299,7 @@ class OrderStrategyRuntime:
                 return False
             if bars and bar.opened_at != bars[-1]['closed_at']:
                 runtime.update(status='PAUSED', reason='BAR_SEQUENCE_GAP')
+                self._prune_pending(self.controller.clock(), withdraw=True)
                 return False
             bars.append(asdict(bar))
             del bars[:-self.journal.spec.history_limit]
@@ -272,21 +321,49 @@ class OrderStrategyRuntime:
         if not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5):
             raise ValueError('fresh quote required')
         self.controller.quote(quote)
-        pending = self.gateway.state.runtime['pending']
-        result = None
-        if pending and quote.observed_at > pending['after']:
-            if quote.observed_at < pending['after'] + timedelta(seconds=self.journal.interval_seconds):
-                result = self.execution.dispatch(Decision(**pending['decision']))
-            self.controller._atomic(lambda: self.gateway.state.runtime.update(pending=None))
         if 'quote' in self.journal.spec.data_types:
             def decide_quote():
                 decision = self._event('quote', 'quote:' + quote.observed_at.isoformat(), quote=quote)
-                self._pending(decision, quote.observed_at)
+                self._pending(decision, quote.observed_at, True)
             # Decision state and its dispatchable outbox commit together.
             self.controller._atomic(decide_quote)
+        return self._dispatch_pending(quote.observed_at)
+
+    def _dispatch_pending(self, observed_at):
+        if self.gateway.state.runtime['pending'] is None:
+            return None
+        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
+        pending = self.gateway.state.runtime['pending']
+        if pending is None:
+            return None
+        state = self.gateway.state
+        for offer in pending['orders']:
+            key = offer['intent'].client_order_id
+            if key not in state.orders and self.execution.attempted(key):
+                raise PersistenceConflict('unresolved strategy dispatch attempt; reconcile before continuing')
+        orders = {offer['intent'].client_order_id: offer for offer in pending['orders']
+                  if observed_at >= offer['eligible_at']}
+        cancellations = {offer['key']: offer for offer in pending['cancellations']
+                         if observed_at >= offer['eligible_at']}
+        decision = Decision(orders=tuple(offer['intent'] for offer in orders.values()),
+                            cancellations=tuple(cancellations))
+        result, deferred = self.execution.dispatch(decision,
+            deadlines={key: offer['expires_at'] for key, offer in orders.items()},
+            cancellation_receipts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
+                                   for key, offer in cancellations.items()})
+
+        def checkpoint():
             pending = self.gateway.state.runtime['pending']
-            result = self.execution.dispatch(Decision(**pending['decision'])) or result
-            self.controller._atomic(lambda: self.gateway.state.runtime.update(pending=None))
+            remaining = []
+            for offer in pending['orders']:
+                key = offer['intent'].client_order_id
+                if key in deferred:
+                    remaining.append(dict(offer, status='DEFERRED'))
+                elif key not in orders:
+                    remaining.append(offer)
+            self._save_pending(remaining, [offer for offer in pending['cancellations']
+                                          if offer['key'] not in cancellations])
+        self.controller._atomic(checkpoint)
         return result
 
     def recover(self):
@@ -310,28 +387,94 @@ class OrderStrategyRuntime:
                                 self._pending(decision, self.controller.clock())
                             self.controller._atomic(confirm)
             self.controller._atomic(lambda: self.gateway.state.runtime.update(status='RUNNING')
-                if self.gateway.state.runtime['status'] != 'STOPPED' else None)
+                if self.gateway.state.runtime['status'] == 'STARTING' else None)
         return result
 
-    def _pending(self, decision, after):
-        runtime = self.gateway.state.runtime
-        previous = runtime.get('pending')
-        old = Decision(**previous['decision']) if previous else Decision()
-        orders = {o.client_order_id: o for o in (*old.orders, *decision.orders)}
-        runtime['pending'] = dict(decision=decision_payload(Decision(orders=tuple(orders.values()),
-            cancellations=tuple(sorted(set(old.cancellations) | set(decision.cancellations))))), after=after)
+    def _pending(self, decision, after, on_quote=False):
+        state = self.gateway.state
+        pending = state.runtime['pending'] or dict(orders=[], cancellations=[])
+        orders = {offer['intent'].client_order_id: offer for offer in pending['orders']}
+        cancellations = {offer['key']: offer for offer in pending['cancellations']}
+        expiry = after + timedelta(seconds=self.journal.interval_seconds)
+        eligible = after if on_quote else after + timedelta(microseconds=1)
+        paused = state.runtime['status'] in {'PAUSED', 'STOPPED'}
+        for intent in decision.orders:
+            key = intent.client_order_id
+            self.execution._owned(key)
+            if self.execution.retired(key, intent):
+                continue
+            existing = orders.get(key)
+            if existing is not None:
+                if existing['intent'] != intent:
+                    raise PersistenceConflict('strategy reused a pending order identity')
+                existing['eligible_at'] = min(existing['eligible_at'], eligible)
+            elif paused and key not in state.orders and not self.execution.attempted(key):
+                self.execution.retire(intent, 'WITHDRAWN', 'STRATEGY_PAUSED')
+            elif not paused:
+                orders[key] = dict(intent=intent, eligible_at=eligible, expires_at=expiry, status='PENDING')
+        if not paused:
+            for key in decision.cancellations:
+                self.execution._owned(key)
+                if key not in state.orders and not self.execution.attempted(key):
+                    if key in orders:
+                        self.execution.retire(orders.pop(key)['intent'], 'WITHDRAWN')
+                        continue
+                    if self.execution.retired(key):
+                        continue
+                cancellations.setdefault(key, dict(key=key, eligible_at=eligible, expires_at=expiry))
+        self._save_pending(list(orders.values()), list(cancellations.values()))
+
+    def _save_pending(self, orders, cancellations):
+        pending = dict(orders=orders, cancellations=cancellations) if orders or cancellations else None
+        self.gateway.state.runtime['pending'] = pending
+
+    def _prune_pending(self, at, *, withdraw=False):
+        state = self.gateway.state
+        pending = state.runtime['pending']
+        if pending is None:
+            return
+        remaining = []
+        for offer in pending['orders']:
+            intent = offer['intent']
+            key = intent.client_order_id
+            if self.execution.retired(key, intent):
+                continue
+            expired = at >= offer['expires_at']
+            if expired or withdraw:
+                if key in state.orders:
+                    continue
+                if not self.execution.attempted(key):
+                    self.execution.retire(intent, 'EXPIRED' if expired else 'WITHDRAWN')
+                    continue
+            remaining.append(offer)
+        cancellations = [] if withdraw else [offer for offer in pending['cancellations'] if at < offer['expires_at']]
+        self._save_pending(remaining, cancellations)
+
+    def _stop_pending(self, status):
+        def operation():
+            self._prune_pending(self.controller.clock(), withdraw=True)
+            self.gateway.state.runtime['status'] = status
+        self.controller._atomic(operation)
 
     def pause(self):
-        self.controller._atomic(lambda: self.gateway.state.runtime.update(status='PAUSED', pending=None))
+        self._stop_pending('PAUSED')
 
     def resume(self):
-        if self.gateway.state.runtime['status'] == 'STOPPED':
-            raise ValueError('stopped strategy cannot resume')
+        def operation():
+            runtime = self.gateway.state.runtime
+            if runtime['status'] == 'STOPPED':
+                raise ValueError('stopped strategy cannot resume')
+            runtime['status'] = 'STARTING'
+        self.controller._atomic(operation)
         return self.recover()
 
     def stop(self):
-        self.controller._atomic(lambda: self.gateway.state.runtime.update(status='STOPPED', pending=None))
+        self._stop_pending('STOPPED')
 
     def disconnect(self):
+        def operation():
+            runtime = self.gateway.state.runtime
+            if runtime['status'] == 'RUNNING':
+                runtime['status'] = 'STARTING'
+        self.controller._atomic(operation)
         self.gateway.adapter.disconnect()
-        self.pause()

@@ -15,6 +15,7 @@ from .demo_runtime import (DemoRuntime, MAX_NOTIONAL, MAX_QUANTITY, durable_cont
 from .demo_supervisor import DemoSupervisor
 from .protocol import Environment, ReadOnlyNetworkTransport, SafetyBlocked
 from .unified_strategy import strategy_runtime
+from factorlab.strategies.decision_runtime import OrderStrategyRuntime
 
 
 from .observability import ObservedClient, RequestCounts, worker_metrics
@@ -105,7 +106,8 @@ class StrategyConsumer:
             raise FeedPaused(self.reason)
         if allowed and not self.was_running:
             # Signals accumulated while paused cannot be executed on resume.
-            self.runner.controller._atomic(lambda: self.runner.gateway.state.runtime.update(pending=None))
+            if not isinstance(self.runner, OrderStrategyRuntime):
+                self.runner.controller._atomic(lambda: self.runner.gateway.state.runtime.update(pending=None))
             self.runner.resume()
             self.was_running = True
         self.reason = None if allowed else self.reason
