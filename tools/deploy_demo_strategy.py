@@ -13,7 +13,10 @@ import tempfile
 
 
 def run(argv, **kwargs):
-    return subprocess.run(argv, check=True, text=True, capture_output=True, **kwargs).stdout
+    result = subprocess.run(argv, text=True, capture_output=True, **kwargs)
+    if result.returncode:
+        raise RuntimeError(f'{Path(argv[0]).name} failed ({result.returncode}): {result.stderr[-1500:]}')
+    return result.stdout
 
 
 def deploy(host, user, key, commit, repo):
@@ -25,7 +28,13 @@ def deploy(host, user, key, commit, repo):
         run(['git', '-C', str(repo), 'archive', '--format=tar.gz', '-o', str(archive), commit])
         fingerprint = hashlib.sha256(archive.read_bytes()).hexdigest()
         remote = '/tmp/factorlab-' + commit + '.tar.gz'
-        run(['scp', '-i', str(key), str(archive), f'{user}@{host}:{remote}'])
+        for attempt in range(3):
+            try:
+                run(['scp', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15', '-i', str(key),
+                     str(archive), f'{user}@{host}:{remote}'])
+                break
+            except RuntimeError:
+                if attempt == 2: raise
         installer = Path(__file__).with_name('install_demo_strategy_runtime.py')
         run(['scp', '-i', str(key), str(installer), f'{user}@{host}:/tmp/install_demo_strategy_runtime.py'])
         output = run(ssh + ['sudo', '/opt/factorlab/python/cpython-3.13-linux-x86_64-gnu/bin/python3',

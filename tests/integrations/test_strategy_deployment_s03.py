@@ -97,6 +97,14 @@ def test_current_s02_native_contract_retains_or_rejects_incompatible_champion(pa
         adapt_selection(native | dict(promoted=True), m)
 
 
+def test_native_retain_does_not_need_a_release_archive(tmp_path):
+    from factorlab.integrations.binance_futures_trading.azure_strategy_deploy import cycle
+    (tmp_path / 'retain.candidate.json').write_text(json.dumps(dict(selection=dict(
+        schema='FACTORLAB_CHAMPION_SELECTION_V1', promoted=False))))
+    assert cycle(tmp_path, tmp_path) == [dict(file='retain.candidate.json', accepted=False, reason='RETAIN_CHAMPION')]
+    assert not (tmp_path / 'strategy-deployment.sqlite3').exists()
+
+
 def test_inbox_builds_automatically_and_bad_envelope_does_not_starve_valid_candidate(tmp_path, package):
     from factorlab.integrations.binance_futures_trading.azure_strategy_deploy import cycle
     import shutil

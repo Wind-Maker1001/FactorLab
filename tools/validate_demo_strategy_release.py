@@ -22,6 +22,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--release', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--run-id', default=str(int(time.time())))
     args = p.parse_args()
     python = str(args.release / 'venv/bin/python')
     sys.path.insert(0, str(args.release / 'source/src'))
@@ -58,10 +59,10 @@ def main():
     args.output.write_text(json.dumps(results, indent=2))
     owner = pwd.getpwnam('factorlab-demo')
     for index, mode in [(1, 'restart'), (2, 'hot'), (3, 'hot')]:
-        archive = INBOX / f's03-conformance-{index}.zip'
+        archive = INBOX / f's03-conformance-{args.run_id}-{index}.zip'
         spec = dict(schema_version=1, interface=INTERFACE, environment='BINANCE_USDM_DEMO', symbol='NVDAUSDT',
             code_commit=args.release.name, state_version=1, entrypoint='hold:evaluate', files=['hold.py'],
-            dependencies=[], configuration=dict(conformance_version=index, inject_failure=index == 3),
+            dependencies=[], configuration=dict(conformance_version=index, run_id=args.run_id, inject_failure=index == 3),
             migration='wait_flat', evidence=dict(kind='SOFTWARE_CONFORMANCE_ONLY',
             research_qualification=False, source_commit=args.release.name))
         if not archive.exists():
@@ -70,10 +71,10 @@ def main():
             import zipfile
             with zipfile.ZipFile(archive) as z: manifest = json.loads(z.read('manifest.json'))
         candidate = dict(schema_version=1, decision='PROMOTE', qualified=True, strictly_better=True,
-            selection_id='s03-official-conformance-' + str(index),
+            selection_id='s03-official-conformance-' + args.run_id + '-' + str(index),
             expected_active=cli('status')['active'],
             package_id=manifest['package_id'], evidence=manifest['evidence'])
-        candidate_path = INBOX / f's03-conformance-{index}.json'
+        candidate_path = INBOX / f's03-conformance-{args.run_id}-{index}.json'
         candidate_path.write_text(json.dumps(candidate))
         for path in (archive, candidate_path):
             os.chown(path, owner.pw_uid, owner.pw_gid)

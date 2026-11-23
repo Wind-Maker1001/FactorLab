@@ -24,6 +24,10 @@ def cycle(root, inbox, *, mode='hot'):
         # Selector publishes complete envelopes by atomic rename. No destructive consumption.
         try:
             envelope = json.loads(candidate_file.read_bytes())
+            if 'selection' in envelope and envelope['selection'].get('promoted') is not True:
+                adapt_selection(envelope['selection'], {})
+                results.append(dict(file=candidate_file.name, accepted=False, reason='RETAIN_CHAMPION'))
+                continue
             archive_name = envelope['archive']
             if Path(archive_name).name != archive_name or not archive_name.endswith('.zip'):
                 raise ValueError('inbox archive must be a local zip filename')
