@@ -36,6 +36,9 @@ jobs:
         run: >-
           python -m pytest -q
           tests/integrations/test_demo_cloud_runtime.py
+          tests/integrations/test_demo_cloud_monitor.py
+          tests/integrations/test_demo_cloud_backup.py
+          tests/integrations/test_demo_cloud_backup_systemd.py
           tests/integrations/test_demo_cloud_storage.py
           tests/integrations/test_demo_cloud_credentials.py
           tests/integrations/test_demo_execute_systemd.py
@@ -61,9 +64,22 @@ jobs:
           sudo mkdir -p /etc/systemd/system/factorlab-demo-ci.service.d
           printf '%s\n' '[Service]' 'LoadCredential=' 'ExecStart=' 'ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime run --offline' | sudo tee /etc/systemd/system/factorlab-demo-ci.service.d/offline.conf > /dev/null
           sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-execute.service /etc/systemd/system/factorlab-demo-execute.service
+          sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-health.service /etc/systemd/system/factorlab-demo-health.service
+          sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-health.timer /etc/systemd/system/factorlab-demo-health.timer
+          sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-daily-report.service /etc/systemd/system/factorlab-demo-daily-report.service
+          sudo install -o root -g root -m 644 deploy/systemd/factorlab-demo-daily-report.timer /etc/systemd/system/factorlab-demo-daily-report.timer
           sudo systemctl daemon-reload
           sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-ci.service
           sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-execute.service
+          sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-health.service /etc/systemd/system/factorlab-demo-health.timer
+          sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-daily-report.service /etc/systemd/system/factorlab-demo-daily-report.timer
+          sudo systemd-analyze verify deploy/systemd/factorlab-demo-backup.service deploy/systemd/factorlab-demo-backup.timer
+      - name: Real systemd backup recovery after SIGTERM and SIGKILL
+        if: runner.os == 'Linux'
+        run: >-
+          sudo env FACTORLAB_TEST_SYSTEMD=1 "$(command -v python)" -m pytest -q
+          tests/integrations/test_demo_cloud_backup_systemd.py
+          -k restores_original_unit
       - name: Real systemd SIGKILL restart and SIGTERM stop
         if: runner.os == 'Linux'
         run: python -I tools/ci/demo_cloud_systemd.py

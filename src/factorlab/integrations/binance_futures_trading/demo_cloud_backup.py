@@ -761,6 +761,7 @@ def record_backup_metadata(backup_root, status_payload):
     """Persist sanitized latest backup status and append one audit history line."""
     backup_root = storage._root(backup_root)
     storage.atomic_json(backup_root / STATUS_FILENAME, status_payload)
+    window = status_payload.get('maintenance_window') or {}
     history_entry = dict(
         started_at=status_payload.get('started_at'),
         completed_at=status_payload.get('completed_at'),
@@ -770,9 +771,14 @@ def record_backup_metadata(backup_root, status_payload):
         database_count=status_payload.get('database_count'),
         backup_bytes=status_payload.get('backup_bytes'),
         verified=status_payload.get('verified'),
-        downtime_seconds=(status_payload.get('maintenance_window') or {}).get('downtime_seconds'),
-        interrupted_unit=(status_payload.get('maintenance_window') or {}).get('interrupted_unit'),
-        reconcile_verified=(status_payload.get('maintenance_window') or {}).get('reconcile_verified'),
+        downtime_seconds=window.get('downtime_seconds'),
+        interrupted_unit=window.get('interrupted_unit'),
+        stopped_at=window.get('stopped_at'),
+        restarted_at=window.get('restarted_at'),
+        pre_pid=(window.get('pre_health') or {}).get('pid'),
+        post_pid=(window.get('post_health') or {}).get('pid'),
+        restart_succeeded=window.get('restart_succeeded'),
+        reconcile_verified=window.get('reconcile_verified'),
         kept_valid_count=(status_payload.get('retention') or {}).get('kept_valid_count'),
         pruned_count=(status_payload.get('retention') or {}).get('pruned_count'),
     )

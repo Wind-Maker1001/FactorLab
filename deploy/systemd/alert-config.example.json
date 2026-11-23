@@ -1,0 +1,11 @@
+{
+  "webhook_url": "https://example.invalid/replace-with-private-https-webhook",
+  "timeout_seconds": 10,
+  "bearer_token": null,
+  "custom_headers": {},
+  "renotify_seconds": 3600,
+  "rate_limit_window_seconds": 300,
+  "rate_limit_max_deliveries": 10,
+  "allow_insecure_loopback_http": false,
+  "send_daily_report": false
+}

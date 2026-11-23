@@ -8,11 +8,13 @@ import shlex
 import signal
 import subprocess
 import sys
+from time import time
 from uuid import uuid4
 
 import pytest
 
 from factorlab.integrations.binance_futures_trading import demo_cloud_backup as backup
+from factorlab.integrations.binance_futures_trading.demo_cloud_monitor import run_monitor_cycle
 
 
 def test_backup_unit_preserves_recovery_after_cgroup_termination():
@@ -133,7 +135,12 @@ def _exercise_systemd_termination(tmp_path, transient_units, mode, expected_resu
         'systemd-run', f'--unit={owner_unit}', '--property=Type=exec', '--',
         sys.executable, '-c', 'import signal; signal.pause()',
     ], check=True, capture_output=True, text=True, timeout=30)
-    original_pid = _main_pid(owner_unit)
+    runner = _FaultRunner(service_user='root')
+    pre_health = runner.read_health(state_root, unit=owner_unit)
+    original_pid = pre_health['pid']
+    pre_health.update(systemd_unit=owner_unit, starts=1)
+    monitor_dir = tmp_path / 'monitoring'
+    run_monitor_cycle(pre_health, monitor_dir, now=time(), backup_root=backup_root)
 
     source_root = Path(__file__).resolve().parents[2] / 'src'
     python_path = os.pathsep.join(filter(None, (str(source_root), os.environ.get('PYTHONPATH'))))
@@ -180,6 +187,11 @@ def _exercise_systemd_termination(tmp_path, transient_units, mode, expected_resu
     assert maintenance['post_health']['unknown_count'] == 0
     assert maintenance['post_health']['consumed_posts'] == 7
     assert maintenance['post_health']['consumed_submitted_notional'] == '41.3308000'
+    post_health = runner.read_health(state_root, unit=owner_unit)
+    post_health.update(systemd_unit=owner_unit, starts=2)
+    cycle = run_monitor_cycle(post_health, monitor_dir, now=time(), backup_root=backup_root)
+    assert {'maintenance_failure', 'unexpected_restart'} <= set(cycle['active_alert_keys'])
+    assert all(event['event'] != 'MAINTENANCE_RESTART' for event in cycle['events'])
 
 
 if sys.platform == 'linux' and os.environ.get('FACTORLAB_TEST_SYSTEMD') == '1':
