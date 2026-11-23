@@ -4,6 +4,8 @@
 
 2026-11-23，现有 Azure `factorlab-demo-01` 完成自动发布和官方 Binance USD-M Demo 切换验证。未新建交易服务、重新绑定账户、重置授权、恢复旧 SQLite 或扩大预算。
 
+独立草稿 PR：[ #236](https://github.com/Wind-Maker1001/FactorLab/pull/236)，不自动合并。运行代码固定在下述部署 SHA；后续报告、测试和 CI 提交不改变主机运行代码身份。
+
 | 项目 | 结论 | 验证边界 |
 | --- | --- | --- |
 | 自动部署 | **已验证** | 固定提交归档、版本目录、原 systemd Execute 受控重启及原账本 GET 恢复 |
