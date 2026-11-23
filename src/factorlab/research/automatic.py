@@ -24,6 +24,10 @@ from factorlab.strategies.custom import load_strategy, run_custom_strategy
 from factorlab.strategies.dual_ma import daily_dates
 
 ROOT = Path(__file__).resolve().parents[3]
+STATE_SCHEMA = "FACTORLAB_CHAMPION_STATE_V1"
+AUDIT_STATE_SCHEMA = "FACTORLAB_CHAMPION_AUDIT_STATE_V1"
+REPLAY_SCHEMA = "FACTORLAB_AUTO_RESEARCH_REPLAY_V1"
+SNAPSHOT_SCHEMA = "FACTORLAB_CHAMPION_PRE_RUN_STATE_V1"
 BAR_FIELDS = {"raw_open", "raw_high", "raw_low", "raw_close", "adj_close", "volume",
               "trade_status", "is_st"}
 
@@ -142,14 +146,81 @@ def run(config_path, *, output, store, state_path, command=()):
     state_path = Path(state_path).absolute()
     state_path.parent.mkdir(parents=True, exist_ok=True)
     with workflow_lock(state_path.with_suffix(state_path.suffix+".lock")):
-        return _run(config, config_path.parent, Path(output).resolve(), store, state_path, policy, command)
+        old = read_json(state_path) if state_path.exists() else None
+        return _run(config, config_path.parent, Path(output).resolve(), store, state_path,
+                    policy, command, old=old)
 
 
-def _run(config, base, output, store, state_path, policy, command):
-    old = read_json(state_path) if state_path.exists() else None
+def replay(source, *, audit_dir, command=()):
+    """Reproduce a research decision in a new, self-contained audit directory."""
+    source = Path(source).resolve()
+    manifest = read_json(source / "replay-config.json")
+    if (not isinstance(manifest, dict)
+            or set(manifest) != {"schema", "config", "pre_run_state_sha256"}
+            or manifest["schema"] != REPLAY_SCHEMA):
+        raise ValueError("invalid audit replay configuration")
+    config = manifest["config"]
+    policy = validate_config(config)
+    snapshot = read_json(source / "pre-run-state.json")
+    if json_hash(snapshot) != manifest["pre_run_state_sha256"]:
+        raise ValueError("pre-run Champion state checksum mismatch")
+    old = _replay_state(snapshot, config)
+    audit_dir = Path(audit_dir).resolve()
+    audit_dir.mkdir(parents=True, exist_ok=False)
+    return _run(config, source, audit_dir / "run", audit_dir / "tracker",
+                audit_dir / "champion.json", policy, command, old=old, audit=True)
+
+
+def _replay_state(snapshot, config):
+    if (not isinstance(snapshot, dict)
+            or set(snapshot) != {"schema", "config_sha256", "common_hash", "state"}
+            or snapshot["schema"] != SNAPSHOT_SCHEMA):
+        raise ValueError("invalid pre-run Champion state snapshot schema")
+    if (snapshot["config_sha256"] != json_hash(config)
+            or snapshot["common_hash"] != json_hash(config["common"])):
+        raise ValueError("pre-run Champion state does not match the replay research contract")
+    old = snapshot["state"]
+    if old is None:
+        return None
+    fields = {"schema", "champion", "common_hash", "last_test_end", "last_promotion_end",
+              "version", "status", "decision", "reserved_study"}
+    if (not isinstance(old, dict) or set(old) != fields or old["schema"] != STATE_SCHEMA
+            or type(old["version"]) is not int or old["version"] < 0
+            or old["status"] not in ("TEST_RESERVED", "COMPLETED")
+            or not isinstance(old["reserved_study"], str)
+            or not re.fullmatch(r"[A-Za-z0-9_-]{1,40}", old["reserved_study"])):
+        raise ValueError("invalid pre-run Champion state fields")
+    decision = old["decision"]
+    if decision is None:
+        if old["status"] == "COMPLETED" or old["version"] > 0:
+            raise ValueError("pre-run Champion state is missing its prior decision")
+    elif (not isinstance(decision, dict) or set(decision) != {"path", "sha256"}
+          or not isinstance(decision["path"], str) or not decision["path"]
+          or not isinstance(decision["sha256"], str)
+          or not re.fullmatch(r"[a-f0-9]{64}", decision["sha256"])):
+        raise ValueError("invalid pre-run Champion decision reference")
+    last_test = _snapshot_date(old["last_test_end"])
+    promotion = old["last_promotion_end"]
+    if ((promotion is None) != (old["version"] == 0)
+            or (promotion is not None and _snapshot_date(promotion) > last_test)):
+        raise ValueError("invalid pre-run Champion promotion continuity")
+    return old
+
+
+def _snapshot_date(value):
+    if not isinstance(value, str):
+        raise ValueError("pre-run Champion dates require calendar date strings")
+    date = pd.Timestamp(value)
+    if pd.isna(date) or date.tzinfo or date != date.normalize():
+        raise ValueError("invalid pre-run Champion date")
+    return date
+
+
+def _run(config, base, output, store, state_path, policy, command, *, old, audit=False):
     common, windows = config["common"], config["windows"]
-    if old:
-        if old["schema"] != "FACTORLAB_CHAMPION_STATE_V1" or old["common_hash"] != json_hash(common):
+    common_hash = json_hash(common)
+    if old is not None:
+        if old["schema"] != STATE_SCHEMA or old["common_hash"] != common_hash:
             raise ValueError("deployment mandate/common comparison contract changed")
         if pd.Timestamp(windows["test"][0]) <= pd.Timestamp(old["last_test_end"]):
             raise ValueError("OOS window already consumed; supply a fresh nonoverlapping test")
@@ -168,7 +239,8 @@ def _run(config, base, output, store, state_path, policy, command):
     bars = bars.loc[bars.date.le(windows["test"][1]), ["date", "symbol", *sorted(BAR_FIELDS)]].copy()
     output.mkdir(parents=True, exist_ok=False)
     (output / "sources").mkdir()
-    write_json(output / "config.json", config)
+    if not audit:
+        write_json(output / "config.json", config)
     provenance = capture_provenance(ROOT)
     provenance["code"]["source_sha256"] = research_source_sha256(ROOT)
     bars.to_parquet(output / "bars.parquet", index=False)
@@ -176,7 +248,14 @@ def _run(config, base, output, store, state_path, policy, command):
     (output / "input-bars.parquet").write_bytes(payload)
     candidates = [_register(item, base, common, windows, output)
                   for item in expand_registry(config["strategies"], policy.max_candidates)]
-    champion_item = old["champion"] if old else _register(config["champion"], base, common, windows, output)
+    if old is None or audit:
+        champion_item = _register(config["champion"], base, common, windows, output)
+        if old is not None:
+            archived = dict(champion_item, strategy=config["champion"]["strategy"])
+            if old["champion"] != archived:
+                raise ValueError("pre-run Champion identity does not match the archived strategy")
+    else:
+        champion_item = old["champion"]
     # Validate existing Champion's pinned code as well; never replace it on failure.
     if file_hash(champion_item["strategy"]["file"]) != champion_item["code_version"]:
         raise ValueError("Champion code changed")
@@ -189,14 +268,23 @@ def _run(config, base, output, store, state_path, policy, command):
         if hashlib.sha256(content).hexdigest() != c["code_version"]:
             raise ValueError("candidate code changed")
         (output / "sources" / (c["code_version"]+".py")).write_bytes(content)
-    replay = deepcopy(config)
-    replay["data"]["bars"] = str(output / "input-bars.parquet")
-    for entry in replay["strategies"]:
-        entry["file"] = str(output / "sources" / (entry["sha256"]+".py"))
-    replay["champion"] = dict(strategy_id=champion_item["strategy_id"],
-        strategy=dict(champion_item["strategy"], file=str(output / "sources" / (champion_item["code_version"]+".py"))),
+    archived_config = deepcopy(config)
+    archived_config["data"]["bars"] = "input-bars.parquet"
+    for entry in archived_config["strategies"]:
+        entry["file"] = "sources/"+entry["sha256"]+".py"
+    archived_champion = dict(champion_item["strategy"],
+                             file="sources/"+champion_item["code_version"]+".py")
+    archived_config["champion"] = dict(strategy_id=champion_item["strategy_id"],
+        strategy=archived_champion,
         parameters=champion_item["parameters"])
-    write_json(output / "replay-config.json", replay)
+    snapshot = dict(schema=SNAPSHOT_SCHEMA, config_sha256=json_hash(archived_config),
+        common_hash=common_hash, state=None if old is None else
+        dict(old, champion=dict(champion_item, strategy=archived_champion)))
+    snapshot_hash = json_hash(snapshot)
+    snapshot_path = output / "pre-run-state.json"
+    write_json(snapshot_path, snapshot)
+    write_json(output / "replay-config.json", dict(schema=REPLAY_SCHEMA, config=archived_config,
+        pre_run_state_sha256=snapshot_hash))
     tracker = ExperimentTracker(store)
     catalog = {c["candidate_id"]: dict(candidate=c, status="REGISTERED", stages={}) for c in all_candidates.values()}
     fees = FeeSchedule([FeeRule(**r) for r in common["fee_rules"]])
@@ -230,7 +318,7 @@ def _run(config, base, output, store, state_path, policy, command):
         except Exception as exc:
             result, metrics, status, failure = None, {}, "FAILED", str(exc)
         paths = [p for p in folder.iterdir() if p.is_file()]
-        paths += [output / "input-bars.parquet", output / "replay-config.json",
+        paths += [output / "input-bars.parquet", output / "replay-config.json", snapshot_path,
                   output / "sources" / (candidate["code_version"]+".py")]
         artifacts = {p.name: {"path": str(p), "sha256": file_hash(p)} for p in paths}
         record = tracker.append_run(identity, identity, **provenance, command=list(command), status=status,
@@ -258,14 +346,16 @@ def _run(config, base, output, store, state_path, policy, command):
     finalists = sorted(leaders.values(), key=lambda e: (-e["metrics"]["score"], e["candidate"]["candidate_id"]))[:policy.max_finalists]
     frozen = dict(config_sha256=json_hash(config), finalists=[f["candidate"] for f in finalists],
                   champion=champion_item, policy=asdict_policy(policy), family_size=len(candidates),
-                  dataset_sha256=config["data"]["sha256"], code=provenance["code"])
+                  dataset_sha256=config["data"]["sha256"], code=provenance["code"],
+                  pre_run_state_sha256=snapshot_hash)
     write_json(output / "frozen-search.json", frozen)
     # Consume before test access. Crash leaves incumbent and reservation intact.
-    state = dict(schema="FACTORLAB_CHAMPION_STATE_V1", champion=champion_item,
-        common_hash=json_hash(common), last_test_end=windows["test"][1],
-        last_promotion_end=old.get("last_promotion_end") if old else None,
-        version=old["version"] if old else 0, status="TEST_RESERVED",
-        decision=old.get("decision") if old else None, reserved_study=config["study_id"])
+    state = dict(schema=AUDIT_STATE_SCHEMA if audit else STATE_SCHEMA, champion=champion_item,
+        common_hash=common_hash, last_test_end=windows["test"][1],
+        last_promotion_end=old["last_promotion_end"] if old is not None else None,
+        version=old["version"] if old is not None else 0, status="TEST_RESERVED",
+        decision=old["decision"] if old is not None and not audit else None,
+        reserved_study=config["study_id"])
     write_json(state_path, state)
     incumbent = evaluate(champion_item, "test")
     catalog[champion_item["candidate_id"]]["status"] = "INCUMBENT_EVALUATED" if incumbent else "INCUMBENT_FAILED"

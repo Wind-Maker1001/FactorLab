@@ -11,18 +11,30 @@
 ```powershell
 python -I examples/research/champion_demo.py --output D:/research/s02-demo
 python -I tools/research/select_champion.py --config D:/research/config.json --output D:/research/study-002 --store D:/research/tracker --state D:/research/champion.json
+python -I tools/research/select_champion.py --replay-from D:/research/s02-demo/run --audit-dir D:/research/s02-audit
 ```
 
 第一条命令生成固定种子合成行情、两种自定义策略的六个参数候选及现金
 Champion，输出完整配置示例。第二条消费固定校验和的历史 parquet；已有历史
 数据可直接导出为现有 `run_custom_strategy` 接受的行情格式，不下载或伪造数据。
 
-`replay-config.json` 指向运行目录中保存的原始行情和策略源码快照；使用它和
-**独立的审计 state/store/output** 可复放同一实验。不得让审计 state 替换生产
-研究 state。可通过 `ExperimentTracker.reproduction(run_id, verify_artifacts=True)`
-校验输入、策略源码、参数配置、交易、净值和评估文件。源码若有额外本地依赖，
+第三条命令读取原运行目录中的 `replay-config.json`、`pre-run-state.json`、
+原始行情和归档策略源码。审计目录必须尚未存在，命令在其中创建 `run/`、
+`tracker/` 和 `champion.json`。审计配置和审计 state 使用专用 schema，生产入口
+只接受生产配置和生产 state。旧工件若缺少运行前快照，审计入口会拒绝复放。
+
+快照在测试窗口预留前写入。首次研究明确记录 `state: null`，并从归档配置恢复
+初始 Champion。滚动研究恢复原 Champion 的完整身份、代码版本、当前版本、
+上次晋升及上次消费测试的末日、共同研究口径和原状态的连续性元数据。复放校验
+快照、配置和策略身份后，沿用原测试窗口预留及冷却期判断。审计 `champion.json`
+进入 `COMPLETED` 后，可对照两次 `selection.json` 的选择身份、代码版本、
+晋升标记、版本、原因和逐候选决策，以及两份 state 的 `last_promotion_end`。
+两次运行的归档源码绝对路径可以不同。
+
+通过 `ExperimentTracker.reproduction(run_id, verify_artifacts=True)` 可校验
+快照、输入、策略源码、配置、交易、净值和评估文件。源码若有额外本地依赖，
 还须保存对应环境；当前适配契约的策略文件应自包含，或只依赖固定版本的
-FactorLab/已记录依赖。SHA256 是一致性收据，不是安全签名。
+FactorLab/已记录依赖。SHA256 提供一致性校验。
 
 ## 窗口与搜索协议
 
@@ -108,6 +120,8 @@ state 必须持久保存且只属于一个部署研究口径。复用已有独�
 测试前先保存 `TEST_RESERVED` 和已消费测试末日，再执行测试。中断后 Champion
 保持原样，该测试窗口仍被消费，下一研究必须提供全新的、不重叠的测试窗口。
 成功结果先写完整 JSON，再更新 state 指针；失败不会留下半个 Champion。
+消费方以 `COMPLETED` 和对应的结果收据确认本轮完成。`TEST_RESERVED` 中的
+Champion 与版本仍属于运行前状态，生产 state 可能保留上一次完成的结果指针。
 不得删除 state 来重复尝试同一个 holdout。锁崩溃遗留时须确认没有活跃进程后
 人工恢复，复用现有锁工具的行为。
 

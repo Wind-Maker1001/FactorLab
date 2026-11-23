@@ -7,9 +7,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from factorlab.dataset.identity import file_hash
+from factorlab.dataset.identity import file_hash, json_hash
 from factorlab.experiments import ExperimentTracker
-from factorlab.research.automatic import expand_registry, run, validate_config, write_json
+from factorlab.research.automatic import expand_registry, read_json, replay, run, validate_config, write_json
 from factorlab.research.champion import (ChampionSelector, SelectionPolicy, objective,
                                         paired_evidence, risk_metrics)
 
@@ -111,6 +111,48 @@ def execute(path, name="first"):
     return run(path, output=root / name, store=root / (name+"-tracker"), state_path=root / (name+"-state.json"), command=["pytest"])
 
 
+@pytest.fixture
+def rolling_study(study):
+    path, config, bars = study
+    opening_price = bars.raw_open.iloc[0]
+    returns = .0015 + .0002 * np.sin(np.arange(len(bars)))
+    close = opening_price * np.cumprod(1 + returns)
+    opening = np.r_[opening_price, close[:-1]]
+    bars = bars.assign(raw_open=opening, raw_high=np.maximum(close, opening) * 1.002,
+                       raw_low=np.minimum(close, opening) * .998, raw_close=close, adj_close=close)
+    bars_path = path.parent / "bars.parquet"
+    bars.to_parquet(bars_path, index=False)
+    config["data"]["sha256"] = file_hash(bars_path)
+    config["strategies"] = [config["strategies"][-1]]
+    config["policy"]["resamples"] = 400
+
+    strategy = dict(config["champion"]["strategy"], file=str(path.parent / "strategies.py"), parameters={})
+    identity = dict(strategy_id="cash", code_version=strategy["sha256"], class_name="Cash", parameters={})
+    champion = dict(identity, candidate_id="c-" + json_hash(identity)[:24], strategy=strategy)
+    prior_selection = path.parent / "prior-selection.json"
+    write_json(prior_selection, dict(version=5, selected=champion, promoted=True))
+    previous_end = config["windows"]["validation"][1]
+    prior = dict(schema="FACTORLAB_CHAMPION_STATE_V1", champion=champion, version=5,
+                 last_test_end=previous_end, last_promotion_end=previous_end,
+                 common_hash=json_hash(config["common"]), status="COMPLETED", reserved_study="prior-study",
+                 decision=dict(path=str(prior_selection), sha256=file_hash(prior_selection)))
+    write_json(path.parent / "first-state.json", prior)
+    config["champion"] = dict(strategy_id="unused_initial_champion",
+                              strategy=dict(config["champion"]["strategy"], **{"class": "Trend"}),
+                              parameters={})
+    write_json(path, config)
+    return path, config, prior
+
+
+def assert_same_selection(original, audited, original_state, audit_state):
+    for key in ("candidate_id", "code_version"):
+        assert original["selected"][key] == audited["selected"][key]
+    for key in ("promoted", "version", "reason", "decisions"):
+        assert original[key] == audited[key]
+    for key in ("last_promotion_end", "last_test_end", "version", "status"):
+        assert original_state[key] == audit_state[key]
+
+
 def test_multistrategy_tracker_state_and_reproduction(study):
     path, config, _ = study
     report = execute(path)
@@ -121,20 +163,54 @@ def test_multistrategy_tracker_state_and_reproduction(study):
     assert len(runs) >= 4
     for record in runs:
         assert tracker.reproduction(record["id"], verify_artifacts=True)
-        assert record["payload"]["run"]["validation"]["train_only_fit"] == config["windows"]["train"]
+        recorded_run = record["payload"]["run"]
+        assert recorded_run["validation"]["train_only_fit"] == config["windows"]["train"]
+        assert "pre-run-state.json" in recorded_run["artifacts"]
     frozen = json.loads((path.parent / "first/frozen-search.json").read_text())
     assert len({c["strategy_id"] for c in frozen["finalists"]}) == len(frozen["finalists"])
     with pytest.raises(ValueError, match="already consumed"):
         run(path, output=path.parent / "repeat", store=tracker.root, state_path=path.parent / "first-state.json")
-    again = execute(path.parent / "first/replay-config.json", "reproduce")
-    assert report["selected"]["candidate_id"] == again["selected"]["candidate_id"]
-    assert report["selected"]["code_version"] == again["selected"]["code_version"]
-    assert report["decisions"] == again["decisions"]
+    origin = path.parent / "first"
+    assert read_json(origin / "pre-run-state.json")["state"] is None
+    audit = path.parent / "reproduce"
+    again = replay(origin, audit_dir=audit)
+    assert_same_selection(report, again, read_json(path.parent / "first-state.json"),
+                          read_json(audit / "champion.json"))
 
 
-def test_interruption_reserves_oos_and_keeps_champion(study, monkeypatch):
+@pytest.mark.parametrize(("cooldown_days", "resamples", "reasons", "version"), [
+    pytest.param(365, 400, ["promotion_cooldown"], 5, id="cooldown-holds-v5"),
+    pytest.param(30, 400, [], 6, id="elapsed-cooldown-promotes-to-v6"),
+    pytest.param(30, 100, ["insufficient_bootstrap_tail_resolution"], 5, id="insufficient-statistics-holds-v5"),
+])
+def test_rolling_replay_preserves_selection(rolling_study, cooldown_days, resamples, reasons, version):
+    path, config, prior = rolling_study
+    config["policy"].update(cooldown_days=cooldown_days, resamples=resamples)
+    write_json(path, config)
+    original = execute(path)
+    origin = path.parent / "first"
+    snapshot = read_json(origin / "pre-run-state.json")["state"]
+    archived_strategy = dict(prior["champion"]["strategy"], file="sources/" + prior["champion"]["code_version"] + ".py")
+    assert snapshot == dict(prior, champion=dict(prior["champion"], strategy=archived_strategy))
+
+    audit_dir = path.parent / "audit"
+    audited = replay(origin, audit_dir=audit_dir)
+    original_state = read_json(path.parent / "first-state.json")
+    assert_same_selection(original, audited, original_state, read_json(audit_dir / "champion.json"))
+    assert original["version"] == version
+    assert original["decisions"][0]["reasons"] == reasons
+    assert original["promoted"] is (version == 6)
+    if version == 6:
+        assert original["selected"]["strategy_id"] == "trainmean"
+        assert original_state["last_promotion_end"] == config["windows"]["test"][1]
+    else:
+        assert original["selected"] == prior["champion"]
+        assert original_state["last_promotion_end"] == prior["last_promotion_end"]
+
+
+def test_interruption_reserves_oos_and_keeps_champion(rolling_study, monkeypatch):
     from factorlab.research import automatic
-    path, config, _ = study
+    path, config, prior = rolling_study
     original = automatic.run_custom_strategy
 
     def interrupt_test(*args, **kwargs):
@@ -145,10 +221,84 @@ def test_interruption_reserves_oos_and_keeps_champion(study, monkeypatch):
     monkeypatch.setattr(automatic, "run_custom_strategy", interrupt_test)
     with pytest.raises(KeyboardInterrupt):
         execute(path)
-    state = json.loads((path.parent / "first-state.json").read_text())
-    assert state["status"] == "TEST_RESERVED" and state["champion"]["strategy_id"] == "cash"
+    state = read_json(path.parent / "first-state.json")
+    assert state == dict(prior, status="TEST_RESERVED", reserved_study=config["study_id"],
+                         last_test_end=config["windows"]["test"][1])
+    assert not (path.parent / "first/selection.json").exists()
     with pytest.raises(ValueError, match="already consumed"):
         run(path, output=path.parent / "retry", store=path.parent / "first-tracker", state_path=path.parent / "first-state.json")
+
+    audit = path.parent / "interrupted-audit"
+    with pytest.raises(KeyboardInterrupt):
+        replay(path.parent / "first", audit_dir=audit)
+    audit_state = read_json(audit / "champion.json")
+    for key in ("status", "version", "last_promotion_end", "last_test_end"):
+        assert audit_state[key] == state[key]
+    for key in ("candidate_id", "code_version"):
+        assert audit_state["champion"][key] == prior["champion"][key]
+    assert audit_state["decision"] is None
+    assert not (audit / "run/selection.json").exists()
+    with pytest.raises(FileExistsError):
+        replay(path.parent / "first", audit_dir=audit)
+
+
+def test_replay_isolates_state_and_keeps_window_consumption(rolling_study):
+    path, _, _ = rolling_study
+    execute(path)
+    root = path.parent
+    origin = root / "first"
+    original_state_path = root / "first-state.json"
+    original_state_bytes = original_state_path.read_bytes()
+    audit = root / "audit"
+    replay(origin, audit_dir=audit)
+
+    for existing in (audit, origin, root / "first-tracker", original_state_path):
+        with pytest.raises(FileExistsError):
+            replay(origin, audit_dir=existing)
+    with pytest.raises(ValueError, match="already consumed"):
+        execute(path)
+    with pytest.raises(ValueError, match="invalid automatic research configuration"):
+        run(origin / "replay-config.json", output=root / "repeat", store=root / "first-tracker",
+            state_path=original_state_path)
+    with pytest.raises(ValueError, match="deployment mandate/common comparison contract changed"):
+        run(path, output=root / "repeat", store=root / "first-tracker", state_path=audit / "champion.json")
+
+    assert original_state_path.read_bytes() == original_state_bytes
+    assert (audit / "run/selection.json").is_file()
+    assert ExperimentTracker(audit / "tracker").query(status="SUCCEEDED")
+
+
+def test_replay_rejects_invalid_pre_run_snapshot(rolling_study):
+    path, _, _ = rolling_study
+    execute(path)
+    origin = path.parent / "first"
+    snapshot_path = origin / "pre-run-state.json"
+    replay_config_path = origin / "replay-config.json"
+    snapshot = read_json(snapshot_path)
+    replay_config = read_json(replay_config_path)
+    state = snapshot["state"]
+    audit = path.parent / "audit"
+
+    write_json(snapshot_path, dict(snapshot, state=None))
+    with pytest.raises(ValueError, match="pre-run Champion state checksum mismatch"):
+        replay(origin, audit_dir=audit)
+
+    without_version = dict(state)
+    del without_version["version"]
+    wrong_champion = dict(state["champion"], candidate_id="c-" + "0" * 24)
+    cases = [
+        (dict(snapshot, schema="UNKNOWN"), "invalid pre-run Champion state snapshot schema"),
+        (dict(snapshot, state=without_version), "invalid pre-run Champion state fields"),
+        (dict(snapshot, common_hash="0" * 64), "does not match the replay research contract"),
+        (dict(snapshot, state=dict(state, last_promotion_end=None)), "invalid pre-run Champion promotion continuity"),
+        (dict(snapshot, state=dict(state, last_test_end="2025-01-01")), "already consumed"),
+        (dict(snapshot, state=dict(state, champion=wrong_champion)), "pre-run Champion identity"),
+    ]
+    for index, (invalid_snapshot, reason) in enumerate(cases):
+        write_json(snapshot_path, invalid_snapshot)
+        write_json(replay_config_path, dict(replay_config, pre_run_state_sha256=json_hash(invalid_snapshot)))
+        with pytest.raises(ValueError, match=reason):
+            replay(origin, audit_dir=path.parent / f"invalid-audit-{index}")
 
 
 def test_fit_receives_only_training_market_fields(study):

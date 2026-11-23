@@ -83,7 +83,7 @@ ONLY**；所有结果继续标记 `FORMAL_ADMISSION_BLOCKED`。
 ```powershell
 python -m pytest tests/research/test_champion_selector.py tests/research/test_custom_strategy.py tests/research/test_experiment_tracker.py tests/research/test_research_workflow.py tests/research/test_research_evaluation.py -q --basetemp=local-s02-check
 python -I examples/research/champion_demo.py --output D:/research/s02-reproduce
-python -I tools/research/select_champion.py --config D:/research/s02-reproduce/run/replay-config.json --output D:/research/s02-audit/run --store D:/research/s02-audit/tracker --state D:/research/s02-audit/champion.json
+python -I tools/research/select_champion.py --replay-from D:/research/s02-reproduce/run --audit-dir D:/research/s02-audit
 ```
 
 覆盖：合格晋升、统计不确定/退化差值不晋升、全部候选不合格、回撤/CVaR/容量
@@ -94,10 +94,43 @@ python -I tools/research/select_champion.py --config D:/research/s02-reproduce/r
 注册脚本；定时任务动作本身直接调用 Python，不修改或绕过系统执行策略。
 `git diff --check` 通过。
 
-最终完整回归：**79 项通过，100.52 秒**，没有未解决失败。
+原 S02 完整回归：**79 项通过，100.52 秒**。
 复放检查使用稳定候选 ID、代码版本与完整决策证据，允许归档源码位置变化。
 定时 Python 入口已实际执行成功；重复消费测试窗口被拒绝。额外策略政策
 边界检查 3 项通过，PowerShell 语法与 Python 编译检查通过。
+
+### PR #235 审查修复后的复放
+
+原流程只归档 Champion 的策略身份。新建空审计 state 会以 V0 开始，
+并因缺少 `last_promotion_end` 而把晋升冷却期视为已满。修复后，运行在预留
+测试窗口前归档 `pre-run-state.json`，将快照与复放配置及冻结清单绑定。审计入口
+恢复已有 Champion 的版本及晋升、测试日期，通过与生产相同的预留和选择逻辑，
+在新目录中生成独立的结果、tracker 和 state。
+
+按上列命令重新运行原合成实验并独立复放。两次均保留 Cash
+（`c-e6b0d748191fb67033994937`，源码版本
+`4197b415ad449ad1bd35b7eeaf889c898d5a2bc59809c135203f028c005d6fd0`），
+`promoted=false`、版本 0、`reason=retain_champion_no_qualified_challenger`，
+`last_promotion_end=null`。两次的完整 `decisions` 与历史合成实验摘要逐项相同，
+包括两个 Challenger 的拒绝原因和配对统计证据。原运行、独立复放及原有历史
+tracker 各有 9 条成功记录通过 `reproduction(..., verify_artifacts=True)`。
+新记录包含快照收据，旧记录沿用各自的工件收据。
+
+滚动合成用例从同一 Cash V5 起步，原运行与复放逐项比较候选 ID、代码版本、
+晋升标记、版本、结果原因、完整候选决策和上次晋升日。
+
+| 场景 | 两次运行的选择和版本 | 两次运行的候选拒绝原因 | 上次晋升日 |
+| --- | --- | --- | --- |
+| 冷却期未满 | 保留 Cash V5 | `promotion_cooldown` | 2021-07-01 |
+| 冷却期已满，候选合格 | 晋升 TrainMean 至 V6 | 无 | 2021-11-18 |
+| 冷却期已满，重采样证据精度不足 | 保留 Cash V5 | `insufficient_bootstrap_tail_resolution` | 2021-07-01 |
+
+在原运行及审计中模拟测试阶段中断时，两份 state 均保留 V5 和已预留的测试末日，
+状态为 `TEST_RESERVED`。使用原 state 重跑同一测试窗口或重新使用已创建的审计目录
+均被拒绝。快照缺字段、研究口径或身份不符时，复放会明确报错。
+
+Python 3.14.0 下，Champion Selector 定向套件 15 项通过，其余四个原 S02
+套件 69 项通过，合计原有 79 项及新增 5 项全部通过。
 
 ## 交付、边界与发布状态
 
