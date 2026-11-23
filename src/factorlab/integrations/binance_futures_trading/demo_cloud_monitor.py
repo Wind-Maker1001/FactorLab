@@ -577,6 +577,7 @@ def sanitize_sample(health_payload: dict, *, observed_at: float | None = None) -
         recent_order_status_counts=recent_status_counts,
         last_order_updated_at=last_order_updated_at,
         grid=grid_summary,
+        strategy_release=health_payload.get('strategy_release'),
         requests=requests,
         request_failure_rate=_safe_float(health_payload.get('request_failure_rate')),
         api_total_requests=api_total_requests,
@@ -2006,6 +2007,12 @@ def generate_daily_report(
 
     report = dict(
         version=1,
+        strategy_release=latest_sample.get('strategy_release') if latest_sample else None,
+        strategy_switch_events=list({
+            e['seq']: e for sample in samples + ([latest_sample] if latest_sample else [])
+            for e in (sample.get('strategy_release') or {}).get('events', [])
+            if e.get('at', 0) >= now_ts - 86400
+        }.values()),
         report_date_utc=datetime.fromtimestamp(now_ts, timezone.utc).strftime('%Y-%m-%d'),
         generated_at_utc=_iso_utc(now_ts),
         environment='BINANCE_USDM_DEMO_NO_LIVE_MONEY',
@@ -2151,6 +2158,13 @@ def render_daily_report_markdown(report: dict) -> str:
         f"- Active Alerts: `{alerts['active_count']}` (`{alerts['active_keys']}`) | 24h Fired: `{alerts['fired_24h']}` | 24h Resolved: `{alerts['resolved_24h']}` | 24h Maintenance Events: `{alerts.get('maintenance_events_24h', 0)}`",
         f"- Disk Free: `{_fmt_num(disk_free_gib, ' GiB')}` | Trading State Size: `{storage['state_bytes']}` B | Monitor Samples Size: `{storage['monitor_samples_bytes']}` B",
     ])
+    if report.get('strategy_release'):
+        release = report['strategy_release']
+        lines.extend(['', '## Strategy versions and switch outcomes',
+            f"- Active: `{release.get('active')}` | Previous: `{release.get('previous')}`",
+            f"- Latest switch: `{release.get('switch')}`"])
+        for event in report.get('strategy_switch_events', []):
+            lines.append(f"- #{event['seq']} `{event['event']}`: `{event.get('old')}` → `{event.get('new')}`; `{event.get('reason')}`")
     return '\n'.join(lines) + '\n'
 
 
