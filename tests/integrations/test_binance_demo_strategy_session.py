@@ -228,7 +228,7 @@ def test_decision_survives_failure_before_submission(deployment, monkeypatch):
             def interrupt(*args, **kwargs):
                 assert not session.controller.store.db.in_transaction
                 raise RuntimeError('interrupted after durable decision')
-            monkeypatch.setattr(session, 'submit_limit', interrupt)
+            monkeypatch.setattr(session, 'submit_intent', interrupt)
             with pytest.raises(RuntimeError, match='durable decision'):
                 runner.quote(Quote('NVDAUSDT', D(100), AT))
             key = session.gateway.state.runtime['last_order']['client_order_id']

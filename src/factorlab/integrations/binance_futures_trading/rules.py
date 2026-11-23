@@ -34,18 +34,23 @@ def market_quantity_constraints(symbol_info):
     if any(f is None or any(f.get(k) is None for k in ('stepSize', 'minQty', 'maxQty'))
            for f in lots):
         raise Unavailable('UNKNOWN_QUANTITY_RULE')
-    steps = [D(f['stepSize']) for f in lots if D(f['stepSize']) > 0]
-    step = Decimal(0)
-    if steps:
-        exponent = min(s.as_tuple().exponent for s in steps)
-        integers = []
-        for value in steps:
-            parts = value.as_tuple()
-            coefficient = int(''.join(map(str, parts.digits)))
-            integers.append(coefficient * 10 ** (parts.exponent - exponent))
-        common = lcm(*integers)
-        step = Decimal((0, tuple(map(int, str(common))), exponent))
+    step = common_step(*(D(f['stepSize']) for f in lots))
     return step, max(D(f['minQty']) for f in lots), min(D(f['maxQty']) for f in lots)
+
+
+def common_step(*steps):
+    """Return the smallest increment aligned to every enabled step."""
+    steps = [step for step in steps if step > 0]
+    if not steps:
+        return Decimal(0)
+    exponent = min(step.as_tuple().exponent for step in steps)
+    integers = []
+    for step in steps:
+        parts = step.as_tuple()
+        coefficient = int(''.join(map(str, parts.digits)))
+        integers.append(coefficient * 10 ** (parts.exponent - exponent))
+    common = lcm(*integers)
+    return Decimal((0, tuple(map(int, str(common))), exponent))
 
 
 @dataclass(frozen=True)
@@ -73,14 +78,17 @@ class RuleObservation:
                    None if 'notionalCoef' not in bracket_info else D(bracket_info['notionalCoef']),
                    None if 'orderTypes' not in symbol_info else tuple(symbol_info['orderTypes']))
 
+    def is_fresh(self, now, *, max_age_seconds=300):
+        utc(now)
+        return timedelta(0) <= now - self.observed_at <= timedelta(seconds=max_age_seconds)
+
     def validate(self, intent, *, mark_price, leverage, available_margin, current_notional,
                  now, max_leverage=1, max_age_seconds=300, remaining_quantity=None):
-        utc(now)
         snapshot = {'source_version': self.source_version, 'observed_at': self.observed_at.isoformat(),
                     'historical': False, 'max_leverage': max_leverage}
         def decision(reason):
             return RiskDecision(reason == 'APPROVED', reason, snapshot)
-        if not timedelta(0) <= now - self.observed_at <= timedelta(seconds=max_age_seconds):
+        if not self.is_fresh(now, max_age_seconds=max_age_seconds):
             return decision('STALE_RULES')
         if self.order_types is None:
             return decision('UNKNOWN_ORDER_TYPES')

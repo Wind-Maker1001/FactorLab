@@ -639,7 +639,7 @@ def calibrated_worker(network_grid, monkeypatch):
 
     root, store, factory, enable, fake, requests = network_grid
     state = SimpleNamespace(seconds=.2, wall_offset=0., quote_age=100, fail_time=False,
-                            delay_bars=0., consumer=None, feed=None)
+                            delay_bars=0., consumer=None, feed=None, rule_response=None)
     initial = NOW.timestamp()
     original_init = protocol.FuturesClient.__init__
 
@@ -662,6 +662,9 @@ def calibrated_worker(network_grid, monkeypatch):
             state.seconds += state.delay_bars
             return Response(200, {}, json.dumps(payload).encode())
         result = original_request(exchange, request, timeout)
+        if state.rule_response is not None and request.path.endswith(('/exchangeInfo', '/leverageBracket')):
+            payload = state.rule_response(request.path, json.loads(result.body))
+            return Response(200, {}, json.dumps(payload).encode())
         if request.path.endswith(('/time', '/bookTicker', '/premiumIndex')):
             payload = json.loads(result.body)
             key = 'serverTime' if request.path.endswith('/time') else 'time'
@@ -698,6 +701,162 @@ def calibrated_worker(network_grid, monkeypatch):
         return module.run(args, root=root, credentials=store)
 
     return run, state, fake, requests
+
+
+@pytest.mark.parametrize('failed_get', [None, 'exchangeInfo', 'leverageBracket'])
+def test_worker_refreshes_rules_without_resetting_orders_or_budget(calibrated_worker, failed_get):
+    from factorlab.errors import DataQualityError
+    run, state, fake, _ = calibrated_worker
+
+    def rules(path, payload):
+        if failed_get is not None and path.endswith(failed_get) and state.seconds < 400:
+            raise OSError('rules temporarily unavailable')
+        if path.endswith('/exchangeInfo'):
+            filters = {rule['filterType']: rule for rule in payload['symbols'][0]['filters']}
+            filters['PRICE_FILTER']['tickSize'] = '.02'
+            filters['LOT_SIZE']['stepSize'] = '.02'
+        else:
+            payload[0]['brackets'][0]['initialLeverage'] = 1
+        return payload
+
+    def rounds(supervisor, state):
+        consumer = state.consumer
+        bridge = consumer.bridge
+        session = bridge.session
+        runtime = supervisor.feed.runtime
+        campaign = runtime.active_campaign()
+        original_rules = session.gateway.rules
+
+        def deliver(number):
+            supervisor.before_poll()
+            consumer.closed_bar(bar(number))
+            return consumer.quote(session.gateway.state.quotes['NVDAUSDT'])
+
+        supervisor.before_poll()
+        state.seconds = 60.2
+        entry = deliver(1)
+        fake.trade_update(entry.intent.client_order_id, '.04', '146')
+        state.seconds = 360.4
+        supervisor.before_poll()
+        before = session.status()
+        assert before['reconciled'] and before['unknown'] == []
+        assert before['orders'][entry.intent.client_order_id]['status'] == 'FILLED'
+        assert runtime.post_count(campaign['id']) == 1
+        assert session.gateway.rules is original_rules
+        state.rule_response = rules
+
+        with pytest.raises(SafetyBlocked, match='already journaled'):
+            session.submit_intent(entry.intent)
+        if failed_get is not None:
+            with pytest.raises(DataQualityError, match='account read failed'):
+                deliver(6)
+            assert len(posts(fake)) == runtime.post_count(campaign['id']) == 1
+            assert session.adapter._rule_observation.rules is session.gateway.rules is original_rules
+            assert session.status()['orders'] == before['orders']
+            supervisor.on_pause()
+            state.seconds = 400.4
+            supervisor.before_poll()
+            state.seconds = 420.4
+            exit_order = deliver(7)
+        else:
+            exit_order = deliver(6)
+
+        rules_now = session.gateway.rules
+        assert session.adapter._rule_observation.rules is rules_now
+        assert rules_now.observed_at == session._now()
+        assert rules_now.filters['PRICE_FILTER']['tickSize'] == '.02'
+        assert rules_now.filters['LOT_SIZE']['stepSize'] == '.02'
+        assert rules_now.brackets[0]['initialLeverage'] == 1
+        assert exit_order.intent.reduce_only and exit_order.intent.limit_price == D('154')
+        assert exit_order.intent.quantity == D('.04')
+        assert len(posts(fake)) == runtime.post_count(campaign['id']) == 2
+        supervisor.before_poll()
+        after = session.status()
+        assert after['reconciled'] and after['unknown'] == []
+        assert after['balances']['walletBalance'] == before['balances']['walletBalance']
+        assert after['orders'][entry.intent.client_order_id] == before['orders'][entry.intent.client_order_id]
+        assert after['orders'][exit_order.intent.client_order_id]['order_id'] == exit_order.exchange_order_id
+
+    assert run(rounds, execute=True) == 0
+
+
+@pytest.mark.parametrize('constraint', ['tick', 'lot', 'leverage'])
+def test_expired_session_uses_current_rules_for_new_limit(calibrated_worker, constraint):
+    from factorlab.trading import Market, OrderIntent, OrderStatus, OrderType, Side
+    from factorlab.trading.control import RiskRejected
+    run, state, fake, _ = calibrated_worker
+
+    def rules(path, payload):
+        if path.endswith('/exchangeInfo'):
+            filters = {rule['filterType']: rule for rule in payload['symbols'][0]['filters']}
+            filters['PRICE_FILTER']['tickSize'] = '.07'
+            if constraint == 'lot':
+                filters['LOT_SIZE']['stepSize'] = '.03'
+        elif constraint == 'leverage':
+            payload[0]['brackets'][0]['notionalCap'] = '5'
+        return payload
+
+    def rounds(supervisor, state):
+        consumer = state.consumer
+        bridge = consumer.bridge
+        session = bridge.session
+        supervisor.before_poll()
+        state.seconds = 301.2
+        supervisor.before_poll()
+        consumer.closed_bar(bar(5))
+        state.rule_response = rules
+        key = bridge.grid.deployment_id + '-00000001'
+        bridge.expect(OrderIntent(Market.BINANCE_USDM, 'NVDAUSDT', Side.BUY, OrderType.LIMIT,
+            D('.04'), D('150.01'), key))
+        if constraint == 'tick':
+            order = session.submit_limit(key, Side.BUY, D('.04'))
+            assert order.intent.limit_price == D('150.01')
+            assert order.status is OrderStatus.SUBMITTED
+            assert len(posts(fake)) == 1
+        else:
+            reason = 'QUANTITY_FILTER' if constraint == 'lot' else 'RISK_BRACKET_LIMIT'
+            with pytest.raises(RiskRejected, match=reason):
+                session.submit_limit(key, Side.BUY, D('.04'))
+            assert not posts(fake)
+            assert key not in session.status()['orders']
+
+    assert run(rounds, execute=True) == 0
+
+
+def test_rules_expiring_during_admission_block_post_and_enter_recovery(calibrated_worker, monkeypatch):
+    from factorlab.errors import DataQualityError
+    run, state, fake, _ = calibrated_worker
+
+    def rounds(supervisor, state):
+        consumer = state.consumer
+        session = consumer.bridge.session
+        supervisor.before_poll()
+        state.seconds = 300.2
+        supervisor.before_poll()
+        consumer.closed_bar(bar(5))
+        mark = session.gateway.fresh_mark_price
+
+        def delayed_mark(symbol):
+            price = mark(symbol)
+            state.seconds += .1
+            return price
+
+        with monkeypatch.context() as patch:
+            patch.setattr(session.gateway, 'fresh_mark_price', delayed_mark)
+            with pytest.raises(DataQualityError, match='STALE_RULES'):
+                consumer.quote(session.gateway.state.quotes['NVDAUSDT'])
+        assert not posts(fake)
+        assert not session.status()['orders']
+        supervisor.on_pause()
+        state.seconds = 340.2
+        supervisor.before_poll()
+        state.seconds = 360.2
+        supervisor.before_poll()
+        consumer.closed_bar(bar(6))
+        assert consumer.quote(session.gateway.state.quotes['NVDAUSDT']).exchange_order_id
+        assert len(posts(fake)) == 1
+
+    assert run(rounds, execute=True) == 0
 
 
 @pytest.mark.parametrize('offset', [-20, 20])

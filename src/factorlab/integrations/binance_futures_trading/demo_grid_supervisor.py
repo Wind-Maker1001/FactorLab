@@ -53,6 +53,7 @@ def grid_factory(settings, *, new_deployment=False):
         status = session.status()
         if not status['reconciled'] or status['positions'] or status['open_orders'] or status['unknown']:
             raise SafetyBlocked('initial Grid deployment requires a reconciled flat dedicated account')
+        session.refresh_rules()
         book = session._fresh_book()
         filters = session.gateway.rules.filters
         lot, tick = filters['LOT_SIZE'], D(filters['PRICE_FILTER']['tickSize'])
