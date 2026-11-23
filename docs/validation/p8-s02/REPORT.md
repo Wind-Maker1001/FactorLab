@@ -106,7 +106,6 @@ python -I tools/research/select_champion.py --config D:/research/s02-reproduce/r
 更不授权实盘交易。统计结论依赖弱相关和稳定性假设，仅调整本次搜索族；不
 提供无限研究周期的终身错误率或未来盈利保证。
 
-已准备独立分支及 PR 描述，不自动合并。远程发布受到权限阻塞：SSH 连接
-GitHub 被环境拒绝，本地 gh token 无效；连接器创建远程分支返回 HTTP 403
-`Resource not accessible by integration`。因此未能创建远程 PR，不能把本地
-提交当作已交付的 PR。
+发布使用当前用户的本机 Git / gh keyring 认证，已确认仓库写权限。此前受限
+会话无法使用该认证，连接器另有 HTTP 403 权限限制；本机认证可以正常发布。
+独立 PR 以 main 为目标，不启用自动合并。

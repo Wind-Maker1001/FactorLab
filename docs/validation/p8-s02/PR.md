@@ -14,7 +14,7 @@ replay configuration, a one-shot CLI and an optional Windows Task Scheduler entr
 The initial adapter supports unlevered daily long-only A-share research; S01
 package identity integration remains a follow-up after its interface merges.
 
-Validation: multi-strategy six-parameter synthetic experiment retained Cash;
+Validation: 79 targeted tests passed. The multi-strategy six-parameter synthetic experiment retained Cash;
 positive point estimates had uncertain OOS advantage. Targeted tests cover
 leakage, constraints, retention, promotion, reproducibility and crash reservation.
 See docs/validation/p8-s02/REPORT.md for commands, measured evidence and limits.
