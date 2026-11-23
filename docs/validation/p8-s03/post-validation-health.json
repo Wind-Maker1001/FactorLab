@@ -1,0 +1,201 @@
+{
+    "pid":  117136,
+    "status":  "RUNNING",
+    "desired":  "RUNNING",
+    "heartbeat_at":  1795448580.93195,
+    "unknown_count":  0,
+    "account_recovered":  true,
+    "positions":  [
+
+                  ],
+    "global_budget":  {
+                          "consumed":  {
+                                           "posts":  40,
+                                           "submitted_notional":  "249.9664000"
+                                       },
+                          "max_loss":  "1",
+                          "opening_equity":  "4999.97114760",
+                          "remaining_notional":  "450.0336000",
+                          "remaining_posts":  60,
+                          "state":  "RUNNING",
+                          "total_notional":  "700",
+                          "total_orders":  100
+                      },
+    "strategy_release":  {
+                             "active":  "legacy-grid",
+                             "events":  [
+                                            {
+                                                "at":  1795447509.7031322,
+                                                "event":  "REQUESTED",
+                                                "new":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "old":  "legacy-grid",
+                                                "seq":  1,
+                                                "switch_id":  1,
+                                                "watermark":  null
+                                            },
+                                            {
+                                                "at":  1795447514.4451356,
+                                                "event":  "QUIESCED",
+                                                "new":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "old":  "legacy-grid",
+                                                "seq":  2,
+                                                "switch_id":  1,
+                                                "watermark":  "{\"controller_event\": 23605, \"market\": \"2026-11-23 15:25:00+00:00\"}"
+                                            },
+                                            {
+                                                "at":  1795447515.5450265,
+                                                "event":  "DRAINING",
+                                                "reason":  "WAIT_TERMINAL_ORDERS",
+                                                "seq":  3,
+                                                "switch_id":  1
+                                            },
+                                            {
+                                                "at":  1795447518.4588017,
+                                                "event":  "READY_RESTART",
+                                                "seq":  4,
+                                                "switch_id":  1
+                                            },
+                                            {
+                                                "at":  1795447521.371223,
+                                                "event":  "READY_RESTART",
+                                                "seq":  5,
+                                                "switch_id":  1
+                                            },
+                                            {
+                                                "at":  1795447526.6496449,
+                                                "event":  "SUCCEEDED",
+                                                "new":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "old":  "legacy-grid",
+                                                "seq":  6,
+                                                "switch_id":  1,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447531.3154697,
+                                                "event":  "REQUESTED",
+                                                "new":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "old":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "seq":  7,
+                                                "switch_id":  2,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447532.4837162,
+                                                "event":  "QUIESCED",
+                                                "new":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "old":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "seq":  8,
+                                                "switch_id":  2,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447532.5354218,
+                                                "event":  "SUCCEEDED",
+                                                "new":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "old":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "seq":  9,
+                                                "switch_id":  2,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447536.4726553,
+                                                "event":  "REQUESTED",
+                                                "new":  "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+                                                "old":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "seq":  10,
+                                                "switch_id":  3,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447538.358302,
+                                                "event":  "QUIESCED",
+                                                "new":  "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+                                                "old":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "seq":  11,
+                                                "switch_id":  3,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447538.4102292,
+                                                "event":  "SUCCEEDED",
+                                                "new":  "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+                                                "old":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "seq":  12,
+                                                "switch_id":  3,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447562.134028,
+                                                "event":  "ROLLBACK_REQUESTED",
+                                                "new":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "old":  "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+                                                "reason":  "STRATEGY_EXCEPTION:ValueError",
+                                                "seq":  13,
+                                                "switch_id":  4
+                                            },
+                                            {
+                                                "at":  1795447565.3281448,
+                                                "event":  "ROLLED_BACK",
+                                                "new":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "old":  "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+                                                "seq":  14,
+                                                "switch_id":  4,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447566.403148,
+                                                "event":  "ROLLBACK_REQUESTED",
+                                                "new":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "old":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "reason":  "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+                                                "seq":  15,
+                                                "switch_id":  5
+                                            },
+                                            {
+                                                "at":  1795447568.2968776,
+                                                "event":  "ROLLED_BACK",
+                                                "new":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "old":  "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+                                                "seq":  16,
+                                                "switch_id":  5,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            },
+                                            {
+                                                "at":  1795447568.6013386,
+                                                "event":  "ROLLBACK_REQUESTED",
+                                                "new":  "legacy-grid",
+                                                "old":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "reason":  "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+                                                "seq":  17,
+                                                "switch_id":  6
+                                            },
+                                            {
+                                                "at":  1795447571.2460508,
+                                                "event":  "ROLLED_BACK",
+                                                "new":  "legacy-grid",
+                                                "old":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                                "seq":  18,
+                                                "switch_id":  6,
+                                                "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                            }
+                                        ],
+                             "id":  1,
+                             "previous":  null,
+                             "stable":  "legacy-grid",
+                             "switch":  {
+                                            "boot":  "",
+                                            "created":  1795447568.6012664,
+                                            "id":  6,
+                                            "mode":  "hot",
+                                            "new":  "legacy-grid",
+                                            "old":  "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+                                            "phase":  "ROLLED_BACK",
+                                            "policy":  "wait_flat",
+                                            "reason":  null,
+                                            "selection":  null,
+                                            "updated":  1795447571.2460132,
+                                            "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                                        },
+                             "watermark":  "{\"controller_event\": 23607, \"market\": \"None\"}"
+                         }
+}

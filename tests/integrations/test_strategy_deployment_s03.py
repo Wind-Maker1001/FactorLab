@@ -287,3 +287,44 @@ def test_custom_orders_keep_identity_and_budget_during_faults(network_grid, pack
             assert b.session.status()['positions'][0]['quantity'] == D('.02')
         else:
             assert r.store.snapshot()['active'] == LEGACY
+
+
+def test_explicit_migration_reduction_uses_existing_budget_and_waits_for_get_flat(network_grid, package):
+    from factorlab.integrations.binance_futures_trading.demo_runtime import open_grid_session, DemoRuntime
+    from factorlab.integrations.binance_futures_trading.demo_strategy_release import ReleaseConsumer
+    from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import GridConsumer
+    from factorlab.integrations.binance_futures_trading.fake import NOW
+    from types import SimpleNamespace
+
+    root, credentials, factory, _, fake, requests = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.start_continuous(credentials.read_config(), opening_equity=D('1000'),
+                                 stop_epoch=runtime.stop_epoch())
+    archive, original_manifest = package
+    m = build_package(root / 'code', original_manifest | dict(migration='reduce_only',
+        reduction=dict(explicitly_allowed=True, max_attempts=2)), root / 'reduce.zip')
+    install_package(root / 'reduce.zip', root / 'strategy-releases')
+    with ExitStack() as stack:
+        b = stack.enter_context(open_grid_session(root, credentials, factory, continuous=True))
+        b.recover()
+        observe(b)
+        buy = writes(requests)[0]['newClientOrderId'][0]
+        fake.trade_update(buy, '.04', '146')
+        b.recover()
+        base = GridConsumer(b, Control(), clock=lambda: NOW, ensure_campaign=b.ensure_campaign)
+        base.supervisor = SimpleNamespace(collection=None)
+        r = ReleaseConsumer(base, root, stack)
+        r.store.request(m, candidate(m))
+        r.before_poll()
+        assert len(writes(requests)) == 2
+        reduction = writes(requests)[1]
+        assert reduction['side'] == ['SELL'] and reduction['reduceOnly'] == ['true']
+        assert reduction['quantity'] == ['0.04']
+        assert r.store.snapshot()['active'] == LEGACY
+        r.before_poll()
+        assert len(writes(requests)) == 2
+        fake.trade_update(reduction['newClientOrderId'][0], '.04', '150')
+        r.before_poll()
+        assert r.store.snapshot()['active'] == m['package_id']
+        assert b.session.status()['positions'] == []
+        assert b.runtime.consumption(b.runtime.continuous_authorization())['posts'] == 2
