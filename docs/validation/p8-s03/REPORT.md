@@ -4,7 +4,7 @@
 
 2026-11-23，现有 Azure `factorlab-demo-01` 完成自动发布和官方 Binance USD-M Demo 切换验证。未新建交易服务、重新绑定账户、重置授权、恢复旧 SQLite 或扩大预算。
 
-独立草稿 PR：[ #236](https://github.com/Wind-Maker1001/FactorLab/pull/236)，不自动合并。运行代码固定在下述部署 SHA；后续报告、测试和 CI 提交不改变主机运行代码身份。
+独立 PR [#236](https://github.com/Wind-Maker1001/FactorLab/pull/236) 已进入审查。运行代码固定在下述部署 SHA。部署新代码需通过 C08/S03 发布入口。
 
 | 项目 | 结论 | 验证边界 |
 | --- | --- | --- |
@@ -77,5 +77,14 @@ C06 health、日报改用版本解释器，保留原目录、异常分类、采�
 | 上述轮换复验 | [rotation-regression.xml](rotation-regression.xml)：1 passed；保留四轮断言、放宽夹具上限至 20 秒，最终 41 项也覆盖通过 |
 
 覆盖 worker 崩溃/超时、重启恢复、网络、部分成交、UNKNOWN、原身份撤单、显式减仓、策略异常、回退失败、旧基准结果及坏 inbox。官方在线未注入网络故障、部分成交或 Execute SIGKILL，相关结论限离线。
+
+## PR #236 审查修复
+
+- **P1 并发回滚。** 两个 SQLite 连接在同一个测试线程中交错执行。连接 A 在 `prepare()` 内让连接 B 提交回滚，无需等待或依赖线程调度。原 HEAD `29788f5` 在 `prepare()` 正常返回时激活了被拒绝的候选，抛出 `ValueError` 时改写了回滚原因，抛出 `OSError` 时把回滚阶段改回 `DRAINING`。修复后，控制器在 `BEGIN IMMEDIATE` 内重新核对权威待切换记录和当前 active。状态匹配才会原子提交 active、终态和事件，提交后才调用 `activated()`。并发回滚保留原原因和目标，下一次 `step()` 完成 `ROLLED_BACK`，事件账本没有误记 `SUCCEEDED`。覆盖正常切换、重复提交、其他控制器先完成、目标变化、取消、基准失效、重启式切换和回滚失败后的重启恢复。[P1 审查线程](https://github.com/Wind-Maker1001/FactorLab/pull/236#discussion_r4668209365)
+- **P2 恢复后的信号新鲜度。** 在原 HEAD 上，暂停和授权失效各产生一次旧信号 POST，暂停期间收盘的 Bar 也被当作恢复后的新决策。自定义路由现沿用 Grid 的 `require_fresh_bar()`，在不可运行及恢复时清除交易资格并更新收盘时间边界。假时钟回归覆盖恢复时的报价、暂停期间收盘的 Bar、新 Bar 正常下单、重复 Bar 只产生一条决策、同账本重启、切换到 HOLD 与回滚。已提交订单按原 client order ID 从模拟交易所对账，保留决策、订单历史和累计预算。[P2 审查线程](https://github.com/Wind-Maker1001/FactorLab/pull/236#discussion_r4668209383)
+
+Windows / Python 3.13 对原 HEAD 分别运行 P1 和 P2 的复现用例，每组均出现 3 个预期失败。修复版 `test_strategy_deployment_s03.py` 通过全部 39 个用例。PR 的 Demo cloud runtime 矩阵也包含这套测试，覆盖 Linux 和 Windows 上的 Python 3.13 与 3.14。[PR 检查](https://github.com/Wind-Maker1001/FactorLab/pull/236/checks)
+
+2026-11-24 00:11（UTC+8）Azure 只读核查显示 Execute 仍从 `362660ebf27ba0f90ce1794411ffedb8c1a3a3eb` 启动，PID `117136`，状态 `RUNNING`，账户已恢复，UNKNOWN 为 0。当前为 `legacy-grid`，最近一次切换为 `ROLLED_BACK`，累计用量 40 / 100 POST、249.9664000 / 700 USDT。本次在独立测试环境验证修复。当前 Grid 可继续运行，下一次自定义策略发布前需通过现有 C08/S03 流程更新运行代码。
 
 复验和操作见 [部署接口](../../binance-demo-strategy-deployment.md)。独立 PR 不自动合并；S01 完整适配、兼容合格 S02 候选联合部署和完整长期窗口仍是待验收项。

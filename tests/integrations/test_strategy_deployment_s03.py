@@ -152,6 +152,103 @@ def test_restart_switch_requires_new_boot_and_retains_database(tmp_path, package
         assert s.snapshot()['switch']['phase'] == 'SUCCEEDED'
 
 
+@pytest.mark.parametrize('prepare_error', [None, ValueError, OSError])
+def test_rollback_requested_during_prepare_wins(tmp_path, package, monkeypatch, prepare_error):
+    _, manifest = package
+    version = manifest['package_id']
+    path = tmp_path / 'deploy.sqlite3'
+    with closing(DeploymentStore(path)) as owner, closing(DeploymentStore(path)) as operator:
+        adapter = OfflineAdapter()
+        prepare = adapter.prepare
+
+        def prepare_with_rollback(target):
+            prepare(target)
+            if target == version:
+                operator.rollback('operator rejected candidate')
+                if prepare_error:
+                    raise prepare_error('candidate preparation interrupted')
+
+        monkeypatch.setattr(adapter, 'prepare', prepare_with_rollback)
+        controller = DeploymentController(owner, adapter)
+        switch_id = owner.request(manifest, candidate(manifest))
+        state = controller.step()
+        assert state['active'] == LEGACY
+        pending = operator.pending()
+        assert pending['id'] == switch_id
+        assert pending['phase'] == 'ROLLBACK'
+        assert pending['new'] == LEGACY
+        assert pending['reason'] == 'operator rejected candidate'
+        assert not any(action[0] == 'activate' for action in adapter.actions)
+        assert [event['event'] for event in owner.summary()['events']] == [
+            'REQUESTED', 'QUIESCED', 'ROLLBACK_REQUESTED',
+        ]
+
+        assert owner.request(manifest, candidate(manifest)) == switch_id
+        assert controller.step()['switch']['phase'] == 'ROLLED_BACK'
+        assert controller.step()['active'] == LEGACY
+        assert [action for action in adapter.actions if action[0] == 'activate'] == [('activate', LEGACY)]
+        assert [event['event'] for event in owner.summary()['events']] == [
+            'REQUESTED', 'QUIESCED', 'ROLLBACK_REQUESTED', 'ROLLED_BACK',
+        ]
+
+
+@pytest.mark.parametrize('complete_during_prepare', [False, True])
+def test_activation_commits_once_and_callback_sees_committed_state(
+    tmp_path, package, monkeypatch, complete_during_prepare,
+):
+    _, manifest = package
+    version = manifest['package_id']
+    path = tmp_path / 'deploy.sqlite3'
+    with closing(DeploymentStore(path)) as owner, closing(DeploymentStore(path)) as other:
+        adapter = OfflineAdapter()
+        other_adapter = OfflineAdapter()
+        activated = []
+
+        def record_activation(target):
+            state = other.snapshot()
+            activated.append((target, state['active'], state['switch']['phase']))
+
+        monkeypatch.setattr(adapter, 'activated', record_activation)
+        monkeypatch.setattr(other_adapter, 'activated', record_activation)
+        if complete_during_prepare:
+            monkeypatch.setattr(adapter, 'prepare', lambda target: DeploymentController(other, other_adapter).step())
+
+        controller = DeploymentController(owner, adapter)
+        switch_id = owner.request(manifest, candidate(manifest))
+        assert controller.step()['active'] == version
+        assert owner.request(manifest, candidate(manifest)) == switch_id
+        assert controller.step()['switch']['phase'] == 'SUCCEEDED'
+        assert activated == [(version, version, 'SUCCEEDED')]
+        assert [event['event'] for event in owner.summary()['events']] == ['REQUESTED', 'QUIESCED', 'SUCCEEDED']
+
+
+@pytest.mark.parametrize(('change', 'active', 'target', 'phase'), [
+    ("UPDATE switches SET new='new-target'", LEGACY, 'new-target', 'DRAINING'),
+    ("UPDATE switches SET phase='FAILED'", LEGACY, None, 'FAILED'),
+    ("UPDATE deployment SET active='new-baseline'", 'new-baseline', None, 'DRAINING'),
+])
+def test_activation_discards_changed_switch_or_baseline(tmp_path, package, monkeypatch, change, active, target, phase):
+    _, manifest = package
+    path = tmp_path / 'deploy.sqlite3'
+    with closing(DeploymentStore(path)) as owner, closing(DeploymentStore(path)) as other:
+        adapter = OfflineAdapter()
+        prepare = adapter.prepare
+
+        def prepare_with_concurrent_change(version):
+            prepare(version)
+            with other.atomic():
+                other.db.execute(change)
+
+        monkeypatch.setattr(adapter, 'prepare', prepare_with_concurrent_change)
+        owner.request(manifest, candidate(manifest))
+        state = DeploymentController(owner, adapter).step()
+        assert state['active'] == active
+        assert state['switch']['new'] == (target or manifest['package_id'])
+        assert state['switch']['phase'] == phase
+        assert not any(action[0] == 'activate' for action in adapter.actions)
+        assert [event['event'] for event in owner.summary()['events']] == ['REQUESTED', 'QUIESCED']
+
+
 @pytest.mark.parametrize('failure', ['network', 'unknown', 'unreconciled', 'foreign'])
 def test_uncertain_account_never_activates(tmp_path, package, failure):
     _, m = package
@@ -188,7 +285,8 @@ def test_partial_fill_cancel_then_wait_real_position(tmp_path, package):
 
 def test_strategy_exception_and_rollback_failure_remain_quiesced(tmp_path, package):
     _, m = package
-    with closing(DeploymentStore(tmp_path / 'deploy.sqlite3')) as s:
+    path = tmp_path / 'deploy.sqlite3'
+    with closing(DeploymentStore(path)) as s:
         a = OfflineAdapter()
         s.request(m, candidate(m))
         a.failure = 'strategy'
@@ -198,9 +296,11 @@ def test_strategy_exception_and_rollback_failure_remain_quiesced(tmp_path, packa
         c.step()
         assert s.pending()['reason'] == 'ROLLBACK_FAILED:ValueError'
         assert s.snapshot()['active'] == LEGACY
-        a.failure = None
+    with closing(DeploymentStore(path)) as s:
+        a = OfflineAdapter()
+        a.boot_id = 'offline-2'
         a.mark = 'current-ledger-999'
-        c.step()
+        DeploymentController(s, a).step()
         assert s.snapshot()['watermark'] == 'current-ledger-999'
         assert s.snapshot()['switch']['phase'] == 'ROLLED_BACK'
 
@@ -328,3 +428,177 @@ def test_explicit_migration_reduction_uses_existing_budget_and_waits_for_get_fla
         assert r.store.snapshot()['active'] == m['package_id']
         assert b.session.status()['positions'] == []
         assert b.runtime.consumption(b.runtime.continuous_authorization())['posts'] == 2
+
+
+@pytest.fixture
+def signal_release(network_grid, package, monkeypatch):
+    from contextlib import contextmanager
+    from types import SimpleNamespace
+    from factorlab.integrations.binance.client import Response
+    from factorlab.integrations.binance_futures_trading.demo_grid_supervisor import GridConsumer
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
+    from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
+    from factorlab.integrations.binance_futures_trading.demo_strategy_release import ReleaseConsumer
+    from factorlab.integrations.binance_futures_trading.fake import NOW
+    from factorlab.trading.paper import Quote
+    from test_binance_demo_network import NetworkFixture
+
+    root, credentials, factory, _, fake, requests = network_grid
+    hold_archive, hold = package
+    source = root / 'code'
+    (source / 'custom.py').write_text(
+        'def evaluate(context, state):\n'
+        '    intents = [{"side": "BUY", "quantity": ".04"}] if context["event"] == "closed_bar" else []\n'
+        '    return {"state": {"count": state.get("count", 0) + 1}, "intents": intents}\n')
+    buy_archive = root / 'buy.zip'
+    buy = build_package(source, hold, buy_archive)
+    install_package(hold_archive, root / 'strategy-releases')
+    install_package(buy_archive, root / 'strategy-releases')
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.start_continuous(credentials.read_config(), opening_equity=D('1000'),
+                                 stop_epoch=runtime.stop_epoch())
+
+    at = NOW
+    control = Control()
+    authority = SimpleNamespace(allowed=True)
+    monkeypatch.setattr(DemoSession, '_now', lambda _: at)
+    transport = NetworkFixture.__call__
+
+    def market(self, request, timeout):
+        response = transport(self, request, timeout)
+        if request.path.endswith(('bookTicker', 'premiumIndex')):
+            payload = json.loads(response.body)
+            payload['time'] = int(at.timestamp() * 1000)
+            return Response(response.status, response.headers, json.dumps(payload).encode())
+        return response
+
+    monkeypatch.setattr(NetworkFixture, '__call__', market)
+
+    @contextmanager
+    def open_router():
+        with ExitStack() as stack:
+            bridge = stack.enter_context(open_grid_session(root, credentials, factory, continuous=True))
+            base = GridConsumer(bridge, control, clock=lambda: at, authority=lambda: authority.allowed,
+                                ensure_campaign=bridge.ensure_campaign)
+            base.supervisor = SimpleNamespace(collection=None, feed=SimpleNamespace(interval_seconds=60))
+            router = ReleaseConsumer(base, root, stack)
+            if router.store.snapshot()['switch'] is None:
+                router.store.request(buy, candidate(buy))
+            router.before_poll()
+            yield router
+
+    def set_time(minute, second):
+        nonlocal at
+        at = NOW + timedelta(minutes=minute, seconds=second)
+
+    def quote(router):
+        router.base.latest_book = router.bridge.session._fresh_book()
+        router.quote(Quote('NVDAUSDT', D('150'), at))
+
+    return SimpleNamespace(open=open_router, set_time=set_time, quote=quote, control=control,
+                           authority=authority, buy=buy, hold=hold, requests=requests, fake=fake)
+
+
+@pytest.mark.parametrize('barrier', ['pause', 'authorization'])
+def test_custom_strategy_requires_fresh_bar_after_resume(signal_release, barrier):
+    release = signal_release
+    with release.open() as router:
+        release.set_time(1, 1)
+        assert router.closed_bar(bar(1))
+        if barrier == 'pause':
+            release.control.state = 'PAUSED'
+        else:
+            release.authority.allowed = False
+        router.before_poll()
+        release.set_time(1, 2)
+        release.control.state = 'RUNNING'
+        release.authority.allowed = True
+        router.before_poll()
+        release.quote(router)
+        assert writes(release.requests) == []
+
+        release.set_time(2, 1)
+        fresh = bar(2)
+        assert router.closed_bar(fresh)
+        assert not router.closed_bar(fresh)
+        release.quote(router)
+        assert len(writes(release.requests)) == 1
+        assert router.store.snapshot()['checkpoint'] == {'count': 2}
+        assert router.store.db.execute('SELECT watermark FROM strategy_orders').fetchone()[0] == fresh.closed_at.isoformat()
+        assert router.store.db.execute('SELECT COUNT(*) FROM decisions').fetchone()[0] == 2
+
+
+def test_custom_strategy_rejects_bars_closed_during_pause(signal_release):
+    release = signal_release
+    with release.open() as router:
+        release.control.state = 'PAUSED'
+        router.before_poll()
+        release.set_time(1, 1)
+        paused_bar = bar(1)
+        assert not router.closed_bar(paused_bar)
+        release.set_time(1, 2)
+        release.control.state = 'RUNNING'
+        router.before_poll()
+        assert not router.closed_bar(paused_bar)
+        release.quote(router)
+        assert writes(release.requests) == []
+        assert router.store.db.execute('SELECT COUNT(*) FROM decisions').fetchone()[0] == 0
+
+
+@pytest.mark.parametrize('submitted', [False, True])
+def test_custom_strategy_recovers_without_replaying_decision(signal_release, submitted):
+    release = signal_release
+    with release.open() as router:
+        release.set_time(1, 1)
+        original_bar = bar(1)
+        assert router.closed_bar(original_bar)
+        if submitted:
+            release.quote(router)
+            post, = writes(release.requests)
+            client_id = post['newClientOrderId'][0]
+            order = release.fake.orders[client_id]
+            order.update(status='CANCELED', updateTime=order['updateTime'] + 1)
+
+    release.set_time(1, 2)
+    with release.open() as router:
+        assert not router.closed_bar(original_bar)
+        release.quote(router)
+        assert router.store.db.execute('SELECT COUNT(*) FROM decisions').fetchone()[0] == 1
+        assert len(writes(release.requests)) == int(submitted)
+        if submitted:
+            assert router.bridge.session.status()['orders'][client_id]['status'] == 'CANCELED'
+            runtime = router.bridge.runtime
+            assert runtime.consumption(runtime.continuous_authorization())['posts'] == 1
+
+
+def test_custom_strategy_switch_and_rollback_keep_prior_decisions_ineligible(signal_release):
+    release = signal_release
+    with release.open() as router:
+        release.set_time(1, 1)
+        buy_bar = bar(1)
+        assert router.closed_bar(buy_bar)
+        router.store.request(release.hold, candidate(release.hold, 'hold')
+                             | dict(expected_active=release.buy['package_id']))
+        router.before_poll()
+        release.set_time(1, 2)
+        release.quote(router)
+        assert writes(release.requests) == []
+
+        release.set_time(2, 1)
+        hold_bar = bar(2)
+        assert router.closed_bar(hold_bar)
+        release.quote(router)
+        assert writes(release.requests) == []
+        router.store.rollback('restore prior strategy')
+        router.before_poll()
+        assert router.store.snapshot()['active'] == release.buy['package_id']
+        assert not router.closed_bar(buy_bar)
+        release.set_time(2, 2)
+        release.quote(router)
+        assert writes(release.requests) == []
+        assert router.store.db.execute('SELECT COUNT(*) FROM decisions').fetchone()[0] == 2
+
+        release.set_time(3, 1)
+        assert router.closed_bar(bar(3))
+        release.quote(router)
+        assert len(writes(release.requests)) == 1

@@ -69,14 +69,20 @@ class DeploymentStore:
         self.db.execute('INSERT INTO switch_events(switch_id,at,event,payload) VALUES(?,?,?,?)',
                         (switch_id, time(), event, encoded(payload).decode()))
 
-    def transition(self, switch_id, phase, **payload):
+    def is_current(self, switch):
+        """Compare the switch and active baseline while holding the write transaction."""
+        return (self.pending() == switch
+                and self.db.execute('SELECT active FROM deployment WHERE id=1').fetchone()['active'] == switch['old'])
+
+    def transition(self, switch, phase, **payload):
         with self.atomic():
-            current = self.db.execute('SELECT phase,reason FROM switches WHERE id=?', (switch_id,)).fetchone()
-            if current['phase'] == phase and current['reason'] == payload.get('reason'):
+            if not self.is_current(switch):
+                return
+            if switch['phase'] == phase and switch['reason'] == payload.get('reason'):
                 return
             self.db.execute('UPDATE switches SET phase=?,reason=?,updated=? WHERE id=?',
-                            (phase, payload.get('reason'), time(), switch_id))
-            self.event(switch_id, phase, **payload)
+                            (phase, payload.get('reason'), time(), switch['id']))
+            self.event(switch['id'], phase, **payload)
 
     def request(self, manifest, candidate, *, mode='hot', boot='unknown'):
         validate_manifest(manifest)
@@ -103,8 +109,10 @@ class DeploymentStore:
                        watermark=state['watermark'], mode=mode)
             return cursor.lastrowid
 
-    def rollback(self, reason):
+    def rollback(self, reason, *, expected=None):
         with self.atomic():
+            if expected is not None and not self.is_current(expected):
+                return
             state = self.snapshot()
             current = self.pending()
             target = state['previous'] or LEGACY
@@ -138,53 +146,61 @@ class DeploymentController:
         try:
             facts = a.reconcile()
             if not facts['reconciled'] or facts['unknown'] or facts.get('untracked_orders'):
-                s.transition(switch['id'], switch['phase'], reason='ORDER_STATE_UNCONFIRMED')
+                s.transition(switch, switch['phase'], reason='ORDER_STATE_UNCONFIRMED')
                 return s.snapshot()
             if switch['phase'] == 'REQUESTED':
                 with s.atomic():
+                    if not s.is_current(switch):
+                        return s.snapshot()
+                    watermark = a.watermark()
                     s.db.execute("UPDATE switches SET phase='DRAINING',watermark=?,boot=?,updated=? WHERE id=?",
-                                 (a.watermark(), str(a.boot_id), time(), switch['id']))
-                    s.event(switch['id'], 'QUIESCED', old=switch['old'], new=switch['new'], watermark=a.watermark())
-                switch = s.pending()
+                                 (watermark, str(a.boot_id), time(), switch['id']))
+                    s.event(switch['id'], 'QUIESCED', old=switch['old'], new=switch['new'], watermark=watermark)
+                    draining = s.pending()
+                switch = draining
             orders = [o for o in facts['orders'] if o['status'] not in TERMINAL]
             for order in orders:
                 if not order['reduce_only']:
                     a.cancel(order['client_id'])
             if orders:
-                s.transition(switch['id'], switch['phase'], reason='WAIT_TERMINAL_ORDERS')
+                s.transition(switch, switch['phase'], reason='WAIT_TERMINAL_ORDERS')
                 return s.snapshot()
             if facts['positions']:
                 if switch['policy'] == 'reduce_only' and switch['phase'] != 'ROLLBACK':
                     a.reduce(switch['id'], switch['new'])
-                s.transition(switch['id'], switch['phase'], reason='WAIT_OLD_POSITIONS')
+                s.transition(switch, switch['phase'], reason='WAIT_OLD_POSITIONS')
                 return s.snapshot()
             if switch['mode'] == 'restart' and switch['phase'] != 'ROLLBACK' and str(a.boot_id) == switch['boot']:
-                s.transition(switch['id'], 'READY_RESTART')
+                s.transition(switch, 'READY_RESTART')
                 return s.snapshot()
             a.prepare(switch['new'])
             # The runner is stateless outside this checkpoint. Ownership and activation are one commit.
             with s.atomic():
+                if not s.is_current(switch):
+                    return s.snapshot()
                 previous = switch['old']
                 if switch['phase'] == 'ROLLBACK':
                     prior = s.db.execute("SELECT old FROM switches WHERE new=? AND phase='SUCCEEDED' ORDER BY id DESC LIMIT 1",
                                          (switch['new'],)).fetchone()
                     previous = prior[0] if prior else None
+                watermark = a.watermark()
                 s.db.execute("UPDATE deployment SET active=?,previous=?,stable=?,checkpoint='{}',watermark=? WHERE id=1",
-                             (switch['new'], previous, switch['new'], a.watermark()))
+                             (switch['new'], previous, switch['new'], watermark))
                 phase = 'ROLLED_BACK' if switch['phase'] == 'ROLLBACK' else 'SUCCEEDED'
                 s.db.execute('UPDATE switches SET phase=?,reason=NULL,updated=? WHERE id=?',
                              (phase, time(), switch['id']))
                 s.event(switch['id'], phase, old=switch['old'], new=switch['new'],
-                        watermark=a.watermark(), facts=facts, boot=str(a.boot_id))
-            a.activated(switch['new'])
+                        watermark=watermark, facts=facts, boot=str(a.boot_id))
         except (OSError, TimeoutError) as error:
-            s.transition(switch['id'], switch['phase'], reason=type(error).__name__)
+            s.transition(switch, switch['phase'], reason=type(error).__name__)
         except Exception as error:
             if switch['phase'] == 'ROLLBACK':
                 # Remain blocked with a pending rollback: no restart can accidentally resume the bad runner.
-                s.transition(switch['id'], 'ROLLBACK', reason='ROLLBACK_FAILED:' + type(error).__name__)
+                s.transition(switch, 'ROLLBACK', reason='ROLLBACK_FAILED:' + type(error).__name__)
             else:
-                s.rollback('ACTIVATION_FAILED:' + type(error).__name__)
+                s.rollback('ACTIVATION_FAILED:' + type(error).__name__, expected=switch)
+        else:
+            a.activated(switch['new'])
         return s.snapshot()
 
 

@@ -137,18 +137,22 @@ class ReleaseConsumer:
                         dispatch_gate=self.gate)
         return True
 
+    def _refresh_readiness(self):
+        desired = self.base.control.desired()
+        allowed = desired == 'RUNNING' and self.base.authority()
+        if not allowed or not self.running:
+            self.base.require_fresh_bar()
+        self.running = allowed
+        if not allowed:
+            self.reason = desired if desired != 'RUNNING' else 'AUTHORIZATION_REQUIRED'
+        return allowed
+
     def before_poll(self):
         if self.store.pending() or self.store.snapshot()['active'] != LEGACY:
             self.bridge.recover(collection=self.base.supervisor.collection if self.base.supervisor else None)
-            if self.base.control.desired() != 'RUNNING':
-                self.base.running = False
-                self.base.reason = self.base.control.desired()
-                return
-            if self.base.ensure_campaign:
+            if self.base.control.desired() == 'RUNNING' and self.base.ensure_campaign:
                 self.base.ensure_campaign()
-            self.base.running = self.base.authority()
-            if not self.base.running:
-                self.base.reason = 'AUTHORIZATION_REQUIRED'
+            if not self._refresh_readiness():
                 return
             self.deployer.step()
             if self.store.pending():
@@ -169,7 +173,8 @@ class ReleaseConsumer:
             return False
         if state['active'] == LEGACY:
             return self.base.closed_bar(bar)
-        if not self.running or bar.closed_at <= self.base.eligible_after or not bar.complete:
+        if (not self.running or not self._refresh_readiness()
+                or bar.closed_at <= self.base.eligible_after or not bar.complete):
             return False
         mark = bar.closed_at.isoformat()
         if self.store.db.execute('SELECT 1 FROM decisions WHERE version=? AND watermark=?',
@@ -234,7 +239,7 @@ class ReleaseConsumer:
         if state['active'] == LEGACY:
             return self.base.quote(quote)
         self.bridge.controller.quote(quote)
-        if not self.running or not self.base.live_bar or not state['watermark']:
+        if not self.running or not self.live_bar or not self._refresh_readiness() or not state['watermark']:
             return None
         row = self.store.db.execute('SELECT result FROM decisions WHERE version=? AND watermark=?',
                                    (state['active'], state['watermark'])).fetchone()
