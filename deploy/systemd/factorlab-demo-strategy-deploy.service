@@ -1,0 +1,13 @@
+[Unit]
+Description=FactorLab qualified Demo strategy inbox (existing account authority)
+After=factorlab-demo-execute.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/factorlab/venv/bin/python -m factorlab.integrations.binance_futures_trading.azure_strategy_deploy drive --state-root /var/lib/factorlab-demo/execute-state --inbox /var/lib/factorlab-demo/champions --mode hot
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/factorlab-demo

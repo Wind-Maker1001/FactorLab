@@ -599,7 +599,9 @@ def test_execute_rotates_after_breakout_and_preserves_feed_budget_and_ledger(exe
     h.state.seconds = 59.2
     h.state.on_report = track
     h.state.stop_after_polls = 4
-    assert h.start_execute() == 0
+    # The scenario terminates after four reports. Slow filesystem runners must
+    # not truncate that safety/recovery scenario at the default five-second wall deadline.
+    assert h.start_execute(seconds='20') == 0
     new_id = old_id + '-00001'
     assert [row[0] for row in trace] == [old_id, old_id, new_id, new_id]
     assert trace[1][1] == trace[2][1]

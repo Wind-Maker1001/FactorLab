@@ -559,6 +559,9 @@ class GridSupervisorRuntime:
                 clock=bridge.session._now, ensure_campaign=bridge.ensure_campaign,
                 request_counts=self.requests,
                 rotate=bridge.rotate_if_terminal if self.execute and self.settings is None else None)
+            if self.execute:
+                from .demo_strategy_release import ReleaseConsumer
+                consumer = ReleaseConsumer(consumer, self.directory, attempt)
             client = MarketClient(self.requests)
             initial_bars = max(1, bridge.grid.config.atr_window if bridge.grid.config.mode == 'atr' else 1)
             feed = attempt.enter_context(closing(DemoMarketFeed(
@@ -797,6 +800,7 @@ class GridSupervisorRuntime:
             equity=equity,
             nav_usdt=nav_usdt,
             grid=grid_info,
+            strategy_release=consumer_status.get('strategy_release') if consumer_status else None,
             diagnostic=diagnostic_info(self.runtime),
             recovery=self._recovery_snapshot(),
             last_exception=self.last_exception,

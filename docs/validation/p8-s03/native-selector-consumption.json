@@ -1,0 +1,16 @@
+{
+    "selection_sha256":  "7762fb61ae8eb2ec908abd12bcb8b6ea6fd4bb88d317d62a80fb08ad52c30b9e",
+    "study_id":  "synthetic-paired-v1",
+    "result":  {
+                   "value":  [
+                                 {
+                                     "accepted":  false,
+                                     "file":  "s03-native-retain.candidate.json",
+                                     "reason":  "RETAIN_CHAMPION"
+                                 }
+                             ],
+                   "Count":  1
+               },
+    "schema":  "FACTORLAB_CHAMPION_SELECTION_V1",
+    "promoted":  false
+}

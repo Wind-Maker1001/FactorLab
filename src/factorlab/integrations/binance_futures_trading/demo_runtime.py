@@ -597,6 +597,10 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
                 'true' if intent.reduce_only else 'false', intent.limit_price)
 
         def guard(method, params, plan):
+            strategy_guard = getattr(session, 'strategy_write_guard', None)
+            if strategy_guard is not None and strategy_guard(
+                    method, params, plan, campaign, expected, runtime, session.adapter.facts):
+                return
             deployment = decode(json.loads(saved_grid_deployment(controller_store)))
             client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
             identity, _, sequence = client_id.rpartition('-')
