@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "study": "P8-R10",
+  "strategy_id": "A_FIXED_GRID",
+  "name": "Original Fixed Grid (R08 Control Group)",
+  "execution_model": "NO_F11_NO_F08_STRANDED_POSITION_BASELINE",
+  "base_parameters": {
+    "mode": "arithmetic",
+    "half_width_pct": 0.01,
+    "levels": 1,
+    "quantity": 1,
+    "max_inventory": 1,
+    "breakout": "pause",
+    "order_ttl": 100,
+    "fee_bps": 3.0,
+    "slippage_bps": 2.0,
+    "max_drawdown": 0.2,
+    "max_turnover": 10.0,
+    "minimum_price": 0.01,
+    "minimum_quantity": 1,
+    "expiry_reseed_limit": 0,
+    "expiry_reseed_interval": 100
+  },
+  "rules": {
+    "quantity_unit": "0.04",
+    "step_size": "0.01",
+    "tick_size": "0.01",
+    "min_quantity": "0.01",
+    "min_notional": "5"
+  },
+  "capital_basis": {
+    "historical_replay_usdt": "10.00",
+    "synthetic_demo_anchor_usdt": "7.00",
+    "synthetic_anchor_price": 132.89,
+    "synthetic_capacity_per_bar": "0.10",
+    "historical_participation": "0.01"
+  },
+  "boundaries": [
+    "NO_LIVE_MONEY",
+    "OFFLINE_RESEARCH_ONLY",
+    "NO_F11_NO_F08_STRANDED_POSITION_BASELINE"
+  ]
+}
