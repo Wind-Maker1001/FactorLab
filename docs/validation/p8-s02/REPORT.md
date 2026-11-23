@@ -74,8 +74,9 @@ ONLY**；所有结果继续标记 `FORMAL_ADMISSION_BLOCKED`。
 [experiment-summary.json](experiment-summary.json)。该文件是便于审阅的便携摘要：
 只将运行时绝对策略路径替换为仓库内源码路径，其余指标来自实际实验。
 权威 tracker、原始 parquet、归档源码、净值、交易、配置与复放配置保留在
-`local-p8-s02-evidence/`（忽略的本地工件目录）。源码/数据/环境身份均有记录；
-摘要中的 dirty 状态忠实反映实验在实现提交前运行，不虚称已验证某个干净提交。
+`local-p8-s02-final-evidence/`（忽略的本地工件目录）。源码/数据/环境身份均有记录。
+最终实验从干净实现提交 `b66feb73002d729e7988d6db90d4e1db4e92b403` 运行，
+`git_dirty=false`；与实现过程中的首轮实验相比，完整配对证据及保留决策完全一致。
 
 ## 验证与复现
 
