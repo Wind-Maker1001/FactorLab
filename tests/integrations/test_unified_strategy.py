@@ -107,13 +107,61 @@ def test_dualma_worker_matches_native_and_demo(tmp_path):
     assert len([x for x in fake.calls if x[0] == 'POST']) == 1
 
 
-def grid_strategy(path, account_id):
+def grid_strategy(path, account_id, **config):
     return manifest(path, 'from factorlab.strategies.adapters import GridAdapter\n', 'GridAdapter',
         parameters=dict(config=dict(lower=145, upper=155, levels=1, initial_price=150,
             initial_inventory=0, quantity=1, max_inventory=1, max_cash_committed=7,
-            breakout='pause'), rules=dict(quantity_unit='.04', step_size='.01', tick_size='.01',
+            breakout='pause') | config, rules=dict(quantity_unit='.04', step_size='.01', tick_size='.01',
             min_quantity='.01', min_notional='5'), deployment_id='grid-demo', account_id=account_id,
             market='BINANCE_USDM', instrument_id='NVDAUSDT', initial_equity='1000', interval_seconds=60))
+
+
+@pytest.mark.parametrize('mode,first_order_bar', [('arithmetic', 19), ('geometric', 19), ('atr', 21)])
+def test_grid_closed_bars_warmup_replay_and_breakout(tmp_path, mode, first_order_bar):
+    strategy = (LoadedStrategy(ROOT / 'examples/protocol_strategy/grid.json', trusted=True)
+        if mode == 'arithmetic' else grid_strategy(tmp_path / 'strategy', 'research', mode=mode))
+    path = tmp_path / 'research.db'
+    at = bar(19, 150).closed_at
+
+    def start():
+        broker = PaperBroker(Market.BINANCE_USDM, 'research',
+            (Instrument('NVDAUSDT', 'USDT'),), {'USDT': D(1000)})
+        controller = TradingController(broker, PaperStore(path), clock=lambda: at,
+            limits=RiskLimits(D(500), D(500), D(800), 10))
+        runner = OrderStrategyRuntime(journal(strategy, controller, 'grid-demo'))
+        assert runner.recover().reconciled
+        return runner, controller
+
+    def deliver(index, price):
+        nonlocal at
+        closed = replace(bar(index, price), high=D(price + 3), low=D(price - 3))
+        at = closed.closed_at
+        assert runner.closed_bar(closed)
+        at += timedelta(milliseconds=1)
+        runner.quote(Quote('NVDAUSDT', D(price), at))
+        assert runner.recover().reconciled
+        return closed
+
+    runner, controller = start()
+    for index in (19, 20):
+        closed = deliver(index, 150)
+        assert len(controller.broker.state.orders) == int(index >= first_order_bar)
+
+    state = runner.journal._latest()
+    controller.store.close()
+    runner, controller = start()
+    assert not runner.closed_bar(closed)
+    runner.quote(Quote('NVDAUSDT', D(150), at))
+    assert runner.journal._latest() == state
+    assert len(controller.broker.state.orders) == int(20 >= first_order_bar)
+
+    deliver(21, 150)
+    buy, = controller.account().open_orders
+    assert buy.intent.side is Side.BUY and buy.intent.limit_price == D(147 if mode == 'atr' else 145)
+    deliver(22, 160)
+    assert not controller.account().open_orders
+    assert controller.broker.state.orders[buy.intent.client_order_id].snapshot.status is OrderStatus.CANCELED
+    assert len(controller.broker.state.orders) == 1
 
 
 def test_grid_protocol_preserves_limit_lifecycle_and_restart(tmp_path):

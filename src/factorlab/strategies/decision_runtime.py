@@ -133,7 +133,7 @@ class ControllerExecution:
         self.prefix = 'strategy-dispatch:' + deployment_id + ':'
         self.max_notional, self.max_quantity = max_notional, max_quantity
 
-    def dispatch(self, decision, *, book=None):
+    def dispatch(self, decision):
         c = self.controller
         results = []
         for key in decision.cancellations:
@@ -164,6 +164,8 @@ class ControllerExecution:
                 raise PersistenceConflict('unresolved strategy dispatch attempt; reconcile before continuing')
             if self.preview:
                 continue
+            if self.session and any(r.snapshot.status not in TERMINAL for r in c.broker.state.orders.values()):
+                continue
             price = max(intent.limit_price or D(0), c.broker.state.quotes[intent.instrument_id].price)
             position = c.broker.state.positions.get(intent.instrument_id)
             inventory = position.quantity if position else D(0)
@@ -177,6 +179,7 @@ class ControllerExecution:
                     or intent.side is Side.BUY and (inventory + reserved + intent.quantity) * price > self.max_notional)):
                 raise ValueError('strategy order exceeds execution budget')
             # Existing risk admission precedes the durable dispatch attempt.
+            book = self.session.prepare_limit_book() if self.session else None
             risk = c.assess(intent)
             if not risk.approved:
                 raise RiskRejected(risk)
@@ -268,13 +271,12 @@ class OrderStrategyRuntime:
             return None
         if not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5):
             raise ValueError('fresh quote required')
-        book = self.session.prepare_limit_book() if self.session else None
         self.controller.quote(quote)
         pending = self.gateway.state.runtime['pending']
         result = None
         if pending and quote.observed_at > pending['after']:
             if quote.observed_at < pending['after'] + timedelta(seconds=self.journal.interval_seconds):
-                result = self.execution.dispatch(Decision(**pending['decision']), book=book)
+                result = self.execution.dispatch(Decision(**pending['decision']))
             self.controller._atomic(lambda: self.gateway.state.runtime.update(pending=None))
         if 'quote' in self.journal.spec.data_types:
             def decide_quote():
@@ -283,7 +285,7 @@ class OrderStrategyRuntime:
             # Decision state and its dispatchable outbox commit together.
             self.controller._atomic(decide_quote)
             pending = self.gateway.state.runtime['pending']
-            result = self.execution.dispatch(Decision(**pending['decision']), book=book) or result
+            result = self.execution.dispatch(Decision(**pending['decision'])) or result
             self.controller._atomic(lambda: self.gateway.state.runtime.update(pending=None))
         return result
 

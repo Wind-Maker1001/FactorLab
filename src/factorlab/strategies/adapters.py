@@ -63,7 +63,7 @@ class GridAdapter:
             grid.confirm(event, account, delivery=grid.delivery + 1)
         else:
             grid.observe(command['value'], account, delivery=grid.delivery + 1)
-            if command['kind'] == 'closed_bar':
+            if grid.pending_bar is not None:
                 grid.complete_bar(delivery=grid.delivery + 1)
 
     def decide(self, event, state):

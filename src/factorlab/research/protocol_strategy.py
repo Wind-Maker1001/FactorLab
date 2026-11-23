@@ -6,7 +6,7 @@ from pathlib import Path
 from factorlab.dataset.identity import file_hash
 from factorlab.experiments.tracker import ExperimentTracker, _id
 from factorlab.strategies.decision_runtime import DecisionJournal, SignalAdapter, ControllerExecution, OrderStrategyRuntime
-from factorlab.trading.contracts import OrderIntent, OrderType, Side
+from factorlab.trading.contracts import OrderIntent, OrderType, Side, TERMINAL
 from factorlab.trading.target import target_quantity
 from factorlab.trading.realtime import identity
 from factorlab.trading.storage import dumps
@@ -38,9 +38,13 @@ class ResearchTargetRuntime:
         if quote.observed_at >= s.input_watermark + timedelta(seconds=self.journal.interval_seconds):
             self.pending = None
             return
+        c = self.controller
+        state = c.broker.state
+        if not state.reconciled or any(record.snapshot.intent.instrument_id == self.journal.symbol
+                and record.snapshot.status not in TERMINAL for record in state.orders.values()):
+            return
         from factorlab.strategies.grid_execution import project_paper_account
         from factorlab.strategies.protocol import Decision
-        c = self.controller
         account = project_paper_account(c, self.journal.symbol)
         quantity = target_quantity(equity=account.equity, weight=s.target_weight, price=quote.price,
             budget_price=quote.price, fee_rate=c.broker.state.fee_rate, current=account.inventory,

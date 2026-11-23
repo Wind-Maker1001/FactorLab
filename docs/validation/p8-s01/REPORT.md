@@ -86,4 +86,25 @@ python -m pytest tests/integrations/test_binance_demo_strategy.py tests/integrat
 git diff --check
 ```
 
+## PR #237 P1 审查回归（2026-11-24）
+
+修复基于 `4876633e2d07234caf15b83a7da96b84c477cea7`。新增场景使用 Paper 或经 HTTP 桩接入的持久化 DemoSession。
+
+Windows、Python 3.13.9、pandas 2.3.3 上共通过 **248 项**。原报告列出的命令包含 216 项既有用例，本轮补跑 17 项现有预算与策略重放用例，合计 233 项既有回归。新增 15 项分别覆盖 Grid（3）、DemoSession（6）和研究目标仓位（6）。研究工作流的 Git 来源核对使用测试进程内的工作树所有权配置完成。
+
+Grid、DualMA、CloseMomentum 的清单和版本包以及 LimitOnce 均通过隔离加载。组合测试验证了订单去重、账本连续性、策略状态恢复、预算和授权，以及隔离工作进程对凭据环境和外部凭据文件的访问限制。`compileall` 与 `git diff --check` 通过。
+
+| 审查项 | 修复与离线证据 |
+|---|---|
+| P1-1 Grid Bar | Adapter 在原生 `observe` 产生 `pending_bar` 后才调用 `complete_bar`。算术与几何模式首根 Bar 即可挂出第一单，ATR 在三根 Bar 预热后挂单。三种模式均覆盖连续 Bar、SQLite 重启后同一事件重放、突破撤单。原定向套件继续覆盖 Grid 买卖、部分成交和反向挂单。 |
+| P1-2 Demo 挂单管理 | 报价进策略后，撤单经原 DemoSession 派发。已对账的 NEW 和部分成交订单可继续观察报价并触发 TTL 撤单。新订单仍需新鲜盘口、账户对账、剩余预算和现有授权。POST 或 DELETE 回执丢失时恢复使用原客户订单 ID；重启重放不增加写请求，部分成交和费用仍在账本中。 |
+| P1-3 研究目标仓位 | 同标的订单未终结时保留有效目标，等待成交或撤单。100 股重复目标只提交一次；成交 40 股并撤销余量后，下一次信号按实际库存补 60 股。另覆盖空仓撤单后重算、UNKNOWN 恢复和等待买单终结后再执行零仓位目标。同一份目标策略以相同报价在 Paper 和离线 Demo 各提交一笔订单，第二次信号在挂单期间暂缓，成交后库存一致。 |
+
+原复现命令已包含 Grid 三模式用例。以下命令补跑既有的预算与策略重放用例，以及新增的持久会话与目标仓位用例。
+
+```powershell
+python -m pytest tests/integrations/test_demo_strategy_budget.py tests/trading/test_strategy_replay.py -q
+python -m pytest tests/integrations/test_protocol_demo_working_order.py tests/integrations/test_protocol_research_outstanding.py -q
+```
+
 本任务交付为独立 PR，不自动合并；没有变更生产交易、账户记账或现有 Demo 授权流程。
