@@ -325,8 +325,7 @@ class DemoStrategyRuntime:
             if self.session is not None:
                 if self.expect is not None:
                     self.expect(intent.client_order_id, intent.side, intent.quantity)
-                self.session.submit_limit(intent.client_order_id, intent.side, intent.quantity,
-                    reduce_only=intent.reduce_only, book=book)
+                self.session.submit_intent(intent, book=book)
                 return self.gateway.state.confirmations.get(intent.client_order_id)
             return self.controller.submit(intent)
         except RiskRejected as error:

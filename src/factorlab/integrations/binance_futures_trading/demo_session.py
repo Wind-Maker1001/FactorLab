@@ -10,9 +10,10 @@ from threading import Lock
 from time import perf_counter
 from urllib.parse import parse_qs
 
+from factorlab.errors import DataQualityError
 from factorlab.trading import Market, OrderIntent, OrderType, Side
 from factorlab.trading.contracts import TERMINAL
-from factorlab.trading.control import RiskLimits, TradingController
+from factorlab.trading.control import RiskLimits, RiskRejected, TradingController
 from factorlab.trading.paper import Instrument, Quote
 from factorlab.trading.storage import PaperStore
 
@@ -153,6 +154,14 @@ class DemoSession:
         if self._write_guard is not None and 'GTC' not in symbol.get('timeInForce', ()):
             raise SafetyBlocked('Demo symbol lacks current GTC support')
 
+    def refresh_rules(self):
+        """Refresh the account-bound observation before planning or admitting new orders."""
+        if not self.gateway.rules.is_fresh(self._now()):
+            with self.client.recover_get_clock():
+                observation = observe_demo_rules(self.adapter, source_version=DEMO.host,
+                                                 on_symbol=self._check_symbol)
+            self.gateway.rules = observation.rules
+
     def _admit_write(self, method, params, plan):
         if self.receipt_error or self.write_uncertain:
             raise SafetyBlocked('previous Demo write requires GET-only recovery')
@@ -287,7 +296,8 @@ class DemoSession:
             raise SafetyBlocked('Demo account position changed; use GET recovery')
 
     def prepare_limit_book(self):
-        """Refresh bound account facts and the book used for target sizing."""
+        """Refresh rules, bound account facts and the book used for target sizing."""
+        self.refresh_rules()
         self._fresh_facts_for_submission()
         return self._fresh_book()
 
@@ -302,18 +312,22 @@ class DemoSession:
 
     def submit_limit(self, client_order_id, side, quantity, *, reduce_only=False, book=None):
         """Submit once from the current inside market through the shared controller."""
+        self._prepare_submission(client_order_id, side, reduce_only)
         book = self._fresh_book() if book is None else book
         price = self.limit_price(self.gateway.rules, side, book)
         intent = OrderIntent(Market.BINANCE_USDM, SYMBOL, side, OrderType.LIMIT, quantity, price,
                              client_order_id, position_side='BOTH', reduce_only=reduce_only)
-        return self.submit_intent(intent, book=book)
+        return self._submit_prepared(intent, book)
 
     def submit_intent(self, intent, *, book=None):
         """Validate and deliver an exact LIMIT intent without repricing or resizing."""
         if (intent.market is not Market.BINANCE_USDM or intent.instrument_id != SYMBOL
                 or intent.order_type is not OrderType.LIMIT or intent.position_side not in (None, 'BOTH')):
             raise SafetyBlocked('Demo runtime requires NVDAUSDT one-way LIMIT')
-        client_order_id, side, reduce_only = intent.client_order_id, intent.side, intent.reduce_only
+        self._prepare_submission(intent.client_order_id, intent.side, intent.reduce_only)
+        return self._submit_prepared(intent, book)
+
+    def _prepare_submission(self, client_order_id, side, reduce_only):
         if self._write_guard is None or not self.client.transport.permitted():
             raise SafetyBlocked('active Demo runtime authorization required')
         if (side is not Side.BUY and side is not Side.SELL) or reduce_only is not (side is Side.SELL):
@@ -323,15 +337,24 @@ class DemoSession:
         if not self.gateway.read_account().reconciled:
             raise SafetyBlocked('reconcile Demo orders and account before submission')
         self._require_absent(client_order_id)
+        self.refresh_rules()
         self._fresh_facts_for_submission()
+
+    def _submit_prepared(self, intent, book):
         book = self._fresh_book() if book is None else book
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
         self._order_quote_at = book['time_utc']
         self.controller.quote(Quote(SYMBOL, book['askPrice'], self._order_quote_at))
-        if self.controller.submit(intent) is None:
+        try:
+            result = self.controller.submit(intent)
+        except RiskRejected as error:
+            if error.decision.reason == 'STALE_RULES':
+                raise DataQualityError('STALE_RULES') from error
+            raise
+        if result is None:
             self.write_uncertain = True
-        return self.adapter.order(client_order_id)
+        return self.adapter.order(intent.client_order_id)
 
     def cancel(self, client_order_id):
         """Cancel only a known active order, subject to the same persistent guard."""

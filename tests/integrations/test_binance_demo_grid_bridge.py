@@ -1,3 +1,4 @@
+from dataclasses import replace
 from decimal import Decimal as D
 
 import pytest
@@ -8,6 +9,7 @@ from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocke
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, GridRules
 from factorlab.trading import Market, OrderStatus as S
+from factorlab.trading.control import RiskRejected
 from factorlab.trading.paper import Quote
 from test_binance_demo_execution import setup
 
@@ -138,12 +140,52 @@ def test_rejection_does_not_create_inventory():
 @pytest.mark.parametrize('field,value', [('step_size', D('.001')), ('tick_size', D('.1')),
                                          ('min_notional', D('1'))])
 def test_rules_must_match_observation(field, value):
-    from dataclasses import replace
-    b, _ = bridge()
-    fresh = grid(b.grid.account_id)
+    adapter, _, controller, _ = setup()
+    fresh = grid(adapter.account_id)
     fresh.rules = replace(fresh.rules, **{field: value})
-    with pytest.raises(ValueError, match='rules differ'):
-        DemoGridBridge(fresh, b.controller)
+    with pytest.raises(ValueError, match='^Grid rules differ from observed Demo rules$'):
+        DemoGridBridge(fresh, controller)
+
+
+def test_persisted_deployment_rejects_changed_rules():
+    b, _ = bridge()
+    changed = grid(b.grid.account_id)
+    changed.rules = replace(changed.rules, tick_size=D('.1'))
+    with pytest.raises(ValueError, match='^persisted Grid deployment differs$'):
+        DemoGridBridge(changed, b.controller)
+
+
+@pytest.mark.parametrize('updates,rejection', [
+    ({'LOT_SIZE': {'stepSize': '.03'}}, 'QUANTITY_FILTER'),
+    ({'PRICE_FILTER': {'tickSize': '.03'}}, 'PRICE_FILTER'),
+    ({'MIN_NOTIONAL': {'notional': '6'}}, 'MIN_NOTIONAL'),
+    ({'LOT_SIZE': {'stepSize': '.02'}, 'PRICE_FILTER': {'tickSize': '.02'},
+      'MIN_NOTIONAL': {'notional': '5.50'}}, None),
+])
+def test_restored_deployment_uses_current_exchange_rules(tmp_path, monkeypatch, updates, rejection):
+    import test_binance_demo_execution as exchange_fixture
+
+    protocol, paper = tmp_path / 'protocol.db', tmp_path / 'controller.db'
+    b, fake = bridge(protocol, paper)
+    deployment = b.grid.deployment()
+    b.gateway.adapter.store.close()
+    b.controller.store.close()
+
+    original = exchange_fixture.synthetic_rules()
+    filters = {name: rule | updates.get(name, {}) for name, rule in original.filters.items()}
+    monkeypatch.setattr(exchange_fixture, 'synthetic_rules', lambda: replace(original, filters=filters))
+
+    b, fake = bridge(protocol, paper, fake)
+    assert b.grid.deployment() == deployment
+    assert b.gateway.rules.filters == filters
+    if rejection is None:
+        assert observe(b).status is S.SUBMITTED
+        assert sum(method == 'POST' for method, _, _ in fake.calls) == 1
+    else:
+        with pytest.raises(RiskRejected) as error:
+            observe(b)
+        assert error.value.decision.reason == rejection
+        assert not any(method == 'POST' for method, _, _ in fake.calls)
 
 
 def test_no_decisions_before_recovery():
@@ -162,7 +204,6 @@ def test_no_sell_without_inventory():
 
 
 def test_queued_expiry_withdraws_without_exchange_cancel():
-    from dataclasses import replace
     a, g, c, fake = setup()
     c.quote(Quote('NVDAUSDT', D('150'), NOW))
     fresh = grid(a.account_id)
@@ -212,7 +253,6 @@ def test_pending_atr_bar_recovery_is_durable(tmp_path):
 
 
 def test_pending_atr_waits_for_reconciliation(monkeypatch):
-    from dataclasses import replace
     b, fake = bridge(mode='atr', atr_window=2)
     b._command('observe', dict(id='pending', time='2026-11-11T12:00:00', price='150',
         volume=1, completed_bar=True, high=153, low=147, close=150))

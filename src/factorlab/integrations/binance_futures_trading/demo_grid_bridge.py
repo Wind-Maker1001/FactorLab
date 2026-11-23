@@ -17,6 +17,7 @@ from .demo_runtime import MAX_NOTIONAL, MAX_QUANTITY
 from .execution import DemoExecutionGateway, DemoExecutionTransport
 from .protocol import SafetyBlocked
 from .demo_session import DemoSession
+from .rules import common_step
 
 ZERO = Decimal(0)
 EXIT_REPRICE_SECONDS = 180
@@ -91,13 +92,6 @@ class DemoGridBridge:
         if (Decimal(str(grid.config.max_inventory)) * grid.rules.quantity_unit > MAX_QUANTITY
                 or Decimal(str(grid.config.max_cash_committed)) > MAX_NOTIONAL):
             raise SafetyBlocked('Grid configuration exceeds Demo inventory or capital budget')
-        filters = gateway.rules.filters
-        lot, price = filters['LOT_SIZE'], filters['PRICE_FILTER']
-        if (grid.rules.step_size != Decimal(lot['stepSize'])
-                or grid.rules.tick_size != Decimal(price['tickSize'])
-                or grid.rules.min_quantity != Decimal(lot['minQty'])
-                or grid.rules.min_notional != Decimal(filters['MIN_NOTIONAL']['notional'])):
-            raise ValueError('Grid rules differ from observed Demo rules')
         self.grid, self.controller, self.gateway = grid, controller, gateway
         self.prefix = 'demo-grid:' + grid.deployment_id + ':'
         self.seen = set()
@@ -112,6 +106,14 @@ class DemoGridBridge:
         binding = grid.deployment()
         if saved is not None and saved != dumps(binding):
             raise ValueError('persisted Grid deployment differs')
+        if saved is None:
+            filters = gateway.rules.filters
+            lot, price = filters['LOT_SIZE'], filters['PRICE_FILTER']
+            if (grid.rules.step_size != Decimal(lot['stepSize'])
+                    or grid.rules.tick_size != Decimal(price['tickSize'])
+                    or grid.rules.min_quantity != Decimal(lot['minQty'])
+                    or grid.rules.min_notional != Decimal(filters['MIN_NOTIONAL']['notional'])):
+                raise ValueError('Grid rules differ from observed Demo rules')
         with controller.store.transaction():
             controller.store.record_metadata(self.prefix + 'deployment', binding)
             if new_deployment is not None:
@@ -331,6 +333,8 @@ class DemoGridBridge:
         tick = Decimal(price_filter['tickSize'])
         if tick <= 0:
             return None, None, 'EXIT_PRICE_FILTER'
+        # The exit must satisfy both current exchange filters and the saved Grid deployment.
+        tick = common_step(tick, self.grid.rules.tick_size)
         price = (book['bidPrice'] / tick).to_integral_value(rounding=ROUND_FLOOR) * tick
         min_price = Decimal(price_filter['minPrice']) if price_filter.get('minPrice') is not None else ZERO
         max_price = Decimal(price_filter['maxPrice']) if price_filter.get('maxPrice') is not None else ZERO
@@ -340,10 +344,10 @@ class DemoGridBridge:
             return None, None, 'EXIT_PRICE_FILTER'
 
         lot = filters.get('LOT_SIZE') or {}
-        step = self.grid.rules.step_size
+        step = common_step(Decimal(lot['stepSize']), self.grid.rules.step_size)
         min_qty = max(self.grid.rules.min_quantity, Decimal(lot['minQty']))
         max_qty = min(MAX_QUANTITY, Decimal(lot['maxQty']))
-        min_notional = self.grid.rules.min_notional
+        min_notional = max(self.grid.rules.min_notional, Decimal(filters['MIN_NOTIONAL']['notional']))
         available_qty = (inventory / step).to_integral_value(rounding=ROUND_FLOOR) * step
         if available_qty <= 0 or available_qty < min_qty:
             return None, None, 'EXIT_MIN_QUANTITY'
@@ -515,6 +519,9 @@ class DemoGridBridge:
                 self._sync()
                 return result
             return None
+
+        if self.session is not None:
+            self.session.refresh_rules()
 
         # Existing working reduce-only SELL: monitor, and only cancel/reprice under bounded rules.
         if open_orders:
