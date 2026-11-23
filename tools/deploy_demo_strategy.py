@@ -21,10 +21,10 @@ def deploy(host, user, key, commit, repo):
         raise ValueError('full runtime commit required')
     ssh = ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15', '-i', str(key), f'{user}@{host}']
     with tempfile.TemporaryDirectory(prefix='factorlab-release-') as directory:
-        archive = Path(directory) / (commit + '.tar')
-        run(['git', '-C', str(repo), 'archive', '--format=tar', '-o', str(archive), commit])
+        archive = Path(directory) / (commit + '.tar.gz')
+        run(['git', '-C', str(repo), 'archive', '--format=tar.gz', '-o', str(archive), commit])
         fingerprint = hashlib.sha256(archive.read_bytes()).hexdigest()
-        remote = '/tmp/factorlab-' + commit + '.tar'
+        remote = '/tmp/factorlab-' + commit + '.tar.gz'
         run(['scp', '-i', str(key), str(archive), f'{user}@{host}:{remote}'])
         installer = Path(__file__).with_name('install_demo_strategy_runtime.py')
         run(['scp', '-i', str(key), str(installer), f'{user}@{host}:/tmp/install_demo_strategy_runtime.py'])

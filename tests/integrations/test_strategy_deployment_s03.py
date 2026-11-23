@@ -36,7 +36,7 @@ def package(tmp_path):
 
 def candidate(m, selection='test-1'):
     return dict(schema_version=1, decision='PROMOTE', qualified=True, strictly_better=True,
-                selection_id=selection, package_id=m['package_id'], evidence=m['evidence'])
+                selection_id=selection, package_id=m['package_id'], evidence=m['evidence'], expected_active=LEGACY)
 
 
 def test_package_deterministic_and_invocable(tmp_path, package):
@@ -77,6 +77,54 @@ def test_single_pending_owner_and_duplicate_delivery(tmp_path, package):
         with pytest.raises(sqlite3.IntegrityError):
             s.request(m, candidate(m, 'other'))
         assert s.pending()['id'] == first
+
+
+def test_stale_selector_baseline_cannot_replace_current_strategy(tmp_path, package):
+    _, m = package
+    with closing(DeploymentStore(tmp_path / 'deploy.sqlite3')) as s:
+        with pytest.raises(ValueError, match='baseline'):
+            s.request(m, candidate(m) | dict(expected_active='outdated-version'))
+        assert not s.pending()
+
+
+def test_current_s02_native_contract_retains_or_rejects_incompatible_champion(package):
+    from factorlab.integrations.binance_futures_trading.champion_release_adapter import adapt_selection
+    _, m = package
+    native = dict(schema='FACTORLAB_CHAMPION_SELECTION_V1', promoted=False,
+                  common=dict(symbol='600000', execution='a_share_daily_long_only_next_open_t1'))
+    assert adapt_selection(native, m) is None
+    with pytest.raises(ValueError, match='incompatible'):
+        adapt_selection(native | dict(promoted=True), m)
+
+
+def test_inbox_builds_automatically_and_bad_envelope_does_not_starve_valid_candidate(tmp_path, package):
+    from factorlab.integrations.binance_futures_trading.azure_strategy_deploy import cycle
+    import shutil
+    _, m = package
+    inbox, root = tmp_path / 'inbox', tmp_path / 'state'
+    inbox.mkdir()
+    root.mkdir()
+    shutil.copytree(tmp_path / 'code', inbox / 'source')
+    (inbox / '0.candidate.json').write_text('{broken')
+    (inbox / '1.candidate.json').write_text(json.dumps(dict(archive='built.zip', source='source',
+        manifest=m, candidate=candidate(m))))
+    results = cycle(root, inbox)
+    assert not results[0]['accepted'] and results[1]['accepted']
+    assert (inbox / 'built.zip').exists()
+    with closing(DeploymentStore(root / 'strategy-deployment.sqlite3')) as s:
+        assert s.pending()['new'] == m['package_id']
+
+
+@pytest.mark.parametrize('source', ['import os; os._exit(23)', 'import time; time.sleep(2)'])
+def test_worker_crash_or_timeout_does_not_return_order_intents(tmp_path, package, source):
+    import subprocess
+    archive, m = package
+    (tmp_path / 'code/custom.py').write_text(source)
+    changed = tmp_path / 'crash.zip'
+    build_package(tmp_path / 'code', m, changed)
+    release, _ = install_package(changed, tmp_path / 'releases')
+    with pytest.raises((ValueError, subprocess.TimeoutExpired)):
+        invoke(release, dict(event='probe'), {}, timeout=.3)
 
 
 def test_restart_switch_requires_new_boot_and_retains_database(tmp_path, package):

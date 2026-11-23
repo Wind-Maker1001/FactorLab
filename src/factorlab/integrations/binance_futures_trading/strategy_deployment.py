@@ -71,6 +71,9 @@ class DeploymentStore:
 
     def transition(self, switch_id, phase, **payload):
         with self.atomic():
+            current = self.db.execute('SELECT phase,reason FROM switches WHERE id=?', (switch_id,)).fetchone()
+            if current['phase'] == phase and current['reason'] == payload.get('reason'):
+                return
             self.db.execute('UPDATE switches SET phase=?,reason=?,updated=? WHERE id=?',
                             (phase, payload.get('reason'), time(), switch_id))
             self.event(switch_id, phase, **payload)
@@ -85,6 +88,8 @@ class DeploymentStore:
             if previous:
                 return previous[0]
             state = self.snapshot()
+            if candidate.get('expected_active') != state['active']:
+                raise ValueError('selector baseline no longer active; stale promotion refused')
             if state['active'] == manifest['package_id']:
                 raise ValueError('champion already active')
             self.db.execute('INSERT OR IGNORE INTO packages VALUES(?,?)',

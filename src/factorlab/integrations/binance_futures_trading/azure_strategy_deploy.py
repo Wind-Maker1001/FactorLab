@@ -9,6 +9,7 @@ import sys
 
 from .strategy_deployment import DeploymentStore
 from .strategy_package import build_package, install_package, load_package
+from .champion_release_adapter import adapt_selection
 
 
 def accept(root, archive, candidate, *, mode='hot'):
@@ -21,12 +22,28 @@ def cycle(root, inbox, *, mode='hot'):
     results = []
     for candidate_file in sorted(inbox.glob('*.candidate.json')):
         # Selector publishes complete envelopes by atomic rename. No destructive consumption.
-        envelope = json.loads(candidate_file.read_bytes())
-        archive_name = envelope['archive']
-        if Path(archive_name).name != archive_name or not archive_name.endswith('.zip'):
-            raise ValueError('inbox archive must be a local zip filename')
         try:
-            switch = accept(root, inbox / archive_name, envelope['candidate'], mode=mode)
+            envelope = json.loads(candidate_file.read_bytes())
+            archive_name = envelope['archive']
+            if Path(archive_name).name != archive_name or not archive_name.endswith('.zip'):
+                raise ValueError('inbox archive must be a local zip filename')
+            archive = inbox / archive_name
+            if 'source' in envelope:
+                # A trusted producer may publish an already-staged source tree instead of a zip.
+                source = (inbox / envelope['source']).resolve()
+                if not source.is_relative_to(inbox.resolve()) or source == inbox.resolve():
+                    raise ValueError('source must be below the trusted inbox')
+                if not archive.exists():
+                    build_package(source, envelope['manifest'], archive)
+            if 'selection' in envelope:
+                _, manifest = install_package(archive, root / 'strategy-releases')
+                candidate = adapt_selection(envelope['selection'], manifest)
+                if candidate is None:
+                    results.append(dict(file=candidate_file.name, accepted=False, reason='RETAIN_CHAMPION'))
+                    continue
+            else:
+                candidate = envelope['candidate']
+            switch = accept(root, archive, candidate, mode=mode)
         except Exception as error:
             results.append(dict(file=candidate_file.name, accepted=False, reason=type(error).__name__))
         else:
@@ -57,7 +74,7 @@ def main(argv=None):
     if os.name != 'nt':
         os.umask(0o077)
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('action', choices=('build', 'accept', 'cycle', 'drive', 'status'))
+    p.add_argument('action', choices=('build', 'accept', 'cycle', 'drive', 'status', 'rollback'))
     p.add_argument('--state-root', type=Path)
     p.add_argument('--source', type=Path)
     p.add_argument('--manifest', type=Path)
@@ -77,6 +94,8 @@ def main(argv=None):
         result = drive(args.state_root, args.inbox, args.mode)
     else:
         with closing(DeploymentStore(args.state_root / 'strategy-deployment.sqlite3')) as store:
+            if args.action == 'rollback':
+                store.rollback('OPERATOR_RESTORE_PREVIOUS_STABLE')
             result = store.snapshot()
     print(json.dumps(result, sort_keys=True))
     return 0
