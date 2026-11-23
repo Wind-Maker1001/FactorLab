@@ -16,6 +16,7 @@ from factorlab.experiments.grid_f11_f08_offline import (
     DemoGuardrails,
     ExecutionAssumptions,
     FundingSchedule,
+    _CampaignPaperBroker,
     default_demo_rules,
     execution_profile,
     run_offline_lifecycle,
@@ -23,14 +24,104 @@ from factorlab.experiments.grid_f11_f08_offline import (
 from factorlab.experiments.grid_monte_carlo import close_bars, stress_paths
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, project_paper_account
-from factorlab.trading.contracts import FundingEvent, Market, OrderStatus as S, OrderType, Side, ZERO, funding_event_id
-from factorlab.trading.control import RiskLimits, TradingController
+from factorlab.trading.contracts import (
+    FundingEvent, Market, OrderIntent, OrderStatus as S, OrderType, Side, ZERO, funding_event_id,
+)
+from factorlab.trading.control import RiskLimits, RiskRejected, TradingController
 from factorlab.trading.paper import Instrument, PaperBroker, Quote
 from factorlab.trading.storage import PaperStore
 
 
 def _bars_from_prices(prices: list[float], *, start: str = "2026-08-13T00:00:00+00:00"):
     return close_bars(np.asarray(prices, dtype=float), start)
+
+
+@pytest.mark.parametrize(
+    "window_orders, expected_posts, blocked_exits",
+    [(1, [(0, Side.BUY), (3, Side.SELL)], 2),
+     (2, [(0, Side.BUY), (1, Side.SELL), (3, Side.BUY)], 0)],
+)
+def test_offline_campaign_posts_wait_for_expiry_across_grid_and_f11(
+    tmp_path, window_orders, expected_posts, blocked_exits,
+):
+    bars = _bars_from_prices([132.89, 131.40, 131.40, 131.40, 131.40])
+    store_path = tmp_path / "campaign.sqlite3"
+    result = run_offline_lifecycle(
+        bars,
+        guardrails=DemoGuardrails(window_orders=window_orders, total_orders=len(expected_posts)),
+        store_path=store_path,
+    )
+
+    store = PaperStore(store_path)
+    try:
+        state = store.load()
+        first_close = datetime.fromisoformat(bars[0]["time"]) + timedelta(hours=1, microseconds=-1)
+        assert [
+            ((event.event_time - first_close) // timedelta(hours=1), state.orders[event.client_order_id].snapshot.intent.side)
+            for _, event in store.order_events()
+            if event.status == S.SUBMITTED
+        ] == expected_posts
+    finally:
+        store.close()
+    assert result["exit_block_counts"].get("EXIT_WINDOW_BUDGET_EXHAUSTED", 0) == blocked_exits
+    assert result["rotations_completed"] == window_orders - 1
+    assert result["posts_consumed"] == len(expected_posts)
+    assert result["reconciled_zero_residual"]
+    assert not result["halted"]
+
+
+def test_offline_campaign_restart_preserves_expiry_and_rejected_dispatch(tmp_path):
+    path = tmp_path / "campaign.sqlite3"
+    clock = [datetime(2026, 8, 13, tzinfo=timezone.utc)]
+    market = Market.BINANCE_USDM
+    symbol = "NVDAUSDT"
+    guardrails = DemoGuardrails(window_orders=1, total_orders=2, total_notional=D("12"))
+    limits = RiskLimits(D("7"), D("7"), D("7"), orders_per_minute=20)
+
+    def open_account():
+        store = PaperStore(path)
+        broker = _CampaignPaperBroker(
+            market, "acct-campaign", (Instrument(symbol, "USDT"),),
+            {"USDT": DEFAULT_DEMO_WALLET}, guardrails=guardrails,
+        )
+        return TradingController(broker, store, limits=limits, clock=lambda: clock[0])
+
+    def buy(order_id, quantity):
+        return OrderIntent(market, symbol, Side.BUY, OrderType.LIMIT, D(quantity), D("130"), order_id)
+
+    first = open_account()
+    try:
+        first.quote(Quote(symbol, D("130"), clock[0]))
+        with pytest.raises(RiskRejected, match="ORDER_NOTIONAL_LIMIT"):
+            first.submit(buy("pre-dispatch-rejection", "0.06"))
+        assert not first.broker.window_post_blocked()
+        first.submit(buy("dispatched-order", "0.04"))
+        first.reject("dispatched-order")
+        assert first.broker.window_post_blocked()
+    finally:
+        first.store.close()
+
+    resumed = open_account()
+    try:
+        resumed.reconcile()
+        expiry = clock[0] + timedelta(seconds=guardrails.window_seconds)
+        clock[0] = expiry - timedelta(microseconds=1)
+        resumed.quote(Quote(symbol, D("130"), clock[0]))
+        assert resumed.broker.window_post_blocked()
+        assert resumed.account().open_orders == ()
+        assert resumed.broker.campaign["notional"] == D("5.20")
+
+        clock[0] = expiry
+        resumed.quote(Quote(symbol, D("130"), clock[0]))
+        assert not resumed.broker.window_post_blocked()
+        assert not resumed.broker.global_post_blocked(D("5.20"))
+        assert resumed.broker.global_post_blocked(D("7"))
+        resumed.submit(buy("next-window-order", "0.04"))
+        assert resumed.broker.campaign["posts"] == 2
+        assert resumed.broker.campaign["notional"] == D("10.4")
+        assert resumed.broker.global_post_blocked(D("1"))
+    finally:
+        resumed.store.close()
 
 
 def test_grid_execution_paper_f11_funding_unknown_and_f08_rotation(tmp_path):
@@ -239,8 +330,8 @@ def test_offline_loss_budget_halt_stops_new_orders_and_rotation():
     assert res["rotations_completed"] == 0
 
 
-def test_paired_comparison_a_vs_b_reproduces_r08_baseline_on_continuous_decline():
-    """Verify Model A reproduces R08 continuous_decline (-29.51% ex-funding / -52.22% stress) and B diverges cleanly."""
+def test_paired_continuous_decline_preserves_r08_ex_funding_baseline():
+    """Compare R09 funding and exit outcomes on the frozen R08 price path."""
     sp = stress_paths(132.89, 168)
     bars = close_bars(sp["continuous_decline"], "2026-08-13T00:00:00+00:00")
     a_ex = run_offline_lifecycle(
@@ -248,6 +339,7 @@ def test_paired_comparison_a_vs_b_reproduces_r08_baseline_on_continuous_decline(
         guardrails=DemoGuardrails(enable_f11=False, enable_f08=False),
         assumptions=execution_profile("IDEAL_LIMIT_FILL"),
         funding=FundingSchedule("zero", 0.0, label="EX_FUNDING"),
+        record_hourly_series=True,
     )
     a_stress = run_offline_lifecycle(
         bars,
@@ -268,7 +360,12 @@ def test_paired_comparison_a_vs_b_reproduces_r08_baseline_on_continuous_decline(
         funding=FundingSchedule("constant_hourly_bps", 22.9669, label="DEMO_STRESS"),
     )
     assert a_ex["net_return_pct"] == pytest.approx(-29.51, abs=0.05)
-    assert a_stress["net_return_pct"] == pytest.approx(-52.22, abs=0.05)
+    expected_funding = -sum(
+        prev["inventory"] * bar["close"] * 22.9669 / 10_000
+        for prev, bar in zip(a_ex["hourly_series"][:-1], bars[1:], strict=True)
+    )
+    assert a_stress["realized_funding_usdt"] == pytest.approx(expected_funding, abs=1e-6)
+    assert a_stress["net_return_pct"] == pytest.approx(a_ex["net_return_pct"] + expected_funding * 100 / 7)
     assert b_ideal["net_return_pct"] > a_stress["net_return_pct"] + 40.0
     assert b_unfilled["net_return_pct"] == pytest.approx(a_stress["net_return_pct"], abs=0.2)
     assert all(r["reconciled_zero_residual"] for r in (a_ex, a_stress, b_ideal, b_unfilled))

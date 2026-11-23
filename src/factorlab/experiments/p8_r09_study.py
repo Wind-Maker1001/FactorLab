@@ -913,7 +913,7 @@ def run_p8_r09_study(
         "notes": {
             "ENGINEERING_ACCEPTED": (
                 "已在既有 GridExecution、PaperBroker、TradingController、PaperStore 与 grid_fifo 框架上补齐 "
-                "F11/F08/F10 离线生命周期；全量研究路径与自动化单元测试 FIFO 对账残差均为 0。"
+                "F11/F08/F10 离线生命周期，并汇总本次重跑的官方重放与各研究路径 FIFO 对账结果。"
             ),
             "LIFECYCLE_REPLAY_VERIFIED": (
                 "已在可观测范围内完整重建官方 Binance Demo Gen 1 → F11 平仓 → F08 轮换 → Gen 2 生命周期，"
@@ -1043,6 +1043,20 @@ def render_p8_r09_report(study: dict[str, Any]) -> str:
     lines.append("| F08 平仓后自动轮换 | `GridExecution._paper_command` 仅允许单代部署；突破后永久 `PAUSED` 保留残仓 | 确认平仓、零挂单、零 `UNKNOWN`、订单全终态且预算充足时，在共享账本上创建 `g-0000N` 并继续执行 | `GridExecution` 新增 fail-closed `rotate_paper`，校验平仓/终态/对账后在同账户 `PaperStore` 上原子交接至下一代并记录 `grid_rotation_history` |")
     lines.append("| Demo 硬护栏与规则约束 | 离线未建模 `MIN_NOTIONAL=5`、`MAX_NOTIONAL=7`、`PERCENT_PRICE=[0.97,1.03]`、`max_loss=1U`、`total_orders=100` | 价格低于 `125` 或部分成交碎仓触发 `EXIT_MIN_NOTIONAL`；亏达 `1 USDT` 触发 `HALTED`；撤改超 5 次触发 `EXIT_RETRY_LIMIT_EXCEEDED` | `DemoGuardrails` 完整复现全部规则与预算约束，与线上 `DemoGridBridge._plan_limit_exit` / `DemoRuntime` 对齐 |")
     lines.append("")
+    lines.append(
+        f"- Grid 与 F11 共用 Campaign POST 窗口。默认窗口允许 `{cfg['guardrails_demo']['window_orders']}` 次提交，"
+        f"持续 `{cfg['guardrails_demo']['window_seconds']}` 秒。F08 轮换继承窗口用量，"
+        "窗口到期后自动续开，Campaign 累计订单数与名义金额延续。"
+    )
+    lines.append(
+        "- F11 即时退出用合成 bid 计算一次不利滑点，再向下取整得到可成交的下单限价。"
+        "成交价使用当时经滑点调整的 bid。挂单只有在经滑点调整的 bid 达到原限价后才可成交，成交价始终不低于该限价。"
+    )
+    lines.append(
+        "- `constant_hourly_bps` 按两个收盘时点之间的实际持仓时长折算小时费率，通过 `FundingEvent` 入账。"
+        "`historical_events` 使用原始资金费事件，官方重放使用冻结成交与资金费记录。"
+    )
+    lines.append("")
 
     # 3. R09-02 Official Demo Lifecycle Replay & Reconciliation
     lines.append("## 3. R09-02 官方 Demo 实证生命周期离线重建与对账（`LIFECYCLE_REPLAY_VERIFIED`）")
@@ -1073,7 +1087,7 @@ def render_p8_r09_report(study: dict[str, Any]) -> str:
     lines.append("")
     lines.append("### 3.1 Gen 1 实测 1m K 线条件反事实对照（`CONDITIONAL_COUNTERFACTUAL_ON_OBSERVED_1M_BARS`）")
     lines.append("")
-    lines.append("| 反事实情景（同 1284 根实测 1m K 线 + 同 8 笔实测资金费率，0 手续费） | 模型 | 执行假设 | 净盈亏 (USDT) | 7U 收益率 | 资金费 (USDT) | 最大回撤 | 持仓时长 (h) | 轮换次数 | 期末残仓 | 终态 |")
+    lines.append("| 反事实情景（同 1284 根实测 1m K 线、同 8 笔实测资金费率，手续费和滑点均为 0） | 模型 | 执行假设 | 净盈亏 (USDT) | 7U 收益率 | 资金费 (USDT) | 最大回撤 | 持仓时长 (h) | 轮换次数 | 期末残仓 | 终态 |")
     lines.append("| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |")
     for cf in cfs:
         lines.append(
@@ -1202,7 +1216,7 @@ def render_p8_r09_report(study: dict[str, Any]) -> str:
     # 9. Sample-Size Convergence Diagnostic
     lines.append("## 9. 样本量收敛与误差稳定性核查")
     lines.append("")
-    lines.append("依据误差与稳定性决定必要样本量（不无限追加模拟），下表展示 `DEMO_STRESS_22.97BPS` 下从 `n=32 -> 64 -> 128 -> 200` 路径的 VaR95 / CVaR95 收敛轨迹：")
+    lines.append("下表按 `DEMO_STRESS_22.97BPS` 同路径样本的前缀展示 VaR95、CVaR95 和 Bootstrap 区间宽度。")
     lines.append("")
     lines.append("| 情景 | 样本路径数 `n` | Model A VaR95 | Model A CVaR95 | Model B VaR95 | Model B CVaR95 | B CVaR95 Boot 95% CI 宽 | ΔCVaR95 (B-A) |")
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
@@ -1213,54 +1227,80 @@ def render_p8_r09_report(study: dict[str, Any]) -> str:
             f"{c['delta_cvar95_pp']:+.2f} pp |"
         )
     lines.append("")
+    for scenario in dict.fromkeys(c["scenario"] for c in conv):
+        prefixes = [c for c in conv if c["scenario"] == scenario]
+        smallest, largest = prefixes[0], prefixes[-1]
+        tail_delta_low = min(c["delta_cvar95_pp"] for c in prefixes)
+        tail_delta_high = max(c["delta_cvar95_pp"] for c in prefixes)
+        lines.append(
+            f"- `{scenario}` 的 ΔCVaR95（B−A）在各样本前缀介于 `{tail_delta_low:+.2f}` 和 `{tail_delta_high:+.2f} pp`。"
+            f"B 的 CVaR95 Bootstrap 区间宽度从 `n={smallest['n_paths']}` 的 `{smallest['model_b_cvar95_ci_width_pp']:.2f} pp` "
+            f"变为 `n={largest['n_paths']}` 的 `{largest['model_b_cvar95_ci_width_pp']:.2f} pp`。"
+        )
+    lines.append("")
 
     # 10. Core Risk Synthesis: Does F11/F08 Actually Improve Tail Risk?
-    stress_a = [r for r in stoch if r["funding_label"] == "DEMO_STRESS_22.97BPS" and r["model_label"] == MODEL_BASELINE]
-    stress_b_ideal = [
-        r for r in stoch
-        if r["funding_label"] == "DEMO_STRESS_22.97BPS"
-        and r["model_label"] == MODEL_F11_F08
-        and r["execution_profile"] == "IDEAL_LIMIT_FILL"
-    ]
-    stress_b_delayed = [
-        r for r in stoch
-        if r["funding_label"] == "DEMO_STRESS_22.97BPS"
-        and r["model_label"] == MODEL_F11_F08
-        and r["execution_profile"] == "DELAYED_EXIT_FILL"
-    ]
-    a_cvar_min, a_cvar_max = min(r["cvar_95_pct"] for r in stress_a), max(r["cvar_95_pct"] for r in stress_a)
-    a_hold_min, a_hold_max = min(r["mean_holding_hours"] for r in stress_a), max(r["mean_holding_hours"] for r in stress_a)
-    b_ideal_cvar_min, b_ideal_cvar_max = min(r["cvar_95_pct"] for r in stress_b_ideal), max(r["cvar_95_pct"] for r in stress_b_ideal)
-    b_del_dcvar_min = min(r["delta_cvar_95_vs_baseline_pp"] for r in stress_b_delayed)
-    b_del_dcvar_max = max(r["delta_cvar_95_vs_baseline_pp"] for r in stress_b_delayed)
+    def metric_range(rows: list[dict[str, Any]], key: str, unit: str = "%", scale: float = 1.0) -> str:
+        values = [r[key] * scale for r in rows]
+        return f"{min(values):.2f} 至 {max(values):.2f}{unit}"
+
+    stress = [r for r in stoch if r["funding_label"] == "DEMO_STRESS_22.97BPS"]
+    stress_a = [r for r in stress if r["model_label"] == MODEL_BASELINE]
+    stress_b0 = [r for r in stress if r["model_label"] == MODEL_F11_ONLY]
+    stress_b_ideal = [r for r in stress if r["model_label"] == MODEL_F11_F08 and r["execution_profile"] == "IDEAL_LIMIT_FILL"]
+    ex_funding = [r for r in stoch if r["funding_label"] == "EX_FUNDING" and r["model_label"] == MODEL_F11_F08]
+    ex_ideal = [r for r in ex_funding if r["execution_profile"] == "IDEAL_LIMIT_FILL"]
+    ex_delayed = [r for r in ex_funding if r["execution_profile"] == "DELAYED_EXIT_FILL"]
 
     lines.append("## 10. 核心风险结论：F11/F08 是否真正改善尾部风险？")
     lines.append("")
-    lines.append("基于同路径配对对照（A 旧残仓 vs B0 仅 F11 vs B 完整 F11+F08）以及 5 组执行假设，得出 4 条清晰、非单向的量化结论：")
+    lines.append(
+        f"在 `DEMO_STRESS_22.97BPS` 的主样本中，旧模型 A 各情景的 CVaR95 为 `{metric_range(stress_a, 'cvar_95_pct')}`，"
+        f"仅启用 F11 的 B0 为 `{metric_range(stress_b0, 'cvar_95_pct')}`，"
+        f"完整轮换模型 B 在 `IDEAL_LIMIT_FILL` 下为 `{metric_range(stress_b_ideal, 'cvar_95_pct')}`。"
+        f"B 相对 A 的配对 ΔCVaR95 为 `{metric_range(stress_b_ideal, 'delta_cvar_95_vs_baseline_pp', ' pp')}`，"
+        f"均值持仓从 A 的 `{metric_range(stress_a, 'mean_holding_hours', ' h')}` 变为 B 的 "
+        f"`{metric_range(stress_b_ideal, 'mean_holding_hours', ' h')}`，"
+        f"B 的均值资金费侵蚀占 7U 预算的 `{metric_range(stress_b_ideal, 'mean_funding_erosion_cap_pct')}`。"
+    )
     lines.append("")
     lines.append(
-        f"1. **当 F11 限价退出能够顺利成交时（`IDEAL_LIMIT_FILL`），尾部风险与资金费侵蚀大幅下降**：在 `DEMO_STRESS_22.97BPS` 下，"
-        f"旧模型 A 因突破后永久滞留残仓导致 6 类随机情景 CVaR95 达 `{a_cvar_min:.2f}%–{a_cvar_max:.2f}%`、均值持仓 `{a_hold_min:.1f}–{a_hold_max:.1f}h`；"
-        f"完整模型 B（`IDEAL_LIMIT_FILL`）将 CVaR95 降至 `{b_ideal_cvar_min:.2f}%–{b_ideal_cvar_max:.2f}%`（改善 `-29.50 pp` 至 `-34.74 pp`），资费侵蚀降至 `<=0.12%`。"
-        "但需注意：即便在理想流动性下，`gbm_high_vol_2.0x` 与 `jump_stress_downside` 仍有 `0.5%` 路径因价格跌破 `125.00 USDT` 触发 `EXIT_MIN_NOTIONAL` 导致残仓与 CVaR 跳升（`4.02%–4.35%`）。"
+        "F08 平仓后重新部署，网格因此再次暴露于价格变动，并继续承担手续费与滑点。"
+        f"`EX_FUNDING` 下，完整轮换模型 B 在理想成交情景的亏损概率为 `{metric_range(ex_ideal, 'loss_prob', scale=100)}`。"
+        f"延迟退出时，相对 A 的 ΔCVaR95 介于 `{metric_range(ex_delayed, 'delta_cvar_95_vs_baseline_pp', ' pp')}`。"
     )
+    lines.append("")
+    gap_stress = {
+        (r["model_label"], r["execution_profile"]): r["net_return_pct"]
+        for r in det
+        if r["stress_name"] == "range_then_gap" and r["funding_label"] == "DEMO_STRESS_22.97BPS"
+    }
     lines.append(
-        "2. **F11 与 F08 对尾部风险的方向并不相同（F08 引入再暴露与连续换手成本）**：同路径消融（`B0 仅 F11` vs `B 完整 F11+F08`）显示，"
-        "**真正削减单次极端尾部损失的是 F11 止损退出**（`B0` 在全部 6 类情景下 CVaR95 均为 `0.07%`）；"
-        "而 F08 将原本空仓暂停的账户反复轮换回市场：在 `EX_FUNDING` 下 `B (F11+F08)` 的亏损概率升至 `94%–100%`（因单层 `±1%` 网格在高频突破中连续止损吃手续费/滑点），"
-        "在 `gbm_high_vol_2.0x (EX_FUNDING)` 与 `regime_bootstrap_24h (EX_FUNDING)` 的 `DELAYED_EXIT_FILL` 下，CVaR95 分别比旧模型 A **恶化 `+2.77 pp` 与 `+0.21 pp`**；"
-        "在 `range_then_gap` 确定性压力中，旧模型 A 因早期空仓暂停仅损 `0.00%`，而模型 B 因 F08 轮换重新入场在跳空处被套，延迟/无法成交下亏损高达 `-42.71%` 至 `-47.88%`。"
+        f"在 `range_then_gap` 的确定性压力下，A 的收益率为 `{gap_stress[MODEL_BASELINE, 'IDEAL_LIMIT_FILL']:+.2f}%`。"
+        f"完整轮换模型 B 延迟退出的收益率为 `{gap_stress[MODEL_F11_F08, 'DELAYED_EXIT_FILL']:+.2f}%`，"
+        f"无法退出时为 `{gap_stress[MODEL_F11_F08, 'UNFILLED_EXIT_TIMEOUT']:+.2f}%`。"
     )
+    lines.append("")
+    lines.append("在同一组资金费压力敏感性样本中，执行条件改变了尾部损失和残仓概率。部分成交可能使持仓低于最小名义金额，延迟和跳空则可能使原限价暂时无法成交。")
+    lines.append("")
+    lines.append("| Model B 执行假设 | CVaR95 范围 | 配对 ΔCVaR95（B−A） | 残仓率范围 |")
+    lines.append("| --- | ---: | ---: | ---: |")
+    for profile in ALL_PROFILES:
+        rows = [
+            r for r in sens
+            if r["funding_label"] == "DEMO_STRESS_22.97BPS"
+            and r["model_label"] == MODEL_F11_F08
+            and r["execution_profile"] == profile
+        ]
+        lines.append(
+            f"| `{profile}` | {metric_range(rows, 'cvar_95_pct')} | "
+            f"{metric_range(rows, 'delta_cvar_95_vs_baseline_pp', ' pp')} | "
+            f"{metric_range(rows, 'stranded_tail_rate', scale=100)} |"
+        )
+    lines.append("")
     lines.append(
-        "3. **一旦退出成交受阻（延迟、限容部分成交、无法成交或跳空越带），F11 的尾部保护会显著衰减甚至失效**："
-        f"\n   - `DELAYED_EXIT_FILL`（2h 被动排队 + 撤改）：在 `DEMO_STRESS_22.97BPS` 下，相对旧模型 A 的 CVaR95 改善缩窄至 `{b_del_dcvar_min:+.2f} pp` 至 `{b_del_dcvar_max:+.2f} pp`，高波动与跳跃情景下 CVaR95 仍高达 `35.48%–37.03%`；在单边下跌 `continuous_decline` / `slow_decline` 中，连续 4 次撤改仍无法成交最终触及 `LOSS_BUDGET_EXHAUSTED` 熔断，亏损与旧模型完全一致（`-52.22%` / `-35.80%`）；"
-        "\n   - `LIMITED_CAPACITY_PARTIAL`（每 bar 限容 `0.02`）：买单部分成交 `0.02` 后遇突破撤单留下碎仓（`< 5 USDT`），触发 **`EXIT_MIN_NOTIONAL`** 导致 3 类敏感性情景残仓率升至 `100.0%`（但因半仓暴露，CVaR95 约为旧模型一半 `16.86%–19.68%`）；"
-        "\n   - `UNFILLED_EXIT_TIMEOUT`（退出长时间无法成交）：F11 达 5 次撤改上限或 `1.00 USDT` 亏损熔断，叠加 F08 早期空仓轮换将所有路径最终拖入持仓被套，导致残仓率 `100.0%`、均值亏损翻倍（如 `gbm_base_vol_1.0x` `-26.59%` vs A `-14.17%`），CVaR95 与旧模型持平或更差（`+0.00 pp` 至 `+0.53 pp`）；"
-        "\n   - `GAP_AND_CANCEL_FAULT`（宽点差 + 3% 跳空越带 + 撤单 `UNKNOWN` 恢复）：在 `DEMO_STRESS_22.97BPS` 下保留部分改善（ΔCVaR95 `-8.81 pp` 至 `-16.60 pp`），但仍存在 `10.9%–21.1%` 尾部残仓与 `EXIT_MIN_NOTIONAL` / `HALTED` 阻断。"
-    )
-    lines.append(
-        "4. **实证边界声明（`EMPIRICAL_TAIL_RISK_UNVERIFIED`）**：尽管离线工程（`ENGINEERING_ACCEPTED`）与单次官方 Demo 生命周期重放（`LIFECYCLE_REPLAY_VERIFIED`）均已零残差验证，"
-        "真实交易所下行突破时的 L2 盘口深度、排队成交概率、撤改滑点及极端资金费持续性尚无实证分布样本，因此上述 VaR95 / CVaR95 均属条件估计（`CONDITIONAL_RISK_ESTIMATED`），不得外推为实盘尾部风险保证。"
+        "上述 VaR95 / CVaR95 是条件风险估计（`CONDITIONAL_RISK_ESTIMATED`）。"
+        "官方 Demo 快照只提供一次完整平仓与轮换，真实下行 L2 深度、队列成交率、撤改滑点及极端资金费的持续性仍缺实证样本。"
     )
     lines.append("")
 

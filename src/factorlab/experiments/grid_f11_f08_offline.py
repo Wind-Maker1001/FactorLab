@@ -33,6 +33,7 @@ from factorlab.trading.contracts import (
     FundingEvent,
     Market,
     OrderEvent,
+    OrderIntent,
     OrderStatus,
     OrderType,
     Side,
@@ -89,6 +90,46 @@ class DemoGuardrails:
         return MODEL_F11_F08
 
 
+class _CampaignPaperBroker(PaperBroker):
+    """Keep simulated POST consumption in the account snapshot across Grid generations."""
+
+    def __init__(self, *args, guardrails: DemoGuardrails, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.guardrails = guardrails
+
+    @property
+    def campaign(self) -> dict[str, Any]:
+        return self.state.runtime["offline_campaign"]
+
+    def set_quote(self, quote: Quote) -> None:
+        super().set_quote(quote)
+        campaign = self.state.runtime.get("offline_campaign")
+        if campaign is None:
+            campaign = {"expires_at": quote.observed_at, "window_posts": 0, "posts": 0, "notional": ZERO}
+            self.state.runtime["offline_campaign"] = campaign
+        if quote.observed_at >= campaign["expires_at"]:
+            campaign["expires_at"] = quote.observed_at + timedelta(seconds=self.guardrails.window_seconds)
+            campaign["window_posts"] = 0
+
+    def global_post_blocked(self, notional: Decimal) -> bool:
+        return (
+            self.campaign["posts"] >= self.guardrails.total_orders
+            or self.campaign["notional"] + notional > self.guardrails.total_notional
+        )
+
+    def window_post_blocked(self) -> bool:
+        return self.campaign["window_posts"] >= self.guardrails.window_orders
+
+    def submit_order(self, intent: OrderIntent) -> OrderEvent:
+        # Controller admission has passed. Persist consumption in the same
+        # transaction as the dispatch and its receipt, whatever the order status.
+        campaign = self.campaign
+        campaign["window_posts"] += 1
+        campaign["posts"] += 1
+        campaign["notional"] += intent.quantity * intent.limit_price
+        return super().submit_order(intent)
+
+
 @dataclass(frozen=True)
 class ExecutionAssumptions:
     """Explicit conditional execution assumptions for offline bar/close replay.
@@ -122,8 +163,8 @@ def execution_profile(name: str, *, use_bar_volume: bool = False) -> ExecutionAs
         return ExecutionAssumptions(
             profile_name="IDEAL_LIMIT_FILL",
             assumption_summary=(
-                "Conditional assumption: marketable F11 reduce-only SELL LIMIT at synthetic bid "
-                "crosses top-of-book immediately within bar capacity (0.10 NVDA/bar or bar volume), "
+                "Conditional assumption: marketable F11 reduce-only SELL LIMIT at the tick-rounded "
+                "adverse bid fills immediately within bar capacity (0.10 NVDA/bar or bar volume), "
                 "with 3 bps fee and 2 bps slippage; all real exchange filters & Demo guardrails enforced."
             ),
             fee_rate=DEFAULT_PAPER_FEE_RATE,
@@ -155,7 +196,8 @@ def execution_profile(name: str, *, use_bar_volume: bool = False) -> ExecutionAs
             profile_name="DELAYED_EXIT_FILL",
             assumption_summary=(
                 "Conditional assumption: same entry basis as baseline, but passive F11 reduce-only SELL LIMIT "
-                "rests in queue for >=2 bars (2h on 1h bars) before filling when bid >= limit; reprices downward "
+                "rests in queue for >=2 bars (2h on 1h bars) before filling at its limit when the adverse bid "
+                "reaches it; reprices downward "
                 "after cooldown if price drops (up to EXIT_MAX_ATTEMPTS=5)."
             ),
             fee_rate=DEFAULT_PAPER_FEE_RATE,
@@ -205,7 +247,7 @@ def execution_profile(name: str, *, use_bar_volume: bool = False) -> ExecutionAs
 
 @dataclass(frozen=True)
 class FundingSchedule:
-    """Explicit funding model applied via PaperBroker.apply_funding(FundingEvent)."""
+    """Funding booked through PaperBroker. The constant schedule uses basis points per hour."""
 
     mode: str = "zero"  # 'zero' | 'constant_hourly_bps' | 'historical_events'
     hourly_bps: float = 0.0
@@ -329,20 +371,20 @@ def _plan_offline_limit_exit(
     grid: GridExecution,
     inventory: Decimal,
     book: dict[str, Decimal],
+    limit_bid: Decimal,
     quote_price_state: Decimal,
     guardrails: DemoGuardrails,
     dispatched_exit_attempts: int,
     halted: bool,
     opening_equity: Decimal,
     current_equity: Decimal,
-    posts_consumed: int,
-    submitted_notional: Decimal,
+    broker: _CampaignPaperBroker,
 ) -> tuple[Decimal | None, Decimal | None, str | None]:
     """Mirror ``DemoGridBridge._plan_limit_exit`` faithfully in offline Paper mode."""
     if halted:
         return None, None, "HALTED"
     tick = common_step(grid.rules.tick_size, grid.rules.tick_size)
-    price = _floor_step(book["bid"], tick)
+    price = _floor_step(limit_bid, tick)
     if price <= ZERO or price < D(str(grid.config.minimum_price)):
         return None, None, "EXIT_PRICE_FILTER"
 
@@ -392,11 +434,10 @@ def _plan_offline_limit_exit(
     if guardrails.max_loss is not None and (opening_equity - current_equity) >= guardrails.max_loss:
         return None, None, "EXIT_LOSS_BUDGET_EXHAUSTED"
 
-    if (
-        posts_consumed >= guardrails.total_orders
-        or submitted_notional + quantity * price > guardrails.total_notional
-    ):
+    if broker.global_post_blocked(quantity * price):
         return None, None, "EXIT_GLOBAL_BUDGET_EXHAUSTED"
+    if broker.window_post_blocked():
+        return None, None, "EXIT_WINDOW_BUDGET_EXHAUSTED"
 
     return price, quantity, None
 
@@ -444,12 +485,13 @@ def run_offline_lifecycle(
     anchor_price = initial_anchor_override if initial_anchor_override is not None else initial_book["ask"]
 
     now = [bar_close_utc(bars[0])]
-    broker = PaperBroker(
+    broker = _CampaignPaperBroker(
         Market.BINANCE_USDM,
         account_id,
         (Instrument(instrument_id, "USDT"),),
         {"USDT": opening_wallet},
         fee_rate=assumptions.fee_rate,
+        guardrails=guardrails,
     )
     store = PaperStore(str(store_path), continuous_capacity=True)
     # Use RiskLimits aligned to strategy max_notional (matching Demo DEMO_LIMITS)
@@ -485,9 +527,7 @@ def run_offline_lifecycle(
         opening_equity = opening_wallet
         halted = False
         halt_reason: str | None = None
-        posts_consumed = 0
         deletes_consumed = 0
-        submitted_notional = ZERO
         consumed_delete_ids: set[str] = set()
         order_meta: dict[str, dict[str, Any]] = {}
         trade_rows: list[dict[str, Any]] = []
@@ -534,12 +574,13 @@ def run_offline_lifecycle(
         # Historical funding pointer (sorted by timestamp)
         hist_funding_events = sorted(funding.events, key=lambda x: x[0]) if funding.mode == "historical_events" else []
         hist_funding_idx = 0
+        hourly_rate = D(str(funding.hourly_bps)) / D("10000") if funding.mode == "constant_hourly_bps" else ZERO
 
         # Strategy-cap equity curve & drawdown tracking
         strat_peak = strategy_cap_usdt
         max_drawdown = ZERO
-        holding_bars = 0
-        paused_with_inventory_bars = 0
+        holding_hours = ZERO
+        paused_with_inventory_hours = ZERO
         total_slippage = ZERO
         hourly_series: list[dict[str, Any]] = []
 
@@ -561,7 +602,7 @@ def run_offline_lifecycle(
             return False
 
         def record_fill_trade(event: OrderEvent, order_snap: Any, ref_price: Decimal) -> None:
-            nonlocal trade_seq, total_slippage, exit_orders_partial_events
+            nonlocal trade_seq, total_slippage, exit_orders_partial_events, exit_orders_filled
             qty_delta = event.cumulative_filled_quantity - order_snap.cumulative_filled_quantity
             fee_delta = event.cumulative_fee - order_snap.cumulative_fee
             price = event.fill_price
@@ -588,23 +629,19 @@ def run_offline_lifecycle(
                     "transaction_cost": fee_delta + slip,
                 }
             )
-            if (
-                order_meta.get(event.client_order_id, {}).get("purpose") == "RISK_EXIT"
-                and event.status == OrderStatus.PARTIALLY_FILLED
-            ):
-                exit_orders_partial_events += 1
+            if order_meta[event.client_order_id]["purpose"] == "RISK_EXIT":
+                if event.status == OrderStatus.PARTIALLY_FILLED:
+                    exit_orders_partial_events += 1
+                elif event.status == OrderStatus.FILLED:
+                    exit_orders_filled += 1
 
         def submit_order_through_paper(key: str, *, purpose: str, bar_idx: int) -> bool:
-            nonlocal posts_consumed, submitted_notional
             if check_loss_halt():
                 return False
             order_snap = grid.orders[key]
             intent = order_snap.intent
-            notional = intent.quantity * (intent.limit_price or broker.state.quotes[instrument_id].price)
-            if (
-                posts_consumed >= guardrails.total_orders
-                or submitted_notional + notional > guardrails.total_notional
-            ):
+            notional = intent.quantity * intent.limit_price
+            if broker.global_post_blocked(notional) or broker.window_post_blocked():
                 return False
             if len(controller.account().open_orders) >= guardrails.max_open_orders:
                 return False
@@ -618,8 +655,6 @@ def run_offline_lifecycle(
             except RiskRejected:
                 order_meta.pop(key, None)
                 return False
-            posts_consumed += 1
-            submitted_notional += notional
             order_submitted_bar[key] = bar_idx
             return True
 
@@ -685,6 +720,28 @@ def run_offline_lifecycle(
                 return None
             return event
 
+        def match_order(key, order_snap, book, budget, *, resting_exit=False) -> Decimal:
+            candidate = execution_candidate(
+                order_snap,
+                ask=book["ask"],
+                bid=book["bid"],
+                budget=budget,
+                slippage=assumptions.slippage,
+                step=rules.step_size,
+            )
+            if candidate is None:
+                return ZERO
+            quantity, execution_price = candidate
+            if resting_exit:
+                # A resting F11 order executes at its posted limit once the adverse bid reaches it.
+                execution_price = order_snap.intent.limit_price
+            event = execute_fill(key, quantity, execution_price)
+            if event is None:
+                return ZERO
+            reference = book["ask"] if order_snap.intent.side == Side.BUY else book["bid"]
+            record_fill_trade(event, order_snap, reference)
+            return event.cumulative_filled_quantity - order_snap.cumulative_filled_quantity
+
         prev_close: Decimal | None = None
         prev_bar_close_ts: datetime | None = None
 
@@ -692,6 +749,11 @@ def run_offline_lifecycle(
             now[0] = bar_close_utc(bar)
             close = D(str(bar["close"]))
             book = _synthetic_book(close, prev_close, rules, assumptions)
+            # Plan marketable exits against the adverse bid while retaining the unadjusted
+            # book for risk checks and measuring execution cost.
+            exit_limit_bid = book["bid"]
+            if assumptions.exit_marketable_at_submit:
+                exit_limit_bid *= D("1") - assumptions.slippage
             if assumptions.use_bar_volume and bar.get("volume") is not None:
                 budget = D(str(bar["volume"])) * assumptions.participation
             else:
@@ -703,7 +765,20 @@ def run_offline_lifecycle(
                 exit_reconcile_recoveries += 1
                 pending_unknown_order_id = None
 
-            # 1. Book historical funding settlements strictly in (prev_bar_close_ts, now[0]]
+            # 1. Accrue on the inventory held between closes before any fills at this close.
+            position = broker.state.positions.get(instrument_id)
+            if prev_bar_close_ts is not None and position is not None and position.quantity > ZERO:
+                elapsed_seconds = (now[0] - prev_bar_close_ts).total_seconds()
+                elapsed_hours = D(str(elapsed_seconds)) / D("3600")
+                holding_hours += elapsed_hours
+                if grid.closed_by_breakout:
+                    paused_with_inventory_hours += elapsed_hours
+                if hourly_rate:
+                    rate = hourly_rate * elapsed_hours
+                    amount = funding_cashflow(position.quantity, close, rate)
+                    book_funding_event(amount, now[0], close, rate)
+
+            # Historical funding settlements apply strictly in (prev_bar_close_ts, now[0]].
             if funding.mode == "historical_events" and prev_bar_close_ts is not None:
                 while hist_funding_idx < len(hist_funding_events):
                     f_ts, f_mark, f_rate, _ = hist_funding_events[hist_funding_idx]
@@ -760,40 +835,9 @@ def run_offline_lifecycle(
                     if assumptions.exit_cannot_fill:
                         continue
                     age_bars = bar_idx - order_submitted_bar.get(key, bar_idx)
-                    if not assumptions.exit_marketable_at_submit and age_bars < assumptions.exit_fill_delay_bars:
+                    if age_bars < assumptions.exit_fill_delay_bars:
                         continue
-                    # Passive/resting exit limit SELL fills when bar bid >= limit_price (at limit_price or bid)
-                    if book["bid"] < order_snap.intent.limit_price:
-                        continue
-                    fill_qty = min(budget, order_snap.intent.quantity - order_snap.cumulative_filled_quantity)
-                    fill_qty = _floor_step(fill_qty, rules.step_size)
-                    if fill_qty <= ZERO:
-                        continue
-                    fill_price = order_snap.intent.limit_price
-                    ev = execute_fill(key, fill_qty, fill_price)
-                    if ev is not None:
-                        record_fill_trade(ev, order_snap, book["bid"])
-                        budget -= ev.cumulative_filled_quantity - order_snap.cumulative_filled_quantity
-                        if ev.status == OrderStatus.FILLED:
-                            exit_orders_filled += 1
-                else:
-                    # Standard Grid order matching reusing execution_candidate
-                    cand = execution_candidate(
-                        order_snap,
-                        ask=book["ask"],
-                        bid=book["bid"],
-                        budget=budget,
-                        slippage=assumptions.slippage,
-                        step=rules.step_size,
-                    )
-                    if cand is None:
-                        continue
-                    qty, px = cand
-                    ev = execute_fill(key, qty, px)
-                    if ev is not None:
-                        ref_px = book["ask"] if order_snap.intent.side == Side.BUY else book["bid"]
-                        record_fill_trade(ev, order_snap, ref_px)
-                        budget -= ev.cumulative_filled_quantity - order_snap.cumulative_filled_quantity
+                budget -= match_order(key, order_snap, book, budget, resting_exit=is_exit)
 
             # 5. Process standard Grid cancellations (e.g., breakout cancel or TTL cancel)
             for key in sorted(grid.cancellations):
@@ -858,14 +902,14 @@ def run_offline_lifecycle(
                                 grid=grid,
                                 inventory=acct_now.inventory,
                                 book=book,
+                                limit_bid=exit_limit_bid,
                                 quote_price_state=broker.state.quotes[instrument_id].price,
                                 guardrails=guardrails,
                                 dispatched_exit_attempts=dispatched_exits_this_gen,
                                 halted=halted,
                                 opening_equity=opening_equity,
                                 current_equity=acct_now.equity,
-                                posts_consumed=posts_consumed,
-                                submitted_notional=submitted_notional,
+                                broker=broker,
                             )
                             if plan_block == "EXIT_MIN_NOTIONAL" and sell.cumulative_filled_quantity > ZERO:
                                 # Anti-dust protection: keep working partial SELL rather than canceling!
@@ -895,8 +939,6 @@ def run_offline_lifecycle(
                                     )
                                     if ev is not None:
                                         record_fill_trade(ev, sell, book["bid"])
-                                        if ev.status == OrderStatus.FILLED:
-                                            exit_orders_filled += 1
                                 else:
                                     grid.cancel_paper(controller, sell_key, delivery=grid.delivery + 1)
                                     deletes_consumed += 1
@@ -917,14 +959,14 @@ def run_offline_lifecycle(
                         grid=grid,
                         inventory=acct_now.inventory,
                         book=book,
+                        limit_bid=exit_limit_bid,
                         quote_price_state=broker.state.quotes[instrument_id].price,
                         guardrails=guardrails,
                         dispatched_exit_attempts=dispatched_exits_this_gen,
                         halted=halted,
                         opening_equity=opening_equity,
                         current_equity=acct_now.equity,
-                        posts_consumed=posts_consumed,
-                        submitted_notional=submitted_notional,
+                        broker=broker,
                     )
                     if block_reason is not None:
                         last_exit_block_reason = block_reason
@@ -945,46 +987,19 @@ def run_offline_lifecycle(
                             if ok:
                                 dispatched_exits_this_gen += 1
                                 exit_orders_submitted += 1
-                                # Under marketable-at-submit assumption (IDEAL_LIMIT_FILL / LIMITED_CAPACITY_PARTIAL),
-                                # the reduce-only SELL at bid can immediately cross available bar capacity.
                                 if (
                                     assumptions.exit_marketable_at_submit
                                     and not assumptions.exit_cannot_fill
                                     and assumptions.exit_fill_delay_bars == 0
                                 ):
-                                    fill_qty = min(budget, intent.quantity)
-                                    fill_qty = _floor_step(fill_qty, rules.step_size)
-                                    if fill_qty > ZERO:
-                                        order_snap = broker.state.orders[intent.client_order_id].snapshot
-                                        # Price at intent.limit_price (which is <= bid; apply slippage only
-                                        # via bid pricing so PaperBroker limit-price invariant is preserved).
-                                        # For IDEAL_LIMIT_FILL with slippage > 0, reflect exit execution price
-                                        # at limit_price = floor(bid * (1 - slippage)) if needed; here limit_price
-                                        # is already floor(bid/tick)*tick, and we record slippage vs bar close!
-                                        ev = execute_fill(
-                                            intent.client_order_id,
-                                            fill_qty,
-                                            intent.limit_price,
-                                        )
-                                        if ev is not None:
-                                            record_fill_trade(ev, order_snap, close)
-                                            budget -= ev.cumulative_filled_quantity
-                                            if ev.status == OrderStatus.FILLED:
-                                                exit_orders_filled += 1
+                                    order_snap = broker.state.orders[intent.client_order_id].snapshot
+                                    budget -= match_order(intent.client_order_id, order_snap, book, budget)
                             else:
                                 grid.withdraw_unsubmitted_paper(
                                     controller, [intent.client_order_id], delivery=grid.delivery + 1
                                 )
 
-            # 7. End-of-bar constant hourly funding settlement (in-ledger via PaperBroker.apply_funding!)
-            if funding.mode == "constant_hourly_bps" and funding.hourly_bps != 0.0:
-                pos = broker.state.positions.get(instrument_id)
-                if pos is not None and pos.quantity > ZERO:
-                    rate = D(str(funding.hourly_bps)) / D("10000")
-                    amt = funding_cashflow(pos.quantity, close, rate)
-                    book_funding_event(amt, now[0], close, rate)
-
-            # 8. Check FLAT_CONFIRMED after breakout & F08 Automatic Rotation
+            # 7. Check FLAT_CONFIRMED after breakout & F08 Automatic Rotation
             acct_end = grid.account or project_paper_account(controller, instrument_id)
             check_loss_halt()
             if (
@@ -1019,10 +1034,7 @@ def run_offline_lifecycle(
                             rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_MIN_NOTIONAL"})
                         elif guardrails.enforce_max_notional_on_exit and upper_notional > guardrails.max_notional:
                             rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_MAX_NOTIONAL"})
-                        elif (
-                            posts_consumed >= guardrails.total_orders
-                            or submitted_notional + entry_notional > guardrails.total_notional
-                        ):
+                        elif broker.global_post_blocked(entry_notional):
                             rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_GLOBAL_BUDGET_EXHAUSTED"})
                         else:
                             generation += 1
@@ -1057,18 +1069,13 @@ def run_offline_lifecycle(
                                 }
                             )
 
-            # 9. Update equity curve, drawdown, and holding counters (on strategy_cap_usdt basis)
+            # 8. Update the equity curve and drawdown on a strategy_cap_usdt basis.
             net_pnl_now = acct_end.equity - opening_equity
             strat_equity = strategy_cap_usdt + net_pnl_now
             strat_peak = max(strat_peak, strat_equity)
             if strat_peak > ZERO:
                 dd_now = max(ZERO, (strat_peak - strat_equity) / strat_peak)
                 max_drawdown = max(max_drawdown, min(D("1"), dd_now))
-            if acct_end.inventory > ZERO:
-                holding_bars += 1
-                if grid.closed_by_breakout:
-                    paused_with_inventory_bars += 1
-
             if record_hourly_series:
                 hourly_series.append(
                     {
@@ -1190,11 +1197,11 @@ def run_offline_lifecycle(
             "grid_cycles": int(fifo_summary["grid_cycles"]),
             "fills_total": len(fill_events),
             "orders_total": len(broker.state.orders),
-            "posts_consumed": posts_consumed,
+            "posts_consumed": broker.campaign["posts"],
             "deletes_consumed": deletes_consumed,
-            "submitted_notional_usdt": float(submitted_notional),
-            "holding_hours": float(holding_bars) * (bar_seconds / 3600.0),
-            "paused_with_inventory_hours": float(paused_with_inventory_bars) * (bar_seconds / 3600.0),
+            "submitted_notional_usdt": float(broker.campaign["notional"]),
+            "holding_hours": float(holding_hours),
+            "paused_with_inventory_hours": float(paused_with_inventory_hours),
             "residual_inventory": float(residual_inv),
             "residual_notional_usdt": float(residual_inv * final_close),
             "stranded_at_end": bool(residual_inv > ZERO and grid.closed_by_breakout),
