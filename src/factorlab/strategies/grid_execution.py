@@ -17,7 +17,7 @@ import pandas as pd
 
 from factorlab.backtest.fees import FeeRule, FeeSchedule
 from factorlab.trading.contracts import (
-    Market, OrderIntent, OrderSnapshot, OrderStatus, OrderType, Side, TERMINAL, ZERO, decimal_value,
+    FundingEvent, Market, OrderIntent, OrderSnapshot, OrderStatus, OrderType, Side, TERMINAL, ZERO, decimal_value,
 )
 from factorlab.trading.paper import Quote
 from factorlab.trading.control import RiskRejected
@@ -863,8 +863,13 @@ class GridExecution:
         quantity = min(quantity, intent.quantity - order.cumulative_filled_quantity)
         position = state.positions.get(intent.instrument_id)
         liquidation = (intent.reduce_only and intent.side == Side.SELL
-                       and intent.order_type == OrderType.MARKET
-                       and decision['state'] == 'EXITING'
+                       and (
+                           (intent.order_type == OrderType.MARKET and decision['state'] == 'EXITING')
+                           or (intent.order_type == OrderType.LIMIT
+                               and intent.client_order_id in decision.get('exit_orders', ())
+                               and decision['state'] in ('PAUSED', 'EXITED')
+                               and decision['reason'] in ('BREAKOUT', 'BREAKOUT_REBUILD_INTERVAL'))
+                       )
                        and position is not None and ZERO < quantity <= position.quantity)
         if not liquidation:
             remaining = max(ZERO, self.initial_equity * D(self.config.max_turnover) - turnover)
@@ -887,6 +892,105 @@ class GridExecution:
         """Apply a report once or commit a reconciliation block before raising."""
         validate_identity(event.event_id)
         self._paper_command(controller, delivery, 'confirm', event)
+
+    def propose_limit_exit_paper(self, controller, spec, *, delivery, quote=None):
+        """Propose one reduce-only SELL LIMIT exit inside the Paper transaction."""
+        if not isinstance(spec, dict) or set(spec) != {'price', 'quantity'}:
+            raise ValueError('limit exit requires price and quantity')
+        price, quantity = D(spec['price']), D(spec['quantity'])
+        decimal_value(price, 'price', positive=True)
+        decimal_value(quantity, 'quantity', positive=True)
+        if quote is not None and not isinstance(quote, Quote):
+            raise ValueError('quote must be a Quote')
+        return self._paper_command(
+            controller, delivery, 'exit_limit',
+            (dict(price=price, quantity=quantity), quote),
+        )
+
+    def cancel_exit_paper(self, controller, order_id, *, delivery):
+        """Request cancellation of a working reduce-only SELL during Paper breakout exit."""
+        validate_identity(order_id)
+        self._paper_command(controller, delivery, 'exit_cancel', order_id)
+
+    def withdraw_unsubmitted_paper(self, controller, order_ids, *, delivery):
+        """Withdraw unsubmitted local proposals inside the Paper transaction."""
+        self._paper_command(controller, delivery, 'withdraw', list(order_ids))
+
+    def apply_funding_paper(self, controller, event, *, delivery):
+        """Book one FundingEvent atomically inside the Paper account transaction."""
+        if not isinstance(event, FundingEvent):
+            raise ValueError('FundingEvent required')
+        validate_identity(event.event_id)
+        return self._paper_command(controller, delivery, 'funding', event)
+
+    def mark_unknown_paper(self, controller, order_id, *, delivery):
+        """Mark a working Paper order UNKNOWN, blocking further actions until reconciled."""
+        validate_identity(order_id)
+        self._paper_command(controller, delivery, 'unknown', order_id)
+
+    def reconcile_paper(self, controller, *, delivery):
+        """Reconcile the Paper authority and refresh Grid order snapshots."""
+        return self._paper_command(controller, delivery, 'reconcile', None)
+
+    def rotate_paper(self, controller, replacement):
+        """Hand off a reconciled, flat, breakout-terminated deployment to the next generation.
+
+        Preserves the shared PaperStore ledger, order history, wallet, and funding
+        events while allowing the next deployment generation to initialize cleanly.
+        """
+        if not isinstance(replacement, GridExecution):
+            raise ValueError('replacement must be a GridExecution')
+        if not self.closed_by_breakout:
+            raise ValueError('rotation requires a breakout-terminated Grid deployment')
+        if self._revision is None:
+            raise ValueError('rotation requires a Paper-bound Grid deployment')
+        if replacement.delivery or replacement._revision is not None or replacement.active:
+            raise ValueError('replacement Grid must be fresh and unbound')
+        if (replacement.account_id, replacement.market, replacement.instrument_id) != (
+                self.account_id, self.market, self.instrument_id):
+            raise ValueError('replacement Grid account or instrument mismatch')
+        if replacement.deployment_id == self.deployment_id:
+            raise ValueError('replacement Grid requires a distinct deployment_id')
+
+        def apply():
+            broker, store = controller.broker, controller.store
+            state = broker.state
+            cursor = store.event_cursor()
+            deployment = self._paper_deployment(controller)
+            revision, payload = self._read_checkpoint(state, cursor, deployment)
+            if revision != self._revision:
+                raise ValueError('stale Grid checkpoint revision')
+            account = _project_paper_account(broker, self.instrument_id, self._turnover)
+            if (not account.reconciled or self.conflict is not None or self.active
+                    or state.positions or broker.read_account().open_orders
+                    or any(r.snapshot.status not in TERMINAL or r.snapshot.reconcile_required
+                           for r in state.orders.values())):
+                raise ValueError('rotation requires reconciled flat account with all orders terminal')
+            if any(replacement._owns(key) for key in state.orders):
+                raise ValueError('replacement Grid deployment identity already used')
+            if replacement.initial_equity != account.equity:
+                raise ValueError('replacement Grid initial equity differs from Paper authority')
+            history = list(state.runtime.get('grid_rotation_history', ()))
+            history.append(dict(
+                deployment_id=self.deployment_id,
+                replaces=history[-1]['deployment_id'] if history else None,
+                replaced_by=replacement.deployment_id,
+                terminal_state=self.state,
+                terminal_reason=self.reason,
+                cursor=cursor,
+                equity=account.equity,
+                turnover=self._turnover,
+                checkpoint_revision=revision,
+                exit_orders=list(self.exit_orders),
+            ))
+            state.runtime['grid_rotation_history'] = history
+            state.runtime.pop(_CHECKPOINT, None)
+            broker.fill_admission = None
+            return account
+
+        account = controller._atomic(apply)
+        replacement._bind_admission(controller)
+        return account
 
     def _paper_command(self, controller, delivery, action, command):
         self._bind_admission(controller)
@@ -971,6 +1075,39 @@ class GridExecution:
                     staged.account = _project_paper_account(broker, staged.instrument_id, staged._turnover)
             elif action == 'confirm':
                 staged._confirm_paper(broker, store, command)
+            elif action == 'exit_limit':
+                spec, quote = command
+                if quote is not None:
+                    broker.set_quote(quote)
+                account = _project_paper_account(broker, staged.instrument_id, turnover)
+                staged._propose_limit_exit(spec, account)
+                result = staged.orders[staged.exit_orders[-1]].intent
+            elif action == 'exit_cancel':
+                account = _project_paper_account(broker, staged.instrument_id, turnover)
+                staged._cancel_exit(command, account)
+            elif action == 'withdraw':
+                account = _project_paper_account(broker, staged.instrument_id, turnover)
+                if any(key in state.orders for key in command):
+                    raise ValueError('withdrawal requires unsubmitted Grid proposals')
+                staged._withdraw_unsubmitted(command, account)
+            elif action == 'funding':
+                result = broker.apply_funding(command)
+                staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
+                staged._account_risk()
+            elif action == 'unknown':
+                if not staged._owns(command) or command not in staged.records:
+                    raise ValueError('unknown status requires a submitted Grid order')
+                broker.mark_unknown(command)
+                staged._mark_unknown(command)
+                staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
+            elif action == 'reconcile':
+                if any(key not in state.confirmations for key in state.orders):
+                    state.reconciled = False
+                    result = broker.read_account()
+                else:
+                    result = broker.reconcile()
+                staged._refresh_paper(broker)
+                staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
             else:
                 staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
                 staged._complete_bar()
