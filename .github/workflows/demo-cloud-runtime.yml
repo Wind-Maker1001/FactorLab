@@ -7,6 +7,7 @@ on:
       - 'src/factorlab/integrations/binance_futures_trading/**'
       - 'tests/integrations/test_demo_cloud*'
       - 'tests/integrations/test_demo_execute_systemd.py'
+      - 'tests/integrations/test_strategy_deployment_s03.py'
       - 'deploy/systemd/**'
       - 'tools/ci/demo_cloud_systemd.py'
       - 'tools/ci/demo_execute_systemd.py'
@@ -46,6 +47,7 @@ jobs:
           tests/integrations/test_demo_continuous_campaign.py
           tests/integrations/test_demo_grid_supervisor.py
           tests/integrations/test_demo_observability.py
+          tests/integrations/test_strategy_deployment_s03.py
           --junitxml=cloud-offline.xml
       - name: Install offline systemd acceptance unit
         if: runner.os == 'Linux'
@@ -74,6 +76,7 @@ jobs:
           sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-health.service /etc/systemd/system/factorlab-demo-health.timer
           sudo systemd-analyze verify /etc/systemd/system/factorlab-demo-daily-report.service /etc/systemd/system/factorlab-demo-daily-report.timer
           sudo systemd-analyze verify deploy/systemd/factorlab-demo-backup.service deploy/systemd/factorlab-demo-backup.timer
+          sudo systemd-analyze verify deploy/systemd/factorlab-demo-strategy-deploy.service deploy/systemd/factorlab-demo-strategy-deploy.timer
       - name: Real systemd backup recovery after SIGTERM and SIGKILL
         if: runner.os == 'Linux'
         run: >-

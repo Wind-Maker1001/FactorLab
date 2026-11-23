@@ -36,6 +36,8 @@ StrategyPackage schema v1 包含 Git 代码身份、逐文件 SHA256、精确依
 
 S02 适配器消费 `FACTORLAB_CHAMPION_SELECTION_V1`，检查 OOS 资格、执行口径、代码/参数及 tracker 证据。原研究标签保留，不产生真实资金权限。当前 A 股结果不能成为 NVDA Demo 优势证据；无晋升无需构建包。完整 S01 接口仍须后续对接，不将独立函数适配器称作所有 S01 策略兼容。
 
+主机已消费 S02 实际 `synthetic-paired-v1` 的不晋升输出，返回 `RETAIN_CHAMPION`；见 [原生结果消费记录](native-selector-consumption.json)，未改变当前策略。
+
 ## 切换和恢复
 
 原 state-root 的 `strategy-deployment.sqlite3` 保存 active/stable/previous、checkpoint、决策、订单所属版本、旧/新版本、boot PID、水位及追加事件。包保存在 `strategy-releases/<ID>`，由 C07 原目录备份覆盖。
