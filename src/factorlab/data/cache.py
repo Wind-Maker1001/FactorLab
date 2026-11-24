@@ -1,14 +1,11 @@
 """Atomic per-symbol Parquet cache with explicit request coverage."""
 
-from contextlib import contextmanager
 from dataclasses import dataclass
 import hashlib
 import io
 import json
-import logging
 import math
 import os
-import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,7 +24,6 @@ from factorlab.data.schema import canonicalize_bars, empty_bars, normalize_symbo
 
 
 Range = Tuple[pd.Timestamp, pd.Timestamp]
-LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -118,80 +114,9 @@ class ParquetBarCache:
             raise CacheError("lock_timeout_seconds must be finite and non-negative")
         self.lock_timeout_seconds = float(lock_timeout_seconds)
 
-    @contextmanager
-    def _writer_lock(self, symbol: str) -> Iterator[None]:
-        """Serialize read/merge/publish across processes; OS releases on exit.
-
-        The small lock file is permanent. Its existence does not indicate an
-        active writer and it must not be deleted to unlock another process.
-        """
-
-        lock_path = self.root / (".%s.write.lock" % normalize_symbol(symbol))
-        if lock_path.is_symlink() or lock_path.resolve().parent != self.root:
-            raise CacheError("cache writer lock path escapes its root")
-        # Windows byte-range locks can cover a byte beyond EOF. Acquire that
-        # native lock before initializing a newly created file: otherwise two
-        # buffered handles can both observe length zero, and one may flush its
-        # pending byte after the other has already locked that byte. FileIO
-        # avoids carrying a deferred write into the unlock/close sequence.
-        try:
-            handle = lock_path.open("a+b", buffering=0)
-        except OSError as exc:
-            raise CacheError("cannot open cache writer lock for %s" % symbol) from exc
-        with handle:
-            deadline = time.monotonic() + self.lock_timeout_seconds
-            while True:
-                try:
-                    handle.seek(0)
-                    if os.name == "nt":
-                        import msvcrt
-
-                        msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
-                    else:  # pragma: no cover - exercised on POSIX CI
-                        import fcntl
-
-                        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-                    break
-                except OSError as exc:
-                    if time.monotonic() >= deadline:
-                        raise CacheError(
-                            "cache writer lock timeout for %s" % symbol
-                        ) from exc
-                    time.sleep(min(0.02, max(0.0, deadline - time.monotonic())))
-            protected_error = None
-            try:
-                try:
-                    handle.seek(0, os.SEEK_END)
-                    if handle.tell() == 0:
-                        handle.write(b"\0")
-                        handle.flush()
-                except OSError as exc:
-                    raise CacheError(
-                        "cannot initialize cache writer lock for %s" % symbol
-                    ) from exc
-                yield
-            except BaseException as exc:
-                protected_error = exc
-                raise
-            finally:
-                try:
-                    handle.seek(0)
-                    if os.name == "nt":
-                        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
-                    else:  # pragma: no cover - exercised on POSIX CI
-                        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-                except OSError as exc:
-                    # Closing the unbuffered handle is the final OS-lock
-                    # release. Preserve a primary body/initialization failure,
-                    # but never report success if explicit unlocking failed.
-                    if protected_error is None:
-                        raise CacheError(
-                            "cannot release cache writer lock for %s" % symbol
-                        ) from exc
-                    LOGGER.warning(
-                        "cannot release cache writer lock for %s while handling %s: %s",
-                        symbol, type(protected_error).__name__, exc,
-                    )
+    def _writer_lock(self, symbol: str):
+        from factorlab.data.publication import publication_lock
+        return publication_lock(self.root, normalize_symbol(symbol), self.lock_timeout_seconds)
 
     def data_path(self, symbol: str) -> Path:
         """Return the active generation, or the legacy path for an absent cache."""

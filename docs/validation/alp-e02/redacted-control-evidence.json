@@ -1,0 +1,65 @@
+{
+  "calendar_rows": [
+    {
+      "close": "16:00",
+      "date": "2026-03-06",
+      "open": "09:30",
+      "session_close": "2000",
+      "session_open": "0400",
+      "settlement_date": "2026-03-09"
+    },
+    {
+      "close": "16:00",
+      "date": "2026-03-09",
+      "open": "09:30",
+      "session_close": "2000",
+      "session_open": "0400",
+      "settlement_date": "2026-03-10"
+    },
+    {
+      "close": "16:00",
+      "date": "2026-11-02",
+      "open": "09:30",
+      "session_close": "2000",
+      "session_open": "0400",
+      "settlement_date": "2026-11-03"
+    },
+    {
+      "close": "13:00",
+      "date": "2026-11-27",
+      "open": "09:30",
+      "session_close": "1700",
+      "session_open": "0400",
+      "settlement_date": "2026-11-30"
+    }
+  ],
+  "clock_response": {
+    "is_open": true,
+    "next_close": "2026-11-24T16:00:00-05:00",
+    "next_open": "2026-11-25T09:30:00-05:00",
+    "timestamp": "2026-11-24T10:33:50.95940244-05:00"
+  },
+  "sip_websocket_error_code": 409,
+  "sample_original_event_timestamps": {
+    "iex": {
+      "AAPL": "2025-11-21T05:00:00Z",
+      "BA": "2025-11-21T05:00:00Z",
+      "C": "2025-11-21T05:00:00Z",
+      "GE": "2025-11-21T05:00:00Z",
+      "JPM": "2025-11-21T05:00:00Z",
+      "QQQ": "2025-11-21T05:00:00Z",
+      "SNDK": "2025-11-21T05:00:00Z",
+      "TQQQ": "2025-11-21T05:00:00Z"
+    },
+    "sip": {
+      "AAPL": "2025-11-21T05:00:00Z",
+      "BA": "2025-11-21T05:00:00Z",
+      "C": "2025-11-21T05:00:00Z",
+      "GE": "2025-11-21T05:00:00Z",
+      "JPM": "2025-11-21T05:00:00Z",
+      "QQQ": "2025-11-21T05:00:00Z",
+      "SNDK": "2025-11-21T05:00:00Z",
+      "TQQQ": "2025-11-21T05:00:00Z"
+    }
+  }
+}

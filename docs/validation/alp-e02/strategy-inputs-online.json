@@ -1,0 +1,161 @@
+{
+  "history_rows": 252,
+  "history_columns": 8,
+  "first_session": "2025-11-21",
+  "last_session": "2026-11-23",
+  "valid_counts": {
+    "AAPL": 252,
+    "SNDK": 252,
+    "BA": 252,
+    "C": 252,
+    "JPM": 252,
+    "GE": 252,
+    "TQQQ": 252,
+    "QQQ": 252
+  },
+  "identity_scope": "OBSERVED_SYMBOL_AT_EXPLICIT_ASOF_NOT_LONG_HISTORY_SECURITY_MASTER",
+  "session": "2026-11-24 00:00:00",
+  "next_open": "2026-11-25T14:30:00+00:00",
+  "symbols": {
+    "AAPL": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:17.654196+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:17.974108774+00:00",
+        "received_at": "2026-11-24T15:40:18.551579+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": true,
+        "reasons": []
+      }
+    },
+    "SNDK": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:22.362423+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:23.325252609+00:00",
+        "received_at": "2026-11-24T15:40:23.533765+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": true,
+        "reasons": []
+      }
+    },
+    "BA": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:27.172438+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:24.935130910+00:00",
+        "received_at": "2026-11-24T15:40:28.099880+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": false,
+        "reasons": [
+          "not_after_opening_observation"
+        ]
+      }
+    },
+    "C": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:31.633935+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:32.439212417+00:00",
+        "received_at": "2026-11-24T15:40:32.741378+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": true,
+        "reasons": []
+      }
+    },
+    "JPM": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:36.306705+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:36.017337261+00:00",
+        "received_at": "2026-11-24T15:40:37.222451+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": false,
+        "reasons": [
+          "not_after_opening_observation"
+        ]
+      }
+    },
+    "GE": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:40.780272+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:40.926098805+00:00",
+        "received_at": "2026-11-24T15:40:41.717492+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": true,
+        "reasons": []
+      }
+    },
+    "TQQQ": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:45.469150+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:46.248978376+00:00",
+        "received_at": "2026-11-24T15:40:46.419529+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": true,
+        "reasons": []
+      }
+    },
+    "QQQ": {
+      "opening": {
+        "kind": "bar",
+        "event_at": "2026-11-24T14:30:00+00:00",
+        "received_at": "2026-11-24T15:40:49.979030+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex"
+      },
+      "quote": {
+        "event_at": "2026-11-24T15:40:50.722901600+00:00",
+        "received_at": "2026-11-24T15:40:50.911418+00:00",
+        "source": "ALPACA:iex",
+        "feed": "iex",
+        "valid": true,
+        "reasons": []
+      }
+    }
+  }
+}
