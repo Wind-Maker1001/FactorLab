@@ -20,7 +20,7 @@ from .market_data.stream import AlpacaStream, StreamDisconnected, StreamRecovery
 from .stream import trade_updates
 
 NY = ZoneInfo('America/New_York')
-SYMBOLS = ('QQQ', 'AAPL', 'SPY', 'TLT', 'GLD', 'IEF', 'SHY', 'BIL')
+SYMBOLS = ('AAPL', 'SNDK', 'BA', 'C', 'JPM', 'GE', 'TQQQ', 'QQQ')
 
 
 def now():
