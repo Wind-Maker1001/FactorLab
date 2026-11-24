@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "market_discovery": {
+    "status": "COMPLETE",
+    "scope": "Frozen official listing coverage and QQQ public market acquisition",
+    "observed_at": "2026-11-24T15:03:42.223458+00:00",
+    "listing_acquired_at": null,
+    "identity_confirmation": "EXCHANGE_METADATA_ONLY",
+    "issuer_identity_verified": false,
+    "classifications": {
+      "AAPL": "MAINNET_ONLY",
+      "SNDK": "MAINNET_ONLY",
+      "BA": "NOT_LISTED",
+      "C": "NOT_LISTED",
+      "JPM": "MAINNET_ONLY",
+      "GE": "NOT_LISTED",
+      "TQQQ": "MAINNET_ONLY",
+      "QQQ": "DEMO_LISTED_NOT_EXECUTED"
+    },
+    "demo_status_counts": {
+      "PENDING_TRADING": 2,
+      "TRADING": 20,
+      "SETTLING": 2
+    },
+    "market_coverage": {
+      "book": true,
+      "depth": true,
+      "klines": true,
+      "mark": true,
+      "funding": true
+    },
+    "kline_count": 100,
+    "funding_history_count": 10,
+    "qqq_rules": {
+      "contract_type": "TRADIFI_PERPETUAL",
+      "margin_asset": "USDT",
+      "quote_asset": "USDT",
+      "price_precision": 5,
+      "quantity_precision": 2,
+      "tick_size": "0.01000",
+      "quantity_step": "0.01",
+      "min_notional_filter": "5",
+      "snapshot_ask": "643.55000",
+      "indicative_limit_buy_quantity": "0.01",
+      "indicative_limit_buy_notional": "6.4355000",
+      "calculation_scope": "Historical ask and LOT_SIZE/MIN_NOTIONAL only; not live order admission"
+    },
+    "evidence_manifest": "evidence_manifest.json"
+  },
+  "trading_execution": {
+    "status": "NOT_EXECUTED",
+    "classification": "DEMO_LISTED_NOT_EXECUTED",
+    "owner": "F03 PR #239",
+    "dependency": "https://github.com/Wind-Maker1001/FactorLab/pull/239",
+    "orders_submitted": 0,
+    "execution_verified": false,
+    "fees": null,
+    "leverage_brackets": null,
+    "account_equity_reconciliation": null,
+    "position_reconciliation": null,
+    "restart_reconciliation": null,
+    "remaining": [
+      "Generic Demo execution admission (F03)",
+      "Azure account/order ownership coordination",
+      "Account leverage and current rule checks",
+      "Buy, fill, reduce-only close and restart reconciliation"
+    ]
+  },
+  "review_ready": true,
+  "shared_execution_layer_modified": false
+}
