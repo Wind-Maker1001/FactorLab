@@ -407,6 +407,14 @@ class DemoSession:
                 break
 
     def _submit_prepared(self, intent, book):
+        if self.shared_account:
+            account = self.gateway.read_account()
+            relevant = {p.instrument_id for p in account.positions}
+            relevant.update(o.intent.instrument_id for o in account.open_orders)
+            for symbol in sorted(relevant - {self.symbol}):
+                payload = self.client.request('GET', BOOK, {'symbol':symbol}, signed=False)
+                observed = _book(payload,symbol)
+                self.controller.quote(Quote(symbol, observed['askPrice'], observed['time_utc']))
         book = self._fresh_book() if book is None else book
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
