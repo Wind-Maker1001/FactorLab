@@ -12,6 +12,10 @@ All recorded comparisons passed: database inventory and integrity, binding, budg
 
 The maintenance window recorded the strategy deployment timer and Observer as interrupted auxiliary units. Execute restarted with a new PID after 10.096 seconds, recovered its account with fresh market data and UNKNOWN=0, and retained the exhausted budget and PAUSED state. Reconciliation succeeded. These are archived results of the existing deployment operation, not a new recovery exercise or trading acceptance.
 
+## Targeted regression
+
+Python 3.13: 87 tests passed across cloud storage, C07 backup and Grid supervisor; 55 adjacent runtime/systemd tests passed on the first run. The remaining Windows credential subprocess test initially failed with `ModuleNotFoundError` because pytest's configured source path was not inherited by its child interpreter. With `PYTHONPATH` set to this checkout's `src`, that single test passed (1.45 seconds). Total: 143 passing targeted tests. No production source change was needed for the local import-path correction.
+
 ## Reproduction
 
 Build/install this revision using the existing deployment procedure. Pin Execute, Observer, health commands, strategy deployment and both backup commands to the same installed release interpreter. The captured absolute release prefix is an installation location, not a separate source revision.
