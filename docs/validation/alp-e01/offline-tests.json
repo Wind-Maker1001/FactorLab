@@ -23,9 +23,9 @@
       "duration_seconds": 17.87
     },
     "final_alpaca_execution": {
-      "passed": 65,
+      "passed": 69,
       "failed": 0,
-      "duration_seconds": 42.32,
+      "duration_seconds": 28.70,
       "asserts_http_outside_sqlite_transactions": true
     },
     "latest_pr243_compatibility": {

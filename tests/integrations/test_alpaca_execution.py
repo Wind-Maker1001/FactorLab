@@ -471,6 +471,37 @@ def test_acceptance_reports_failed_sell_without_resubmission(tmp_path, failure):
     assert official.posts == 0
 
 
+@pytest.mark.parametrize("mode", ["http", "terminal", "closed", "lag"])
+def test_acceptance_failure_is_immediate_and_precedes_wait_gates(tmp_path, mode):
+    from factorlab.integrations.alpaca.acceptance import PaperAcceptance
+    a, official = adapter(tmp_path)
+    buy_id, sell_id = "failure-AAPL-buy", "failure-AAPL-sell"
+    buy = order(buy_id, filled="0.1", average="100", status="filled")
+    official.orders[buy_id] = buy
+    official.activities = [{"id": "buy-fill", "order_id": buy["id"], "qty": "0.1", "price": "100", "side": "buy", "symbol": "AAPL"}]
+    official.positions = [{"symbol": "AAPL", "qty": "0.1", "avg_entry_price": "100", "current_price": "100"}]
+    if mode in {"closed", "lag"}:
+        official.orders[sell_id] = {**order(sell_id, filled="0.04", average="100", status="canceled"), "side": "sell"}
+    with a.store.transaction():
+        a.store.put("acceptance", {"prefix": "failure", "symbols": ["AAPL"], "quantity": "0.1", "reservation_price": "100", "initial": {}, "status": "running", "buy_confirmations": {"AAPL": {}}})
+    def transport(method, path, params, body):
+        assert not a.store.db.in_transaction
+        if mode == "closed" and path == "/v2/clock":
+            return 200, {"is_open": False, "next_open": "2026-11-25T14:30:00Z"}
+        if method == "POST":
+            if mode == "http":
+                return 422, {"message": "order rejected"}
+            row = {**order(sell_id, status="rejected"), "side": "sell", "type": "market", "limit_price": None}
+            official.orders[sell_id] = row
+            return 200, row
+        return official(method, path, params, body)
+    a.http = PaperHTTP(AlpacaConfig("fake", "fake"), transport=transport)
+    result = PaperAcceptance(a).step()
+    assert result["status"] == "test_sell_not_filled"
+    assert result["failed_leg"] == sell_id
+    assert D(result["remaining_quantity"]) == D("0.06" if mode in {"closed", "lag"} else "0.1")
+
+
 def test_acceptance_round_trips_use_only_added_positions(tmp_path):
     from factorlab.integrations.alpaca.acceptance import PaperAcceptance
     a, official = adapter(tmp_path)
