@@ -20,9 +20,9 @@ def deploy(args):
         bundle = Path(directory) / 'release.tar'
         subprocess.run(['git', '-C', str(repo), 'archive', '-o', str(bundle), revision], check=True)
         subprocess.run(['scp', '-q', '-i', args.key, str(bundle),
-                        str(repo / 'tools/install_alpaca_paper_runtime.sh'),
                         f'{args.user}@{args.host}:{remote}/'], check=True)
-    subprocess.run(ssh + [f'sudo sh {remote}/install_alpaca_paper_runtime.sh {remote}/release.tar '
+    subprocess.run(ssh + [f'tar -xf {remote}/release.tar -C {remote} tools/install_alpaca_paper_runtime.sh && '
+                          f'sudo sh {remote}/tools/install_alpaca_paper_runtime.sh {remote}/release.tar '
                           f'{revision} /opt/factorlab/python/cpython-3.13-linux-x86_64-gnu/bin/python3'], check=True)
     if args.credential_file:
         from factorlab.integrations.alpaca.market_data.client import Credentials
