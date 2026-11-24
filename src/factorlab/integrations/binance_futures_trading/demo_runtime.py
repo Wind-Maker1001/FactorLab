@@ -727,7 +727,7 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
 
         def ensure_campaign():
             nonlocal campaign
-            if not automatic or not runtime.global_trading_capacity():
+            if not automatic:
                 return campaign
             epoch = runtime.stop_epoch()
             status = session.status()
