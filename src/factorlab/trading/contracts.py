@@ -110,11 +110,14 @@ class OrderEvent:
     source: str
     event_id: str
     cumulative_fee: Decimal = ZERO
+    cumulative_filled_notional: Decimal | None = None
 
     def __post_init__(self):
         utc(self.event_time)
         decimal_value(self.cumulative_filled_quantity, "cumulative_filled_quantity")
         decimal_value(self.cumulative_fee, "cumulative_fee")
+        if self.cumulative_filled_notional is not None:
+            decimal_value(self.cumulative_filled_notional, "cumulative_filled_notional")
         if self.fill_price is not None:
             decimal_value(self.fill_price, "fill_price", positive=True)
         if not isinstance(self.status, OrderStatus) or not self.client_order_id or not self.source or not self.event_id:

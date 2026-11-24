@@ -44,8 +44,12 @@ class AlpacaPortfolioAdapter:
         except self.order_not_found:
             rejection = self.adapter.store.get('rejection:' + client_order_id)
             if rejection is not None:
+                row = self.store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',
+                                            (client_order_id,)).fetchone()
+                order = next(o for o in self.store.orders(row[0])
+                    if o['record'].snapshot.intent.client_order_id == client_order_id)
                 return OrderEvent(client_order_id, None, OrderStatus.REJECTED, D(0), None,
-                    self.clock(), 'alpaca-paper-http-rejection:' + str(rejection['status']),
+                    order['record'].observed_at, 'alpaca-paper-http-rejection:' + str(rejection['status']),
                     'alpaca-paper-http-rejection:' + client_order_id)
             # ALP-E01 commits this admission journal before every HTTP POST.
             # Its absence proves the process stopped before entering submission;
@@ -91,7 +95,8 @@ class AlpacaPortfolioAdapter:
             client_order_id, details['status'], quantity, notional, previous,
             details['observed_at']]).encode()).hexdigest()
         return OrderEvent(client_order_id, details['exchange_order_id'], details['status'],
-            quantity, price, details['observed_at'], 'alpaca-paper-execution-activities', event_id)
+            quantity, price, details['observed_at'], 'alpaca-paper-execution-activities', event_id,
+            cumulative_filled_notional=notional)
 
     def submit_order(self, intent):
         try:

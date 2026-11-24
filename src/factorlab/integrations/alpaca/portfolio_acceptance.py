@@ -82,12 +82,8 @@ def run_acceptance(*, state_dir, phase, credentials_file):
                     prior = store.plan(row[0])
                     if prior['phase'] == 'COMPLETE':
                         continue
-                    for child in store.orders(prior['id']):
-                        runner.executor.cancel(prior['id'],
-                            child['record'].snapshot.intent.client_order_id)
+                    runner.executor.abandon(prior['id'])
                     adapter.recover()
-                    runner.executor.run_once(prior['id'], equity=facts.equity,
-                        quotes={}, rules={}, now=received)
             identity = runner.executor.create(account_id=facts.account_id,
                 strategy_id='ALP-E03 TEST', strategy_version='synthetic-1', trading_session=session,
                 rebalance_id='ALP-E03 TEST:' + phase, weights=WEIGHTS[phase],
@@ -136,7 +132,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
         report = runner.report(identity)
         final = adapter.read_account()
         baseline = decode(json.loads(store.event_payload(baseline_key)))
-        net_cash = sum((fill.quantity * fill.price * (D(-1) if fill.side.value == 'BUY' else D(1))
+        net_cash = sum((fill.notional * (D(-1) if fill.side.value == 'BUY' else D(1))
                         - fill.fee for fill in report.fills), D(0))
         expected_cash = baseline['cash'] + net_cash
         reconciliation = dict(official_cash=report.official_cash, expected_cash=expected_cash,

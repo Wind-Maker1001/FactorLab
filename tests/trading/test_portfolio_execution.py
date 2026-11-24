@@ -189,7 +189,7 @@ def test_eventually_consistent_404_never_reposts_attempted_order(setup):
     assert result.phase == 'WAITING'
     assert len(broker.posts) == 1
     assert 'ORDER_ABSENCE_AFTER_SUBMIT' in result.reasons.values()
-    assert set(result.reasons.values()) <= {'ORDER_ABSENCE_AFTER_SUBMIT', 'INSUFFICIENT_CASH'}
+    assert set(result.reasons.values()) <= {'ORDER_ABSENCE_AFTER_SUBMIT', 'UNRESOLVED_ORDER_OUTCOME'}
 
 
 def test_restart_before_any_post_and_duplicate_week(setup):
@@ -216,6 +216,91 @@ def test_weight_only_journal_replays_after_quantity_interface_upgrade(setup):
     assert create(executor) == identity
     run(executor, identity)
     assert len(broker.posts) == 2
+
+
+def test_unknown_outcome_blocks_next_child_and_other_strategy(setup):
+    broker, store, executor = setup
+    broker.mode = 'timeout'
+    first = create(executor, {'AAPL': D('.2'), 'QQQ': D('.2')}, symbols={'AAPL', 'QQQ'})
+    run(executor, first)
+    assert len(broker.posts) == 1
+    broker.absent_after_post = True
+    other = executor.create(account_id='paper', strategy_id='other', strategy_version='1',
+        trading_session='2026-11-24', weights={'GE': D('.2')}, owned_symbols={'GE'}, now=NOW)
+    result = run(executor, other)
+    assert result.reasons['account'] == 'UNRESOLVED_ORDER_OUTCOME'
+    assert len(broker.posts) == 1
+
+
+def test_missing_sell_quote_blocks_funded_buy(setup):
+    broker, store, executor = setup
+    broker.positions = {'AAPL': D(1)}
+    identity = create(executor, initial={'AAPL': (D(1), D(10))},
+        quantity_deltas={'AAPL': D(-1), 'QQQ': D(1)})
+    result = run(executor, identity, prices={'QQQ': D(10)})
+    assert result.phase == 'BLOCKED'
+    assert result.reasons['AAPL'] == 'MISSING_QUOTE'
+    assert not broker.posts
+    run(executor, identity)
+    assert [i.side for i in broker.posts] == [Side.SELL]
+    run(executor, identity)
+    assert [i.side for i in broker.posts] == [Side.SELL, Side.BUY]
+
+
+def test_abandon_empty_blocked_plan_permits_owned_cleanup(setup):
+    broker, store, executor = setup
+    identity = create(executor, symbols=(s for s in SYMBOLS))
+    assert run(executor, identity, prices={}).phase == 'BLOCKED'
+    executor.abandon(identity)
+    assert run(executor, identity).phase == 'COMPLETE'
+    assert not broker.posts
+    successor = create(executor, {'AAPL': D(0)}, rebalance_id='cleanup')
+    assert run(executor, successor).phase == 'COMPLETE'
+
+
+def test_unsubmitted_outbox_can_be_abandoned_without_post(setup):
+    from factorlab.trading.portfolio_execution import SubmissionNotAttempted
+    broker, store, executor = setup
+    executor.clock = lambda: NOW + timedelta(seconds=6)
+    identity = create(executor)
+    run(executor, identity)
+    def absent(client_id):
+        raise SubmissionNotAttempted(client_id)
+    broker.query_order = absent
+    executor.abandon(identity)
+    assert store.plan(identity)['phase'] == 'COMPLETE'
+    assert all(o['record'].snapshot.status == S.CANCELED for o in store.orders(identity))
+    assert not broker.posts
+
+
+def test_recovered_outbox_rechecks_tradability(setup):
+    broker, store, executor = setup
+    identity = create(executor)
+    executor.clock = lambda: NOW + timedelta(seconds=6)
+    run(executor, identity)
+    executor.clock = lambda: NOW
+    result = run(executor, identity, rules={s: InstrumentRules(D('.001'), D(1), tradable=False)
+                                           for s in SYMBOLS})
+    assert not broker.posts
+    assert set(result.reasons.values()) == {'NOT_TRADABLE'}
+
+
+def test_predecessor_late_fill_cannot_reverse_native_buy_direction(setup):
+    broker, store, executor = setup
+    broker.mode = 'partial'
+    first = create(executor, {'AAPL': D('.5')}, symbols={'AAPL'})
+    run(executor, first)
+    old = broker.posts[0]
+    executor.cancel(first, old.client_order_id)
+    run(executor, first)
+    successor = create(executor, {'AAPL': D('.5')}, symbols={'AAPL'},
+        rebalance_id='successor', quantity_deltas={'AAPL': D(1)})
+    broker.confirm(old.client_order_id, old.quantity, S.FILLED)
+    broker.mode = 'fill'
+    run(executor, successor)
+    assert broker.posts[-1].side == Side.BUY
+    assert broker.posts[-1].quantity == D(1)
+    assert broker.positions['AAPL'] == D(6)
 
 
 def test_cash_shortfall_does_not_normalize_targets(setup):

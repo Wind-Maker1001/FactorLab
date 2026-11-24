@@ -103,6 +103,52 @@ def test_bridge_restores_cash_exact_fill_after_e01_consumed_response(tmp_path):
     recovered.close()
 
 
+def test_exact_notional_survives_nonterminating_average_and_requery(tmp_path):
+    adapter = Adapter()
+    store = PortfolioStore(tmp_path / 'portfolio.sqlite')
+    runner = AlpacaPortfolioRunner(adapter, store, order_not_found=Missing, clock=lambda: NOW)
+    identity = create(runner)
+    adapter.die_after_post = True
+    with pytest.raises(SystemExit):
+        runner.run_once(identity, **inputs())
+    client_id = adapter.posts[0].client_order_id
+    adapter.details[client_id].update(status=S.PARTIALLY_FILLED, filled_quantity=D(3))
+    activity = adapter.activities[client_id][0]
+    adapter.activities[client_id] = [dict(activity, id='fill-a', qty='1', price='10'),
+        dict(activity, id='fill-b', qty='2', price='11')]
+    adapter.positions['AAPL'] = D(3)
+    adapter.cash = D(68)
+    with store.transaction():
+        plan = store.plan(identity)
+        order = store.orders(identity)[0]
+        runner.executor._accept(plan, order, runner.bridge.query_order(client_id))
+    assert store.orders(identity)[0]['filled_notional'] == D(32)
+    assert runner.bridge.query_order(client_id).fill_price is None
+    report = runner.report(identity)
+    assert report.traded_notional == D(32)
+    assert report.positions[0].owned_cost_basis == D(32)
+    store.close()
+
+
+def test_http_rejection_replay_uses_stable_event_time(tmp_path):
+    from datetime import timedelta
+    adapter = Adapter()
+    store = PortfolioStore(tmp_path / 'portfolio.sqlite')
+    runner = AlpacaPortfolioRunner(adapter, store, order_not_found=Missing, clock=lambda: NOW)
+    identity = create(runner)
+    runner.executor.clock = lambda: NOW + timedelta(seconds=6)
+    runner.run_once(identity, **inputs())
+    client_id = store.orders(identity)[0]['record'].snapshot.intent.client_order_id
+    adapter.store.get = lambda key: {'status': 422}
+    event = runner.bridge.query_order(client_id)
+    with store.transaction():
+        runner.executor._accept(store.plan(identity), store.orders(identity)[0], event)
+    runner.bridge.clock = lambda: NOW + timedelta(seconds=10)
+    assert runner.bridge.query_order(client_id) == event
+    runner.executor.cancel(identity, client_id)
+    store.close()
+
+
 def test_lagging_activities_block_without_fabricated_price_or_duplicate(tmp_path):
     adapter = Adapter()
     store = PortfolioStore(tmp_path / 'portfolio.sqlite')

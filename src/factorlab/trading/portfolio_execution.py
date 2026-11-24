@@ -167,13 +167,14 @@ class PortfolioExecutor:
         Omitting it claims only flat inventory; foreign holdings cannot be adopted
         implicitly. Same account/strategy/session with different inputs is an error.
         quantity_deltas optionally supplies signed broker-share order quantities;
-        omitted symbols mean no order, not liquidation. Targets are fixed against
-        the owned planning inventory, without current-price weight sizing.
+        omitted symbols mean no order, not liquidation. Remaining quantities
+        deduct this plan's fills only, without current-price weight sizing.
         signal_inputs is a serializable provenance/checkpoint snapshot included
         in immutable identity validation. Strategy preparation must retain its
         original holdings snapshot when replaying the same decision.
         """
         utc(now)
+        owned_symbols = tuple(owned_symbols)
         if not all((account_id, strategy_id, strategy_version, trading_session)):
             raise ValueError('complete rebalance identity required')
         for weight in weights.values():
@@ -213,6 +214,7 @@ class PortfolioExecutor:
                 if previous['request'] != decode(json.loads(dumps(request))):
                     raise ValueError('rebalance identity already has different targets or ownership')
                 return identity
+            self._recover_account(account_id)
             active = self.store.db.execute(
                 'SELECT id,payload FROM portfolio_plans WHERE account=? AND strategy=?',
                 (account_id, strategy_id)).fetchall()
@@ -281,7 +283,9 @@ class PortfolioExecutor:
             self.store.db.execute(
                 'UPDATE portfolio_claims SET quantity=? WHERE account=? AND symbol=?',
                 (str(quantity), account, intent.instrument_id))
-        order['filled_notional'] = order.get('filled_notional', ZERO) + delta * (event.fill_price or ZERO)
+        order['filled_notional'] = (event.cumulative_filled_notional
+            if event.cumulative_filled_notional is not None else
+            order.get('filled_notional', ZERO) + delta * (event.fill_price or ZERO))
         order['record'], order['uncertain'], order['attempted'] = updated, False, True
         self.store.save_order(order)
         self.store.db.execute('INSERT INTO portfolio_confirmations VALUES (?,?,?)',
@@ -320,6 +324,11 @@ class PortfolioExecutor:
             plan = self.store.plan(identity)
             self._recover(plan)
             self.store.save_plan(plan)
+
+    def _account_uncertain(self, account_id):
+        return any(order['uncertain'] for identity, in self.store.db.execute(
+            'SELECT id FROM portfolio_plans WHERE account=?', (account_id,)).fetchall()
+            for order in self.store.orders(identity))
 
     def _available_cash(self, account, quotes, request, now, not_before, *, exclude_id=None):
         balances = [a for a in account.assets if a.currency == self.quote_currency]
@@ -387,6 +396,18 @@ class PortfolioExecutor:
             (request['account'], request['strategy']))}
         positions = {p.instrument_id: p for p in account.positions}
         orders = self.store.orders(plan['id'])
+        if request.get('quantity_deltas') is not None:
+            executed = {}
+            for order in orders:
+                snapshot = order['record'].snapshot
+                sign = 1 if snapshot.intent.side == Side.BUY else -1
+                symbol = snapshot.intent.instrument_id
+                executed[symbol] = executed.get(symbol, ZERO) + sign * snapshot.cumulative_filled_quantity
+            for symbol in request['owned']:
+                remaining = request['quantity_deltas'].get(symbol, ZERO) - executed.get(symbol, ZERO)
+                plan['targets'][symbol] = owned[symbol] + remaining
+                if plan['targets'][symbol] < ZERO:
+                    raise ValueError('strategy order exceeds recovered owned inventory')
         if any(o['record'].snapshot.status not in TERMINAL or o['uncertain'] for o in orders):
             return []
         foreign_orders = [o for o in account.open_orders if o.status not in TERMINAL
@@ -440,8 +461,14 @@ class PortfolioExecutor:
                     quote_currency=self.quote_currency):
                 plan['targets'].setdefault(leg.symbol, leg.target)
         attempted = {o['record'].snapshot.intent.instrument_id: o for o in orders}
+        blocked_reductions = [s for s in request['owned']
+            if s not in attempted and s not in eligible and owned[s] > ZERO
+            and (s not in plan['targets'] or owned[s] > plan['targets'][s])]
         reductions = [s for s in sorted(eligible) if owned[s] > plan['targets'][s]
                       and s not in attempted]
+        if blocked_reductions and not reductions:
+            plan['phase'] = 'BLOCKED'
+            return []
         phase = 'REDUCE' if reductions else 'INCREASE'
         plan['phase'] = phase
         cash, cash_reason = self._available_cash(account, quotes, request, now, not_before)
@@ -519,7 +546,16 @@ class PortfolioExecutor:
             self._recover_account(plan['request']['account'])
             plan = self.store.plan(identity)
             account = self.adapter.read_account()
-            self._prepare(plan, account, equity, quotes, rules, now, not_before)
+            if plan.get('abandoned'):
+                self.store.save_plan(plan)
+                return RebalanceResult(identity, 'COMPLETE', dict(plan['reasons']),
+                    dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
+                                                for o in self.store.orders(identity)))
+            if self._account_uncertain(plan['request']['account']):
+                plan['phase'] = 'WAITING'
+                plan['reasons']['account'] = 'UNRESOLVED_ORDER_OUTCOME'
+            else:
+                self._prepare(plan, account, equity, quotes, rules, now, not_before)
             self.store.save_plan(plan)
         # Commit SUBMITTING before POST: a crash or an eventually-consistent 404
         # can never turn an attempted order back into an unattempted outbox entry.
@@ -528,6 +564,8 @@ class PortfolioExecutor:
             send = False
             with self.store.transaction():
                 plan = self.store.plan(identity)
+                if self._account_uncertain(plan['request']['account']):
+                    break
                 order = next(o for o in self.store.orders(identity)
                              if o['record'].snapshot.intent.client_order_id == client_id)
                 if order['attempted'] or order['uncertain']:
@@ -585,6 +623,8 @@ class PortfolioExecutor:
                     plan = self.store.plan(identity)
                     order = next(o for o in self.store.orders(identity)
                                  if o['record'].snapshot.intent.client_order_id == client_id)
+                    if self._account_uncertain(plan['request']['account']):
+                        break
                     if order['record'].snapshot.status in TERMINAL or order['uncertain']:
                         continue
                     try:
@@ -603,6 +643,14 @@ class PortfolioExecutor:
                         utc(submission_now)
                         reason = self._quote_reason(intent.instrument_id, quotes.get(intent.instrument_id),
                                                     request, submission_now, not_before)
+                        rule = rules.get(intent.instrument_id)
+                        if rule is None or not rule.tradable:
+                            reason = 'MISSING_RULES' if rule is None else 'NOT_TRADABLE'
+                        elif (intent.quantity % rule.quantity_step != ZERO
+                              or intent.quantity * intent.limit_price < rule.minimum_notional
+                              or intent.time_in_force != rule.time_in_force
+                              or (rule.price_tick is not None and intent.limit_price % rule.price_tick != ZERO)):
+                            reason = 'ORDER_RULES_CHANGED'
                         if (not account.reconciled or account.account_id != request['account']
                                 or actual != owned):
                             reason = 'ACCOUNT_RECONCILIATION_REQUIRED'
@@ -646,6 +694,23 @@ class PortfolioExecutor:
             return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
                 dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id for o in orders))
 
+    def abandon(self, identity):
+        """Stop a rebalance without releasing ownership or erasing its fills."""
+        for order in self.store.orders(identity):
+            if order['record'].snapshot.status not in TERMINAL or order['uncertain']:
+                self.cancel(identity, order['record'].snapshot.intent.client_order_id)
+        with self.store.transaction():
+            plan = self.store.plan(identity)
+            self._recover_account(plan['request']['account'])
+            if any(o['record'].snapshot.status not in TERMINAL or o['uncertain']
+                   for o in self.store.orders(identity)):
+                raise ValueError('cannot abandon unresolved orders')
+            plan = self.store.plan(identity)
+            plan['abandoned'] = True
+            plan['phase'] = 'COMPLETE'
+            plan['reasons']['plan'] = 'ABANDONED_REBALANCE'
+            self.store.save_plan(plan)
+
     def cancel(self, identity, client_order_id):
         """Cancel only this plan's child; query original identity before any retry.
 
@@ -656,7 +721,13 @@ class PortfolioExecutor:
             plan = self.store.plan(identity)
             order = next(o for o in self.store.orders(identity)
                          if o['record'].snapshot.intent.client_order_id == client_order_id)
-            self._accept(plan, order, self.adapter.query_order(client_order_id))
+            try:
+                event = self.adapter.query_order(client_order_id)
+            except SubmissionNotAttempted:
+                event = OrderEvent(client_order_id, None, OrderStatus.CANCELED, ZERO, None,
+                    self.clock(), 'local-unsubmitted-cancellation',
+                    'local-unsubmitted-cancellation:' + client_order_id)
+            self._accept(plan, order, event)
             if order['record'].snapshot.status in TERMINAL or order['uncertain']:
                 return
             order['uncertain'] = True

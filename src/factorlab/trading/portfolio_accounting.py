@@ -55,6 +55,7 @@ class ConfirmedFill:
     fee: Decimal
     reference_price: Decimal
     slippage_cost: Decimal
+    notional: Decimal
 
 
 @dataclass(frozen=True)
@@ -142,6 +143,7 @@ def build_portfolio_report(
     inventory = dict(starting_inventory)
     realized: dict[str, Decimal] = {}
     cumulative: dict[str, tuple[Decimal, Decimal]] = {}
+    notionals = {}
     seen: dict[str, OrderEvent] = {}
     fills = []
     for event in events:
@@ -165,21 +167,27 @@ def build_portfolio_report(
         reference = reference_prices[intent.client_order_id]
         decimal_value(reference, "reference price", positive=True)
         price = event.fill_price
+        previous_notional = notionals.get(intent.client_order_id, ZERO)
+        amount = (quantity * price if event.cumulative_filled_notional is None else
+                  event.cumulative_filled_notional - previous_notional)
+        if amount <= ZERO:
+            raise ValueError('positive incremental fill notional required')
+        notionals[intent.client_order_id] = previous_notional + amount
         owned = inventory.get(intent.instrument_id, OwnedPosition(ZERO, ZERO))
         pnl = ZERO
         if intent.side == Side.BUY:
-            updated = OwnedPosition(owned.quantity + quantity, owned.cost_basis + quantity * price + fee)
+            updated = OwnedPosition(owned.quantity + quantity, owned.cost_basis + amount + fee)
         else:
             if quantity > owned.quantity:
                 raise ValueError("sell exceeds explicitly owned inventory")
             removed_basis = owned.cost_basis if quantity == owned.quantity else owned.cost_basis * quantity / owned.quantity
-            pnl = quantity * price - fee - removed_basis
+            pnl = amount - fee - removed_basis
             updated = OwnedPosition(owned.quantity - quantity, owned.cost_basis - removed_basis)
         inventory[intent.instrument_id] = updated
         realized[intent.instrument_id] = realized.get(intent.instrument_id, ZERO) + pnl
-        slippage = quantity * (price - reference) * (Decimal(1) if intent.side == Side.BUY else Decimal(-1))
+        slippage = (amount - quantity * reference) * (Decimal(1) if intent.side == Side.BUY else Decimal(-1))
         fills.append(ConfirmedFill(event.event_id, intent.client_order_id, intent.instrument_id,
-                                   intent.side, quantity, price, fee, reference, slippage))
+                                   intent.side, quantity, price, fee, reference, slippage, amount))
         cumulative[intent.client_order_id] = (event.cumulative_filled_quantity, event.cumulative_fee)
 
     actual = {}
@@ -219,7 +227,7 @@ def build_portfolio_report(
     if len({item.adjustment_id for item in adjustments}) != len(adjustments):
         raise ValueError("duplicate research adjustment")
     adjustment = sum((item.amount for item in adjustments), ZERO)
-    notional = sum((fill.quantity * fill.price for fill in fills), ZERO)
+    notional = sum((fill.notional for fill in fills), ZERO)
     return PortfolioReport(
         official_equity, cash, available, cash / official_equity,
         Decimal(1) - sum(target_weights.values(), ZERO), tuple(adjustments), adjustment,
