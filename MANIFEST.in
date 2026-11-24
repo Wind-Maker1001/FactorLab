@@ -6,6 +6,7 @@ recursive-include configs/console *.json
 recursive-include src/factorlab/console/static *.html *.css *.js
 recursive-include requirements *.txt
 recursive-include tests *.py *.json *.parquet *.csv
+recursive-include tests/fixtures/v69_original *.md *.txt
 recursive-include docs/user *.md
 recursive-include examples/research *.py
 prune docs/migration
