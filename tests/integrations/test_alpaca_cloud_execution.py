@@ -110,6 +110,40 @@ def test_original_flat_week_commits_once_and_survives_new_process_state(tmp_path
     resumed.close()
 
 
+@pytest.mark.parametrize('observed_at', [
+    datetime(2026, 11, 24, 15, tzinfo=timezone.utc),
+    datetime(2026, 11, 30, 15, tzinfo=timezone.utc),
+])
+def test_late_midweek_receipts_are_retained_across_weekly_cutoffs(tmp_path, monkeypatch, observed_at):
+    import factorlab.integrations.alpaca.cloud_execution as module
+    service, _ = inputs()
+    class FlatOriginal:
+        def decide(self, event, checkpoint):
+            return dict(weights=dict.fromkeys(ASSETS, 0.), orders=[], state={})
+    monkeypatch.setattr(module, 'V69Strategy', FlatOriginal)
+    adapter = Adapter()
+    worker = WeeklyExecution(tmp_path, adapter, clock=lambda: NOW)
+    worker.tick(service, weekly_window(service.calendar, NOW), NOW, adapter.read_account_details())
+    identity = worker.identity
+    receipt = dict(id='late-midweek-receipt', activity_type='REORG',
+                   symbol='EXTERNAL', date='2026-11-24', net_amount='0')
+    boundaries = []
+    def activities(*, after):
+        boundaries.append(after)
+        return [receipt] if after < '2026-11-24T12:00:00Z' else []
+    adapter.read_corporate_activities = activities
+    worker.clock = lambda: observed_at
+    worker.tick(service, weekly_window(service.calendar, observed_at), observed_at,
+                adapter.read_account_details())
+    expected_start = '2026-11-20' if observed_at.day == 24 else '2026-11-23'
+    assert boundaries == [expected_start + 'T00:00:00Z']
+    assert module.CorporateReceiptJournal(worker.store, 'paper').read(receipt['id']) == receipt
+    if observed_at.day == 24:
+        assert worker.identity == identity
+        assert worker.execution['state'] == 'IDLE'
+    worker.close()
+
+
 def test_frozen_preparation_blocks_changed_holdings_before_task_commit(tmp_path, monkeypatch):
     from dataclasses import replace
     import factorlab.integrations.alpaca.cloud_execution as module

@@ -105,7 +105,8 @@ class CorporateReceiptJournal:
                     strategy_id=strategy_id, actions=actions)
             except ValueError as error:
                 if str(error) not in {'corporate action does not reconcile to official shares',
-                                      'corporate action requires settled original orders'}:
+                                      'corporate action requires settled original orders',
+                                      'cannot mix effective-time and legacy anchored corporate actions'}:
                     raise
                 blocked[symbol] = str(error)
         return blocked

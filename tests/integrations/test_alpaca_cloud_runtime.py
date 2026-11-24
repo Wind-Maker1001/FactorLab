@@ -73,6 +73,18 @@ def test_health_staleness_and_stopped(tmp_path):
     assert not health(tmp_path, at=at('2026-11-24T15:00:30'))['healthy']
 
 
+@pytest.mark.parametrize('market_state', ['STARTING', 'RECOVERING', 'RECONNECTING', 'FAILED', 'CONNECTED'])
+def test_health_requires_recovered_market_stream(tmp_path, market_state):
+    runtime = Supervisor(tmp_path, AlpacaConfig('key', 'secret'))
+    runtime.health.update(account_recovered=True, trade_stream='CONNECTED',
+                          market_rest={'missing_symbols': [], 'fresh_quotes': True},
+                          schedule={'market_open': True})
+    runtime.market.update(state=market_state)
+    assert runtime.publish()['healthy'] == (market_state == 'CONNECTED')
+    runtime.adapter.store.db.close()
+    runtime.store.db.close()
+
+
 def test_acceptance_uses_same_owner_lock_and_systemd_configuration(tmp_path, monkeypatch):
     from contextlib import contextmanager
     import factorlab.integrations.alpaca.cloud_runtime as module
@@ -137,6 +149,24 @@ def test_disconnect_restarts_session_without_submitting(tmp_path, monkeypatch):
     assert not result['healthy']
 
 
+def test_market_worker_failure_exits_without_waiting_for_service_stop(tmp_path, monkeypatch):
+    import threading
+    import factorlab.integrations.alpaca.cloud_runtime as module
+    stop = threading.Event()
+    def invalid_bars(*args, **kwargs):
+        raise ValueError('malformed market bars')
+    monkeypatch.setattr(module.MarketDataClient, 'bars', invalid_bars)
+    worker = module.MarketWorker(AlpacaConfig('key', 'secret'), tmp_path, ('AAPL',), stop)
+    worker.thread.start()
+    worker.thread.join(timeout=5)
+    exited = not worker.thread.is_alive()
+    stop.set()
+    worker.thread.join(timeout=5)
+    assert exited
+    assert worker.snapshot()['state'] == 'FAILED'
+    assert worker.snapshot()['error'] == 'ValueError'
+
+
 def test_market_failure_preserves_account_recovery_and_revokes_old_quotes(tmp_path, monkeypatch):
     import factorlab.integrations.alpaca.cloud_runtime as module
     monkeypatch.setattr(module, 'now', lambda: at('2026-11-24T15:00:00'))
@@ -157,6 +187,50 @@ def test_market_failure_preserves_account_recovery_and_revokes_old_quotes(tmp_pa
     assert not result['market_available']
     assert not result['healthy']
     assert result['error'] == 'MarketDataError'
+    runtime.adapter.store.db.close()
+    runtime.store.db.close()
+
+
+@pytest.mark.parametrize('blocked', [False, True])
+def test_execution_report_includes_corporate_cash_and_preserves_blocked_account_observation(
+        tmp_path, monkeypatch, blocked):
+    from dataclasses import dataclass
+    from decimal import Decimal as D
+    from types import SimpleNamespace
+    import factorlab.integrations.alpaca.cloud_runtime as module
+    observed = at('2026-11-24T15:00:00')
+    monkeypatch.setattr(module, 'now', lambda: observed)
+    runtime = Supervisor(tmp_path, AlpacaConfig('key', 'secret'))
+    runtime.calendar_day = observed.date()
+    runtime.service = SimpleNamespace(calendar=calendar())
+    runtime.adapter.recover = lambda: SimpleNamespace(reconciled=True)
+    runtime.adapter.read_account_details = lambda: SimpleNamespace(equity=D(100), cash=D(100))
+    runtime.adapter.http.request = lambda *args, **kwargs: []
+    runtime.client.latest = lambda *args: ({'quotes': {
+        symbol: {'t': observed.isoformat()} for symbol in runtime.symbols}}, observed)
+    runtime.client.clock = lambda: ({'is_open': True}, observed)
+    @dataclass
+    class Accounting:
+        realized_pnl: D = D(2)
+        unrealized_pnl: D = D(-1)
+        corporate_cash_flow: D = D('.5')
+        initial_capital: D = D(100)
+    def report(identity):
+        assert not blocked
+        return Accounting()
+    runtime.execution = SimpleNamespace(identity='persisted-task',
+        state={'state': 'PREPARATION_INCOMPLETE' if blocked else 'WEEK_COMPLETE'},
+        execution={'state': 'BLOCKED_INPUTS' if blocked else 'COMPLETE'},
+        tick=lambda *args: None,
+        store=SimpleNamespace(plan=lambda identity: {'request': {
+            'weights': {'AAPL': D(0)}, 'signal_inputs': {'checkpoint': 'retained'}}}),
+        runner=SimpleNamespace(report=report))
+    runtime.poll()
+    result = json.loads((tmp_path / 'reports/2026-11-24.json').read_text())
+    assert result['equity'] == '100'
+    assert result['original_v69_task']['identity'] == 'persisted-task'
+    assert result['execution_ledger_return'] == (None if blocked else '0.015')
+    assert (result['original_v69_task']['accounting'] is None) == blocked
     runtime.adapter.store.db.close()
     runtime.store.db.close()
 

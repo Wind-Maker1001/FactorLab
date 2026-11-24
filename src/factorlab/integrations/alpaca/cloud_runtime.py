@@ -215,15 +215,20 @@ class MarketWorker:
                     await asyncio.sleep(delay)
                     delay = min(60, delay * 2)
 
+        async def wait_for_stop():
+            while not self.stop.is_set():
+                await asyncio.sleep(1)
+
         task = asyncio.create_task(events())
-        stopped = asyncio.create_task(asyncio.to_thread(self.stop.wait))
+        stopped = asyncio.create_task(wait_for_stop())
         try:
             done, _ = await asyncio.wait((task, stopped), return_when=asyncio.FIRST_COMPLETED)
             if task in done:
                 await task
         finally:
             task.cancel()
-            await asyncio.gather(task, return_exceptions=True)
+            stopped.cancel()
+            await asyncio.gather(task, stopped, return_exceptions=True)
             db.close()
 
 
@@ -263,7 +268,7 @@ class Supervisor:
             and (not market_open or rest['fresh_quotes']))
         value['healthy'] = (value['account_recovered'] and value['error'] is None
                             and value['trade_stream'] == 'CONNECTED'
-                            and value['market_available'] and value['market']['state'] != 'FAILED')
+                            and value['market_available'] and value['market']['state'] == 'CONNECTED')
         atomic_json(self.root / 'health.json', value)
         return value
 
@@ -327,12 +332,16 @@ class Supervisor:
             if self.execution and self.execution.identity:
                 from dataclasses import asdict
                 plan = self.execution.store.plan(self.execution.identity)
-                accounting = self.execution.runner.report(self.execution.identity)
                 report['target_weights'] = {s: str(w) for s, w in plan['request']['weights'].items()}
                 report['original_v69_task'] = dict(identity=self.execution.identity,
-                    signal_inputs=plan['request']['signal_inputs'], accounting=asdict(accounting))
-                report['execution_ledger_return'] = str(
-                    (accounting.realized_pnl + accounting.unrealized_pnl) / accounting.initial_capital)
+                    signal_inputs=plan['request']['signal_inputs'], accounting=None)
+                report['execution_ledger_return'] = None
+                if self.execution.execution['state'] != 'BLOCKED_INPUTS':
+                    accounting = self.execution.runner.report(self.execution.identity)
+                    report['original_v69_task']['accounting'] = asdict(accounting)
+                    report['execution_ledger_return'] = str(
+                        (accounting.realized_pnl + accounting.unrealized_pnl + accounting.corporate_cash_flow)
+                        / accounting.initial_capital)
             report['actual_weights'] = {p['symbol']: str(Decimal(p['market_value']) / facts.equity)
                                         for p in report['positions']} if facts.equity else {}
             self.store.report(at, report)

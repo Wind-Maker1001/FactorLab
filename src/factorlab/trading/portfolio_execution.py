@@ -385,7 +385,12 @@ class PortfolioExecutor:
                     raise ValueError('corporate action requires explicit inventory ownership')
                 quantities[symbol] = D(claim[0])
                 initial[symbol] = D(claim[1])
-            if any('effective_at' in terms for terms in pending):
+            for terms in pending:
+                if 'effective_at' not in terms:
+                    ids = {order['record'].snapshot.intent.client_order_id for order in orders}
+                    terms['after_event_id'] = next((event.event_id for event in reversed(confirmations)
+                                                   if event.client_order_id in ids), None)
+            if any('effective_at' in terms for terms in saved + pending):
                 from .portfolio_accounting import corporate_action_timeline
                 intents = {order['record'].snapshot.intent.client_order_id:
                            order['record'].snapshot.intent for order in orders}
@@ -418,11 +423,6 @@ class PortfolioExecutor:
                 if actual != quantity:
                     raise ValueError('corporate action does not reconcile to official shares')
             for terms in pending:
-                if 'effective_at' not in terms:
-                    ids = {order['record'].snapshot.intent.client_order_id for order in orders
-                           if order['record'].snapshot.intent.instrument_id == terms['symbol']}
-                    terms['after_event_id'] = next((event.event_id for event in reversed(confirmations)
-                                                   if event.client_order_id in ids), None)
                 self.store.db.execute('INSERT INTO portfolio_corporate_actions VALUES (?,?,?,?)',
                                       (account_id, strategy_id, terms['id'], dumps(terms)))
             for symbol, quantity in quantities.items():

@@ -3,6 +3,7 @@ from datetime import timedelta
 from decimal import Decimal as D
 import json
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -79,7 +80,27 @@ class WeeklyExecution:
             self.runner.executor.transfer_flat_ownership(account_id=account,
                 from_strategy='ALP-E03 TEST', to_strategy='V69_CAUSAL', symbols=symbols)
 
-    def prepare(self, service, window, at, facts):
+    def reconcile_corporate_actions(self, account, cutoff, session):
+        first = self.store.db.execute(
+            'SELECT MIN(session) FROM portfolio_plans WHERE account=? AND strategy=?',
+            (account, 'V69_CAUSAL')).fetchone()[0]
+        since = min(first, cutoff) if first else cutoff
+        announcements = self.adapter.http.request('GET', '/v2/corporate_actions/announcements',
+            params={'ca_types': 'dividend,merger,spinoff,split', 'since': since,
+                    'until': session, 'date_type': 'ex_date'})
+        if len(announcements) >= 1000:
+            raise PreparationIncomplete('SATURATED_CORPORATE_ACTION_WINDOW')
+        after = since + 'T00:00:00Z'
+        receipts = self.adapter.read_corporate_activities(after=after)
+        blocked = CorporateReceiptJournal(self.store, account).reconcile(
+            self.runner.executor, strategy_id='V69_CAUSAL',
+            announcements=announcements, receipts=receipts)
+        affected_blocks = {symbol: reason for symbol, reason in blocked.items() if symbol in ASSETS}
+        if affected_blocks:
+            raise PreparationIncomplete('CORPORATE_RECEIPTS:' + json.dumps(affected_blocks, sort_keys=True))
+        return announcements, receipts, after
+
+    def prepare(self, service, window, at, facts, *, corporate_evidence=None):
         session, cutoff = window['execution_session'], window['signal_cutoff']
         directory = self.root / 'signals'
         directory.mkdir(mode=0o700, exist_ok=True)
@@ -109,18 +130,8 @@ class WeeklyExecution:
                 prepared.adjusted_close.isna().any().any() or
                 prepared.adjusted_volume.isna().any().any()):
             raise PreparationIncomplete('INCOMPLETE_PRIOR_SESSION_MATRICES')
-        announcements = self.adapter.http.request('GET', '/v2/corporate_actions/announcements',
-            params={'ca_types': 'dividend,merger,spinoff,split', 'since': cutoff,
-                    'until': session, 'date_type': 'ex_date'})
-        if len(announcements) >= 1000:
-            raise PreparationIncomplete('SATURATED_CORPORATE_ACTION_WINDOW')
-        receipts = self.adapter.read_corporate_activities(after=cutoff + 'T00:00:00Z')
-        blocked = CorporateReceiptJournal(self.store, facts.account_id).reconcile(
-            self.runner.executor, strategy_id='V69_CAUSAL',
-            announcements=announcements, receipts=receipts)
-        affected_blocks = {symbol: reason for symbol, reason in blocked.items() if symbol in ASSETS}
-        if affected_blocks:
-            raise PreparationIncomplete('CORPORATE_RECEIPTS:' + json.dumps(affected_blocks, sort_keys=True))
+        announcements, receipts, receipts_after = (corporate_evidence if corporate_evidence is not None
+            else self.reconcile_corporate_actions(facts.account_id, cutoff, session))
         affected = set().union(*(
             {row['initiating_symbol'], row['target_symbol']} & set(ASSETS)
             for row in announcements if row['ex_date'] == session))
@@ -183,7 +194,7 @@ class WeeklyExecution:
                 'execution_basis_acquired_at': self.clock().isoformat(),
                 'announcements': announcements,
                 'corporate_receipt_ids': [row['id'] for row in receipts],
-                'corporate_receipts_after': cutoff + 'T00:00:00Z',
+                'corporate_receipts_after': receipts_after,
                 'action_ids': [row['id'] for row in announcements]})
         temporary = frozen.with_suffix('.tmp')
         temporary.write_text(dumps(inputs) + '\n', encoding='utf-8')
@@ -202,6 +213,13 @@ class WeeklyExecution:
     def tick(self, service, window, at, facts):
         self.handover(facts.account_id)
         plan = self.last_plan(facts.account_id)
+        try:
+            corporate_evidence = self.reconcile_corporate_actions(facts.account_id,
+                window['signal_cutoff'], at.astimezone(ZoneInfo('America/New_York')).date().isoformat())
+        except PreparationIncomplete as error:
+            self.state.update(state='PREPARATION_INCOMPLETE', reason=str(error))
+            self.execution.update(state='BLOCKED_INPUTS')
+            return
         if plan is not None:
             self.identity = plan['id']
             if plan['phase'] != 'COMPLETE' and not (
@@ -220,7 +238,8 @@ class WeeklyExecution:
             return
         if plan is None or plan['request']['session'] != window['execution_session']:
             try:
-                self.identity = self.prepare(service, window, at, facts)
+                self.identity = self.prepare(service, window, at, facts,
+                                             corporate_evidence=corporate_evidence)
             except PreparationIncomplete as error:
                 self.state.update(state='PREPARATION_INCOMPLETE', reason=str(error))
                 self.execution.update(state='BLOCKED_INPUTS')

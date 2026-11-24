@@ -150,7 +150,8 @@ def test_split_blocks_unsubmitted_pre_action_intent_after_restart(setup, tmp_pat
     reopened.close()
 
 
-def test_spinoff_retains_child_inventory_and_allocates_official_cost_basis(setup):
+@pytest.mark.parametrize('timed', [True, False])
+def test_spinoff_retains_child_inventory_and_allocates_official_cost_basis(setup, timed):
     broker, store, executor = setup
     identity = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
     run(executor, identity)
@@ -161,6 +162,8 @@ def test_spinoff_retains_child_inventory_and_allocates_official_cost_basis(setup
                   effective_at=NOW + timedelta(hours=1),
                   allocations=[dict(symbol='CHILD', quantity=D(1), basis_fraction=D('.2'))],
                   evidence={'activity': 'official-SSO', 'cost_allocation': 'official-statement'})
+    if not timed:
+        action.pop('effective_at')
     args = dict(account_id='paper', strategy_id='test', actions=[action])
     executor.record_corporate_actions(**args)
     executor.record_corporate_actions(**args)
@@ -174,11 +177,15 @@ def test_spinoff_retains_child_inventory_and_allocates_official_cost_basis(setup
     dividend = dict(id='post-spin-dividend', symbol='AAPL', quantity_ratio=D(1),
                     basis_ratio=D(1), cash_flow=D('.5'),
                     effective_at=NOW + timedelta(hours=2), evidence={'activity': 'official-DIV'})
+    if not timed:
+        dividend.pop('effective_at')
     executor.record_corporate_actions(account_id='paper', strategy_id='test', actions=[dividend])
     broker.positions['CHILD'] = D(2)
     child_split = dict(id='child-split', symbol='CHILD', quantity_ratio=D(2),
                        basis_ratio=D(1), cash_flow=D(0),
                        effective_at=NOW + timedelta(hours=3), evidence={'activity': 'official-SSP-child'})
+    if not timed:
+        child_split.pop('effective_at')
     executor.record_corporate_actions(account_id='paper', strategy_id='test', actions=[child_split])
     report = executor.report(identity, official_equity=D(110))
     rows = {row.instrument_id: row for row in report.positions}
@@ -187,6 +194,46 @@ def test_spinoff_retains_child_inventory_and_allocates_official_cost_basis(setup
     assert rows['AAPL'].owned_cost_basis == D(40)
     assert report.corporate_cash_flow == D('.5')
     assert len(broker.posts) == 1
+
+
+@pytest.mark.parametrize('timed_first', [True, False])
+def test_unrelated_timed_and_anchored_actions_remain_reportable(setup, timed_first):
+    broker, store, executor = setup
+    identity = create(executor, symbols=('AAPL', 'QQQ'))
+    run(executor, identity)
+    run(executor, identity)
+    anchored = dict(id='anchored-aapl', symbol='AAPL', quantity_ratio=D(2),
+                    basis_ratio=D(1), cash_flow=D(0), evidence={'receipt': 'split'})
+    timed = dict(id='timed-qqq', symbol='QQQ', quantity_ratio=D(1),
+                 basis_ratio=D(1), cash_flow=D('.5'), effective_at=NOW + timedelta(hours=1),
+                 evidence={'receipt': 'dividend'})
+    for action in ([timed, anchored] if timed_first else [anchored, timed]):
+        if action is anchored:
+            broker.positions['AAPL'] *= 2
+        executor.record_corporate_actions(account_id='paper', strategy_id='test', actions=[action])
+    report = executor.report(identity, official_equity=D(150))
+    rows = {row.instrument_id: row for row in report.positions}
+    assert rows['AAPL'].owned_quantity == D(10)
+    assert rows['QQQ'].owned_quantity == D(5)
+    assert rows['AAPL'].owned_cost_basis == rows['QQQ'].owned_cost_basis == D(50)
+    assert report.corporate_cash_flow == D('.5')
+
+
+def test_connected_mixed_chronology_refuses_before_committing(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
+    run(executor, identity)
+    run(executor, identity)
+    executor.record_corporate_action(account_id='paper', strategy_id='test',
+        event_id='timed-dividend', symbol='AAPL', quantity_ratio=D(1), basis_ratio=D(1),
+        cash_flow=D('.5'), effective_at=NOW + timedelta(hours=1), evidence={'receipt': 'dividend'})
+    broker.positions['AAPL'] *= 2
+    with pytest.raises(ValueError, match='cannot mix'):
+        executor.record_corporate_action(account_id='paper', strategy_id='test',
+            event_id='ambiguous-split', symbol='AAPL', quantity_ratio=D(2), basis_ratio=D(1),
+            cash_flow=D(0), evidence={'receipt': 'split'})
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 1
+    assert D(store.db.execute('SELECT quantity FROM portfolio_claims').fetchone()[0]) == D(5)
 
 
 def test_late_split_replays_before_post_effective_fill(setup):

@@ -37,7 +37,20 @@ def corporate_action_timeline(events, corporate_actions):
     if not timed:
         return timeline
     if anchors:
-        raise ValueError('cannot mix effective-time and legacy anchored corporate actions')
+        def symbols(action):
+            return {action['symbol']} | {item['symbol'] for item in action.get('allocations', ())}
+        timed_symbols = set().union(*(symbols(action) for action in timed))
+        if any(symbols(action) & timed_symbols for actions in anchors.values() for action in actions):
+            raise ValueError('cannot mix effective-time and legacy anchored corporate actions')
+        boundaries = {event.event_id: event.event_time for event in events}
+        def order(item):
+            if not isinstance(item, Mapping):
+                return (1, item.event_time, 1)
+            if 'effective_at' in item:
+                return (1, item['effective_at'], 0)
+            anchor = item['after_event_id']
+            return (0, None, 0) if anchor is None else (1, boundaries[anchor], 2)
+        return sorted([*timeline, *timed], key=order)
     return sorted([*events, *timed], key=lambda item:
         (item['effective_at'], 0) if isinstance(item, Mapping) else (item.event_time, 1))
 
