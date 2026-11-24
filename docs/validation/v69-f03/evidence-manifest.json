@@ -1,0 +1,12 @@
+{
+  "cloud_runtime_commit": "201d76ad2a67257127bfb7f9a0f1e01a8d339230",
+  "files_sha256": {
+    "closed-account.json": "a45e08215848635620093cc6f60d43a6c3faab10a894b3404f9672d61ee94c95",
+    "f04-observer-health.json": "3332182418b99f6c2dc645deef735a989f499cf269030a5f0a25a2b461effba8",
+    "mailbox-open-account.json": "d0ca90e8091fa6c7d381981cb59724a6f9ba4a44c9cc3065e3295ca928dac101",
+    "mailbox-restart-held.jsonl": "d4d578b95cf41e75a0b1be31728950d1ddbb67abac81e2f3838184739ac2eb28",
+    "open-account.json": "5e0edd3f5c5247aa96361e7b793875d9611bdeca54c3be224df61a51bc015882",
+    "owner-journals.json": "ef74056077698f91f55b8e97e91f3e2d400b25579cb7f3d2c5bf330d22483cad",
+    "restart-held.json": "8ac0e949d6ae44dc931c96c366cb06fc43383c0256796b045f9c60efc021b9b1"
+  }
+}

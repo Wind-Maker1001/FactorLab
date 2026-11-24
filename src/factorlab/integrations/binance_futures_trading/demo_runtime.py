@@ -123,6 +123,10 @@ class DemoRuntime:
                 parameters TEXT NOT NULL, receipt TEXT,
                 PRIMARY KEY (campaign, method, client_id)
             );
+            CREATE TABLE IF NOT EXISTS exit_budget_reservations (
+                authorization TEXT NOT NULL, entry_id TEXT PRIMARY KEY,
+                exit_id TEXT UNIQUE NOT NULL, notional TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS dispatch_retry_history (
                 campaign TEXT NOT NULL, method TEXT NOT NULL, client_id TEXT NOT NULL,
                 parameters TEXT NOT NULL, receipt TEXT
@@ -476,8 +480,19 @@ class DemoRuntime:
                 "SELECT campaign, client_id FROM dispatches WHERE method='POST'") if owner in owners]
         return DemoNetworkAuthorization(plan, cancellation_ids=cancellation_ids)
 
+    def release_unfilled_exit_reservations(self, orders):
+        """Release only a GET-confirmed terminal entry with no actual fills."""
+        from factorlab.trading.contracts import TERMINAL
+        with self.db:
+            for entry_id, in self.db.execute('SELECT entry_id FROM exit_budget_reservations').fetchall():
+                record = orders.get(entry_id)
+                if (record is not None and record.snapshot.status in TERMINAL
+                        and not record.snapshot.reconcile_required
+                        and record.snapshot.cumulative_filled_quantity == 0):
+                    self.db.execute('DELETE FROM exit_budget_reservations WHERE entry_id=?', (entry_id,))
+
     def reserve(self, campaign, method, params, plan, *, expected, facts, dispatch_gate=None,
-                cancel_recovered_at=None):
+                cancel_recovered_at=None, exit_reservation=None):
         """Consume POST once; retry DELETE only after a newer GET confirms it active."""
         client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
         continuous = campaign.get('authorization') is not None
@@ -519,9 +534,31 @@ class DemoRuntime:
                         raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
                     consumed = self.consumption(authorization)
                     notional = Decimal(params['quantity']) * Decimal(params['price'])
-                    if (consumed['posts'] >= authorization['total_orders']
-                            or Decimal(consumed['submitted_notional']) + notional > Decimal(authorization['total_notional'])):
-                        raise SafetyBlocked('global Demo trading budget exhausted')
+                    reservations = self.db.execute(
+                        'SELECT exit_id, notional FROM exit_budget_reservations WHERE authorization=?',
+                        (authorization['id'],)).fetchall()
+                    own_exit = next((Decimal(amount) for key, amount in reservations if key == client_id), None)
+                    if own_exit is not None and (params['reduceOnly'] != 'true' or notional > own_exit):
+                        raise SafetyBlocked('reserved exit must reduce inventory within its notional budget')
+                    held = [(key, Decimal(amount)) for key, amount in reservations if key != client_id]
+                    extra_posts, extra_notional = 0, Decimal(0)
+                    if exit_reservation is not None:
+                        exit_id, extra_notional = exit_reservation
+                        if (params['side'] != 'BUY' or params['reduceOnly'] != 'false'
+                                or not exit_id.startswith(campaign['prefix'] + '-')
+                                or exit_id == client_id or not extra_notional.is_finite() or extra_notional <= 0):
+                            raise SafetyBlocked('invalid conformance exit reservation')
+                        extra_posts = 1
+                    if (consumed['posts'] + len(held) + 1 + extra_posts > authorization['total_orders']
+                            or Decimal(consumed['submitted_notional']) + sum((amount for _, amount in held), Decimal(0))
+                                + notional + extra_notional > Decimal(authorization['total_notional'])
+                            or count + 1 + extra_posts > campaign['orders']):
+                        raise SafetyBlocked('global Demo trading budget exhausted or reserved for exit')
+                    if exit_reservation is not None:
+                        self.db.execute('INSERT INTO exit_budget_reservations VALUES (?, ?, ?, ?)',
+                            (authorization['id'], client_id, exit_id, str(extra_notional)))
+                    if own_exit is not None:
+                        self.db.execute('DELETE FROM exit_budget_reservations WHERE exit_id=?', (client_id,))
                 funds = facts.usdt()
                 if Decimal(campaign['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit']) >= plan.max_loss:
                     raise SafetyBlocked('persistent Demo loss budget exhausted')

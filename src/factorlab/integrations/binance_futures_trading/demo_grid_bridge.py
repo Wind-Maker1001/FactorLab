@@ -183,6 +183,8 @@ class DemoGridBridge:
         facts = self.gateway.adapter.facts
         funds = facts.usdt()
         positions = snapshot.positions
+        if self.session is not None and self.session.shared_account:
+            positions = tuple(p for p in positions if p.instrument_id == self.grid.instrument_id)
         if any(p.instrument_id != self.grid.instrument_id or p.quantity < 0 for p in positions):
             raise SafetyBlocked('dedicated long-only NVDA account required')
         inventory = sum((p.quantity for p in positions), ZERO)
@@ -190,7 +192,8 @@ class DemoGridBridge:
         committed = sum((p.quantity * max(p.entry_price, p.mark_price, quote) for p in positions), ZERO)
         committed += sum(((o.intent.quantity - o.cumulative_filled_quantity)
                          * max(o.intent.limit_price or quote, quote)
-                         for o in snapshot.open_orders if o.intent.side is Side.BUY), ZERO)
+                         for o in snapshot.open_orders if o.intent.side is Side.BUY
+                         and o.intent.instrument_id == self.grid.instrument_id), ZERO)
         for cursor, event in self._events_after(self.turnover_cursor):
             self.turnover_cursor = cursor
             if not isinstance(event, OrderEvent):
@@ -420,7 +423,7 @@ class DemoGridBridge:
             reason = ('ORDER_UNKNOWN' if unknown else
                       'WRITE_UNCERTAIN' if uncertain or pending_recovery else 'RECONCILE_REQUIRED')
             return dict(phase='EXIT_RECONCILING', reason=reason, entry_blocked=True,
-                        inventory=None if facts is None else sum((p.quantity for p in facts.shared().positions), ZERO),
+                        inventory=None if facts is None else sum((p.quantity for p in facts.shared().positions if p.instrument_id == self.grid.instrument_id), ZERO),
                         active_exit_order_id=None, attempts=attempts, max_attempts=self.exit_max_attempts)
         reconciled = bool(status['reconciled'] if status is not None else self.controller.account().reconciled)
         if not reconciled:
@@ -429,7 +432,8 @@ class DemoGridBridge:
                         attempts=attempts, max_attempts=self.exit_max_attempts)
         account = self.account()
         inventory = account.inventory
-        open_orders = self.controller.account().open_orders
+        open_orders = tuple(o for o in self.controller.account().open_orders
+                            if o.intent.instrument_id == self.grid.instrument_id)
         open_buys = [o for o in open_orders if o.intent.side is Side.BUY]
         open_sells = [o for o in open_orders if o.intent.side is Side.SELL and o.intent.reduce_only]
         active_exit_id = open_sells[0].intent.client_order_id if open_sells else None
@@ -490,7 +494,8 @@ class DemoGridBridge:
             raise SafetyBlocked('RECONCILE_REQUIRED')
 
         self.withdraw_unsubmitted()
-        open_orders = self.controller.account().open_orders
+        open_orders = tuple(o for o in self.controller.account().open_orders
+                            if o.intent.instrument_id == self.grid.instrument_id)
 
         # Cancel any resting BUY order first so entry stays blocked and the single open-order slot is freed.
         for order in open_orders:
@@ -630,7 +635,7 @@ class DemoGridBridge:
                 self.ready = result is not None and not (self.session and self.session.write_uncertain)
                 self._sync()
                 return result
-        if self.controller.account().open_orders:
+        if any(o.intent.instrument_id == self.grid.instrument_id for o in self.controller.account().open_orders):
             return None
         for order in self.grid.active:
             intent = order.intent

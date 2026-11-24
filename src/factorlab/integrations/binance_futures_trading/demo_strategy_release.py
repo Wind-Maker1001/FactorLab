@@ -308,6 +308,7 @@ class ReleaseConsumer:
         """GET-reconcile shared account for non-legacy strategies without injecting askPrice quote conflicts."""
         session = self.bridge.session
         session.recover()
+        self.bridge.runtime.release_unfilled_exit_reservations(self.bridge.gateway.state.orders)
         collection = self.base.supervisor.collection if self.base.supervisor else None
         if collection is None:
             book = session._fresh_book()
@@ -345,8 +346,15 @@ class ReleaseConsumer:
                 raise SafetyBlocked('strategy order ownership mismatch')
             if self._expected is not None and self._expected[0] == key:
                 effective_expected = self._expected
+        reservation = None
+        if method == 'POST' and params['side'] == 'BUY':
+            manifest = self._package_manifest(row['version'])
+            configuration = manifest['configuration'] if manifest is not None else {}
+            if 'exit_budget_notional' in configuration:
+                reservation = (key.removesuffix('-entry') + '-exit',
+                               Decimal(configuration['exit_budget_notional']))
         runtime.reserve(campaign, method, params, plan, expected=effective_expected, facts=facts,
-                        dispatch_gate=self.gate,
+                        dispatch_gate=self.gate, exit_reservation=reservation,
                         cancel_recovered_at=self.bridge.session.last_reconciled_at)
         return True
 
@@ -394,6 +402,11 @@ class ReleaseConsumer:
                         if runner._runtime()['status'] == 'PAUSED':
                             runner.controller._atomic(lambda: runner._runtime().update(status='STARTING'))
                         runner.sync_reconciled()
+                        self.maintenance = True
+                        try:
+                            runner.dispatch_cancellations(self.bridge.controller.clock())
+                        finally:
+                            self.maintenance = False
                     if 'closed_bar' not in loaded.spec.data_types:
                         self.base.live_bar = True
                         self.base.reason = None
@@ -408,6 +421,21 @@ class ReleaseConsumer:
         else:
             self.base.before_poll()
 
+    def history_watermark(self):
+        """Current version's durable input boundary, independent of the feed cursor."""
+        state = self.store.snapshot()
+        if self.store.pending() or not self.running or not self._is_decision_package(state['active']):
+            return None
+        _, loaded, runner = self._load_decision_runner(state['active'])
+        if 'closed_bar' not in loaded.spec.data_types:
+            return None
+        bars = runner._runtime()['bars']
+        return bars[-1]['closed_at'] if bars else None
+
+    def history_paused(self, reason):
+        self.base.live_bar = False
+        self.base.reason = reason
+
     def historical_bar(self, bar):
         state = self.store.snapshot()
         if self.store.pending():
@@ -417,9 +445,10 @@ class ReleaseConsumer:
         if self._is_decision_package(state['active']) and self.running and bar.complete:
             try:
                 _, loaded, runner = self._load_decision_runner(state['active'])
-                if isinstance(runner, DemoStrategyRuntime) and 'closed_bar' in loaded.spec.data_types:
-                    runner.clear_pending(freshness_boundary=max(self.base.eligible_after, bar.closed_at))
-                    return runner.closed_bar(bar)
+                if 'closed_bar' in loaded.spec.data_types:
+                    if isinstance(runner, DemoStrategyRuntime):
+                        runner.clear_pending(freshness_boundary=max(self.base.eligible_after, bar.closed_at))
+                    return runner.historical_bar(bar)
             except (StrategyWorkerError, ValueError, RuntimeError, TypeError) as error:
                 self._rollback_on_strategy_error(error)
         return False

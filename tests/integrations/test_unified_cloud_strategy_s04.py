@@ -393,7 +393,7 @@ def test_d_grid_package_partial_fill_cancel_and_restart_recovery(tmp_path, harne
         harness.set_time(2, 2)
         harness.quote(router, '160')
         deletes = writes(harness.requests, 'DELETE')
-        assert len(deletes) == 1 and deletes[0]['origClientOrderId'] == [buy_id]
+        assert len(deletes) == 1 and deletes[0]['origClientOrderId'] == [buy_id], router.status()
         router.before_poll()
         assert router.bridge.session.status()['orders'][buy_id]['status'] == 'CANCELED'
         assert router.bridge.session.status()['orders'][buy_id]['filled_quantity'] == D('.02')
@@ -711,7 +711,9 @@ def test_i_shared_account_ledger_compatibility_and_transient_quote_jitter(tmp_pa
     with harness.open() as router:
         # Simulate an existing shared-account ledger marker with additional historical symbols.
         def mark_shared():
-            router.bridge.controller.store.record_metadata('demo:static-shared-account:v1', dict(symbols=['NVDAUSDT', 'QQQUSDT', 'SPYUSDT']))
+            router.bridge.controller.store.record_metadata('demo:static-shared-account:v1',
+                dict(grid=['NVDAUSDT'], portfolio=['QQQUSDT', 'SPYUSDT'],
+                     grid_budget=D(7), portfolio_budget=D(20)))
             router.bridge.gateway.state.instruments['QQQUSDT'] = Instrument('QQQUSDT', 'USDT')
             router.bridge.gateway.state.instruments['SPYUSDT'] = Instrument('SPYUSDT', 'USDT')
         router.bridge.controller._atomic(mark_shared)

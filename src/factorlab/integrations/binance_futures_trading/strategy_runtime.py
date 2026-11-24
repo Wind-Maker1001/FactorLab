@@ -35,8 +35,8 @@ class DemoStrategyRuntime:
         self.controller, self.strategy = controller, strategy
         self.gateway = controller.broker
         self.symbol = strategy.describe()['symbol']
-        if self.symbol != 'NVDAUSDT':
-            raise ValueError('Demo strategy supports NVDAUSDT only')
+        if self.symbol != self.gateway.rules.symbol:
+            raise ValueError('strategy symbol differs from Demo rules')
         self.configuration = dict(strategy=strategy.describe(), client_id_prefix=client_id_prefix)
         for name, value in (('max_notional', max_notional), ('max_quantity', max_quantity)):
             if value is not None:
@@ -166,7 +166,11 @@ class DemoStrategyRuntime:
     def kill(self):
         self.controller.set_kill_switch(True)
 
-    def closed_bar(self, bar):
+    def historical_bar(self, bar):
+        """Restore history without advancing target decisions or pending signals."""
+        return self.closed_bar(bar, historical=True)
+
+    def closed_bar(self, bar, *, historical=False):
         if not isinstance(bar, ClosedBar) or bar.symbol != self.symbol or bar.closed_at > self.controller.clock():
             raise ValueError('confirmed deployment bar required')
         if not bar.complete:
@@ -191,6 +195,8 @@ class DemoStrategyRuntime:
             runtime.pop('reason', None)
             bars.append(value)
             del bars[:-self.strategy.history_limit]
+            if historical:
+                return True
             signal = self.strategy.signal([ClosedBar(**v) for v in bars], self.controller.clock())
             runtime['last_signal'] = asdict(signal)
             runtime['pending'] = (asdict(signal) if signal.status == 'SIGNAL'

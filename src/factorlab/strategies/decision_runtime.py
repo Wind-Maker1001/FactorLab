@@ -306,7 +306,15 @@ class OrderStrategyRuntime:
             account=self._account(), execution=dict(submitted_order_ids=sorted(submitted),
                                                     pending_order_ids=pending_ids), **value))
 
-    def closed_bar(self, bar):
+    def historical_bar(self, bar):
+        """Restore the input window without invoking decisions or changing order state.
+
+        Orders strategies receive this window on their next live event. Historical
+        proposals cannot safely advance strategy state: they were never submitted.
+        """
+        return self.closed_bar(bar, historical=True)
+
+    def closed_bar(self, bar, *, historical=False):
         if (not isinstance(bar, ClosedBar) or bar.symbol != self.symbol
                 or bar.interval_seconds != self.journal.interval_seconds
                 or bar.closed_at > self.controller.clock()):
@@ -330,7 +338,8 @@ class OrderStrategyRuntime:
             del bars[:-self.journal.spec.history_limit]
             if runtime['status'] == 'STOPPED':
                 return False
-            if 'closed_bar' in self.journal.spec.data_types:
+            runtime.pop('reason', None)
+            if not historical:
                 decision = self._event('closed_bar', 'bar:' + bar.closed_at.isoformat(),
                     bar=asdict(bar), bars=bars)
                 self._pending(decision, bar.closed_at)

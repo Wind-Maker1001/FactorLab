@@ -11,11 +11,12 @@ import argparse
 import json
 import os
 from pathlib import Path
-import pwd
 import sqlite3
 import subprocess
 import sys
 import time
+from decimal import Decimal as D, ROUND_CEILING
+from urllib.request import urlopen
 
 
 ROOT = Path('/var/lib/factorlab-demo/execute-state')
@@ -35,7 +36,88 @@ def sqlite_inodes():
     return {str(f.relative_to(ROOT)): f.stat().st_ino for f in ROOT.rglob('*.sqlite3')}
 
 
+def acceptance_plan(health, symbol_info, book):
+    """Plan one bounded entry/exit pair; dispatch still reserves the exit atomically."""
+    from factorlab.integrations.binance_futures_trading.demo_runtime import MAX_NOTIONAL, MAX_QUANTITY
+    zero = dict(mode='ZERO_POST_SWITCH_ONLY', configuration={})
+    budget, campaign = health.get('global_budget') or {}, health.get('campaign') or {}
+    if (budget.get('state') != 'RUNNING' or budget.get('remaining_posts', 0) < 2
+            or campaign.get('remaining_posts', 0) < 2 or not health.get('account_recovered')
+            or health.get('unknown_count') != 0 or health.get('open_orders') or health.get('positions')
+            or 'opening_equity' not in budget or 'max_loss' not in budget
+            or D(budget['opening_equity']) - D(health.get('equity') or '0') >= D(budget['max_loss'])):
+        return zero
+    filters = {row['filterType']: row for row in symbol_info['filters']}
+    tick = D(filters['PRICE_FILTER']['tickSize'])
+    quantity = D('.04')
+    lot = filters['LOT_SIZE']
+    if not D(lot['minQty']) <= quantity <= min(D(lot['maxQty']), MAX_QUANTITY):
+        return zero
+    if quantity % D(lot['stepSize']):
+        return zero
+    # Both entry and exit prices are capped in the strategy; reserve at the caps.
+    cap = (D(book['askPrice']) * D('1.01') / tick).to_integral_value(rounding=ROUND_CEILING) * tick
+    notional = quantity * cap
+    min_notional = D(filters.get('MIN_NOTIONAL', {}).get('notional', '0'))
+    notional_filter = filters.get('NOTIONAL', {})
+    if (not D(filters['PRICE_FILTER']['minPrice']) <= cap <= D(filters['PRICE_FILTER']['maxPrice'])
+            or notional < max(min_notional, D(notional_filter.get('minNotional', '0')))
+            or notional > min(MAX_NOTIONAL, D(notional_filter.get('maxNotional', str(MAX_NOTIONAL))))
+            or D(budget.get('remaining_notional', '0')) < notional * 2
+            or D(health.get('equity') or '0') < notional):
+        return zero
+    return dict(mode='ROUNDTRIP_2_POST', configuration=dict(quantity=str(quantity), tick=str(tick),
+        max_entry_price=str(cap), max_exit_price=str(cap), exit_budget_notional=str(notional)))
+
+
+def can_downgrade_after_timeout(health, plan, evidence):
+    return (plan['mode'] == 'ZERO_POST_SWITCH_ONLY' and health.get('account_recovered')
+            and health.get('unknown_count') == 0 and not health.get('positions')
+            and not health.get('open_orders') and D(evidence['actual_filled_quantity']) == 0)
+
+
+def real_fill_evidence(orders, receipts, entry_id, exit_id, *, inventory):
+    """Match protocol order identities to exchange fills, quantities and commissions."""
+    from factorlab.trading.contracts import OrderStatus, Side, TERMINAL
+    result = dict(verified=False, entry_id=entry_id, exit_id=exit_id)
+    entry, exit_order = orders.get(entry_id), orders.get(exit_id)
+    result['actual_filled_quantity'] = str(entry.snapshot.cumulative_filled_quantity) if entry else '0'
+    if entry is None or exit_order is None:
+        return result
+    a, b = entry.snapshot, exit_order.snapshot
+    if (a.status not in TERMINAL or b.status is not OrderStatus.FILLED
+            or a.reconcile_required or b.reconcile_required
+            or a.intent.side is not Side.BUY or b.intent.side is not Side.SELL
+            or a.intent.reduce_only or not b.intent.reduce_only
+            or a.cumulative_filled_quantity <= 0
+            or a.cumulative_filled_quantity != b.cumulative_filled_quantity or D(inventory) != 0):
+        return result
+    fills = {}
+    for key, snapshot in ((entry_id, a), (exit_id, b)):
+        matching = [row for row in receipts if row['order']['clientOrderId'] == key
+                    and row['order']['status'] == snapshot.status.value]
+        if not matching:
+            return result
+        receipt = matching[-1]
+        trades = receipt['trades']
+        if (str(receipt['order']['orderId']) != str(snapshot.exchange_order_id)
+                or receipt['order']['side'] != snapshot.intent.side.value
+                or receipt['order']['symbol'] != snapshot.intent.instrument_id
+                or D(receipt['order']['executedQty']) != snapshot.cumulative_filled_quantity
+                or not trades or len({str(t['id']) for t in trades}) != len(trades)
+                or any(str(t['orderId']) != str(receipt['order']['orderId'])
+                       or t['symbol'] != receipt['order']['symbol']
+                       or 'commission' not in t or t.get('commissionAsset') != 'USDT' for t in trades)
+                or sum((D(t['qty']) for t in trades), D(0)) != snapshot.cumulative_filled_quantity
+                or sum((D(t['commission']) for t in trades), D(0)) != snapshot.cumulative_fee):
+            return result
+        fills[key] = dict(quantity=str(snapshot.cumulative_filled_quantity), status=snapshot.status.value,
+            trades=trades, commissions=[dict(amount=t['commission'], asset=t['commissionAsset']) for t in trades])
+    return dict(result, verified=True, fills=fills, final_inventory=str(inventory))
+
+
 def main():
+    import pwd
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--release', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
@@ -97,6 +179,31 @@ def main():
         for oid, raw in rows:
             orders[oid] = json.loads(raw)
         return orders
+
+    def current_plan():
+        from factorlab.integrations.binance_futures_trading.protocol import Environment
+        host = Environment.DEMO.host
+        with urlopen(host + '/fapi/v1/exchangeInfo', timeout=10) as response:
+            exchange = json.load(response)
+        with urlopen(host + '/fapi/v1/ticker/bookTicker?symbol=NVDAUSDT', timeout=10) as response:
+            book = json.load(response)
+        symbol = next(row for row in exchange['symbols'] if row['symbol'] == 'NVDAUSDT')
+        return acceptance_plan(health(), symbol, book)
+
+    def phase_fill_evidence(package_id):
+        from factorlab.trading.storage import decode
+        with sqlite3.connect((ROOT / 'strategy-deployment.sqlite3').resolve().as_uri() + '?mode=ro', uri=True) as db:
+            owned = [row[0] for row in db.execute('SELECT client_id FROM strategy_orders WHERE version=?', (package_id,))]
+        entry_id = next((key for key in owned if key.endswith('-entry')), None)
+        exit_id = next((key for key in owned if key.endswith('-exit')), None)
+        proto = next(ROOT.glob('*/protocol.sqlite3'))
+        with sqlite3.connect(proto.resolve().as_uri() + '?mode=ro', uri=True) as db:
+            orders = {key: decode(json.loads(raw)) for key, raw in db.execute('SELECT id,payload FROM futures_orders')
+                      if key in {entry_id, exit_id}}
+            receipts = [json.loads(raw) for raw, in db.execute('SELECT payload FROM futures_receipts WHERE client_id IN (?,?) ORDER BY rowid', (entry_id, exit_id))]
+        h = health()
+        inventory = sum((D(row['quantity']) for row in (h['positions'] or [])), D(0))
+        return real_fill_evidence(orders, receipts, entry_id, exit_id, inventory=inventory)
 
     def wait_for(predicate, timeout=120, interval=2):
         until = time.monotonic() + timeout
@@ -173,9 +280,7 @@ def main():
         run_id=args.run_id,
         started_at_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         remaining_posts_before=remaining_posts,
-        budget_profile=('FULL_ROUNDTRIP_3_POST' if remaining_posts >= 3 else
-                        'SINGLE_POST_RESTING_CANCEL' if remaining_posts >= 1 else
-                        'ZERO_POST_SWITCH_ONLY'),
+        budget_profile='ZERO_POST_SWITCH_ONLY',
         real_fill_verified=False,
         real_fill_note=None,
         before=dict(health=before_health, pid=service_pid(), inodes=before_inodes, state=cli('status')),
@@ -186,15 +291,19 @@ def main():
     if before_health.get('unknown_count') != 0:
         raise RuntimeError('UNKNOWN orders present before validation; aborting')
 
-    # --- Optional Phase 1 (only when >= 3 POSTs remain): real BUY FILL + reduce-only SELL close ---
-    if remaining_posts >= 3:
+    phase1_plan = current_plan()
+    results['budget_profile'] = phase1_plan['mode']
+    results['phase1_plan'] = phase1_plan
+    save()
+    if phase1_plan['mode'] == 'ROUNDTRIP_2_POST':
         pid0 = service_pid()
         a1_man = publish_and_accept(
             'a1-buy-sell', version='1.0.1',
             configuration=dict(
-                symbol='NVDAUSDT', interval_seconds=60, quantity='.04', tick='.01',
+                symbol='NVDAUSDT', interval_seconds=60,
                 buy_offset='.30', sell_offset='-.30', mode='buy_then_sell',
                 version='1.0.1', strategy_id='limit_cycle',
+                **phase1_plan['configuration'],
             ),
             mode='hot',
         )
@@ -203,17 +312,33 @@ def main():
             timeout=120,
         )
         posts_at_activate = p1_active['health']['global_budget']['consumed']['posts']
-        p1_done = wait_for(
-            lambda s: (
-                s['health']['global_budget']['consumed']['posts'] >= posts_at_activate + 2
-                and not s['health']['open_orders']
-                and not s['health']['positions']
-                and s['health']['unknown_count'] == 0
-                and s['health']['account_recovered']
-            ),
-            timeout=args.fill_timeout,
-        )
-        results['real_fill_verified'] = True
+        try:
+            p1_done = wait_for(
+                lambda s: (
+                    phase_fill_evidence(a1_man['package_id'])['verified']
+                    and not s['health']['open_orders']
+                    and not s['health']['positions']
+                    and s['health']['unknown_count'] == 0
+                    and s['health']['account_recovered']
+                ),
+                timeout=args.fill_timeout,
+            )
+        except TimeoutError:
+            results['complete'] = False
+            results['real_fill_evidence'] = phase_fill_evidence(a1_man['package_id'])
+            results['recovery_required'] = dict(package_id=a1_man['package_id'], health=health(),
+                reason='ENTRY_OR_EXIT_NOT_CONFIRMED; inventory and order recovery remain active')
+            latest = health()
+            if can_downgrade_after_timeout(latest, current_plan(), results['real_fill_evidence']):
+                results['budget_profile'] = 'ZERO_POST_SWITCH_ONLY'
+                results['real_fill_note'] = 'Budget changed before dispatch; zero-fill phase safely downgraded.'
+                results.pop('recovery_required')
+                p1_done = dict(health=latest)
+            else:
+                save()
+                raise
+        results['real_fill_evidence'] = phase_fill_evidence(a1_man['package_id'])
+        results['real_fill_verified'] = results['real_fill_evidence']['verified']
         results['phases'].append(dict(
             name='phase1_s01_buy_fill_sell_close',
             package_id=a1_man['package_id'],
@@ -227,17 +352,15 @@ def main():
         save()
     else:
         results['real_fill_note'] = (
-            f'Remaining existing global POST budget is {remaining_posts}/100; '
-            'opening a fill without >=2 POSTs reserved for entry+exit would risk an uncloseable '
-            'residual position under frozen risk limits. Using non-crossing resting LIMIT order '
-            'lifecycle instead without expanding budget.'
+            'The current account, filters and risk/notional/POST budgets do not admit '
+            'a reserved entry/exit pair. Continuing with zero-POST switching only.'
         )
 
-    # --- Resting order + restart recovery phase ---
+    # Restart, switching and rollback do not require another potentially filling entry.
     pid1 = service_pid()
     cur_health = health()
-    cur_remaining = (cur_health.get('global_budget') or {}).get('remaining_posts', 0)
-    a2_mode = 'buy_then_cancel' if cur_remaining >= 1 else 'hold'
+    results['phase2_budget'] = cur_health.get('global_budget')
+    a2_mode = 'hold'
     a2_man = publish_and_accept(
         'a2-resting-buy', version='1.0.2',
         configuration=dict(
@@ -253,21 +376,8 @@ def main():
     )
     posts_at_a2 = p2_active['health']['global_budget']['consumed']['posts']
     resting_order = None
-    if cur_remaining >= 1:
-        p2_order = wait_for(
-            lambda s: (
-                s['health']['global_budget']['consumed']['posts'] >= posts_at_a2 + 1
-                and s['health']['unknown_count'] == 0
-                and (len(s['health']['open_orders'] or []) == 1 or bool(s['health']['positions']))
-            ),
-            timeout=90,
-        )
-        resting_order = (p2_order['health']['open_orders'] or [None])[0]
-        pre_restart_posts = p2_order['health']['global_budget']['consumed']['posts']
-        pre_restart_pid = p2_order['pid']
-    else:
-        pre_restart_posts = posts_at_a2
-        pre_restart_pid = p2_active['pid']
+    pre_restart_posts = posts_at_a2
+    pre_restart_pid = p2_active['pid']
 
     restart_at = time.time()
     run_cmd(['systemctl', 'restart', UNIT])
@@ -366,6 +476,8 @@ def main():
         results['after']['state']['active'] == 'legacy-grid'
         and results['after']['health']['unknown_count'] == 0
         and results['after']['inodes_preserved']
+        and not results['after']['health']['positions']
+        and not results['after']['health']['open_orders']
     )
     save()
     print(json.dumps(dict(
