@@ -1,0 +1,13 @@
+{
+  "suite": [
+    "tests/integrations/test_alpaca_execution.py",
+    "tests/integrations/test_dual_market_trading.py",
+    "tests/integrations/test_binance_equity_trading_core.py",
+    "tests/integrations/test_binance_futures_trading.py"
+  ],
+  "passed": 116,
+  "failed": 0,
+  "duration_seconds": 29.74,
+  "includes_separate_python_process_recovery": true,
+  "official_execution_evidence": "official-round-trips.json"
+}
