@@ -13,7 +13,7 @@ install -d -o root -g root -m 755 "$release/source"
 tar -xf "$archive" -C "$release/source"
 "$python" -m venv "$release/venv"
 "$release/venv/bin/python" -m pip install "$release/source[cross-market]"
-install -d -o factorlab-demo -g factorlab-demo -m 700 /var/lib/factorlab-tradfi-observer
+install -d -o factorlab-demo -g factorlab-demo -m 700 /var/lib/factorlab-tradfi-observer /var/lib/factorlab-tradfi-observer/task-mailbox
 for unit in factorlab-demo-tradfi-observer.service factorlab-demo-tradfi-health.service factorlab-demo-tradfi-health.timer; do
     install -o root -g root -m 644 "$release/source/deploy/systemd/$unit" "/etc/systemd/system/$unit"
 done

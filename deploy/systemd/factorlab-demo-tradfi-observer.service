@@ -10,7 +10,7 @@ User=factorlab-demo
 Group=factorlab-demo
 UMask=0077
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/opt/factorlab/tradfi-observer/current/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --execute-health /var/lib/factorlab-demo/execute-state/cloud-health.json --symbols QQQUSDT SPYUSDT --poll-seconds 30
+ExecStart=/opt/factorlab/tradfi-observer/current/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --execute-health /var/lib/factorlab-demo/execute-state/cloud-health.json --symbols QQQUSDT SPYUSDT --poll-seconds 30 --task-db /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3
 Restart=on-failure
 RestartSec=15
 TimeoutStopSec=30
