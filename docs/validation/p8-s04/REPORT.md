@@ -146,3 +146,10 @@
 - 修复 HEAD：`8821c6120fcb6a009f0095bde106f1ad25e55ff6`；[Demo 四组合矩阵](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45468467989) 全通过。[可信 PR validation](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45468462949) 的 Fast 在基础 1,429 项通过后执行定向集合，触及整个 job 的 15 分钟上限被取消，并非已报告的测试断言失败。
 - CI 调整：定向集合拆为并行 `Targeted Python 3.13`，独立 30 分钟上限和回执；Fast 保持 15 分钟及原基础集合。固定版本 actions、不可变事件合并、可信工具/风险工件重取和身份校验均保留。可信身份/工作流契约 **31 passed**，`git diff --check` 通过。`pull_request_target` 使用可信 base 工作流，此调整需进入可信 base 后才能影响该入口；不以候选工作流替代受信执行。
 - TODO：补录拆分工作流生效后的可信 CI 与定向独立复审结果。原始历史 JSON/XML 不修改；历史实机真实成交判定保持 **PARTIAL_VERIFIED**，不操作 Azure、不发送交易网络请求、不调整全局预算。
+
+## 9. CI-control #249 合并后的复验（2026-11-25）
+
+- 可信基线：`170d3106de5e3f44a47fea8ed88e9642a25e65a4`（PR #249）；合并提交：`fb7418850d079ea73aa020ad0c899825d286f33d`，保留 `8821c61` 全部 S04 业务修复。候选 `.github/workflows/factorlab-pr.yml` 与该可信基线无差异；`targeted` 同时列入 `merge-gate.needs` 与 `required`。#249 的门禁失败、取消、跳过及缺失依赖注入测试完整保留。
+- 旧 HEAD `90e9519aec9a40ed9b86c1eff78157a1ec692e8e` 的 [PR validation 45472238050](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45472238050) 三项失败原因相同：`test_fast_consumes_trusted_plan_and_runner` 仍从 Fast 步骤查找已拆出的 `--suite targeted`，`next(...)` 抛出 `StopIteration`，属于工作流契约不一致，不是超时。Fast financial-gates 为 `1 failed, 532 passed in 91.23s`；Python 3.13 shard 2 为 `1 failed, 3092 passed in 1410.22s`；Python 3.14 shard 1 为 `1 failed, 2442 passed in 519.38s`。#249 已将契约更新为独立 Targeted job。
+- 合并后定向回归：`python -m pytest tests/security/test_pr_risk.py tests/security/test_pr_identity.py -q`，**112 passed in 146.42s**，包括 #249 门禁失败注入及独立 Targeted 契约。
+- TODO：记录新 HEAD 的新触发可信 CI（含事件 base 身份、独立 Fast/Targeted 回执、六个 Extended software 分片、coverage、Demo 四组合、trusted merge gate）及原独立审查者对 `8821c61` 的定向复审结论；全部通过前不作 `MERGE_RECOMMENDED` 判定。
