@@ -57,7 +57,7 @@ try:
                 SIGNAL_EQUIVALENCE='PASS: deterministic same-input synthetic oracle; not historical market replay',
                 ORDER_INTENT_EQUIVALENCE='PASS: same-input oracle and explicit edge tests',
                 FULL_REFERENCE_REPLAY='PENDING: original fixture/market and Qlib Provider absent',
-                ALPACA_INTEGRATION='OFFLINE_CONTRACT_PASS: E03 local working tree; no Paper network submission',
+                ALPACA_INTEGRATION='PENDING_PUBLIC_DEPENDENCY: see integration-snapshots.json and INTEGRATION.md; this command validates only strategy equivalence',
                 weight_diff_rows=rows,max_absolute_weight_difference=maximum,
                 reference_artifact_counts=dict(sessions=977,targets=204,fills=371),
                 historical_inputs_replayed=False)

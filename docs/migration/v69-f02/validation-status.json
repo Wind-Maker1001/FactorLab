@@ -3,7 +3,7 @@
   "SIGNAL_EQUIVALENCE": "PASS: deterministic same-input synthetic oracle; not historical market replay",
   "ORDER_INTENT_EQUIVALENCE": "PASS: same-input oracle and explicit edge tests",
   "FULL_REFERENCE_REPLAY": "PENDING: original fixture/market and Qlib Provider absent",
-  "ALPACA_INTEGRATION": "OFFLINE_CONTRACT_PASS: E03 local working tree; no Paper network submission",
+  "ALPACA_INTEGRATION": "PUBLIC_CONTRACT_PASS; E03 unmerged, standard CI dependent test deferred; E04 runtime activation pending",
   "weight_diff_rows": 2688,
   "max_absolute_weight_difference": 0.0,
   "reference_artifact_counts": {
@@ -11,5 +11,10 @@
     "targets": 204,
     "fills": 371
   },
-  "historical_inputs_replayed": false
+  "historical_inputs_replayed": false,
+  "integration_regression": {
+    "passed": 25,
+    "dependency_skipped": 1,
+    "e03_source_snapshot_bridge_passed": 3
+  }
 }

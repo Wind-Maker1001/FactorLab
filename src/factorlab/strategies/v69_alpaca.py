@@ -23,7 +23,8 @@ def _factors(factors):
 
 
 def create_alpaca_plan(executor, *, decision, account_id, session, now,
-                       raw_holdings, factors, quantity_steps, initial_inventory=None):
+                       raw_holdings, factors, quantity_steps, initial_inventory=None,
+                       signal_provenance=None):
     """Persist exact capped share intentions in the existing E03 target journal.
 
     E03 subsequently uses official equity, raw execution quotes, quantity steps,
@@ -40,9 +41,19 @@ def create_alpaca_plan(executor, *, decision, account_id, session, now,
     validate_weights(weights)
     if set(raw_holdings) - set(ASSETS):
         raise ValueError('holdings outside original universe')
+    if set(quantity_steps) != set(ASSETS):
+        raise ValueError('complete broker steps required')
     targets = {s: D(str(raw_holdings.get(s, 0))) for s in ASSETS}
+    if any(not q.is_finite() or q < 0 for q in targets.values()):
+        raise ValueError('finite nonnegative raw holdings required')
+    seen = set()
     for order in decision['orders']:
         symbol = order['symbol']
+        if symbol not in ASSETS:
+            raise ValueError('order outside original universe')
+        if symbol in seen:
+            raise ValueError('one intent per symbol required')
+        seen.add(symbol)
         quantity = D(str(order['adjusted_quantity'])) * D(str(factors[symbol]))
         if not quantity.is_finite() or quantity <= 0 or order['side'] not in {'buy','sell'}:
             raise ValueError('invalid research intent')
@@ -53,32 +64,15 @@ def create_alpaca_plan(executor, *, decision, account_id, session, now,
         targets[symbol] += quantity if order['side'] == 'buy' else -quantity
     if any(not q.is_finite() or q < 0 for q in targets.values()):
         raise ValueError('invalid long-only inventory')
-    # E03 create owns a transaction. Join it to the target-seeding transaction
-    # through a private shallow facade, never mutating the shared executor.
-    from contextlib import nullcontext
-    from copy import copy
-    store = executor.store
-    class JoinedStore:
-        def __getattr__(self, name):
-            return getattr(store, name)
-        def transaction(self):
-            return nullcontext()
-    joined = copy(executor)
-    joined.store = JoinedStore()
-    with store.transaction():
-        identity = joined.create(account_id=account_id, strategy_id='V69_CAUSAL',
-            strategy_version='69.1', trading_session=str(session), weights=weights,
-            owned_symbols=list(ASSETS), now=now, initial_inventory=initial_inventory,
-            economic_multipliers={'TQQQ': D(3)})
-        plan = store.plan(identity)
-        frozen = plan.get('v69_intent_targets')
-        if frozen is not None:
-            if frozen != targets:
-                raise ValueError('rebalance already has different V69 intentions')
-            return identity
-        if store.orders(identity):
-            raise ValueError('cannot change an execution plan after orders exist')
-        plan['targets'] = targets
-        plan['v69_intent_targets'] = targets
-        store.save_plan(plan)
-    return identity
+    # Public E03 contract atomically freezes quantities and their checkpoint.
+    # No access to executor.store, plan dictionaries or transaction internals.
+    deltas = {s: targets[s] - D(str(raw_holdings.get(s, 0))) for s in ASSETS}
+    return executor.create(account_id=account_id, strategy_id='V69_CAUSAL',
+        strategy_version='69.2', trading_session=str(session), weights=weights,
+        owned_symbols=list(ASSETS), now=now, initial_inventory=initial_inventory,
+        economic_multipliers={'TQQQ': D(3)}, quantity_deltas=deltas,
+        signal_inputs=dict(kind='V69_NATURAL', checkpoint=decision.get('state', {}),
+            raw_holdings={s: str(raw_holdings.get(s, 0)) for s in ASSETS},
+            adjustment_factors={s: str(factors[s]) for s in ASSETS},
+            quantity_steps={s: str(quantity_steps[s]) for s in ASSETS},
+            provenance=signal_provenance))
