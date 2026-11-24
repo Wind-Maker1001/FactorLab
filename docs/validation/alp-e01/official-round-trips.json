@@ -1,0 +1,148 @@
+{
+  "prefix": "alpe01-86c71efca58a403a",
+  "symbols": [
+    "QQQ",
+    "AAPL"
+  ],
+  "quantity": "0.003",
+  "reservation_price": "1000",
+  "initial": {
+    "observed_at": "2026-11-24T15:41:20.612728+00:00",
+    "equity": "100000",
+    "cash": "100000",
+    "buying_power": "200000",
+    "positions": {},
+    "reconciled": true
+  },
+  "status": "complete",
+  "buy_confirmations": {
+    "QQQ": {
+      "observed_at": "2026-11-24T15:42:05.353716+00:00",
+      "equity": "100000",
+      "cash": "99997.04",
+      "buying_power": "199997.04",
+      "positions": {
+        "AAPL": "0.003",
+        "QQQ": "0.003"
+      },
+      "reconciled": true
+    },
+    "AAPL": {
+      "observed_at": "2026-11-24T15:42:18.813542+00:00",
+      "equity": "100000.01",
+      "cash": "99998.95",
+      "buying_power": "199998.96",
+      "positions": {
+        "AAPL": "0.003"
+      },
+      "reconciled": true
+    }
+  },
+  "final": {
+    "observed_at": "2026-11-24T15:42:50.144166+00:00",
+    "equity": "100000",
+    "cash": "100000",
+    "buying_power": "200000",
+    "positions": {},
+    "reconciled": true
+  },
+  "orders": [
+    {
+      "id": "dde43deb-80dc-4970-9a44-9e84ed3d5517",
+      "client_order_id": "alpe01-86c71efca58a403a-AAPL-buy",
+      "symbol": "AAPL",
+      "side": "buy",
+      "status": "filled",
+      "qty": "0.003",
+      "filled_qty": "0.003",
+      "filled_avg_price": "351.556",
+      "filled_at": "2026-11-24T15:41:47.035571Z"
+    },
+    {
+      "id": "cff82d82-dbad-4557-93ef-a61295300d02",
+      "client_order_id": "alpe01-86c71efca58a403a-AAPL-sell",
+      "symbol": "AAPL",
+      "side": "sell",
+      "status": "filled",
+      "qty": "0.003",
+      "filled_qty": "0.003",
+      "filled_avg_price": "351.416",
+      "filled_at": "2026-11-24T15:42:31.229257243Z"
+    },
+    {
+      "id": "742028c2-9ac8-47c9-9b23-f81df08e3e06",
+      "client_order_id": "alpe01-86c71efca58a403a-QQQ-buy",
+      "symbol": "QQQ",
+      "side": "buy",
+      "status": "filled",
+      "qty": "0.003",
+      "filled_qty": "0.003",
+      "filled_avg_price": "635.886",
+      "filled_at": "2026-11-24T15:41:37.27925Z"
+    },
+    {
+      "id": "c06d146f-5866-4ae3-90b5-cb9ad534d791",
+      "client_order_id": "alpe01-86c71efca58a403a-QQQ-sell",
+      "symbol": "QQQ",
+      "side": "sell",
+      "status": "filled",
+      "qty": "0.003",
+      "filled_qty": "0.003",
+      "filled_avg_price": "636.01",
+      "filled_at": "2026-11-24T15:42:16.667196Z"
+    }
+  ],
+  "activities": [
+    {
+      "id": "20261124104137279::c26e6e9e-da6e-4866-835d-9f9e0450dad5",
+      "order_id": "742028c2-9ac8-47c9-9b23-f81df08e3e06",
+      "symbol": "QQQ",
+      "side": "buy",
+      "qty": "0.003",
+      "price": "635.886",
+      "transaction_time": "2026-11-24T15:41:37.27925Z"
+    },
+    {
+      "id": "20261124104147035::89d6028b-cfdc-434c-b95b-9131c5fc5cb5",
+      "order_id": "dde43deb-80dc-4970-9a44-9e84ed3d5517",
+      "symbol": "AAPL",
+      "side": "buy",
+      "qty": "0.003",
+      "price": "351.556",
+      "transaction_time": "2026-11-24T15:41:47.035571Z"
+    },
+    {
+      "id": "20261124104216667::8cada332-25dc-452c-a7e7-c88e0c589b8b",
+      "order_id": "c06d146f-5866-4ae3-90b5-cb9ad534d791",
+      "symbol": "QQQ",
+      "side": "sell",
+      "qty": "0.003",
+      "price": "636.01",
+      "transaction_time": "2026-11-24T15:42:16.667196Z"
+    },
+    {
+      "id": "20261124104231229::3d99989d-200f-4754-915c-054df43ede2f",
+      "order_id": "cff82d82-dbad-4557-93ef-a61295300d02",
+      "symbol": "AAPL",
+      "side": "sell",
+      "qty": "0.003",
+      "price": "351.416",
+      "transaction_time": "2026-11-24T15:42:31.229257Z"
+    }
+  ],
+  "cash_change": "0",
+  "fill_cash_flow": "-0.000048",
+  "cash_rounding_or_other_activity_difference": "0.000048",
+  "restart_recovered": true,
+  "duplicate_activity_count": 0,
+  "observed_partial_fills": [],
+  "online_multiple_execution_activities_observed": false,
+  "restart": {
+    "observed_at": "2026-11-24T15:43:25.892056+00:00",
+    "equity": "100000",
+    "cash": "100000",
+    "buying_power": "200000",
+    "positions": {},
+    "reconciled": true
+  }
+}
