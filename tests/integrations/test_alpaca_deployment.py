@@ -2,6 +2,22 @@ from argparse import Namespace
 from pathlib import Path
 import runpy
 import subprocess
+import io
+import tarfile
+
+
+def test_release_archive_preserves_linux_installer_line_endings(tmp_path):
+    root = Path(__file__).parents[2]
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    (tmp_path / '.gitattributes').write_bytes((root / '.gitattributes').read_bytes())
+    (tmp_path / 'install.sh').write_bytes(b'#!/bin/sh\r\nset -eu\r\n')
+    git = ['git', '-C', str(tmp_path), '-c', 'core.autocrlf=true']
+    subprocess.run(git + ['add', '.'], check=True, capture_output=True)
+    subprocess.run(git + ['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid',
+                         'commit', '-qm', 'fixture'], check=True, capture_output=True)
+    archive = subprocess.check_output(git + ['archive', 'HEAD'])
+    with tarfile.open(fileobj=io.BytesIO(archive)) as bundle:
+        assert bundle.extractfile('install.sh').read() == b'#!/bin/sh\nset -eu\n'
 
 
 def test_deploy_uses_committed_installer_not_working_tree(tmp_path, monkeypatch):

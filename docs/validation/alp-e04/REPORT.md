@@ -10,6 +10,10 @@ At 18:38:11 UTC, SIGKILL was sent only to the Alpaca main process. systemd sched
 
 Binance Execute was active during deployment and was not operated by these deployment or fault-injection commands.
 
+## Release reproducibility
+
+An attempted acceptance upgrade exposed two deployment defects before service cutover: the old deployer copied an uncommitted installer beside the selected archive, and Git archive converted shell files to CRLF under Windows configuration. The former attempted to read a lockfile absent from its archived revision; the latter exited at `set -eu`. Neither attempt replaced the active observation release. The deployer now extracts the installer from its selected commit, Linux dependencies are pinned, and shell/systemd files have explicit LF attributes. Regression tests exercise committed-installer selection and archive generation with `core.autocrlf=true`.
+
 ## Integration status
 
 The E01/E02/E03 mainline regression passed 88 tests. Cloud runtime regression passed 11 tests, including independent account/market failure reporting and the shared owner-lock boundary for synthetic acceptance.
