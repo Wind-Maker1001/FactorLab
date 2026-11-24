@@ -20,7 +20,9 @@ The shipped unit observes QQQUSDT and SPYUSDT, both observed as TRADING / TRADIF
 
 On 2026-11-24, the first observer release started on `factorlab-demo-01` at 15:27 UTC. Four observations through 15:29:12 UTC persisted official QQQUSDT books with fresh account projections and no market transport errors. The original Execute process remained unchanged with zero automatic restarts. The next weekly window was 2026-11-30 14:30–21:00 UTC, with completed-history cutoff 2026-11-27; XNYS identifies that preceding Friday's early close separately.
 
-Official exchange metadata also identified SPYUSDT as TRADING / TRADIFI_PERPETUAL / EQUITY, and its public book was observed before adding it to the service configuration. These are market-observation records, not portfolio order or fill evidence.
+Official exchange metadata also identified SPYUSDT as TRADING / TRADIFI_PERPETUAL / EQUITY, and its public book was observed before adding it to the service configuration. At 15:41:10 UTC, release `5302407` persisted fresh books for both QQQUSDT and SPYUSDT. The ledger retained 28 observations beginning at 15:27:42 UTC across the observer restart; persistent starts was 2, with zero recorded transport disconnects. The daily report existed and the quote/heartbeat health command succeeded. These are market-observation and observer-restart records, not portfolio order, fill or execution-idempotency evidence.
+
+The original Execute changed independently at 15:39:57 UTC to release `193a2db47d5f2f481bce59faa1dd8476e29d06e8`. Subsequent health reported PAUSED with desired RUNNING, account recovery false and reason `dedicated long-only NVDA account required`; UNKNOWN count was zero. Current financial/position projections were suppressed and cannot identify the conflicting account facts. This finding was sent to PR #239 for the static shared-account admission integration. F04 did not change the Execute unit or clear its controls. Quote observation health is not account execution readiness.
 
 ## Execution integration
 
