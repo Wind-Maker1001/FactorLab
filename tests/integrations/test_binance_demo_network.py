@@ -174,7 +174,7 @@ def test_wrong_environment_host_account_and_no_direct_dispatch(wired):
 
 @pytest.mark.parametrize('change', [dict(max_quantity=D('0')), dict(max_loss=D('NaN')),
     dict(max_seconds=0), dict(max_orders=True), dict(order_types=frozenset()),
-    dict(environment=E.PRODUCTION), dict(symbol='BTCUSDT'), dict(cleanup=''), dict(recovery='')])
+    dict(environment=E.PRODUCTION), dict(symbol='invalid/symbol'), dict(cleanup=''), dict(recovery='')])
 def test_plan_rejects_missing_or_invalid_limits(change):
     with pytest.raises(ValueError):
         plan('DEMO:FactorLab-Demo:test', **change)

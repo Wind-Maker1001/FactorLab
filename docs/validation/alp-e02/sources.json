@@ -1,0 +1,473 @@
+[
+  {
+    "feed": "iex",
+    "endpoints": {
+      "daily:raw": "HTTP_200",
+      "daily:split": "HTTP_200",
+      "daily:dividend": "HTTP_200",
+      "daily:spin-off": "HTTP_200",
+      "daily:all": "HTTP_200",
+      "minutes": "HTTP_200",
+      "latest_quotes": {
+        "status": 200,
+        "received_at": "2026-11-24T15:34:05.175262+00:00",
+        "symbols": {
+          "TQQQ": {
+            "event_at": "2026-11-24T15:34:04.994817877Z",
+            "age_seconds_at_receipt": 0.180444
+          },
+          "GE": {
+            "event_at": "2026-11-24T15:34:00.35210686Z",
+            "age_seconds_at_receipt": 4.823155
+          },
+          "JPM": {
+            "event_at": "2026-11-24T15:34:04.103013004Z",
+            "age_seconds_at_receipt": 1.072248
+          },
+          "C": {
+            "event_at": "2026-11-24T15:34:04.751322883Z",
+            "age_seconds_at_receipt": 0.423939
+          },
+          "BA": {
+            "event_at": "2026-11-24T15:34:04.762476255Z",
+            "age_seconds_at_receipt": 0.412785
+          },
+          "SNDK": {
+            "event_at": "2026-11-24T15:34:04.990939518Z",
+            "age_seconds_at_receipt": 0.184322
+          },
+          "AAPL": {
+            "event_at": "2026-11-24T15:34:04.362080399Z",
+            "age_seconds_at_receipt": 0.813181
+          },
+          "QQQ": {
+            "event_at": "2026-11-24T15:34:05.002647478Z",
+            "age_seconds_at_receipt": 0.172614
+          }
+        }
+      },
+      "latest_trades": {
+        "status": 200,
+        "received_at": "2026-11-24T15:34:06.101256+00:00",
+        "symbols": {
+          "AAPL": {
+            "event_at": "2026-11-24T15:34:04.13267653Z",
+            "age_seconds_at_receipt": 1.968579
+          },
+          "QQQ": {
+            "event_at": "2026-11-24T15:34:02.177850106Z",
+            "age_seconds_at_receipt": 3.923405
+          },
+          "TQQQ": {
+            "event_at": "2026-11-24T15:34:05.281216965Z",
+            "age_seconds_at_receipt": 0.820039
+          },
+          "GE": {
+            "event_at": "2026-11-24T15:34:03.311775164Z",
+            "age_seconds_at_receipt": 2.78948
+          },
+          "JPM": {
+            "event_at": "2026-11-24T15:33:52.687969832Z",
+            "age_seconds_at_receipt": 13.413286
+          },
+          "C": {
+            "event_at": "2026-11-24T15:33:19.337494239Z",
+            "age_seconds_at_receipt": 46.763761
+          },
+          "BA": {
+            "event_at": "2026-11-24T15:33:42.106526915Z",
+            "age_seconds_at_receipt": 23.994729
+          },
+          "SNDK": {
+            "event_at": "2026-11-24T15:34:05.032646601Z",
+            "age_seconds_at_receipt": 1.068609
+          }
+        }
+      },
+      "snapshots": {
+        "status": 200,
+        "received_at": "2026-11-24T15:34:07.052280+00:00"
+      }
+    },
+    "requests": [
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:33:51.120668+00:00",
+        "received_at": "2026-11-24T15:33:52.905098+00:00",
+        "status": 200,
+        "request_id": "354e6d156017531750e81050412861cc"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "split",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:33:53.007128+00:00",
+        "received_at": "2026-11-24T15:33:55.862044+00:00",
+        "status": 200,
+        "request_id": "6194dcdefbab2d7928d95c7ded817587"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "dividend",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:33:55.898361+00:00",
+        "received_at": "2026-11-24T15:33:57.701382+00:00",
+        "status": 200,
+        "request_id": "da2eb3826beebdc908a70b25d06d178a"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "spin-off",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:33:57.796764+00:00",
+        "received_at": "2026-11-24T15:33:59.628216+00:00",
+        "status": 200,
+        "request_id": "d983e5099b2180ee1c8ed168013a0ab5"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "all",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:33:59.724997+00:00",
+        "received_at": "2026-11-24T15:34:01.508102+00:00",
+        "status": 200,
+        "request_id": "c0fcbed589c388665f755a5809029b4f"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Min",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2026-11-20",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:34:01.640913+00:00",
+        "received_at": "2026-11-24T15:34:03.662617+00:00",
+        "status": 200,
+        "request_id": "42ed91c114e439c5d9eefb06fcf37552"
+      },
+      {
+        "path": "/v2/stocks/quotes/latest",
+        "params": {
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:34:04.257176+00:00",
+        "received_at": "2026-11-24T15:34:05.175262+00:00",
+        "status": 200,
+        "request_id": "7534e2eba995829217e42e8ee31f3d6c"
+      },
+      {
+        "path": "/v2/stocks/trades/latest",
+        "params": {
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:34:05.176474+00:00",
+        "received_at": "2026-11-24T15:34:06.101256+00:00",
+        "status": 200,
+        "request_id": "cb72ed9478d7850b4d7a48dd7b7d5e43"
+      },
+      {
+        "path": "/v2/stocks/snapshots",
+        "params": {
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:34:06.102870+00:00",
+        "received_at": "2026-11-24T15:34:07.052280+00:00",
+        "status": 200,
+        "request_id": "40e6f937a1c3e79c4ec9d8b7d08de1b4"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Min",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2026-11-20T00:00:00-05:00",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:37:47.843482+00:00",
+        "received_at": "2026-11-24T15:37:49.893926+00:00",
+        "status": 200,
+        "request_id": "28f953c3a83c421d8864778ceaae33f0"
+      }
+    ]
+  },
+  {
+    "feed": "sip",
+    "endpoints": {
+      "daily:raw": "HTTP_200",
+      "daily:split": "HTTP_200",
+      "daily:dividend": "HTTP_200",
+      "daily:spin-off": "HTTP_200",
+      "daily:all": "HTTP_200",
+      "minutes": "HTTP_200",
+      "latest_quotes": {
+        "status": 403
+      },
+      "latest_trades": {
+        "status": 403
+      },
+      "snapshots": {
+        "status": 403
+      }
+    },
+    "requests": [
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:07.057434+00:00",
+        "received_at": "2026-11-24T15:34:08.881653+00:00",
+        "status": 200,
+        "request_id": "d696667ffd988ecc1f3610af7673f84f"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "split",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:08.981988+00:00",
+        "received_at": "2026-11-24T15:34:10.823641+00:00",
+        "status": 200,
+        "request_id": "449745133c57bd033bfe138d8b58882f"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "dividend",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:10.922200+00:00",
+        "received_at": "2026-11-24T15:34:12.701759+00:00",
+        "status": 200,
+        "request_id": "7d820e8342bbc3107491cca0e31e5080"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "spin-off",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:12.787189+00:00",
+        "received_at": "2026-11-24T15:34:14.609857+00:00",
+        "status": 200,
+        "request_id": "8a7de44ba086c3bc07681d6571582dad"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "all",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2025-11-21",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:14.708401+00:00",
+        "received_at": "2026-11-24T15:34:16.537121+00:00",
+        "status": 200,
+        "request_id": "c15505a1bd57c17edfeb39258ae44fff"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Min",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2026-11-20",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:16.650037+00:00",
+        "received_at": "2026-11-24T15:34:18.922766+00:00",
+        "status": 200,
+        "request_id": "2485bcd971ca5b6b086c5b55a5f4a3c0"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Min",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2026-11-20",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "page_token": "VFFRUXxNfDE3OTUxMzQ2MDAwMDAwMDAwMDA=",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:18.939657+00:00",
+        "received_at": "2026-11-24T15:34:20.780269+00:00",
+        "status": 200,
+        "request_id": "9755b00fbd3d88bf0b5d02df08b210e5"
+      },
+      {
+        "path": "/v2/stocks/quotes/latest",
+        "params": {
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:21.868412+00:00",
+        "received_at": "2026-11-24T15:34:22.779550+00:00",
+        "status": 403,
+        "request_id": "beb2fd4519c24c486e4e685c8d692deb"
+      },
+      {
+        "path": "/v2/stocks/trades/latest",
+        "params": {
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:22.779607+00:00",
+        "received_at": "2026-11-24T15:34:23.702446+00:00",
+        "status": 403,
+        "request_id": "b9504e4fc6f5d8c90fc052fbd823a0b1"
+      },
+      {
+        "path": "/v2/stocks/snapshots",
+        "params": {
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:34:23.702512+00:00",
+        "received_at": "2026-11-24T15:34:24.691262+00:00",
+        "status": 403,
+        "request_id": "f752e4d7ecb3e601787035999d652ddf"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Min",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2026-11-20T00:00:00-05:00",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:37:51.044360+00:00",
+        "received_at": "2026-11-24T15:37:53.328250+00:00",
+        "status": 200,
+        "request_id": "aad3fdc57b56fb9dd2ebcbb8c65ba49c"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Min",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL,SNDK,BA,C,JPM,GE,TQQQ,QQQ",
+          "start": "2026-11-20T00:00:00-05:00",
+          "end": "2026-11-23T23:59:59.999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "page_token": "VFFRUXxNfDE3OTUxNzg5NDAwMDAwMDAwMDA=",
+          "feed": "sip"
+        },
+        "requested_at": "2026-11-24T15:37:53.347133+00:00",
+        "received_at": "2026-11-24T15:37:55.949377+00:00",
+        "status": 200,
+        "request_id": "a7fa8fcb0347014f1827d8ef44b09456"
+      }
+    ]
+  }
+]

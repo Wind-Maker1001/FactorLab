@@ -1,0 +1,33 @@
+[Unit]
+Description=FactorLab TradFi read-only market and session observer (NO LIVE MONEY)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=factorlab-demo
+Group=factorlab-demo
+UMask=0077
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/factorlab/tradfi-observer/current/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --execute-health /var/lib/factorlab-demo/execute-state/cloud-health.json --symbols QQQUSDT SPYUSDT --poll-seconds 30 --task-db /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=30
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/lib/factorlab-tradfi-observer
+ReadOnlyPaths=/var/lib/factorlab-demo
+InaccessiblePaths=/etc/factorlab-demo -/run/credentials/factorlab-demo-execute.service -/run/credentials/factorlab-demo.service
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

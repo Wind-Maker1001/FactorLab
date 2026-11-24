@@ -1,0 +1,36 @@
+[Unit]
+Description=FactorLab Alpaca Paper runtime
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/var/lib/factorlab-alpaca-paper
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=factorlab-alpaca
+Group=factorlab-alpaca
+WorkingDirectory=/opt/factorlab-alpaca/current
+Environment=PYTHONUNBUFFERED=1
+Environment=FACTORLAB_ALPACA_SECRET_FILE=%d/paper-secret
+LoadCredential=paper-secret:/etc/factorlab-alpaca-paper/paper-secret.json
+ExecStart=/opt/factorlab-alpaca/current/run
+Restart=on-failure
+RestartSec=15
+RestartPreventExitStatus=78
+KillSignal=SIGTERM
+TimeoutStopSec=90
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/factorlab-alpaca-paper
+
+[Install]
+WantedBy=multi-user.target

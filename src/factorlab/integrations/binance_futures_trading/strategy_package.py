@@ -8,7 +8,12 @@ import tempfile
 import zipfile
 
 
+from .demo_market_feed import INTERVALS
+
+
 INTERFACE = 'factorlab.demo.evaluate/v1'
+DECISION_INTERFACE = 'FACTORLAB_DECISION_V1'
+SUPPORTED_INTERFACES = frozenset({INTERFACE, DECISION_INTERFACE})
 
 
 def encoded(value):
@@ -19,15 +24,64 @@ def digest(value):
     return sha256(encoded(value)).hexdigest()
 
 
+def package_entrypoint_file(manifest):
+    entrypoint = manifest['entrypoint']
+    module, symbol = entrypoint.split(':')
+    if module.endswith('.py'):
+        return module, symbol
+    return module.replace('.', '/') + '.py', symbol
+
+
+def strategy_package_identity(manifest):
+    """Return a credential-free, canonical identity map for logs, health, and audits."""
+    interface = manifest['interface']
+    mode = manifest.get('execution_mode')
+    if mode is None and interface == INTERFACE:
+        mode = 'evaluate_v1'
+    return dict(
+        strategy_id=manifest.get('strategy_id') or manifest['entrypoint'],
+        strategy_version=str(manifest.get('strategy_version', manifest['state_version'])),
+        package_id=manifest['package_id'],
+        code_commit=manifest['code_commit'],
+        files_sha256=digest(manifest['files']),
+        configuration_sha256=digest(manifest['configuration']),
+        protocol_version=interface,
+        state_schema_version=str(manifest['state_version']),
+        execution_mode=mode,
+        instrument=manifest['symbol'],
+        interval_seconds=manifest.get('interval_seconds', 60),
+        research_evidence_sha256=digest(manifest['evidence']),
+    )
+
+
 def validate_manifest(m):
-    if m.get('schema_version') != 1 or m.get('interface') != INTERFACE:
+    interface = m.get('interface')
+    if m.get('schema_version') != 1 or interface not in SUPPORTED_INTERFACES:
         raise ValueError('unsupported StrategyPackage/interface version')
     if m.get('environment') != 'BINANCE_USDM_DEMO' or m.get('symbol') != 'NVDAUSDT':
         raise ValueError('package outside existing Demo authority')
     if not re.fullmatch(r'[0-9a-f]{40}', m['code_commit']):
         raise ValueError('full source commit required')
-    if type(m['state_version']) is not int or m['state_version'] < 1:
-        raise ValueError('positive state version required')
+    if interface == INTERFACE:
+        if type(m['state_version']) is not int or m['state_version'] < 1:
+            raise ValueError('positive state version required')
+    else:
+        state_version = m.get('state_version')
+        if not ((type(state_version) is int and state_version >= 1)
+                or (isinstance(state_version, str) and bool(state_version))):
+            raise ValueError('positive state version or nonempty schema version required')
+        if not isinstance(m.get('strategy_id'), str) or not m['strategy_id']:
+            raise ValueError('strategy_id required for FACTORLAB_DECISION_V1 package')
+        if not isinstance(m.get('strategy_version'), str) or not m['strategy_version']:
+            raise ValueError('strategy_version required for FACTORLAB_DECISION_V1 package')
+        execution_mode = m.get('execution_mode')
+        if execution_mode is not None and execution_mode not in {'target', 'orders'}:
+            raise ValueError('execution_mode must be target or orders')
+        interval_seconds = m.get('interval_seconds', 60)
+        if type(interval_seconds) is not int or interval_seconds not in INTERVALS.values():
+            raise ValueError('interval_seconds unavailable from current Demo feed')
+        if 'package' in m and not isinstance(m['package'], bool):
+            raise ValueError('package flag must be a boolean')
     if m['migration'] not in {'wait_flat', 'reduce_only'}:
         raise ValueError('explicit position migration policy required')
     if m['migration'] == 'reduce_only' and not m.get('reduction', {}).get('explicitly_allowed') is True:
@@ -51,7 +105,8 @@ def validate_manifest(m):
                 or str(p) != name or not name.endswith('.py') or len(p.parts) > 10
                 or not re.fullmatch(r'[0-9a-f]{64}', fingerprint)):
             raise ValueError('invalid package source member')
-    if m['entrypoint'].split(':')[0].replace('.', '/') + '.py' not in files:
+    entry_file, _ = package_entrypoint_file(m)
+    if entry_file not in files:
         raise ValueError('entrypoint missing from source inventory')
     if m.get('package_id') != digest({k: v for k, v in m.items() if k != 'package_id'}):
         raise ValueError('package identity mismatch')

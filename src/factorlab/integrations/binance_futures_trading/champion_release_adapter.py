@@ -32,11 +32,13 @@ def adapt_selection(selection, manifest):
             or evidence['candidate'] != selected):
         raise ValueError('selected candidate lacks qualified OOS decision')
     test = evidence['stages']['test']
-    source = selected['strategy']['file'].replace('\\', '/').rsplit('/', 1)[-1]
+    source_path = selected['strategy']['file'].replace('\\', '/').lstrip('./')
+    source_name = source_path.rsplit('/', 1)[-1]
+    file_hash = manifest['files'].get(source_path) or manifest['files'].get(source_name)
     required = dict(selection_sha256=digest(selection), candidate_id=candidate_id,
                     run_id=test['run_id'], record_sha256=test['record_sha256'])
     if (test.get('status') != 'SUCCEEDED' or manifest['configuration'] != selected['parameters']
-            or manifest['files'].get(source) != selected['code_version']
+            or file_hash != selected['code_version']
             or any(manifest['evidence'].get(k) != v for k, v in required.items())):
         raise ValueError('selector/package code, configuration or evidence binding mismatch')
     return dict(schema_version=1, decision='PROMOTE', qualified=True, strictly_better=True,

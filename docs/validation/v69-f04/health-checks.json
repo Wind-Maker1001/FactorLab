@@ -1,0 +1,34 @@
+{
+  "source": "EXISTING_AZURE_READ_ONLY_HEALTH_COMMANDS",
+  "observer_health": {
+    "healthy": true,
+    "heartbeat_age_seconds": 0.994967,
+    "market_fresh": true,
+    "mode": "READ_ONLY_SIGNAL_OBSERVER",
+    "execution_status": "COMPLETED",
+    "target_status": "NO_STRATEGY_CONFIGURED"
+  },
+  "health_services": {
+    "factorlab-demo-tradfi-health.service": {
+      "result": "success",
+      "exit_status": 0,
+      "last_exit_at": "2026-11-24T16:13:33+00:00"
+    },
+    "factorlab-demo-health.service": {
+      "result": "success",
+      "exit_status": 0,
+      "last_exit_at": "2026-11-24T16:13:36+00:00"
+    }
+  },
+  "execute_process": {
+    "pid": 335200,
+    "revision": "201d76ad2a67257127bfb7f9a0f1e01a8d339230",
+    "entrypoint": "factorlab.integrations.binance_futures_trading.demo_grid_supervisor start --execute"
+  },
+  "daily_report": {
+    "day": "2026-11-24",
+    "samples": 94,
+    "execution_owner": "factorlab-demo-execute.service",
+    "execution_status": "COMPLETED"
+  }
+}

@@ -28,6 +28,11 @@ DEFAULT_RETENTION_DAYS = 14
 DEFAULT_MIN_VALID_COPIES = 1
 DEFAULT_RECONCILE_TIMEOUT = 90.0
 DEFAULT_UNITS = ('factorlab-demo-execute.service', 'factorlab-demo.service')
+MAILBOX_WRITER_UNITS = (
+    'factorlab-demo-strategy-deploy.timer',
+    'factorlab-demo-strategy-deploy.service',
+    'factorlab-demo-tradfi-observer.service',
+)
 
 BACKUP_PREFIX = 'backup-'
 BACKUP_TIMESTAMP_FORMAT = '%Y%m%dT%H%M%SZ'
@@ -380,6 +385,23 @@ def _read_controller_summary(controller_path):
     return summary
 
 
+def _read_task_mailbox_summary(root):
+    path = root / storage._TASK_MAILBOX
+    if not path.exists():
+        return dict(present=False)
+    digest = hashlib.sha256()
+    counts = {}
+    with closing(_readonly_sqlite(path)) as db:
+        for table, order in (('portfolio_tasks', 'task_id'), ('portfolio_receipts', 'sequence')):
+            count = 0
+            for row in db.execute(f'SELECT * FROM {table} ORDER BY {order}'):
+                digest.update(json.dumps([table, list(row)], separators=(',', ':')).encode('utf-8'))
+                digest.update(bytes([10]))
+                count += 1
+            counts[table] = count
+    return dict(present=True, rows=counts, content_sha256=digest.hexdigest())
+
+
 def inspect_state_snapshot(root, *, expect_backup_manifest=False, expect_quarantine=False):
     """Read-only deep verification of a state or backup directory without touching live locks."""
     root = storage._root(root)
@@ -478,6 +500,7 @@ def inspect_state_snapshot(root, *, expect_backup_manifest=False, expect_quarant
         control=control_summary,
         protocol=protocol_summary,
         controller=controller_summary,
+        task_mailbox=_read_task_mailbox_summary(root),
     )
 
 
@@ -490,14 +513,14 @@ def verify_backup(backup_dir):
     )
 
 
-def create_backup(state_root, backup_root, *, name=None, now_utc=None):
+def create_backup(state_root, backup_root, *, name=None, now_utc=None, task_mailbox=None):
     """Create one coherent offline snapshot in backup_root using demo_cloud_storage.backup_state."""
     backup_root = storage._root(backup_root)
     backup_name = name or generate_backup_name(backup_root, now_utc=now_utc)
     if parse_backup_timestamp(backup_name) is None:
         raise SafetyBlocked(f'backup name must match {BACKUP_PREFIX}YYYYMMDDTHHMMSSZ: {backup_name}')
     destination = backup_root / backup_name
-    return storage.backup_state(state_root, destination)
+    return storage.backup_state(state_root, destination, task_mailbox=task_mailbox)
 
 
 def _compare_snapshot_invariants(source_report, restored_report):
@@ -534,6 +557,7 @@ def _compare_snapshot_invariants(source_report, restored_report):
         and source_report['runtime']['remaining_notional'] == restored_report['runtime']['remaining_notional']
     )
     checks['controller_match'] = source_report['controller'] == restored_report['controller']
+    checks['task_mailbox_match'] = source_report['task_mailbox'] == restored_report['task_mailbox']
     checks['secret_files_excluded'] = bool(restored_report['secret_files_excluded'])
     return checks
 
@@ -628,6 +652,7 @@ def drill_restore(backup_dir, *, work_parent=None, keep_restored=False):
                 control=restored_report['control'],
                 protocol=restored_report['protocol'],
                 controller=restored_report['controller'],
+                task_mailbox=restored_report['task_mailbox'],
             ),
         )
         return result
@@ -839,7 +864,13 @@ def _reconcile_matches(pre_health, post_health, *, unit, require_new_pid):
         if not post_health.get('account_recovered'):
             return False, 'WAITING_FOR_RECONCILIATION'
     elif unit == 'factorlab-demo-execute.service':
-        if not (post_health.get('execute_healthy') and post_health.get('account_recovered')
+        budget_paused = bool(pre_health and pre_health.get('status') == 'PAUSED'
+            and (pre_health.get('remaining_posts') == 0
+                 or pre_health.get('remaining_notional') is not None
+                 and Decimal(str(pre_health['remaining_notional'])) == 0)
+            and post_health.get('status') == 'PAUSED')
+        if not ((post_health.get('execute_healthy') or budget_paused)
+                and post_health.get('account_recovered')
                 and post_health.get('market_fresh') and post_health.get('unknown_count') == 0):
             return False, 'WAITING_FOR_EXECUTE_READY'
     elif not post_health.get('ready'):
@@ -944,7 +975,7 @@ class SystemdRunner:
             return None
 
 
-def _preflight_backup_space(state_root, backup_root, *, min_free_bytes=MIN_FREE_BYTES):
+def _preflight_backup_space(state_root, backup_root, *, min_free_bytes=MIN_FREE_BYTES, task_mailbox=None):
     state_root = Path(state_root)
     backup_root = Path(backup_root)
     if not state_root.is_dir():
@@ -959,6 +990,10 @@ def _preflight_backup_space(state_root, backup_root, *, min_free_bytes=MIN_FREE_
                 state_bytes += path.lstat().st_size
             except FileNotFoundError:
                 continue
+    if task_mailbox is not None:
+        mailbox = Path(os.path.abspath(task_mailbox))
+        storage._no_symlinks(mailbox)
+        state_bytes += mailbox.stat().st_size
     free_bytes = shutil.disk_usage(backup_root).free
     if free_bytes < state_bytes + min_free_bytes:
         raise SafetyBlocked('insufficient backup destination space')
@@ -974,7 +1009,7 @@ def _control_blocks_restart(state_root, health=None):
     return control['durable_control_state'] in blocked or control['grid_control_desired'] in blocked
 
 
-def _restore_maintenance(runner, state_root, window, *, reconcile_timeout,
+def _restore_execute(runner, state_root, window, *, reconcile_timeout,
                          now_fn=utc_now, sleep_fn=time.sleep, monotonic_fn=time.monotonic,
                          stopped_mono=None):
     unit = window['interrupted_unit']
@@ -1018,6 +1053,19 @@ def _restore_maintenance(runner, state_root, window, *, reconcile_timeout,
     except Exception:
         window['reconcile_reason'] = 'POST_HEALTH_UNAVAILABLE'
         return 'RECONCILE_FAILED'
+
+
+def _restore_maintenance(runner, state_root, window, **kwargs):
+    error = None
+    if window['interrupted_unit'] is not None:
+        error = _restore_execute(runner, state_root, window, **kwargs)
+    try:
+        for unit in reversed(window.get('auxiliary_units', [])):
+            if not runner.is_unit_active(unit):
+                runner.start_unit(unit)
+    except Exception:
+        return 'SERVICE_RESTART_FAILED'
+    return error
 
 
 def _publish_status(runner, backup_root, payload):
@@ -1066,6 +1114,7 @@ def run_scheduled_backup(
     backup_root,
     *,
     units=DEFAULT_UNITS,
+    task_mailbox=None,
     service_user='factorlab-demo',
     retention_days=DEFAULT_RETENTION_DAYS,
     min_valid_copies=DEFAULT_MIN_VALID_COPIES,
@@ -1101,6 +1150,7 @@ def run_scheduled_backup(
         maintenance_window=dict(
             service_control_enabled=not skip_service_control,
             interrupted_unit=None,
+            auxiliary_units=[],
             stopped_at=None,
             restarted_at=None,
             downtime_seconds=0.0,
@@ -1143,7 +1193,8 @@ def run_scheduled_backup(
             raise SafetyBlocked('active unit has STOPPED or HALTED control state')
 
         # 2. Check free disk space BEFORE stopping Execute to avoid pointless downtime.
-        _preflight_backup_space(state_root, backup_root, min_free_bytes=min_free_bytes)
+        _preflight_backup_space(state_root, backup_root, min_free_bytes=min_free_bytes,
+                                task_mailbox=task_mailbox)
 
         backup_name = generate_backup_name(backup_root, now_utc=started_dt)
         backup_dest = backup_root / backup_name
@@ -1153,6 +1204,15 @@ def run_scheduled_backup(
         # Persist recovery intent before the stop request reaches systemd.
         stopped_mono = None
         try:
+            if task_mailbox is not None and not skip_service_control:
+                for unit in MAILBOX_WRITER_UNITS:
+                    if runner.is_unit_active(unit):
+                        window['auxiliary_units'].append(unit)
+                        _checkpoint_recovery(recovery_file, status_payload, True)
+                        recovery_pending = True
+                        operation_error = 'SERVICE_STOP_FAILED'
+                        runner.stop_unit(unit)
+                        operation_error = None
             if active_unit is not None:
                 window['interrupted_unit'] = active_unit
                 window['stopped_at'] = now_fn().isoformat()
@@ -1165,7 +1225,8 @@ def run_scheduled_backup(
 
             proc = runner.run_python_module(
                 'factorlab.integrations.binance_futures_trading.demo_cloud_runtime',
-                ['backup', '--state-root', str(state_root), '--destination', str(backup_dest)],
+                ['backup', '--state-root', str(state_root), '--destination', str(backup_dest)]
+                + (['--task-mailbox', str(task_mailbox)] if task_mailbox is not None else []),
                 state_root=state_root,
                 timeout=300,
             )
@@ -1278,6 +1339,7 @@ def main(argv=None):
     p_sched = subparsers.add_parser('run-scheduled', help='Run controlled maintenance-window backup')
     p_sched.add_argument('--state-root', type=Path, required=True)
     p_sched.add_argument('--backup-root', type=Path, required=True)
+    p_sched.add_argument('--task-mailbox', type=Path)
     p_sched.add_argument('--service-user', default='factorlab-demo')
     p_sched.add_argument('--units', nargs='+', default=list(DEFAULT_UNITS))
     p_sched.add_argument('--retention-days', type=int, default=DEFAULT_RETENTION_DAYS)
@@ -1325,6 +1387,7 @@ def main(argv=None):
                 args.state_root,
                 args.backup_root,
                 units=tuple(args.units),
+                task_mailbox=args.task_mailbox,
                 service_user=args.service_user,
                 retention_days=args.retention_days,
                 min_valid_copies=args.min_valid_copies,

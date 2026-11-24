@@ -79,8 +79,8 @@ def _open_orders(facts):
     return {'count': len(identities), 'NVDAUSDT_count': sum(symbol == SYMBOL for symbol, _ in identities)}
 
 
-def _quote(payload, fields):
-    if not isinstance(payload, dict) or payload.get('symbol') != SYMBOL:
+def _quote(payload, fields, symbol=SYMBOL):
+    if not isinstance(payload, dict) or payload.get('symbol') != symbol:
         raise DataQualityError('unexpected price identity')
     prices = _numbers(payload, fields, nonnegative=True)
     if min(prices.values()) <= 0:
@@ -88,8 +88,8 @@ def _quote(payload, fields):
     return dict(prices, time_utc=instant(payload['time']))
 
 
-def _book(payload):
-    prices = _quote(payload, ('bidPrice', 'askPrice'))
+def _book(payload, symbol=SYMBOL):
+    prices = _quote(payload, ('bidPrice', 'askPrice'), symbol)
     if prices['bidPrice'] > prices['askPrice']:
         raise DataQualityError('crossed book')
     return prices

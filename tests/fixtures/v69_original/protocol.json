@@ -1,0 +1,56 @@
+{
+  "universe": {
+    "AAPL": "苹果",
+    "SNDK": "闪迪",
+    "BA": "波音",
+    "C": "花旗集团",
+    "JPM": "摩根大通",
+    "GE": "通用电气 GE Aerospace",
+    "TQQQ": "ProShares UltraPro QQQ",
+    "QQQ": "Invesco QQQ"
+  },
+  "cash": 300000,
+  "quote_start": "2021-10-01",
+  "quote_end": "2026-11-21",
+  "first_listed": {
+    "SNDK": "2025-02-24"
+  },
+  "weights": {
+    "AAPL": 0.04,
+    "SNDK": 0.04,
+    "BA": 0.04,
+    "C": 0.04,
+    "JPM": 0.04,
+    "GE": 0.04,
+    "TQQQ": 0.013333333333333334,
+    "QQQ": 0.04
+  },
+  "trend_days": 28,
+  "slow_days": 63,
+  "rebalance_deadband": 0.005,
+  "windows": {
+    "bear22": [
+      "2022-01-01",
+      "2022-12-31"
+    ],
+    "early": [
+      "2023-01-01",
+      "2024-12-31"
+    ],
+    "main": [
+      "2025-01-01",
+      "2026-11-15"
+    ],
+    "recent": [
+      "2026-11-16",
+      "2026-11-20"
+    ]
+  },
+  "costs": {
+    "normal": 0.001,
+    "stress": 0.003
+  },
+  "planning": "Fixed before acquiring strategy performance. Long-only, no borrowing. On first session and first open of each US trading week use previous completed day's price and moving average. v47 permits each eligible symbol above SMA 28. v48 changes only the ETF sleeve: both QQQ and TQQQ also require QQQ over its own SMA 63. Passive same weights without trend; each starts from cash, no pre-list or warmup trades in SNDK for any basket strategy. QQQ 32% and QQQ 100% provide separate market references. Value open positions at final close without artificial end-of-period liquidation. TQQQ budget is one third of a regular sleeve because of daily 3x target; no extra leverage.",
+  "buy_capacity": "Budgeted at previous close. Cap new order to 0.1% of prior session's split-adjusted volume. Strategy uses provider-adjusted units; simulate cash debits with adjusted open and no added dividend credits. Daily indicators only use completed sessions.",
+  "caveats": "Retrospective study on a user-specified current universe. 2022–2024 has seven active symbols; SNDK enters after listing and 28 completed sessions. Yahoo price and adjusted close, Nasdaq recent close cross-check where supplied. Equity TQQQ returns use actual tape and its existing expense drag."
+}

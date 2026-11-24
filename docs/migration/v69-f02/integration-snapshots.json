@@ -1,0 +1,17 @@
+{
+  "e03": {
+    "sha256": "85aea3acb49f05a7a3115203ef3574f65a8a8994b201543921790077ab768c57",
+    "source_path": "D:/Code/FactorLab-worktrees/alp-e03/src/factorlab/trading/portfolio_execution.py",
+    "merged_into_main": false
+  },
+  "e02": {
+    "sha256": "00be5bc2d45806de9cd3499e027858741a3b03e3e6b30eef53fb8d1b6b844cb1",
+    "source_path": "D:/Code/FactorLab-worktrees/alp-e02-market-data/src/factorlab/integrations/alpaca/market_data/service.py",
+    "merged_into_main": false
+  },
+  "e04": {
+    "sha256": "963c7d6653ee944235b033aef9422024566bd9c117216db4f88716f8d51527fd",
+    "source_path": "D:/Code/FactorLab-worktrees/alp-e04-cloud-runtime/src/factorlab/integrations/alpaca/cloud_runtime.py",
+    "merged_into_main": false
+  }
+}
