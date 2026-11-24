@@ -17,6 +17,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+alpaca-paper = ["websockets>=15,<17"]
 suppliers = ["akshare==1.18.88", "baostock==0.8.9"]
 pdf = ["pypdf>=5,<7", "openpyxl>=3.1,<4"]
 dev = ["pytest>=8.3.5,<9", "pytest-cov>=6.2.1,<8", "build>=1.3,<2"]
@@ -24,7 +25,6 @@ cross-market = ["exchange-calendars>=4.11,<5"]
 pairs = ["statsmodels>=0.14.4,<0.15"]
 binance-equity = ["websockets>=15,<17"]
 alpaca-data = ["websockets>=15,<17", "exchange-calendars>=4.11,<5"]
-alpaca-paper = ["websockets>=15,<17"]
 monte-carlo-cuda = ["cupy-cuda13x[ctk]>=14,<15"]
 
 [project.scripts]

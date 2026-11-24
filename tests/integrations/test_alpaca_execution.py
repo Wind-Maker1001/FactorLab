@@ -68,8 +68,13 @@ class Official:
 
 def adapter(tmp_path, official=None):
     official = official or Official()
-    http = PaperHTTP(AlpacaConfig("not-real", "not-real"), transport=official)
-    return AlpacaAdapter(http, tmp_path / "alpaca.sqlite", limits=LIMITS), official
+    def transport(method, path, params, body):
+        assert not instance.store.db.in_transaction, "HTTP request inside SQLite transaction"
+        return official(method, path, params, body)
+
+    http = PaperHTTP(AlpacaConfig("not-real", "not-real"), transport=transport)
+    instance = AlpacaAdapter(http, tmp_path / "alpaca.sqlite", limits=LIMITS)
+    return instance, official
 
 
 @pytest.mark.parametrize(("status", "error"), [(401, AuthenticationError), (403, PermissionDenied),
@@ -78,6 +83,81 @@ def test_error_classification(status, error):
     http = PaperHTTP(AlpacaConfig("fake", "fake"), transport=lambda *args: (status, {}))
     with pytest.raises(error):
         http.request("GET", "/v2/account")
+
+
+def test_details_keep_accepted_observation(tmp_path):
+    a, official = adapter(tmp_path)
+    a.submit_order(intent())
+    stale = deepcopy(official.orders["alp-test"])
+    official.orders["alp-test"].update(
+        filled_qty="0.1", filled_avg_price="99", status="filled",
+        updated_at="2026-11-24T15:01:00Z")
+    a.query_order("alp-test")
+    official.orders["alp-test"] = stale
+    details = a.read_order_details("alp-test")
+    assert details["status"] == S.FILLED
+    assert details["filled_quantity"] == D("0.1")
+    assert details["cumulative_filled_notional"] == D("9.9")
+    a.close()
+
+
+def test_external_partial_market_buy_remains_unpriced(tmp_path):
+    a, official = adapter(tmp_path)
+    row = order("external", filled="0.04", average="99", status="partially_filled")
+    row.update(type="market", limit_price=None)
+    official.orders["external"] = row
+    official.activities = [{"id": "external-fill", "order_id": row["id"], "qty": "0.04",
+                            "price": "99", "side": "buy", "symbol": "AAPL"}]
+    with pytest.raises(RiskRejected, match="UNPRICED_EXTERNAL_ORDER"):
+        a.submit_order(intent())
+    assert D(a.store.order("external")[3]) == 0
+    assert official.posts == 0
+    a.close()
+
+
+def test_pending_sell_does_not_increase_buy_exposure(tmp_path):
+    a, official = adapter(tmp_path)
+    a.limits = RiskLimits(D("100"), D("1000"), D("1000"), 20)
+    official.positions = [{"symbol": "AAPL", "qty": "5", "avg_entry_price": "100",
+                           "current_price": "100"}]
+    row = order("external-sell", qty="5")
+    row["side"] = "sell"
+    official.orders["external-sell"] = row
+    assert a.submit_order(intent(quantity="1")).status == S.SUBMITTED
+    a.close()
+
+
+@pytest.mark.parametrize(("status", "message", "unknown"), [
+    (422, "insufficient buying power", False),
+    (422, "qty must be greater than 0", False),
+    (422, "client_order_id must be unique", True),
+    (422, None, True),
+    (408, "request timeout", True),
+    (409, "conflict", True),
+])
+def test_submission_rejection_certainty(tmp_path, status, message, unknown):
+    from factorlab.integrations.alpaca import AlpacaError
+    a, official = adapter(tmp_path)
+    real_transport = a.http.transport
+
+    def reject(method, path, params, body):
+        if method == "POST":
+            return status, {"code": 42210000, "message": message}
+        return real_transport(method, path, params, body)
+
+    a.http.transport = reject
+    with pytest.raises(OutcomeUnknown if unknown else AlpacaError):
+        a.submit_order(intent())
+    assert a.recover().reconciled is not unknown
+    if unknown:
+        with pytest.raises(RiskRejected, match="RECONCILE_REQUIRED"):
+            a.submit_order(intent("second"))
+    else:
+        assert a.query_order("alp-test").status == S.REJECTED
+        assert not a.read_account().open_orders
+        a.http.transport = real_transport
+        assert a.submit_order(intent("second")).status == S.SUBMITTED
+    a.close()
 
 
 @pytest.mark.parametrize("url", ["https://api.alpaca.markets", "http://paper-api.alpaca.markets",
@@ -118,9 +198,11 @@ def test_incremental_fill_amounts_and_activity_dedup(tmp_path):
     a.submit_order(intent())
     row = official.orders["alp-test"]
     row.update(filled_qty="0.04", filled_avg_price="99", status="partially_filled", updated_at="2026-11-24T15:01:00Z")
+    official.activities = [{"id": "fill-one", "order_id": row["id"], "qty": "0.04", "price": "99", "side": "buy", "symbol": "AAPL"}]
     event = a.query_order("alp-test")
     assert event.status == S.PARTIALLY_FILLED and event.fill_price == D("99")
     row.update(filled_qty="0.1", filled_avg_price="99.6", status="filled", updated_at="2026-11-24T15:02:00Z")
+    official.activities.append({"id": "fill-two", "order_id": row["id"], "qty": "0.06", "price": "100", "side": "buy", "symbol": "AAPL"})
     event = a.query_order("alp-test")
     assert event.fill_price == D("100")
     assert a.query_order("alp-test").fill_price is None
@@ -137,12 +219,46 @@ def test_incremental_fill_amounts_and_activity_dedup(tmp_path):
     assert len(a.store.activities()) == 2
 
 
+def test_exact_activity_price_survives_rounding_lag_and_restart(tmp_path):
+    a, official = adapter(tmp_path)
+    row = order(qty="0.500000001", filled="0.5", average="99.000001", status="partially_filled")
+    official.orders["alp-test"] = row
+    official.activities = [{"id": "first", "order_id": row["id"], "qty": "0.5", "price": "99.000001", "side": "buy", "symbol": "AAPL"}]
+    assert a.query_order("alp-test").fill_price == D("99.000001")
+    row.update(filled_qty="0.500000001", filled_avg_price="99", status="filled")
+    delayed = a.query_order("alp-test")
+    assert delayed.status == S.UNKNOWN
+    assert delayed.cumulative_filled_quantity == D("0.5")
+    assert a.read_order_details("alp-test")["filled_quantity"] == D("0.500000001")
+    a.close()
+    official.activities.append({"id": "second", "order_id": row["id"], "qty": "0.000000001", "price": "99", "side": "buy", "symbol": "AAPL"})
+    a, _ = adapter(tmp_path, official)
+    assert a.recover().reconciled
+    priced = a.query_order("alp-test")
+    assert priced.status == S.FILLED and priced.fill_price == D("99")
+    assert priced.event_id != delayed.event_id
+    assert a.query_order("alp-test").fill_price is None
+
+
+@pytest.mark.parametrize("source", ["position", "order"])
+def test_non_equity_exposure_blocks_recovery(tmp_path, source):
+    a, official = adapter(tmp_path)
+    if source == "position":
+        official.positions = [{"symbol": "OPTION", "asset_class": "us_option", "qty": "1", "avg_entry_price": "5", "current_price": "5"}]
+    else:
+        official.orders["alp-test"] = {**order(), "asset_class": "us_option"}
+    with pytest.raises(ValueError, match="asset_class"):
+        a.recover()
+    assert not a.reconciled
+
+
 def test_stale_event_cannot_regress_fill(tmp_path):
     a, official = adapter(tmp_path)
     a.submit_order(intent())
     stale = deepcopy(official.orders["alp-test"])
     row = official.orders["alp-test"]
     row.update(filled_qty="0.04", filled_avg_price="99", status="partially_filled", updated_at="2026-11-24T15:01:00Z")
+    official.activities = [{"id": "fill-one", "order_id": row["id"], "qty": "0.04", "price": "99", "side": "buy", "symbol": "AAPL"}]
     a.query_order("alp-test")
     assert a._apply(stale).cumulative_filled_quantity == D("0.04")
 
@@ -152,8 +268,10 @@ def test_partial_cancel_and_fill_race(tmp_path):
     a.submit_order(intent())
     row = official.orders["alp-test"]
     row.update(filled_qty="0.04", filled_avg_price="99", status="partially_filled", updated_at="2026-11-24T15:00:30Z")
+    official.activities = [{"id": "fill-one", "order_id": row["id"], "qty": "0.04", "price": "99", "side": "buy", "symbol": "AAPL"}]
     assert a.cancel_order("alp-test").status == S.CANCELED
     row.update(filled_qty="0.1", filled_avg_price="99", status="filled", updated_at="2026-11-24T15:02:00Z")
+    official.activities.append({"id": "fill-two", "order_id": row["id"], "qty": "0.06", "price": "99", "side": "buy", "symbol": "AAPL"})
     assert a.query_order("alp-test").status == S.FILLED
 
 
@@ -297,6 +415,27 @@ def test_order_pagination_overlaps_tied_timestamp_group(tmp_path):
     assert calls[1]["until"] == "2026-11-24T15:00:00Z"
 
 
+@pytest.mark.parametrize(("kind", "quantity"), [("stop", "1"), ("stop_limit", "1"),
+                                                ("trailing_stop", "1"), ("market", None)])
+def test_unsupported_external_history_is_diagnosed_not_omitted(tmp_path, kind, quantity):
+    a, official = adapter(tmp_path)
+    official.orders["external"] = {**order("external"), "type": kind, "qty": quantity}
+    with pytest.raises(ValueError, match="id=exchange-external.*reconciliation incomplete"):
+        a.recover()
+    assert not a.reconciled
+    assert official.posts == 0
+
+
+def test_saturated_history_timestamp_blocks_recovery_with_diagnostic(tmp_path):
+    a, official = adapter(tmp_path)
+    assert a.recover().reconciled
+    official.orders = {str(i): order(str(i)) for i in range(500)}
+    with pytest.raises(ValueError, match="500 orders at submitted_at=2026-11-24T15:00:00Z"):
+        a.recover()
+    assert not a.reconciled
+    assert official.posts == 0
+
+
 def test_cash_ledger_deduplicates_exact_official_activities(tmp_path):
     a, _ = adapter(tmp_path)
     row = {"id": "execution-one", "order_id": "order", "qty": "0.1", "price": "99",
@@ -308,6 +447,59 @@ def test_cash_ledger_deduplicates_exact_official_activities(tmp_path):
     with pytest.raises(ValueError, match="identity changed"):
         with a.store.transaction():
             a.store.activity({**row, "price": "98"})
+
+
+@pytest.mark.parametrize("failure", ["canceled", "expired", "rejected", "http_rejected"])
+def test_acceptance_reports_failed_sell_without_resubmission(tmp_path, failure):
+    from factorlab.integrations.alpaca.acceptance import PaperAcceptance
+    a, official = adapter(tmp_path)
+    buy_id, sell_id = "failure-AAPL-buy", "failure-AAPL-sell"
+    buy = order(buy_id, filled="0.1", average="100", status="filled")
+    official.orders[buy_id] = buy
+    official.activities = [{"id": "buy-fill", "order_id": buy["id"], "qty": "0.1", "price": "100", "side": "buy", "symbol": "AAPL"}]
+    with a.store.transaction():
+        a.store.put("acceptance", {"prefix": "failure", "symbols": ["AAPL"], "quantity": "0.1", "reservation_price": "100", "initial": {}, "status": "running", "buy_confirmations": {"AAPL": {}}})
+        if failure == "http_rejected":
+            a.store.admit(intent(sell_id, side=Side.SELL), D("100"))
+            a.store.put("rejection:" + sell_id, {"status": 422})
+        else:
+            official.orders[sell_id] = {**order(sell_id, status=failure), "side": "sell"}
+    result = PaperAcceptance(a).step()
+    assert result["status"] == "test_sell_not_filled"
+    assert result["failed_leg"] == sell_id
+    assert D(result["remaining_quantity"]) == D("0.1")
+    assert official.posts == 0
+
+
+@pytest.mark.parametrize("mode", ["http", "terminal", "closed", "lag"])
+def test_acceptance_failure_is_immediate_and_precedes_wait_gates(tmp_path, mode):
+    from factorlab.integrations.alpaca.acceptance import PaperAcceptance
+    a, official = adapter(tmp_path)
+    buy_id, sell_id = "failure-AAPL-buy", "failure-AAPL-sell"
+    buy = order(buy_id, filled="0.1", average="100", status="filled")
+    official.orders[buy_id] = buy
+    official.activities = [{"id": "buy-fill", "order_id": buy["id"], "qty": "0.1", "price": "100", "side": "buy", "symbol": "AAPL"}]
+    official.positions = [{"symbol": "AAPL", "qty": "0.1", "avg_entry_price": "100", "current_price": "100"}]
+    if mode in {"closed", "lag"}:
+        official.orders[sell_id] = {**order(sell_id, filled="0.04", average="100", status="canceled"), "side": "sell"}
+    with a.store.transaction():
+        a.store.put("acceptance", {"prefix": "failure", "symbols": ["AAPL"], "quantity": "0.1", "reservation_price": "100", "initial": {}, "status": "running", "buy_confirmations": {"AAPL": {}}})
+    def transport(method, path, params, body):
+        assert not a.store.db.in_transaction
+        if mode == "closed" and path == "/v2/clock":
+            return 200, {"is_open": False, "next_open": "2026-11-25T14:30:00Z"}
+        if method == "POST":
+            if mode == "http":
+                return 422, {"message": "order rejected"}
+            row = {**order(sell_id, status="rejected"), "side": "sell", "type": "market", "limit_price": None}
+            official.orders[sell_id] = row
+            return 200, row
+        return official(method, path, params, body)
+    a.http = PaperHTTP(AlpacaConfig("fake", "fake"), transport=transport)
+    result = PaperAcceptance(a).step()
+    assert result["status"] == "test_sell_not_filled"
+    assert result["failed_leg"] == sell_id
+    assert D(result["remaining_quantity"]) == D("0.06" if mode in {"closed", "lag"} else "0.1")
 
 
 def test_acceptance_round_trips_use_only_added_positions(tmp_path):
