@@ -49,4 +49,6 @@
 
 `python tools/validate_tradfi_demo.py` 离线校验已保留证据并重建映射、状态清单和 validation；不再联网刷新固定证据。`python -m unittest discover -s tests/validation -p test_v69_f01.py` 检查覆盖分类、20/2/2 分组、原件摘录绑定及篡改拒绝。新快照应保存为新批次，避免覆盖本次历史证据。
 
-?????3 ? unittest ???????????/SHA-256??? 956 ?? Demo 744 ???????????????????????? 345 KB?
+Validation: 3 unittest cases passed. External originals matched recorded byte counts and SHA-256 hashes; all 956 mainnet and 744 Demo identity entries and selected raw rows matched. Retained evidence totals approximately 345 KB.
+
+Review: market discovery is COMPLETE; trading execution remains NOT_EXECUTED and does not block review. Prefer Squash Merge so the earlier full exchangeInfo snapshots do not enter main through normal individual commit history. Do not automatically merge.
