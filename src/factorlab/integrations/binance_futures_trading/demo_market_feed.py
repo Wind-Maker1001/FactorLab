@@ -54,7 +54,7 @@ class DemoMarketFeed:
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
                  max_backfill=120, max_quote_age=5, initial_bars=1, catch_up=False,
                  clock=lambda: datetime.now(timezone.utc), timings: FeedTimings | None = None,
-                 exchange_time=None, receipt_clock=None):
+                 exchange_time=None, receipt_clock=None, symbol=SYMBOL):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -71,6 +71,8 @@ class DemoMarketFeed:
             request_counts = getattr(client, 'request_counts', None)
             if isinstance(request_counts, RequestCounts):
                 timings = request_counts
+        from factorlab.integrations.binance.market import symbol_name
+        self.symbol = symbol_name(symbol)
         self.timings = timings
         self.commit_seconds = 0.
         self.commit_count = 0
@@ -89,7 +91,7 @@ class DemoMarketFeed:
         self.db = sqlite3.connect(path)
         self.db.execute('PRAGMA synchronous=FULL')
         self.db.execute('CREATE TABLE IF NOT EXISTS cursor (id TEXT PRIMARY KEY, bar INTEGER, quote INTEGER)')
-        self.identity = f'{SOURCE}:{SYMBOL}:{interval}:{consumer_id}'
+        self.identity = f'{SOURCE}:{self.symbol}:{interval}:{consumer_id}'
         with self._transaction():
             if 'initial_start' not in {row[1] for row in self.db.execute('PRAGMA table_info(cursor)')}:
                 self.db.execute('ALTER TABLE cursor ADD COLUMN initial_start INTEGER')
@@ -153,7 +155,7 @@ class DemoMarketFeed:
         count = (page_boundary - start) // width
         if count == 0:
             return [], [], None
-        rows = self.client.request('GET', '/fapi/v1/klines', dict(symbol=SYMBOL,
+        rows = self.client.request('GET', '/fapi/v1/klines', dict(symbol=self.symbol,
             interval=self.interval, startTime=start,
             endTime=page_boundary - 1, limit=count), signed=False)
         if not isinstance(rows, list) or len(rows) > count + 1:
@@ -182,7 +184,7 @@ class DemoMarketFeed:
             if any(not isinstance(v, str) for v in row[1:6]):
                 raise FeedPaused('DECIMAL_STRINGS_REQUIRED')
             try:
-                bars.append(ClosedBar(SYMBOL, timestamp(opened), timestamp(closed + 1),
+                bars.append(ClosedBar(self.symbol, timestamp(opened), timestamp(closed + 1),
                     *(Decimal(v) for v in row[1:6]), self.seconds, SOURCE))
             except (ValueError, InvalidOperation) as error:
                 raise FeedPaused('INVALID_OHLCV') from error
@@ -241,7 +243,7 @@ class DemoMarketFeed:
             anchor = self.exchange_time(allow_refresh=False)
         # Request the book after the closed range so history cannot age the book.
         if self.collection is None:
-            raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
+            raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=self.symbol), signed=False)
         else:
             # Acquisition can overlap klines. Apply the exchange age bound
             # below at delivery, using the current calibration.
@@ -259,7 +261,7 @@ class DemoMarketFeed:
             symbol = raw['symbol']
         except (KeyError, TypeError, ValueError, InvalidOperation) as error:
             raise FeedPaused('INVALID_BOOK') from error
-        if symbol != SYMBOL or raw['time'] < boundary:
+        if symbol != self.symbol or raw['time'] < boundary:
             raise FeedPaused('STALE_OR_FUTURE_QUOTE')
         self._validate_quote_age(raw['time'], received)
         if last_quote is not None and raw['time'] < last_quote:
@@ -287,7 +289,7 @@ class DemoMarketFeed:
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
         delivered = 0
         if last_quote is None or raw['time'] > last_quote:
-            quote = Quote(SYMBOL, (bid + ask) / 2, observed)
+            quote = Quote(self.symbol, (bid + ask) / 2, observed)
             self._validate_quote_age(raw['time'], self.exchange_time(allow_refresh=False))
             if hasattr(self.consumer, 'set_latest_book'):
                 self.consumer.set_latest_book(raw)
