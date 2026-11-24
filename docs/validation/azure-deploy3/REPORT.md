@@ -12,6 +12,10 @@ All recorded comparisons passed: database inventory and integrity, binding, budg
 
 The maintenance window recorded the strategy deployment timer and Observer as interrupted auxiliary units. Execute restarted with a new PID after 10.096 seconds, recovered its account with fresh market data and UNKNOWN=0, and retained the exhausted budget and PAUSED state. Reconciliation succeeded. These are archived results of the existing deployment operation, not a new recovery exercise or trading acceptance.
 
+## CI-discovered budget diagnostic correction
+
+The initial source reconciliation matched deploy3 exactly. Trusted CI then exposed a regression in `test_f11_15_rule_precision_and_budget_violations_block_safely[global_posts_exhausted]`: held inventory was correctly retained with zero additional POSTs, but the breakout exit reason was `AUTHORIZATION_REQUIRED` instead of `EXIT_GLOBAL_BUDGET_EXHAUSTED`. The final revision includes a subsequent correction to campaign recovery context and Grid/breakout diagnostics; those changes are not part of the captured deploy3 installed source. The historical `source_matches` capture describes the initial reconciliation, not this subsequent correction. The eight F11 rule/budget cases and four C07 recovery cases passed together (12 tests, 39.03 seconds). No live deployment was changed by this correction.
+
 ## Targeted regression
 
 Python 3.13: 87 tests passed across cloud storage, C07 backup and Grid supervisor; 55 adjacent runtime/systemd tests passed on the first run. The remaining Windows credential subprocess test initially failed with `ModuleNotFoundError` because pytest's configured source path was not inherited by its child interpreter. With `PYTHONPATH` set to this checkout's `src`, that single test passed (1.45 seconds). Total: 143 passing targeted tests. No production source change was needed for the local import-path correction.
