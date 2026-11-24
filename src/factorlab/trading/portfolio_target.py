@@ -17,7 +17,7 @@ class TargetLeg:
 
 
 def plan_targets(*, account, equity, weights, prices, steps, owned_symbols,
-                 fee_rate=D('0'), economic_multipliers=None):
+                 fee_rate=D('0'), economic_multipliers=None, quote_currency='USDT'):
     """Plan one phase against one reconciled account, never anticipated proceeds.
 
     Missing instruments retain cash. Call again after confirmed reductions and
@@ -40,7 +40,10 @@ def plan_targets(*, account, equity, weights, prices, steps, owned_symbols,
         raise ValueError('explicit position ownership required')
     if any(positions.get(s, D(0)) < 0 for s in symbols):
         raise ValueError('long-only positions required')
-    available = next(a.available for a in account.assets if a.currency == 'USDT')
+    if any(p.quote_currency != quote_currency for p in account.positions
+           if p.instrument_id in symbols):
+        raise ValueError('position quote currency mismatch')
+    available = next(a.available for a in account.assets if a.currency == quote_currency)
     available = max(D(0), available)
     desired = []
     for symbol in sorted(symbols):

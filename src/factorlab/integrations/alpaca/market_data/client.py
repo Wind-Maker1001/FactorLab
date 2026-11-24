@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import json
+from email.utils import parsedate_to_datetime
 import os
 import time
 from urllib.error import HTTPError, URLError
@@ -111,7 +112,14 @@ class MarketDataClient:
             if response.status not in {429, 500, 502, 503, 504} or attempt + 1 == self.attempts:
                 raise MarketDataError(response.status, f'market data request rejected: HTTP {response.status}')
             lower = {k.lower(): v for k, v in response.headers.items()}
-            delay = float(lower.get('retry-after', 2 ** attempt))
+            retry_after = lower.get('retry-after')
+            if retry_after is None:
+                delay = 2 ** attempt
+            else:
+                try:
+                    delay = float(retry_after)
+                except ValueError:
+                    delay = (parsedate_to_datetime(retry_after) - received_at).total_seconds()
             if response.status == 429 and 'x-ratelimit-reset' in lower:
                 delay = max(delay, float(lower['x-ratelimit-reset']) - received_at.timestamp())
             if delay > self.timeout:

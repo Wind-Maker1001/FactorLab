@@ -125,7 +125,7 @@ def run(args):
         if 'raw' in variants:
             quality[feed + ':adjustments'] = {key: adjustment_relationship(variants['raw'], value)
                                                for key, value in variants.items() if key != 'raw'}
-        minute_start = target.index[-2].date()
+        minute_start = target.index[max(0, len(target.index) - 2)].date()
         try:
             minute_start_at = datetime.combine(minute_start, time.min, ZoneInfo('America/New_York')).isoformat()
             minutes = source.bars(args.symbols, minute_start_at, end_at, timeframe='1Min', asof=str(end))

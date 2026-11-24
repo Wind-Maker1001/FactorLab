@@ -36,6 +36,10 @@ def scan(directory, output):
     golden={item['source_path']:item['source_sha256'] for item in mapping['files']
             if item['source_path'].startswith('tests/research/fixtures/') and
             item['source_path'].endswith('.parquet')}
+    fixture_root='tests/fixtures/v69_original/'
+    frozen=json.loads((ROOT/fixture_root/'source-manifest.json').read_text(encoding='utf-8'))
+    golden.update({fixture_root+name:meta['sha256'] for name,meta in frozen['files'].items()
+                   if name.endswith('.parquet')})
     for archive_path in sorted(directory.glob('*')):
         if archive_path.suffix=='.whl':
             with zipfile.ZipFile(archive_path) as archive:
@@ -75,7 +79,7 @@ def scan(directory, output):
                 findings.append({'file':name,'reason':'nonportable local dependency URL or path'})
             if path.suffix=='.parquet':
                 parquet.append(name)
-                logical=name[name.index('tests/research/fixtures/'):] if 'tests/research/fixtures/' in name else name
+                logical=path.relative_to(path.parts[0]).as_posix() if archive_path.name.endswith('.tar.gz') else name
                 if logical not in golden or hashlib.sha256(body).hexdigest()!=golden[logical]:
                     findings.append({'file':name,'reason':'Parquet absent from exact preserved baseline path/hash inventory'})
             for label, pattern in PATTERNS.items():
