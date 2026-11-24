@@ -24,7 +24,13 @@ result = service.query(instrument, "2025-11-20", "2026-11-23", adjustment="raw")
 
 Raw queries retain `raw_open/high/low/close/volume` as well as the ordinary OHLCV aliases. Adjusted queries expose `adjusted_*` independently; they never replace raw execution prices. Source, feed, adjustment, mapping as-of, calendar version, original vendor timestamps, receipt timestamps, request coverage and immutable generation are retained. A successful empty request covers an acquisition interval, not an observed trading session.
 
-`MarketDataService.inputs(...)` returns prior-session history, a per-instrument/date validity matrix, opening observations, raw bid/ask quotes, session/next-session information and a clock diagnostic. Use `adjustment="all"` for vendor-adjusted strategy history or explicitly choose another supported basis. `use_opening=True` acquires opening observations before requesting execution quotes. Missing openings invalidate execution quotes. Consumers must inspect `quote.valid` and `validity_reasons`; no quote is substituted from another instrument or feed. Missing quotes remain `None`. The history matrix excludes the current New York session even after its close; current-day streaming daily bars cannot update it.
+`prepare_history(instruments, start=..., end=..., adjustment="all", adjustment_basis="yahoo_ratio")` prepares prior-session matrices before the execution window. With no `now`, availability is evaluated after acquisition; an explicit aware `now` applies that cutoff, masking later receipts. `inputs(..., prepared=prepared, use_opening=False)` exposes `adjusted_close`, `adjusted_open`, `adjusted_volume` and their `*_validity` masks directly; `history`/`validity` remain close aliases. Both raw and adjusted completion/receipt metadata govern availability. The matrices exclude the current New York session even after its close.
+
+Original v69 forms weekly intent from the previous complete session, not an opening observation. The explicit `yahoo_ratio` projection uses `adjust_ratio=adjusted_close/raw_close`, `adjusted_open=raw_open*adjust_ratio`, and `adjusted_volume=raw_volume/adjust_ratio`. `vendor_adjusted_volume` remains separate in `prepared.bars`; `adjustment_basis="vendor"` retains supplier OHLCV. This implements the original Yahoo formulas without claiming that Alpaca factors or volume equal Yahoo's data. Raw prices remain available for actual-share conversion; the market-data service does not generate orders.
+
+Set `history_client=` in the constructor to use explicitly separate historical and realtime feeds, such as historical SIP and realtime IEX. Sources remain attached to each side of the join. There is no subscription-based fallback or paid-SIP execution gate.
+
+`inputs` completes historical/opening inputs and Clock acquisition before one batch quote request. Its `decision_at` is the portfolio-input cutoff. After strategy calculation and account preparation, execution consumers call `refresh_quotes(instruments, decision_at=..., decision_window=..., max_age=pd.Timedelta(seconds=5))` again. All quotes use one TTL observation instant; event and receipt must strictly follow the decision cutoff. Consumers still recheck TTL immediately before submission. Missing quotes remain `None`; invalid quotes retain reasons. `use_opening=True` is optional and groups opening acquisition by identity-mapping date before requesting any quotes; missing openings invalidate those quotes.
 
 A first observed RTH trade/minute open is not necessarily the official primary-exchange opening auction. The opening helper describes that narrower observation. Quotes must have both event and receipt times strictly after the opening observation's receipt. A stale latest quote therefore does not become executable merely because its HTTP response arrived later.
 
@@ -65,7 +71,7 @@ Company-action requests filter/sort by **process_date**, not effective date. Ann
 
 TODO(ALP-E02): establish dated security-master and corporate-action evidence for SNDK's post-separation listing and GE's reorganizations before claiming long-history identity continuity. Retain vendor `asof` and do not splice old same-ticker entities.
 
-TODO(ALP-E02): reconcile adjustment factors with the original v69 provider once its source and adjustment convention are available. Current vendor-adjusted history is **PIT_UNVERIFIED / HFQ_UNVERIFIED**, and original-strategy equivalence remains unconfirmed.
+TODO(ALP-E02): reconcile Alpaca adjustment factors against dated Yahoo provider observations; the original v69 formulas are implemented explicitly, but cross-provider data equivalence remains unconfirmed. Current vendor-adjusted history is **PIT_UNVERIFIED / HFQ_UNVERIFIED**.
 
 ## Official interface references
 
