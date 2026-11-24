@@ -1,0 +1,64 @@
+{
+  "backup_dropin": "[Service]\nReadWritePaths=/var/lib/factorlab-tradfi-observer/task-mailbox\nExecStart=\nExecStart=/opt/factorlab/releases/a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-deploy3/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_backup run-scheduled --state-root /var/lib/factorlab-demo/execute-state --backup-root /var/backups/factorlab-demo --retention-days 14 --min-valid-copies 1 --recovery-directory /run/factorlab-demo-backup --task-mailbox /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3 --drill\nExecStopPost=\nExecStopPost=/opt/factorlab/releases/a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-deploy3/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_backup recover-scheduled --state-root /var/lib/factorlab-demo/execute-state --backup-root /var/backups/factorlab-demo --recovery-directory /run/factorlab-demo-backup\n",
+  "baseline": "a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45",
+  "captured_at": "2026-11-24T19:07:47.423735+00:00",
+  "execute": {
+    "account_recovered": true,
+    "desired": "RUNNING",
+    "global_budget": {
+      "consumed": {
+        "posts": 100,
+        "submitted_notional": "635.9740000"
+      },
+      "max_loss": "1",
+      "opening_equity": "4999.97114760",
+      "remaining_notional": "64.0260000",
+      "remaining_posts": 0,
+      "state": "RUNNING",
+      "total_notional": "700",
+      "total_orders": 100
+    },
+    "last_reconciled_at": "2026-11-24T19:07:14.154586+00:00",
+    "last_valid_market_at": "2026-11-24T19:07:13.391000+00:00",
+    "open_orders": [],
+    "pid": 360112,
+    "positions": [],
+    "reason": "AUTHORIZATION_REQUIRED",
+    "recovery": {
+      "consecutive_failures": 0,
+      "last_failure_at": "2026-11-24T19:04:37.999716+00:00",
+      "last_failure_reason": "STALE_OR_FUTURE_QUOTE",
+      "last_recovered_at": "2026-11-24T19:04:40.807145+00:00",
+      "recovery_attempts": 4,
+      "startup_recovered": true,
+      "state": "RECOVERED"
+    },
+    "requests": {
+      "DELETE": 0,
+      "GET": 1782,
+      "POST": 0
+    },
+    "started_at": 1795546754.1620204,
+    "status": "PAUSED",
+    "unknown_count": 0
+  },
+  "release": "/opt/factorlab/releases/a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-deploy3",
+  "services_capture": [
+    "MainPID=360112",
+    "NRestarts=0",
+    "ExecStart={ path=/opt/factorlab/releases/a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-deploy3/venv/bin/python ; argv[]=/opt/factorlab/releases/a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-deploy3/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_grid_supervisor start --execute ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }",
+    "ActiveState=active",
+    "",
+    "MainPID=360158",
+    "NRestarts=0",
+    "ExecStart={ path=/opt/factorlab/releases/a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-deploy3/venv/bin/python ; argv[]=/opt/factorlab/releases/a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-deploy3/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --execute-health /var/lib/factorlab-demo/execute-state/cloud-health.json --symbols QQQUSDT SPYUSDT --poll-seconds 30 --task-db /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3 ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }",
+    "ActiveState=active"
+  ],
+  "source_matches": {
+    "demo_cloud_backup.py": true,
+    "demo_cloud_runtime.py": true,
+    "demo_cloud_storage.py": true,
+    "demo_grid_supervisor.py": true,
+    "demo_runtime.py": true
+  }
+}

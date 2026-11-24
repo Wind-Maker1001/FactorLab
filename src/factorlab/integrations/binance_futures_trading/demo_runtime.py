@@ -157,6 +157,15 @@ class DemoRuntime:
         value = self._get('continuous')
         return json.loads(value) if value is not None else None
 
+    def global_trading_capacity(self):
+        """Report remaining cumulative order/notional capacity without granting writes."""
+        authorization = self.continuous_authorization()
+        if authorization is None:
+            return True
+        consumed = self.consumption(authorization)
+        return (consumed['posts'] < authorization['total_orders']
+                and Decimal(consumed['submitted_notional']) < Decimal(authorization['total_notional']))
+
     def _continuous_campaigns(self, authorization):
         return [campaign for (payload,) in self.db.execute('SELECT payload FROM campaigns ORDER BY rowid')
                 if (campaign := json.loads(payload))['journal_id'] == authorization['journal_id']

@@ -118,7 +118,13 @@ class GridConsumer:
 
     def _refresh_reason(self, desired, allowed):
         if not allowed:
-            self.reason = 'PAUSED' if desired == 'PAUSED' else 'AUTHORIZATION_REQUIRED'
+            capacity = getattr(self.bridge, 'runtime', None)
+            exhausted = bool(capacity is not None
+                and not capacity.global_trading_capacity())
+            self.reason = ('PAUSED' if desired == 'PAUSED' else
+                           'EXIT_GLOBAL_BUDGET_EXHAUSTED' if exhausted
+                           and self.bridge.grid.closed_by_breakout else
+                           'AUTHORIZATION_REQUIRED')
             return
         exit_status = self.bridge.breakout_exit_status(desired=desired, authorized=allowed)
         if exit_status is not None and exit_status['phase'] != 'FLAT_CONFIRMED':
@@ -165,7 +171,7 @@ class GridConsumer:
         self._refresh_reason(desired, allowed)
 
     def _rotation_allowed(self):
-        return (self.control.desired() == 'RUNNING'
+        return (self.control.desired() == 'RUNNING' and self.authority()
                 and (self.supervisor is None or not self.supervisor.stopped.is_set()))
 
     def require_fresh_bar(self):
@@ -545,7 +551,8 @@ class GridSupervisorRuntime:
                     return True
                 current = consumer.bridge
                 campaign = self.runtime.active_campaign()
-                if (campaign is None or campaign['smoke'] or self._effective_desired() != 'RUNNING'
+                if (not self.runtime.global_trading_capacity()
+                        or campaign is None or campaign['smoke'] or self._effective_desired() != 'RUNNING'
                         or self.runtime.post_count(campaign['id']) >= campaign['orders']
                         or current.session.receipt_error or current.session.write_uncertain):
                     return False
