@@ -11,7 +11,7 @@ from uuid import NAMESPACE_URL, uuid4, uuid5
 
 from factorlab.trading.control import RiskLimits
 
-from .demo_session import DEMO, SYMBOL
+from .demo_session import DEMO, SYMBOL, receipt_confirmed
 from .network import DemoExecutionPlan, DemoNetworkAuthorization
 from .protocol import SafetyBlocked
 
@@ -423,7 +423,10 @@ class DemoRuntime:
             receipts = [json.loads(value) for (value,) in self.db.execute(
                 'SELECT receipt FROM dispatches WHERE receipt IS NOT NULL')]
             result['EXCHANGE_WRITE_CAPABILITY'] = dict(historical_success=any(
-                receipt['http_status'] == 200 for receipt in receipts), current='EXCHANGE_RESPONSE_AUTHORITATIVE')
+                receipt_confirmed(receipt)
+                if {'outcome_unknown', 'order_id', 'status', 'code'} & receipt.keys()
+                else receipt.get('http_status') == 200
+                for receipt in receipts), current='EXCHANGE_RESPONSE_AUTHORITATIVE')
             account = self._get('continuous_account')
             result['ACCOUNT_EXECUTION_STATE'] = dict(account=json.loads(account) if account else None,
                 recovery_required=bool(self._get('continuous_recovery')),
@@ -545,7 +548,9 @@ class DemoRuntime:
                         and row.get('status') in {'NEW', 'PARTIALLY_FILLED'} for row in facts.open_orders)
                     if (plan.quote_policy is not None or cancel_recovered_at is None
                             or attempted_at is not None and cancel_recovered_at <= datetime.fromisoformat(attempted_at)
-                            or not active_order or receipt is not None and not receipt.get('outcome_unknown')):
+                            or not active_order
+                            or receipt is not None and (not receipt.get('outcome_unknown')
+                                                        or receipt.get('http_status') == 400)):
                         raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
                     # Keep the earlier reservation and receipt as audit evidence.
                     # The canonical identity and POST budget are unchanged.
@@ -563,10 +568,11 @@ class DemoRuntime:
         with self.db:
             self.db.execute('UPDATE dispatches SET receipt=? WHERE campaign=? AND method=? AND client_id=?',
                 (json.dumps(receipt), campaign['id'], receipt['method'], receipt['client_order_id']))
-            if receipt['http_status'] != 200:
+            if not receipt_confirmed(receipt):
                 if campaign.get('authorization'):
                     self._set('continuous_recovery', json.dumps(receipt))
-                elif not (receipt['method'] == 'DELETE' and receipt.get('outcome_unknown')):
+                elif not (receipt['method'] == 'DELETE' and receipt.get('outcome_unknown')
+                          and receipt.get('http_status') != 400):
                     self._set('active', '')
                     self._set('stop_epoch', uuid4().hex)
 

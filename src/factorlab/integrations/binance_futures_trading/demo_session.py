@@ -81,6 +81,27 @@ def _order_observables(payload):
                 filled_quantity=filled_quantity)
 
 
+def receipt_confirmed(receipt):
+    """Return True only when a write receipt carries a confirmed HTTP 200 order ACK."""
+    if not isinstance(receipt, dict) or receipt.get('http_status') != 200:
+        return False
+    if receipt.get('outcome_unknown') is True:
+        return False
+    code = receipt.get('code')
+    if type(code) is int and code < 0:
+        return False
+    if receipt.get('order_id') is None or receipt.get('status') not in STATUS:
+        return False
+    ack = receipt.get('acknowledgement')
+    if isinstance(ack, dict):
+        if 'clientOrderId' in ack and ack['clientOrderId'] != receipt.get('client_order_id'):
+            return False
+        req = receipt.get('request_parameters')
+        if isinstance(req, dict) and 'symbol' in req and 'symbol' in ack and ack['symbol'] != req['symbol']:
+            return False
+    return True
+
+
 class DemoSession:
     """A caller-owned session whose persistent write guard is independent of recovery."""
 
@@ -267,13 +288,16 @@ class DemoSession:
                 result = self.status()
             if result['reconciled']:
                 self.last_reconciled_at = self._now()
-                unresolved = [receipt for receipt in self.receipts[self._recovered_receipt_count:]
-                              if receipt['http_status'] != 200]
-                if (self.write_uncertain and unresolved and all(
-                        receipt['method'] == 'DELETE' and receipt['outcome_unknown']
-                        and receipt['client_order_id'] in result['orders']
-                        and not result['orders'][receipt['client_order_id']]['reconcile_required']
-                        for receipt in unresolved)):
+                window = self.receipts[self._recovered_receipt_count:]
+                unresolved = [receipt for receipt in window if not receipt_confirmed(receipt)]
+                if (self.write_uncertain and not self.receipt_error and not result['unknown']
+                        and unresolved
+                        and not any(receipt['http_status'] == 400 for receipt in window)
+                        and all(
+                            receipt['method'] == 'DELETE' and receipt['outcome_unknown']
+                            and receipt['client_order_id'] in result['orders']
+                            and not result['orders'][receipt['client_order_id']]['reconcile_required']
+                            for receipt in unresolved)):
                     # A confirmed active remainder may be canceled again through
                     # the existing persistent guard. POST uncertainty stays closed.
                     self.write_uncertain = False
@@ -351,12 +375,26 @@ class DemoSession:
         self.refresh_rules()
         self._fresh_facts_for_submission()
 
+    def _mark_write_uncertain(self, receipt_index, method, client_order_id):
+        self.write_uncertain = True
+        for receipt in reversed(self.receipts[receipt_index:]):
+            if receipt['method'] == method and receipt['client_order_id'] == client_order_id:
+                if not receipt['outcome_unknown']:
+                    receipt['outcome_unknown'] = True
+                    if self._receipt_sink is not None:
+                        try:
+                            self._receipt_sink(receipt)
+                        except Exception:
+                            self.receipt_error = True
+                break
+
     def _submit_prepared(self, intent, book):
         book = self._fresh_book() if book is None else book
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
         self._order_quote_at = book['time_utc']
         self.controller.quote(Quote(SYMBOL, book['askPrice'], self._order_quote_at))
+        receipt_index = len(self.receipts)
         try:
             result = self.controller.submit(intent)
         except RiskRejected as error:
@@ -364,7 +402,7 @@ class DemoSession:
                 raise DataQualityError('STALE_RULES') from error
             raise
         if result is None:
-            self.write_uncertain = True
+            self._mark_write_uncertain(receipt_index, 'POST', intent.client_order_id)
         return self.adapter.order(intent.client_order_id)
 
     def cancel(self, client_order_id):
@@ -378,8 +416,9 @@ class DemoSession:
         if not any(row['symbol'] == SYMBOL and row['clientOrderId'] == client_order_id
                    and str(row['orderId']) == order.exchange_order_id for row in facts.open_orders):
             raise SafetyBlocked('Demo order no longer observed active; use GET recovery')
+        receipt_index = len(self.receipts)
         if self.controller.cancel(client_order_id) is None:
-            self.write_uncertain = True
+            self._mark_write_uncertain(receipt_index, 'DELETE', client_order_id)
         return self.adapter.order(client_order_id)
 
     def status(self):

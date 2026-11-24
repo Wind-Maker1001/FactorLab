@@ -202,3 +202,65 @@ git diff --check
 验证脚本通过环境白名单启动测试，只传递 Python/Git 路径和必要的 Windows/临时目录变量，
 不传入凭据环境。凭据来自内存假凭据仓库；网络传输被 HTTP 桩拦截。
 未读取真实令牌、未操作 Azure 在线 Grid，交付不自动合并。
+
+## PR #237 HTTP 200 未确认撤单恢复 P2（2026-11-24）
+
+本轮继续更新原分支 `feat/p8-s01-strategy-protocol`，修复基线为
+`0a48ea5182831713402c0122783dbf7395dd8f93`，对应审查线程
+[4678963667](https://github.com/Wind-Maker1001/FactorLab/pull/237#discussion_r4678963667)。
+
+### 根因与同类语义排查
+
+对本 PR 的订单提交、撤单、回执、终态与恢复边界进行定向排查后，确认存在四处 HTTP 状态码与业务确认混淆或同进程恢复衔接缺陷：
+
+1. `DemoSession._recover()`（`demo_session.py`）：原逻辑使用 `receipt['http_status'] != 200` 筛选 unresolved receipts。当 `DELETE` 返回 HTTP 200 但响应 JSON 损坏或缺少订单确认字段时，该回执被排除，成功 GET 对账后 `write_uncertain` 仍保持 `True`，必须重启进程才能恢复；且同一会话中若同时存在 HTTP 200 未确认 `POST` 与非 200 `DELETE`，旧筛选会漏掉未确认 `POST` 并错误放开写入限制；若 `DELETE` 返回 HTTP 400（如 `code=-1006`），推进 `_recovered_receipt_count` 还会绕过 HTTP 400 停止写入守卫。
+2. `DemoSession._submit_prepared()` / `cancel()`（`demo_session.py`）：当 HTTP 200 响应包含 `clientOrderId/symbol/orderId/status` 但缺少 `_rest_order` 必需执行字段（如 `executedQty`/`side`/`origQty`/`updateTime`）或 `cumQuote` 回读失败导致 `controller.submit/cancel` 返回 `None` 时，`receipt['outcome_unknown']` 原先仍为 `False`，导致后续恢复与 `DemoRuntime.reserve()` 判定不一致。
+3. `DemoRuntime.record_receipt()`、`reserve()` 与 `report()`（`demo_runtime.py`）：`record_receipt()` 原先以 `http_status != 200` 判断是否停用非连续 campaign 或写入 `continuous_recovery`，导致 HTTP 200 未确认 `POST` 未停用 `active` 也未标记 `continuous_recovery`，HTTP 400 未知 `DELETE` 未按 HTTP 400 停止；`report()` 原先仅凭 `http_status == 200` 报告 `historical_success`。
+4. `StrategyConsumer.before_poll()` 与 `run_worker()` 的 `authority()`（`demo_strategy_supervisor.py`）：`before_poll()` 在 `recover()` 之前计算 `allowed`，即使 `recover()` 在同进程清除了合格 `DELETE` 的 `write_uncertain`，当轮仍保持 `PAUSED`；同时在 `authority()` 中补齐未恢复窗口内 HTTP 400 检查，与 `DemoSession._admit_write()` 对齐。
+
+### 最小充分修复
+
+- 新增 `receipt_confirmed(receipt)`，要求 `http_status == 200`、`outcome_unknown` 不为 `True`、`code` 非负、`order_id` 非空、`status` 合法，且 `acknowledgement` 中的订单/标的身份与请求一致。
+- `DemoSession._mark_write_uncertain()` 在 `controller.submit/cancel` 返回 `None` 时将本次未确认回执同步标记为 `outcome_unknown=True` 并经 `_receipt_sink` 持久化。
+- `DemoSession._recover()` 基于 `not receipt_confirmed(receipt)` 筛选 unresolved receipts，同时校验 `not self.receipt_error`、`not result['unknown']`、窗口内无 HTTP 400，且全部 unresolved 均为 `DELETE`、`outcome_unknown=True` 且原订单已对账，才清除 `write_uncertain`；POST 不确定结果与混合 POST/DELETE 场景始终保持关闭。
+- `DemoRuntime.record_receipt()` 改用 `not receipt_confirmed(receipt)`，并保持非连续模式下非 HTTP 400 的 `DELETE outcome_unknown` 允许 GET 对账后重试；`reserve()` 额外阻断 HTTP 400 的 `DELETE` 重试；`report()` 兼容极简旧 stub 的同时不再把 HTTP 200 未确认回执报为 `historical_success=True`。
+- `StrategyConsumer.before_poll()` 在 `recover()` 对账成功后按需重估 `_control()`，使 Supervisor 在同一进程内即可完成合格撤单恢复。
+
+### 旧 HEAD 复现与修复后验证
+
+- **旧 HEAD 复现**：在基线 `0a48ea5182831713402c0122783dbf7395dd8f93` 未改生产代码下运行 `tests/integrations/test_protocol_http200_cancel_recovery.py`，复现全部预期失败：HTTP 200 非法 JSON、缺少核心确认字段与缺少执行字段的 `DELETE` 在 GET 对账后 `write_uncertain` 仍为 `True`；Supervisor 第 3 轮卡在 `PAUSED / AUTHORIZATION_REQUIRED`（`DELETE=1`，`dispatch_retry_history=0`）；HTTP 200 未确认 `POST` 未停用 `active_campaign()`；混合 HTTP 200 未确认 `POST` + HTTP 500 `DELETE` 错误清除了 `write_uncertain`；HTTP 400 `code=-1006` 未停用 `active_campaign()`；连续模式下 `continuous_recovery` 为空且 `historical_success` 误报。
+- **修复后新增测试**（白名单环境，Python 3.13.9，pytest 8.4.2，假凭据 + HTTP 桩）：`tests/integrations/test_protocol_http200_cancel_recovery.py` **16 passed**（134.22 秒）。
+- **关联回归**（Python 3.13.9，pytest 8.4.2，白名单环境）：
+  - `test_binance_demo_runtime.py`、`test_demo_continuous_campaign.py`、`test_binance_demo_network.py`、`test_binance_bounded_quote.py`、`test_binance_demo_grid_bridge.py`：**139 passed**（98.52 秒）。
+  - `test_binance_demo_strategy_session.py`、`test_unified_strategy.py`、`test_protocol_order_outbox.py`：**40 passed**（283.12 秒）。
+  - `test_demo_strategy_supervisor.py`、`test_demo_receipts_m19.py`、`test_demo_cloud_backup.py`：**59 passed**（143.62 秒）。
+  - 另在 Python 3.12.7 下运行 `test_protocol_cancel_outbox.py`（20 项）与 `test_protocol_demo_working_order.py`（6 项）等 7 个关联文件共 **116 passed**（0 failed）。
+- **静态检查**：`python -m compileall -q src tests` 与 `git diff --check` 均通过。
+
+下表为新增 16 项确定性测试在 Python 3.13.9 下的逐场景请求计数（所有场景均核对原 `client_order_id`，且无重复 POST）：
+
+| 场景 | GET | POST | DELETE | 结果 |
+|---|---:|---:|---:|---|
+| DELETE HTTP 200 非法 JSON，同进程 GET 确认活跃后重试 | 60 | 1 | 2 | `write_uncertain` 解除，原 ID 重试成功，归档 1 条历史 |
+| DELETE HTTP 200 缺核心确认字段，同进程 GET 确认活跃后重试 | 60 | 1 | 2 | `write_uncertain` 解除，原 ID 重试成功，归档 1 条历史 |
+| DELETE HTTP 200 缺执行字段，同进程 GET 确认活跃后重试 | 60 | 1 | 2 | 同步回写 `outcome_unknown=True`，同进程重试成功 |
+| DELETE HTTP 200 未确认回执，GET 确认 CANCELED | 46 | 1 | 1 | 不重复 DELETE，Outbox 终结，历史归档 0 条 |
+| DELETE HTTP 200 未确认回执，GET 确认 PARTIALLY_FILLED | 72 | 1 | 2 | 保留 0.01 成交与费用，正确撤销剩余 0.03 |
+| DELETE HTTP 200 未确认回执，GET 恢复失败后恢复 | 60 | 1 | 2 | GET 失败期间拒绝盲目重试，GET 恢复后完成撤单 |
+| HTTP 200 合法回执（POST + DELETE） | 38 | 1 | 1 | 保持原行为，`write_uncertain=False` |
+| POST HTTP 200 未确认（非法 JSON / 缺核心 / 缺执行字段，3 例各计） | 46 | 1 | 0 | 停用 campaign，GET 后 `write_uncertain` 仍保持 `True` |
+| 同会话混合未确认 POST(200) + DELETE(200 / 500，2 例各计) | 52 | 1 | 1 | GET 后 `write_uncertain` 保持 `True`，写入限制不解除 |
+| DELETE HTTP 400 `code=-1006` 未知错误 | 52 | 1 | 1 | 保持 HTTP 400 停止守卫，停用 campaign 且拒绝重试 |
+| Supervisor 同进程 3 轮 poll 恢复 HTTP 200 未确认撤单 | 82 | 1 | 2 | 无需重启，第 3 轮 GET 对账后自动恢复并完成 CANCELED |
+| SQLite 重启恢复 + 旧格式回执兼容 + 历史归档 | 69 | 1 | 2 | 重启保留 Outbox 与原 ID，旧回执兼容，归档 1 条历史 |
+| Continuous 模式 `record_receipt` 与 `report()` 拒绝 HTTP 200 未确认 | 0 | 0 | 0 | 设置 `continuous_recovery`，`historical_success=False` |
+
+复现命令（白名单环境、Python 3.13）：
+
+```powershell
+$env:PYTHONPATH = "$PWD/src"
+python -m pytest tests/integrations/test_protocol_http200_cancel_recovery.py -v
+python -m pytest tests/integrations/test_protocol_cancel_outbox.py tests/integrations/test_demo_strategy_supervisor.py tests/integrations/test_binance_demo_runtime.py tests/integrations/test_demo_continuous_campaign.py tests/integrations/test_demo_receipts_m19.py tests/integrations/test_binance_demo_network.py tests/integrations/test_binance_bounded_quote.py -q
+python -m compileall -q src tests
+git diff --check
+```

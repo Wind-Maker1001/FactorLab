@@ -104,6 +104,10 @@ class StrategyConsumer:
         if not result.reconciled:
             self.reason = 'RECONCILE_REQUIRED'
             raise FeedPaused(self.reason)
+        if not allowed:
+            allowed = self._control()
+            if self.control.desired() == 'STOPPED':
+                return
         if allowed and not self.was_running:
             # Signals accumulated while paused cannot be executed on resume.
             if not isinstance(self.runner, OrderStrategyRuntime):
@@ -197,7 +201,9 @@ def run_worker(args, root, store, runtime, requests):
                 active = runtime.active_campaign()
                 return (not args.execute or active is not None and active['id'] == campaign['id']
                     and runtime.post_count(active['id']) < active['orders']
-                    and not session.write_uncertain and not session.receipt_error)
+                    and not session.write_uncertain and not session.receipt_error
+                    and not any(receipt['http_status'] == 400
+                                for receipt in session.receipts[session._recovered_receipt_count:]))
 
             consumer = StrategyConsumer(runner, control, authority)
             client = MarketClient(requests)
