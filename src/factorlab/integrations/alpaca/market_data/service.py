@@ -103,6 +103,7 @@ class MarketDataService:
     def prepare_history(self, instruments, *, start, end, now=None, adjustment='all',
                         adjustment_basis='vendor'):
         """Prepare prior-session inputs; yahoo_ratio is a formula, not Yahoo data equivalence."""
+        instruments = tuple(instruments)
         if adjustment_basis not in {'vendor', 'yahoo_ratio'}:
             raise ValueError('unknown adjustment basis')
         cutoff = None if now is None else pd.Timestamp(now)

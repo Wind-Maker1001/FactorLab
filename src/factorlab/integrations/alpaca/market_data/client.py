@@ -28,7 +28,12 @@ def transport(url, headers, timeout):
         with urlopen(request, timeout=timeout) as response:
             return Response(response.status, dict(response.headers), json.load(response))
     except HTTPError as exc:
-        return Response(exc.code, dict(exc.headers), json.loads(exc.read()))
+        body = exc.read()
+        try:
+            data = json.loads(body)
+        except (ValueError, UnicodeDecodeError):
+            data = None
+        return Response(exc.code, dict(exc.headers), data)
 
 
 @dataclass(frozen=True)
