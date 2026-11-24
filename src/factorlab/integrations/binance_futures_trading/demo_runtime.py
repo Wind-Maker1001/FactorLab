@@ -123,6 +123,10 @@ class DemoRuntime:
                 parameters TEXT NOT NULL, receipt TEXT,
                 PRIMARY KEY (campaign, method, client_id)
             );
+            CREATE TABLE IF NOT EXISTS dispatch_retry_history (
+                campaign TEXT NOT NULL, method TEXT NOT NULL, client_id TEXT NOT NULL,
+                parameters TEXT NOT NULL, receipt TEXT
+            );
         ''')
 
     def close(self):
@@ -433,8 +437,19 @@ class DemoRuntime:
     def receipts(self, campaign):
         rows = self.db.execute('SELECT method, client_id, receipt FROM dispatches WHERE campaign = ? ORDER BY rowid',
             (campaign,))
-        return [json.loads(receipt) if receipt is not None else dict(method=method, client_order_id=client_id,
-            http_status=None, dispatch='RESERVED_RESPONSE_UNCONFIRMED') for method, client_id, receipt in rows]
+        receipts = []
+        for method, client_id, raw in rows:
+            receipt = json.loads(raw) if raw is not None else dict(method=method, client_order_id=client_id,
+                http_status=None, dispatch='RESERVED_RESPONSE_UNCONFIRMED')
+            history = list(self.db.execute(
+                'SELECT receipt FROM dispatch_retry_history WHERE client_id=? AND method=? ORDER BY rowid',
+                (client_id, method)))
+            if history:
+                receipt['previous_attempts'] = [json.loads(previous) if previous is not None else
+                    dict(method=method, client_order_id=client_id, http_status=None,
+                         dispatch='RESERVED_RESPONSE_UNCONFIRMED') for previous, in history]
+            receipts.append(receipt)
+        return receipts
 
     def authority(self, binding, campaign):
         if campaign is None or campaign['journal_id'] != journal_id(binding['account_id']):
@@ -458,8 +473,9 @@ class DemoRuntime:
                 "SELECT campaign, client_id FROM dispatches WHERE method='POST'") if owner in owners]
         return DemoNetworkAuthorization(plan, cancellation_ids=cancellation_ids)
 
-    def reserve(self, campaign, method, params, plan, *, expected, facts, dispatch_gate=None):
-        """Consume each admitted POST/DELETE exactly once, including unknown responses."""
+    def reserve(self, campaign, method, params, plan, *, expected, facts, dispatch_gate=None,
+                cancel_recovered_at=None):
+        """Consume POST once; retry DELETE only after a newer GET confirms it active."""
         client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
         continuous = campaign.get('authorization') is not None
         if continuous and method == 'POST':
@@ -517,8 +533,26 @@ class DemoRuntime:
                     "SELECT campaign FROM dispatches WHERE method='POST' AND client_id=?", (client_id,)) if owner in owners]
                 if len(origins) != 1:
                     raise SafetyBlocked('Demo cancellation requires a known owned order')
-                if self.db.execute("SELECT 1 FROM dispatches WHERE method='DELETE' AND client_id=?", (client_id,)).fetchone():
-                    raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
+                previous = self.db.execute(
+                    "SELECT campaign, parameters, receipt FROM dispatches WHERE method='DELETE' AND client_id=?",
+                    (client_id,)).fetchone()
+                if previous is not None:
+                    receipt = json.loads(previous[2]) if previous[2] is not None else None
+                    attempted_at = self._get('cancel-attempt:' + client_id)
+                    if attempted_at is None and receipt is not None:
+                        attempted_at = receipt.get('observed_at')
+                    active_order = any(row['symbol'] == SYMBOL and row['clientOrderId'] == client_id
+                        and row.get('status') in {'NEW', 'PARTIALLY_FILLED'} for row in facts.open_orders)
+                    if (plan.quote_policy is not None or cancel_recovered_at is None
+                            or attempted_at is not None and cancel_recovered_at <= datetime.fromisoformat(attempted_at)
+                            or not active_order or receipt is not None and not receipt.get('outcome_unknown')):
+                        raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
+                    # Keep the earlier reservation and receipt as audit evidence.
+                    # The canonical identity and POST budget are unchanged.
+                    self.db.execute('INSERT INTO dispatch_retry_history VALUES (?, ?, ?, ?, ?)',
+                        (previous[0], method, client_id, previous[1], previous[2]))
+                    self.db.execute("DELETE FROM dispatches WHERE method='DELETE' AND client_id=?", (client_id,))
+                self._set('cancel-attempt:' + client_id, facts.observed_at.isoformat())
 
             inserted = self.db.execute('INSERT OR IGNORE INTO dispatches VALUES (?, ?, ?, ?, NULL)',
                 (campaign['id'], method, client_id, json.dumps(params))).rowcount
@@ -532,7 +566,7 @@ class DemoRuntime:
             if receipt['http_status'] != 200:
                 if campaign.get('authorization'):
                     self._set('continuous_recovery', json.dumps(receipt))
-                else:
+                elif not (receipt['method'] == 'DELETE' and receipt.get('outcome_unknown')):
                     self._set('active', '')
                     self._set('stop_epoch', uuid4().hex)
 

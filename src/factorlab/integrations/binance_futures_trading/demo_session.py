@@ -267,6 +267,17 @@ class DemoSession:
                 result = self.status()
             if result['reconciled']:
                 self.last_reconciled_at = self._now()
+                unresolved = [receipt for receipt in self.receipts[self._recovered_receipt_count:]
+                              if receipt['http_status'] != 200]
+                if (self.write_uncertain and unresolved and all(
+                        receipt['method'] == 'DELETE' and receipt['outcome_unknown']
+                        and receipt['client_order_id'] in result['orders']
+                        and not result['orders'][receipt['client_order_id']]['reconcile_required']
+                        for receipt in unresolved)):
+                    # A confirmed active remainder may be canceled again through
+                    # the existing persistent guard. POST uncertainty stays closed.
+                    self.write_uncertain = False
+                    self._recovered_receipt_count = len(self.receipts)
             return result
         finally:
             self.last_recovery_seconds = perf_counter() - started

@@ -124,3 +124,81 @@ python -m pytest tests/integrations/test_protocol_grid_withdrawal.py tests/integ
 ```
 
 本任务交付为独立 PR，不自动合并；没有变更生产交易、账户记账或现有 Demo 授权流程。
+
+## PR #237 撤单持久化 P2（2026-11-24）
+
+本轮直接更新原分支 `feat/p8-s01-strategy-protocol`，修复基线为
+`923a512a2fa8c191eb3451445b11663d60e3b809`，对应审查线程
+[4669455423](https://github.com/Wind-Maker1001/FactorLab/pull/237#discussion_r4669455423)。
+
+故障复现：把基线版本的 `decision_runtime.py` 注入测试进程，执行本轮新增的失败恢复用例，
+得到 **11 个预期失败**，见 `cancel-baseline.xml`。撤单尝试落盘、调用前中断后，
+重启虽然 GET 确认订单仍活跃，却跳过 DELETE 并清空请求。DELETE 前取数失败时首次 DELETE 为 0，
+后续报价会丢弃过期请求；DELETE 回执丢失后 Outbox 已为空；暂停也会清除未完成撤单。
+复现只替换内存中的执行模块，不改动工作树。
+
+修复后的生命周期如下。撤单仍通过同一个 Controller、DemoSession、DecisionJournal 和持久 Outbox 执行。
+
+| 阶段 | 持久证据与处理 |
+|---|---|
+| 已登记意图 | 原客户订单 ID 和 eligible_at 保存在 Outbox；普通开仓有效期与暂停撤回均不删除它 |
+| 已尝试 | 原 `cancel:` 记录仅表示 ATTEMPTED；兼容旧版没有状态字段的记录，不当作成功回执 |
+| 网络结果不确定 | 控制器/协议账本为 UNKNOWN、reconcile_required，保留请求，禁止盲目重复 DELETE |
+| GET 确认仍活跃 | 原 GET 恢复路径确认 NEW/PARTIALLY_FILLED 后，重新执行账户、授权和所有权检查，再按原 ID 撤销余量 |
+| 终态确认 | 控制器账本确认 CANCELED/FILLED/其他映射终态，原子记录 `:outcome`，包含实际成交量与费用，然后移除请求 |
+
+CLI 持久守卫只允许在新的 GET 恢复证明晚于上一次撤单尝试、且新账户读取确认订单仍活跃时，
+重试结果不确定的 DELETE。旧证明、缺少授权、STOP、HTTP 400 和 bounded quote 单次写入约束仍阻止写入。
+原 dispatch 身份与 POST 累计预算不变；旧尝试及其回执原子归档到同一 Runtime SQLite 的
+`dispatch_retry_history`，`receipts()` 通过 `previous_attempts` 提供历史。
+只有经过完整 GET 对账的 DELETE 不确定标志自动解除，POST 不确定的关闭规则保持不变。
+
+新增测试覆盖正常成功、调用前崩溃（包括旧版尝试记录）、DELETE 前 `_fresh_bound_facts()` 失败、
+回执丢失、GET 再次失败、GET 确认活跃后重试、部分成交保留、暂停/断线/超期/重启、
+终态到 Outbox checkpoint 之间中断、撤回开仓不复活、Paper 的相同生命周期以及授权拒绝。
+同时检查原 ID、GET 先于重试、没有替代订单和重复 POST，以及重试历史不丢失。
+
+新增撤单回归 **20 passed**（293.80 秒，`cancel-cancellation.xml`）；
+持久授权、累计预算、连续窗口、网络守卫与 bounded quote 回归 **116 passed**
+（178.25 秒，`cancel-safety.xml`）。
+FIFO、资金、费用与成交闭环回归 **104 passed**（1174.43 秒，`cancel-fifo.xml`）。
+原 **260 项 S01 定向回归全部通过**（1386.21 秒，`cancel-regression.xml`），
+包含前三条 P1、前两条 P2，以及 Grid、DualMA、CloseMomentum、LimitOnce、UNKNOWN、
+持久 Outbox、预算和恢复语义。以上四组共 **500 passed**，基线的 11 个预期失败另计。
+`compileall -q src tests` 和 `git diff --check` 均通过。
+提交后的 GitHub CI 与 Codex 复审状态记录于原 PR 的本轮审查回复。
+
+下表是完整用例的请求总数，GET 包含开户读取、规则、订单和账户对账，不仅是单笔订单查询。
+每个 Demo 用例的 POST 都是 **1**。完整逐例计数保存在新增测试 XML 的 `requests` 属性。
+
+| 场景 | GET | DELETE | 结果 |
+|---|---:|---:|---|
+| 正常一次性撤单，含重启/重放 | 55 | 1 | CANCELED，Outbox 结束 |
+| 尝试落盘后、调用前崩溃；旧记录兼容两例各自计数相同 | 63 | 1 | 重启先 GET，再按原 ID 撤单 |
+| `_fresh_bound_facts()` 失败，超出普通有效期后重试 | 46 | 1 | 首次 DELETE=0，恢复完成 |
+| DELETE 回执丢失，重启 GET 确认已取消 | 55 | 1 | UNKNOWN 请求保留；无重复 DELETE |
+| DELETE 回执丢失，重启 GET 确认 NEW | 69 | 2 | 新 GET 证明后只重试一次 |
+| 部分成交后正常撤单，含重启 | 66 | 1 | 0.01 成交量、资金、费用不变 |
+| 暂停、断线、超期、重启和恢复 | 63 | 1 | 撤单继续，已撤回开仓不复活 |
+| GET 确认外部 CANCELED / FILLED / EXPIRED | 40 / 41 / 40 | 0 | 按真实终态结束意图 |
+
+SQLite 恢复测试在关闭两个订单账本和 Runtime 后重新打开，GET 前直接断言原 Outbox、
+eligible_at 和原订单 ID 存在，GET 后再断言终态及唯一 `:outcome`。
+Paper 另验证相同 Outbox 生命周期：成交 0.01、费用 0.00099、原资金和仓位不变，
+订单事件仅 SUBMITTED、PARTIALLY_FILLED、CANCELED 各一次。
+
+复现命令（使用已安装项目依赖的 Python 3.13，基线模式预期退出码为 1）：
+
+```powershell
+python docs/validation/p8-s01/validate_cancel_outbox.py baseline
+python docs/validation/p8-s01/validate_cancel_outbox.py cancellation
+python docs/validation/p8-s01/validate_cancel_outbox.py regression
+python docs/validation/p8-s01/validate_cancel_outbox.py safety
+python docs/validation/p8-s01/validate_cancel_outbox.py fifo
+python docs/validation/p8-s01/validate_cancel_outbox.py compile
+git diff --check
+```
+
+验证脚本通过环境白名单启动测试，只传递 Python/Git 路径和必要的 Windows/临时目录变量，
+不传入凭据环境。凭据来自内存假凭据仓库；网络传输被 HTTP 桩拦截。
+未读取真实令牌、未操作 Azure 在线 Grid，交付不自动合并。

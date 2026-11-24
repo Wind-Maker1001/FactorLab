@@ -62,7 +62,8 @@ def open_session(root, store, runtime, requests, *, campaign=None, require_bound
     expected = None
 
     def guard(method, params, plan):
-        runtime.reserve(campaign, method, params, plan, expected=expected, facts=session.adapter.facts)
+        runtime.reserve(campaign, method, params, plan, expected=expected, facts=session.adapter.facts,
+                        cancel_recovered_at=session.last_reconciled_at)
 
     def expect(client_id, side, quantity):
         nonlocal expected

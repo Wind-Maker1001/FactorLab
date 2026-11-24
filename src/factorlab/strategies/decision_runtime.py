@@ -135,7 +135,12 @@ class ControllerExecution:
         self.prefix = 'strategy-dispatch:' + deployment_id + ':'
         self.max_notional, self.max_quantity = max_notional, max_quantity
 
-    def dispatch(self, decision, *, deadlines=None, cancellation_receipts=None):
+    def cancellation_confirmed(self, key):
+        record = self.controller.broker.state.orders.get(key)
+        return (record is not None and record.snapshot.status in TERMINAL
+                and not record.snapshot.reconcile_required)
+
+    def dispatch(self, decision, *, deadlines=None, cancellation_attempts=None):
         c = self.controller
         results = []
         deferred = set()
@@ -144,15 +149,25 @@ class ControllerExecution:
             record = c.broker.state.orders.get(key)
             if record is None:
                 raise ValueError('cannot cancel an unknown strategy order')
-            if record.snapshot.status in TERMINAL:
+            if self.cancellation_confirmed(key):
                 continue
             if not self.preview:
-                if cancellation_receipts is not None:
-                    receipt = cancellation_receipts[key]
-                    if c.store.event_payload(receipt) is not None:
-                        continue
-                    with c.store.transaction():
-                        c.store.record_metadata(receipt, dict(client_order_id=key, at=c.clock()))
+                if cancellation_attempts is not None:
+                    attempt = cancellation_attempts[key]
+                    if c.store.event_payload(attempt) is not None:
+                        # This also accepts legacy pre-call "receipts". They
+                        # prove only an attempt, never the exchange outcome.
+                        if self.session:
+                            self.session.recover()
+                        if self.cancellation_confirmed(key):
+                            continue
+                    else:
+                        with c.store.transaction():
+                            c.store.record_metadata(attempt, dict(client_order_id=key,
+                                status='ATTEMPTED', at=c.clock()))
+                record = c.broker.state.orders[key]
+                if not c.broker.state.reconciled or record.snapshot.reconcile_required:
+                    continue
                 results.append(self.session.cancel(key) if self.session else c.cancel(key))
         for intent in decision.orders:
             self._owned(intent.client_order_id)
@@ -349,7 +364,7 @@ class OrderStrategyRuntime:
                             cancellations=tuple(cancellations))
         result, deferred = self.execution.dispatch(decision,
             deadlines={key: offer['expires_at'] for key, offer in orders.items()},
-            cancellation_receipts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
+            cancellation_attempts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
                                    for key, offer in cancellations.items()})
 
         def checkpoint():
@@ -361,8 +376,8 @@ class OrderStrategyRuntime:
                     remaining.append(dict(offer, status='DEFERRED'))
                 elif key not in orders:
                     remaining.append(offer)
-            self._save_pending(remaining, [offer for offer in pending['cancellations']
-                                          if offer['key'] not in cancellations])
+            self._save_pending(remaining, pending['cancellations'])
+            self._prune_pending(self.controller.clock())
         self.controller._atomic(checkpoint)
         return result
 
@@ -375,6 +390,7 @@ class OrderStrategyRuntime:
         else:
             result = self.gateway.recover(self.controller)
         if result.reconciled:
+            self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
             if 'order_event' in self.journal.spec.data_types:
                 # Deliver each immutable confirmation once, with the current
                 # reconciled account. Replays use the original saved receipt.
@@ -447,7 +463,20 @@ class OrderStrategyRuntime:
                     self.execution.retire(intent, 'EXPIRED' if expired else 'WITHDRAWN')
                     continue
             remaining.append(offer)
-        cancellations = [] if withdraw else [offer for offer in pending['cancellations'] if at < offer['expires_at']]
+        # Cancellation is a durable obligation for an existing order. Entry
+        # deadlines and withdrawal on pause apply only to unsubmitted orders.
+        cancellations = []
+        for offer in pending['cancellations']:
+            key = offer['key']
+            if self.execution.cancellation_confirmed(key):
+                order = state.orders[key].snapshot
+                receipt = self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at'])) + ':outcome'
+                if self.controller.store.event_payload(receipt) is None:
+                    self.controller.store.record_metadata(receipt, dict(client_order_id=key,
+                        status=order.status, filled_quantity=order.cumulative_filled_quantity,
+                        fee=order.cumulative_fee, at=self.controller.clock()))
+            else:
+                cancellations.append(offer)
         self._save_pending(remaining, cancellations)
 
     def _stop_pending(self, status):
