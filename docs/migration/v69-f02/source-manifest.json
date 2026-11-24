@@ -1,0 +1,24 @@
+{
+  "status": "missing_original_sources",
+  "versions": {
+    "v48": null,
+    "v50": null,
+    "v69": null
+  },
+  "assets": [
+    "AAPL",
+    "SNDK",
+    "BA",
+    "C",
+    "JPM",
+    "GE",
+    "TQQQ",
+    "QQQ"
+  ],
+  "TARGET": null,
+  "omit_sndk": null,
+  "tqqq_conversion": null,
+  "position_adjustments": null,
+  "adjustment_basis": null,
+  "equivalence_verified": false
+}
