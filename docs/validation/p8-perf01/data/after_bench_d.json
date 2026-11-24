@@ -1,0 +1,175 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-24T17:14:48.076073+00:00",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "python_version": "3.13.9",
+    "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "cpu_physical_cores": 20,
+    "cpu_logical_processors": 28,
+    "ram_total_gb": 63.82,
+    "ram_available_gb": 27.69,
+    "numpy_version": "2.3.4",
+    "pandas_version": "2.3.3",
+    "gpu": {
+      "nvidia_smi_available": true,
+      "name": "NVIDIA GeForce RTX 2070",
+      "memory_total_mb": 8192,
+      "memory_free_mb": 6245,
+      "driver_version": "617.42",
+      "utilization_gpu_pct": 2,
+      "cupy_probe": {
+        "available": false,
+        "reason": "runtime cupy unavailable: No module named 'cupy'",
+        "version": null,
+        "driver_visible": null,
+        "runtime_available": false
+      }
+    },
+    "git_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+    "git_dirty": true,
+    "blas_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "suite": "bench_d",
+  "bench_d": {
+    "suite": "BENCH-D",
+    "repeats": 3,
+    "workers": 8,
+    "d1_r10_walkforward_and_funding_sweep": {
+      "timing": {
+        "all_runs_s": [
+          27.913748,
+          29.320328,
+          30.968099
+        ],
+        "cold_s": 27.913748,
+        "warm_median_s": 30.144213,
+        "median_s": 29.320328,
+        "min_s": 27.913748,
+        "max_s": 30.968099
+      },
+      "last_phase_breakdown": {
+        "precompute_ac_s": 17.9193,
+        "wf_mainnet_s": 3.5286,
+        "wf_demo_stress_s": 3.3741,
+        "funding_sweep_8regimes_s": 5.2048
+      },
+      "semantics": {
+        "mainnet_oos_a_ret_pct": 0.1648,
+        "mainnet_oos_b_ret_pct": 0.0,
+        "mainnet_oos_c_ret_pct": 0.641,
+        "demo_oos_b_ret_pct": 0.0,
+        "sweep_rows": 32
+      }
+    },
+    "d2_s02_automatic_12candidates": {
+      "timing": {
+        "all_runs_s": [
+          32.949101,
+          30.333338,
+          34.40864
+        ],
+        "cold_s": 32.949101,
+        "warm_median_s": 32.370989,
+        "median_s": 32.949101,
+        "min_s": 30.333338,
+        "max_s": 34.40864
+      },
+      "semantics": {
+        "candidates": 13,
+        "selected": "c-e6b0d748191fb67033994937",
+        "promoted": false,
+        "reason": "retain_champion_no_qualified_challenger"
+      }
+    },
+    "d3_s01_isolated_grid_8bars": {
+      "timing": {
+        "all_runs_s": [
+          66.246322,
+          85.302661,
+          82.484532
+        ],
+        "cold_s": 66.246322,
+        "warm_median_s": 83.893597,
+        "median_s": 82.484532,
+        "min_s": 66.246322,
+        "max_s": 85.302661
+      },
+      "last_run_detail": {
+        "n_bars": 8,
+        "persistent_worker": false,
+        "verify_runtime_each_call": true,
+        "load_strategy_s": 5.031647,
+        "replay_s": 77.452885,
+        "total_s": 82.484532,
+        "decide_events": 16,
+        "ms_per_decide_event": 4840.81,
+        "final_state_json_bytes": 12053,
+        "max_state_json_bytes": 12053,
+        "sqlite_transactions": 85,
+        "orders_created": 1
+      }
+    },
+    "d3_s01_persistent_worker_verify_each": {
+      "timing": {
+        "all_runs_s": [
+          4.953067,
+          6.903495,
+          10.684001
+        ],
+        "cold_s": 4.953067,
+        "warm_median_s": 8.793748,
+        "median_s": 6.903495,
+        "min_s": 4.953067,
+        "max_s": 10.684001
+      },
+      "last_run_detail": {
+        "n_bars": 8,
+        "persistent_worker": true,
+        "verify_runtime_each_call": true,
+        "load_strategy_s": 3.79849,
+        "replay_s": 6.885512,
+        "total_s": 10.684001,
+        "decide_events": 16,
+        "ms_per_decide_event": 430.34,
+        "final_state_json_bytes": 12053,
+        "max_state_json_bytes": 12053,
+        "sqlite_transactions": 85,
+        "orders_created": 1
+      }
+    },
+    "d3_s01_persistent_worker_verify_once": {
+      "timing": {
+        "all_runs_s": [
+          4.547035,
+          2.077255,
+          2.588294
+        ],
+        "cold_s": 4.547035,
+        "warm_median_s": 2.332775,
+        "median_s": 2.588294,
+        "min_s": 2.077255,
+        "max_s": 4.547035
+      },
+      "last_run_detail": {
+        "n_bars": 8,
+        "persistent_worker": true,
+        "verify_runtime_each_call": false,
+        "load_strategy_s": 2.031687,
+        "replay_s": 0.556607,
+        "total_s": 2.588294,
+        "decide_events": 16,
+        "ms_per_decide_event": 34.79,
+        "final_state_json_bytes": 12053,
+        "max_state_json_bytes": 12053,
+        "sqlite_transactions": 85,
+        "orders_created": 1
+      }
+    }
+  },
+  "total_benchmark_wall_s": 461.546
+}

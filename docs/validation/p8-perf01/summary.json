@@ -1,0 +1,166 @@
+{
+  "task": "P8-PERF-01",
+  "branch": "perf/p8-perf01-research-throughput",
+  "base_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+  "hardware": {
+    "cpu": "Intel Core i7-14700KF (20 physical cores: 8P+12E, 28 logical processors)",
+    "ram_gb": 63.82,
+    "gpu": "NVIDIA GeForce RTX 2070 (8192 MiB, driver 617.42; no CuPy/CUDA toolkit in standard env)",
+    "python": "3.13.9 (D:/Environments/factorlab-py313/Scripts/python.exe)",
+    "os": "Windows 11"
+  },
+  "key_speedups": {
+    "r09_16accts_1w_paired_ababab": {
+      "before_median_s": 14.642592,
+      "after_median_s": 1.714438,
+      "speedup": 8.541,
+      "semantics_identical": true
+    },
+    "r09_256accts_8w_bench_b": {
+      "before_median_s": 37.560847,
+      "after_median_s": 10.801422,
+      "speedup": 3.477,
+      "before_accts_per_sec": 6.82,
+      "after_accts_per_sec": 23.7,
+      "semantics_identical": true
+    },
+    "r09_256accts_12w_optimal_quiet": {
+      "before_8w_median_s": 37.560847,
+      "after_12w_total_s": 7.7259,
+      "after_12w_compute_s": 4.7164,
+      "speedup_total_vs_baseline_8w": 4.862,
+      "warm_compute_accts_per_sec": 54.28,
+      "total_accts_per_sec": 33.14
+    },
+    "r10_12accts_1w_cleanup_dir_true": {
+      "before_median_s": 27.692581,
+      "after_median_s": 1.276513,
+      "speedup": 21.694,
+      "semantics_identical": true
+    },
+    "r10_72accts_8w_cleanup_dir_true": {
+      "before_median_s": 80.018374,
+      "after_median_s": 13.820127,
+      "speedup": 5.79,
+      "semantics_identical": true
+    },
+    "r10_walkforward_12w_plus_8regime_sweep": {
+      "before_median_s": 377.459989,
+      "after_median_s": 29.320328,
+      "speedup": 12.874,
+      "semantics_identical": true
+    },
+    "s02_12candidates_paired_ababab": {
+      "before_median_s": 12.685289,
+      "after_median_s": 7.415707,
+      "speedup": 1.711,
+      "semantics_identical": true
+    },
+    "s01_isolated_grid_8bars_persistent_verify_each": {
+      "before_baseline_median_s": 39.867594,
+      "after_median_s": 6.903495,
+      "speedup_vs_baseline": 5.775
+    },
+    "s01_isolated_grid_8bars_persistent_verify_once": {
+      "before_baseline_median_s": 39.867594,
+      "after_median_s": 2.588294,
+      "speedup_vs_baseline": 15.403
+    },
+    "mc_tail_statistics_10k_499boot_paired": {
+      "before_median_s": 0.127673,
+      "after_median_s": 0.09765,
+      "speedup": 1.307,
+      "max_abs_diff": 0.0
+    },
+    "blas_single_thread_pinning_16w": {
+      "unrestricted_median_s": 0.094858,
+      "pinned_1_median_s": 0.078382,
+      "speedup": 1.21
+    }
+  },
+  "scale_1024_paths": {
+    "optimal_12w_quiet_host": {
+      "suite": "SCALE-1024",
+      "n_paths": 1024,
+      "horizon_hours": 168,
+      "workers": 12,
+      "generation_s": 0.007287,
+      "execution_s": 25.8255,
+      "statistics_s": 0.006657,
+      "total_s": 25.8394,
+      "paths_per_sec": 39.63,
+      "projected_4096_paths_s": 103.4,
+      "projected_10000_paths_s": 252.3,
+      "semantics": {
+        "accounts": 1024,
+        "all_zero_fifo_residual": true,
+        "sum_net_pnl_usdt": -62.85139499,
+        "sum_fees_usdt": 33.86653354,
+        "sum_slippage_usdt": 22.57768848,
+        "sum_funding_usdt": -2.38213687,
+        "total_orders": 34110,
+        "total_fills": 21248,
+        "total_grid_cycles": 0,
+        "total_rotations": 24102,
+        "mean_max_dd": 0.00883117,
+        "var_95": 0.0121419,
+        "cvar_95": 0.01855361,
+        "loss_prob": 1.0
+      }
+    },
+    "16w_high_background_load": {
+      "suite": "SCALE-1024",
+      "n_paths": 1024,
+      "horizon_hours": 168,
+      "workers": 16,
+      "generation_s": 0.037022,
+      "execution_s": 65.2626,
+      "statistics_s": 0.015338,
+      "total_s": 65.315,
+      "paths_per_sec": 15.68,
+      "projected_4096_paths_s": 261.3,
+      "projected_10000_paths_s": 637.8,
+      "semantics": {
+        "accounts": 1024,
+        "all_zero_fifo_residual": true,
+        "sum_net_pnl_usdt": -62.85139499,
+        "sum_fees_usdt": 33.86653354,
+        "sum_slippage_usdt": 22.57768848,
+        "sum_funding_usdt": -2.38213687,
+        "total_orders": 34110,
+        "total_fills": 21248,
+        "total_grid_cycles": 0,
+        "total_rotations": 24102,
+        "mean_max_dd": 0.00883117,
+        "var_95": 0.0121419,
+        "cvar_95": 0.01855361,
+        "loss_prob": 1.0
+      }
+    }
+  },
+  "recommended_config_i7_14700kf": {
+    "single_thread_blas_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    },
+    "small_workload_lt_32_accounts": {
+      "workers": 1,
+      "reason": "Avoids 2.6-3.0s Windows spawn overhead"
+    },
+    "medium_workload_32_to_128_accounts": {
+      "workers": 8,
+      "reason": "Matches 8 P-cores, 2.64s spawn, 8.48x warm compute speedup"
+    },
+    "large_workload_ge_128_accounts_or_reused_pool": {
+      "workers": 12,
+      "reason": "Peak throughput (54.28 accts/s warm, 39.63 paths/s at 1024 paths, 94.9% compute efficiency); >12 degrades from E-core/cache contention and higher spawn cost"
+    },
+    "file_backed_wal_synchronous_full": {
+      "workers": "4-8",
+      "reason": "NTFS fsync saturation caps parallel efficiency above 8 workers"
+    },
+    "gpu_recommendation": "CPU-only for full-lifecycle Grid research (path generation is <0.03% of total wall time; CuPy/CUDA not installed in standard env)"
+  }
+}

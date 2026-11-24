@@ -23,7 +23,7 @@ import pandas as pd
 from scipy import stats as scipy_stats
 
 from factorlab._identity import source_context_root
-from factorlab.compute import ComputeConfig
+from factorlab.compute import ComputeConfig, chunksize_for_tasks, create_process_pool
 from factorlab.experiments.grid_funding_adaptive import (
     DEMO_OBSERVED_HOURLY_FUNDING_BPS,
     EXECUTION_MODEL_VERSION,
@@ -216,11 +216,34 @@ def _window_worker(payload: tuple[Any, ...]) -> dict[str, Any]:
     return m
 
 
-def _execute_tasks_parallel(tasks: list[tuple[Any, ...]], max_workers: int) -> list[dict[str, Any]]:
+def _slice_window_funding(
+    funding_events: list[tuple[datetime, Decimal, Decimal, str]],
+    start_utc_iso: str,
+    end_excl_utc_iso: str,
+    *,
+    lookback_hours: int = 96,
+) -> list[tuple[datetime, Decimal, Decimal, str]]:
+    """Slice only the causal funding events relevant to one window (plus lookback buffer)."""
+    if not funding_events:
+        return []
+    win_start = parse_utc(start_utc_iso) - timedelta(hours=lookback_hours)
+    win_end = parse_utc(end_excl_utc_iso)
+    return [ev for ev in funding_events if win_start <= ev[0] < win_end]
+
+
+def _execute_tasks_parallel(
+    tasks: list[tuple[Any, ...]],
+    max_workers: int,
+    *,
+    executor: ProcessPoolExecutor | None = None,
+) -> list[dict[str, Any]]:
     if max_workers <= 1 or len(tasks) <= 2:
         return [_window_worker(t) for t in tasks]
-    with ProcessPoolExecutor(max_workers=max_workers) as pool:
-        return list(pool.map(_window_worker, tasks))
+    chunksize = chunksize_for_tasks(len(tasks), max_workers)
+    if executor is not None:
+        return list(executor.map(_window_worker, tasks, chunksize=chunksize))
+    with create_process_pool(max_workers) as pool:
+        return list(pool.map(_window_worker, tasks, chunksize=chunksize))
 
 
 def summarize_window_group(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -377,6 +400,7 @@ def precompute_ac_multi_regime(
     step_windows: int = 3,
     max_workers: int = 4,
     provenance: dict[str, Any] | None = None,
+    executor: ProcessPoolExecutor | None = None,
 ) -> dict[str, Any]:
     """Run funding-independent arms (A and C) ONCE per (config, window) and compute all funding overlays."""
     validate_research_windows(all_bars, windows)
@@ -395,19 +419,25 @@ def precompute_ac_multi_regime(
         fold_specs.append((fold_id, train_end, test_end, fold_sigma_ref))
         train_end = test_end
 
+    win_funding = {
+        w["window_id"]: _slice_window_funding(funding_events, w["start_utc"], w["end_exclusive_utc"], lookback_hours=0)
+        for w in windows
+    }
+
     with tempfile.TemporaryDirectory(prefix="factorlab-r10-ac-") as tmp:
         tasks: list[tuple[Any, ...]] = []
         # 1. Base matrix: A_FIXED + C1..C6 (with init_sigma_ref) across all 27 windows
         for w in windows:
+            wf = win_funding[w["window_id"]]
             tasks.append((
                 tmp, f"base_A_{w['window_id']}", w, "A_FIXED", None,
-                funding_events, overlays, HISTORICAL_REPLAY_CAPITAL, provenance,
+                wf, overlays, HISTORICAL_REPLAY_CAPITAL, provenance,
             ))
             for cp in c_policies:
                 cp_frozen = replace(cp, reference_vol_1h=init_sigma_ref)
                 tasks.append((
                     tmp, f"base_{cp.candidate_id}_{w['window_id']}", w, cp.candidate_id, cp_frozen,
-                    funding_events, overlays, HISTORICAL_REPLAY_CAPITAL, provenance,
+                    wf, overlays, HISTORICAL_REPLAY_CAPITAL, provenance,
                 ))
         # 2. Per-fold causal sigma_ref runs ONLY for C candidates where extreme_vol_mult is not None (fold >= 2; fold 1 == init_sigma_ref)
         fold_task_meta: list[tuple[int, str, str]] = []
@@ -421,15 +451,19 @@ def precompute_ac_multi_regime(
                 for w in windows[:te_end]:
                     tasks.append((
                         tmp, f"f{fid}_{cp.candidate_id}_{w['window_id']}", w, cp.candidate_id, cp_fold,
-                        funding_events, overlays, HISTORICAL_REPLAY_CAPITAL, provenance,
+                        win_funding[w["window_id"]], overlays, HISTORICAL_REPLAY_CAPITAL, provenance,
                     ))
                     fold_task_meta.append((fid, cp.candidate_id, w["window_id"]))
 
         if max_workers <= 1:
             raw_results = [_window_multi_overlay_worker(t) for t in tasks]
         else:
-            with ProcessPoolExecutor(max_workers=max_workers) as pool:
-                raw_results = list(pool.map(_window_multi_overlay_worker, tasks))
+            chunksize = chunksize_for_tasks(len(tasks), max_workers)
+            if executor is not None:
+                raw_results = list(executor.map(_window_multi_overlay_worker, tasks, chunksize=chunksize))
+            else:
+                with create_process_pool(max_workers) as pool:
+                    raw_results = list(pool.map(_window_multi_overlay_worker, tasks, chunksize=chunksize))
 
     base_count = len(windows) * (1 + len(c_policies))
     base_by_regime: dict[str, dict[tuple[str, str], dict[str, Any]]] = {ov[0]: {} for ov in overlays}
@@ -467,6 +501,7 @@ def run_expanding_walk_forward(
     max_workers: int = 4,
     provenance: dict[str, Any] | None = None,
     precomputed_ac: dict[str, Any] | None = None,
+    executor: ProcessPoolExecutor | None = None,
 ) -> dict[str, Any]:
     """Run expanding-window Walk-Forward without any validation-window refitting.
 
@@ -480,7 +515,7 @@ def run_expanding_walk_forward(
         precomputed_ac = precompute_ac_multi_regime(
             all_bars, windows, funding_events, c_policies, overlays,
             initial_train_windows=initial_train_windows, step_windows=step_windows,
-            max_workers=max_workers, provenance=provenance,
+            max_workers=max_workers, provenance=provenance, executor=executor,
         )
 
     init_sigma_ref = precomputed_ac["init_sigma_ref"]
@@ -488,18 +523,23 @@ def run_expanding_walk_forward(
     by_arm_win: dict[tuple[str, str], dict[str, Any]] = dict(precomputed_ac["base_by_regime"][regime_label])
     fold_c_cache = precomputed_ac["fold_by_regime"][regime_label]
 
+    max_lb = max((bp.lookback_hours for bp in b_policies), default=24) + 24
     # Run funding-sensitive Strategy B candidates specifically under this funding regime
     with tempfile.TemporaryDirectory(prefix=f"factorlab-r10-wf-b-{regime_label}-") as tmp:
-        b_tasks = [
-            (
-                tmp, f"{bp.candidate_id}_{w['window_id']}", w, bp.candidate_id, bp, None,
-                funding_events, funding_scale, constant_hourly_bps, regime_switch_bps,
-                HISTORICAL_REPLAY_CAPITAL, provenance,
+        b_tasks = []
+        for w in windows:
+            wf = (
+                []
+                if (constant_hourly_bps is not None or regime_switch_bps is not None)
+                else _slice_window_funding(funding_events, w["start_utc"], w["end_exclusive_utc"], lookback_hours=max_lb)
             )
-            for w in windows
-            for bp in b_policies
-        ]
-        b_rows = _execute_tasks_parallel(b_tasks, max_workers=max_workers)
+            for bp in b_policies:
+                b_tasks.append((
+                    tmp, f"{bp.candidate_id}_{w['window_id']}", w, bp.candidate_id, bp, None,
+                    wf, funding_scale, constant_hourly_bps, regime_switch_bps,
+                    HISTORICAL_REPLAY_CAPITAL, provenance,
+                ))
+        b_rows = _execute_tasks_parallel(b_tasks, max_workers=max_workers, executor=executor)
     for r in b_rows:
         by_arm_win[(r["strategy_id"], r["window_id"])] = r
 
@@ -693,6 +733,7 @@ def run_funding_sensitivity_sweep(
     *,
     max_workers: int = 4,
     provenance: dict[str, Any] | None = None,
+    executor: ProcessPoolExecutor | None = None,
 ) -> list[dict[str, Any]]:
     """Sweep funding regimes from 0x to 25x Mainnet + Demo stress + Dynamic Regime Switch."""
     regimes = [
@@ -710,19 +751,33 @@ def run_funding_sensitivity_sweep(
         (f"B_EXIT_{b_entry_exit.candidate_id}", b_entry_exit),
     ]
     c_arm_name = f"C_ADAPT_{c_policy.candidate_id}"
+    max_lb = max(b_entry_only.lookback_hours, b_entry_exit.lookback_hours) + 24
+    win_funding_ac = {
+        w["window_id"]: _slice_window_funding(funding_events, w["start_utc"], w["end_exclusive_utc"], lookback_hours=0)
+        for w in windows
+    }
+    win_funding_b = {
+        w["window_id"]: _slice_window_funding(funding_events, w["start_utc"], w["end_exclusive_utc"], lookback_hours=max_lb)
+        for w in windows
+    }
 
     rows_out: list[dict[str, Any]] = []
     with tempfile.TemporaryDirectory(prefix="factorlab-r10-fsweep-") as tmp:
         # Run funding-independent A and C ONCE per window and overlay all 8 regimes
         ac_tasks = []
         for w in windows:
-            ac_tasks.append((tmp, f"A_{w['window_id']}", w, "A_FIXED", None, funding_events, regimes, HISTORICAL_REPLAY_CAPITAL, provenance))
-            ac_tasks.append((tmp, f"C_{w['window_id']}", w, c_arm_name, c_policy, funding_events, regimes, HISTORICAL_REPLAY_CAPITAL, provenance))
+            wf = win_funding_ac[w["window_id"]]
+            ac_tasks.append((tmp, f"A_{w['window_id']}", w, "A_FIXED", None, wf, regimes, HISTORICAL_REPLAY_CAPITAL, provenance))
+            ac_tasks.append((tmp, f"C_{w['window_id']}", w, c_arm_name, c_policy, wf, regimes, HISTORICAL_REPLAY_CAPITAL, provenance))
         if max_workers <= 1:
             ac_res = [_window_multi_overlay_worker(t) for t in ac_tasks]
         else:
-            with ProcessPoolExecutor(max_workers=max_workers) as pool:
-                ac_res = list(pool.map(_window_multi_overlay_worker, ac_tasks))
+            chunksize = chunksize_for_tasks(len(ac_tasks), max_workers)
+            if executor is not None:
+                ac_res = list(executor.map(_window_multi_overlay_worker, ac_tasks, chunksize=chunksize))
+            else:
+                with create_process_pool(max_workers) as pool:
+                    ac_res = list(pool.map(_window_multi_overlay_worker, ac_tasks, chunksize=chunksize))
         ac_by_reg: dict[tuple[str, str], list[dict[str, Any]]] = {}
         for arm_id, _, ov_map in ac_res:
             for reg_name, row in ov_map.items():
@@ -733,11 +788,12 @@ def run_funding_sensitivity_sweep(
         for reg_name, f_scale, const_bps, sw_bps in regimes:
             for arm_name, bp in b_arms:
                 for w in windows:
+                    wf = [] if (const_bps is not None or sw_bps is not None) else win_funding_b[w["window_id"]]
                     b_tasks.append((
                         tmp, f"{reg_name}_{arm_name}_{w['window_id']}", w, arm_name, bp, None,
-                        funding_events, f_scale, const_bps, sw_bps, HISTORICAL_REPLAY_CAPITAL, provenance,
+                        wf, f_scale, const_bps, sw_bps, HISTORICAL_REPLAY_CAPITAL, provenance,
                     ))
-        b_res = _execute_tasks_parallel(b_tasks, max_workers=max_workers)
+        b_res = _execute_tasks_parallel(b_tasks, max_workers=max_workers, executor=executor)
         b_idx = 0
         b_by_reg: dict[tuple[str, str], list[dict[str, Any]]] = {}
         for reg_name, _, _, _ in regimes:
@@ -998,7 +1054,7 @@ def run_stochastic_mc_tail_risk(
 
     summary_rows: list[dict[str, Any]] = []
     with tempfile.TemporaryDirectory(prefix="factorlab-r10-mc-") as tmp:
-        pool = ProcessPoolExecutor(max_workers=max_workers) if max_workers > 1 else None
+        pool = create_process_pool(max_workers) if max_workers > 1 else None
         try:
             for sc_name, sc_vol, paths in scenario_paths:
                 rng_w = np.random.default_rng(seed + 99)
@@ -1011,7 +1067,8 @@ def run_stochastic_mc_tail_risk(
                 for pi in range(n_paths):
                     ac_tasks.append((tmp, f"{sc_name}_A_p{pi:03d}", paths[pi], start_iso, "A_FIXED", None, w_closes, funding_overlays, provenance))
                     ac_tasks.append((tmp, f"{sc_name}_C_p{pi:03d}", paths[pi], start_iso, c_arm_name, c_policy, w_closes, funding_overlays, provenance))
-                ac_res = list(pool.map(_mc_multi_overlay_worker, ac_tasks)) if pool else [_mc_multi_overlay_worker(t) for t in ac_tasks]
+                ac_chunk = chunksize_for_tasks(len(ac_tasks), max_workers)
+                ac_res = list(pool.map(_mc_multi_overlay_worker, ac_tasks, chunksize=ac_chunk)) if pool else [_mc_multi_overlay_worker(t) for t in ac_tasks]
 
                 by_reg_arm: dict[tuple[str, str], list[dict[str, Any]]] = {}
                 for arm_name, ov_map in ac_res:
@@ -1026,7 +1083,8 @@ def run_stochastic_mc_tail_risk(
                             tmp, f"{sc_name}_{f_label}_B_p{pi:03d}", paths[pi], start_iso,
                             b_arm_name, b_entry_exit, None, w_closes, const_bps, sw_bps, provenance,
                         ))
-                b_res = list(pool.map(_mc_path_worker, b_tasks)) if pool else [_mc_path_worker(t) for t in b_tasks]
+                b_chunk = chunksize_for_tasks(len(b_tasks), max_workers)
+                b_res = list(pool.map(_mc_path_worker, b_tasks, chunksize=b_chunk)) if pool else [_mc_path_worker(t) for t in b_tasks]
                 for fi, (f_label, _, _, _) in enumerate(funding_overlays):
                     by_reg_arm[(f_label, b_arm_name)] = b_res[fi * n_paths : (fi + 1) * n_paths]
 
@@ -1513,53 +1571,62 @@ def run_full_r10_study(
         ("switch_0.125_to_22.97_at_48h", 1.0, None, (48, NORMAL_PERP_HOURLY_FUNDING_BPS, DEMO_OBSERVED_HOURLY_FUNDING_BPS)),
         ("demo_stress_22.97bps_h", 1.0, DEMO_OBSERVED_HOURLY_FUNDING_BPS, None),
     ]
-    t2 = perf_counter()
-    precomputed_ac = precompute_ac_multi_regime(
-        all_bars, windows, all_funding, c_policies, wf_overlays,
-        max_workers=max_workers, provenance=provenance,
-    )
-    print(f"  [Step 2 done in {perf_counter() - t2:.1f}s]", flush=True)
+    shared_pool = create_process_pool(max_workers) if max_workers > 1 else None
+    try:
+        t2 = perf_counter()
+        precomputed_ac = precompute_ac_multi_regime(
+            all_bars, windows, all_funding, c_policies, wf_overlays,
+            max_workers=max_workers, provenance=provenance, executor=shared_pool,
+        )
+        print(f"  [Step 2 done in {perf_counter() - t2:.1f}s]", flush=True)
 
-    print("[P8-R10] Step 3/6: Running Walk-Forward & Strategy B paired backtests across 3 funding regimes...", flush=True)
-    t3 = perf_counter()
-    wf_mainnet = run_expanding_walk_forward(
-        all_bars, windows, all_funding, b_policies, c_policies,
-        regime_label="mainnet_actual",
-        funding_scale=1.0,
-        max_workers=max_workers,
-        provenance=provenance,
-        precomputed_ac=precomputed_ac,
-    )
-    wf_switch = run_expanding_walk_forward(
-        all_bars, windows, all_funding, b_policies, c_policies,
-        regime_label="switch_0.125_to_22.97_at_48h",
-        regime_switch_bps=(48, NORMAL_PERP_HOURLY_FUNDING_BPS, DEMO_OBSERVED_HOURLY_FUNDING_BPS),
-        max_workers=max_workers,
-        provenance=provenance,
-        precomputed_ac=precomputed_ac,
-    )
-    wf_demo = run_expanding_walk_forward(
-        all_bars, windows, all_funding, b_policies, c_policies,
-        regime_label="demo_stress_22.97bps_h",
-        constant_hourly_bps=DEMO_OBSERVED_HOURLY_FUNDING_BPS,
-        max_workers=max_workers,
-        provenance=provenance,
-        precomputed_ac=precomputed_ac,
-    )
-    print(f"  [Step 3 done in {perf_counter() - t3:.1f}s]", flush=True)
+        print("[P8-R10] Step 3/6: Running Walk-Forward & Strategy B paired backtests across 3 funding regimes...", flush=True)
+        t3 = perf_counter()
+        wf_mainnet = run_expanding_walk_forward(
+            all_bars, windows, all_funding, b_policies, c_policies,
+            regime_label="mainnet_actual",
+            funding_scale=1.0,
+            max_workers=max_workers,
+            provenance=provenance,
+            precomputed_ac=precomputed_ac,
+            executor=shared_pool,
+        )
+        wf_switch = run_expanding_walk_forward(
+            all_bars, windows, all_funding, b_policies, c_policies,
+            regime_label="switch_0.125_to_22.97_at_48h",
+            regime_switch_bps=(48, NORMAL_PERP_HOURLY_FUNDING_BPS, DEMO_OBSERVED_HOURLY_FUNDING_BPS),
+            max_workers=max_workers,
+            provenance=provenance,
+            precomputed_ac=precomputed_ac,
+            executor=shared_pool,
+        )
+        wf_demo = run_expanding_walk_forward(
+            all_bars, windows, all_funding, b_policies, c_policies,
+            regime_label="demo_stress_22.97bps_h",
+            constant_hourly_bps=DEMO_OBSERVED_HOURLY_FUNDING_BPS,
+            max_workers=max_workers,
+            provenance=provenance,
+            precomputed_ac=precomputed_ac,
+            executor=shared_pool,
+        )
+        print(f"  [Step 3 done in {perf_counter() - t3:.1f}s]", flush=True)
 
-    # Representative policies for sensitivity, deterministic stress & MC (predeclared defaults B2/B5/C5 with initial frozen sigma_ref)
-    init_sigma_ref = wf_mainnet["initial_sigma_ref_1h"]
-    b_entry_only = next(p for p in b_policies if p.candidate_id == "B2")
-    b_entry_exit = next(p for p in b_policies if p.candidate_id == "B5")
-    c_rep = replace(next(p for p in c_policies if p.candidate_id == "C5"), reference_vol_1h=init_sigma_ref)
+        # Representative policies for sensitivity, deterministic stress & MC (predeclared defaults B2/B5/C5 with initial frozen sigma_ref)
+        init_sigma_ref = wf_mainnet["initial_sigma_ref_1h"]
+        b_entry_only = next(p for p in b_policies if p.candidate_id == "B2")
+        b_entry_exit = next(p for p in b_policies if p.candidate_id == "B5")
+        c_rep = replace(next(p for p in c_policies if p.candidate_id == "C5"), reference_vol_1h=init_sigma_ref)
 
-    print("[P8-R10] Step 4/6: Running funding sensitivity sweep (0x -> 25x + Demo + Switch)...", flush=True)
-    funding_sensitivity = run_funding_sensitivity_sweep(
-        windows, all_funding, b_entry_only, b_entry_exit, c_rep,
-        max_workers=max_workers,
-        provenance=provenance,
-    )
+        print("[P8-R10] Step 4/6: Running funding sensitivity sweep (0x -> 25x + Demo + Switch)...", flush=True)
+        funding_sensitivity = run_funding_sensitivity_sweep(
+            windows, all_funding, b_entry_only, b_entry_exit, c_rep,
+            max_workers=max_workers,
+            provenance=provenance,
+            executor=shared_pool,
+        )
+    finally:
+        if shared_pool is not None:
+            shared_pool.shutdown()
 
     print("[P8-R10] Step 5/6: Running 9 deterministic stress regimes...", flush=True)
     deterministic_stress = run_deterministic_stress_suite(

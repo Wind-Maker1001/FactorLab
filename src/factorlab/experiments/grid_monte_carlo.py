@@ -1,5 +1,7 @@
 """Bounded price scenarios executed by the existing Grid Paper authority."""
 from dataclasses import asdict
+from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 import json
 from pathlib import Path
 import os
@@ -79,12 +81,20 @@ def historical_input(snapshot, as_of, initial_price):
     return inputs, receipt
 
 
-def close_bars(prices, start):
-    dates = pd.date_range(start, periods=len(prices), freq='h')
-    if dates.tz is None:
+@lru_cache(maxsize=64)
+def _hourly_utc_timestamps(start: str, count: int) -> tuple[str, ...]:
+    ts = pd.Timestamp(start)
+    if ts.tzinfo is None:
         raise ValueError('scenario start requires UTC timezone')
-    return [dict(id=f'step-{i}', time=t.tz_convert('UTC').isoformat(), price=float(p),
-                 close=float(p), completed_bar=True) for i, (t, p) in enumerate(zip(dates, prices))]
+    base = ts.tz_convert('UTC').to_pydatetime()
+    step = timedelta(hours=1)
+    return tuple((base + step * i).isoformat() for i in range(count))
+
+
+def close_bars(prices, start):
+    times = _hourly_utc_timestamps(str(start), len(prices))
+    return [dict(id=f'step-{i}', time=t, price=float(p),
+                 close=float(p), completed_bar=True) for i, (t, p) in enumerate(zip(times, prices))]
 
 
 def evaluate_path(prices, *, start, config, rules, capacity, output, research_wal=True,

@@ -1,5 +1,4 @@
 """Fail-closed risk admission and atomic paper execution/recovery."""
-from copy import deepcopy
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -46,6 +45,8 @@ class TradingController:
         if live or not isinstance(broker, PaperBroker):
             raise ValueError("NO LIVE MONEY: only PaperBroker execution is enabled")
         self.broker, self.store, self.limits, self.clock = broker, store, limits, clock
+        self._limits_base = {k: str(v) if isinstance(v, Decimal) else v for k, v in asdict(limits).items()}
+        self._limits_ref = limits
         self._admitted_intent = None
         self._admitted_cancel_id = None
         utc(clock())
@@ -72,11 +73,13 @@ class TradingController:
             store.save(broker.state)
 
     def _atomic(self, operation):
-        before = deepcopy(self.broker.state)
+        before = self.broker.state
         try:
             with self.store.transaction():
                 # Read inside the write transaction so independent controller
                 # instances cannot overwrite a newer account projection.
+                # PaperStore.load() returns an isolated PaperState copy, leaving
+                # ``before`` untouched if the transaction rolls back.
                 self.broker.state = self.store.load()
                 result = operation()
                 self.store.save(self.broker.state)
@@ -96,7 +99,10 @@ class TradingController:
     def assess(self, intent):
         b, state, now = self.broker, self.broker.state, self.clock()
         utc(now)
-        limits = {k: str(v) if isinstance(v, Decimal) else v for k, v in asdict(self.limits).items()}
+        if self._limits_ref is not self.limits:
+            self._limits_base = {k: str(v) if isinstance(v, Decimal) else v for k, v in asdict(self.limits).items()}
+            self._limits_ref = self.limits
+        limits = dict(self._limits_base)
         limits["kill_switch"] = state.kill_switch
 
         def result(reason):

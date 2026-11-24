@@ -1,0 +1,1128 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-24T16:57:16.697755+00:00",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "python_version": "3.13.9",
+    "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "cpu_physical_cores": 20,
+    "cpu_logical_processors": 28,
+    "ram_total_gb": 63.82,
+    "ram_available_gb": 27.6,
+    "numpy_version": "2.3.4",
+    "pandas_version": "2.3.3",
+    "gpu": {
+      "nvidia_smi_available": true,
+      "name": "NVIDIA GeForce RTX 2070",
+      "memory_total_mb": 8192,
+      "memory_free_mb": 6425,
+      "driver_version": "617.42",
+      "utilization_gpu_pct": 3,
+      "cupy_probe": {
+        "available": false,
+        "reason": "runtime cupy unavailable: No module named 'cupy'",
+        "version": null,
+        "driver_visible": null,
+        "runtime_available": false
+      }
+    },
+    "git_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+    "git_dirty": true,
+    "blas_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "suite": "bench_a",
+  "bench_a": {
+    "suite": "BENCH-A",
+    "repeats": 3,
+    "cpu_results": [
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 64,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.002356,
+            0.001986,
+            0.007288
+          ],
+          "cold_s": 0.002356,
+          "warm_median_s": 0.004637,
+          "median_s": 0.002356,
+          "min_s": 0.001986,
+          "max_s": 0.007288
+        },
+        "paths_per_sec_median": 27164.7,
+        "var_95": 0.07599861,
+        "cvar_95": 0.09311544,
+        "loss_prob": 0.609375,
+        "mean_terminal": 0.98876309,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.004067,
+            0.008582,
+            0.01253
+          ],
+          "cold_s": 0.004067,
+          "warm_median_s": 0.010556,
+          "median_s": 0.008582,
+          "min_s": 0.004067,
+          "max_s": 0.01253
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 64,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.00232,
+            0.006825,
+            0.00649
+          ],
+          "cold_s": 0.00232,
+          "warm_median_s": 0.006657,
+          "median_s": 0.00649,
+          "min_s": 0.00232,
+          "max_s": 0.006825
+        },
+        "paths_per_sec_median": 9861.3,
+        "var_95": 0.07599861,
+        "cvar_95": 0.09311544,
+        "loss_prob": 0.609375,
+        "mean_terminal": 0.98876309
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 256,
+        "n_steps": 168,
+        "batch_size": 256,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.008569,
+            0.017331,
+            0.012585
+          ],
+          "cold_s": 0.008569,
+          "warm_median_s": 0.014958,
+          "median_s": 0.012585,
+          "min_s": 0.008569,
+          "max_s": 0.017331
+        },
+        "paths_per_sec_median": 20341.7,
+        "var_95": 0.10343577,
+        "cvar_95": 0.13340573,
+        "loss_prob": 0.566406,
+        "mean_terminal": 0.99203688,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.015059,
+            0.016119,
+            0.017663
+          ],
+          "cold_s": 0.015059,
+          "warm_median_s": 0.016891,
+          "median_s": 0.016119,
+          "min_s": 0.015059,
+          "max_s": 0.017663
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 256,
+        "n_steps": 168,
+        "batch_size": 256,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.012114,
+            0.010647,
+            0.012929
+          ],
+          "cold_s": 0.012114,
+          "warm_median_s": 0.011788,
+          "median_s": 0.012114,
+          "min_s": 0.010647,
+          "max_s": 0.012929
+        },
+        "paths_per_sec_median": 21132.6,
+        "var_95": 0.10343577,
+        "cvar_95": 0.13340573,
+        "loss_prob": 0.566406,
+        "mean_terminal": 0.99203688
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 1024,
+        "n_steps": 168,
+        "batch_size": 1024,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.033439,
+            0.017331,
+            0.016032
+          ],
+          "cold_s": 0.033439,
+          "warm_median_s": 0.016681,
+          "median_s": 0.017331,
+          "min_s": 0.016032,
+          "max_s": 0.033439
+        },
+        "paths_per_sec_median": 59084.9,
+        "var_95": 0.0932799,
+        "cvar_95": 0.10952366,
+        "loss_prob": 0.564453,
+        "mean_terminal": 0.99310598,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.012668,
+            0.029556,
+            0.01287
+          ],
+          "cold_s": 0.012668,
+          "warm_median_s": 0.021213,
+          "median_s": 0.01287,
+          "min_s": 0.012668,
+          "max_s": 0.029556
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 1024,
+        "n_steps": 168,
+        "batch_size": 1024,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.032112,
+            0.045316,
+            0.018586
+          ],
+          "cold_s": 0.032112,
+          "warm_median_s": 0.031951,
+          "median_s": 0.032112,
+          "min_s": 0.018586,
+          "max_s": 0.045316
+        },
+        "paths_per_sec_median": 31888.4,
+        "var_95": 0.0932799,
+        "cvar_95": 0.10952366,
+        "loss_prob": 0.564453,
+        "mean_terminal": 0.99310598
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 1024,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.009454,
+            0.008778,
+            0.008658
+          ],
+          "cold_s": 0.009454,
+          "warm_median_s": 0.008718,
+          "median_s": 0.008778,
+          "min_s": 0.008658,
+          "max_s": 0.009454
+        },
+        "paths_per_sec_median": 116655.3,
+        "var_95": 0.0914897,
+        "cvar_95": 0.11155259,
+        "loss_prob": 0.574219,
+        "mean_terminal": 0.99310993
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 4096,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.107236,
+            0.053159,
+            0.075988
+          ],
+          "cold_s": 0.107236,
+          "warm_median_s": 0.064573,
+          "median_s": 0.075988,
+          "min_s": 0.053159,
+          "max_s": 0.107236
+        },
+        "paths_per_sec_median": 53903.2,
+        "var_95": 0.09547097,
+        "cvar_95": 0.11771386,
+        "loss_prob": 0.567139,
+        "mean_terminal": 0.99170002,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.071525,
+            0.030308,
+            0.068124
+          ],
+          "cold_s": 0.071525,
+          "warm_median_s": 0.049216,
+          "median_s": 0.068124,
+          "min_s": 0.030308,
+          "max_s": 0.071525
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 4096,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.173857,
+            0.159366,
+            0.188441
+          ],
+          "cold_s": 0.173857,
+          "warm_median_s": 0.173903,
+          "median_s": 0.173857,
+          "min_s": 0.159366,
+          "max_s": 0.188441
+        },
+        "paths_per_sec_median": 23559.6,
+        "var_95": 0.09547097,
+        "cvar_95": 0.11771386,
+        "loss_prob": 0.567139,
+        "mean_terminal": 0.99170002
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 4096,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.101077,
+            0.109038,
+            0.074379
+          ],
+          "cold_s": 0.101077,
+          "warm_median_s": 0.091709,
+          "median_s": 0.101077,
+          "min_s": 0.074379,
+          "max_s": 0.109038
+        },
+        "paths_per_sec_median": 40523.6,
+        "var_95": 0.09406882,
+        "cvar_95": 0.11373524,
+        "loss_prob": 0.578125,
+        "mean_terminal": 0.99166927
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 10000,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.333942,
+            0.157787,
+            0.117319
+          ],
+          "cold_s": 0.333942,
+          "warm_median_s": 0.137553,
+          "median_s": 0.157787,
+          "min_s": 0.117319,
+          "max_s": 0.333942
+        },
+        "paths_per_sec_median": 63376.6,
+        "var_95": 0.09569522,
+        "cvar_95": 0.11561721,
+        "loss_prob": 0.5714,
+        "mean_terminal": 0.99137018,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.249924,
+            0.232675,
+            0.125995
+          ],
+          "cold_s": 0.249924,
+          "warm_median_s": 0.179335,
+          "median_s": 0.232675,
+          "min_s": 0.125995,
+          "max_s": 0.249924
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 10000,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.368332,
+            0.172848,
+            0.386953
+          ],
+          "cold_s": 0.368332,
+          "warm_median_s": 0.2799,
+          "median_s": 0.368332,
+          "min_s": 0.172848,
+          "max_s": 0.386953
+        },
+        "paths_per_sec_median": 27149.4,
+        "var_95": 0.09569522,
+        "cvar_95": 0.11561721,
+        "loss_prob": 0.5714,
+        "mean_terminal": 0.99137018
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "1asset_168h",
+        "n_paths": 10000,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.167757,
+            0.163538,
+            0.173837
+          ],
+          "cold_s": 0.167757,
+          "warm_median_s": 0.168687,
+          "median_s": 0.167757,
+          "min_s": 0.163538,
+          "max_s": 0.173837
+        },
+        "paths_per_sec_median": 59610.0,
+        "var_95": 0.09473431,
+        "cvar_95": 0.11385536,
+        "loss_prob": 0.5758,
+        "mean_terminal": 0.99134879
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 64,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.008668,
+            0.006228,
+            0.001747
+          ],
+          "cold_s": 0.008668,
+          "warm_median_s": 0.003987,
+          "median_s": 0.006228,
+          "min_s": 0.001747,
+          "max_s": 0.008668
+        },
+        "paths_per_sec_median": 10276.2,
+        "var_95": 0.10379282,
+        "cvar_95": 0.11044756,
+        "loss_prob": 0.609375,
+        "mean_terminal": 0.99008634,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.01336,
+            0.008784,
+            0.015209
+          ],
+          "cold_s": 0.01336,
+          "warm_median_s": 0.011996,
+          "median_s": 0.01336,
+          "min_s": 0.008784,
+          "max_s": 0.015209
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 64,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.001979,
+            0.006554,
+            0.006041
+          ],
+          "cold_s": 0.001979,
+          "warm_median_s": 0.006297,
+          "median_s": 0.006041,
+          "min_s": 0.001979,
+          "max_s": 0.006554
+        },
+        "paths_per_sec_median": 10594.3,
+        "var_95": 0.10379282,
+        "cvar_95": 0.11044756,
+        "loss_prob": 0.609375,
+        "mean_terminal": 0.99008634
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 256,
+        "n_steps": 168,
+        "batch_size": 256,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.006797,
+            0.012247,
+            0.006781
+          ],
+          "cold_s": 0.006797,
+          "warm_median_s": 0.009514,
+          "median_s": 0.006797,
+          "min_s": 0.006781,
+          "max_s": 0.012247
+        },
+        "paths_per_sec_median": 37663.7,
+        "var_95": 0.10233667,
+        "cvar_95": 0.11427872,
+        "loss_prob": 0.597656,
+        "mean_terminal": 0.98876137,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.02479,
+            0.020359,
+            0.009693
+          ],
+          "cold_s": 0.02479,
+          "warm_median_s": 0.015026,
+          "median_s": 0.020359,
+          "min_s": 0.009693,
+          "max_s": 0.02479
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 256,
+        "n_steps": 168,
+        "batch_size": 256,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.002877,
+            0.002818,
+            0.002934
+          ],
+          "cold_s": 0.002877,
+          "warm_median_s": 0.002876,
+          "median_s": 0.002877,
+          "min_s": 0.002818,
+          "max_s": 0.002934
+        },
+        "paths_per_sec_median": 88981.6,
+        "var_95": 0.10233667,
+        "cvar_95": 0.11427872,
+        "loss_prob": 0.597656,
+        "mean_terminal": 0.98876137
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 1024,
+        "n_steps": 168,
+        "batch_size": 1024,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.009348,
+            0.014866,
+            0.009454
+          ],
+          "cold_s": 0.009348,
+          "warm_median_s": 0.01216,
+          "median_s": 0.009454,
+          "min_s": 0.009348,
+          "max_s": 0.014866
+        },
+        "paths_per_sec_median": 108313.9,
+        "var_95": 0.09526601,
+        "cvar_95": 0.12544312,
+        "loss_prob": 0.583008,
+        "mean_terminal": 0.98930416,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.014284,
+            0.008628,
+            0.008673
+          ],
+          "cold_s": 0.014284,
+          "warm_median_s": 0.00865,
+          "median_s": 0.008673,
+          "min_s": 0.008628,
+          "max_s": 0.014284
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 1024,
+        "n_steps": 168,
+        "batch_size": 1024,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.011825,
+            0.029902,
+            0.039132
+          ],
+          "cold_s": 0.011825,
+          "warm_median_s": 0.034517,
+          "median_s": 0.029902,
+          "min_s": 0.011825,
+          "max_s": 0.039132
+        },
+        "paths_per_sec_median": 34245.2,
+        "var_95": 0.09526601,
+        "cvar_95": 0.12544312,
+        "loss_prob": 0.583008,
+        "mean_terminal": 0.98930416
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 1024,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.016023,
+            0.013148,
+            0.005461
+          ],
+          "cold_s": 0.016023,
+          "warm_median_s": 0.009304,
+          "median_s": 0.013148,
+          "min_s": 0.005461,
+          "max_s": 0.016023
+        },
+        "paths_per_sec_median": 77882.6,
+        "var_95": 0.09925187,
+        "cvar_95": 0.11932665,
+        "loss_prob": 0.568359,
+        "mean_terminal": 0.98931397
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 4096,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.030255,
+            0.042589,
+            0.04863
+          ],
+          "cold_s": 0.030255,
+          "warm_median_s": 0.045609,
+          "median_s": 0.042589,
+          "min_s": 0.030255,
+          "max_s": 0.04863
+        },
+        "paths_per_sec_median": 96175.1,
+        "var_95": 0.09410909,
+        "cvar_95": 0.11892832,
+        "loss_prob": 0.560059,
+        "mean_terminal": 0.99098588,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.030511,
+            0.030349,
+            0.059425
+          ],
+          "cold_s": 0.030511,
+          "warm_median_s": 0.044887,
+          "median_s": 0.030511,
+          "min_s": 0.030349,
+          "max_s": 0.059425
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 4096,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.059009,
+            0.061948,
+            0.130909
+          ],
+          "cold_s": 0.059009,
+          "warm_median_s": 0.096428,
+          "median_s": 0.061948,
+          "min_s": 0.059009,
+          "max_s": 0.130909
+        },
+        "paths_per_sec_median": 66120.0,
+        "var_95": 0.09410909,
+        "cvar_95": 0.11892832,
+        "loss_prob": 0.560059,
+        "mean_terminal": 0.99098588
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 4096,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.018046,
+            0.066958,
+            0.061071
+          ],
+          "cold_s": 0.018046,
+          "warm_median_s": 0.064015,
+          "median_s": 0.061071,
+          "min_s": 0.018046,
+          "max_s": 0.066958
+        },
+        "paths_per_sec_median": 67069.5,
+        "var_95": 0.09249314,
+        "cvar_95": 0.11692078,
+        "loss_prob": 0.571045,
+        "mean_terminal": 0.99096336
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 10000,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.104801,
+            0.267827,
+            0.138252
+          ],
+          "cold_s": 0.104801,
+          "warm_median_s": 0.20304,
+          "median_s": 0.138252,
+          "min_s": 0.104801,
+          "max_s": 0.267827
+        },
+        "paths_per_sec_median": 72331.7,
+        "var_95": 0.09580672,
+        "cvar_95": 0.12090487,
+        "loss_prob": 0.5619,
+        "mean_terminal": 0.99062885,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.155352,
+            0.176559,
+            0.285341
+          ],
+          "cold_s": 0.155352,
+          "warm_median_s": 0.23095,
+          "median_s": 0.176559,
+          "min_s": 0.155352,
+          "max_s": 0.285341
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 10000,
+        "n_steps": 168,
+        "batch_size": 4096,
+        "save_full_paths": true,
+        "generation": {
+          "all_runs_s": [
+            0.152063,
+            0.193337,
+            0.157528
+          ],
+          "cold_s": 0.152063,
+          "warm_median_s": 0.175433,
+          "median_s": 0.157528,
+          "min_s": 0.152063,
+          "max_s": 0.193337
+        },
+        "paths_per_sec_median": 63480.8,
+        "var_95": 0.09580672,
+        "cvar_95": 0.12090487,
+        "loss_prob": 0.5619,
+        "mean_terminal": 0.99062885
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "moving_block_bootstrap",
+        "scenario": "1asset_168h",
+        "n_paths": 10000,
+        "n_steps": 168,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.092647,
+            0.099609,
+            0.112123
+          ],
+          "cold_s": 0.092647,
+          "warm_median_s": 0.105866,
+          "median_s": 0.099609,
+          "min_s": 0.092647,
+          "max_s": 0.112123
+        },
+        "paths_per_sec_median": 100392.5,
+        "var_95": 0.09548535,
+        "cvar_95": 0.11956106,
+        "loss_prob": 0.5709,
+        "mean_terminal": 0.99062735
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 64,
+        "n_steps": 252,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.004073,
+            0.003846,
+            0.012985
+          ],
+          "cold_s": 0.004073,
+          "warm_median_s": 0.008415,
+          "median_s": 0.004073,
+          "min_s": 0.003846,
+          "max_s": 0.012985
+        },
+        "paths_per_sec_median": 15713.2,
+        "var_95": 0.1594225,
+        "cvar_95": 0.22596592,
+        "loss_prob": 0.421875,
+        "mean_terminal": 1.05402175,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.003918,
+            0.003781,
+            0.012492
+          ],
+          "cold_s": 0.003918,
+          "warm_median_s": 0.008136,
+          "median_s": 0.003918,
+          "min_s": 0.003781,
+          "max_s": 0.012492
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 256,
+        "n_steps": 252,
+        "batch_size": 256,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.031832,
+            0.038787,
+            0.026088
+          ],
+          "cold_s": 0.031832,
+          "warm_median_s": 0.032438,
+          "median_s": 0.031832,
+          "min_s": 0.026088,
+          "max_s": 0.038787
+        },
+        "paths_per_sec_median": 8042.2,
+        "var_95": 0.21660954,
+        "cvar_95": 0.25706695,
+        "loss_prob": 0.378906,
+        "mean_terminal": 1.06131069,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.019451,
+            0.004958,
+            0.015638
+          ],
+          "cold_s": 0.019451,
+          "warm_median_s": 0.010298,
+          "median_s": 0.015638,
+          "min_s": 0.004958,
+          "max_s": 0.019451
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 1024,
+        "n_steps": 252,
+        "batch_size": 1024,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.09207,
+            0.124746,
+            0.10347
+          ],
+          "cold_s": 0.09207,
+          "warm_median_s": 0.114108,
+          "median_s": 0.10347,
+          "min_s": 0.09207,
+          "max_s": 0.124746
+        },
+        "paths_per_sec_median": 9896.6,
+        "var_95": 0.19522691,
+        "cvar_95": 0.24768341,
+        "loss_prob": 0.423828,
+        "mean_terminal": 1.04949884,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.01974,
+            0.028226,
+            0.021025
+          ],
+          "cold_s": 0.01974,
+          "warm_median_s": 0.024625,
+          "median_s": 0.021025,
+          "min_s": 0.01974,
+          "max_s": 0.028226
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 1024,
+        "n_steps": 252,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.087267,
+            0.061231,
+            0.144451
+          ],
+          "cold_s": 0.087267,
+          "warm_median_s": 0.102841,
+          "median_s": 0.087267,
+          "min_s": 0.061231,
+          "max_s": 0.144451
+        },
+        "paths_per_sec_median": 11734.1,
+        "var_95": 0.20875942,
+        "cvar_95": 0.26185134,
+        "loss_prob": 0.389648,
+        "mean_terminal": 1.04905728
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 4096,
+        "n_steps": 252,
+        "batch_size": 4096,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.460964,
+            0.446139,
+            0.483309
+          ],
+          "cold_s": 0.460964,
+          "warm_median_s": 0.464724,
+          "median_s": 0.460964,
+          "min_s": 0.446139,
+          "max_s": 0.483309
+        },
+        "paths_per_sec_median": 8885.7,
+        "var_95": 0.19882026,
+        "cvar_95": 0.25003781,
+        "loss_prob": 0.412842,
+        "mean_terminal": 1.04993628,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.080404,
+            0.094531,
+            0.084765
+          ],
+          "cold_s": 0.080404,
+          "warm_median_s": 0.089648,
+          "median_s": 0.084765,
+          "min_s": 0.080404,
+          "max_s": 0.094531
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 4096,
+        "n_steps": 252,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.165682,
+            0.264513,
+            0.388921
+          ],
+          "cold_s": 0.165682,
+          "warm_median_s": 0.326717,
+          "median_s": 0.264513,
+          "min_s": 0.165682,
+          "max_s": 0.388921
+        },
+        "paths_per_sec_median": 15485.1,
+        "var_95": 0.20721315,
+        "cvar_95": 0.25925786,
+        "loss_prob": 0.403809,
+        "mean_terminal": 1.05001556
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 10000,
+        "n_steps": 252,
+        "batch_size": 4096,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            1.022203,
+            0.716106,
+            0.932563
+          ],
+          "cold_s": 1.022203,
+          "warm_median_s": 0.824334,
+          "median_s": 0.932563,
+          "min_s": 0.716106,
+          "max_s": 1.022203
+        },
+        "paths_per_sec_median": 10723.1,
+        "var_95": 0.19788073,
+        "cvar_95": 0.24850634,
+        "loss_prob": 0.4107,
+        "mean_terminal": 1.0495222,
+        "summarize_paths_499boot": {
+          "all_runs_s": [
+            0.324338,
+            0.246376,
+            0.154283
+          ],
+          "cold_s": 0.324338,
+          "warm_median_s": 0.20033,
+          "median_s": 0.246376,
+          "min_s": 0.154283,
+          "max_s": 0.324338
+        }
+      },
+      {
+        "backend": "numpy-cpu",
+        "model": "gbm",
+        "scenario": "5asset_252d",
+        "n_paths": 10000,
+        "n_steps": 252,
+        "batch_size": 64,
+        "save_full_paths": false,
+        "generation": {
+          "all_runs_s": [
+            0.796504,
+            0.724627,
+            0.836118
+          ],
+          "cold_s": 0.796504,
+          "warm_median_s": 0.780373,
+          "median_s": 0.796504,
+          "min_s": 0.724627,
+          "max_s": 0.836118
+        },
+        "paths_per_sec_median": 12554.9,
+        "var_95": 0.2047134,
+        "cvar_95": 0.25408237,
+        "loss_prob": 0.4052,
+        "mean_terminal": 1.04994623
+      }
+    ],
+    "gpu_probe_and_execution": {
+      "hardware": {
+        "nvidia_smi_available": true,
+        "name": "NVIDIA GeForce RTX 2070",
+        "memory_total_mb": 8192,
+        "memory_free_mb": 6409,
+        "driver_version": "617.42",
+        "utilization_gpu_pct": 3,
+        "cupy_probe": {
+          "available": false,
+          "reason": "runtime cupy unavailable: No module named 'cupy'",
+          "version": null,
+          "driver_visible": null,
+          "runtime_available": false
+        }
+      },
+      "executed": false,
+      "unavailable_reason": "compute.device=gpu: cupy-cuda: runtime cupy unavailable: No module named 'cupy'"
+    }
+  },
+  "total_benchmark_wall_s": 17.562
+}

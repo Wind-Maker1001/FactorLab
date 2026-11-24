@@ -76,15 +76,26 @@ def tail_statistics(losses, confidences=(.95, .99), *, coverage=.95,
     estimates = np.empty((resamples, len(confidences)))
     # Bound temporary index/value arrays, independently of the simulation batch plan.
     chunk = max(1, min(32, 262144 // n))
+    max_needed = min(n, max(int(np.floor((1 - c) * n)) + 1 for c in confidences))
+    use_partition = max_needed < n
+    kth = n - max_needed
     for begin in range(0, resamples, chunk):
         count = min(chunk, resamples-begin)
-        descending = np.sort(losses[rng.randint(0, n, size=(count, n))], axis=1)[:, ::-1]
+        sample = losses[rng.randint(0, n, size=(count, n))]
+        if use_partition:
+            top = np.partition(sample, kth, axis=1)[:, kth:]
+            descending = np.sort(top, axis=1)[:, ::-1]
+        else:
+            descending = np.sort(sample, axis=1)[:, ::-1]
         for j, c in enumerate(confidences):
             mass = (1-c)*n
             whole = int(np.floor(mass))
             fraction = mass-whole
-            estimates[begin:begin+count, j] = (descending[:, :whole].sum(axis=1)
-                + fraction*descending[:, whole]) / mass
+            if fraction:
+                estimates[begin:begin+count, j] = (descending[:, :whole].sum(axis=1)
+                    + fraction*descending[:, whole]) / mass
+            else:
+                estimates[begin:begin+count, j] = descending[:, :whole].sum(axis=1) / mass
     results = {}
     for j, c in enumerate(confidences):
         var, cvar = _loss_tail(losses, c)

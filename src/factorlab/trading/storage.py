@@ -19,17 +19,45 @@ _TYPES = {c.__name__: c for c in (
     contracts.Position, Instrument, PaperState, Quote, OrderRecord,
 )}
 _ENUMS = {c.__name__: c for c in (contracts.Market, contracts.Side, contracts.OrderType, contracts.OrderStatus)}
+_PRIMITIVE_TYPES = frozenset((str, int, float, bool, type(None)))
+_DATACLASS_FIELD_CACHE: dict[type, tuple[str, tuple[str, ...]] | None] = {}
+for _cls in _TYPES.values():
+    _DATACLASS_FIELD_CACHE[_cls] = (_cls.__name__, tuple(f.name for f in fields(_cls)))
+
+
+def _dataclass_meta(cls):
+    meta = _DATACLASS_FIELD_CACHE.get(cls, False)
+    if meta is False:
+        if is_dataclass(cls):
+            meta = (cls.__name__, tuple(f.name for f in fields(cls)))
+        else:
+            meta = None
+        _DATACLASS_FIELD_CACHE[cls] = meta
+    return meta
 
 
 def encode(value):
+    t = type(value)
+    if t in _PRIMITIVE_TYPES:
+        return value
+    if t is Decimal:
+        return {"decimal": str(value)}
+    if t is datetime:
+        return {"utc": value.isoformat()}
+    if t is dict:
+        return {"map": [[k, encode(v)] for k, v in value.items()]}
+    if t is list or t is tuple:
+        return [encode(v) for v in value]
     if isinstance(value, Enum):
-        return {"enum": type(value).__name__, "value": value.value}
+        return {"enum": t.__name__, "value": value.value}
     if isinstance(value, Decimal):
         return {"decimal": str(value)}
     if isinstance(value, datetime):
         return {"utc": value.isoformat()}
-    if is_dataclass(value):
-        return {"type": type(value).__name__, "fields": {f.name: encode(getattr(value, f.name)) for f in fields(value)}}
+    meta = _dataclass_meta(t)
+    if meta is not None:
+        name, field_names = meta
+        return {"type": name, "fields": {fname: encode(getattr(value, fname)) for fname in field_names}}
     if isinstance(value, dict):
         return {"map": [[k, encode(v)] for k, v in value.items()]}
     if isinstance(value, (tuple, list)):
@@ -38,25 +66,91 @@ def encode(value):
 
 
 def decode(value):
-    if isinstance(value, list):
+    t = type(value)
+    if t is dict:
+        n = len(value)
+        if n == 1:
+            if "decimal" in value:
+                return Decimal(value["decimal"])
+            if "utc" in value:
+                return datetime.fromisoformat(value["utc"])
+            if "map" in value:
+                return {k: decode(v) for k, v in value["map"]}
+        elif n == 2:
+            if "type" in value and "fields" in value:
+                return _TYPES[value["type"]](**{k: decode(v) for k, v in value["fields"].items()})
+            if "enum" in value and "value" in value:
+                return _ENUMS[value["enum"]](value["value"])
+        if "map" in value:
+            return {k: decode(v) for k, v in value["map"]}
+        if "enum" in value:
+            return _ENUMS[value["enum"]](value["value"])
+        if "decimal" in value:
+            return Decimal(value["decimal"])
+        if "utc" in value:
+            return datetime.fromisoformat(value["utc"])
+        if "type" in value:
+            return _TYPES[value["type"]](**{k: decode(v) for k, v in value["fields"].items()})
+        return {k: decode(v) for k, v in value.items()}
+    if t is list:
         return [decode(v) for v in value]
-    if not isinstance(value, dict):
+    return value
+
+
+def _clone_runtime(value):
+    """Fast copy for PaperState.runtime containers while sharing immutable values."""
+    t = type(value)
+    if t in _PRIMITIVE_TYPES or t is Decimal or t is datetime or isinstance(value, Enum):
         return value
-    if "map" in value:
-        return {k: decode(v) for k, v in value["map"]}
-    if "enum" in value:
-        return _ENUMS[value["enum"]](value["value"])
-    if "decimal" in value:
-        return Decimal(value["decimal"])
-    if "utc" in value:
-        return datetime.fromisoformat(value["utc"])
-    if "type" in value:
-        return _TYPES[value["type"]](**{k: decode(v) for k, v in value["fields"].items()})
-    return {k: decode(v) for k, v in value.items()}
+    if t is dict:
+        return {k: _clone_runtime(v) for k, v in value.items()}
+    if t is list:
+        return [_clone_runtime(v) for v in value]
+    if t is tuple:
+        return tuple(_clone_runtime(v) for v in value)
+    if t is set:
+        return {_clone_runtime(v) for v in value}
+    if t in (contracts.OrderIntent, contracts.OrderEvent, contracts.OrderSnapshot,
+             contracts.Position, Instrument, Quote, OrderRecord):
+        return value
+    if t is contracts.FundingEvent:
+        if not value.metadata:
+            return value
+        return contracts.FundingEvent(
+            value.account_id, value.tran_id, value.symbol, value.asset, value.income_type,
+            value.amount, value.event_time, value.source, value.event_id, dict(value.metadata),
+        )
+    from copy import deepcopy
+    return deepcopy(value)
+
+
+def _clone_paper_state(state: PaperState) -> PaperState:
+    """Create an isolated PaperState copy without recursing into immutable records."""
+    return PaperState(
+        market=state.market,
+        account_id=state.account_id,
+        instruments=dict(state.instruments),
+        cash=dict(state.cash),
+        fee_rate=state.fee_rate,
+        orders=dict(state.orders),
+        positions=dict(state.positions),
+        quotes=dict(state.quotes),
+        confirmations=dict(state.confirmations),
+        submissions=list(state.submissions),
+        reconciled=state.reconciled,
+        kill_switch=state.kill_switch,
+        sequence=state.sequence,
+        runtime=_clone_runtime(state.runtime),
+        funding=dict(state.funding),
+        funding_events=dict(state.funding_events),
+    )
+
+
+_ENCODER = json.JSONEncoder(sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def dumps(value):
-    return json.dumps(encode(value), sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return _ENCODER.encode(encode(value))
 
 
 class PaperStore:
@@ -83,6 +177,11 @@ class PaperStore:
         self.transaction_count = 0
         self.last_transaction = None
         self.last_transaction_times = None
+        self._cached_payload = None
+        self._cached_state = None
+        self._encoded_orders_json = {}
+        self._encoded_confirmations_json = {}
+        self._encoded_funding_json = {}
         self.db = sqlite3.connect(path, isolation_level=None)
         if research_wal:
             self.db.execute("PRAGMA journal_mode=WAL")
@@ -112,11 +211,76 @@ class PaperStore:
                 self.commit_count += 1
         except BaseException:
             self.db.execute("ROLLBACK")
+            self._cached_payload = None
+            self._cached_state = None
             raise
         finally:
             self.transaction_count += 1
             self.last_transaction = time.perf_counter() - started
             self.last_transaction_times = (started_at, datetime.now(timezone.utc))
+
+    def _dumps_paper_state(self, state):
+        if type(state) is not PaperState:
+            return dumps(state)
+        enc = _ENCODER.encode
+
+        ord_cache = self._encoded_orders_json
+        order_parts = []
+        for k, v in state.orders.items():
+            cached = ord_cache.get(k)
+            if cached is not None and cached[0] is v and type(v) is OrderRecord:
+                order_parts.append(cached[1])
+            else:
+                frag = "[" + enc(k) + "," + enc(encode(v)) + "]"
+                if type(v) is OrderRecord:
+                    ord_cache[k] = (v, frag)
+                order_parts.append(frag)
+
+        conf_cache = self._encoded_confirmations_json
+        conf_parts = []
+        for k, v in state.confirmations.items():
+            cached = conf_cache.get(k)
+            if cached is not None and cached[0] is v and type(v) is contracts.OrderEvent:
+                conf_parts.append(cached[1])
+            else:
+                frag = "[" + enc(k) + "," + enc(encode(v)) + "]"
+                if type(v) is contracts.OrderEvent:
+                    conf_cache[k] = (v, frag)
+                conf_parts.append(frag)
+
+        fund_cache = self._encoded_funding_json
+        fund_parts = []
+        for k, v in state.funding_events.items():
+            cached = fund_cache.get(k)
+            if cached is not None and cached[0] is v and type(v) is contracts.FundingEvent:
+                fund_parts.append(cached[1])
+            else:
+                frag = "[" + enc(k) + "," + enc(encode(v)) + "]"
+                if type(v) is contracts.FundingEvent:
+                    fund_cache[k] = (v, frag)
+                fund_parts.append(frag)
+
+        # Keys in strictly alphabetical order to match sort_keys=True byte-for-byte.
+        return (
+            '{"fields":{'
+            '"account_id":' + enc(encode(state.account_id)) + ','
+            '"cash":' + enc(encode(state.cash)) + ','
+            '"confirmations":{"map":[' + ",".join(conf_parts) + ']},'
+            '"fee_rate":' + enc(encode(state.fee_rate)) + ','
+            '"funding":' + enc(encode(state.funding)) + ','
+            '"funding_events":{"map":[' + ",".join(fund_parts) + ']},'
+            '"instruments":' + enc(encode(state.instruments)) + ','
+            '"kill_switch":' + enc(encode(state.kill_switch)) + ','
+            '"market":' + enc(encode(state.market)) + ','
+            '"orders":{"map":[' + ",".join(order_parts) + ']},'
+            '"positions":' + enc(encode(state.positions)) + ','
+            '"quotes":' + enc(encode(state.quotes)) + ','
+            '"reconciled":' + enc(encode(state.reconciled)) + ','
+            '"runtime":' + enc(encode(state.runtime)) + ','
+            '"sequence":' + enc(encode(state.sequence)) + ','
+            '"submissions":' + enc(encode(state.submissions)) +
+            '},"type":"PaperState"}'
+        )
 
     def load(self):
         row = self.db.execute("SELECT version,payload FROM snapshot WHERE id=1").fetchone()
@@ -124,16 +288,29 @@ class PaperStore:
             return None
         if row[0] != contracts.CONTRACT_VERSION:
             raise ValueError("unsupported persisted contract version")
-        return decode(json.loads(row[1]))
+        payload = row[1]
+        if self._cached_state is not None and payload == self._cached_payload:
+            return _clone_paper_state(self._cached_state)
+        loaded = decode(json.loads(payload))
+        if type(loaded) is PaperState:
+            self._cached_payload = payload
+            self._cached_state = _clone_paper_state(loaded)
+        return loaded
 
     def save(self, state):
         if self.max_orders is not None and len(state.orders) > self.max_orders:
             raise ValueError("paper order storage budget exhausted")
-        payload = dumps(state)
+        payload = self._dumps_paper_state(state)
         if not self.continuous_capacity and len(payload.encode("utf-8")) > 32 * 1024 * 1024:
             raise ValueError("paper snapshot storage budget exhausted")
         self.db.execute("INSERT INTO snapshot VALUES(1,?,?) ON CONFLICT(id) DO UPDATE SET version=excluded.version,payload=excluded.payload",
                         (contracts.CONTRACT_VERSION, payload))
+        if type(state) is PaperState:
+            self._cached_payload = payload
+            self._cached_state = _clone_paper_state(state)
+        else:
+            self._cached_payload = None
+            self._cached_state = None
 
     def record_event(self, event):
         if isinstance(event, contracts.FundingEvent):

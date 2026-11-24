@@ -1,0 +1,68 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-24T17:22:35.418701+00:00",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "python_version": "3.13.9",
+    "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "cpu_physical_cores": 20,
+    "cpu_logical_processors": 28,
+    "ram_total_gb": 63.82,
+    "ram_available_gb": 27.75,
+    "numpy_version": "2.3.4",
+    "pandas_version": "2.3.3",
+    "gpu": {
+      "nvidia_smi_available": true,
+      "name": "NVIDIA GeForce RTX 2070",
+      "memory_total_mb": 8192,
+      "memory_free_mb": 6162,
+      "driver_version": "617.42",
+      "utilization_gpu_pct": 3,
+      "cupy_probe": {
+        "available": false,
+        "reason": "runtime cupy unavailable: No module named 'cupy'",
+        "version": null,
+        "driver_visible": null,
+        "runtime_available": false
+      }
+    },
+    "git_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+    "git_dirty": true,
+    "blas_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "suite": "scale_1024",
+  "scale_1024": {
+    "suite": "SCALE-1024",
+    "n_paths": 1024,
+    "horizon_hours": 168,
+    "workers": 16,
+    "generation_s": 0.037022,
+    "execution_s": 65.2626,
+    "statistics_s": 0.015338,
+    "total_s": 65.315,
+    "paths_per_sec": 15.68,
+    "projected_4096_paths_s": 261.3,
+    "projected_10000_paths_s": 637.8,
+    "semantics": {
+      "accounts": 1024,
+      "all_zero_fifo_residual": true,
+      "sum_net_pnl_usdt": -62.85139499,
+      "sum_fees_usdt": 33.86653354,
+      "sum_slippage_usdt": 22.57768848,
+      "sum_funding_usdt": -2.38213687,
+      "total_orders": 34110,
+      "total_fills": 21248,
+      "total_grid_cycles": 0,
+      "total_rotations": 24102,
+      "mean_max_dd": 0.00883117,
+      "var_95": 0.0121419,
+      "cvar_95": 0.01855361,
+      "loss_prob": 1.0
+    }
+  },
+  "total_benchmark_wall_s": 66.255
+}
