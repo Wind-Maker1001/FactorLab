@@ -165,7 +165,7 @@ class GridConsumer:
         self._refresh_reason(desired, allowed)
 
     def _rotation_allowed(self):
-        return (self.control.desired() == 'RUNNING'
+        return (self.control.desired() == 'RUNNING' and self.authority()
                 and (self.supervisor is None or not self.supervisor.stopped.is_set()))
 
     def require_fresh_bar(self):
@@ -545,7 +545,8 @@ class GridSupervisorRuntime:
                     return True
                 current = consumer.bridge
                 campaign = self.runtime.active_campaign()
-                if (campaign is None or campaign['smoke'] or self._effective_desired() != 'RUNNING'
+                if (not self.runtime.global_trading_capacity()
+                        or campaign is None or campaign['smoke'] or self._effective_desired() != 'RUNNING'
                         or self.runtime.post_count(campaign['id']) >= campaign['orders']
                         or current.session.receipt_error or current.session.write_uncertain):
                     return False
