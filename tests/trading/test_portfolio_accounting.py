@@ -24,7 +24,8 @@ def event(key, identity, quantity, price, fee="0"):
                       D(quantity), D(price) if price else None, NOW, "broker", identity, D(fee))
 
 
-def report(*, orders=(), events=(), owned=None, quantity="10", adjustments=(), targets=None):
+def report(*, orders=(), events=(), owned=None, quantity="10", adjustments=(), targets=None,
+           corporate_actions=()):
     return build_portfolio_report(
         starting_inventory=owned or {}, intents=orders, events=events,
         reference_prices={order.client_order_id: D("100") for order in orders},
@@ -33,8 +34,52 @@ def report(*, orders=(), events=(), owned=None, quantity="10", adjustments=(), t
             (Position("TQQQ", D(quantity), D("999"), D("999"), "USD"),), (), NOW),
         prices={"TQQQ": D("120"), "OTHER": D("1")}, official_equity=D("2000"),
         target_weights=targets or {"TQQQ": D("0.7")}, adjustments=adjustments,
-        economic_multipliers={"TQQQ": D("3")},
+        economic_multipliers={"TQQQ": D("3")}, corporate_actions=corporate_actions,
     )
+
+
+@pytest.mark.parametrize('ratio,sell_qty,sell_price,remaining,pnl', [
+    ('2', '4', '60', '16', '40'), ('.5', '1', '220', '4', '20'),
+])
+def test_split_between_historical_buy_and_new_sell_replays_cost_basis(ratio, sell_qty, sell_price, remaining, pnl):
+    buy, sell = intent('buy', Side.BUY), intent('sell', Side.SELL, sell_qty)
+    bought = event('buy', 'buy-filled', '10', '100')
+    action = dict(id='official-split', after_event_id='buy-filled', symbol='TQQQ',
+                  quantity_ratio=D(ratio), basis_ratio=D(1), cash_flow=D(0))
+    result = report(orders=(buy, sell), events=(bought, bought,
+        event('sell', 'sell-filled', sell_qty, sell_price)), quantity=remaining,
+        corporate_actions=(action,))
+    assert result.positions[0].owned_quantity == D(remaining)
+    assert result.positions[0].owned_cost_basis == D(800)
+    assert result.realized_pnl == D(pnl)
+    assert result.fills[0].quantity == D(10)
+    assert result.fills[0].price == D(100)
+
+
+def test_dividend_cash_and_same_boundary_split_do_not_double_change_shares_or_nav():
+    actions = (
+        dict(id='split', after_event_id=None, symbol='TQQQ', quantity_ratio=D(2),
+             basis_ratio=D(1), cash_flow=D(0)),
+        dict(id='dividend-payment', after_event_id=None, symbol='TQQQ', quantity_ratio=D(1),
+             basis_ratio=D(1), cash_flow=D('2.50')),
+    )
+    result = report(owned={'TQQQ': OwnedPosition(D(5), D(500))}, quantity='10',
+                    corporate_actions=actions)
+    assert result.positions[0].owned_quantity == D(10)
+    assert result.positions[0].owned_cost_basis == D(500)
+    assert result.corporate_cash_flow == D('2.50')
+    assert result.economic_nav == result.official_equity
+    assert result.official_cash == D(500)
+
+
+def test_corporate_action_replay_requires_unique_identity_and_known_boundary():
+    action = dict(id='split', after_event_id='missing-fill', symbol='TQQQ',
+                  quantity_ratio=D(2), basis_ratio=D(1), cash_flow=D(0))
+    with pytest.raises(ValueError, match='confirmation boundary'):
+        report(corporate_actions=(action,))
+    action['after_event_id'] = None
+    with pytest.raises(ValueError, match='duplicate corporate action'):
+        report(corporate_actions=(action, action))
 
 
 def test_cumulative_deltas_average_basis_fees_slippage_and_turnover():

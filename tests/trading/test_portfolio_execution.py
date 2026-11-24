@@ -104,6 +104,259 @@ def run(executor, identity, prices=None, rules=None, **kwargs):
         rules=rules or {s: InstrumentRules(D('.001'), D(1)) for s in SYMBOLS}, now=NOW, **kwargs)
 
 
+def test_corporate_split_is_atomic_replayable_and_idempotent_after_store_reopen(setup, tmp_path):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
+    assert run(executor, identity).phase == 'INCREASE'
+    assert run(executor, identity).phase == 'COMPLETE'
+    original = broker.positions['AAPL']
+    broker.positions['AAPL'] *= 2
+    args = dict(account_id='paper', strategy_id='test', event_id='official-split',
+                symbol='AAPL', quantity_ratio=D(2), basis_ratio=D(1), cash_flow=D(0),
+                evidence={'announcement': 'official-id', 'activity': 'SSP-id'})
+    executor.record_corporate_action(**args)
+    assert D(store.db.execute('SELECT quantity FROM portfolio_claims').fetchone()[0]) == original * 2
+    posts = len(broker.posts)
+    reopened = PortfolioStore(tmp_path / 'portfolio.sqlite')
+    resumed = PortfolioExecutor(broker, reopened, clock=lambda: NOW)
+    resumed.record_corporate_action(**args)
+    report = resumed.report(identity, official_equity=D(100))
+    assert report.positions[0].owned_quantity == original * 2
+    assert report.positions[0].owned_cost_basis == sum(
+        order.quantity * order.limit_price for order in broker.posts)
+    assert len(broker.posts) == posts
+    with pytest.raises(ValueError, match='identity changed'):
+        resumed.record_corporate_action(**dict(args, quantity_ratio=D(3)))
+    reopened.close()
+
+
+def test_split_blocks_unsubmitted_pre_action_intent_after_restart(setup, tmp_path):
+    broker, store, executor = setup
+    broker.positions['AAPL'] = D(5)
+    identity = create(executor, {'AAPL': D('.7')}, symbols=('AAPL',),
+                      initial={'AAPL': (D(5), D(10))}, quantity_deltas={'AAPL': D(2)})
+    broker.positions['AAPL'] = D(10)
+    executor.record_corporate_action(account_id='paper', strategy_id='test',
+        event_id='split-before-first-post', symbol='AAPL', quantity_ratio=D(2),
+        basis_ratio=D(1), cash_flow=D(0), evidence={'activity': 'official-SSP'},
+        effective_at=NOW + timedelta(hours=1))
+    reopened = PortfolioStore(tmp_path / 'portfolio.sqlite')
+    resumed = PortfolioExecutor(broker, reopened, clock=lambda: NOW)
+    result = run(resumed, identity)
+    assert result.phase == 'WAITING'
+    assert result.reasons['corporate_action'] == 'FROZEN_INTENT_REQUIRES_ACTION_RECONCILIATION'
+    assert reopened.plan(identity)['request']['quantity_deltas'] == {'AAPL': D(2)}
+    assert broker.posts == []
+    reopened.close()
+
+
+@pytest.mark.parametrize('timed', [True, False])
+def test_spinoff_retains_child_inventory_and_allocates_official_cost_basis(setup, timed):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
+    run(executor, identity)
+    run(executor, identity)
+    broker.positions['CHILD'] = D(1)
+    action = dict(id='official-spin', symbol='AAPL', quantity_ratio=D(1),
+                  basis_ratio=D('.8'), cash_flow=D(0),
+                  effective_at=NOW + timedelta(hours=1),
+                  allocations=[dict(symbol='CHILD', quantity=D(1), basis_fraction=D('.2'))],
+                  evidence={'activity': 'official-SSO', 'cost_allocation': 'official-statement'})
+    if not timed:
+        action.pop('effective_at')
+    args = dict(account_id='paper', strategy_id='test', actions=[action])
+    executor.record_corporate_actions(**args)
+    executor.record_corporate_actions(**args)
+    report = executor.report(identity, official_equity=D(110))
+    rows = {row.instrument_id: row for row in report.positions}
+    assert rows['AAPL'].owned_quantity == D(5)
+    assert rows['AAPL'].owned_cost_basis == D(40)
+    assert rows['CHILD'].owned_quantity == D(1)
+    assert rows['CHILD'].owned_cost_basis == D(10)
+    assert store.plan(identity)['request']['owned'] == ['AAPL']
+    dividend = dict(id='post-spin-dividend', symbol='AAPL', quantity_ratio=D(1),
+                    basis_ratio=D(1), cash_flow=D('.5'),
+                    effective_at=NOW + timedelta(hours=2), evidence={'activity': 'official-DIV'})
+    if not timed:
+        dividend.pop('effective_at')
+    executor.record_corporate_actions(account_id='paper', strategy_id='test', actions=[dividend])
+    broker.positions['CHILD'] = D(2)
+    child_split = dict(id='child-split', symbol='CHILD', quantity_ratio=D(2),
+                       basis_ratio=D(1), cash_flow=D(0),
+                       effective_at=NOW + timedelta(hours=3), evidence={'activity': 'official-SSP-child'})
+    if not timed:
+        child_split.pop('effective_at')
+    executor.record_corporate_actions(account_id='paper', strategy_id='test', actions=[child_split])
+    report = executor.report(identity, official_equity=D(110))
+    rows = {row.instrument_id: row for row in report.positions}
+    assert rows['CHILD'].owned_quantity == D(2)
+    assert rows['CHILD'].owned_cost_basis == D(10)
+    assert rows['AAPL'].owned_cost_basis == D(40)
+    assert report.corporate_cash_flow == D('.5')
+    assert len(broker.posts) == 1
+
+
+@pytest.mark.parametrize('timed_first', [True, False])
+def test_unrelated_timed_and_anchored_actions_remain_reportable(setup, timed_first):
+    broker, store, executor = setup
+    identity = create(executor, symbols=('AAPL', 'QQQ'))
+    run(executor, identity)
+    run(executor, identity)
+    anchored = dict(id='anchored-aapl', symbol='AAPL', quantity_ratio=D(2),
+                    basis_ratio=D(1), cash_flow=D(0), evidence={'receipt': 'split'})
+    timed = dict(id='timed-qqq', symbol='QQQ', quantity_ratio=D(1),
+                 basis_ratio=D(1), cash_flow=D('.5'), effective_at=NOW + timedelta(hours=1),
+                 evidence={'receipt': 'dividend'})
+    for action in ([timed, anchored] if timed_first else [anchored, timed]):
+        if action is anchored:
+            broker.positions['AAPL'] *= 2
+        executor.record_corporate_actions(account_id='paper', strategy_id='test', actions=[action])
+    report = executor.report(identity, official_equity=D(150))
+    rows = {row.instrument_id: row for row in report.positions}
+    assert rows['AAPL'].owned_quantity == D(10)
+    assert rows['QQQ'].owned_quantity == D(5)
+    assert rows['AAPL'].owned_cost_basis == rows['QQQ'].owned_cost_basis == D(50)
+    assert report.corporate_cash_flow == D('.5')
+
+
+def test_connected_mixed_chronology_refuses_before_committing(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
+    run(executor, identity)
+    run(executor, identity)
+    executor.record_corporate_action(account_id='paper', strategy_id='test',
+        event_id='timed-dividend', symbol='AAPL', quantity_ratio=D(1), basis_ratio=D(1),
+        cash_flow=D('.5'), effective_at=NOW + timedelta(hours=1), evidence={'receipt': 'dividend'})
+    broker.positions['AAPL'] *= 2
+    with pytest.raises(ValueError, match='cannot mix'):
+        executor.record_corporate_action(account_id='paper', strategy_id='test',
+            event_id='ambiguous-split', symbol='AAPL', quantity_ratio=D(2), basis_ratio=D(1),
+            cash_flow=D(0), evidence={'receipt': 'split'})
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 1
+    assert D(store.db.execute('SELECT quantity FROM portfolio_claims').fetchone()[0]) == D(5)
+
+
+def test_late_split_replays_before_post_effective_fill(setup):
+    broker, store, executor = setup
+    first = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
+    run(executor, first)
+    run(executor, first)
+    confirm = broker.confirm
+
+    def later_confirmation(*args):
+        event = replace(confirm(*args), event_time=NOW + timedelta(days=2))
+        broker.events[event.client_order_id] = event
+        return event
+
+    broker.confirm = later_confirmation
+    second = create(executor, {'AAPL': D('.7')}, symbols=('AAPL',),
+                    rebalance_id='post-effective-buy', quantity_deltas={'AAPL': D(2)})
+    run(executor, second)
+    run(executor, second)
+    broker.positions['AAPL'] += D(5)
+    args = dict(account_id='paper', strategy_id='test', event_id='late-official-split',
+                symbol='AAPL', quantity_ratio=D(2), basis_ratio=D(1), cash_flow=D(0),
+                evidence={'activity': 'official-SSP'}, effective_at=NOW + timedelta(days=1))
+    executor.record_corporate_action(**args)
+    executor.record_corporate_action(**args)
+    report = executor.report(second, official_equity=D(150))
+    assert report.positions[0].owned_quantity == D(12)
+    assert report.positions[0].owned_cost_basis == D(70)
+    assert len(broker.posts) == 2
+
+
+def test_same_day_corporate_actions_reconcile_final_quantity_atomically(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
+    run(executor, identity)
+    run(executor, identity)
+    original = broker.positions['AAPL']
+    actions = [dict(id=f'split-{i}', symbol='AAPL', quantity_ratio=D(2),
+                    basis_ratio=D(1), cash_flow=D(0), evidence={'activity': f'SSP-{i}'})
+               for i in range(2)]
+    args = dict(account_id='paper', strategy_id='test', actions=actions)
+    broker.positions['AAPL'] = original * 3
+    with pytest.raises(ValueError, match='official shares'):
+        executor.record_corporate_actions(**args)
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 0
+    broker.positions['AAPL'] = original * 4
+    executor.record_corporate_actions(**args)
+    executor.record_corporate_actions(**args)
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 2
+    report = executor.report(identity, official_equity=D(100))
+    assert report.positions[0].owned_quantity == original * 4
+    assert report.positions[0].owned_cost_basis == D(50)
+    assert len(broker.posts) == 1
+
+
+def test_corporate_split_does_not_block_on_unrelated_pending_order(setup):
+    broker, store, executor = setup
+    submit = broker.submit_order
+
+    def submit_with_pending_qqq(intent):
+        broker.mode = 'pending' if intent.instrument_id == 'QQQ' else 'fill'
+        return submit(intent)
+
+    broker.submit_order = submit_with_pending_qqq
+    identity = create(executor)
+    run(executor, identity)
+    original = broker.positions['AAPL']
+    broker.positions['AAPL'] *= 2
+    executor.record_corporate_action(account_id='paper', strategy_id='test',
+        event_id='aapl-split-with-qqq-pending', symbol='AAPL', quantity_ratio=D(2),
+        basis_ratio=D(1), cash_flow=D(0), evidence={'activity': 'official-SSP'})
+    claim = store.db.execute("SELECT quantity FROM portfolio_claims WHERE symbol='AAPL'").fetchone()
+    assert D(claim[0]) == original * 2
+    assert store.orders(identity)[1]['record'].snapshot.status == S.SUBMITTED
+
+
+def test_corporate_split_mismatched_official_inventory_rolls_back(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D('.5')}, symbols=('AAPL',))
+    assert run(executor, identity).phase == 'INCREASE'
+    assert run(executor, identity).phase == 'COMPLETE'
+    original = broker.positions['AAPL']
+    with pytest.raises(ValueError, match='official shares'):
+        executor.record_corporate_action(account_id='paper', strategy_id='test',
+            event_id='unposted-split', symbol='AAPL', quantity_ratio=D(2),
+            basis_ratio=D(1), cash_flow=D(0), evidence={'announcement': 'official-id'})
+    assert D(store.db.execute('SELECT quantity FROM portfolio_claims').fetchone()[0]) == original
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 0
+
+
+def test_flat_ownership_handover_preserves_historical_tasks(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
+    assert run(executor, identity).phase == 'COMPLETE'
+    executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
+                                    to_strategy='V69_CAUSAL', symbols=('AAPL',))
+    assert store.plan(identity)['phase'] == 'COMPLETE'
+    assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'V69_CAUSAL'
+    assert broker.posts == []
+    executor.create(account_id='paper', strategy_id='V69_CAUSAL', strategy_version='69.2',
+        trading_session='2026-11-30', weights={'AAPL': D(0)}, owned_symbols=('AAPL',), now=NOW)
+
+
+def test_flat_handover_rejects_unfinished_predecessor(setup):
+    _, store, executor = setup
+    create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
+    with pytest.raises(ValueError, match='completed predecessor'):
+        executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
+                                        to_strategy='V69_CAUSAL', symbols=('AAPL',))
+    assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'test'
+
+
+def test_flat_handover_rejects_unclaimed_official_inventory(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
+    run(executor, identity)
+    broker.positions['AAPL'] = D(1)
+    with pytest.raises(ValueError, match='flat official inventory'):
+        executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
+                                        to_strategy='V69_CAUSAL', symbols=('AAPL',))
+    assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'test'
+
+
 def test_public_v69_bridge_executes_frozen_adjusted_shares(setup):
     from factorlab.strategies.v69_alpaca import create_alpaca_plan
 
