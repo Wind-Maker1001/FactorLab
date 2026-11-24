@@ -293,7 +293,7 @@ class AlpacaAdapter:
 
     def cancel_order(self, client_order_id):
         row = self._lookup(client_order_id)
-        self._apply(row)
+        self._apply(row, emit=False)
         if order_status(row) not in TERMINAL:
             with self.store.transaction():
                 self.store.uncertain(client_order_id)
@@ -304,7 +304,7 @@ class AlpacaAdapter:
                 if error.status not in {404, 422}:
                     raise
             return self.query_order(client_order_id)
-        return self._event(row, row)
+        return self._apply(row, activities=())
 
     def read_activities(self):
         rows, token = [], None
