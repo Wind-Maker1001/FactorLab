@@ -250,6 +250,38 @@ class PortfolioExecutor:
                 (identity, account_id, strategy_id, trading_session, dumps(plan)))
         return identity
 
+    def transfer_flat_ownership(self, *, account_id, from_strategy, to_strategy, symbols):
+        """Transfer explicitly selected flat sleeves after predecessor tasks settle."""
+        symbols = tuple(symbols)
+        with self.store.transaction():
+            self._recover_account(account_id)
+            account = self.adapter.read_account()
+            if not account.reconciled or self._account_uncertain(account_id):
+                raise ValueError('ownership transfer requires a reconciled account')
+            plans = self.store.db.execute(
+                'SELECT payload FROM portfolio_plans WHERE account=? AND strategy=?',
+                (account_id, from_strategy)).fetchall()
+            if any(decode(json.loads(payload))['phase'] != 'COMPLETE' for payload, in plans):
+                raise ValueError('ownership transfer requires completed predecessor tasks')
+            for symbol in symbols:
+                claim = self.store.db.execute(
+                    'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=?',
+                    (account_id, symbol)).fetchone()
+                if claim is None or claim[0] not in {from_strategy, to_strategy} or D(claim[1]) != ZERO:
+                    raise ValueError('ownership transfer requires an explicitly owned flat sleeve')
+                if any(p.instrument_id == symbol and p.quantity != ZERO for p in account.positions):
+                    raise ValueError('ownership transfer requires flat official inventory')
+                if any(o.intent.instrument_id == symbol and o.status not in TERMINAL for o in account.open_orders):
+                    raise ValueError('ownership transfer cannot include open broker orders')
+            for symbol in symbols:
+                self.store.db.execute(
+                    'UPDATE portfolio_claims SET strategy=? WHERE account=? AND symbol=?',
+                    (to_strategy, account_id, symbol))
+            identity = 'flat-ownership:' + sha256(dumps(
+                [account_id, from_strategy, to_strategy, sorted(symbols)]).encode()).hexdigest()
+            self.store.record_metadata(identity, dict(symbols=sorted(symbols),
+                previous=from_strategy, owner=to_strategy))
+
     def _accept(self, plan, order, event):
         account = plan['request']['account']
         payload = dumps(event)

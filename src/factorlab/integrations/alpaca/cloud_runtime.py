@@ -99,9 +99,6 @@ class ObservationHTTP(PaperHTTP):
         return super().request(method, path, **kwargs)
 
 
-# TODO(ALP-E03): connect persisted portfolio tasks after the committed runner is
-# available and both account journals have transferred from the previous owner.
-# TODO(V69-F02): use the original strategy entry point; never substitute weights.
 class RuntimeStore:
     def __init__(self, root):
         self.root = root
@@ -231,12 +228,17 @@ class MarketWorker:
 
 
 class Supervisor:
-    def __init__(self, root, config, *, symbols=SYMBOLS, interval=15, revision='unknown'):
+    def __init__(self, root, config, *, symbols=SYMBOLS, interval=15, revision='unknown',
+                 execute_v69=False):
         self.root, self.config, self.symbols = root, config, tuple(symbols)
         self.interval, self.revision = interval, revision
         self.stop = threading.Event()
         self.store = RuntimeStore(root)
-        self.adapter = AlpacaAdapter(ObservationHTTP(config), root / 'account.sqlite3')
+        self.adapter = AlpacaAdapter((PaperHTTP if execute_v69 else ObservationHTTP)(config), root / 'account.sqlite3')
+        self.execution = None
+        if execute_v69:
+            from .cloud_execution import WeeklyExecution
+            self.execution = WeeklyExecution(root, self.adapter, clock=now)
         self.client = MarketDataClient(Credentials(config.key_id, config.secret_key), feed='iex', attempts=1)
         self.market = MarketWorker(config, root, self.symbols, self.stop)
         self.started = now()
@@ -250,9 +252,11 @@ class Supervisor:
         at = now()
         value = dict(self.health, heartbeat=at.isoformat(), started_at=self.started.isoformat(),
                      pid=os.getpid(), starts=self.store.starts, revision=self.revision,
-                     mode='OBSERVE', market=self.market.snapshot(),
-                     strategy={'state': 'WAITING_F02', 'name': 'v69-original', 'frequency': 'natural-week'},
-                     execution={'state': 'WAITING_E03_HANDOVER', 'enabled': False})
+                     mode='EXECUTE' if self.execution else 'OBSERVE', market=self.market.snapshot(),
+                     strategy=self.execution.state if self.execution else
+                         {'state': 'NOT_ENABLED', 'name': 'v69-original', 'frequency': 'natural-week'},
+                     execution=self.execution.execution if self.execution else
+                         {'state': 'WAITING_E03_HANDOVER', 'enabled': False})
         rest = value.get('market_rest')
         market_open = value.get('schedule', {}).get('market_open', False)
         value['market_available'] = bool(rest and not rest['missing_symbols']
@@ -275,7 +279,7 @@ class Supervisor:
             self.health.update(account_recovered=snapshot.reconciled,
                                last_recovery_at=at.isoformat())
             if self.calendar_day != at.date():
-                start, end = at.date() - timedelta(days=40), at.date() + timedelta(days=370)
+                start, end = at.date() - timedelta(days=500), at.date() + timedelta(days=370)
                 self.service = MarketDataService.connect(self.client, None, start=start, end=end)
                 self.calendar_day = at.date()
             window = weekly_window(self.service.calendar, at)
@@ -294,13 +298,22 @@ class Supervisor:
                                             'feed': 'iex', 'clock_open': clock['is_open'],
                                             'fresh_quotes': fresh})
             self.store.event('RECOVERED', {'reconciled': snapshot.reconciled})
-            report = {'observed_at': at.isoformat(), 'source': 'ALPACA_PAPER_OBSERVATION',
+            if self.execution and snapshot.reconciled:
+                from factorlab.trading.control import RiskLimits
+                self.adapter.limits = RiskLimits(facts.equity, facts.equity, facts.equity, 30)
+                self.execution.tick(self.service, window, at, facts)
+                snapshot = self.adapter.recover()
+                facts = self.adapter.read_account_details()
+                self.health['account_recovered'] = snapshot.reconciled
+            report = {'observed_at': at.isoformat(), 'source': 'ALPACA_PAPER_ACCOUNT',
                       'equity': str(facts.equity), 'cash': str(facts.cash),
                       'positions': self.adapter.http.request('GET', '/v2/positions'),
                       'target_weights': None, 'actual_weights': {},
-                      'strategy_state': 'WAITING_F02', 'execution_state': 'WAITING_E03_HANDOVER',
-                      'fills': self.adapter.http.request('GET', '/v2/account/activities/FILL',
-                          params={'date': at.astimezone(NY).date().isoformat()}),
+                      'strategy_state': self.execution.state['state'] if self.execution else 'NOT_ENABLED',
+                      'execution_state': self.execution.execution['state'] if self.execution else 'WAITING_E03_HANDOVER',
+                      'fills': [row for row in self.adapter.store.activities() if
+                          datetime.fromisoformat(row['transaction_time'].replace('Z', '+00:00')).astimezone(NY).date()
+                          == at.astimezone(NY).date()],
                       'schedule': window}
             baseline = self.store.get('equity_baseline')
             if baseline is None:
@@ -311,6 +324,15 @@ class Supervisor:
             from decimal import Decimal
             report['equity_change_since_baseline'] = str(facts.equity - Decimal(baseline['equity']))
             report['strategy_return'] = None
+            if self.execution and self.execution.identity:
+                from dataclasses import asdict
+                plan = self.execution.store.plan(self.execution.identity)
+                accounting = self.execution.runner.report(self.execution.identity)
+                report['target_weights'] = {s: str(w) for s, w in plan['request']['weights'].items()}
+                report['original_v69_task'] = dict(identity=self.execution.identity,
+                    signal_inputs=plan['request']['signal_inputs'], accounting=asdict(accounting))
+                report['execution_ledger_return'] = str(
+                    (accounting.realized_pnl + accounting.unrealized_pnl) / accounting.initial_capital)
             report['actual_weights'] = {p['symbol']: str(Decimal(p['market_value']) / facts.equity)
                                         for p in report['positions']} if facts.equity else {}
             self.store.report(at, report)
@@ -377,6 +399,8 @@ class Supervisor:
             self.health.update(trade_stream='STOPPED', account_recovered=False)
             self.publish()
             self.store.event('STOP', {'pid': os.getpid()})
+            if self.execution:
+                self.execution.close()
             self.adapter.store.db.close()
             self.store.db.close()
 
@@ -396,6 +420,8 @@ def main(argv=None):
     parser.add_argument('--state-root', default='/var/lib/factorlab-alpaca-paper')
     parser.add_argument('--credential-file', default=os.environ.get('FACTORLAB_ALPACA_SECRET_FILE'))
     parser.add_argument('--revision', default='unknown')
+    parser.add_argument('--execute-v69', action='store_true',
+                        default=os.environ.get('FACTORLAB_ALPACA_EXECUTE_V69') == '1')
     parser.add_argument('--symbols', default=','.join(SYMBOLS))
     args = parser.parse_args(argv)
     if args.action == 'acceptance' and args.phase is None:
@@ -420,7 +446,8 @@ def main(argv=None):
                                         campaign='ALP-E04 CLOUD TEST')
                 print(json.dumps(result), flush=True)
                 return 0
-            runtime = Supervisor(root, config, symbols=args.symbols.split(','), revision=args.revision)
+            runtime = Supervisor(root, config, symbols=args.symbols.split(','), revision=args.revision,
+                                 execute_v69=args.execute_v69)
             for signum in (signal.SIGTERM, signal.SIGINT):
                 signal.signal(signum, lambda *_: runtime.stop.set())
             runtime.run()

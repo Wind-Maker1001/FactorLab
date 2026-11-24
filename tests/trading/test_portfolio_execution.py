@@ -104,6 +104,39 @@ def run(executor, identity, prices=None, rules=None, **kwargs):
         rules=rules or {s: InstrumentRules(D('.001'), D(1)) for s in SYMBOLS}, now=NOW, **kwargs)
 
 
+def test_flat_ownership_handover_preserves_historical_tasks(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
+    assert run(executor, identity).phase == 'COMPLETE'
+    executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
+                                    to_strategy='V69_CAUSAL', symbols=('AAPL',))
+    assert store.plan(identity)['phase'] == 'COMPLETE'
+    assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'V69_CAUSAL'
+    assert broker.posts == []
+    executor.create(account_id='paper', strategy_id='V69_CAUSAL', strategy_version='69.2',
+        trading_session='2026-11-30', weights={'AAPL': D(0)}, owned_symbols=('AAPL',), now=NOW)
+
+
+def test_flat_handover_rejects_unfinished_predecessor(setup):
+    _, store, executor = setup
+    create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
+    with pytest.raises(ValueError, match='completed predecessor'):
+        executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
+                                        to_strategy='V69_CAUSAL', symbols=('AAPL',))
+    assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'test'
+
+
+def test_flat_handover_rejects_unclaimed_official_inventory(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
+    run(executor, identity)
+    broker.positions['AAPL'] = D(1)
+    with pytest.raises(ValueError, match='flat official inventory'):
+        executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
+                                        to_strategy='V69_CAUSAL', symbols=('AAPL',))
+    assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'test'
+
+
 def test_public_v69_bridge_executes_frozen_adjusted_shares(setup):
     from factorlab.strategies.v69_alpaca import create_alpaca_plan
 
