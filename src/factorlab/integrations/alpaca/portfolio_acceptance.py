@@ -64,7 +64,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
                 store.record_metadata(baseline_key, dict(cash=facts.cash, equity=facts.equity,
                     positions={p.instrument_id: p.quantity for p in initial.positions},
                     captured_at=facts.observed_at, process=os.getpid()))
-        if phase == 'recover':
+        if phase in {'recover', 'replay'}:
             active = store.event_payload('ALP-E03 TEST:open-id')
             if active is None:
                 raise ValueError('open phase must be persisted before recovery')
@@ -98,7 +98,8 @@ def run_acceptance(*, state_dir, phase, credentials_file):
             asset = adapter.read_asset(symbol)
             if not asset['tradable'] or not asset['fractionable']:
                 raise ValueError('acceptance requires tradable fractional-share test assets')
-            rule_map[symbol] = InstrumentRules(D('.000000001'), D(1), time_in_force='DAY', price_tick=D('.01'))
+            rule_map[symbol] = InstrumentRules(D('.000000001'), D(1), time_in_force='DAY',
+                price_tick=D('.01'), limit_price_tolerance=D('.001'))
         started = datetime.now(timezone.utc)
         invocations = []
 
@@ -128,7 +129,26 @@ def run_acceptance(*, state_dir, phase, credentials_file):
                 return True
             return False
 
-        trade_updates(adapter, on_update=update)
+        before_orders = tuple(row[0] for row in store.db.execute('SELECT id FROM portfolio_orders ORDER BY id'))
+        before_positions = {p.instrument_id: p.quantity for p in initial.positions}
+        if phase == 'replay':
+            if store.event_payload('ALP-E03 TEST:rotate-complete') is None:
+                raise ValueError('completed rotation required before historical replay')
+            if not update():
+                raise ValueError('historical completed plan did not remain complete')
+            after_orders = tuple(row[0] for row in store.db.execute('SELECT id FROM portfolio_orders ORDER BY id'))
+            after_positions = {p.instrument_id: p.quantity for p in adapter.read_account().positions}
+            if after_orders != before_orders or after_positions != before_positions:
+                raise ValueError('historical replay changed orders or successor holdings')
+        else:
+            from websockets.exceptions import ConnectionClosed
+            try:
+                trade_updates(adapter, on_update=update)
+            except (TimeoutError, ConnectionClosed):
+                # Continue this durable identity using official REST facts after
+                # the stream has reconciled its disconnect boundary.
+                if not update():
+                    raise RuntimeError('REST recovery left original phase pending; resume the same phase and state directory')
         report = runner.report(identity)
         final = adapter.read_account()
         baseline = decode(json.loads(store.event_payload(baseline_key)))
@@ -140,16 +160,36 @@ def run_acceptance(*, state_dir, phase, credentials_file):
             official_positions={p.instrument_id: p.quantity for p in final.positions},
             owned_positions={row.instrument_id: row.owned_quantity for row in report.positions},
             cleaned=(phase == 'cleanup' and all(row.owned_quantity == 0 for row in report.positions)),
-            restored_in_new_process=(phase == 'recover'))
+            restored_in_new_process=(phase in {'recover', 'replay'}),
+            historical_replay_unchanged=(phase == 'replay'),
+            order_count_before=len(before_orders),
+            order_count_after=store.db.execute('SELECT COUNT(*) FROM portfolio_orders').fetchone()[0])
         # Official cash is exposed in cents; fractional fills retain additional
         # precision. Preserve the difference rather than changing either ledger.
         if abs(reconciliation['cash_difference']) > reconciliation['cash_tolerance']:
             raise ValueError('official cash does not reconcile within its one-cent reporting precision')
         if phase == 'cleanup' and not reconciliation['cleaned']:
             raise ValueError('test-owned holdings remain after cleanup')
+        owned = reconciliation['owned_positions']
+        if phase in {'open', 'recover', 'rotate', 'replay'} and not all(owned.get(s, D(0)) > 0 for s in SYMBOLS):
+            raise ValueError('official simultaneous two-instrument holdings required')
+        if phase == 'rotate' and not (owned['AAPL'] < before_positions['AAPL']
+                                      and owned['QQQ'] > before_positions['QQQ']):
+            raise ValueError('official rotation must reduce AAPL and increase QQQ')
+        order_facts = []
+        for order in store.orders(identity):
+            record = order['record']
+            intent = record.snapshot.intent
+            order_facts.append(dict(client_order_id=intent.client_order_id,
+                symbol=intent.instrument_id, side=intent.side.value,
+                quantity=intent.quantity, limit_price=intent.limit_price,
+                status=record.snapshot.status.value,
+                filled_quantity=record.snapshot.cumulative_filled_quantity,
+                observed_at=record.observed_at))
         evidence = dict(purpose='ALP-E03 TEST: synthetic targets, not a strategy signal',
             phase=phase, account_fingerprint=sha256(facts.account_id.encode()).hexdigest()[:12],
             rebalance_id=identity, process=os.getpid(), invocations=invocations,
+            orders=order_facts, limit_price_tolerance=D('.001'),
             report=asdict(report), reconciliation=reconciliation,
             captured_at=datetime.now(timezone.utc))
         # Decimal values retain their full exact text in the evidence artifact.
@@ -170,7 +210,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state-dir', required=True)
-    parser.add_argument('--phase', required=True, choices=('open', 'recover', 'rotate', 'cleanup'))
+    parser.add_argument('--phase', required=True, choices=('open', 'recover', 'rotate', 'replay', 'cleanup'))
     parser.add_argument('--credentials-file', required=True)
     args = parser.parse_args()
     print(json.dumps(run_acceptance(state_dir=args.state_dir, phase=args.phase,

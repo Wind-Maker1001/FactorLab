@@ -76,10 +76,14 @@ class InstrumentRules:
     tradable: bool = True
     time_in_force: str = 'GTC'
     price_tick: D | None = None
+    limit_price_tolerance: D = ZERO
 
     def __post_init__(self):
         decimal_value(self.quantity_step, 'quantity_step', positive=True)
         decimal_value(self.minimum_notional, 'minimum_notional')
+        decimal_value(self.limit_price_tolerance, 'limit_price_tolerance')
+        if not ZERO <= self.limit_price_tolerance < D(1):
+            raise ValueError('limit price tolerance must be in [0, 1)')
         if self.price_tick is not None:
             decimal_value(self.price_tick, 'price_tick', positive=True)
 
@@ -493,7 +497,8 @@ class PortfolioExecutor:
             if phase == 'INCREASE' and side == Side.SELL:
                 continue
             reference = quotes[symbol].bid if side == Side.SELL else quotes[symbol].ask
-            price = reference
+            tolerance = rules[symbol].limit_price_tolerance
+            price = reference * (D(1) - tolerance if side == Side.SELL else D(1) + tolerance)
             tick = rules[symbol].price_tick
             if tick is not None:
                 rounding = ROUND_FLOOR if side == Side.SELL else ROUND_CEILING

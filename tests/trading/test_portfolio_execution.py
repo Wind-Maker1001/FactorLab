@@ -104,6 +104,41 @@ def run(executor, identity, prices=None, rules=None, **kwargs):
         rules=rules or {s: InstrumentRules(D('.001'), D(1)) for s in SYMBOLS}, now=NOW, **kwargs)
 
 
+def test_public_v69_bridge_executes_frozen_adjusted_shares(setup):
+    from factorlab.strategies.v69_alpaca import create_alpaca_plan
+
+    broker, store, executor = setup
+    decision = dict(weights=dict.fromkeys(SYMBOLS, .04),
+        orders=[dict(symbol='AAPL', side='buy', adjusted_quantity=2.25)],
+        state={'last_week': [2026, 48]})
+    args = dict(decision=decision, account_id='paper', session='2026-11-24', now=NOW,
+        raw_holdings={}, factors=dict.fromkeys(SYMBOLS, .5),
+        quantity_steps=dict.fromkeys(SYMBOLS, .01),
+        signal_provenance={'previous_adjusted_volume': {'AAPL': 2250}})
+    identity = create_alpaca_plan(executor, **args)
+    run(executor, identity, prices=dict.fromkeys(SYMBOLS, D(20)))
+    assert len(broker.posts) == 1
+    assert broker.posts[0].quantity == D('1.12')
+    assert store.plan(identity)['request']['signal_inputs']['checkpoint'] == decision['state']
+    assert create_alpaca_plan(executor, **args) == identity
+    args['factors'] = dict.fromkeys(SYMBOLS, .25)
+    with pytest.raises(ValueError):
+        create_alpaca_plan(executor, **args)
+
+
+def test_marketable_limit_uses_bounded_price_and_preserves_native_quantity(setup):
+    broker, store, executor = setup
+    identity = create(executor, {'AAPL': D(1)}, symbols={'AAPL'},
+                      quantity_deltas={'AAPL': D(2)})
+    rule = InstrumentRules(D('.001'), D(1), price_tick=D('.01'),
+                           limit_price_tolerance=D('.001'))
+    run(executor, identity, rules={'AAPL': rule})
+    assert broker.posts[0].quantity == D(2)
+    assert broker.posts[0].limit_price == D('10.01')
+    assert store.orders(identity)[0]['reference_price'] == D(10)
+    assert broker.cash == D('79.98')
+
+
 @pytest.mark.parametrize('restart', [False, True])
 def test_complete_qqq_plan_cannot_trade_after_aapl_rotation(tmp_path, restart):
     path = tmp_path / 'terminal.sqlite'
