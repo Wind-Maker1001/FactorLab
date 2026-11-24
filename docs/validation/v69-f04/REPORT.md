@@ -28,6 +28,10 @@ The existing F03 [held-position restart export](../v69-f03/mailbox-restart-held.
 
 The shared mailbox must accompany account journals during an offline coherent backup; account-root-only backups do not include this external subdirectory. Ordinary process recovery uses the surviving original files, not an old database restore.
 
+## Regression and review
+
+The initial focused regression passed 43 tests; additional Grid/isolation/recovery/systemd regression passed 123 tests. Codex identified six defects in the integrated owner/installation paths. The fixes and their 31 passing targeted tests are recorded in [REVIEW.md](REVIEW.md). Installer shell syntax passed. Codex follow-up stopped at its account usage limit without a verification conclusion; review readiness remains pending that verification and final F03 evidence publication. The fixes are not represented as deployed cloud behavior.
+
 ## Merge dependency
 
 F01 #241 is already in main. Merge #239 before #242. F04 integrates main `6c4df82` and F03 `a956d79` with identical shared TaskMailbox/WeeklySchedule contracts; the dependency merge completed without textual conflicts. #239 owns account execution, static symbol ownership, shared admission and journal recovery. #242 owns the observer, scheduling/producer boundary and observer units. No automatic GitHub merge is performed.

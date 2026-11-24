@@ -17,6 +17,8 @@ install -d -o factorlab-demo -g factorlab-demo -m 700 /var/lib/factorlab-tradfi-
 for unit in factorlab-demo-tradfi-observer.service factorlab-demo-tradfi-health.service factorlab-demo-tradfi-health.timer; do
     install -o root -g root -m 644 "$release/source/deploy/systemd/$unit" "/etc/systemd/system/$unit"
 done
+install -d -o root -g root -m 755 /etc/systemd/system/factorlab-demo-execute.service.d
+install -o root -g root -m 644 "$release/source/deploy/systemd/factorlab-demo-execute-task-mailbox.conf" /etc/systemd/system/factorlab-demo-execute.service.d/30-task-mailbox.conf
 ln -s "$release" "$base/current.next"
 mv -Tf "$base/current.next" "$base/current"
 systemctl daemon-reload
