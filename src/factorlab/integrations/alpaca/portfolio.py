@@ -35,6 +35,9 @@ class AlpacaPortfolioAdapter:
         self.order_not_found, self.rejection_error, self.clock = order_not_found, rejection_error, clock
 
     def read_account(self):
+        # Original-order recovery can observe a fill after the runner's initial
+        # account recovery, invalidating its inventory/cash admission snapshot.
+        self.adapter.recover()
         return self.adapter.read_account()
 
     def query_order(self, client_order_id):
