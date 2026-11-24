@@ -56,14 +56,26 @@ def private_root(path):
 
 
 def credential_config(path):
+    from factorlab.integrations.binance_futures_trading.demo_file_credentials import DemoFileCredentialStore
     path = Path(path)
-    info = path.lstat()
-    if not stat.S_ISREG(info.st_mode) or info.st_mode & 0o077 or info.st_nlink != 1:
-        raise ValueError('private regular credential file required')
-    # systemd mounts root-owned credentials read-only for the service UID.
-    if info.st_uid not in {0, os.getuid()}:
-        raise ValueError('credential owner must be root or the service identity')
-    return AlpacaConfig.from_file(path)
+    credential_directory = os.environ.get('CREDENTIALS_DIRECTORY')
+    systemd = credential_directory is not None and path.parent == Path(credential_directory)
+    directory = DemoFileCredentialStore._open_directory(path.parent)
+    try:
+        if systemd and not DemoFileCredentialStore._systemd_credential_acl_ok(directory, directory=True):
+            raise ValueError('unsafe systemd credential directory')
+        descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
+        with os.fdopen(descriptor, encoding='utf-8-sig') as stream:
+            if systemd:
+                if not DemoFileCredentialStore._systemd_credential_acl_ok(stream.fileno()):
+                    raise ValueError('unsafe systemd credential ACL')
+            else:
+                DemoFileCredentialStore._private(stream.fileno())
+            values = json.load(stream)
+            return AlpacaConfig(values['APCA_API_KEY_ID'], values['APCA_API_SECRET_KEY'],
+                                values.get('APCA_API_BASE_URL', 'https://paper-api.alpaca.markets'))
+    finally:
+        os.close(directory)
 
 
 def weekly_window(calendar, at):
