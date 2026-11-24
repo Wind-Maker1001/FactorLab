@@ -538,13 +538,6 @@ def test_f_automatic_rollback_on_worker_crash_timeout_and_invalid_output(tmp_pat
     )
     harness.install(stable_arc)
     harness.install(bad_arc)
-    orig_from_pkg = LoadedStrategy.from_strategy_package
-    monkeypatch.setattr(
-        LoadedStrategy, 'from_strategy_package',
-        classmethod(lambda cls, release_dir, manifest=None, *, trusted=False, timeout=15:
-                    orig_from_pkg(release_dir, manifest=manifest, trusted=trusted,
-                                  timeout=2.0 if Path(release_dir).name == bad_man['package_id'] else timeout)),
-    )
     with harness.open() as router:
         router.store.request(stable_man, promote_candidate(stable_man, f'stable-{fault_kind}'))
         router.before_poll()
@@ -554,6 +547,8 @@ def test_f_automatic_rollback_on_worker_crash_timeout_and_invalid_output(tmp_pat
                                                         expected_active=stable_man['package_id']))
         router.before_poll()
         assert router.store.snapshot()['active'] == bad_man['package_id']
+        if fault_kind == 'timeout':
+            router._runners[bad_man['package_id']][1].timeout = 1.5
 
         harness.set_time(1, 1)
         harness.quote(router, '150')
@@ -698,3 +693,43 @@ def test_h_i_residual_position_and_paused_bar_never_leak_across_switch_or_resume
         router.before_poll()
         assert router.store.snapshot()['active'] == cm_man['package_id']
         assert router.store.pending()['reason'] == 'WAIT_OLD_POSITIONS'
+
+
+def test_i_shared_account_ledger_compatibility_and_transient_quote_jitter(tmp_path, harness):
+    from factorlab.integrations.binance_futures_trading.demo_market_feed import FeedPaused
+    from factorlab.trading.paper import Instrument
+
+    arc, man = build_decision_package(
+        tmp_path, 'lc-shared', EXAMPLES,
+        strategy_id='limit_cycle', strategy_version='1.0.0',
+        entrypoint='limit_cycle:LimitCycle', files=['limit_cycle.py'],
+        configuration=dict(symbol='NVDAUSDT', interval_seconds=60, quantity='.04',
+                           buy_offset='-2.00', mode='buy_then_cancel', cancel_after_quotes=5),
+        execution_mode='orders',
+    )
+    harness.install(arc)
+    with harness.open() as router:
+        # Simulate an existing shared-account ledger marker with additional historical symbols.
+        def mark_shared():
+            router.bridge.controller.store.record_metadata('demo:static-shared-account:v1', dict(symbols=['NVDAUSDT', 'QQQUSDT', 'SPYUSDT']))
+            router.bridge.gateway.state.instruments['QQQUSDT'] = Instrument('QQQUSDT', 'USDT')
+            router.bridge.gateway.state.instruments['SPYUSDT'] = Instrument('SPYUSDT', 'USDT')
+        router.bridge.controller._atomic(mark_shared)
+
+    # Reopen on the same shared-account SQLite ledger, activate S01 strategy, and confirm safe execution + jitter handling.
+    with harness.open() as router:
+        assert set(router.bridge.gateway.state.instruments) == {'NVDAUSDT', 'QQQUSDT', 'SPYUSDT'}
+        router.store.request(man, promote_candidate(man, 'shared-s01'))
+        router.before_poll()
+        assert router.store.snapshot()['active'] == man['package_id']
+
+        # Stale quote jitter must raise FeedPaused rather than rolling back the strategy.
+        harness.set_time(1, 20)
+        with pytest.raises(FeedPaused, match='fresh quote required'):
+            router.quote(Quote('NVDAUSDT', D('150'), NOW + timedelta(minutes=1, seconds=1)))
+        assert router.store.snapshot()['active'] == man['package_id']
+        assert not router.store.pending()
+
+        # Fresh quote succeeds on shared-account projection for NVDAUSDT.
+        harness.quote(router, '150')
+        assert len(writes(harness.requests)) == 1
