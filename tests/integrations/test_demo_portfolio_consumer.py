@@ -42,6 +42,31 @@ def test_portfolio_loss_baseline_survives_runtime_restart(tmp_path, monkeypatch)
     runtime.close()
 
 
+def test_expired_scope_allows_cleanup_but_not_new_dispatch(tmp_path, monkeypatch):
+    now = datetime.now(timezone.utc)
+    facts = SimpleNamespace(usdt=lambda:dict(walletBalance=D(5000),unrealizedProfit=D(0)))
+    session = SimpleNamespace(symbol='NVDAUSDT',configuration={},
+        gateway=SimpleNamespace(rules=object(),state=SimpleNamespace(orders={},positions={})),
+        adapter=SimpleNamespace(account_id='DEMO:FactorLab-Demo:unit',facts=facts,read_facts=lambda:facts),
+        client=SimpleNamespace(transport=object()),_write_guard=None,_receipt_sink=None,
+        _admit_write=lambda *args:None,controller=SimpleNamespace(limits=RiskLimits()),_now=lambda:now)
+    monkeypatch.setattr(module,'demo_account_configuration',lambda *args:{'leverage':1})
+    monkeypatch.setattr(module,'observe_demo_rules',lambda *args,**kwargs:SimpleNamespace(rules=object()))
+    runtime = DemoRuntime(tmp_path)
+    consumer = module.DemoPortfolioConsumer(session,runtime,tmp_path)
+    consumer.active_mailbox_task = dict(valid_until=(now-timedelta(seconds=1)).isoformat())
+    try:
+        with consumer.scope('expired-task','QQQUSDT'):
+            plan = session.client.transport.authorization.plan
+            with pytest.raises(SafetyBlocked,match='task expired'):
+                session._write_guard('POST',dict(symbol='QQQUSDT',newClientOrderId='pf-new'),plan)
+            session._write_guard('DELETE',dict(symbol='QQQUSDT',origClientOrderId='pf-original'),plan)
+        rows = runtime.db.execute('SELECT method,client_id FROM dispatches').fetchall()
+        assert rows == [('DELETE','pf-original')]
+    finally:
+        runtime.close()
+
+
 def mailbox_consumer(tmp_path, monkeypatch, *, expired=False):
     from factorlab.integrations.binance_futures_trading.tradfi_tasks import TaskMailbox, PortfolioTask
     from factorlab.trading.storage import PaperStore
