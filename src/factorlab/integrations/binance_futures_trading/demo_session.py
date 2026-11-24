@@ -141,7 +141,13 @@ class DemoSession:
         if balance is None:
             raise SafetyBlocked('Demo wallet balance unavailable')
         leverage = configuration['leverage']
-        self.gateway = DemoExecutionGateway(self.adapter, observation, (Instrument(SYMBOL, 'USDT'),),
+        instruments = (Instrument(SYMBOL, 'USDT'),)
+        restored = controller_store.load()
+        if controller_store.event_payload('demo:static-shared-account:v1') is not None and restored is not None:
+            if set(restored.instruments) - {'NVDAUSDT', 'QQQUSDT', 'SPYUSDT'}:
+                raise SafetyBlocked('unexpected shared account instrument')
+            instruments = tuple(restored.instruments.values())
+        self.gateway = DemoExecutionGateway(self.adapter, observation, instruments,
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
