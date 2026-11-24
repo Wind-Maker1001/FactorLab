@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import os
+from uuid import uuid4
 
 from factorlab.trading.control import RiskLimits
 from factorlab.trading.portfolio_execution import InstrumentRules, PortfolioStore
@@ -56,6 +57,13 @@ def run_acceptance(*, state_dir, phase, credentials_file):
         rows, _ = client.calendar(session, session)
         calendar = AlpacaSessionCalendar(rows, coverage_start=session, coverage_end=session,
                                         version='ALPACA:v2/calendar')
+        task_key = 'ALP-E03 TEST:task-id'
+        with store.transaction():
+            if store.event_payload(task_key) is None:
+                if store.db.execute('SELECT COUNT(*) FROM portfolio_plans').fetchone()[0]:
+                    raise ValueError('legacy acceptance journal requires explicit identity-collision review')
+                store.record_metadata(task_key, uuid4().hex)
+            task_id = decode(json.loads(store.event_payload(task_key)))
         baseline_key = 'ALP-E03 TEST:baseline'
         with store.transaction():
             if store.event_payload(baseline_key) is None:
@@ -86,7 +94,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
                     adapter.recover()
             identity = runner.executor.create(account_id=facts.account_id,
                 strategy_id='ALP-E03 TEST', strategy_version='synthetic-1', trading_session=session,
-                rebalance_id='ALP-E03 TEST:' + phase, weights=WEIGHTS[phase],
+                rebalance_id='ALP-E03 TEST:' + task_id + ':' + phase, weights=WEIGHTS[phase],
                 owned_symbols=SYMBOLS, now=received, initial_capital=D(100000))
             if phase == 'open':
                 with store.transaction():
@@ -118,16 +126,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
             now = datetime.now(timezone.utc)
             if now - started > timedelta(minutes=4):
                 raise TimeoutError('Paper test phase exceeded its event-driven execution window')
-            try:
-                result = runner.run_once(identity, quotes=fresh_quotes, rules=rule_map)
-            except ValueError as error:
-                if str(error) != 'out-of-order confirmation requires reconciliation':
-                    raise
-                # A broker update can race a REST snapshot. Reconcile the same
-                # original identities once, then continue without reposting.
-                adapter.reconciled = False
-                adapter.recover()
-                result = runner.run_once(identity, quotes=fresh_quotes, rules=rule_map)
+            result = runner.run_once(identity, quotes=fresh_quotes, rules=rule_map)
             invocations.append(dict(phase=result.phase, reasons=dict(result.reasons),
                                     orders=list(result.order_ids), observed_at=now.isoformat()))
             if result.phase == 'BLOCKED':
