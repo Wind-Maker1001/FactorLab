@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "acquired_at": null,
+  "acquisition_note": "Original acquisition timestamp was not recorded. serverTime is exchange metadata, not acquisition time.",
+  "retention": "Full snapshots retained outside repository; no durable remote artifact has been published. Relevant raw symbol rows and complete identity indexes are tracked.",
+  "sources": {
+    "mainnet": {
+      "url": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+      "original_file": "mainnet_exchangeInfo.json",
+      "original_bytes": 2033301,
+      "original_sha256": "cb55bac227fa8d962bcfc21e8eb07a7d1cb3048da12f2fd734b382c54efd3248",
+      "symbol_count": 956,
+      "retained_evidence": "mainnet_listing_evidence.json",
+      "retained_sha256": "2a07d94c5d78f9ddd0f9e9587c5c3ec38acbe3770b4bc2faf950afeebe68fac1",
+      "external_archive": "FactorLab-archives/v69-f01-public-snapshots/mainnet_exchangeInfo.json"
+    },
+    "demo": {
+      "url": "https://demo-fapi.binance.com/fapi/v1/exchangeInfo",
+      "original_file": "demo_exchangeInfo.json",
+      "original_bytes": 1533324,
+      "original_sha256": "1b91a8baa9fd2f7aecd1e0a53666c42545ab4f8b1e78cefb47933f2f64e7af68",
+      "symbol_count": 744,
+      "retained_evidence": "demo_listing_evidence.json",
+      "retained_sha256": "457c2080eb721490caef35a35b6fa0684f6a2881504e9f734b6916c09868231a",
+      "external_archive": "FactorLab-archives/v69-f01-public-snapshots/demo_exchangeInfo.json"
+    }
+  }
+}
