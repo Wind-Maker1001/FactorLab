@@ -47,7 +47,7 @@ READ_PATHS = frozenset({
     '/fapi/v1/leverageBracket', '/fapi/v1/userTrades', '/fapi/v1/income', '/fapi/v1/symbolConfig',
     '/fapi/v1/apiTradingStatus', '/fapi/v1/premiumIndex', '/fapi/v1/ticker/bookTicker', '/fapi/v1/klines',
 })
-WRITE_PATHS = frozenset({('POST', '/fapi/v1/order'), ('DELETE', '/fapi/v1/order')})
+WRITE_PATHS = frozenset({('POST', '/fapi/v1/order'), ('DELETE', '/fapi/v1/order'), ('POST', '/fapi/v1/leverage')})
 
 DEMO_TIME_SAMPLES = 3
 DEMO_TIME_TTL_SECONDS = 45

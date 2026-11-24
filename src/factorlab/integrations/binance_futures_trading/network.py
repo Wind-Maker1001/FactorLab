@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from decimal import Decimal
 import time
+import re
 from typing import Callable
 from urllib.parse import parse_qs
 from urllib.request import build_opener
@@ -44,14 +45,14 @@ class DemoExecutionPlan:
             policy = self.quote_policy
             if self.max_orders != 1 or self.max_open_orders != 1:
                 raise ValueError('bounded execution requires one order and one open order')
-            if (self.order_types != frozenset({'LIMIT'}) or policy.account_id != self.account_id
+            if (self.order_types != frozenset({'LIMIT'}) or policy.account_id != self.account_id or policy.symbol != self.symbol
                     or policy.quantity > self.max_quantity or policy.max_notional > self.max_notional
                     or policy.max_funds > self.max_margin or policy.expires_at > self.expires_at
                     or not policy.client_order_id.startswith(self.client_id_prefix)):
                 raise ValueError('bounded quote exceeds execution plan')
         utc(self.expires_at)
-        if self.environment is not Environment.DEMO or self.symbol != 'NVDAUSDT':
-            raise ValueError('Demo NVDAUSDT plan required')
+        if self.environment is not Environment.DEMO or not re.fullmatch(r'[A-Z0-9]{2,30}USDT', self.symbol):
+            raise ValueError('Demo USDT symbol plan required')
         if not self.account_id.startswith('DEMO:FactorLab-Demo:'):
             raise ValueError('Demo credential-bound account required')
         if type(self.order_types) is not frozenset or not self.order_types or not self.order_types <= {'MARKET', 'LIMIT'}:
@@ -155,7 +156,7 @@ class DemoNetworkTransport:
         if request.method == 'GET':
             if request.path == '/fapi/v1/order':
                 params = parse_qs(request.query)
-                if params.get('symbol') != ['NVDAUSDT'] or len(params.get('origClientOrderId', [])) != 1:
+                if (len(params.get('symbol', [])) != 1 or not re.fullmatch(r'[A-Z0-9]{2,30}USDT', params['symbol'][0])) or len(params.get('origClientOrderId', [])) != 1:
                     raise SafetyBlocked('recovery requires same Demo symbol and client ID')
             if request.path not in READ_PATHS:
                 raise SafetyBlocked('read endpoint not allowlisted')

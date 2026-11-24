@@ -34,8 +34,8 @@ class DemoStrategyRuntime:
         self.controller, self.strategy = controller, strategy
         self.gateway = controller.broker
         self.symbol = strategy.describe()['symbol']
-        if self.symbol != 'NVDAUSDT':
-            raise ValueError('Demo strategy supports NVDAUSDT only')
+        if self.symbol != self.gateway.rules.symbol:
+            raise ValueError('strategy symbol differs from Demo rules')
         self.configuration = dict(strategy=strategy.describe(), client_id_prefix=client_id_prefix)
         for name, value in (('max_notional', max_notional), ('max_quantity', max_quantity)):
             if value is not None:

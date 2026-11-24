@@ -10,7 +10,7 @@ from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side, Or
 from factorlab.trading.control import RiskLimits
 
 from .adapter import AlpacaAdapter, order_status
-from .http import AlpacaConfig, PaperHTTP
+from .http import AlpacaConfig, AlpacaError, PaperHTTP
 
 D = Decimal
 LIMITS = RiskLimits(D("5"), D("10"), D("20"), 20)
@@ -32,6 +32,28 @@ class PaperAcceptance:
     """One persisted campaign of two tiny round trips, without an approval state machine."""
     def __init__(self, adapter):
         self.adapter = adapter
+
+    def buy_failure(self, run, symbol):
+        key = f"{run['prefix']}-{symbol}-buy"
+        buy = self.adapter.store.order(key)
+        if buy is not None and buy[1] is None and self.adapter.store.get("rejection:" + key) is not None:
+            return {**run, "status": "test_buy_not_filled", "symbol": symbol,
+                    "failed_leg": key, "order_status": "rejected"}
+        return None
+
+    def sell_failure(self, run, symbol):
+        key = f"{run['prefix']}-{symbol}-sell"
+        sell = self.adapter.store.order(key)
+        if sell is None:
+            return None
+        row = sell[1]
+        rejected = row is None and self.adapter.store.get("rejection:" + key) is not None
+        if rejected or (row is not None and order_status(row) in TERMINAL and order_status(row) != S.FILLED):
+            bought = D(self.adapter.store.order(f"{run['prefix']}-{symbol}-buy")[1]["filled_qty"])
+            return {**run, "status": "test_sell_not_filled", "symbol": symbol,
+                    "failed_leg": key, "order_status": "rejected" if rejected else row["status"],
+                    "remaining_quantity": str(bought - (D(row["filled_qty"]) if row else D("0")))}
+        return None
 
     def step(self):
         a = self.adapter
@@ -57,6 +79,10 @@ class PaperAcceptance:
             with a.store.transaction():
                 a.store.put("acceptance", run)
             return run
+        for symbol in run["symbols"]:
+            failure = self.buy_failure(run, symbol) or self.sell_failure(run, symbol)
+            if failure is not None:
+                return failure
         clock = a.http.request("GET", "/v2/clock")
         if not clock["is_open"]:
             return {**run, "status": "waiting_market_session", "next_open": clock["next_open"]}
@@ -68,9 +94,15 @@ class PaperAcceptance:
             sell_id = f"{run['prefix']}-{symbol}-sell"
             buy = a.store.order(buy_id)
             if buy is None:
-                a.submit_order(OrderIntent(Market.ALPACA_US_EQUITY, symbol, Side.BUY, OrderType.MARKET,
-                                           D(run["quantity"]), None, buy_id, "DAY"),
-                               reservation_price=D(run["reservation_price"]))
+                try:
+                    a.submit_order(OrderIntent(Market.ALPACA_US_EQUITY, symbol, Side.BUY, OrderType.MARKET,
+                                               D(run["quantity"]), None, buy_id, "DAY"),
+                                   reservation_price=D(run["reservation_price"]))
+                except AlpacaError:
+                    failure = self.buy_failure(run, symbol)
+                    if failure is None:
+                        raise
+                    return failure
                 complete = False
                 continue
             if buy[1] is None or order_status(buy[1]) not in TERMINAL:
@@ -86,9 +118,18 @@ class PaperAcceptance:
                     a.store.put("acceptance", run)
             sell = a.store.order(sell_id)
             if sell is None:
-                a.submit_order(OrderIntent(Market.ALPACA_US_EQUITY, symbol, Side.SELL, OrderType.MARKET,
-                                           filled, None, sell_id, "DAY"),
-                               reservation_price=D(run["reservation_price"]))
+                try:
+                    a.submit_order(OrderIntent(Market.ALPACA_US_EQUITY, symbol, Side.SELL, OrderType.MARKET,
+                                               filled, None, sell_id, "DAY"),
+                                   reservation_price=D(run["reservation_price"]))
+                except AlpacaError:
+                    failure = self.sell_failure(run, symbol)
+                    if failure is None:
+                        raise
+                    return failure
+                failure = self.sell_failure(run, symbol)
+                if failure is not None:
+                    return failure
                 complete = False
             elif sell[1] is None or order_status(sell[1]) != S.FILLED:
                 complete = False

@@ -625,6 +625,9 @@ class GridSupervisorRuntime:
         if self._stop_if_requested():
             return
         self.account_recovered = False
+        if self.execute and self._effective_desired() == 'RUNNING':
+            from .demo_portfolio_consumer import DemoPortfolioConsumer
+            DemoPortfolioConsumer(self.bridge.session, self.runtime, self.directory).poll()
         try:
             self.consumer.before_poll()
         except ExchangeError as error:

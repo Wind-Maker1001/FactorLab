@@ -38,6 +38,10 @@ def order_status(row):
 
 
 def intent_from_order(row):
+    if row["type"] not in {"market", "limit"} or row["qty"] is None:
+        raise ValueError(
+            f"Alpaca order cannot be projected: id={row['id']}, type={row['type']}, qty={row['qty']}; "
+            "only quantity-based market/limit history is supported; reconciliation incomplete")
     return OrderIntent(Market.ALPACA_US_EQUITY, row["symbol"], Side(row["side"].upper()),
                        OrderType(row["type"].upper()), D(row["qty"]),
                        D(row["limit_price"]) if row["limit_price"] else None,
@@ -72,24 +76,42 @@ class AlpacaAdapter:
                 raise OrderNotFound(404) from None
             raise
 
-    def _event(self, row, previous=None):
+    def _event(self, row, previous=None, *, advance=True):
         quantity = D(row["filled_qty"])
-        old_qty = D(previous["filled_qty"]) if previous else Z
-        amount = quantity * D(row["filled_avg_price"] or "0")
-        old_amount = old_qty * D(previous["filled_avg_price"] or "0") if previous else Z
-        delta = quantity - old_qty
-        price = (amount - old_amount) / delta if delta > 0 else None
-        return OrderEvent(row["client_order_id"], row["id"], order_status(row), quantity, price,
+        cursor_key = "priced-event:" + row["client_order_id"]
+        cursor = self.store.get(cursor_key) or {"quantity": "0", "amount": "0"}
+        old_qty, old_amount = D(cursor["quantity"]), D(cursor["amount"])
+        price, status = None, order_status(row)
+        if quantity > old_qty:
+            executions = [activity for activity in self.store.activities() if activity["order_id"] == row["id"]]
+            executed = sum((D(activity["qty"]) for activity in executions), Z)
+            if executed != quantity:
+                self.reconciled = False
+                status, quantity = S.UNKNOWN, old_qty
+            else:
+                amount = sum((D(activity["qty"]) * D(activity["price"]) for activity in executions), Z)
+                price = (amount - old_amount) / (quantity - old_qty)
+                if advance:
+                    self.store.put(cursor_key, {"quantity": str(quantity), "amount": str(amount)})
+        return OrderEvent(row["client_order_id"], row["id"], status, quantity, price,
                           instant(row["updated_at"] or row["created_at"]), "alpaca-paper-rest",
-                          f"{row['id']}:{row['updated_at']}:{row['status']}:{quantity}")
+                          f"{row['id']}:{row['updated_at']}:{status.value}:{quantity}:{price}")
 
-    def _apply(self, row):
+    def _apply(self, row, *, activities=None, emit=True):
+        if row.get("asset_class", "us_equity") != "us_equity":
+            self.reconciled = False
+            raise ValueError(f"unsupported Alpaca order asset_class: id={row['id']}, asset_class={row['asset_class']}")
         key = row["client_order_id"]
+        cursor = self.store.get("priced-event:" + key) or {"quantity": "0"}
+        if activities is None:
+            activities = self.read_activities() if D(row["filled_qty"]) > D(cursor["quantity"]) else ()
         with self.store.transaction():
+            for activity in activities:
+                self.store.activity(activity)
             old = self.store.order(key)
             if old is None:
                 intent = intent_from_order(row)
-                self.store.admit(intent, D(row["limit_price"] or row["filled_avg_price"] or "0"))
+                self.store.admit(intent, D(row["limit_price"] or "0"))
                 previous = None
             else:
                 intent, previous, _, _ = old
@@ -100,15 +122,15 @@ class AlpacaAdapter:
                     raise ValueError("exchange order identity changed")
                 if (instant(row["updated_at"] or row["created_at"]) <
                         instant(previous["updated_at"] or previous["created_at"])):
-                    return self._event(previous, previous)
+                    return self._event(previous, previous, advance=emit)
                 if D(row["filled_qty"]) < D(previous["filled_qty"]):
                     raise ValueError("official cumulative fill regression")
                 if order_status(previous) in TERMINAL and order_status(row) not in TERMINAL:
                     if D(row["filled_qty"]) == D(previous["filled_qty"]):
-                        return self._event(previous, previous)
+                        return self._event(previous, previous, advance=emit)
                     raise ValueError("terminal order returned to an open status")
                 if order_status(previous) == S.FILLED and order_status(row) != S.FILLED:
-                    return self._event(previous, previous)
+                    return self._event(previous, previous, advance=emit)
             filled = D(row["filled_qty"])
             if not filled.is_finite() or filled < 0 or filled > intent.quantity:
                 raise ValueError("invalid official cumulative fill")
@@ -116,7 +138,7 @@ class AlpacaAdapter:
                 raise ValueError("official FILLED status and quantity disagree")
             if filled and (row["filled_avg_price"] is None or D(row["filled_avg_price"]) <= 0):
                 raise ValueError("official fill requires a positive average price")
-            event = self._event(row, previous)
+            event = self._event(row, previous, advance=emit)
             self.store.save_order(key, row)
             if previous is None or D(previous["filled_qty"]) != filled:
                 self.reconciled = False
@@ -139,8 +161,8 @@ class AlpacaAdapter:
         filled_avg_price is the broker's rounded cumulative average. Consumers
         needing execution-exact cash flows use read_order_executions instead.
         """
-        row = self._lookup(client_order_id)
-        self._apply(row)
+        self._apply(self._lookup(client_order_id), emit=False)
+        row = self.store.order(client_order_id)[1]
         return {"client_order_id": row["client_order_id"], "exchange_order_id": row["id"],
                 "status": order_status(row), "filled_quantity": D(row["filled_qty"]),
                 "filled_avg_price": D(row["filled_avg_price"]) if row["filled_avg_price"] else None,
@@ -149,18 +171,20 @@ class AlpacaAdapter:
 
     def read_order_executions(self, client_order_id):
         row = self._lookup(client_order_id)
-        self._apply(row)
         activities = self.read_activities()
-        with self.store.transaction():
-            for activity in activities:
-                self.store.activity(activity)
+        self._apply(row, activities=activities, emit=False)
         return tuple(activity for activity in self.store.activities() if activity["order_id"] == row["id"])
 
     def _reject(self, reason):
         raise RiskRejected(RiskDecision(False, reason))
 
     def _positions(self):
-        return self.http.request("GET", "/v2/positions")
+        rows = self.http.request("GET", "/v2/positions")
+        for row in rows:
+            if row.get("asset_class", "us_equity") != "us_equity":
+                self.reconciled = False
+                raise ValueError(f"unsupported Alpaca position asset_class: symbol={row['symbol']}, asset_class={row['asset_class']}")
+        return rows
 
     def read_account(self):
         facts = self.read_account_details()
@@ -216,7 +240,7 @@ class AlpacaAdapter:
         for key, (other, row, _, reservation) in self.store.orders():
             if row is None and self.store.get("rejection:" + key) is not None:
                 continue
-            if row is None or order_status(row) not in TERMINAL:
+            if other.side == Side.BUY and (row is None or order_status(row) not in TERMINAL):
                 pending = other.quantity - (D(row["filled_qty"]) if row else Z)
                 exposures[other.instrument_id] = exposures.get(other.instrument_id, Z) + pending * D(reservation)
         if exposures.get(intent.instrument_id, Z) + amount > self.limits.max_instrument_exposure:
@@ -253,8 +277,11 @@ class AlpacaAdapter:
             self.reconciled = False
             raise
         except AlpacaError as error:
-            # 408/409/422 may represent a duplicate identity or ambiguous acceptance.
-            if error.status in {408, 409, 422}:
+            message = (error.message or "").lower()
+            duplicate_identity = "client_order_id" in message and any(
+                marker in message for marker in ("unique", "duplicate", "already"))
+            if error.status in {408, 409} or (
+                    error.status == 422 and (not message or duplicate_identity)):
                 self.reconciled = False
                 raise OutcomeUnknown("query persisted client_order_id before any replacement") from None
             with self.store.transaction():
@@ -266,7 +293,7 @@ class AlpacaAdapter:
 
     def cancel_order(self, client_order_id):
         row = self._lookup(client_order_id)
-        self._apply(row)
+        self._apply(row, emit=False)
         if order_status(row) not in TERMINAL:
             with self.store.transaction():
                 self.store.uncertain(client_order_id)
@@ -277,7 +304,7 @@ class AlpacaAdapter:
                 if error.status not in {404, 422}:
                     raise
             return self.query_order(client_order_id)
-        return self._event(row, row)
+        return self._apply(row, activities=())
 
     def read_activities(self):
         rows, token = [], None
@@ -309,8 +336,10 @@ class AlpacaAdapter:
             # page may cut through several orders sharing its oldest timestamp.
             timestamps = list(dict.fromkeys(row["submitted_at"] for row in page))
             if len(timestamps) < 2:
-                # FIXME: partition saturated history timestamps by symbol before resuming recovery.
-                raise ValueError("Alpaca history exceeds the timestamp cursor's 500-order resolution")
+                # FIXME: timestamp-only history cannot prove coverage of a saturated page.
+                raise ValueError(
+                    f"Alpaca history cursor saturated: 500 orders at submitted_at={timestamps[0]}; "
+                    "reconciliation incomplete, execution blocked")
             next_until = timestamps[-2]
             if next_until == until:
                 raise ValueError("order pagination boundary ambiguous; reconciliation required")
@@ -320,14 +349,18 @@ class AlpacaAdapter:
     def recover(self):
         self.reconciled = False
         self.read_account_details()
+        activities = self.read_activities()
+        with self.store.transaction():
+            for activity in activities:
+                self.store.activity(activity)
         for row in self._all_orders():
-            self._apply(row)
+            self._apply(row, activities=(), emit=False)
         for key, (_, row, uncertain, _) in self.store.orders():
             if row is None and self.store.get("rejection:" + key) is not None:
                 continue
             if row is None or uncertain or order_status(row) not in TERMINAL:
                 try:
-                    self.query_order(key)
+                    self._apply(self._lookup(key), activities=(), emit=False)
                 except OrderNotFound:
                     # Absence is not proof a timed-out POST cannot still arrive.
                     pass

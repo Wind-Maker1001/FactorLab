@@ -70,8 +70,6 @@ def observe_demo_rules(adapter, symbol='NVDAUSDT', *, source_version, on_symbol=
     client = adapter.client
     if client.environment is not Environment.DEMO:
         raise SafetyBlocked('Demo rules require Demo client')
-    if symbol != 'NVDAUSDT':
-        raise SafetyBlocked('Demo execution contract currently supports NVDAUSDT only')
     symbol_info = read_demo_symbol(client, symbol)
     if on_symbol is not None:
         on_symbol(symbol_info)
@@ -342,8 +340,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
     def submit_order(self, intent):
         if not self.read_account().reconciled:
             raise SafetyBlocked('RECONCILE_REQUIRED: confirmed Demo account projection required')
-        if intent.instrument_id != 'NVDAUSDT':
-            raise SafetyBlocked('Demo execution contract currently supports NVDAUSDT only')
+        if intent.instrument_id != self.rules.symbol:
+            raise SafetyBlocked('order symbol differs from observed Demo rules')
         if type(self.adapter.client.transport) is DemoNetworkTransport:
             self._network_admission(intent)
         elif type(self.adapter.client.transport.authorization) is not DemoExecutionAuthorization:
@@ -447,7 +445,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
             raise SafetyBlocked('order must pass shared controller risk admission')
         if state.kill_switch:
             raise SafetyBlocked('KILL_SWITCH: no new Demo orders')
-        if (intent.order_type.value not in plan.order_types or intent.quantity > plan.max_quantity
+        if (intent.instrument_id != plan.symbol or intent.order_type.value not in plan.order_types or intent.quantity > plan.max_quantity
                 or not intent.client_order_id.startswith(plan.client_id_prefix)):
             raise SafetyBlocked('order outside execution plan')
         observation = getattr(adapter, '_rule_observation', None)
@@ -504,7 +502,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
         exchange_limit = filters.get('MAX_NUM_ORDERS', {}).get('limit')
         if exchange_limit is None:
             raise SafetyBlocked('UNKNOWN exchange order limit')
-        if len(pending) >= min(plan.max_open_orders, int(exchange_limit)):
+        symbol_pending = [o for o in pending if o.intent.instrument_id == intent.instrument_id]
+        if len(symbol_pending) >= min(plan.max_open_orders, int(exchange_limit)):
             raise SafetyBlocked('plan open order limit')
         funds = facts.usdt()
         keys = ('walletBalance', 'unrealizedProfit', 'initialMargin', 'availableBalance')
@@ -513,7 +512,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
         equity = funds['walletBalance'] + funds['unrealizedProfit']
         if self._initial_equity is None:
             self._initial_equity = equity
-        local_pnl = sum((p.quantity * (reference - p.entry_price)
+        local_pnl = sum((p.quantity * (p.mark_price - p.entry_price)
                          for p in state.positions.values()), Decimal('0'))
         local_equity = (sum((a.total for a in self.read_account().assets), Decimal('0'))
                         + min(local_pnl, funds['unrealizedProfit']))
@@ -521,8 +520,9 @@ class DemoExecutionGateway(FuturesPaperGateway):
             raise SafetyBlocked('plan virtual loss limit')
         # Full notional reservation is conservative for the one-way supported path.
         reserved = sum(((o.intent.quantity - o.cumulative_filled_quantity)
-                        * max(o.intent.limit_price or quote.price, quote.price) for o in pending), Decimal('0'))
-        collateral = sum((abs(p.quantity) * max(p.entry_price, reference, quote.price)
+                        * max(o.intent.limit_price or state.quotes[o.intent.instrument_id].price,
+                              state.quotes[o.intent.instrument_id].price) for o in pending if not o.intent.reduce_only), Decimal('0'))
+        collateral = sum((abs(p.quantity) * max(p.entry_price, p.mark_price)
                           for p in state.positions.values()), Decimal('0'))
         additional_margin = notional
         if (transport.write_guard is not None and intent.reduce_only
@@ -532,5 +532,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
                     for position in facts.shared().positions):
                 raise SafetyBlocked('confirmed Demo long must cover reduce-only SELL LIMIT')
             additional_margin = Decimal('0')
-        if max(funds['initialMargin'], collateral) + reserved + additional_margin > plan.max_margin:
+        margin_limit = plan.max_margin
+        if self._controller.store.event_payload('demo:static-shared-account:v1') is not None:
+            margin_limit = max(margin_limit, Decimal(27))
+        if max(funds['initialMargin'], collateral) + reserved + additional_margin > margin_limit:
             raise SafetyBlocked('plan margin limit')

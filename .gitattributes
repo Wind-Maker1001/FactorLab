@@ -20,6 +20,8 @@ src/factorlab/** text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
 *.toml text eol=lf
+tools/install_tradfi_observer.sh text eol=lf
+deploy/systemd/factorlab-demo-tradfi-* text eol=lf
 tests/research/fixtures/** -filter -diff -merge -text
 tests/fixtures/research/** -filter -diff -merge -text
 docs/migration/evidence/environments/*.original.txt -filter -diff -merge -text
@@ -37,3 +39,5 @@ docs/validation/p2-09/** -text whitespace=cr-at-eol
 docs/validation/p2-09/*.xml -whitespace
 docs/validation/p6-d01/** -text whitespace=cr-at-eol
 configs/research/p6-d01-multisecurity.json -text whitespace=cr-at-eol
+
+docs/validation/v69-f01/** text eol=lf
