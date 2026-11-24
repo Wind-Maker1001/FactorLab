@@ -16,6 +16,12 @@ No changes to the original Execute unit, credentials, trading controls or deploy
 
 The shipped unit observes QQQUSDT and SPYUSDT, both observed as TRADING / TRADIFI_PERPETUAL / EQUITY in official Demo exchange metadata on 2026-11-24. Additional instruments must be verified against current official Demo exchange metadata before configuring them; missing stock instruments are not replaced with unrelated contracts.
 
+## Forward observation record
+
+On 2026-11-24, the first observer release started on `factorlab-demo-01` at 15:27 UTC. Four observations through 15:29:12 UTC persisted official QQQUSDT books with fresh account projections and no market transport errors. The original Execute process remained unchanged with zero automatic restarts. The next weekly window was 2026-11-30 14:30–21:00 UTC, with completed-history cutoff 2026-11-27; XNYS identifies that preceding Friday's early close separately.
+
+Official exchange metadata also identified SPYUSDT as TRADING / TRADIFI_PERPETUAL / EQUITY, and its public book was observed before adding it to the service configuration. These are market-observation records, not portfolio order or fill evidence.
+
 ## Execution integration
 
 The first integration uses static ownership: `NVDAUSDT` belongs exclusively to Grid; `QQQUSDT` and `SPYUSDT` belong to `tradfi-qqq-spy-test`. No dynamic subaccount or position-allocation system is required.
