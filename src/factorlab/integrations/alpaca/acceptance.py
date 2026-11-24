@@ -33,6 +33,14 @@ class PaperAcceptance:
     def __init__(self, adapter):
         self.adapter = adapter
 
+    def buy_failure(self, run, symbol):
+        key = f"{run['prefix']}-{symbol}-buy"
+        buy = self.adapter.store.order(key)
+        if buy is not None and buy[1] is None and self.adapter.store.get("rejection:" + key) is not None:
+            return {**run, "status": "test_buy_not_filled", "symbol": symbol,
+                    "failed_leg": key, "order_status": "rejected"}
+        return None
+
     def sell_failure(self, run, symbol):
         key = f"{run['prefix']}-{symbol}-sell"
         sell = self.adapter.store.order(key)
@@ -72,7 +80,7 @@ class PaperAcceptance:
                 a.store.put("acceptance", run)
             return run
         for symbol in run["symbols"]:
-            failure = self.sell_failure(run, symbol)
+            failure = self.buy_failure(run, symbol) or self.sell_failure(run, symbol)
             if failure is not None:
                 return failure
         clock = a.http.request("GET", "/v2/clock")
@@ -86,9 +94,15 @@ class PaperAcceptance:
             sell_id = f"{run['prefix']}-{symbol}-sell"
             buy = a.store.order(buy_id)
             if buy is None:
-                a.submit_order(OrderIntent(Market.ALPACA_US_EQUITY, symbol, Side.BUY, OrderType.MARKET,
-                                           D(run["quantity"]), None, buy_id, "DAY"),
-                               reservation_price=D(run["reservation_price"]))
+                try:
+                    a.submit_order(OrderIntent(Market.ALPACA_US_EQUITY, symbol, Side.BUY, OrderType.MARKET,
+                                               D(run["quantity"]), None, buy_id, "DAY"),
+                                   reservation_price=D(run["reservation_price"]))
+                except AlpacaError:
+                    failure = self.buy_failure(run, symbol)
+                    if failure is None:
+                        raise
+                    return failure
                 complete = False
                 continue
             if buy[1] is None or order_status(buy[1]) not in TERMINAL:

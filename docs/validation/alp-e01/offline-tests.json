@@ -23,9 +23,9 @@
       "duration_seconds": 17.87
     },
     "final_alpaca_execution": {
-      "passed": 71,
+      "passed": 73,
       "failed": 0,
-      "duration_seconds": 31.61,
+      "duration_seconds": 38.97,
       "asserts_http_outside_sqlite_transactions": true
     },
     "latest_pr243_compatibility": {
@@ -38,6 +38,13 @@
       "passed": 172,
       "failed": 0,
       "duration_seconds": 42.57
+    },
+    "merged_main_regression": {
+      "main_commit": "9386a34",
+      "passed": 296,
+      "failed": 0,
+      "duration_seconds": 98.94,
+      "suites": "Alpaca execution and market data; Binance equity, futures, demo execution and dual market"
     },
     "peer_merge_conflicts": false,
     "additional_online_orders": 0

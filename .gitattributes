@@ -37,3 +37,5 @@ docs/validation/p2-09/** -text whitespace=cr-at-eol
 docs/validation/p2-09/*.xml -whitespace
 docs/validation/p6-d01/** -text whitespace=cr-at-eol
 configs/research/p6-d01-multisecurity.json -text whitespace=cr-at-eol
+
+docs/validation/v69-f01/** text eol=lf
