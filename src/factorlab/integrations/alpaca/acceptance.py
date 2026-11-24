@@ -90,6 +90,14 @@ class PaperAcceptance:
                                            filled, None, sell_id, "DAY"),
                                reservation_price=D(run["reservation_price"]))
                 complete = False
+            elif sell[1] is None and a.store.get("rejection:" + sell_id) is not None:
+                return {**run, "status": "test_sell_not_filled", "symbol": symbol,
+                        "failed_leg": sell_id, "order_status": "rejected",
+                        "remaining_quantity": str(filled)}
+            elif sell[1] is not None and order_status(sell[1]) in TERMINAL and order_status(sell[1]) != S.FILLED:
+                return {**run, "status": "test_sell_not_filled", "symbol": symbol,
+                        "failed_leg": sell_id, "order_status": sell[1]["status"],
+                        "remaining_quantity": str(filled - D(sell[1]["filled_qty"]))}
             elif sell[1] is None or order_status(sell[1]) != S.FILLED:
                 complete = False
         if not complete:
