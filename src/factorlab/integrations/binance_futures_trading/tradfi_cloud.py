@@ -16,6 +16,8 @@ from zoneinfo import ZoneInfo
 from factorlab.cross_market.calendar import us_calendar
 from .demo_cloud_storage import atomic_json
 from .tradfi_schedule import WeeklySchedule
+from .tradfi_dispatch import dispatch
+from .tradfi_tasks import TaskMailbox
 
 DEMO_PUBLIC = 'https://demo-fapi.binance.com'
 
@@ -59,7 +61,7 @@ class ObservationLedger:
         daily = {'day': day, 'samples': count, 'first_observed_at': first,
                  'last': snapshot, 'market_failure_samples': failures,
                  'execution_owner': 'factorlab-demo-execute.service',
-                 'execution_status': 'AWAITING_SHARED_ACCOUNT_EXECUTION_INTERFACE',
+                 'execution_status': snapshot['execution_status'],
                  'stock_reference_return': None, 'contract_strategy_return': None,
                  'execution_cost': None}
         atomic_json(self.root / ('daily-' + day + '.json'), daily)
@@ -110,6 +112,8 @@ def run(args):
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: stopped.set())
     ledger = ObservationLedger(args.state_root)
+    mailbox = None if args.task_db is None else TaskMailbox(args.task_db)
+    config = None if args.task_config is None else json.loads(args.task_config.read_text(encoding='utf-8'))
     started = datetime.now(timezone.utc)
     calendar_day = None
     schedule = None
@@ -130,7 +134,10 @@ def run(args):
             for quote in quotes.values():
                 quote['age_seconds'] = observed.timestamp() - quote['time'] / 1000
                 quote['fresh'] = 0 <= quote['age_seconds'] <= 90
-            snapshot = {'schema_version': 1, 'mode': 'READ_ONLY_SIGNAL_OBSERVER',
+            target = None if config is None else dispatch(
+                mailbox, config, window, quotes, observed, acceptance_task_id=args.acceptance_task_id)
+            receipts = [] if mailbox is None else mailbox.snapshot()
+            snapshot = {'schema_version': 1, 'mode': 'READ_ONLY_SIGNAL_OBSERVER' if config is None else 'SIGNAL_PRODUCER',
                         'started_at': started.isoformat(), 'observed_at': observed.isoformat(),
                         'uptime_seconds': (observed - started).total_seconds(),
                         'quotes': quotes, 'market_error': error,
@@ -139,25 +146,59 @@ def run(args):
                                      'closes_at': window.closes_at.isoformat(),
                                      'history_through': window.history_through,
                                      'calendar_version': window.calendar_version},
-                        'last_successful_rebalance': None, 'target': None,
-                        'target_status': 'NO_STRATEGY_CONFIGURED',
-                        'execution_status': 'AWAITING_SHARED_ACCOUNT_EXECUTION_INTERFACE'}
+                        'last_successful_rebalance': max((r['recorded_at'] for r in receipts
+                                                          if r['status'] == 'COMPLETED' and r['task_type'] == 'SCHEDULED'), default=None),
+                        'last_successful_acceptance': max((r['recorded_at'] for r in receipts
+                                                           if r['status'] == 'COMPLETED' and r['task_type'] == 'ACCEPTANCE'), default=None),
+                        'target': target, 'receipts': receipts,
+                        'target_status': 'NO_STRATEGY_CONFIGURED' if target is None else target['status'],
+                        'execution_status': 'AWAITING_SHARED_ACCOUNT_EXECUTION_INTERFACE' if not receipts else receipts[-1]['status']}
             ledger.record(snapshot)
             print(json.dumps({'observed_at': snapshot['observed_at'], 'symbols': list(quotes),
                               'market_error': error, 'account_fresh': snapshot['account']['fresh'],
                               'next_session': window.session}), flush=True)
             stopped.wait(args.poll_seconds)
     finally:
+        if mailbox is not None:
+            mailbox.close()
         ledger.close()
+
+
+def health(root, now):
+    try:
+        snapshot = json.loads((Path(root) / 'tradfi-health.json').read_text(encoding='utf-8'))
+    except FileNotFoundError:
+        return {'healthy': False, 'reason': 'NO_HEARTBEAT'}
+    age = (now - datetime.fromisoformat(snapshot['observed_at'])).total_seconds()
+    market_fresh = bool(snapshot['quotes']) and all(
+        0 <= now.timestamp() - q['time'] / 1000 <= 90 for q in snapshot['quotes'].values())
+    return {'healthy': 0 <= age <= 90 and snapshot['market_error'] is None and market_fresh,
+            'heartbeat_age_seconds': age, 'market_fresh': market_fresh,
+            'mode': snapshot['mode'], 'execution_status': snapshot['execution_status'],
+            'target_status': snapshot['target_status']}
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state-root', type=Path, required=True)
-    parser.add_argument('--execute-health', type=Path, required=True)
-    parser.add_argument('--symbols', nargs='+', required=True)
+    parser.add_argument('--execute-health', type=Path)
+    parser.add_argument('--symbols', nargs='+')
+    parser.add_argument('--health', action='store_true')
     parser.add_argument('--poll-seconds', type=float, default=30)
+    parser.add_argument('--task-db', type=Path)
+    parser.add_argument('--task-config', type=Path)
+    parser.add_argument('--acceptance-task-id')
     args = parser.parse_args(argv)
+    if args.health:
+        result = health(args.state_root, datetime.now(timezone.utc))
+        print(json.dumps(result))
+        raise SystemExit(0 if result['healthy'] else 1)
+    if args.execute_health is None or not args.symbols:
+        parser.error('execute-health and symbols are required for observation')
+    if args.task_config is not None and args.task_db is None:
+        parser.error('task-config requires task-db')
+    if args.acceptance_task_id is not None and args.task_config is None:
+        parser.error('acceptance-task-id requires explicit task-config')
     if args.poll_seconds <= 0:
         parser.error('poll-seconds must be positive')
     if not args.state_root.is_absolute() or not args.state_root.is_dir():

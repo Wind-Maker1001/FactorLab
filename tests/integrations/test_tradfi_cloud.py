@@ -1,11 +1,12 @@
 from datetime import datetime, timezone
 import json
 
-from factorlab.integrations.binance_futures_trading.tradfi_cloud import ObservationLedger, account_projection
+from factorlab.integrations.binance_futures_trading.tradfi_cloud import ObservationLedger, account_projection, health
 
 
 def sample(at, error=None):
-    return {'observed_at': at, 'market_error': error, 'quotes': {}}
+    return {'observed_at': at, 'market_error': error, 'quotes': {},
+            'execution_status': 'AWAITING_SHARED_ACCOUNT_EXECUTION_INTERFACE'}
 
 
 def test_ledger_restarts_and_disconnect_recovery_are_durable(tmp_path):
@@ -40,6 +41,16 @@ def test_account_projection_suppresses_stale_financials(tmp_path):
     assert not result['fresh']
     assert result['nav_usdt'] is None
     assert result['positions'] is None
+
+
+def test_monitor_does_not_trust_cached_quote_fresh_flag(tmp_path):
+    now = datetime(2026, 11, 24, 15, tzinfo=timezone.utc)
+    snapshot = {'observed_at': now.isoformat(), 'market_error': None,
+                'quotes': {'QQQUSDT': {'time': (now.timestamp() - 100) * 1000, 'fresh': True}},
+                'mode': 'READ_ONLY_SIGNAL_OBSERVER', 'execution_status': 'AWAITING_SHARED_ACCOUNT_EXECUTION_INTERFACE',
+                'target_status': 'NO_STRATEGY_CONFIGURED'}
+    (tmp_path / 'tradfi-health.json').write_text(json.dumps(snapshot))
+    assert not health(tmp_path, now)['healthy']
 
 
 def test_missing_owner_health_is_explicit(tmp_path):

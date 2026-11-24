@@ -1,0 +1,15 @@
+[Unit]
+Description=FactorLab TradFi observer heartbeat and quote freshness
+After=factorlab-demo-tradfi-observer.service
+
+[Service]
+Type=oneshot
+User=factorlab-demo
+Group=factorlab-demo
+UMask=0077
+ExecStart=/opt/factorlab/tradfi-observer/current/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --health
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+InaccessiblePaths=/etc/factorlab-demo -/run/credentials/factorlab-demo-execute.service -/run/credentials/factorlab-demo.service

@@ -27,7 +27,8 @@ def test_dst_changes_utc_open(schedule):
 def test_quote_must_be_after_open_and_before_close(schedule):
     window = schedule.next_window('2026-11-23T12:00:00Z')
     assert not window.accepts('2026-11-23T14:29:59Z', '2026-11-23T14:31:00Z')
-    assert window.accepts('2026-11-23T14:30:01Z', '2026-11-23T14:31:00Z')
+    assert window.accepts('2026-11-23T14:30:01Z', '2026-11-23T14:30:02Z')
+    assert not window.accepts('2026-11-23T14:30:01Z', '2026-11-23T14:31:00Z')
     assert not window.accepts('2026-11-23T14:32:00Z', '2026-11-23T14:31:00Z')
     assert not window.accepts('2026-11-23T20:59:00Z', '2026-11-23T21:00:00Z')
 

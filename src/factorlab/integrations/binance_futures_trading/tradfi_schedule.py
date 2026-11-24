@@ -15,10 +15,13 @@ class RebalanceWindow:
     history_through: str
     calendar_version: str
 
-    def accepts(self, observed_at, now):
-        """Only a quote observed in this session can authorize a new target."""
+    def accepts(self, observed_at, now, *, max_quote_age_seconds=5):
+        """Only a fresh quote observed in this session can authorize a target."""
+        if max_quote_age_seconds <= 0:
+            raise ValueError('positive quote age bound required')
         observed_at, now = utc_instant(observed_at), utc_instant(now)
-        return self.opens_at <= observed_at <= now < self.closes_at
+        return (self.opens_at <= observed_at <= now < self.closes_at
+                and (now - observed_at).total_seconds() <= max_quote_age_seconds)
 
 
 def utc_instant(value):
