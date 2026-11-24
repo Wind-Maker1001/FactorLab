@@ -118,7 +118,13 @@ class GridConsumer:
 
     def _refresh_reason(self, desired, allowed):
         if not allowed:
-            self.reason = 'PAUSED' if desired == 'PAUSED' else 'AUTHORIZATION_REQUIRED'
+            capacity = getattr(self.bridge, 'runtime', None)
+            exhausted = bool(capacity is not None
+                and not capacity.global_trading_capacity())
+            self.reason = ('PAUSED' if desired == 'PAUSED' else
+                           'EXIT_GLOBAL_BUDGET_EXHAUSTED' if exhausted
+                           and self.bridge.grid.closed_by_breakout else
+                           'AUTHORIZATION_REQUIRED')
             return
         exit_status = self.bridge.breakout_exit_status(desired=desired, authorized=allowed)
         if exit_status is not None and exit_status['phase'] != 'FLAT_CONFIRMED':

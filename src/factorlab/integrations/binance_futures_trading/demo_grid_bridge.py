@@ -465,6 +465,9 @@ class DemoGridBridge:
                 phase, reason = 'EXIT_BLOCKED', 'PREVIEW_OR_READ_ONLY'
             elif self.exit_block_reason is not None:
                 phase, reason = 'EXIT_BLOCKED', self.exit_block_reason
+            elif (not authorized and runtime is not None
+                  and not runtime.global_trading_capacity()):
+                phase, reason = 'EXIT_BLOCKED', 'EXIT_GLOBAL_BUDGET_EXHAUSTED'
             elif not authorized:
                 phase, reason = 'EXIT_BLOCKED', 'AUTHORIZATION_REQUIRED'
             else:
