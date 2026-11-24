@@ -468,6 +468,33 @@ def test_cash_ledger_deduplicates_exact_official_activities(tmp_path):
             a.store.activity({**row, "price": "98"})
 
 
+@pytest.mark.parametrize("status", [403, 422])
+def test_acceptance_http_buy_rejection_survives_restart_without_resubmission(tmp_path, status):
+    from factorlab.integrations.alpaca.acceptance import PaperAcceptance
+    official = Official()
+    posts = []
+    def transport(method, path, params, body):
+        if method == "POST":
+            posts.append(body["client_order_id"])
+            return status, {"message": "insufficient permissions or invalid quantity"}
+        if path == "/v2/clock" and posts:
+            raise AssertionError("known rejection must precede market-session gate")
+        return official(method, path, params, body)
+    http = PaperHTTP(AlpacaConfig("fake", "fake"), transport=transport)
+    a = AlpacaAdapter(http, tmp_path / "alpaca.sqlite", limits=LIMITS)
+    first = PaperAcceptance(a).step()
+    assert first["status"] == "test_buy_not_filled"
+    assert first["failed_leg"] == posts[0]
+    assert PaperAcceptance(a).step()["failed_leg"] == posts[0]
+    a.close()
+    a = AlpacaAdapter(http, tmp_path / "alpaca.sqlite", limits=LIMITS)
+    restarted = PaperAcceptance(a).step()
+    assert restarted["status"] == "test_buy_not_filled"
+    assert restarted["failed_leg"] == first["failed_leg"]
+    assert len(posts) == 1
+    a.close()
+
+
 @pytest.mark.parametrize("failure", ["canceled", "expired", "rejected", "http_rejected"])
 def test_acceptance_reports_failed_sell_without_resubmission(tmp_path, failure):
     from factorlab.integrations.alpaca.acceptance import PaperAcceptance
