@@ -9,6 +9,7 @@ from datetime import timedelta
 from decimal import Decimal as D
 import json
 from pathlib import Path
+import os
 from urllib.parse import parse_qs
 
 from factorlab.trading.contracts import Side
@@ -34,12 +35,17 @@ class DemoPortfolioConsumer:
         self.directory = Path(directory) / 'portfolio-inbox'
         self.directory.mkdir(mode=0o700, exist_ok=True)
         self.result = self.directory.parent / 'portfolio-result.json'
+        self.mailbox_path = Path(os.environ.get('FACTORLAB_DEMO_TASK_DB',
+            str(Path(directory) / 'tradfi-tasks.sqlite3')))
+        self.active_mailbox_task = None
 
     def poll(self):
         try:
             self._poll()
         except Exception as error:
             atomic_json(self.result,dict(status='PORTFOLIO_BLOCKED',reason=str(error)[:300]))
+            if self.active_mailbox_task is not None:
+                self.receipt('RECONCILING',dict(reason=str(error)[:300]))
 
     def _poll(self):
         if durable_control_state(self.runtime) is not None:
@@ -47,9 +53,43 @@ class DemoPortfolioConsumer:
         requests = [p for p in sorted(self.directory.glob('*.json'))
             if self.session.controller.store.event_payload('portfolio-result:' + identity(
                 json.loads(p.read_text())['task_id'])) is None]
-        if not requests:
-            return
-        request = json.loads(requests[0].read_text())
+        if requests:
+            request = json.loads(requests[0].read_text())
+        else:
+            from .tradfi_tasks import TaskMailbox, PortfolioTask
+            if not self.mailbox_path.exists():
+                return
+            mailbox = TaskMailbox(self.mailbox_path)
+            try:
+                outstanding = mailbox.outstanding()
+            finally:
+                mailbox.close()
+            if not outstanding:
+                return
+            task_payload = outstanding[0]['task']
+            PortfolioTask(task_id=task_payload['task_id'],allocation_id=task_payload['allocation_id'],
+                session=task_payload['session'],observed_at=task_payload['observed_at'],
+                valid_until=task_payload['valid_until'],equity_usdt=D(task_payload['equity_usdt']),
+                weights={k:D(v) for k,v in task_payload['weights'].items()},
+                task_type=task_payload['task_type']).payload()
+            self.active_mailbox_task = task_payload
+            from .tradfi_schedule import utc_instant
+            from factorlab.trading.contracts import TERMINAL
+            started = self.session.controller.store.event_payload('portfolio:' + identity((
+                'tradfi-demo-acceptance',task_payload['task_id']))) is not None
+            if utc_instant(task_payload['valid_until']) <= self.session._now():
+                recovered = self.session.gateway.recover(self.session.controller)
+                if recovered.reconciled and not any(r.snapshot.status not in TERMINAL
+                        for k,r in self.session.gateway.state.orders.items() if k.startswith('pf')):
+                    self.receipt('REJECTED',dict(reason='EXPIRED',recovered_inflight=started))
+                else:
+                    self.receipt('RECONCILING',dict(reason='EXPIRED_INFLIGHT'))
+                return
+            funds = self.session.adapter.read_facts().usdt()
+            budget = max(D(0),min(BUDGET,funds['walletBalance']+funds['unrealizedProfit']-D(7)))
+            request = dict(task_id=task_payload['task_id'],budget_usdt=str(budget),
+                           weights=task_payload['weights'])
+            self.receipt('ACCEPTED',dict(owner_budget_usdt=str(budget)))
         task = request['task_id']
         weights = {k:D(v) for k,v in request['weights'].items()}
         budget = D(request['budget_usdt'])
@@ -97,7 +137,11 @@ class DemoPortfolioConsumer:
                 book = self.session._fresh_book()
                 current = next((p.quantity for p in account.positions if p.instrument_id == symbol),D(0))
                 side = Side.SELL if current * book['bidPrice'] > budget * weights.get(symbol,D(0)) else Side.BUY
-                price = self.session.limit_price(self.session.gateway.rules, side, book)
+                # Bounded marketable LIMIT cushion; account and allocation caps still apply.
+                executable = dict(book)
+                executable['askPrice'] *= D('1.005')
+                executable['bidPrice'] *= D('0.995')
+                price = self.session.limit_price(self.session.gateway.rules, side, executable)
                 prices[symbol] = price
                 steps[symbol] = D(self.session.gateway.rules.filters['LOT_SIZE']['stepSize'])
                 self.session.controller.quote(Quote(symbol, price, book['time_utc']))
@@ -105,6 +149,10 @@ class DemoPortfolioConsumer:
             owned_symbols=SYMBOLS, recover=lambda:self.session.gateway.recover(self.session.controller))
         portfolio.begin(task, weights=weights, equity=budget)
         def submit(intent):
+            if self.active_mailbox_task is not None:
+                from .tradfi_schedule import utc_instant
+                if utc_instant(self.active_mailbox_task['valid_until']) <= self.session._now():
+                    raise SafetyBlocked('task expired before dispatch; recover original identities')
             with self.scope(task, intent.instrument_id):
                 self.session.submit_intent(intent)
         outcome = portfolio.advance(task, prices=prices, steps=steps, submit=submit)
@@ -129,6 +177,10 @@ class DemoPortfolioConsumer:
         atomic_json(self.result, json.loads(dumps(report)))
         if outcome in {'NO_EXECUTABLE_DELTA','BATCH_TERMINATED'}:
             store.record_metadata(done,dict(task_id=task,outcome=outcome))
+        if self.active_mailbox_task is not None:
+            self.receipt('COMPLETED' if outcome == 'NO_EXECUTABLE_DELTA' else
+                'REJECTED' if outcome == 'BATCH_TERMINATED' else 'RECONCILING',
+                dict(outcome=outcome,orders=report['orders'],accounting={k:str(v) for k,v in accounting.items()}))
 
     @contextmanager
     def scope(self, task, symbol):
@@ -237,3 +289,12 @@ class DemoPortfolioConsumer:
         if verified['leverage'] != 1:
             raise SafetyBlocked('Demo leverage configuration not confirmed')
         s.configuration = verified
+
+    def receipt(self,status,detail):
+        from .tradfi_tasks import TaskMailbox
+        mailbox = TaskMailbox(self.mailbox_path)
+        try:
+            mailbox.receipt(self.active_mailbox_task['task_id'],recorded_at=self.session._now().isoformat(),
+                            status=status,detail=detail)
+        finally:
+            mailbox.close()

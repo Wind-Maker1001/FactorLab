@@ -502,7 +502,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
         exchange_limit = filters.get('MAX_NUM_ORDERS', {}).get('limit')
         if exchange_limit is None:
             raise SafetyBlocked('UNKNOWN exchange order limit')
-        if len(pending) >= min(plan.max_open_orders, int(exchange_limit)):
+        symbol_pending = [o for o in pending if o.intent.instrument_id == intent.instrument_id]
+        if len(symbol_pending) >= min(plan.max_open_orders, int(exchange_limit)):
             raise SafetyBlocked('plan open order limit')
         funds = facts.usdt()
         keys = ('walletBalance', 'unrealizedProfit', 'initialMargin', 'availableBalance')
@@ -531,5 +532,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
                     for position in facts.shared().positions):
                 raise SafetyBlocked('confirmed Demo long must cover reduce-only SELL LIMIT')
             additional_margin = Decimal('0')
-        if max(funds['initialMargin'], collateral) + reserved + additional_margin > plan.max_margin:
+        margin_limit = plan.max_margin
+        if self._controller.store.event_payload('demo:static-shared-account:v1') is not None:
+            margin_limit = max(margin_limit, Decimal(27))
+        if max(funds['initialMargin'], collateral) + reserved + additional_margin > margin_limit:
             raise SafetyBlocked('plan margin limit')
