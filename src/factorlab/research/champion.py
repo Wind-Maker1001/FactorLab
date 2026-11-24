@@ -34,13 +34,17 @@ class SelectionPolicy:
     max_candidates: int = 32
     max_finalists: int = 4
     volume_lookback: int = 20
+    min_capacity_usdt: float | None = None
+    min_trade_count: int = 0
+    max_exit_failure_ratio: float = 1.0
 
     def __post_init__(self):
         if self.objective not in {"risk_adjusted_net_return", "net_return", "sharpe"}:
             raise ValueError("unknown objective")
         integers = {"periods_per_year": 1, "min_oos_days": 2, "min_tail_observations": 1,
                     "cooldown_days": 0, "block_days": 1, "resamples": 100,
-                    "seed": 0, "max_candidates": 1, "max_finalists": 1, "volume_lookback": 2}
+                    "seed": 0, "max_candidates": 1, "max_finalists": 1, "volume_lookback": 2,
+                    "min_trade_count": 0}
         for name, minimum in integers.items():
             value = getattr(self, name)
             if type(value) is not int or value < minimum:
@@ -48,11 +52,14 @@ class SelectionPolicy:
         for name, value in asdict(self).items():
             if name == "objective" or name in integers:
                 continue
+            if name == "min_capacity_usdt" and value is None:
+                continue
             if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
                 raise ValueError(name + " must be finite and nonnegative")
         if (not 0 < self.confidence < 1 or not 0 < self.cvar_confidence < 1
                 or not 0 < self.participation_limit <= 1 or self.max_drawdown > 1
-                or self.min_positive_blocks > 1 or self.seed >= 2**32
+                or self.min_positive_blocks > 1 or self.max_exit_failure_ratio > 1
+                or self.seed >= 2**32
                 or self.min_oos_days < 2*self.block_days
                 or self.max_finalists > self.max_candidates):
             raise ValueError("invalid selection probability, sample size or search bound")
@@ -109,19 +116,57 @@ def risk_metrics(result, bars, capital, policy):
                 transaction_cost=float(trades.transaction_cost.sum()))
 
 
+OOS_ELIGIBILITY_VALUES = {"FRESH_UNCONSUMED_OOS", "HISTORICAL_REUSE_PSEUDO_OOS", "INSUFFICIENT_FRESH_OOS"}
+_UNCERTAINTY_REASONS = {
+    "insufficient_oos_or_tail_observations",
+    "oos_advantage_statistically_uncertain",
+    "risk_adjusted_advantage_statistically_uncertain",
+    "insufficient_bootstrap_tail_resolution",
+    "oos_window_not_fresh_unconsumed",
+}
+
+
 def qualification(metrics, policy):
     reasons = []
     for name, limit in (("max_drawdown", policy.max_drawdown), ("daily_cvar", policy.max_daily_cvar),
                         ("max_participation", policy.participation_limit)):
         if metrics[name] is None or metrics[name] > limit:
             reasons.append(name + "_breach_or_unknown")
-    if metrics["capacity_cny"] is None or metrics["capacity_cny"] < policy.min_capacity_cny:
+    if "capacity_usdt" in metrics:
+        cap_value = metrics["capacity_usdt"]
+        cap_floor = policy.min_capacity_usdt if policy.min_capacity_usdt is not None else policy.min_capacity_cny
+    else:
+        cap_value = metrics["capacity_cny"]
+        cap_floor = policy.min_capacity_cny
+    if cap_value is None or cap_value < cap_floor:
         reasons.append("capacity_insufficient_or_unknown")
     if metrics["score"] is None:
         reasons.append("objective_undefined")
     if metrics["net_return"] <= policy.min_net_return:
         reasons.append("net_return_below_floor")
+    if policy.min_trade_count > 0 and metrics.get("trade_count", 0) < policy.min_trade_count:
+        reasons.append("insufficient_trade_activity")
+    exit_fail = metrics.get("exit_failure_ratio")
+    if policy.max_exit_failure_ratio < 1.0 and (exit_fail is None or exit_fail > policy.max_exit_failure_ratio):
+        reasons.append("exit_failure_ratio_breach")
     return reasons
+
+
+def classify_verdict(decision, oos_eligibility="FRESH_UNCONSUMED_OOS"):
+    if oos_eligibility not in OOS_ELIGIBILITY_VALUES:
+        raise ValueError("unknown oos_eligibility classification")
+    if decision.get("promoted") is True:
+        return "PROMOTE_CHALLENGER"
+    if oos_eligibility == "INSUFFICIENT_FRESH_OOS":
+        return "INCONCLUSIVE"
+    decisions = decision.get("decisions", [])
+    if oos_eligibility == "HISTORICAL_REUSE_PSEUDO_OOS":
+        return "INCONCLUSIVE" if decisions else "RETAIN_CHAMPION"
+    for item in decisions:
+        reasons = set(item.get("reasons", []))
+        if reasons and reasons <= _UNCERTAINTY_REASONS:
+            return "INCONCLUSIVE"
+    return "RETAIN_CHAMPION"
 
 
 def paired_evidence(challenger, champion, policy, family_size):
@@ -173,12 +218,15 @@ class ChampionSelector:
     def __init__(self, policy):
         self.policy = policy
 
-    def select(self, incumbent, challengers, *, family_size, cooldown_elapsed=True):
+    def select(self, incumbent, challengers, *, family_size, cooldown_elapsed=True,
+               oos_eligibility="FRESH_UNCONSUMED_OOS"):
         """Inputs contain candidate identity, risk metrics and net OOS NAV.
 
         Return the incumbent verbatim if no challenger clears every gate.
         """
         p = self.policy
+        if oos_eligibility not in OOS_ELIGIBILITY_VALUES:
+            raise ValueError("unknown oos_eligibility classification")
         if type(family_size) is not int or family_size < max(1, len(challengers)):
             raise ValueError("family_size must cover every tested challenger")
         identities = [c["candidate"]["candidate_id"] for c in [incumbent, *challengers]]
@@ -189,6 +237,8 @@ class ChampionSelector:
             m = candidate["metrics"]
             reasons = qualification(m, p)
             e = paired_evidence(candidate["nav"], incumbent["nav"], p, family_size)
+            if oos_eligibility != "FRESH_UNCONSUMED_OOS":
+                reasons.append("oos_window_not_fresh_unconsumed")
             if m["days"] < p.min_oos_days or m["tail_observations"]+1e-9 < p.min_tail_observations:
                 reasons.append("insufficient_oos_or_tail_observations")
             baseline_score = incumbent["metrics"]["score"]

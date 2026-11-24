@@ -1,0 +1,97 @@
+{
+  "cash_benchmark_net_return": 0.0,
+  "decisions": [
+    {
+      "candidate_id": "c-b97c8b599be80d00b44fcc8e",
+      "eligible": false,
+      "evidence": {
+        "annual_mean_improvement": 0.8909105921912059,
+        "bootstrap_ci_lower": -0.0004662037974365249,
+        "bootstrap_ci_upper": 0.005745074994588458,
+        "bootstrap_seed": 2636991976,
+        "bootstrap_status": "OK",
+        "bootstrap_tail_replicates": 6.000000000000005,
+        "bootstrap_valid_repetitions": 6000,
+        "calendar_slots": 72,
+        "confidence": 0.998,
+        "coverage": 1.0,
+        "family_size": 25,
+        "hac_ci_lower": -0.0007852559025724524,
+        "hac_ci_upper": 0.0056669577775927595,
+        "hac_p_value": 0.019384697554604296,
+        "hac_standard_error": 0.001043969035481119,
+        "hac_statistic": 2.338049170572644,
+        "interpretation": "conditional historical OOS evidence; weak dependence and stability assumed; no profit guarantee",
+        "mean": 0.0024408509375101533,
+        "missing_metric_dates": 0,
+        "positive_block_fraction": 0.7142857142857143,
+        "score_ci_lower": -0.06334131556077006,
+        "score_ci_upper": 2.246444292434231,
+        "score_interval_method": "paired_moving_block_percentile_bootstrap",
+        "signal_dates": 72,
+        "status": "OK",
+        "valid_dates": 72
+      },
+      "reasons": [
+        "max_drawdown_breach_or_unknown",
+        "daily_cvar_breach_or_unknown",
+        "net_return_below_floor",
+        "oos_window_not_fresh_unconsumed",
+        "oos_advantage_statistically_uncertain",
+        "risk_adjusted_advantage_statistically_uncertain"
+      ]
+    },
+    {
+      "candidate_id": "c-f13e00ea46ee334f54d722a6",
+      "eligible": false,
+      "evidence": {
+        "annual_mean_improvement": 1.6952302837396855,
+        "bootstrap_ci_lower": -0.0002530350529404297,
+        "bootstrap_ci_upper": 0.011072739096290257,
+        "bootstrap_seed": 2636991976,
+        "bootstrap_status": "OK",
+        "bootstrap_tail_replicates": 6.000000000000005,
+        "bootstrap_valid_repetitions": 6000,
+        "calendar_slots": 72,
+        "confidence": 0.998,
+        "coverage": 1.0,
+        "family_size": 25,
+        "hac_ci_lower": -0.0017232540259092335,
+        "hac_ci_upper": 0.011012187087496551,
+        "hac_p_value": 0.02419974080224902,
+        "hac_standard_error": 0.0020605960736328854,
+        "hac_statistic": 2.2539432110075515,
+        "interpretation": "conditional historical OOS evidence; weak dependence and stability assumed; no profit guarantee",
+        "mean": 0.004644466530793659,
+        "missing_metric_dates": 0,
+        "positive_block_fraction": 0.6428571428571429,
+        "score_ci_lower": -0.012656843395997366,
+        "score_ci_upper": 4.610482819895622,
+        "score_interval_method": "paired_moving_block_percentile_bootstrap",
+        "signal_dates": 72,
+        "status": "OK",
+        "valid_dates": 72
+      },
+      "reasons": [
+        "net_return_below_floor",
+        "oos_window_not_fresh_unconsumed",
+        "oos_advantage_statistically_uncertain",
+        "risk_adjusted_advantage_statistically_uncertain"
+      ]
+    }
+  ],
+  "family_size": 25,
+  "incumbent_candidate_id": "c-7eefa330d4d7fa022db5d1ff",
+  "oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+  "prior_studies": [
+    "P7-R04B",
+    "P7-R09",
+    "P8-R07",
+    "P8-R08",
+    "P8-R09",
+    "P8-R10"
+  ],
+  "schema": "FACTORLAB_PAIRED_STATISTICS_V1",
+  "study_id": "p8-s02-f01-nvda-real-v1",
+  "verdict": "INCONCLUSIVE"
+}

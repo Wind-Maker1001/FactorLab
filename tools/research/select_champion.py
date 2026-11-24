@@ -43,7 +43,10 @@ def main(argv=None):
     except (ValueError, OSError, FactorLabError) as exc:
         print(json.dumps(dict(status="REJECTED", reason=str(exc))), file=sys.stderr)
         return 2
-    print(json.dumps({k: result[k] for k in ("study_id", "version", "selected", "promoted", "reason")}, allow_nan=False))
+    summary = {k: result[k] for k in ("study_id", "version", "selected", "promoted", "reason")}
+    if "verdict" in result:
+        summary["verdict"] = result["verdict"]
+    print(json.dumps(summary, allow_nan=False))
     return 0
 
 

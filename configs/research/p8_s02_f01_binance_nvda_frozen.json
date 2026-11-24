@@ -1,0 +1,443 @@
+{
+  "champion": {
+    "parameters": {
+      "breakout": "pause",
+      "half_width_pct": 0.01,
+      "interval_seconds": 3600,
+      "order_ttl": 100,
+      "symbol": "NVDAUSDT"
+    },
+    "strategy": {
+      "class": "FixedGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/fixed_grid.py",
+      "sha256": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0"
+    },
+    "strategy_id": "FIXED_GRID"
+  },
+  "common": {
+    "demo_live_cap_usdt": 7.0,
+    "execution": "binance_usdm_demo_nvda_limit_long_only",
+    "execution_lifecycle": "F11_F08_FULL_LIFECYCLE",
+    "exit_profile": "DELAYED_EXIT_FILL",
+    "fee_bps": 3.0,
+    "funding_mode": "historical_events",
+    "funding_tie_rule": "settlement_before_exact_tie_fill",
+    "guardrails": {
+      "exit_max_attempts": 5,
+      "exit_reprice_seconds": 180,
+      "max_loss_ratio": 0.25,
+      "max_open_orders": 1,
+      "percent_price_down": 0.97,
+      "percent_price_up": 1.03,
+      "total_notional": 20000.0,
+      "total_orders": 2000,
+      "window_orders": 20,
+      "window_seconds": 10800
+    },
+    "initial_cash": 10.0,
+    "interval": "1h",
+    "leverage": 1,
+    "limit_buffer_bps": 10.0,
+    "market": "BINANCE_USDM",
+    "max_weight": 1.0,
+    "order_type": "LIMIT",
+    "participation": 0.01,
+    "position_mode": "ONE_WAY_LONG_ONLY",
+    "price_basis": "1h Binance USD-M trade close with adverse slippage; offline bar close is NOT live exchange orderbook matching",
+    "rule_boundary_note": "Historical NVDAUSDT traded at 126-243 USDT (0.04 units = 5.05-9.70 USDT), exceeding the 7.00 USDT Demo live cap on high-price weeks; offline replay uses 10.00 USDT 1x collateral risk budget matching R08/R09/R10 while retaining 5 USDT min_notional, 0.01 step/tick, and 0.97-1.03 PERCENT_PRICE.",
+    "rules": {
+      "max_quantity": "0.04",
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.04",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "slippage_bps": 2.0,
+    "symbol": "NVDAUSDT"
+  },
+  "data": {
+    "bars": "data/nvdausdt_1h_audited.parquet",
+    "funding": "data/nvdausdt_funding_audited.json",
+    "funding_sha256": "25824ca08ba3faf3a7f3253c49f0e45a96fb4523f262bcd70c47df639d21f55c",
+    "oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+    "prior_studies": [
+      "P7-R04B",
+      "P7-R09",
+      "P8-R07",
+      "P8-R08",
+      "P8-R09",
+      "P8-R10"
+    ],
+    "sha256": "2a1280648190c2dd724b43e9adc8d6bd24c01c8a5f9096bf279d46925c8ffb5a",
+    "source_kind": "REAL_CANDIDATE"
+  },
+  "policy": {
+    "block_days": 5,
+    "confidence": 0.95,
+    "cooldown_days": 30,
+    "cvar_confidence": 0.95,
+    "max_candidates": 32,
+    "max_daily_cvar": 0.05,
+    "max_drawdown": 0.2,
+    "max_exit_failure_ratio": 0.5,
+    "max_finalists": 6,
+    "min_annual_net_improvement": 0.01,
+    "min_capacity_usdt": 10.0,
+    "min_net_return": 0.0,
+    "min_oos_days": 60,
+    "min_positive_blocks": 0.6,
+    "min_score_improvement": 0.02,
+    "min_tail_observations": 3,
+    "min_trade_count": 2,
+    "objective": "risk_adjusted_net_return",
+    "participation_limit": 0.01,
+    "periods_per_year": 365,
+    "resamples": 6000,
+    "risk_aversion": 1.0,
+    "seed": 42,
+    "volume_lookback": 20
+  },
+  "schema": "FACTORLAB_AUTO_RESEARCH_V1",
+  "strategies": [
+    {
+      "class": "CashBenchmarkStrategy",
+      "file": "../../src/factorlab/strategies/binance_usdm/cash_benchmark.py",
+      "grid": {},
+      "parameters": {
+        "interval_seconds": 3600,
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "c0e1ddc26ae8f5782366d095b3e8708ca4272a67be4ef07c68d05532441d5cfb",
+      "strategy_id": "CASH"
+    },
+    {
+      "class": "FixedGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/fixed_grid.py",
+      "grid": {
+        "half_width_pct": [
+          0.015,
+          0.02
+        ]
+      },
+      "parameters": {
+        "breakout": "pause",
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+      "strategy_id": "FIXED_GRID_ALT"
+    },
+    {
+      "class": "FundingSensitiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py",
+      "grid": {},
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.25,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B1",
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B1"
+    },
+    {
+      "class": "FundingSensitiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py",
+      "grid": {},
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.5,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B2",
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B2"
+    },
+    {
+      "class": "FundingSensitiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py",
+      "grid": {},
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 1.0,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 80.0,
+        "profile_id": "B3",
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B3"
+    },
+    {
+      "class": "FundingSensitiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py",
+      "grid": {},
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.25,
+        "exit_bps_h": 0.5,
+        "exit_mode": "funding_bleed",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 72.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B4",
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B4"
+    },
+    {
+      "class": "FundingSensitiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py",
+      "grid": {},
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.5,
+        "exit_bps_h": 1.0,
+        "exit_mode": "funding_bleed",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 72.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B5",
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B5"
+    },
+    {
+      "class": "FundingSensitiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py",
+      "grid": {},
+      "parameters": {
+        "conservative": false,
+        "entry_max_bps_h": 0.75,
+        "exit_bps_h": 0.75,
+        "exit_mode": "net_margin",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 96.0,
+        "min_net_margin_bps": 120.0,
+        "profile_id": "B6",
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B6"
+    },
+    {
+      "class": "VolAdaptiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py",
+      "grid": {},
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 2.5,
+        "max_half_width": 0.03,
+        "min_half_width": 0.005,
+        "min_rebuild_interval": 24,
+        "profile_id": "C1",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 24
+      },
+      "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C1"
+    },
+    {
+      "class": "VolAdaptiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py",
+      "grid": {},
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.0,
+        "max_half_width": 0.035,
+        "min_half_width": 0.006,
+        "min_rebuild_interval": 24,
+        "profile_id": "C2",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 48
+      },
+      "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C2"
+    },
+    {
+      "class": "VolAdaptiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py",
+      "grid": {},
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.5,
+        "max_half_width": 0.04,
+        "min_half_width": 0.008,
+        "min_rebuild_interval": 24,
+        "profile_id": "C3",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 72
+      },
+      "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C3"
+    },
+    {
+      "class": "VolAdaptiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py",
+      "grid": {},
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 2.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 2.5,
+        "max_half_width": 0.03,
+        "min_half_width": 0.005,
+        "min_rebuild_interval": 24,
+        "profile_id": "C4",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 24
+      },
+      "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C4"
+    },
+    {
+      "class": "VolAdaptiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py",
+      "grid": {},
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 2.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.0,
+        "max_half_width": 0.035,
+        "min_half_width": 0.006,
+        "min_rebuild_interval": 24,
+        "profile_id": "C5",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 48
+      },
+      "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C5"
+    },
+    {
+      "class": "VolAdaptiveGridCandidate",
+      "file": "../../src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py",
+      "grid": {},
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 1.8,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.5,
+        "max_half_width": 0.04,
+        "min_half_width": 0.008,
+        "min_rebuild_interval": 24,
+        "profile_id": "C6",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 72
+      },
+      "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C6"
+    },
+    {
+      "class": "DualMAUsdmStrategy",
+      "file": "../../src/factorlab/strategies/binance_usdm/dual_ma_usdm.py",
+      "grid": {
+        "fast_window": [
+          5,
+          12
+        ],
+        "slow_window": [
+          20,
+          48
+        ]
+      },
+      "parameters": {
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "6cbaf67d0b378215baba96d7a36e5adfabbb8e757f99467cf40c2d4c357beb01",
+      "strategy_id": "DUAL_MA"
+    },
+    {
+      "class": "CloseMomentumUsdmStrategy",
+      "file": "../../src/factorlab/strategies/binance_usdm/close_momentum_usdm.py",
+      "grid": {
+        "lookback": [
+          1,
+          6,
+          24
+        ],
+        "threshold_bps": [
+          0.0,
+          25.0
+        ]
+      },
+      "parameters": {
+        "interval_seconds": 3600,
+        "symbol": "NVDAUSDT",
+        "weight": 0.9
+      },
+      "sha256": "2f5f0ed27ec277bf978758bcdce8788b48dc09a317c7312a6af19a11766e9a3b",
+      "strategy_id": "CLOSE_MOMENTUM"
+    }
+  ],
+  "study_id": "p8-s02-f01-nvda-real-v1",
+  "windows": {
+    "test": [
+      "2026-09-12",
+      "2026-11-22"
+    ],
+    "train": [
+      "2026-05-14",
+      "2026-07-13"
+    ],
+    "validation": [
+      "2026-07-14",
+      "2026-09-11"
+    ]
+  }
+}

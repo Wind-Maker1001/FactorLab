@@ -18,8 +18,19 @@ from factorlab.dataset.identity import file_hash, frame_hash, json_hash
 from factorlab.experiments import ExperimentTracker
 from factorlab.experiments.provenance import capture_provenance
 from factorlab.forward.integrity import research_source_sha256, workflow_lock
+from factorlab.research.binance_perpetual import (
+    BINANCE_EXECUTION,
+    load_binance_bars_and_funding,
+    register_binance_candidate,
+    run_risk_stress_suite,
+    run_simulations_batch,
+    simulate_binance_candidate,
+    slice_stage_bars,
+    validate_binance_config,
+)
+_DEFAULT_SIMULATE_BINANCE = simulate_binance_candidate
 from factorlab.research.champion import (ChampionSelector, SelectionPolicy,
-                                        qualification, risk_metrics)
+                                        classify_verdict, qualification, risk_metrics)
 from factorlab.strategies.custom import load_strategy, run_custom_strategy
 from factorlab.strategies.dual_ma import daily_dates
 
@@ -76,6 +87,8 @@ def validate_config(config):
     if boundaries[-1] >= pd.Timestamp(datetime.now(timezone.utc).date()):
         raise ValueError("test must end before the current UTC day")
     common = config["common"]
+    if isinstance(common, dict) and common.get("execution") == BINANCE_EXECUTION:
+        return validate_binance_config(config)
     if set(common) != {"symbol", "initial_cash", "max_weight", "board_lot", "funding_bps",
                        "execution", "fee_rules"}:
         raise ValueError("explicit common capital, costs, funding, execution and risk budget required")
@@ -217,6 +230,8 @@ def _snapshot_date(value):
 
 
 def _run(config, base, output, store, state_path, policy, command, *, old, audit=False):
+    if config["common"].get("execution") == BINANCE_EXECUTION:
+        return _run_binance(config, base, output, store, state_path, policy, command, old=old, audit=audit)
     common, windows = config["common"], config["windows"]
     common_hash = json_hash(common)
     if old is not None:
@@ -408,3 +423,508 @@ def _run(config, base, output, store, state_path, policy, command, *, old, audit
 def asdict_policy(policy):
     from dataclasses import asdict
     return asdict(policy)
+
+
+def _run_binance(config, base, output, store, state_path, policy, command, *, old, audit=False):
+    common, windows, data_cfg = config["common"], config["windows"], config["data"]
+    common_hash = json_hash(common)
+    oos_eligibility = data_cfg["oos_eligibility"]
+    if old is not None:
+        if old["schema"] != STATE_SCHEMA or old["common_hash"] != common_hash:
+            raise ValueError("deployment mandate/common comparison contract changed")
+        if pd.Timestamp(windows["test"][0]) <= pd.Timestamp(old["last_test_end"]):
+            raise ValueError("OOS window already consumed; supply a fresh nonoverlapping test")
+
+    bars_path = (base / data_cfg["bars"]).resolve()
+    bars_payload = bars_path.read_bytes()
+    if hashlib.sha256(bars_payload).hexdigest() != data_cfg["sha256"]:
+        raise ValueError("historical data identity changed")
+
+    funding_path = (base / data_cfg["funding"]).resolve()
+    funding_payload = funding_path.read_bytes()
+    if hashlib.sha256(funding_payload).hexdigest() != data_cfg["funding_sha256"]:
+        raise ValueError("historical funding identity changed")
+
+    all_bars, all_funding = load_binance_bars_and_funding(
+        bars_payload, funding_payload, symbol=common["symbol"]
+    )
+    train_warmup, train_bars = slice_stage_bars(all_bars, windows["train"][0], windows["train"][1])
+    val_warmup, val_bars = slice_stage_bars(all_bars, windows["validation"][0], windows["validation"][1])
+    test_warmup, test_bars = slice_stage_bars(all_bars, windows["test"][0], windows["test"][1])
+    stage_slices = {
+        "train": (train_warmup, train_bars),
+        "validation": (val_warmup, val_bars),
+        "test": (test_warmup, test_bars),
+    }
+    test_end_excl = pd.Timestamp(windows["test"][1], tz="UTC") + pd.Timedelta(days=1)
+    consumed_bars = [b for b in all_bars if pd.Timestamp(b["time"]) < test_end_excl]
+    sample_hash = json_hash(
+        {
+            "bars_sha256": data_cfg["sha256"],
+            "funding_sha256": data_cfg["funding_sha256"],
+            "windows": windows,
+            "consumed_bars": len(consumed_bars),
+        }
+    )
+
+    output.mkdir(parents=True, exist_ok=False)
+    (output / "sources").mkdir()
+    if not audit:
+        write_json(output / "config.json", config)
+    provenance = capture_provenance(ROOT)
+    provenance["code"]["source_sha256"] = research_source_sha256(ROOT)
+    (output / "input-bars.parquet").write_bytes(bars_payload)
+    (output / "input-funding.json").write_bytes(funding_payload)
+
+    expanded = expand_registry(config["strategies"], policy.max_candidates)
+    candidates = []
+    compat_map = {}
+    for item in expanded:
+        cand, compat = register_binance_candidate(item, base, common)
+        candidates.append(cand)
+        compat_map[cand["candidate_id"]] = compat
+
+    if old is None or audit:
+        champion_item, champ_compat = register_binance_candidate(config["champion"], base, common)
+        if old is not None:
+            archived = dict(champion_item, strategy=config["champion"]["strategy"])
+            if old["champion"] != archived:
+                raise ValueError("pre-run Champion identity does not match the archived strategy")
+    else:
+        champion_item = old["champion"]
+        champ_reg = dict(
+            strategy_id=champion_item["strategy_id"],
+            strategy=champion_item["strategy"],
+            parameters=champion_item["parameters"],
+        )
+        _, champ_compat = register_binance_candidate(champ_reg, base, common)
+    compat_map[champion_item["candidate_id"]] = champ_compat
+
+    if file_hash(champion_item["strategy"]["file"]) != champion_item["code_version"]:
+        raise ValueError("Champion code changed")
+    if len({c["candidate_id"] for c in candidates}) != len(candidates):
+        raise ValueError("duplicate normalized parameter candidates")
+
+    all_candidates = {c["candidate_id"]: c for c in [champion_item, *candidates]}
+    for c in all_candidates.values():
+        source = Path(c["strategy"]["file"])
+        content = source.read_bytes()
+        if hashlib.sha256(content).hexdigest() != c["code_version"]:
+            raise ValueError("candidate code changed")
+        (output / "sources" / (c["code_version"] + ".py")).write_bytes(content)
+
+    archived_config = deepcopy(config)
+    archived_config["data"]["bars"] = "input-bars.parquet"
+    archived_config["data"]["funding"] = "input-funding.json"
+    for entry in archived_config["strategies"]:
+        entry["file"] = "sources/" + entry["sha256"] + ".py"
+    archived_champion = dict(
+        champion_item["strategy"],
+        file="sources/" + champion_item["code_version"] + ".py",
+    )
+    archived_config["champion"] = dict(
+        strategy_id=champion_item["strategy_id"],
+        strategy=archived_champion,
+        parameters=champion_item["parameters"],
+    )
+    snapshot = dict(
+        schema=SNAPSHOT_SCHEMA,
+        config_sha256=json_hash(archived_config),
+        common_hash=common_hash,
+        state=None if old is None else dict(old, champion=dict(champion_item, strategy=archived_champion)),
+    )
+    snapshot_hash = json_hash(snapshot)
+    snapshot_path = output / "pre-run-state.json"
+    write_json(snapshot_path, snapshot)
+    write_json(
+        output / "replay-config.json",
+        dict(schema=REPLAY_SCHEMA, config=archived_config, pre_run_state_sha256=snapshot_hash),
+    )
+
+    tracker = ExperimentTracker(store)
+    catalog = {
+        c["candidate_id"]: dict(
+            candidate=c,
+            status="REGISTERED",
+            compatibility=compat_map[c["candidate_id"]],
+            stages={},
+        )
+        for c in all_candidates.values()
+    }
+
+    def evaluate(candidate, stage, *, precomputed=None):
+        cid = candidate["candidate_id"]
+        folder = output / (cid + "-" + stage)
+        folder.mkdir()
+        archived_source = output / "sources" / (candidate["code_version"] + ".py")
+        stage_meta = dict(
+            candidate=candidate,
+            stage=stage,
+            window=windows[stage],
+            common=common,
+            oos_eligibility=oos_eligibility,
+        )
+        write_json(folder / "config.json", stage_meta)
+        identity = config["study_id"] + "-" + cid + "-" + stage
+        tracker.create_experiment(
+            identity,
+            dict(
+                model=candidate["strategy_id"],
+                parameters=candidate,
+                factors=[],
+                dataset={
+                    "bars_sha256": data_cfg["sha256"],
+                    "funding_sha256": data_cfg["funding_sha256"],
+                },
+                label={"name": "binance_usdm_daily_funded_net_equity_return"},
+                windows=windows,
+                walk_forward={"mode": "fixed_train_validation_then_sealed_test", "stage": stage},
+                costs=common,
+            ),
+        )
+        try:
+            if precomputed is not None:
+                sim, err = precomputed
+                if err is not None:
+                    raise RuntimeError(err)
+            else:
+                stage_warmup, stage_bars = stage_slices[stage]
+                sim = simulate_binance_candidate(
+                    candidate,
+                    source_path=archived_source,
+                    stage_bars=stage_bars,
+                    warmup_bars=stage_warmup,
+                    train_bars=train_bars,
+                    funding_events=all_funding,
+                    common=common,
+                    policy=policy,
+                    account_id=f"{config['study_id']}-{cid[:10]}-{stage[:3]}",
+                )
+            metrics = sim["metrics"]
+            sim["nav"].to_csv(folder / "nav.csv", index=False)
+            sim["hourly"].to_csv(folder / "hourly.csv", index=False)
+            sim["trades"].to_csv(folder / "trades.csv", index=False)
+            write_json(folder / "metrics.json", metrics)
+            status, failure = "SUCCEEDED", None
+        except Exception as exc:
+            sim, metrics, status, failure = None, {}, "FAILED", str(exc)
+
+        paths = [p for p in folder.iterdir() if p.is_file()]
+        paths += [
+            output / "input-bars.parquet",
+            output / "input-funding.json",
+            output / "replay-config.json",
+            snapshot_path,
+            archived_source,
+        ]
+        artifacts = {p.name: {"path": str(p), "sha256": file_hash(p)} for p in paths}
+        record = tracker.append_run(
+            identity,
+            identity,
+            **provenance,
+            command=list(command),
+            status=status,
+            qualification=data_cfg["source_kind"],
+            portfolio_metrics=metrics,
+            artifacts=artifacts,
+            validation={
+                "sample_hash": sample_hash,
+                "evaluation": {"policy": asdict_policy(policy), "stage": stage},
+                "failure": failure,
+                "train_only_fit": windows["train"],
+                "oos_eligibility": oos_eligibility,
+                "financial_admission": "FORMAL_ADMISSION_BLOCKED",
+            },
+        )
+        catalog[cid]["stages"][stage] = dict(
+            status=status,
+            metrics=metrics,
+            failure=failure,
+            run_id=identity,
+            record_sha256=record["sha256"],
+        )
+        return None if sim is None else dict(candidate=candidate, metrics=metrics, nav=sim["nav"])
+
+    # Search ONLY validation; lock one version per strategy before seeing OOS.
+    val_candidates = [c for c in candidates if c["candidate_id"] != champion_item["candidate_id"]]
+    val_batch = None
+    if simulate_binance_candidate is _DEFAULT_SIMULATE_BINANCE and len(val_candidates) >= 4:
+        val_warmup, val_bars = stage_slices["validation"]
+        val_tasks = [
+            (
+                c["candidate_id"],
+                dict(
+                    candidate=c,
+                    source_path=output / "sources" / (c["code_version"] + ".py"),
+                    stage_bars=val_bars,
+                    warmup_bars=val_warmup,
+                    train_bars=train_bars,
+                    funding_events=all_funding,
+                    common=common,
+                    policy=policy,
+                    account_id=f"{config['study_id']}-{c['candidate_id'][:10]}-val",
+                ),
+            )
+            for c in val_candidates
+        ]
+        val_batch = run_simulations_batch(val_tasks)
+
+    leaders = {}
+    for c in val_candidates:
+        evaluated = evaluate(
+            c, "validation", precomputed=None if val_batch is None else val_batch[c["candidate_id"]]
+        )
+        entry = catalog[c["candidate_id"]]
+        entry["reasons"] = qualification(evaluated["metrics"], policy) if evaluated else ["validation_execution_failed"]
+        entry["status"] = "VALIDATION_REJECTED" if entry["reasons"] else "VALIDATION_PASSED_NOT_SHORTLISTED"
+        if evaluated and not entry["reasons"]:
+            key = c["strategy_id"]
+            previous = leaders.get(key)
+            if previous is None or (-evaluated["metrics"]["score"], c["candidate_id"]) < (
+                -previous["metrics"]["score"],
+                previous["candidate"]["candidate_id"],
+            ):
+                leaders[key] = evaluated
+
+    finalists = sorted(
+        leaders.values(),
+        key=lambda e: (-e["metrics"]["score"], e["candidate"]["candidate_id"]),
+    )[: policy.max_finalists]
+
+    frozen = dict(
+        config_sha256=json_hash(config),
+        finalists=[f["candidate"] for f in finalists],
+        champion=champion_item,
+        policy=asdict_policy(policy),
+        family_size=len(candidates),
+        dataset_sha256=data_cfg["sha256"],
+        funding_sha256=data_cfg["funding_sha256"],
+        oos_eligibility=oos_eligibility,
+        code=provenance["code"],
+        pre_run_state_sha256=snapshot_hash,
+    )
+    write_json(output / "frozen-search.json", frozen)
+
+    # Consume before test access. Crash leaves incumbent and reservation intact.
+    state = dict(
+        schema=AUDIT_STATE_SCHEMA if audit else STATE_SCHEMA,
+        champion=champion_item,
+        common_hash=common_hash,
+        last_test_end=windows["test"][1],
+        last_promotion_end=old["last_promotion_end"] if old is not None else None,
+        version=old["version"] if old is not None else 0,
+        status="TEST_RESERVED",
+        decision=old["decision"] if old is not None and not audit else None,
+        reserved_study=config["study_id"],
+    )
+    write_json(state_path, state)
+
+    incumbent = evaluate(champion_item, "test")
+    catalog[champion_item["candidate_id"]]["status"] = "INCUMBENT_EVALUATED" if incumbent else "INCUMBENT_FAILED"
+
+    challengers = []
+    for finalist in finalists:
+        c = finalist["candidate"]
+        evaluated = evaluate(c, "test")
+        catalog[c["candidate_id"]]["status"] = "OOS_EVALUATED" if evaluated else "OOS_FAILED"
+        if evaluated:
+            challengers.append(evaluated)
+
+    # Also evaluate Cash benchmark on test (for excess-vs-cash reporting; never enters promotion challengers unless shortlisted).
+    cash_net_return = 0.0
+    cash_candidates = [c for c in all_candidates.values() if compat_map[c["candidate_id"]]["strategy_family"] == "cash"]
+    if cash_candidates:
+        cash_cand = cash_candidates[0]
+        cash_cid = cash_cand["candidate_id"]
+        if "test" not in catalog[cash_cid]["stages"]:
+            cash_eval = evaluate(cash_cand, "test")
+            if cash_eval is not None:
+                cash_net_return = float(cash_eval["metrics"]["net_return"])
+                if catalog[cash_cid]["status"] == "VALIDATION_REJECTED":
+                    catalog[cash_cid]["status"] = "BENCHMARK_CASH_EVALUATED"
+        else:
+            cash_net_return = float(catalog[cash_cid]["stages"]["test"]["metrics"].get("net_return", 0.0))
+
+    incumbent_net_return = float(incumbent["metrics"]["net_return"]) if incumbent is not None else None
+    for cid, entry in catalog.items():
+        if "test" in entry["stages"] and entry["stages"]["test"]["status"] == "SUCCEEDED":
+            m = entry["stages"]["test"]["metrics"]
+            m["excess_return_vs_cash"] = float(m["net_return"] - cash_net_return)
+            if incumbent_net_return is not None:
+                m["excess_return_vs_incumbent"] = float(m["net_return"] - incumbent_net_return)
+
+    if incumbent is None:
+        decision = dict(
+            selected=champion_item,
+            promoted=False,
+            decisions=[],
+            reason="retain_champion_comparison_unavailable",
+        )
+    else:
+        cooldown = (
+            not state["last_promotion_end"]
+            or (pd.Timestamp(windows["test"][1]) - pd.Timestamp(state["last_promotion_end"])).days
+            >= policy.cooldown_days
+        )
+        decision = ChampionSelector(policy).select(
+            incumbent,
+            challengers,
+            family_size=len(candidates),
+            cooldown_elapsed=cooldown,
+            oos_eligibility=oos_eligibility,
+        )
+
+    verdict = classify_verdict(decision, oos_eligibility)
+
+    if incumbent and challengers:
+        tracker.compare(
+            [
+                catalog[x["candidate"]["candidate_id"]]["stages"]["test"]["run_id"]
+                for x in [incumbent, *challengers]
+            ]
+        )
+
+    for d in decision["decisions"]:
+        catalog[d["candidate_id"]]["reasons"] = d["reasons"]
+        catalog[d["candidate_id"]]["status"] = "OOS_QUALIFIED" if d["eligible"] else "OOS_REJECTED"
+
+    # Risk stress suite on incumbent + finalists + cash (strictly NOT OOS qualification evidence)
+    stress_targets = []
+    seen_stress = set()
+    for item in [champion_item, *[f["candidate"] for f in finalists], *cash_candidates[:1]]:
+        cid = item["candidate_id"]
+        if cid not in seen_stress:
+            seen_stress.add(cid)
+            stress_targets.append((item, output / "sources" / (item["code_version"] + ".py")))
+    risk_stress = run_risk_stress_suite(
+        stress_targets,
+        stage_bars=test_bars,
+        warmup_bars=test_warmup,
+        train_bars=train_bars,
+        funding_events=all_funding,
+        common=common,
+        policy=policy,
+    )
+    write_json(output / "risk_stress.json", risk_stress)
+
+    paired_stats = {
+        "schema": "FACTORLAB_PAIRED_STATISTICS_V1",
+        "study_id": config["study_id"],
+        "oos_eligibility": oos_eligibility,
+        "prior_studies": data_cfg.get("prior_studies", []),
+        "family_size": len(candidates),
+        "incumbent_candidate_id": champion_item["candidate_id"],
+        "cash_benchmark_net_return": cash_net_return,
+        "verdict": verdict,
+        "decisions": decision["decisions"],
+    }
+    write_json(output / "paired_statistics.json", paired_stats)
+
+    package_mapping = {
+        "schema": "FACTORLAB_STRATEGY_PACKAGE_MAPPING_V1",
+        "study_id": config["study_id"],
+        "execution_contract": BINANCE_EXECUTION,
+        "s03_release_schema": "FACTORLAB_CHAMPION_SELECTION_V1",
+        "candidates": [
+            {
+                "candidate_id": cid,
+                "strategy_id": entry["candidate"]["strategy_id"],
+                "class_name": entry["candidate"]["class_name"],
+                "code_version": entry["candidate"]["code_version"],
+                "parameters": entry["candidate"]["parameters"],
+                "source_filename": entry["compatibility"]["source_filename"],
+                "strategy_family": entry["compatibility"]["strategy_family"],
+                "s03_compatible": entry["compatibility"]["s03_compatible"],
+                "s03_entrypoint": entry["compatibility"]["s03_entrypoint"],
+                "s04_requirements": entry["compatibility"]["s04_requirements"],
+            }
+            for cid, entry in catalog.items()
+        ],
+    }
+    write_json(output / "package_mapping.json", package_mapping)
+
+    report = dict(
+        schema="FACTORLAB_CHAMPION_SELECTION_V1",
+        study_id=config["study_id"],
+        version=state["version"] + int(decision["promoted"]),
+        verdict=verdict,
+        oos_eligibility=oos_eligibility,
+        prior_studies=data_cfg.get("prior_studies", []),
+        **decision,
+        frozen_search_sha256=file_hash(output / "frozen-search.json"),
+        windows=windows,
+        common=common,
+        policy=asdict_policy(policy),
+        candidates=list(catalog.values()),
+        source_kind=data_cfg["source_kind"],
+        financial_admission="FORMAL_ADMISSION_BLOCKED",
+        interpretation=(
+            "Binance USD-M NVDAUSDT 1x LIMIT long-only offline research evidence; "
+            "funding settled before exact-tie fills (R10 rule); "
+            "synthetic inputs prove software only; reused historical windows cannot prove fresh OOS alpha"
+        ),
+    )
+    write_json(output / "selection.json", report)
+    write_json(output / "candidates.json", list(catalog.values()))
+
+    lines = [
+        "# Binance USD-M Automatic Research Evidence",
+        "",
+        f"- Study ID: `{report['study_id']}`",
+        f"- Verdict: `{verdict}`",
+        f"- Decision reason: `{report['reason']}`",
+        f"- Promoted: `{report['promoted']}` (version `{report['version']}`)",
+        f"- Selected: `{report['selected']['candidate_id']}` (`{report['selected']['strategy_id']}`)",
+        f"- Source kind: `{report['source_kind']}` | OOS eligibility: `{oos_eligibility}`",
+        f"- Execution contract: `{common['execution']}` (`{common['execution_lifecycle']}`, `{common['exit_profile']}`)",
+        "",
+        report["interpretation"],
+        "",
+        "| Strategy | Candidate | Stage | Net Return | vs Cash | vs Incumbent | MaxDD | CVaR95 | Sharpe | Fill Rate | Turnover | Funding Erosion | Residual Inv | Exit Fail |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for item in catalog.values():
+        c = item["candidate"]
+        for stage, ev in item["stages"].items():
+            m = ev["metrics"]
+            def _fmt(val, pct=False):
+                if val is None:
+                    return "N/A"
+                return f"{val*100:.2f}%" if pct else f"{val:.4f}"
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        c["strategy_id"],
+                        c["candidate_id"],
+                        stage,
+                        _fmt(m.get("net_return"), True),
+                        _fmt(m.get("excess_return_vs_cash"), True),
+                        _fmt(m.get("excess_return_vs_incumbent"), True),
+                        _fmt(m.get("max_drawdown"), True),
+                        _fmt(m.get("cvar_95"), True),
+                        _fmt(m.get("sharpe"), False),
+                        _fmt(m.get("fill_rate"), True),
+                        _fmt(m.get("turnover_ratio"), False),
+                        _fmt(m.get("funding_erosion_pct"), True),
+                        _fmt(m.get("residual_inventory"), False),
+                        _fmt(m.get("exit_failure_ratio"), True),
+                    ]
+                )
+                + " |"
+            )
+    (output / "REPORT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    state.update(
+        champion=decision["selected"],
+        version=report["version"],
+        status="COMPLETED",
+        decision={
+            "path": str(output / "selection.json"),
+            "sha256": file_hash(output / "selection.json"),
+        },
+    )
+    if decision["promoted"]:
+        state["last_promotion_end"] = windows["test"][1]
+    write_json(state_path, state)
+    return report
