@@ -22,7 +22,7 @@ The calendar comes from the official Paper calendar endpoint. The weekly window 
 
 Run `sudo -u factorlab-alpaca /opt/factorlab-alpaca/current/venv/bin/python -m factorlab.integrations.alpaca.cloud_runtime health`. The minute timer sends the same JSON to journald. An active unit alone is not recovered account or strategy execution readiness. Reports are private daily JSON files and SQLite records, updated with current official equity, cash, positions, actual weights and official FILL activities. Target weights and strategy returns are null until real strategy execution is connected. Equity change has an explicit observation baseline and is not claimed as strategy performance.
 
-Health records the release, PID, persistent process-start count, heartbeat, recovery timestamp, trade stream, market stream/gap status, explicit IEX REST quote availability, weekly window and deferred execution state. A stale heartbeat fails the health command. Quiet closed-market feeds are not fabricated market events.
+Health records the release, PID, persistent process-start count, heartbeat, recovery timestamp, trade stream, market stream/gap status, explicit IEX REST quote availability, weekly window and deferred execution state. Each REST cycle revokes previous quote availability before acquiring new quotes. A market-data failure does not erase an account recovery that succeeded in the same cycle; the aggregate remains unhealthy. A stale heartbeat fails the health command. Quiet closed-market feeds are not fabricated market events.
 
 ## Code rollback and recovery
 

@@ -27,7 +27,8 @@ WEIGHTS = {
 }
 
 
-def run_acceptance(*, state_dir, phase, credentials_file):
+def run_acceptance(*, state_dir, phase, credentials_file=None, runtime_config=None,
+                   campaign='ALP-E03 TEST'):
     """Perform one test phase; wait for push events, never poll orders for fills."""
     from .adapter import AlpacaAdapter, OrderNotFound
     from .http import AlpacaConfig, AlpacaError, PaperHTTP
@@ -39,13 +40,19 @@ def run_acceptance(*, state_dir, phase, credentials_file):
 
     root = Path(state_dir)
     root.mkdir(parents=True, exist_ok=True)
-    credentials = Credentials.from_dpapi(credentials_file)
-    http = PaperHTTP(AlpacaConfig(credentials.key, credentials.secret))
-    adapter = AlpacaAdapter(http, root / 'broker.sqlite', limits=RiskLimits(
+    if runtime_config is None:
+        credentials = Credentials.from_dpapi(credentials_file)
+        runtime_config = AlpacaConfig(credentials.key, credentials.secret)
+        broker_name, portfolio_name = 'broker.sqlite', 'portfolio.sqlite'
+    else:
+        credentials = Credentials(runtime_config.key_id, runtime_config.secret_key)
+        broker_name, portfolio_name = 'account.sqlite3', 'portfolio.sqlite3'
+    http = PaperHTTP(runtime_config)
+    adapter = AlpacaAdapter(http, root / broker_name, limits=RiskLimits(
         max_order_notional=D(25), max_instrument_exposure=D(50),
         account_budget=D(100), orders_per_minute=30))
     client = MarketDataClient(credentials, feed='iex', attempts=1)
-    store = PortfolioStore(root / 'portfolio.sqlite')
+    store = PortfolioStore(root / portfolio_name)
     runner = AlpacaPortfolioRunner(adapter, store, order_not_found=OrderNotFound, rejection_error=AlpacaError)
     try:
         initial = adapter.recover()
@@ -57,14 +64,14 @@ def run_acceptance(*, state_dir, phase, credentials_file):
         rows, _ = client.calendar(session, session)
         calendar = AlpacaSessionCalendar(rows, coverage_start=session, coverage_end=session,
                                         version='ALPACA:v2/calendar')
-        task_key = 'ALP-E03 TEST:task-id'
+        task_key = f'{campaign}:task-id'
         with store.transaction():
             if store.event_payload(task_key) is None:
                 if store.db.execute('SELECT COUNT(*) FROM portfolio_plans').fetchone()[0]:
                     raise ValueError('legacy acceptance journal requires explicit identity-collision review')
                 store.record_metadata(task_key, uuid4().hex)
             task_id = decode(json.loads(store.event_payload(task_key)))
-        baseline_key = 'ALP-E03 TEST:baseline'
+        baseline_key = f'{campaign}:baseline'
         with store.transaction():
             if store.event_payload(baseline_key) is None:
                 if any(p.instrument_id in SYMBOLS and p.quantity for p in initial.positions):
@@ -73,15 +80,15 @@ def run_acceptance(*, state_dir, phase, credentials_file):
                     positions={p.instrument_id: p.quantity for p in initial.positions},
                     captured_at=facts.observed_at, process=os.getpid()))
         if phase in {'recover', 'replay'}:
-            active = store.event_payload('ALP-E03 TEST:open-id')
+            active = store.event_payload(f'{campaign}:open-id')
             if active is None:
                 raise ValueError('open phase must be persisted before recovery')
             identity = decode(json.loads(active))
-            previous = store.event_payload('ALP-E03 TEST:open-process')
+            previous = store.event_payload(f'{campaign}:open-process')
             if previous is not None and decode(json.loads(previous)) == os.getpid():
                 raise ValueError('restart evidence requires a different process')
         else:
-            if phase == 'rotate' and store.event_payload('ALP-E03 TEST:recover-complete') is None:
+            if phase == 'rotate' and store.event_payload(f'{campaign}:recover-complete') is None:
                 raise ValueError('fresh-process recovery must complete before rotation')
             if phase == 'cleanup':
                 for row in store.db.execute(
@@ -94,13 +101,13 @@ def run_acceptance(*, state_dir, phase, credentials_file):
                     adapter.recover()
             identity = runner.executor.create(account_id=facts.account_id,
                 strategy_id='ALP-E03 TEST', strategy_version='synthetic-1', trading_session=session,
-                rebalance_id='ALP-E03 TEST:' + task_id + ':' + phase, weights=WEIGHTS[phase],
+                rebalance_id=f'{campaign}:' + task_id + ':' + phase, weights=WEIGHTS[phase],
                 owned_symbols=SYMBOLS, now=received, initial_capital=D(100000))
             if phase == 'open':
                 with store.transaction():
-                    store.record_metadata('ALP-E03 TEST:open-id', identity)
-                    if store.event_payload('ALP-E03 TEST:open-process') is None:
-                        store.record_metadata('ALP-E03 TEST:open-process', os.getpid())
+                    store.record_metadata(f'{campaign}:open-id', identity)
+                    if store.event_payload(f'{campaign}:open-process') is None:
+                        store.record_metadata(f'{campaign}:open-process', os.getpid())
         rule_map = {}
         for symbol in SYMBOLS:
             asset = adapter.read_asset(symbol)
@@ -140,7 +147,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
         before_orders = tuple(row[0] for row in store.db.execute('SELECT id FROM portfolio_orders ORDER BY id'))
         before_positions = {p.instrument_id: p.quantity for p in initial.positions}
         if phase == 'replay':
-            if store.event_payload('ALP-E03 TEST:rotate-complete') is None:
+            if store.event_payload(f'{campaign}:rotate-complete') is None:
                 raise ValueError('completed rotation required before historical replay')
             if not update():
                 raise ValueError('historical completed plan did not remain complete')
@@ -194,7 +201,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
                 status=record.snapshot.status.value,
                 filled_quantity=record.snapshot.cumulative_filled_quantity,
                 observed_at=record.observed_at))
-        evidence = dict(purpose='ALP-E03 TEST: synthetic targets, not a strategy signal',
+        evidence = dict(purpose=f'{campaign}: synthetic targets, not a strategy signal',
             phase=phase, account_fingerprint=sha256(facts.account_id.encode()).hexdigest()[:12],
             rebalance_id=identity, process=os.getpid(), invocations=invocations,
             orders=order_facts, limit_price_tolerance=D('.001'),
@@ -204,7 +211,7 @@ def run_acceptance(*, state_dir, phase, credentials_file):
         artifact = root / ('evidence-' + phase + '.json')
         artifact.write_text(dumps(evidence) + '\n', encoding='utf-8')
         with store.transaction():
-            store.record_metadata('ALP-E03 TEST:' + phase + '-complete', dict(
+            store.record_metadata(f'{campaign}:' + phase + '-complete', dict(
                 identity=identity, process=os.getpid(), evidence=artifact.name))
         return dict(phase=phase, complete=True, evidence=str(artifact),
                     official_equity=str(report.official_equity), cash=str(report.official_cash),

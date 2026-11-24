@@ -73,6 +73,38 @@ def test_health_staleness_and_stopped(tmp_path):
     assert not health(tmp_path, at=at('2026-11-24T15:00:30'))['healthy']
 
 
+def test_acceptance_uses_same_owner_lock_and_systemd_configuration(tmp_path, monkeypatch):
+    from contextlib import contextmanager
+    import factorlab.integrations.alpaca.cloud_runtime as module
+    import factorlab.integrations.alpaca.portfolio_acceptance as acceptance
+    config = AlpacaConfig('key', 'secret')
+    calls = []
+    monkeypatch.setattr(module, 'private_root', lambda _: tmp_path)
+    monkeypatch.setattr(module, 'credential_config', lambda _: config)
+    @contextmanager
+    def locked(root):
+        calls.append(('locked', root))
+        yield
+        calls.append('unlocked')
+    monkeypatch.setattr(module, 'owner_lock', locked)
+    def run(**kwargs):
+        assert calls == [('locked', tmp_path)]
+        assert kwargs == dict(state_dir=tmp_path, phase='recover', runtime_config=config,
+                              campaign='ALP-E04 CLOUD TEST')
+        calls.append('acceptance')
+        return {'complete': True}
+    monkeypatch.setattr(acceptance, 'run_acceptance', run)
+    assert module.main(['acceptance', '--phase', 'recover']) == 0
+    assert calls == [('locked', tmp_path), 'acceptance', 'unlocked']
+
+
+def test_acceptance_requires_explicit_phase():
+    from factorlab.integrations.alpaca.cloud_runtime import main
+    with pytest.raises(SystemExit) as error:
+        main(['acceptance'])
+    assert error.value.code == 2
+
+
 def test_incompatible_schema_refused(tmp_path):
     import sqlite3
     with sqlite3.connect(tmp_path / 'runtime.sqlite3') as db:
@@ -103,6 +135,30 @@ def test_disconnect_restarts_session_without_submitting(tmp_path, monkeypatch):
     assert result['trade_stream'] == 'STOPPED'
     assert not result['execution']['enabled']
     assert not result['healthy']
+
+
+def test_market_failure_preserves_account_recovery_and_revokes_old_quotes(tmp_path, monkeypatch):
+    import factorlab.integrations.alpaca.cloud_runtime as module
+    monkeypatch.setattr(module, 'now', lambda: at('2026-11-24T15:00:00'))
+    from types import SimpleNamespace
+    from factorlab.integrations.alpaca.market_data.client import MarketDataError
+    runtime = Supervisor(tmp_path, AlpacaConfig('key', 'secret'))
+    runtime.health['market_rest'] = {'missing_symbols': [], 'fresh_quotes': True}
+    runtime.adapter.recover = lambda: SimpleNamespace(reconciled=True)
+    runtime.adapter.read_account_details = lambda: SimpleNamespace()
+    runtime.calendar_day = at('2026-11-24T15:00:00').date()
+    runtime.service = SimpleNamespace(calendar=calendar())
+    def unavailable(*args):
+        raise MarketDataError(503, 'unavailable')
+    runtime.client.latest = unavailable
+    runtime.poll()
+    result = json.loads((tmp_path / 'health.json').read_text())
+    assert result['account_recovered']
+    assert not result['market_available']
+    assert not result['healthy']
+    assert result['error'] == 'MarketDataError'
+    runtime.adapter.store.db.close()
+    runtime.store.db.close()
 
 
 def test_failed_recovery_revokes_old_health(tmp_path):

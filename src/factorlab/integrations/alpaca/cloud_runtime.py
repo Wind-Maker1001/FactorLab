@@ -268,10 +268,12 @@ class Supervisor:
         if self.last_poll is not None and (at - self.last_poll).total_seconds() < self.interval:
             return
         self.last_poll = at
-        self.health.update(account_recovered=False, error=None)
+        self.health.update(account_recovered=False, market_rest=None, error=None)
         try:
             snapshot = self.adapter.recover()
             facts = self.adapter.read_account_details()
+            self.health.update(account_recovered=snapshot.reconciled,
+                               last_recovery_at=at.isoformat())
             if self.calendar_day != at.date():
                 start, end = at.date() - timedelta(days=40), at.date() + timedelta(days=370)
                 self.service = MarketDataService.connect(self.client, None, start=start, end=end)
@@ -313,8 +315,9 @@ class Supervisor:
                                         for p in report['positions']} if facts.equity else {}
             self.store.report(at, report)
         except (ConnectionError, TimeoutError, OSError, RateLimited, ServiceError, MarketDataError) as error:
-            self.health.update(account_recovered=False, error=type(error).__name__)
-            self.store.event('RECOVERY_FAILED', {'error': type(error).__name__})
+            self.health.update(error=type(error).__name__)
+            self.store.event('RECOVERY_FAILED', {'error': type(error).__name__,
+                                               'account_recovered': self.health['account_recovered']})
             if isinstance(error, MarketDataError) and error.status in {401, 403}:
                 raise PermissionError('market authentication refused') from None
         self.publish()
@@ -388,12 +391,17 @@ def health(root, *, at=None, max_age=90):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=('run', 'health'))
+    parser.add_argument('action', choices=('run', 'health', 'acceptance'))
+    parser.add_argument('--phase', choices=('open', 'recover', 'rotate', 'replay', 'cleanup'))
     parser.add_argument('--state-root', default='/var/lib/factorlab-alpaca-paper')
     parser.add_argument('--credential-file', default=os.environ.get('FACTORLAB_ALPACA_SECRET_FILE'))
     parser.add_argument('--revision', default='unknown')
     parser.add_argument('--symbols', default=','.join(SYMBOLS))
     args = parser.parse_args(argv)
+    if args.action == 'acceptance' and args.phase is None:
+        parser.error('acceptance requires --phase')
+    if args.action != 'acceptance' and args.phase is not None:
+        parser.error('--phase is only valid for acceptance')
     if args.action == 'health':
         try:
             value = health(args.state_root)
@@ -406,6 +414,12 @@ def main(argv=None):
         root = private_root(args.state_root)
         config = credential_config(args.credential_file)
         with owner_lock(root):
+            if args.action == 'acceptance':
+                from .portfolio_acceptance import run_acceptance
+                result = run_acceptance(state_dir=root, phase=args.phase, runtime_config=config,
+                                        campaign='ALP-E04 CLOUD TEST')
+                print(json.dumps(result), flush=True)
+                return 0
             runtime = Supervisor(root, config, symbols=args.symbols.split(','), revision=args.revision)
             for signum in (signal.SIGTERM, signal.SIGINT):
                 signal.signal(signum, lambda *_: runtime.stop.set())
