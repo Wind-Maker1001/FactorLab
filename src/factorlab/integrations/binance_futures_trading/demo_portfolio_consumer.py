@@ -76,7 +76,7 @@ class DemoPortfolioConsumer:
             from .tradfi_schedule import utc_instant
             from factorlab.trading.contracts import TERMINAL
             started = self.session.controller.store.event_payload('portfolio:' + identity((
-                'tradfi-demo-acceptance',task_payload['task_id']))) is not None
+                task_payload['allocation_id'],task_payload['task_id']))) is not None
             if utc_instant(task_payload['valid_until']) <= self.session._now():
                 recovered = self.session.gateway.recover(self.session.controller)
                 if recovered.reconciled and not any(r.snapshot.status not in TERMINAL
@@ -89,7 +89,8 @@ class DemoPortfolioConsumer:
             budget = max(D(0),min(BUDGET,funds['walletBalance']+funds['unrealizedProfit']-D(7)))
             request = dict(task_id=task_payload['task_id'],budget_usdt=str(budget),
                            weights=task_payload['weights'])
-            self.receipt('ACCEPTED',dict(owner_budget_usdt=str(budget)))
+            if outstanding[0]['status'] == 'QUEUED':
+                self.receipt('ACCEPTED',dict(owner_budget_usdt=str(budget)))
         task = request['task_id']
         weights = {k:D(v) for k,v in request['weights'].items()}
         budget = D(request['budget_usdt'])
@@ -100,6 +101,11 @@ class DemoPortfolioConsumer:
         store = self.session.controller.store
         done = 'portfolio-result:' + identity(task)
         if store.event_payload(done) is not None:
+            if self.active_mailbox_task is not None:
+                from factorlab.trading.storage import decode
+                saved = decode(json.loads(store.event_payload(done)))
+                self.receipt('COMPLETED' if saved['outcome'] == 'NO_EXECUTABLE_DELTA' else 'REJECTED',
+                    dict(outcome=saved['outcome'],journal=done))
             return
         self.session.shared_account = True
         store.record_metadata('demo:static-shared-account:v1',
@@ -145,7 +151,8 @@ class DemoPortfolioConsumer:
                 prices[symbol] = price
                 steps[symbol] = D(self.session.gateway.rules.filters['LOT_SIZE']['stepSize'])
                 self.session.controller.quote(Quote(symbol, price, book['time_utc']))
-        portfolio = PortfolioRuntime(self.session.controller, allocation_id='tradfi-demo-acceptance',
+        portfolio = PortfolioRuntime(self.session.controller, allocation_id=(self.active_mailbox_task['allocation_id']
+            if self.active_mailbox_task is not None else 'tradfi-demo-acceptance'),
             owned_symbols=SYMBOLS, recover=lambda:self.session.gateway.recover(self.session.controller))
         portfolio.begin(task, weights=weights, equity=budget)
         def submit(intent):
@@ -206,12 +213,16 @@ class DemoPortfolioConsumer:
                 self.runtime._set(campaign_key,json.dumps(campaign))
         plan = DemoExecutionPlan(account_id=s.adapter.account_id, symbol=symbol,
             order_types=frozenset({'LIMIT'}), max_quantity=D(1), max_notional=BUDGET,
-            max_orders=12,max_open_orders=4,max_seconds=3600,max_loss=D(2),
+            max_orders=len([k for k in s.gateway.state.orders if k.startswith('pf')])+12,max_open_orders=4,max_seconds=3600,max_loss=D(2),
             max_margin=ACCOUNT_BUDGET,expires_at=expires,client_id_prefix='pf',
             cleanup='CANCEL_KNOWN_THEN_STOP',recovery='GET_RECONCILE_NO_RESUBMIT')
         def guard(method,params,plan):
             if durable_control_state(self.runtime) is not None:
                 raise SafetyBlocked('account execution stopped')
+            if self.active_mailbox_task is not None:
+                from .tradfi_schedule import utc_instant
+                if utc_instant(self.active_mailbox_task['valid_until']) <= s._now():
+                    raise SafetyBlocked('task expired at dispatch; GET recovery required')
             if params.get('symbol') != symbol or symbol not in SYMBOLS:
                 raise SafetyBlocked('portfolio symbol ownership mismatch')
             key = ('pf-leverage-'+symbol if 'leverage' in params else
