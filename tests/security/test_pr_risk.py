@@ -294,7 +294,7 @@ def test_merge_gate_rejects_failures_and_missing_extensions(monkeypatch):
         GITHUB_RUN_ID='123', STATUS_SHA='a' * 40, GH_TOKEN='test').items():
         monkeypatch.setenv(name, value)
     results = {name: {'result': 'success'} for name in (
-        'risk', 'fast', 'control-review', 'current', 'current-coverage', 'locking', 'package')}
+        'risk', 'fast', 'targeted', 'control-review', 'current', 'current-coverage', 'locking', 'package')}
     results['risk']['outputs'] = dict(current='true', locking='true', package='true', review='true')
     for job in results:
         for status in ('failure', 'skipped', 'cancelled'):
@@ -305,7 +305,8 @@ def test_merge_gate_rejects_failures_and_missing_extensions(monkeypatch):
                 exec(compile(script, '<merge-gate>', 'exec'), {})
             assert exc.value.code
             assert json.loads(response.call_args.args[0].data)['state'] == 'failure'
-    for job in ('current', 'current-coverage'):
+    assert 'targeted' in workflow['jobs']['merge-gate']['needs']
+    for job in ('fast', 'targeted', 'current', 'current-coverage'):
         attack = {key: value for key, value in results.items() if key != job}
         monkeypatch.setenv('RESULTS', json.dumps(attack))
         with pytest.raises(SystemExit) as exc:
@@ -330,19 +331,19 @@ def test_merge_gate_rejects_failures_and_missing_extensions(monkeypatch):
         assert json.loads(response.call_args.args[0].data)['state'] == 'success'
 
 
-def test_fast_consumes_trusted_plan_and_runner():
+def test_targeted_consumes_trusted_plan_and_runner():
     from pathlib import Path
     import yaml
     workflow = yaml.load((Path(__file__).resolve().parents[2] /
         '.github/workflows/factorlab-pr.yml').read_text(), Loader=yaml.BaseLoader)
-    fast = workflow['jobs']['fast']
-    assert fast['needs'] == 'risk'
+    job = workflow['jobs']['targeted']
+    assert job['needs'] == 'risk'
     assert any(step.get('with', {}).get('name') == 'pr-risk' and
-               step.get('uses', '').startswith('actions/download-artifact@') for step in fast['steps'])
-    targeted = next(step['run'] for step in fast['steps'] if '--suite targeted' in step.get('run', ''))
+               step.get('uses', '').startswith('actions/download-artifact@') for step in job['steps'])
+    targeted = next(step['run'] for step in job['steps'] if '--suite targeted' in step.get('run', ''))
     assert 'python -I ../trusted/tools/ci/integration_checks.py' in targeted
     assert '--risk-plan ../trusted-risk/risk.json' in targeted
-    assert any('execution.json' in step.get('with', {}).get('path', '') for step in fast['steps'])
+    assert any('execution.json' in step.get('with', {}).get('path', '') for step in job['steps'])
 
 
 @pytest.mark.parametrize('parents,is_pr,subject,passes', [

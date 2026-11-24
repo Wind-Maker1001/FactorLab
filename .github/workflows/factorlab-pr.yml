@@ -479,7 +479,7 @@ jobs:
   merge-gate:
     name: FactorLab merge gate
     environment: ci-merge-publisher
-    needs: [risk, fast, control-review, current, current-coverage, locking, package]
+    needs: [risk, fast, targeted, control-review, current, current-coverage, locking, package]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 1
@@ -506,7 +506,7 @@ jobs:
           import json, os, urllib.request
           results = json.loads(os.environ['RESULTS'])
           risk = results['risk']
-          required = ['risk', 'fast'] + [job for key, job in (
+          required = ['risk', 'fast', 'targeted'] + [job for key, job in (
               ('review', 'control-review'), ('current', 'current'), ('current', 'current-coverage'),
               ('locking', 'locking'), ('package', 'package'))
               if risk.get('outputs', {}).get(key) == 'true']
@@ -516,7 +516,7 @@ jobs:
           failed = not valid_risk or any(results.get(job, {}).get('result') != 'success' for job in required)
           payload = dict(state='failure' if failed else 'success',
                          context='FactorLab trusted merge gate',
-                         description='Mandatory Fast and risk extensions ' + ('failed' if failed else 'passed'),
+                         description='Mandatory Fast, Targeted and risk extensions ' + ('failed' if failed else 'passed'),
                          target_url=os.environ['GITHUB_SERVER_URL'] + '/' + os.environ['GITHUB_REPOSITORY'] +
                                     '/actions/runs/' + os.environ['GITHUB_RUN_ID'])
           request = urllib.request.Request(os.environ['GITHUB_API_URL'] + '/repos/' +

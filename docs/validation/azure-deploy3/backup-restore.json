@@ -1,0 +1,358 @@
+{
+  "backup_bytes": 23094317,
+  "backup_name": "backup-20261124T185859Z",
+  "backup_path": "/var/backups/factorlab-demo/backup-20261124T185859Z",
+  "completed_at": "2026-11-24T18:59:48.401036+00:00",
+  "database_count": 14,
+  "drill_restore": {
+    "backup_path": "/var/backups/factorlab-demo/backup-20261124T185859Z",
+    "checks": {
+      "binding_match": true,
+      "budget_match": true,
+      "control_match": true,
+      "controller_match": true,
+      "databases_match": true,
+      "funding_match": true,
+      "integrity_all_ok": true,
+      "orders_match": true,
+      "secret_files_excluded": true,
+      "task_mailbox_match": true
+    },
+    "drilled_at": "2026-11-24T18:59:38.194252+00:00",
+    "isolated_restore_path": "/var/backups/factorlab-demo/.restore-drill-6um2lw92/restored-state",
+    "kept_restored": false,
+    "passed": true,
+    "quarantine": {
+      "backup_manifest_present_in_restored": true,
+      "c05_handoff_blocks_backup": true,
+      "c05_handoff_blocks_restored": true,
+      "execute_lock_blocked": true,
+      "execute_lock_error": "restored Demo state is restricted to cloud GET-only recovery",
+      "get_only_lock_allowed": true,
+      "quarantine_file_present": true,
+      "quarantine_reason": "restored-state-requires-GET-only-recovery"
+    },
+    "snapshot": {
+      "binding": {
+        "account_id_sha256_prefix": "a85bde3c47c7",
+        "environment": "DEMO",
+        "host": "https://demo-fapi.binance.com",
+        "journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+        "journal_id_matches_account": true,
+        "present": true
+      },
+      "control": {
+        "durable_control_state": "RUNNING",
+        "grid_control_desired": "RUNNING",
+        "grid_mode": "execute",
+        "grid_supervisor_present": true
+      },
+      "controller": {
+        "events_count": 27344,
+        "present": true,
+        "snapshot_count": 1
+      },
+      "database_bytes": 23027712,
+      "database_count": 14,
+      "databases": [
+        "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+        "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+        "external/task-mailbox/tasks.sqlite3",
+        "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+        "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+        "grid-preview/grid-supervisor.sqlite3",
+        "grid-preview/runtime.sqlite3",
+        "grid-supervisor.sqlite3",
+        "runtime.sqlite3",
+        "strategy-deployment.sqlite3",
+        "strategy-dry-run.sqlite3",
+        "strategy-execute.sqlite3",
+        "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+        "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3"
+      ],
+      "protocol": {
+        "events_count": 192,
+        "funding_continuity_ok": true,
+        "funding_coverage": {
+          "complete": true,
+          "covered_from_ms": 1794650735948,
+          "covered_through_ms": 1795546737820,
+          "updated_at": "2026-11-24T18:58:58.110990+00:00"
+        },
+        "funding_earliest_ms": 1795338000000,
+        "funding_events_count": 10,
+        "funding_latest_ms": 1795485600000,
+        "funding_time_monotonic": true,
+        "funding_tran_ids_unique": true,
+        "meta_account_matches_binding": true,
+        "order_recovery_count": 111,
+        "orders_by_status": {
+          "CANCELED": 51,
+          "FILLED": 60,
+          "REJECTED": 2
+        },
+        "orders_count": 113,
+        "present": true,
+        "receipts_count": 192,
+        "rejections_count": 2,
+        "unknown_orders_count": 0
+      },
+      "runtime": {
+        "active_window_id": "window-0d0c555e062c4bc49972d8739983cd93",
+        "authorization_journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+        "authorization_state": "RUNNING",
+        "campaigns_count": 42,
+        "consumed_posts": 100,
+        "consumed_submitted_notional": "635.9740000",
+        "continuous_authorization_present": true,
+        "diagnostic_present": false,
+        "dispatches_count": 166,
+        "durable_control_state": null,
+        "max_loss": "1",
+        "opening_equity": "4999.97114760",
+        "present": true,
+        "remaining_notional": "64.0260000",
+        "remaining_posts": 0,
+        "total_notional": "700",
+        "total_orders": 100
+      },
+      "task_mailbox": {
+        "content_sha256": "be821ef37b46830296c622f863c88fa7f27336f61262873c7929ab7c15f45316",
+        "present": true,
+        "rows": {
+          "portfolio_receipts": 6,
+          "portfolio_tasks": 2
+        }
+      },
+      "total_bytes": 23094384
+    }
+  },
+  "error_category": null,
+  "maintenance_window": {
+    "auxiliary_units": [
+      "factorlab-demo-strategy-deploy.timer",
+      "factorlab-demo-tradfi-observer.service"
+    ],
+    "downtime_seconds": 10.096,
+    "interrupted_unit": "factorlab-demo-execute.service",
+    "post_health": {
+      "account_recovered": true,
+      "alive": true,
+      "consumed_posts": 100,
+      "consumed_submitted_notional": "635.9740000",
+      "deployment_id": "fl-d7345f8795464a65-g-00036",
+      "desired": "RUNNING",
+      "execute_healthy": false,
+      "get_only_healthy": false,
+      "grid_state": "PAUSED",
+      "market_fresh": true,
+      "mode": "EXECUTE",
+      "open_orders_count": 0,
+      "pid": 360112,
+      "positions_count": 0,
+      "ready": false,
+      "remaining_notional": "64.0260000",
+      "remaining_posts": 0,
+      "status": "PAUSED",
+      "systemd_active_state": "active",
+      "systemd_main_pid": 360112,
+      "systemd_n_restarts": 0,
+      "systemd_sub_state": "running",
+      "unknown_count": 0
+    },
+    "pre_health": {
+      "account_recovered": false,
+      "alive": true,
+      "consumed_posts": 100,
+      "consumed_submitted_notional": "635.9740000",
+      "deployment_id": "fl-d7345f8795464a65-g-00036",
+      "desired": "RUNNING",
+      "execute_healthy": false,
+      "get_only_healthy": false,
+      "grid_state": "PAUSED",
+      "market_fresh": false,
+      "mode": "EXECUTE",
+      "open_orders_count": null,
+      "pid": 359755,
+      "positions_count": null,
+      "ready": false,
+      "remaining_notional": "64.0260000",
+      "remaining_posts": 0,
+      "status": "PAUSED",
+      "systemd_active_state": "active",
+      "systemd_main_pid": 359755,
+      "systemd_n_restarts": 0,
+      "systemd_sub_state": "running",
+      "unknown_count": 0
+    },
+    "reconcile_reason": null,
+    "reconcile_verified": true,
+    "restart_succeeded": true,
+    "restarted_at": "2026-11-24T18:59:11.960714+00:00",
+    "service_control_enabled": true,
+    "stopped_at": "2026-11-24T18:59:01.864449+00:00"
+  },
+  "offsite_enabled": false,
+  "retention": {
+    "evaluated_at": "2026-11-24T18:59:39.862484+00:00",
+    "kept_invalid": [],
+    "kept_invalid_count": 0,
+    "kept_valid": [
+      {
+        "bytes": 23028781,
+        "created_at": "2026-11-24T18:58:59+00:00",
+        "name": "backup-20261124T185859Z",
+        "protected_min_copy": true
+      },
+      {
+        "bytes": 23086125,
+        "created_at": "2026-11-24T18:54:43+00:00",
+        "name": "backup-20261124T185443Z",
+        "protected_min_copy": false
+      },
+      {
+        "bytes": 22909997,
+        "created_at": "2026-11-24T18:50:37+00:00",
+        "name": "backup-20261124T185037Z",
+        "protected_min_copy": false
+      },
+      {
+        "bytes": 20812807,
+        "created_at": "2026-11-24T03:15:03+00:00",
+        "name": "backup-20261124T031503Z",
+        "protected_min_copy": false
+      },
+      {
+        "bytes": 17236969,
+        "created_at": "2026-11-23T03:15:02+00:00",
+        "name": "backup-20261123T031502Z",
+        "protected_min_copy": false
+      },
+      {
+        "bytes": 16843753,
+        "created_at": "2026-11-22T17:43:07+00:00",
+        "name": "backup-20261122T174307Z",
+        "protected_min_copy": false
+      },
+      {
+        "bytes": 16770025,
+        "created_at": "2026-11-22T16:55:47+00:00",
+        "name": "backup-20261122T165547Z",
+        "protected_min_copy": false
+      }
+    ],
+    "kept_valid_count": 7,
+    "min_valid_copies": 1,
+    "pruned": [],
+    "pruned_count": 0,
+    "retention_days": 14,
+    "skipped_reason": null,
+    "total_kept_bytes": 140688457
+  },
+  "started_at": "2026-11-24T18:58:59.363932+00:00",
+  "status": "SUCCEEDED",
+  "verification": {
+    "backup_manifest_present": true,
+    "binding": {
+      "account_id_sha256_prefix": "a85bde3c47c7",
+      "environment": "DEMO",
+      "host": "https://demo-fapi.binance.com",
+      "journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+      "journal_id_matches_account": true,
+      "present": true
+    },
+    "control": {
+      "durable_control_state": "RUNNING",
+      "grid_control_desired": "RUNNING",
+      "grid_mode": "execute",
+      "grid_supervisor_present": true
+    },
+    "controller": {
+      "events_count": 27344,
+      "present": true,
+      "snapshot_count": 1
+    },
+    "database_bytes": 23027712,
+    "database_count": 14,
+    "databases": [
+      "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+      "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+      "external/task-mailbox/tasks.sqlite3",
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+      "grid-preview/grid-supervisor.sqlite3",
+      "grid-preview/runtime.sqlite3",
+      "grid-supervisor.sqlite3",
+      "runtime.sqlite3",
+      "strategy-deployment.sqlite3",
+      "strategy-dry-run.sqlite3",
+      "strategy-execute.sqlite3",
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3"
+    ],
+    "integrity_all_ok": true,
+    "path": "/var/backups/factorlab-demo/backup-20261124T185859Z",
+    "protocol": {
+      "events_count": 192,
+      "funding_continuity_ok": true,
+      "funding_coverage": {
+        "complete": true,
+        "covered_from_ms": 1794650735948,
+        "covered_through_ms": 1795546737820,
+        "updated_at": "2026-11-24T18:58:58.110990+00:00"
+      },
+      "funding_earliest_ms": 1795338000000,
+      "funding_events_count": 10,
+      "funding_latest_ms": 1795485600000,
+      "funding_time_monotonic": true,
+      "funding_tran_ids_unique": true,
+      "meta_account_matches_binding": true,
+      "order_recovery_count": 111,
+      "orders_by_status": {
+        "CANCELED": 51,
+        "FILLED": 60,
+        "REJECTED": 2
+      },
+      "orders_count": 113,
+      "present": true,
+      "receipts_count": 192,
+      "rejections_count": 2,
+      "unknown_orders_count": 0
+    },
+    "quarantine_present": false,
+    "quarantine_reason": null,
+    "runtime": {
+      "active_window_id": "window-0d0c555e062c4bc49972d8739983cd93",
+      "authorization_journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+      "authorization_state": "RUNNING",
+      "campaigns_count": 42,
+      "consumed_posts": 100,
+      "consumed_submitted_notional": "635.9740000",
+      "continuous_authorization_present": true,
+      "diagnostic_present": false,
+      "dispatches_count": 166,
+      "durable_control_state": null,
+      "max_loss": "1",
+      "opening_equity": "4999.97114760",
+      "present": true,
+      "remaining_notional": "64.0260000",
+      "remaining_posts": 0,
+      "total_notional": "700",
+      "total_orders": 100
+    },
+    "secret_files_excluded": true,
+    "sidecar_bytes": 65536,
+    "task_mailbox": {
+      "content_sha256": "be821ef37b46830296c622f863c88fa7f27336f61262873c7929ab7c15f45316",
+      "present": true,
+      "rows": {
+        "portfolio_receipts": 6,
+        "portfolio_tasks": 2
+      }
+    },
+    "total_bytes": 23094317,
+    "valid": true
+  },
+  "verified": true,
+  "version": 1
+}
