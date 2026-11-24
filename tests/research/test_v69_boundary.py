@@ -11,14 +11,6 @@ def weights():
     return dict.fromkeys(ASSETS, D('.1'))
 
 
-@pytest.mark.parametrize('variant', list(Variant))
-def test_missing_sources_emit_nothing(variant):
-    state = {'held': ['AAPL']}
-    with pytest.raises(SourceUnavailable):
-        V69Strategy(variant).decide({}, state)
-    assert state == {'held': ['AAPL']}
-
-
 def test_mapping_is_repeatable_and_does_not_redistribute():
     original = weights()
     for _ in range(2):

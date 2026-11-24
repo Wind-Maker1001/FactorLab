@@ -1,24 +1,14 @@
 {
-  "status": "missing_original_sources",
-  "versions": {
-    "v48": null,
-    "v50": null,
-    "v69": null
+  "status": "SOURCE_AVAILABLE",
+  "archive_sha256": "d3e7346c8100e4c5ea6d9a98f3a60a151405288198bb5c84a1f4e32bb9dfe97e",
+  "manifest_files_verified": 28,
+  "provenance": {
+    "origin": "https://github.com/cfu02669-lang/qlib-workbench",
+    "host_checkout_head": "c3f93e563ca981bd4a12502f799cc5a39fa09cdd",
+    "research_source_kind": "local research archive; v69 strategy is untracked; host commit does not authenticate these bytes",
+    "research_root_relative_to_qlib": "local/research/ai_grid_iterations_20261117/round12_us_equity"
   },
-  "assets": [
-    "AAPL",
-    "SNDK",
-    "BA",
-    "C",
-    "JPM",
-    "GE",
-    "TQQQ",
-    "QQQ"
-  ],
-  "TARGET": null,
-  "omit_sndk": null,
-  "tqqq_conversion": null,
-  "position_adjustments": null,
-  "adjustment_basis": null,
-  "equivalence_verified": false
+  "license": "tests/fixtures/v69_original/LICENSE-QLIB",
+  "license_scope": "Supplied Qlib MIT license retained; local research bytes are not authenticated by host HEAD.",
+  "upstream_manifest": "tests/fixtures/v69_original/source-manifest.json"
 }

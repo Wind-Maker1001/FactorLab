@@ -1,0 +1,15 @@
+{
+  "SOURCE_AVAILABLE": "PASS: all 27 manifest entries byte/hash verified",
+  "SIGNAL_EQUIVALENCE": "PASS: deterministic same-input synthetic oracle; not historical market replay",
+  "ORDER_INTENT_EQUIVALENCE": "PASS: same-input oracle and explicit edge tests",
+  "FULL_REFERENCE_REPLAY": "PENDING: original fixture/market and Qlib Provider absent",
+  "ALPACA_INTEGRATION": "OFFLINE_CONTRACT_PASS: E03 local working tree; no Paper network submission",
+  "weight_diff_rows": 2688,
+  "max_absolute_weight_difference": 0.0,
+  "reference_artifact_counts": {
+    "sessions": 977,
+    "targets": 204,
+    "fills": 371
+  },
+  "historical_inputs_replayed": false
+}

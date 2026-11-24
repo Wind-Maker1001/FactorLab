@@ -1,4 +1,4 @@
-"""V69 portfolio migration boundary; original signal sources are unavailable."""
+"""Native V69 portfolio boundary with explicit checkpoint and causal history."""
 from decimal import Decimal
 from enum import Enum
 import csv
@@ -65,13 +65,41 @@ def write_weight_diff(stream, session, variant, reference, candidate):
 
 
 class V69Strategy:
-    """Fail closed until original sources and all dependencies are frozen.
+    """Stateless portfolio preparation with explicit JSON checkpoint.
 
-    Not registered with the single-symbol live loader. Portfolio execution
-    requires an account-wide adapter before live use.
+    Event: close/volume frames through previous completed session, calendar,
+    session, adjusted holdings and cash. No opening observation required.
+    Returned orders remain in adjusted research units.
     """
-    def __init__(self, variant=Variant.REFERENCE):
+    def __init__(self, variant=Variant.CAUSAL, *, omit_sndk=False):
         self.variant = Variant(variant)
+        self.omit_sndk = omit_sndk
 
     def decide(self, event, state):
-        raise SourceUnavailable('Missing v48/v50/v69 originals; no verified target available')
+        import pandas as pd
+        from types import SimpleNamespace
+        from .v69_native import V69Planner
+        day = pd.Timestamp(event['session'])
+        calendar = event['calendar']
+        if not first_session_of_week(calendar, day):
+            return dict(weights=None, orders=[], state=dict(state))
+        week = list(day.isocalendar()[:2])
+        if state.get('last_week') == week:
+            return dict(weights=None, orders=[], state=dict(state))
+        previous = calendar.shift(day, -1)
+        close, volume = event['close'], event['volume']
+        if close.index[-1] != previous or volume.index[-1] != previous:
+            raise ValueError('history must end at preceding completed session')
+        # Append a label only, never a current-session observation.
+        engine = V69Planner(close.reindex(close.index.append(pd.DatetimeIndex([day]))),
+                            volume.reindex(volume.index.append(pd.DatetimeIndex([day]))),
+                            omit_sndk=self.omit_sndk)
+        engine.trade_calendar = SimpleNamespace(get_step_time=lambda: (day, day))
+        engine.trade_position = SimpleNamespace(
+            get_stock_amount_dict=lambda: dict(event['holdings']),
+            get_cash=lambda: event['cash'])
+        decision = engine.generate_trade_decision()
+        weights = {k: engine.decisions[-1][k] for k in ASSETS}
+        return dict(weights=weights, orders=[dict(symbol=o.stock_id,
+            side='sell' if o.direction == 0 else 'buy', adjusted_quantity=o.amount)
+            for o in decision.order_list], state={'last_week': week})
