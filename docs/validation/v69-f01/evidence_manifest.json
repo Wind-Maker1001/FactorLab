@@ -11,7 +11,7 @@
       "original_sha256": "cb55bac227fa8d962bcfc21e8eb07a7d1cb3048da12f2fd734b382c54efd3248",
       "symbol_count": 956,
       "retained_evidence": "mainnet_listing_evidence.json",
-      "retained_sha256": "2a07d94c5d78f9ddd0f9e9587c5c3ec38acbe3770b4bc2faf950afeebe68fac1",
+      "retained_sha256": "67de8d55cddd4687ea02db784dd001aa516cec0448e1c8b8b54eec6cd7f5db5d",
       "external_archive": "FactorLab-archives/v69-f01-public-snapshots/mainnet_exchangeInfo.json"
     },
     "demo": {
@@ -21,7 +21,7 @@
       "original_sha256": "1b91a8baa9fd2f7aecd1e0a53666c42545ab4f8b1e78cefb47933f2f64e7af68",
       "symbol_count": 744,
       "retained_evidence": "demo_listing_evidence.json",
-      "retained_sha256": "457c2080eb721490caef35a35b6fa0684f6a2881504e9f734b6916c09868231a",
+      "retained_sha256": "b938123622c07a824b8dcc56b18c4d07aecf849fb148bd62979e5c7362873fdf",
       "external_archive": "FactorLab-archives/v69-f01-public-snapshots/demo_exchangeInfo.json"
     }
   }
