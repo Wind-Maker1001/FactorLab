@@ -178,7 +178,11 @@ class LoadedStrategy:
             raise StrategyWorkerError('strategy worker failed (no decision committed)')
         try:
             response = decode(json.loads(raw))
+            if not isinstance(response, dict):
+                self.close()
+                raise StrategyWorkerError('invalid strategy worker response')
             if response.get('error'):
+                self.close()
                 raise StrategyWorkerError(response['error'])
             return response['value']
         except (KeyError, json.JSONDecodeError) as error:

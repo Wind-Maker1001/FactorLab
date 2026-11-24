@@ -413,3 +413,105 @@ def test_parallel_helpers_and_blas_pinning():
     with create_process_pool(2, single_thread_blas=True) as pool:
         envs = list(pool.map(_worker_read_blas_env, [0, 1]))
     assert all(e["OMP_NUM_THREADS"] == "1" and e["OPENBLAS_NUM_THREADS"] == "1" for e in envs)
+
+
+def test_paper_store_funding_metadata_mutation_isolation_and_cache_invalidation():
+    from factorlab.trading.paper import PaperState
+
+    now = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
+    inst = Instrument("NVDAUSDT", "USDT")
+    state = PaperState(Market.BINANCE_USDM, "acct-fund-meta", {"NVDAUSDT": inst}, {"USDT": D("100")}, D("0.0004"))
+    ev = FundingEvent(
+        account_id="acct-fund-meta",
+        tran_id="tr-1",
+        symbol="NVDAUSDT",
+        asset="USDT",
+        income_type="FUNDING_FEE",
+        amount=D("-0.1234"),
+        event_time=now,
+        source="test",
+        event_id="fe-1",
+        metadata={"mark_price": "130.0", "rate": "0.0001"},
+    )
+    state.funding_events[ev.event_id] = ev
+
+    store = PaperStore(":memory:")
+    with store.transaction():
+        store.save(state)
+
+    # Mutating loaded event.metadata outside a transaction must not pollute cached state
+    loaded_a = store.load()
+    loaded_a.funding_events["fe-1"].metadata["mark_price"] = "999.0"
+    loaded_b = store.load()
+    assert loaded_b.funding_events["fe-1"].metadata["mark_price"] == "130.0"
+
+    # Saving a mutated metadata dict on the same FundingEvent object must invalidate fragment cache
+    loaded_a.funding_events["fe-1"].metadata["mark_price"] = "135.5"
+    with store.transaction():
+        store.save(loaded_a)
+    row = store.db.execute("SELECT payload FROM snapshot WHERE id=1").fetchone()
+    assert row[0] == dumps(loaded_a)
+    assert store.load().funding_events["fe-1"].metadata["mark_price"] == "135.5"
+    store.db.close()
+
+
+def test_slice_window_funding_preserves_predecessor_for_exact_gap_calculation():
+    from factorlab.experiments.grid_r10_study import _slice_window_funding
+
+    base = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
+    # Sparse events where at win_start (h=48), lookback (24h..48h] has only h=25,
+    # while its immediate predecessor is at h=23 (gap_h = 2h, not default 8h).
+    all_events = [
+        (base + timedelta(hours=15), D("130"), D("0.0002"), "Sparse"),
+        (base + timedelta(hours=23), D("130"), D("0.0004"), "Sparse"),
+        (base + timedelta(hours=25), D("130"), D("0.0006"), "Sparse"),
+        (base + timedelta(hours=52), D("130"), D("0.0005"), "Sparse"),
+    ]
+    win_start_iso = (base + timedelta(hours=48)).isoformat()
+    win_end_iso = (base + timedelta(hours=72)).isoformat()
+    sliced = _slice_window_funding(all_events, win_start_iso, win_end_iso, lookback_hours=24)
+    for h in (48, 49, 52, 60, 71):
+        obs = base + timedelta(hours=h)
+        assert (
+            causal_funding_rate_bps_h(sliced, obs, lookback_hours=24, conservative=True)
+            == causal_funding_rate_bps_h(all_events, obs, lookback_hours=24, conservative=True)
+        )
+    # Specifically verify h=48 got gap_h=2h (last_bps_h = 6.0 / 2.0 = 3.0), not fallback 8h (0.75)
+    est, cnt, last_bps_h = causal_funding_rate_bps_h(sliced, base + timedelta(hours=48), lookback_hours=24)
+    assert cnt == 1
+    assert last_bps_h == pytest.approx(3.0)
+    assert est == pytest.approx(3.0)
+
+
+def test_s01_persistent_worker_recycles_cleanly_after_error(tmp_path: Path):
+    pkg = tmp_path / "err_pkg"
+    pkg.mkdir()
+    (pkg / "strategy.py").write_text(
+        "from decimal import Decimal as D\n"
+        "from factorlab.strategies.protocol import Decision, StrategySpec\n"
+        "DIRTY = 0\n"
+        "class FlakyStrategy:\n"
+        "    def describe(self):\n"
+        "        return StrategySpec('flaky', '1', 'target', ['NVDAUSDT'], [3600], ['closed_bar'])\n"
+        "    def decide(self, event, state):\n"
+        "        global DIRTY\n"
+        "        if event['event_id'] == 'boom':\n"
+        "            DIRTY = 999\n"
+        "            raise RuntimeError('injected failure')\n"
+        "        return Decision(target_weight=D('0'), state={'dirty': DIRTY})\n",
+        encoding="utf-8",
+    )
+    (pkg / "strategy.json").write_text(
+        json.dumps({"file": "strategy.py", "class": "FlakyStrategy", "version": "1", "parameters": {}}),
+        encoding="utf-8",
+    )
+    now = datetime(2026, 6, 1, 1, 0, tzinfo=timezone.utc)
+    ev_boom = {"kind": "closed_bar", "symbol": "NVDAUSDT", "now": now, "event_id": "boom", "bars": [{"close": D("100")}]}
+    ev_ok = {"kind": "closed_bar", "symbol": "NVDAUSDT", "now": now, "event_id": "ok", "bars": [{"close": D("100")}]}
+    with LoadedStrategy(pkg, trusted=True, persistent_worker=True, verify_runtime_each_call=False) as strat:
+        with pytest.raises(StrategyWorkerError, match="RuntimeError"):
+            strat.decide(ev_boom, {})
+        # Worker must have been recycled so DIRTY global state from the failed call is gone
+        assert strat._worker_proc is None
+        decision = strat.decide(ev_ok, {})
+        assert decision.state == {"dirty": 0}

@@ -126,6 +126,17 @@ def _clone_runtime(value):
 
 def _clone_paper_state(state: PaperState) -> PaperState:
     """Create an isolated PaperState copy without recursing into immutable records."""
+    funding_events = {
+        k: (
+            contracts.FundingEvent(
+                v.account_id, v.tran_id, v.symbol, v.asset, v.income_type,
+                v.amount, v.event_time, v.source, v.event_id, dict(v.metadata),
+            )
+            if type(v) is contracts.FundingEvent and v.metadata
+            else v
+        )
+        for k, v in state.funding_events.items()
+    }
     return PaperState(
         market=state.market,
         account_id=state.account_id,
@@ -142,7 +153,7 @@ def _clone_paper_state(state: PaperState) -> PaperState:
         sequence=state.sequence,
         runtime=_clone_runtime(state.runtime),
         funding=dict(state.funding),
-        funding_events=dict(state.funding_events),
+        funding_events=funding_events,
     )
 
 
@@ -252,12 +263,26 @@ class PaperStore:
         fund_parts = []
         for k, v in state.funding_events.items():
             cached = fund_cache.get(k)
-            if cached is not None and cached[0] is v and type(v) is contracts.FundingEvent:
+            if (
+                cached is not None
+                and type(v) is contracts.FundingEvent
+                and cached[2] == v.metadata
+                and (cached[0] is v or cached[0] == v)
+            ):
                 fund_parts.append(cached[1])
             else:
                 frag = "[" + enc(k) + "," + enc(encode(v)) + "]"
                 if type(v) is contracts.FundingEvent:
-                    fund_cache[k] = (v, frag)
+                    meta_copy = dict(v.metadata)
+                    snap = (
+                        contracts.FundingEvent(
+                            v.account_id, v.tran_id, v.symbol, v.asset, v.income_type,
+                            v.amount, v.event_time, v.source, v.event_id, meta_copy,
+                        )
+                        if meta_copy
+                        else v
+                    )
+                    fund_cache[k] = (snap, frag, meta_copy)
                 fund_parts.append(frag)
 
         # Keys in strictly alphabetical order to match sort_keys=True byte-for-byte.

@@ -223,12 +223,25 @@ def _slice_window_funding(
     *,
     lookback_hours: int = 96,
 ) -> list[tuple[datetime, Decimal, Decimal, str]]:
-    """Slice only the causal funding events relevant to one window (plus lookback buffer)."""
+    """Slice only the causal funding events relevant to one window (plus lookback buffer).
+
+    When ``lookback_hours > 0``, also preserves the latest event strictly before
+    ``win_start`` so ``causal_funding_rate_bps_h`` computes the exact same inter-event
+    gap as when given the full funding history.
+    """
     if not funding_events:
         return []
     win_start = parse_utc(start_utc_iso) - timedelta(hours=lookback_hours)
     win_end = parse_utc(end_excl_utc_iso)
-    return [ev for ev in funding_events if win_start <= ev[0] < win_end]
+    sliced = [ev for ev in funding_events if win_start <= ev[0] < win_end]
+    if lookback_hours > 0:
+        pre = None
+        for ev in funding_events:
+            if ev[0] < win_start and (pre is None or ev[0] > pre[0]):
+                pre = ev
+        if pre is not None:
+            sliced.insert(0, pre)
+    return sliced
 
 
 def _execute_tasks_parallel(
