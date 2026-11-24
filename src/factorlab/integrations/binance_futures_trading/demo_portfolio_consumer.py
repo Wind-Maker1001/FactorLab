@@ -10,7 +10,6 @@ from decimal import Decimal as D
 import json
 from pathlib import Path
 import os
-from urllib.parse import parse_qs
 
 from factorlab.trading.contracts import Side
 from factorlab.trading.paper import Instrument, Quote
@@ -200,7 +199,9 @@ class DemoPortfolioConsumer:
         campaign = json.loads(raw) if raw else None
         now = s._now()
         if campaign is None:
-            campaign = dict(id=campaign_key, expires_at=(now+timedelta(hours=1)).isoformat())
+            funds = s.adapter.facts.usdt()
+            campaign = dict(id=campaign_key, expires_at=(now+timedelta(hours=1)).isoformat(),
+                            opening_equity=str(funds['walletBalance']+funds['unrealizedProfit']))
             with self.runtime.db:
                 self.runtime._set(campaign_key,json.dumps(campaign))
         from datetime import datetime
@@ -232,6 +233,11 @@ class DemoPortfolioConsumer:
             if 'leverage' in params and params['leverage'] != 1:
                 raise SafetyBlocked('portfolio leverage must be one')
             if 'leverage' not in params and method == 'POST' and params.get('reduceOnly') == 'false':
+                funds = s.adapter.facts.usdt()
+                if 'opening_equity' not in campaign:
+                    raise SafetyBlocked('legacy campaign has no durable loss baseline; use a new task')
+                if D(campaign['opening_equity'])-(funds['walletBalance']+funds['unrealizedProfit']) >= D(2):
+                    raise SafetyBlocked('portfolio persistent account loss limit')
                 state = s.gateway.state
                 exposure = sum((abs(p.quantity)*p.mark_price for p in state.positions.values()
                                 if p.instrument_id in SYMBOLS),D(0))
