@@ -730,6 +730,30 @@ def calibrated_worker(network_grid, monkeypatch):
     return run, state, fake, requests
 
 
+def test_worker_reports_exhausted_budget_without_losing_account_recovery(calibrated_worker, monkeypatch):
+    run, _, _, requests = calibrated_worker
+
+    def rounds(supervisor, state):
+        runtime = supervisor.feed.runtime
+        monkeypatch.setattr(runtime, 'global_trading_capacity', lambda: False)
+        supervisor.before_poll()
+        consumer = state.consumer
+        assert not consumer.running
+        assert consumer.reason == 'global Demo trading budget exhausted'
+        assert supervisor.feed.account_recovered
+        health = supervisor.feed.health_snapshot()
+        assert health['account_recovered']
+        assert health['nav_usdt'] is not None
+        with pytest.raises(SafetyBlocked, match='global Demo trading budget exhausted'):
+            consumer.gate()
+        consumer.control.request('PAUSED')
+        supervisor.before_poll()
+        assert consumer.reason == 'PAUSED'
+        assert not [request for request in requests if request.get_method() == 'POST']
+
+    assert run(rounds, execute=True) == 0
+
+
 @pytest.mark.parametrize('failed_get', [None, 'exchangeInfo', 'leverageBracket'])
 def test_worker_refreshes_rules_without_resetting_orders_or_budget(calibrated_worker, failed_get):
     from factorlab.errors import DataQualityError
