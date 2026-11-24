@@ -80,7 +80,8 @@ class GridConsumer:
     """Bars advance Grid; GET reports alone advance economic state."""
     def __init__(self, bridge, control, *, authority=lambda: True,
                  clock=lambda: datetime.now(timezone.utc), proposal_observer=None, ensure_campaign=None,
-                 request_counts=None, rotate=None):
+                 request_counts=None, rotate=None, blocked_reason=lambda: 'AUTHORIZATION_REQUIRED'):
+        self.blocked_reason = blocked_reason
         self.request_counts = request_counts
         self.ensure_campaign = ensure_campaign
         self.proposal_observer = proposal_observer
@@ -103,7 +104,7 @@ class GridConsumer:
         if self.control.desired() != 'RUNNING':
             raise SafetyBlocked('Grid control prohibits submission')
         if not self.authority():
-            raise SafetyBlocked('AUTHORIZATION_REQUIRED')
+            raise SafetyBlocked(self.blocked_reason())
         if not self.running:
             raise SafetyBlocked('FRESH_CLOSED_BAR_REQUIRED')
         if self._exit_dispatch_active:
@@ -118,7 +119,7 @@ class GridConsumer:
 
     def _refresh_reason(self, desired, allowed):
         if not allowed:
-            self.reason = 'PAUSED' if desired == 'PAUSED' else 'AUTHORIZATION_REQUIRED'
+            self.reason = 'PAUSED' if desired == 'PAUSED' else self.blocked_reason()
             return
         exit_status = self.bridge.breakout_exit_status(desired=desired, authorized=allowed)
         if exit_status is not None and exit_status['phase'] != 'FLAT_CONFIRMED':
@@ -165,7 +166,7 @@ class GridConsumer:
         self._refresh_reason(desired, allowed)
 
     def _rotation_allowed(self):
-        return (self.control.desired() == 'RUNNING'
+        return (self.control.desired() == 'RUNNING' and self.authority()
                 and (self.supervisor is None or not self.supervisor.stopped.is_set()))
 
     def require_fresh_bar(self):
@@ -545,7 +546,8 @@ class GridSupervisorRuntime:
                     return True
                 current = consumer.bridge
                 campaign = self.runtime.active_campaign()
-                if (campaign is None or campaign['smoke'] or self._effective_desired() != 'RUNNING'
+                if (not self.runtime.global_trading_capacity()
+                        or campaign is None or campaign['smoke'] or self._effective_desired() != 'RUNNING'
                         or self.runtime.post_count(campaign['id']) >= campaign['orders']
                         or current.session.receipt_error or current.session.write_uncertain):
                     return False
@@ -555,7 +557,12 @@ class GridSupervisorRuntime:
                         and self.runtime.grid_deployment_matches(
                             store, deployment, campaign, self.runtime.continuous_authorization()))
 
-            consumer = GridConsumer(bridge, self.control, authority=authority,
+            def blocked_reason():
+                if self.execute and not self.runtime.global_trading_capacity():
+                    return 'global Demo trading budget exhausted'
+                return 'AUTHORIZATION_REQUIRED'
+
+            consumer = GridConsumer(bridge, self.control, authority=authority, blocked_reason=blocked_reason,
                 clock=bridge.session._now, ensure_campaign=bridge.ensure_campaign,
                 request_counts=self.requests,
                 rotate=bridge.rotate_if_terminal if self.execute and self.settings is None else None)

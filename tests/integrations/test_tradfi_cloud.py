@@ -43,6 +43,31 @@ def test_account_projection_suppresses_stale_financials(tmp_path):
     assert result['positions'] is None
 
 
+def test_budget_pause_retains_reason_and_only_fresh_nav_in_durable_observation(tmp_path):
+    now = datetime(2026, 11, 24, 15, tzinfo=timezone.utc)
+    path = tmp_path / 'cloud-health.json'
+    owner = {'heartbeat_at': now.timestamp() - 1, 'account_recovered': True,
+             'account_age_seconds': 0, 'status': 'PAUSED',
+             'reason': 'global Demo trading budget exhausted', 'mode': 'EXECUTE',
+             'nav_usdt': '4999.32325687', 'positions': []}
+    path.write_text(json.dumps(owner))
+    ledger = ObservationLedger(tmp_path)
+    snapshot = sample(now.isoformat())
+    snapshot['account'] = account_projection(path, now)
+    ledger.record(snapshot)
+    stored = json.loads(ledger.db.execute('SELECT payload FROM samples').fetchone()[0])
+    assert stored['account']['fresh']
+    assert stored['account']['nav_usdt'] == owner['nav_usdt']
+    assert stored['account']['reason'] == owner['reason']
+    owner['account_age_seconds'] = 100
+    path.write_text(json.dumps(owner))
+    stale = account_projection(path, now)
+    assert stale['reason'] == owner['reason']
+    assert not stale['fresh']
+    assert stale['nav_usdt'] is None
+    ledger.close()
+
+
 def test_monitor_does_not_trust_cached_quote_fresh_flag(tmp_path):
     now = datetime(2026, 11, 24, 15, tzinfo=timezone.utc)
     snapshot = {'observed_at': now.isoformat(), 'market_error': None,

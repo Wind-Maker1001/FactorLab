@@ -175,6 +175,16 @@ def run_command(args, root, store, runtime, requests, smoke_id):
         runtime.save_tradfi(account_id, receipt)
         status = 'DEMO_TRADFI_SIGNED' if receipt['success'] else 'DEMO_TRADFI_NOT_CONFIRMED'
         return dict(status=status, agreement=receipt)
+    if command == 'update-budget':
+        binding, _ = load_bound_credential(store)
+        with open_session(root, store, runtime, requests, require_bound_configuration=True) as (session, _):
+            account = recover(session)
+            if account['unknown'] or session.adapter.account_id != binding['account_id']:
+                raise SafetyBlocked('fresh bound Demo account reconciliation required')
+            result = runtime.update_continuous_budget(binding, total_orders=args.total_orders,
+                total_notional=args.total_notional, max_loss=args.max_loss)
+            result['account'] = account
+            return dict(status='DEMO_BUDGET_UPDATED', **result)
     if command == 'resume-continuous':
         binding, _ = load_bound_credential(store)
         epoch = runtime.stop_epoch()
@@ -306,6 +316,10 @@ def parse_args(argv):
     continuous.add_argument('--total-notional', type=parse_decimal, default=Decimal('700'))
     continuous.add_argument('--window-seconds', type=int, default=10800)
     continuous.add_argument('--window-orders', type=int, default=4)
+    update = commands.add_parser('update-budget', help='enlarge the bound Demo cumulative budget')
+    update.add_argument('--total-orders', type=int, required=True)
+    update.add_argument('--total-notional', type=parse_decimal, required=True)
+    update.add_argument('--max-loss', type=parse_decimal, required=True)
     commands.add_parser('resume-continuous', help='explicitly resume the same stopped Demo authorization without resetting budgets')
     commands.add_parser('stop', aliases=['disable-demo', 'kill'])
     for name in ('buy-limit', 'reduce-limit'):

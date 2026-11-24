@@ -1,17 +1,2 @@
-__pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
-.coverage*
-htmlcov/
-build/
-dist/
-local-*/
-results/
-.venv*/
-# Local raw audit evidence can contain absolute paths; preserve on disk only.
-docs/migration/evidence/**/*.log
-docs/migration/evidence/**/*.xml
-docs/migration/evidence/*.log
-docs/migration/evidence/*.xml
-docs/migration/evidence/test-summary.json
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*

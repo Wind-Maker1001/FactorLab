@@ -117,6 +117,33 @@ def test_new_campaign_rejects_existing_activity(network_grid):
     assert sum(request.get_method() == 'POST' for request in requests) == 1
 
 
+def test_exhausted_global_budget_preserves_readonly_grid_recovery(network_grid):
+    from contextlib import closing
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
+    from test_binance_demo_grid_network import observe, writes
+
+    root, store, factory, _, _, requests = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        policy = runtime.start_continuous(store.read_config(), opening_equity=D('1000'),
+            stop_epoch=runtime.stop_epoch(), total_orders=1)
+    with open_grid_session(root, store, factory, continuous=True) as b:
+        b.recover()
+        observe(b)
+        b.dispatch()
+        assert len(writes(requests)) == 1
+    with open_grid_session(root, store, factory, continuous=True, ensure_on_open=False) as b:
+        consumed = b.runtime.consumption(policy)
+        consumer = GridConsumer(b, Control(), authority=b.runtime.global_trading_capacity,
+            clock=lambda: NOW, ensure_campaign=b.ensure_campaign, rotate=b.rotate_if_terminal)
+        consumer.before_poll()
+        assert b.session.status()['reconciled']
+        assert not consumer.running
+        assert not consumer._rotation_allowed()
+        assert b.runtime.consumption(policy) == consumed
+        assert consumed['posts'] == 1
+        assert len(writes(requests)) == 1
+
+
 def test_continuous_breakout_rotates_after_flat_recovery_and_restarts(network_grid):
     from contextlib import closing
 
@@ -701,6 +728,30 @@ def calibrated_worker(network_grid, monkeypatch):
         return module.run(args, root=root, credentials=store)
 
     return run, state, fake, requests
+
+
+def test_worker_reports_exhausted_budget_without_losing_account_recovery(calibrated_worker, monkeypatch):
+    run, _, _, requests = calibrated_worker
+
+    def rounds(supervisor, state):
+        runtime = supervisor.feed.runtime
+        monkeypatch.setattr(runtime, 'global_trading_capacity', lambda: False)
+        supervisor.before_poll()
+        consumer = state.consumer
+        assert not consumer.running
+        assert consumer.reason == 'global Demo trading budget exhausted'
+        assert supervisor.feed.account_recovered
+        health = supervisor.feed.health_snapshot()
+        assert health['account_recovered']
+        assert health['nav_usdt'] is not None
+        with pytest.raises(SafetyBlocked, match='global Demo trading budget exhausted'):
+            consumer.gate()
+        consumer.control.request('PAUSED')
+        supervisor.before_poll()
+        assert consumer.reason == 'PAUSED'
+        assert not [request for request in requests if request.get_method() == 'POST']
+
+    assert run(rounds, execute=True) == 0
 
 
 @pytest.mark.parametrize('failed_get', [None, 'exchangeInfo', 'leverageBracket'])

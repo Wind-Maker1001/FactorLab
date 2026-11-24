@@ -91,7 +91,7 @@ def test_freezes_every_database_and_blocks_lock_bypassing_stop(state, tmp_path, 
     original = storage._snapshot
     observed = []
 
-    def snapshot(root, destination, databases, *, quarantine):
+    def snapshot(root, destination, databases, *, quarantine, task_mailbox=None):
         with closing(DemoRuntime(root)) as runtime:
             runtime.db.execute('PRAGMA busy_timeout=0')
             with pytest.raises(sqlite3.OperationalError, match='locked'):
@@ -101,7 +101,7 @@ def test_freezes_every_database_and_blocks_lock_bypassing_stop(state, tmp_path, 
                 with pytest.raises(sqlite3.OperationalError, match='locked'):
                     connection.execute('BEGIN IMMEDIATE')
                 observed.append(path)
-        return original(root, destination, databases, quarantine=quarantine)
+        return original(root, destination, databases, quarantine=quarantine, task_mailbox=task_mailbox)
 
     monkeypatch.setattr(storage, '_snapshot', snapshot)
     storage.backup_state(state, tmp_path / 'backup')

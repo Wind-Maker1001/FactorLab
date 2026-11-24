@@ -98,7 +98,7 @@ def account_projection(health_path, now):
              and health.get('account_recovered') is True
              and account_age is not None and 0 <= account_age + age <= ACCOUNT_READ_SECONDS
              and health['status'] not in {'EXITED', 'STOPPED', 'HALTED'})
-    keys = ('status', 'mode', 'desired', 'last_reconciled_at', 'last_valid_market_at',
+    keys = ('status', 'reason', 'mode', 'desired', 'last_reconciled_at', 'last_valid_market_at',
             'campaign', 'global_budget', 'unknown_count', 'open_orders')
     result = {k: health.get(k) for k in keys}
     result.update(fresh=fresh, heartbeat_age_seconds=age)

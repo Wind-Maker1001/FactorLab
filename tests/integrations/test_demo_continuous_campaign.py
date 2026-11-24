@@ -411,3 +411,44 @@ def test_non_protocol_clock_skew_does_not_replay_recovery(network_grid, monkeypa
 def test_continuous_entrypoint_has_no_campaign_approval():
     args = parse_args(['start-continuous'])
     assert (args.total_orders, args.total_notional, args.window_seconds, args.window_orders) == (100, D('700'), 10800, 4)
+
+
+def test_budget_migration_preserves_identity_consumption_and_is_idempotent(network_grid):
+    root, store, _, _, _, _ = network_grid
+    authorization, _, _ = initialize(root, store)
+    campaign = dict(id='legacy-window', journal_id=authorization['journal_id'], smoke=False, opening_equity='1000')
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.db.execute('INSERT INTO campaigns VALUES (?, ?)', (campaign['id'], json.dumps(campaign)))
+        for index in range(100):
+            runtime.db.execute('INSERT INTO dispatches VALUES (?, ?, ?, ?, NULL)',
+                (campaign['id'], 'POST', f'legacy-{index}', json.dumps(dict(quantity='.04', price='158.9935'))))
+        runtime.db.commit()
+        before = runtime.continuous_authorization()
+        consumed = runtime.consumption(before)
+        assert consumed == dict(posts=100, submitted_notional='635.974000')
+        migrated = runtime.update_continuous_budget(store.config, total_orders=100000,
+            total_notional=D('500000'), max_loss=D('250'))
+        after = migrated['authorization']
+        assert after['id'] == before['id']
+        assert after['journal_id'] == before['journal_id']
+        assert after['opening_equity'] == before['opening_equity'] == '1000'
+        assert (after['total_orders'], D(after['total_notional']), D(after['max_loss'])) == (100000, D('500000'), D('250'))
+        assert migrated['consumption'] == consumed
+        repeated = runtime.update_continuous_budget(store.config, total_orders=100000,
+            total_notional=D('500000'), max_loss=D('250'))
+        assert repeated['idempotent'] is True
+        assert runtime.db.execute("SELECT count(*) FROM runtime WHERE key LIKE 'continuous_budget_migration:%'").fetchone()[0] == 1
+
+
+def test_budget_migration_rejects_consumption_or_independent_state_changes(network_grid):
+    root, store, _, _, _, _ = network_grid
+    authorization, _, _ = initialize(root, store)
+    with closing(DemoRuntime(root)) as runtime:
+        with pytest.raises(SafetyBlocked, match='invalid continuous Demo risk budget'):
+            runtime.update_continuous_budget(store.config, total_orders=0, total_notional=D('500000'), max_loss=D('250'))
+        runtime.stop()
+        stopped = runtime.continuous_authorization()
+        migrated = runtime.update_continuous_budget(store.config, total_orders=100000,
+            total_notional=D('500000'), max_loss=D('250'))
+        assert migrated['authorization']['state'] == stopped['state'] == 'STOPPED'
+        assert runtime.continuous_authorization()['stop_epoch'] == stopped['stop_epoch']
