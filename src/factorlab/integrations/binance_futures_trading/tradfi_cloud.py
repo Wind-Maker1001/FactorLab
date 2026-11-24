@@ -123,7 +123,10 @@ def run(args):
             if calendar_day != now.date():
                 schedule = WeeklySchedule(us_calendar(now.date() - timedelta(days=14), now.date() + timedelta(days=400)))
                 calendar_day = now.date()
-            window = schedule.next_window(now)
+            receipts = [] if mailbox is None else mailbox.snapshot()
+            completed_session = max((r['session'] for r in receipts
+                                     if r['task_type'] == 'SCHEDULED' and r['status'] == 'COMPLETED'), default=None)
+            window = schedule.next_window(now, completed_session=completed_session)
             error = None
             try:
                 quotes = collect_market(args.symbols)

@@ -113,7 +113,7 @@ class TaskMailbox:
             ON r.sequence=(SELECT max(sequence) FROM portfolio_receipts WHERE task_id=t.task_id)
             ORDER BY t.rowid''').fetchall()
         return [dict(task_id=task, task_type=json.loads(payload)['task_type'],
-                     status=status, recorded_at=at,
+                     session=json.loads(payload)['session'], status=status, recorded_at=at,
                      detail=None if detail is None else json.loads(detail))
                 for task, status, at, detail, payload in rows]
 
