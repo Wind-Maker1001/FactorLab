@@ -18,6 +18,40 @@ from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRunt
 from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
 
 
+@pytest.mark.parametrize('account_ok,market_ok,unknown,accepted', [
+    (True, True, 0, True), (False, True, 0, False),
+    (True, False, 0, False), (True, True, 1, False),
+])
+def test_budget_paused_maintenance_requires_fresh_readonly_recovery(account_ok, market_ok, unknown, accepted):
+    pre = dict(pid=1, status='PAUSED', desired='RUNNING', remaining_posts=0,
+        consumed_posts=100, consumed_submitted_notional='635.974')
+    post = dict(pre, pid=2, execute_healthy=False, account_recovered=account_ok,
+        market_fresh=market_ok, unknown_count=unknown)
+    matched, _ = backup_mod._reconcile_matches(pre, post,
+        unit='factorlab-demo-execute.service', require_new_pid=True)
+    assert matched is accepted
+    if accepted:
+        assert backup_mod._reconcile_matches(pre, dict(post, consumed_posts=0),
+            unit='factorlab-demo-execute.service', require_new_pid=True) == (False, 'BUDGET_POSTS_REGRESSED')
+
+
+def test_maintenance_reconcile_timeout_restores_auxiliary_writers(monkeypatch):
+    starts = []
+
+    class Runner:
+        def is_unit_active(self, unit):
+            return False
+
+        def start_unit(self, unit):
+            starts.append(unit)
+
+    monkeypatch.setattr(backup_mod, '_restore_execute', lambda *args, **kwargs: 'RECONCILE_TIMEOUT')
+    window = dict(interrupted_unit='factorlab-demo-execute.service', auxiliary_units=[
+        'factorlab-demo-strategy-deploy.timer', 'factorlab-demo-tradfi-observer.service'])
+    assert backup_mod._restore_maintenance(Runner(), Path('unused'), window) == 'RECONCILE_TIMEOUT'
+    assert starts == ['factorlab-demo-tradfi-observer.service', 'factorlab-demo-strategy-deploy.timer']
+
+
 ACCOUNT_ID = 'demo-account-c07-test'
 JOURNAL_ID = journal_id(ACCOUNT_ID)
 SECRET_SENTINEL = 'SUPER_SECRET_NEVER_COPY_C07_9999'
@@ -703,3 +737,96 @@ def test_systemd_backup_units_follow_security_and_schedule_contracts():
     assert 'Unit=factorlab-demo-backup.service' in timer_text
     assert 'OnCalendar=*-*-* 03:15:00 UTC' in timer_text
     assert 'Persistent=true' in timer_text
+
+
+def _seed_external_mailbox(tmp_path):
+    from factorlab.integrations.binance_futures_trading.tradfi_tasks import TaskMailbox
+    directory = _make_private_dir(tmp_path / 'observer')
+    path = directory / 'tasks.sqlite3'
+    with closing(TaskMailbox(path)) as mailbox:
+        mailbox.db.execute("INSERT INTO portfolio_tasks VALUES ('task-1', '{}', 'RECONCILING')")
+        mailbox.db.execute("INSERT INTO portfolio_receipts VALUES (1, 'task-1', '2026-11-22', 'RECONCILING', '{}')")
+        mailbox.db.commit()
+    path.chmod(0o600)
+    return path
+
+
+def test_external_mailbox_backup_and_isolated_restore(tmp_path):
+    state = _seed_execute_state(tmp_path / 'state')
+    mailbox = _seed_external_mailbox(tmp_path)
+    root = _make_private_dir(tmp_path / 'backups')
+    snapshot = backup_mod.create_backup(state, root, task_mailbox=mailbox)
+    summary = backup_mod.verify_backup(snapshot)['task_mailbox']
+    assert summary['rows'] == {'portfolio_tasks': 1, 'portfolio_receipts': 1}
+    with closing(sqlite3.connect(mailbox)) as db:
+        db.execute("UPDATE portfolio_tasks SET status='COMPLETED'")
+        db.commit()
+    drill = backup_mod.drill_restore(snapshot, keep_restored=True)
+    assert drill['checks']['task_mailbox_match']
+    restored = Path(drill['isolated_restore_path']) / storage._TASK_MAILBOX
+    with closing(sqlite3.connect(restored)) as db:
+        assert db.execute('SELECT status FROM portfolio_tasks').fetchone() == ('RECONCILING',)
+    with closing(sqlite3.connect(mailbox)) as db:
+        assert db.execute('SELECT status FROM portfolio_tasks').fetchone() == ('COMPLETED',)
+
+
+def test_external_mailbox_writer_contention_refuses_snapshot(tmp_path):
+    state = _seed_execute_state(tmp_path / 'state')
+    mailbox = _seed_external_mailbox(tmp_path)
+    root = _make_private_dir(tmp_path / 'backups')
+    with closing(sqlite3.connect(mailbox)) as writer:
+        writer.execute('BEGIN IMMEDIATE')
+        with pytest.raises(sqlite3.OperationalError, match='locked'):
+            backup_mod.create_backup(state, root, task_mailbox=mailbox)
+    assert not list(root.iterdir())
+
+
+def test_scheduled_external_mailbox_stops_all_writers(tmp_path):
+    state = _seed_execute_state(tmp_path / 'state')
+    mailbox = _seed_external_mailbox(tmp_path)
+    root = _make_private_dir(tmp_path / 'backups')
+
+    class Runner(_FakeRunner):
+        def __init__(self):
+            super().__init__(pre_health=_health_fixture(pid=1001),
+                             post_health_sequence=[_health_fixture(pid=2002)])
+            self.auxiliary = set(backup_mod.MAILBOX_WRITER_UNITS)
+
+        def is_unit_active(self, unit):
+            return unit in self.auxiliary or super().is_unit_active(unit)
+
+        def stop_unit(self, unit):
+            self.auxiliary.discard(unit)
+            super().stop_unit(unit)
+
+        def start_unit(self, unit):
+            if unit in backup_mod.MAILBOX_WRITER_UNITS:
+                self.events.append(('start', unit))
+                self.auxiliary.add(unit)
+            else:
+                super().start_unit(unit)
+
+    runner = Runner()
+    result = backup_mod.run_scheduled_backup(state, root, task_mailbox=mailbox,
+                                             runner=runner, drill=True)
+    assert result['status'] == 'SUCCEEDED'
+    stops = [event[1] for event in runner.events if event[0] == 'stop']
+    assert stops == [*backup_mod.MAILBOX_WRITER_UNITS, 'factorlab-demo-execute.service']
+    starts = [event[1] for event in runner.events if event[0] == 'start']
+    assert starts == ['factorlab-demo-execute.service', *reversed(backup_mod.MAILBOX_WRITER_UNITS)]
+    assert result['verification']['task_mailbox']['present']
+    assert result['drill_restore']['checks']['task_mailbox_match']
+
+
+def test_auxiliary_only_recovery_restarts_timer_last():
+    class Runner:
+        def __init__(self):
+            self.started = []
+        def is_unit_active(self, unit):
+            return False
+        def start_unit(self, unit):
+            self.started.append(unit)
+    runner = Runner()
+    window = dict(interrupted_unit=None, auxiliary_units=list(backup_mod.MAILBOX_WRITER_UNITS))
+    assert backup_mod._restore_maintenance(runner, None, window, reconcile_timeout=1) is None
+    assert runner.started == list(reversed(backup_mod.MAILBOX_WRITER_UNITS))

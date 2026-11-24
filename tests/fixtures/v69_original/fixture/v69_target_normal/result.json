@@ -1,0 +1,30 @@
+{
+  "lock": "5ce4cf7e6ea8bdd622da804109a478fea133c1e2d087a2cc56082d44f7fac892-7318f94619d2a41abb357e324153bb536fe8224d5b88505121ddafa983396ef9-5a5b97d2880e69f42c561bf3310dae399f93c0f05fb3762ffeb149b8d4870540-a05e66aad6e5e8dc8171fdcd2bfb3b1a37ab0e27cf30f1eef53f2b5644718806",
+  "metrics": {
+    "version": "v69",
+    "window": "target",
+    "case": "normal",
+    "start": "2023-01-03",
+    "end": "2026-11-23",
+    "days": 977,
+    "fills": 371,
+    "fees": 4588.267373538735,
+    "exposure": 0.19167722758363404,
+    "net_usd": 116497.51215209713,
+    "error": 6.402842700481415e-10,
+    "net_return": 0.38832504050698935,
+    "max_dd": -0.04243085484693654,
+    "cagr": 0.08831118513730463,
+    "sortino": 2.9315722767087764,
+    "calmar": 2.0812963928225123,
+    "sharpe": 1.8377693725059805,
+    "beta": 0.12805431314107635,
+    "alpha": 0.05266396925252321
+  },
+  "outputs": {
+    "daily.parquet": "5b6552b9f394b3073801bfcd3cb71fedfed5fc47e6c204207936514750cbe9f6",
+    "fills.csv": "632bb1b99bba4139d6fff695fe07242af0cea54855add1dbee1151356dd9c1a8",
+    "attribution.csv": "efe2c12bd06f9076e2a0f38a5ffebadb76be19ffff619134396b58e16b8f8dd9",
+    "targets.csv": "b3b23406bed7e0b06f19e8d7f49871f749f785e3712f1c065da18f20c9bc0c68"
+  }
+}

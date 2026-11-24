@@ -1,0 +1,36 @@
+{
+  "after_budget": {
+    "consumed": {
+      "posts": 99,
+      "submitted_notional": "629.9972000"
+    },
+    "max_loss": "1",
+    "opening_equity": "4999.97114760",
+    "remaining_notional": "70.0028000",
+    "remaining_posts": 1,
+    "state": "RUNNING",
+    "total_notional": "700",
+    "total_orders": 100
+  },
+  "before_budget": {
+    "consumed": {
+      "posts": 99,
+      "submitted_notional": "629.9972000"
+    },
+    "max_loss": "1",
+    "opening_equity": "4999.97114760",
+    "remaining_notional": "70.0028000",
+    "remaining_posts": 1,
+    "state": "RUNNING",
+    "total_notional": "700",
+    "total_orders": 100
+  },
+  "commit": "94b604bccdaa318ffbff52aa7e0350bac52cf54d",
+  "event": "RUNTIME_DEPLOYED",
+  "ledger_inodes_preserved": true,
+  "old_pid": 342858,
+  "pid": 343417,
+  "recovery_seconds": 19.43556046485901,
+  "status": "RUNNING",
+  "unknown": 0
+}

@@ -41,6 +41,8 @@ def main():
         'local_dependency_url':('factorlab-0.1.0.dev0/requirements/private.lock.txt',
                                 b'factorlab @ file:///D:/private/project\n'),
         'unbound_golden':('tests/research/fixtures/factor_golden/real.parquet',b'synthetic unbound sentinel'),
+        'unbound_v69':('tests/fixtures/v69_original/fixture/v69_target_normal/unknown.parquet',b'synthetic unbound sentinel'),
+        'changed_v69':('tests/fixtures/v69_original/fixture/v69_target_normal/daily.parquet',b'synthetic changed sentinel'),
         'duplicate_zip':('duplicate',b''),
         'zip_link':('factorlab/link.py',b'../../outside'),
         'tar_link':('link',b''),

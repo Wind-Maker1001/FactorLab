@@ -1,0 +1,11 @@
+[Unit]
+Description=Check TradFi observer freshness every minute
+
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=60
+AccuracySec=5
+Unit=factorlab-demo-tradfi-health.service
+
+[Install]
+WantedBy=timers.target

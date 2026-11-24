@@ -15,6 +15,7 @@ ZERO = Decimal("0")
 class Market(StrEnum):
     BINANCE_USDM = "BINANCE_USDM"
     BINANCE_EQUITY = "BINANCE_EQUITY"
+    ALPACA_US_EQUITY = "ALPACA_US_EQUITY"
 
 
 class Side(StrEnum):
@@ -86,8 +87,9 @@ class OrderIntent:
             decimal_value(self.limit_price, "limit_price", positive=True)
         if (self.order_type == OrderType.LIMIT) != (self.limit_price is not None):
             raise ValueError("only LIMIT orders require limit_price")
-        if self.time_in_force != "GTC" or self.position_side not in (None, "BOTH"):
-            raise ValueError("v1 supports GTC and one-way BOTH positions only")
+        allowed_tif = {"DAY", "GTC", "IOC", "FOK", "OPG", "CLS"} if self.market == Market.ALPACA_US_EQUITY else {"GTC"}
+        if self.time_in_force not in allowed_tif or self.position_side not in (None, "BOTH"):
+            raise ValueError("unsupported time in force or position side")
         if type(self.reduce_only) is not bool:
             raise ValueError("reduce_only must be boolean")
 
@@ -108,11 +110,14 @@ class OrderEvent:
     source: str
     event_id: str
     cumulative_fee: Decimal = ZERO
+    cumulative_filled_notional: Decimal | None = None
 
     def __post_init__(self):
         utc(self.event_time)
         decimal_value(self.cumulative_filled_quantity, "cumulative_filled_quantity")
         decimal_value(self.cumulative_fee, "cumulative_fee")
+        if self.cumulative_filled_notional is not None:
+            decimal_value(self.cumulative_filled_notional, "cumulative_filled_notional")
         if self.fill_price is not None:
             decimal_value(self.fill_price, "fill_price", positive=True)
         if not isinstance(self.status, OrderStatus) or not self.client_order_id or not self.source or not self.event_id:

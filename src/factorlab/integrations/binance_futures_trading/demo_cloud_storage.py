@@ -19,6 +19,7 @@ _SIDECARS = ('-wal', '-shm', '-journal')
 _QUARANTINE = 'restore-quarantine.json'
 _BACKUP_MANIFEST = 'backup-manifest.json'
 _HANDOFF_SOURCE = 'windows-execute-source-sealed'
+_TASK_MAILBOX = Path('external/task-mailbox/tasks.sqlite3')
 
 
 def _private(path, *, directory=False):
@@ -226,9 +227,10 @@ def _destination(source, destination):
     return destination
 
 
-def _copy_databases(root, staging, databases):
+def _copy_databases(root, staging, databases, *, task_mailbox=None):
     for source in databases:
-        target = staging / source.relative_to(root)
+        relative = _TASK_MAILBOX if source == task_mailbox else source.relative_to(root)
+        target = staging / relative
         _root(target.parent, create=True)
         descriptor = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         os.close(descriptor)
@@ -243,17 +245,18 @@ def _copy_databases(root, staging, databases):
         _sync_directory(Path(directory))
 
 
-def _snapshot(root, destination, databases, *, quarantine):
+def _snapshot(root, destination, databases, *, quarantine, task_mailbox=None):
     staging = Path(tempfile.mkdtemp(prefix='.' + destination.name + '-', dir=destination.parent))
     try:
-        _copy_databases(root, staging, databases)
+        _copy_databases(root, staging, databases, task_mailbox=task_mailbox)
         binding = root / 'binding.json'
         if binding.exists():
             atomic_json(staging / 'binding.json', _binding(binding))
         if quarantine or (root / _QUARANTINE).exists():
             atomic_json(staging / _QUARANTINE, {'version': 1, 'reason': 'restored-state-requires-GET-only-recovery'})
         atomic_json(staging / _BACKUP_MANIFEST, dict(version=1,
-            databases=[path.relative_to(root).as_posix() for path in databases], binding=binding.exists()))
+            databases=sorted((_TASK_MAILBOX if path == task_mailbox else path.relative_to(root)).as_posix()
+                             for path in databases), binding=binding.exists()))
         _publish(staging, destination)
     finally:
         if staging.exists():
@@ -262,10 +265,19 @@ def _snapshot(root, destination, databases, *, quarantine):
 
 
 @contextmanager
-def _freeze_databases(root, destination):
+def _freeze_databases(root, destination, *, task_mailbox=None):
     # The caller owns session.lock. SQLite reservations also exclude concurrent STOP.
     with ExitStack() as stack:
         databases, _ = _inventory(root)
+        if task_mailbox is not None:
+            _root(task_mailbox.parent)
+            _no_symlinks(task_mailbox)
+            _private(task_mailbox)
+            if task_mailbox == root or root in task_mailbox.parents:
+                raise SafetyBlocked('external TaskMailbox must be outside the state root')
+            if (root / _TASK_MAILBOX).exists():
+                raise SafetyBlocked('external TaskMailbox snapshot path already exists')
+            databases.append(task_mailbox)
         required = sum(path.stat().st_size for path in databases)
         if shutil.disk_usage(destination.parent).free < required + 256 * 1024 * 1024:
             raise SafetyBlocked('insufficient backup destination space')
@@ -277,28 +289,34 @@ def _freeze_databases(root, destination):
         yield databases
 
 
-def _frozen_snapshot(root, destination, *, quarantine):
+def _frozen_snapshot(root, destination, *, quarantine, task_mailbox=None):
     from .demo_runtime import operator_lock
 
     root = _root(root)
     destination = _destination(root, destination)
-    with operator_lock(root, allow_quarantined=True), _freeze_databases(root, destination) as databases:
+    if task_mailbox is not None:
+        task_mailbox = Path(os.path.abspath(task_mailbox))
+    with operator_lock(root, allow_quarantined=True), _freeze_databases(
+        root, destination, task_mailbox=task_mailbox,
+    ) as databases:
         if quarantine:
             manifest = json.loads((root / _BACKUP_MANIFEST).read_text())
             expected = dict(version=1, databases=[path.relative_to(root).as_posix() for path in databases],
                             binding=(root / 'binding.json').exists())
             if manifest != expected:
                 raise SafetyBlocked('incomplete backup inventory')
-        return _snapshot(root, destination, databases, quarantine=quarantine)
+        return _snapshot(root, destination, databases, quarantine=quarantine, task_mailbox=task_mailbox)
 
 
-def backup_state(root, dest):
+def backup_state(root, dest, *, task_mailbox=None):
     """Publish an offline, coherent SQLite + binding backup; never copy credentials.
 
     All operators must be stopped. Active SQLite writers or an operator lock cause
     immediate failure. The destination must not exist, including an empty directory.
+    An external TaskMailbox is frozen with the journals and stored at
+    external/task-mailbox/tasks.sqlite3; restore never writes to its live path.
     """
-    return _frozen_snapshot(root, dest, quarantine=False)
+    return _frozen_snapshot(root, dest, quarantine=False, task_mailbox=task_mailbox)
 
 
 def restore_state(source, dest):

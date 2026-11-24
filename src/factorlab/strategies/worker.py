@@ -1,5 +1,6 @@
 """Private JSON stdin/stdout worker. Never started with account credentials."""
 import contextlib
+import importlib.metadata
 import importlib.util
 import io
 import json
@@ -18,6 +19,14 @@ def main():
     # still runs with a guard against accidental file/network/process access.
     import factorlab.strategies.adapters  # noqa: F401
     allowed = (package, source_root, Path(sys.base_prefix).resolve(), Path(sys.prefix).resolve())
+    try:
+        for requirement in request['manifest'].get('dependencies', ()):
+            name, version = requirement.split('==')
+            if importlib.metadata.version(name) != version:
+                raise ValueError('strategy dependency mismatch')
+    except Exception as error:
+        sys.stdout.write(dumps(dict(error=type(error).__name__ + ': ' + str(error))))
+        return
 
     def guard(event, args):
         if event == 'open':

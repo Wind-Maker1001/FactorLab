@@ -1,0 +1,797 @@
+{
+  "open": {
+    "purpose": "ALP-E03 TEST: synthetic targets, not a strategy signal",
+    "phase": "open",
+    "account_fingerprint": "f71c8781251c",
+    "rebalance_id": "2d2855d935aedadd2511d21873052e6f",
+    "process": 22448,
+    "invocations": [
+      {
+        "phase": "COMPLETE",
+        "reasons": {},
+        "orders": [
+          "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "flp-962b994cfacf3130db2c81d059ee988ef260fb8e"
+        ],
+        "observed_at": "2026-11-24T17:27:12.404550+00:00"
+      }
+    ],
+    "orders": [
+      {
+        "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+        "symbol": "AAPL",
+        "side": "BUY",
+        "quantity": "0.028497335",
+        "limit_price": "352.89",
+        "status": "FILLED",
+        "filled_quantity": "0.028497335",
+        "observed_at": "2026-11-24T17:24:40.638325+00:00"
+      },
+      {
+        "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+        "symbol": "QQQ",
+        "side": "BUY",
+        "quantity": "0.015695260",
+        "limit_price": "637.96",
+        "status": "FILLED",
+        "filled_quantity": "0.01569526",
+        "observed_at": "2026-11-24T17:25:44.016151+00:00"
+      }
+    ],
+    "limit_price_tolerance": "0.001",
+    "report": {
+      "official_equity": "100000.01",
+      "official_cash": "99979.93",
+      "available_cash": "99979.93",
+      "cash_weight": "0.9997992000200799979920002008",
+      "target_cash_weight": "0.99980",
+      "adjustments": [],
+      "research_adjustment": "0",
+      "economic_nav": "100000.01",
+      "positions": [
+        {
+          "instrument_id": "AAPL",
+          "actual_quantity": "0.028497335",
+          "owned_quantity": "0.028497335",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "10.056025585460",
+          "market_value": "10.05756444155",
+          "target_weight": "0.00010",
+          "actual_weight": "0.0001005756343579365642063435794",
+          "economic_exposure_weight": "0.0001005756343579365642063435794",
+          "realized_pnl": "0",
+          "unrealized_pnl": "0.001538856090"
+        },
+        {
+          "instrument_id": "QQQ",
+          "actual_quantity": "0.01569526",
+          "owned_quantity": "0.01569526",
+          "external_quantity": "0E-8",
+          "owned_cost_basis": "10.01288528856",
+          "market_value": "10.0233069412",
+          "target_weight": "0.00010",
+          "actual_weight": "0.0001002330593886940611305938869",
+          "economic_exposure_weight": "0.0001002330593886940611305938869",
+          "realized_pnl": "0",
+          "unrealized_pnl": "0.01042165264"
+        }
+      ],
+      "fills": [
+        {
+          "event_id": "alpaca-portfolio:0b61f985c4160c698bb8de6f52e187c00e62a06f51cad00bde6d70f86e295ffa",
+          "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "instrument_id": "AAPL",
+          "side": "BUY",
+          "quantity": "0.028497335",
+          "price": "352.876",
+          "fee": "0",
+          "reference_price": "352.53",
+          "slippage_cost": "0.009860077910",
+          "notional": "10.056025585460"
+        },
+        {
+          "event_id": "alpaca-portfolio:6e3120f9133637bac63d53fa9204e07f0443c3a88efe2b7e533d4d64d7d544e4",
+          "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.01569526",
+          "price": "637.956",
+          "fee": "0",
+          "reference_price": "637.32",
+          "slippage_cost": "0.00998218536",
+          "notional": "10.01288528856"
+        }
+      ],
+      "realized_pnl": "0",
+      "unrealized_pnl": "0.011960508730",
+      "execution_fees": "0",
+      "slippage_cost": "0.019842263270",
+      "traded_notional": "20.068910874020",
+      "turnover": "0.0002006890886712911328708867129",
+      "tracking_error": "0.000001012738596628917420600602030",
+      "initial_capital": "100000"
+    },
+    "reconciliation": {
+      "official_cash": "99979.93",
+      "expected_cash": "99979.931089125980",
+      "cash_difference": "-0.001089125980",
+      "cash_tolerance": "0.01",
+      "official_positions": {
+        "AAPL": "0.028497335",
+        "QQQ": "0.01569526"
+      },
+      "owned_positions": {
+        "AAPL": "0.028497335",
+        "QQQ": "0.01569526"
+      },
+      "cleaned": false,
+      "restored_in_new_process": false,
+      "historical_replay_unchanged": false,
+      "order_count_before": 2,
+      "order_count_after": 2
+    },
+    "captured_at": "2026-11-24T17:27:53.966076+00:00"
+  },
+  "recover": {
+    "purpose": "ALP-E03 TEST: synthetic targets, not a strategy signal",
+    "phase": "recover",
+    "account_fingerprint": "f71c8781251c",
+    "rebalance_id": "2d2855d935aedadd2511d21873052e6f",
+    "process": 67468,
+    "invocations": [
+      {
+        "phase": "COMPLETE",
+        "reasons": {},
+        "orders": [
+          "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "flp-962b994cfacf3130db2c81d059ee988ef260fb8e"
+        ],
+        "observed_at": "2026-11-24T17:28:32.282587+00:00"
+      }
+    ],
+    "orders": [
+      {
+        "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+        "symbol": "AAPL",
+        "side": "BUY",
+        "quantity": "0.028497335",
+        "limit_price": "352.89",
+        "status": "FILLED",
+        "filled_quantity": "0.028497335",
+        "observed_at": "2026-11-24T17:24:40.638325+00:00"
+      },
+      {
+        "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+        "symbol": "QQQ",
+        "side": "BUY",
+        "quantity": "0.015695260",
+        "limit_price": "637.96",
+        "status": "FILLED",
+        "filled_quantity": "0.01569526",
+        "observed_at": "2026-11-24T17:25:44.016151+00:00"
+      }
+    ],
+    "limit_price_tolerance": "0.001",
+    "report": {
+      "official_equity": "100000.01",
+      "official_cash": "99979.93",
+      "available_cash": "99979.93",
+      "cash_weight": "0.9997992000200799979920002008",
+      "target_cash_weight": "0.99980",
+      "adjustments": [],
+      "research_adjustment": "0",
+      "economic_nav": "100000.01",
+      "positions": [
+        {
+          "instrument_id": "AAPL",
+          "actual_quantity": "0.028497335",
+          "owned_quantity": "0.028497335",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "10.056025585460",
+          "market_value": "10.05813438825",
+          "target_weight": "0.00010",
+          "actual_weight": "0.0001005813338243666175633382437",
+          "economic_exposure_weight": "0.0001005813338243666175633382437",
+          "realized_pnl": "0",
+          "unrealized_pnl": "0.002108802790"
+        },
+        {
+          "instrument_id": "QQQ",
+          "actual_quantity": "0.01569526",
+          "owned_quantity": "0.01569526",
+          "external_quantity": "0E-8",
+          "owned_cost_basis": "10.01288528856",
+          "market_value": "10.0168718846",
+          "target_weight": "0.00010",
+          "actual_weight": "0.0001001687088291291170870882913",
+          "economic_exposure_weight": "0.0001001687088291291170870882913",
+          "realized_pnl": "0",
+          "unrealized_pnl": "0.00398659604"
+        }
+      ],
+      "fills": [
+        {
+          "event_id": "alpaca-portfolio:0b61f985c4160c698bb8de6f52e187c00e62a06f51cad00bde6d70f86e295ffa",
+          "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "instrument_id": "AAPL",
+          "side": "BUY",
+          "quantity": "0.028497335",
+          "price": "352.876",
+          "fee": "0",
+          "reference_price": "352.53",
+          "slippage_cost": "0.009860077910",
+          "notional": "10.056025585460"
+        },
+        {
+          "event_id": "alpaca-portfolio:6e3120f9133637bac63d53fa9204e07f0443c3a88efe2b7e533d4d64d7d544e4",
+          "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.01569526",
+          "price": "637.956",
+          "fee": "0",
+          "reference_price": "637.32",
+          "slippage_cost": "0.00998218536",
+          "notional": "10.01288528856"
+        }
+      ],
+      "realized_pnl": "0",
+      "unrealized_pnl": "0.006095398830",
+      "execution_fees": "0",
+      "slippage_cost": "0.019842263270",
+      "traded_notional": "20.068910874020",
+      "turnover": "0.0002006890886712911328708867129",
+      "tracking_error": "0.000001003184707212612019193394665",
+      "initial_capital": "100000"
+    },
+    "reconciliation": {
+      "official_cash": "99979.93",
+      "expected_cash": "99979.931089125980",
+      "cash_difference": "-0.001089125980",
+      "cash_tolerance": "0.01",
+      "official_positions": {
+        "AAPL": "0.028497335",
+        "QQQ": "0.01569526"
+      },
+      "owned_positions": {
+        "AAPL": "0.028497335",
+        "QQQ": "0.01569526"
+      },
+      "cleaned": false,
+      "restored_in_new_process": true,
+      "historical_replay_unchanged": false,
+      "order_count_before": 2,
+      "order_count_after": 2
+    },
+    "captured_at": "2026-11-24T17:29:01.960807+00:00"
+  },
+  "rotate": {
+    "purpose": "ALP-E03 TEST: synthetic targets, not a strategy signal",
+    "phase": "rotate",
+    "account_fingerprint": "f71c8781251c",
+    "rebalance_id": "ecbcbf06f66cb5490b395004f7213633",
+    "process": 60320,
+    "invocations": [
+      {
+        "phase": "REDUCE",
+        "reasons": {},
+        "orders": [
+          "flp-f10fc50c4f756c1e168c81eaa73e2b2806eef34d"
+        ],
+        "observed_at": "2026-11-24T17:29:28.413348+00:00"
+      },
+      {
+        "phase": "INCREASE",
+        "reasons": {},
+        "orders": [
+          "flp-8223a4bf7d830cba2c01fe05bfac8acccdb915c7",
+          "flp-f10fc50c4f756c1e168c81eaa73e2b2806eef34d"
+        ],
+        "observed_at": "2026-11-24T17:30:23.361668+00:00"
+      },
+      {
+        "phase": "COMPLETE",
+        "reasons": {},
+        "orders": [
+          "flp-8223a4bf7d830cba2c01fe05bfac8acccdb915c7",
+          "flp-f10fc50c4f756c1e168c81eaa73e2b2806eef34d"
+        ],
+        "observed_at": "2026-11-24T17:31:17.652676+00:00"
+      }
+    ],
+    "orders": [
+      {
+        "client_order_id": "flp-8223a4bf7d830cba2c01fe05bfac8acccdb915c7",
+        "symbol": "QQQ",
+        "side": "BUY",
+        "quantity": "0.007792888",
+        "limit_price": "640.82",
+        "status": "FILLED",
+        "filled_quantity": "0.007792888",
+        "observed_at": "2026-11-24T17:31:07.075464+00:00"
+      },
+      {
+        "client_order_id": "flp-f10fc50c4f756c1e168c81eaa73e2b2806eef34d",
+        "symbol": "AAPL",
+        "side": "SELL",
+        "quantity": "0.014331222",
+        "limit_price": "352.55",
+        "status": "FILLED",
+        "filled_quantity": "0.014331222",
+        "observed_at": "2026-11-24T17:30:11.873226+00:00"
+      }
+    ],
+    "limit_price_tolerance": "0.001",
+    "report": {
+      "official_equity": "100000.03",
+      "official_cash": "99980",
+      "available_cash": "99980",
+      "cash_weight": "0.9997997000600899819730054081",
+      "target_cash_weight": "0.99980",
+      "adjustments": [],
+      "research_adjustment": "0",
+      "economic_nav": "100000.03",
+      "positions": [
+        {
+          "instrument_id": "AAPL",
+          "actual_quantity": "0.014166113",
+          "owned_quantity": "0.014166113",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "4.998881290988",
+          "market_value": "5.00276280595",
+          "target_weight": "0.00005",
+          "actual_weight": "0.00005002761305121608463517460945",
+          "economic_exposure_weight": "0.00005002761305121608463517460945",
+          "realized_pnl": "0.001891721304",
+          "unrealized_pnl": "0.003881514962"
+        },
+        {
+          "instrument_id": "QQQ",
+          "actual_quantity": "0.023488148",
+          "owned_quantity": "0.023488148",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "14.999507562432",
+          "market_value": "15.0213142212552",
+          "target_weight": "0.00015",
+          "actual_weight": "0.0001502130971486228554131433761",
+          "economic_exposure_weight": "0.0001502130971486228554131433761",
+          "realized_pnl": "0",
+          "unrealized_pnl": "0.0218066588232"
+        }
+      ],
+      "fills": [
+        {
+          "event_id": "alpaca-portfolio:0b61f985c4160c698bb8de6f52e187c00e62a06f51cad00bde6d70f86e295ffa",
+          "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "instrument_id": "AAPL",
+          "side": "BUY",
+          "quantity": "0.028497335",
+          "price": "352.876",
+          "fee": "0",
+          "reference_price": "352.53",
+          "slippage_cost": "0.009860077910",
+          "notional": "10.056025585460"
+        },
+        {
+          "event_id": "alpaca-portfolio:6e3120f9133637bac63d53fa9204e07f0443c3a88efe2b7e533d4d64d7d544e4",
+          "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.01569526",
+          "price": "637.956",
+          "fee": "0",
+          "reference_price": "637.32",
+          "slippage_cost": "0.00998218536",
+          "notional": "10.01288528856"
+        },
+        {
+          "event_id": "alpaca-portfolio:5b37130f323736cd7277ac76b44e7fdd259ce2152c9eb4ef32c4ba6c77d956d5",
+          "client_order_id": "flp-f10fc50c4f756c1e168c81eaa73e2b2806eef34d",
+          "instrument_id": "AAPL",
+          "side": "SELL",
+          "quantity": "0.014331222",
+          "price": "353.008",
+          "fee": "0",
+          "reference_price": "352.91",
+          "slippage_cost": "-0.001404459756",
+          "notional": "5.059036015776"
+        },
+        {
+          "event_id": "alpaca-portfolio:b12906d936bce28b9275672b194f07162123d004675587fa6f20989497968850",
+          "client_order_id": "flp-8223a4bf7d830cba2c01fe05bfac8acccdb915c7",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.007792888",
+          "price": "639.894",
+          "fee": "0",
+          "reference_price": "640.17",
+          "slippage_cost": "-0.002150837088",
+          "notional": "4.986622273872"
+        }
+      ],
+      "realized_pnl": "0.001891721304",
+      "unrealized_pnl": "0.0256881737852",
+      "execution_fees": "0",
+      "slippage_cost": "0.016286966426",
+      "traded_notional": "30.114569163668",
+      "turnover": "0.0003011456012929996121001163700",
+      "tracking_error": "3.689672410530175673784296531E-7",
+      "initial_capital": "100000"
+    },
+    "reconciliation": {
+      "official_cash": "99980",
+      "expected_cash": "99980.003502867884",
+      "cash_difference": "-0.003502867884",
+      "cash_tolerance": "0.01",
+      "official_positions": {
+        "AAPL": "0.014166113",
+        "QQQ": "0.023488148"
+      },
+      "owned_positions": {
+        "AAPL": "0.014166113",
+        "QQQ": "0.023488148"
+      },
+      "cleaned": false,
+      "restored_in_new_process": false,
+      "historical_replay_unchanged": false,
+      "order_count_before": 2,
+      "order_count_after": 4
+    },
+    "captured_at": "2026-11-24T17:31:56.344224+00:00"
+  },
+  "replay": {
+    "purpose": "ALP-E03 TEST: synthetic targets, not a strategy signal",
+    "phase": "replay",
+    "account_fingerprint": "f71c8781251c",
+    "rebalance_id": "2d2855d935aedadd2511d21873052e6f",
+    "process": 46220,
+    "invocations": [
+      {
+        "phase": "COMPLETE",
+        "reasons": {},
+        "orders": [
+          "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "flp-962b994cfacf3130db2c81d059ee988ef260fb8e"
+        ],
+        "observed_at": "2026-11-24T17:32:20.188075+00:00"
+      }
+    ],
+    "orders": [
+      {
+        "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+        "symbol": "AAPL",
+        "side": "BUY",
+        "quantity": "0.028497335",
+        "limit_price": "352.89",
+        "status": "FILLED",
+        "filled_quantity": "0.028497335",
+        "observed_at": "2026-11-24T17:24:40.638325+00:00"
+      },
+      {
+        "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+        "symbol": "QQQ",
+        "side": "BUY",
+        "quantity": "0.015695260",
+        "limit_price": "637.96",
+        "status": "FILLED",
+        "filled_quantity": "0.01569526",
+        "observed_at": "2026-11-24T17:25:44.016151+00:00"
+      }
+    ],
+    "limit_price_tolerance": "0.001",
+    "report": {
+      "official_equity": "100000.02",
+      "official_cash": "99980",
+      "available_cash": "99980",
+      "cash_weight": "0.9997998000400399919920016016",
+      "target_cash_weight": "0.99980",
+      "adjustments": [],
+      "research_adjustment": "0",
+      "economic_nav": "100000.02",
+      "positions": [
+        {
+          "instrument_id": "AAPL",
+          "actual_quantity": "0.014166113",
+          "owned_quantity": "0.014166113",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "4.998881290988",
+          "market_value": "5.00403775612",
+          "target_weight": "0.00010",
+          "actual_weight": "0.00005004036755312648937470212506",
+          "economic_exposure_weight": "0.00005004036755312648937470212506",
+          "realized_pnl": "0.001891721304",
+          "unrealized_pnl": "0.005156465132"
+        },
+        {
+          "instrument_id": "QQQ",
+          "actual_quantity": "0.023488148",
+          "owned_quantity": "0.023488148",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "14.999507562432",
+          "market_value": "15.01785206824",
+          "target_weight": "0.00010",
+          "actual_weight": "0.0001501784906467018706596258681",
+          "economic_exposure_weight": "0.0001501784906467018706596258681",
+          "realized_pnl": "0",
+          "unrealized_pnl": "0.018344505808"
+        }
+      ],
+      "fills": [
+        {
+          "event_id": "alpaca-portfolio:0b61f985c4160c698bb8de6f52e187c00e62a06f51cad00bde6d70f86e295ffa",
+          "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "instrument_id": "AAPL",
+          "side": "BUY",
+          "quantity": "0.028497335",
+          "price": "352.876",
+          "fee": "0",
+          "reference_price": "352.53",
+          "slippage_cost": "0.009860077910",
+          "notional": "10.056025585460"
+        },
+        {
+          "event_id": "alpaca-portfolio:6e3120f9133637bac63d53fa9204e07f0443c3a88efe2b7e533d4d64d7d544e4",
+          "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.01569526",
+          "price": "637.956",
+          "fee": "0",
+          "reference_price": "637.32",
+          "slippage_cost": "0.00998218536",
+          "notional": "10.01288528856"
+        },
+        {
+          "event_id": "alpaca-portfolio:5b37130f323736cd7277ac76b44e7fdd259ce2152c9eb4ef32c4ba6c77d956d5",
+          "client_order_id": "flp-f10fc50c4f756c1e168c81eaa73e2b2806eef34d",
+          "instrument_id": "AAPL",
+          "side": "SELL",
+          "quantity": "0.014331222",
+          "price": "353.008",
+          "fee": "0",
+          "reference_price": "352.91",
+          "slippage_cost": "-0.001404459756",
+          "notional": "5.059036015776"
+        },
+        {
+          "event_id": "alpaca-portfolio:b12906d936bce28b9275672b194f07162123d004675587fa6f20989497968850",
+          "client_order_id": "flp-8223a4bf7d830cba2c01fe05bfac8acccdb915c7",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.007792888",
+          "price": "639.894",
+          "fee": "0",
+          "reference_price": "640.17",
+          "slippage_cost": "-0.002150837088",
+          "notional": "4.986622273872"
+        }
+      ],
+      "realized_pnl": "0.001891721304",
+      "unrealized_pnl": "0.023500970940",
+      "execution_fees": "0",
+      "slippage_cost": "0.016286966426",
+      "traded_notional": "30.114569163668",
+      "turnover": "0.0003011456314075537184892563021",
+      "tracking_error": "0.00007080879734745852894433792658",
+      "initial_capital": "100000"
+    },
+    "reconciliation": {
+      "official_cash": "99980",
+      "expected_cash": "99980.003502867884",
+      "cash_difference": "-0.003502867884",
+      "cash_tolerance": "0.01",
+      "official_positions": {
+        "AAPL": "0.014166113",
+        "QQQ": "0.023488148"
+      },
+      "owned_positions": {
+        "AAPL": "0.014166113",
+        "QQQ": "0.023488148"
+      },
+      "cleaned": false,
+      "restored_in_new_process": true,
+      "historical_replay_unchanged": true,
+      "order_count_before": 4,
+      "order_count_after": 4
+    },
+    "captured_at": "2026-11-24T17:32:46.823444+00:00"
+  },
+  "cleanup": {
+    "purpose": "ALP-E03 TEST: synthetic targets, not a strategy signal",
+    "phase": "cleanup",
+    "account_fingerprint": "f71c8781251c",
+    "rebalance_id": "85642462d3c38d650b5c872a1bd88b58",
+    "process": 14916,
+    "invocations": [
+      {
+        "phase": "WAITING",
+        "reasons": {
+          "AAPL": "STALE_QUOTE"
+        },
+        "orders": [
+          "flp-b003416f15de2c45565dce5881ac295df0a56547",
+          "flp-df1c439d9821242127a35bacbdb0fedd8e8d42c1"
+        ],
+        "observed_at": "2026-11-24T17:33:11.988970+00:00"
+      },
+      {
+        "phase": "WAITING",
+        "reasons": {},
+        "orders": [
+          "flp-b003416f15de2c45565dce5881ac295df0a56547",
+          "flp-df1c439d9821242127a35bacbdb0fedd8e8d42c1"
+        ],
+        "observed_at": "2026-11-24T17:34:19.399052+00:00"
+      },
+      {
+        "phase": "COMPLETE",
+        "reasons": {},
+        "orders": [
+          "flp-b003416f15de2c45565dce5881ac295df0a56547",
+          "flp-df1c439d9821242127a35bacbdb0fedd8e8d42c1"
+        ],
+        "observed_at": "2026-11-24T17:35:16.150596+00:00"
+      }
+    ],
+    "orders": [
+      {
+        "client_order_id": "flp-b003416f15de2c45565dce5881ac295df0a56547",
+        "symbol": "QQQ",
+        "side": "SELL",
+        "quantity": "0.023488148",
+        "limit_price": "638.83",
+        "status": "FILLED",
+        "filled_quantity": "0.023488148",
+        "observed_at": "2026-11-24T17:33:57.809673+00:00"
+      },
+      {
+        "client_order_id": "flp-df1c439d9821242127a35bacbdb0fedd8e8d42c1",
+        "symbol": "AAPL",
+        "side": "SELL",
+        "quantity": "0.014166113",
+        "limit_price": "352.80",
+        "status": "FILLED",
+        "filled_quantity": "0.014166113",
+        "observed_at": "2026-11-24T17:35:05.505314+00:00"
+      }
+    ],
+    "limit_price_tolerance": "0.001",
+    "report": {
+      "official_equity": "100000.04",
+      "official_cash": "100000.04",
+      "available_cash": "100000.04",
+      "cash_weight": "1",
+      "target_cash_weight": "1",
+      "adjustments": [],
+      "research_adjustment": "0",
+      "economic_nav": "100000.04",
+      "positions": [
+        {
+          "instrument_id": "AAPL",
+          "actual_quantity": "0",
+          "owned_quantity": "0E-9",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "0E-12",
+          "market_value": "0",
+          "target_weight": "0",
+          "actual_weight": "0E+2",
+          "economic_exposure_weight": "0E+2",
+          "realized_pnl": "0.006821528628",
+          "unrealized_pnl": "0E-12"
+        },
+        {
+          "instrument_id": "QQQ",
+          "actual_quantity": "0",
+          "owned_quantity": "0E-9",
+          "external_quantity": "0E-9",
+          "owned_cost_basis": "0E-12",
+          "market_value": "0",
+          "target_weight": "0",
+          "actual_weight": "0E+2",
+          "economic_exposure_weight": "0E+2",
+          "realized_pnl": "0.042490321952",
+          "unrealized_pnl": "0E-12"
+        }
+      ],
+      "fills": [
+        {
+          "event_id": "alpaca-portfolio:0b61f985c4160c698bb8de6f52e187c00e62a06f51cad00bde6d70f86e295ffa",
+          "client_order_id": "flp-184afa3e8e5cfe6aeca2fe7def47fd604150203f",
+          "instrument_id": "AAPL",
+          "side": "BUY",
+          "quantity": "0.028497335",
+          "price": "352.876",
+          "fee": "0",
+          "reference_price": "352.53",
+          "slippage_cost": "0.009860077910",
+          "notional": "10.056025585460"
+        },
+        {
+          "event_id": "alpaca-portfolio:6e3120f9133637bac63d53fa9204e07f0443c3a88efe2b7e533d4d64d7d544e4",
+          "client_order_id": "flp-962b994cfacf3130db2c81d059ee988ef260fb8e",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.01569526",
+          "price": "637.956",
+          "fee": "0",
+          "reference_price": "637.32",
+          "slippage_cost": "0.00998218536",
+          "notional": "10.01288528856"
+        },
+        {
+          "event_id": "alpaca-portfolio:5b37130f323736cd7277ac76b44e7fdd259ce2152c9eb4ef32c4ba6c77d956d5",
+          "client_order_id": "flp-f10fc50c4f756c1e168c81eaa73e2b2806eef34d",
+          "instrument_id": "AAPL",
+          "side": "SELL",
+          "quantity": "0.014331222",
+          "price": "353.008",
+          "fee": "0",
+          "reference_price": "352.91",
+          "slippage_cost": "-0.001404459756",
+          "notional": "5.059036015776"
+        },
+        {
+          "event_id": "alpaca-portfolio:b12906d936bce28b9275672b194f07162123d004675587fa6f20989497968850",
+          "client_order_id": "flp-8223a4bf7d830cba2c01fe05bfac8acccdb915c7",
+          "instrument_id": "QQQ",
+          "side": "BUY",
+          "quantity": "0.007792888",
+          "price": "639.894",
+          "fee": "0",
+          "reference_price": "640.17",
+          "slippage_cost": "-0.002150837088",
+          "notional": "4.986622273872"
+        },
+        {
+          "event_id": "alpaca-portfolio:2d95de93dc8077736792f74d36f575395934d5d777ac1959c32a0061120c1b12",
+          "client_order_id": "flp-b003416f15de2c45565dce5881ac295df0a56547",
+          "instrument_id": "QQQ",
+          "side": "SELL",
+          "quantity": "0.023488148",
+          "price": "640.408",
+          "fee": "0",
+          "reference_price": "639.47",
+          "slippage_cost": "-0.022031882824",
+          "notional": "15.041997884384"
+        },
+        {
+          "event_id": "alpaca-portfolio:a2297115c427c1bf86c9ec2263dd7e70b152cd2f78c4074bbddd343ddaf27088",
+          "client_order_id": "flp-df1c439d9821242127a35bacbdb0fedd8e8d42c1",
+          "instrument_id": "AAPL",
+          "side": "SELL",
+          "quantity": "0.014166113",
+          "price": "353.224",
+          "fee": "0",
+          "reference_price": "353.16",
+          "slippage_cost": "-0.000906631232",
+          "notional": "5.003811098312"
+        }
+      ],
+      "realized_pnl": "0.049311850580",
+      "unrealized_pnl": "0E-12",
+      "execution_fees": "0",
+      "slippage_cost": "-0.006651547630",
+      "traded_notional": "50.160378146364",
+      "turnover": "0.0005016035808222076711169315532",
+      "tracking_error": "0",
+      "initial_capital": "100000"
+    },
+    "reconciliation": {
+      "official_cash": "100000.04",
+      "expected_cash": "100000.049311850580",
+      "cash_difference": "-0.009311850580",
+      "cash_tolerance": "0.01",
+      "official_positions": {},
+      "owned_positions": {
+        "AAPL": "0E-9",
+        "QQQ": "0E-9"
+      },
+      "cleaned": true,
+      "restored_in_new_process": false,
+      "historical_replay_unchanged": false,
+      "order_count_before": 4,
+      "order_count_after": 6
+    },
+    "captured_at": "2026-11-24T17:35:54.554973+00:00"
+  }
+}

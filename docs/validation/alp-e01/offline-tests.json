@@ -1,0 +1,52 @@
+{
+  "suite": [
+    "tests/integrations/test_alpaca_execution.py",
+    "tests/integrations/test_dual_market_trading.py",
+    "tests/integrations/test_binance_equity_trading_core.py",
+    "tests/integrations/test_binance_futures_trading.py"
+  ],
+  "passed": 116,
+  "failed": 0,
+  "duration_seconds": 29.74,
+  "includes_separate_python_process_recovery": true,
+  "official_execution_evidence": "official-round-trips.json",
+  "closeout_regression": {
+    "alpaca_execution_and_pr243_market_data": {
+      "peer_commit": "b603976cfdec9212a52d27718ea2b0d9f77c2660",
+      "passed": 101,
+      "failed": 0,
+      "duration_seconds": 16.35
+    },
+    "binance_and_dual_market": {
+      "passed": 72,
+      "failed": 0,
+      "duration_seconds": 17.87
+    },
+    "final_alpaca_execution": {
+      "passed": 73,
+      "failed": 0,
+      "duration_seconds": 38.97,
+      "asserts_http_outside_sqlite_transactions": true
+    },
+    "latest_pr243_compatibility": {
+      "peer_commit": "2f02e928a4253b5766d0840a4e61d596fa5e4ce5",
+      "passed": 111,
+      "failed": 0,
+      "duration_seconds": 50.76
+    },
+    "final_binance_and_dual_market": {
+      "passed": 172,
+      "failed": 0,
+      "duration_seconds": 42.57
+    },
+    "merged_main_regression": {
+      "main_commit": "9386a34",
+      "passed": 296,
+      "failed": 0,
+      "duration_seconds": 98.94,
+      "suites": "Alpaca execution and market data; Binance equity, futures, demo execution and dual market"
+    },
+    "peer_merge_conflicts": false,
+    "additional_online_orders": 0
+  }
+}

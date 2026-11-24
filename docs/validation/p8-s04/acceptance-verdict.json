@@ -1,0 +1,90 @@
+{
+  "schema": "FACTORLAB_P8_S04_ACCEPTANCE_VERDICT_V1",
+  "generated_at_utc": "2026-11-24T16:40:00Z",
+  "branch": "feat/p8-s04-unified-cloud-strategy",
+  "base_main_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+  "deployed_azure_commit": "94b604bccdaa318ffbff52aa7e0350bac52cf54d",
+  "conformance_classification": "SOFTWARE_CONFORMANCE_ONLY",
+  "research_qualification": false,
+  "verdicts": {
+    "ENGINEERING_ACCEPTED": {
+      "status": "PASS",
+      "basis": "S01 FACTORLAB_DECISION_V1 and S03 StrategyPackage/ReleaseConsumer integrated over the single account owner, DemoSession, TradingController, and SQLite ledgers without adding a second execution engine or resetting budgets; offline acceptance and regression suites pass."
+    },
+    "S01_S03_PROTOCOL_INTEGRATED": {
+      "status": "PASS",
+      "basis": "S03 StrategyPackage validates and binds both legacy factorlab.demo.evaluate/v1 and S01 FACTORLAB_DECISION_V1 (target and orders modes) via LoadedStrategy.from_strategy_package isolated worker, DecisionJournal, SignalAdapter/DemoStrategyRuntime, and OrderStrategyRuntime/ControllerExecution."
+    },
+    "OFFICIAL_DEMO_CUSTOM_STRATEGY_VERIFIED": {
+      "status": "PARTIAL_VERIFIED",
+      "verified_items": [
+        "legacy-grid -> non-HOLD S01 FACTORLAB_DECISION_V1 strategy activation (a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726)",
+        "real official Binance USD-M Demo POST with legal exchange acknowledgement (client_order_id=fl-d7345f8795464a65-sa46d8-entry, order_id=195433064, NVDAUSDT BUY LIMIT 0.04 @ 149.42 GTC)",
+        "real official Binance USD-M Demo DELETE cancellation and signed GET terminal CANCELED reconciliation (observed_at=2026-11-24T16:37:10.599000+00:00)",
+        "cumulative budget preserved and incremented accurately (99/100 -> 100/100 POST, 629.9972 -> 635.9740 USDT notional)"
+      ],
+      "unverified_items": [
+        "real official Binance USD-M Demo trade FILL and real reduce-only SELL close were NOT executed on Azure because the existing frozen global POST budget was already at 99/100 (only 1 POST remaining) before S04 deployment; opening a crossing BUY fill without a 101st POST for reduce-only exit would have left an uncloseable residual position. Offline HTTP-stub tests verify BUY/partial-fill/SELL/cancel lifecycles but are explicitly NOT claimed as real fills."
+      ]
+    },
+    "HOT_SWITCH_VERIFIED": {
+      "status": "PASS",
+      "basis": "Official Azure host executed same-PID hot switches: legacy-grid -> S01 A2 on PID 343417; S01 A2 -> S01 A3 (with DRAINING cancel of active order 195433064) on PID 343968; automatic fault rollback S01 A3 -> S01 A2 on PID 343968; stable history restore S01 A2 -> legacy-grid on PID 343968."
+    },
+    "RECOVERY_VERIFIED": {
+      "status": "PASS",
+      "basis": "Official Azure host completed controlled systemctl restart (PID 343417 -> 343968) while holding active S01 order 195433064, recovering active package, order identity, strategy state, and 100/100 budget with zero duplicate POSTs and all SQLite inodes preserved; automatic fault rollback verified on STRATEGY_EXCEPTION:StrategyWorkerError; offline regressions verify crash/timeout/invalid-output rollback, HTTP 200 unconfirmed DELETE retry, and residual-exposure switch guards."
+    },
+    "CONTINUOUS_24H": {
+      "status": "PENDING",
+      "window_start_utc": "2026-11-24T16:35:34Z",
+      "basis": "New P8-S04 runtime release 94b604bccdaa318ffbff52aa7e0350bac52cf54d started at 2026-11-24T16:35:34Z; 24h dedicated observation window for the new release has just begun. Historical mixed-release C06 rolling 24h has 1367 samples (94.93% coverage, 99.63% alive)."
+    },
+    "CONTINUOUS_72H": {
+      "status": "PENDING",
+      "window_start_utc": "2026-11-24T16:35:34Z",
+      "basis": "72h window incomplete (historical mixed-release C06 rolling 72h has 2725/4320 samples, window_complete=false)."
+    },
+    "CONTINUOUS_7D": {
+      "status": "PENDING",
+      "window_start_utc": "2026-11-24T16:35:34Z",
+      "basis": "7d window incomplete (historical mixed-release C06 rolling 7d has 2725/10080 samples, window_complete=false)."
+    }
+  },
+  "azure_live_state_after": {
+    "host": "factorlab-demo-01",
+    "deployed_commit": "94b604bccdaa318ffbff52aa7e0350bac52cf54d",
+    "pid": 343968,
+    "active_deployment": "legacy-grid",
+    "status": "RUNNING",
+    "account_recovered": true,
+    "unknown_orders": 0,
+    "open_orders": 0,
+    "positions": 0,
+    "nav_usdt": "4999.32325687",
+    "global_budget": {
+      "consumed_posts": 100,
+      "total_orders": 100,
+      "remaining_posts": 0,
+      "consumed_notional_usdt": "635.9740000",
+      "total_notional_usdt": "700",
+      "remaining_notional_usdt": "64.0260000",
+      "opening_equity_usdt": "4999.97114760",
+      "max_loss_usdt": "1"
+    },
+    "ledger_inodes_preserved": true,
+    "last_c07_backup": {
+      "name": "backup-20261124T031503Z",
+      "status": "SUCCEEDED",
+      "verified": true,
+      "database_count": 13
+    }
+  },
+  "evidence_files": {
+    "offline_s04_junit": "docs/validation/p8-s04/offline-s04.xml",
+    "runtime_deployment": "docs/validation/p8-s04/runtime-deployment.json",
+    "official_demo_acceptance": "docs/validation/p8-s04/official-demo-acceptance.json",
+    "backup_status": "docs/validation/p8-s04/backup-status.json",
+    "report": "docs/validation/p8-s04/REPORT.md"
+  }
+}

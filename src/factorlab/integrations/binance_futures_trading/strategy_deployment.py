@@ -32,7 +32,29 @@ class DeploymentStore:
             watermark TEXT, reduce_only INTEGER NOT NULL);
           CREATE TABLE IF NOT EXISTS decisions(version TEXT, watermark TEXT, result TEXT,
             PRIMARY KEY(version,watermark));
+          CREATE TABLE IF NOT EXISTS deployment_bindings(package_id TEXT PRIMARY KEY,
+            deployment_id TEXT UNIQUE NOT NULL);
         ''')
+
+    def deployment_id_for(self, package_id, prefix):
+        """Return a stable, collision-free <=26-char deployment_id bound to package_id."""
+        row = self.db.execute('SELECT deployment_id FROM deployment_bindings WHERE package_id=?',
+                              (package_id,)).fetchone()
+        if row is not None:
+            return row['deployment_id']
+        with self.atomic():
+            row = self.db.execute('SELECT deployment_id FROM deployment_bindings WHERE package_id=?',
+                                  (package_id,)).fetchone()
+            if row is not None:
+                return row['deployment_id']
+            for offset in range(len(package_id) - 4):
+                candidate = f'{prefix}-s{package_id[offset:offset + 5]}'
+                taken = self.db.execute('SELECT 1 FROM deployment_bindings WHERE deployment_id=?',
+                                        (candidate,)).fetchone()
+                if taken is None:
+                    self.db.execute('INSERT INTO deployment_bindings VALUES(?,?)', (package_id, candidate))
+                    return candidate
+            raise ValueError('unable to allocate unique strategy deployment_id')
 
     @contextmanager
     def atomic(self):
@@ -162,7 +184,7 @@ class DeploymentController:
             for order in orders:
                 if not order['reduce_only']:
                     a.cancel(order['client_id'])
-            if orders:
+            if orders or facts.get('pending_cancellations'):
                 s.transition(switch, switch['phase'], reason='WAIT_TERMINAL_ORDERS')
                 return s.snapshot()
             if facts['positions']:
