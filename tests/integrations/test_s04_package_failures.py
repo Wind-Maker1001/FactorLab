@@ -37,10 +37,15 @@ def test_broken_package_is_diagnosed_and_paused(tmp_path, harness, damage, monke
             monkeypatch.setattr(Path, 'read_bytes', unreadable)
         with pytest.raises(PackageLoadError):
             router._is_decision_package(version)
-        router.before_poll()
         assert router.reason.startswith('PACKAGE_LOAD_FAILED:')
         assert not router.live_bar
         assert router.store.pending()['phase'] == 'ROLLBACK'
+    with harness.open() as router:
+        for _ in range(3):
+            router.before_poll()
+        assert router.store.snapshot()['active'] == LEGACY
+        assert router.store.snapshot()['switch']['phase'] == 'ROLLED_BACK'
+        assert router.store.pending() is None
         assert not writes(harness.requests)
         assert not router._is_decision_package(LEGACY)
 
@@ -59,4 +64,12 @@ def test_missing_dependency_on_active_restart_becomes_controlled_fault(tmp_path,
         router.before_poll()
         assert not router.live_bar
         assert router.store.pending() is not None
+        assert router.reason.startswith('PACKAGE_LOAD_FAILED:')
+        assert not writes(harness.requests)
+    with harness.open() as router:
+        for _ in range(3):
+            router.before_poll()
+        assert router.store.snapshot()['active'] == LEGACY
+        assert router.store.snapshot()['switch']['phase'] == 'ROLLED_BACK'
+        assert router.store.pending() is None
         assert not writes(harness.requests)

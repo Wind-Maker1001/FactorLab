@@ -252,7 +252,110 @@ class ControllerExecution:
             raise ValueError('order identity outside strategy deployment')
 
 
-class OrderStrategyRuntime:
+class OrderOutbox:
+    """Maintain durable orders without loading or invoking strategy code."""
+    def __init__(self, controller, *, deployment_id, runtime_namespace, session=None):
+        self.controller = controller
+        self.gateway = controller.broker
+        self.runtime_namespace = runtime_namespace
+        self.execution = ControllerExecution(controller, deployment_id=deployment_id, session=session)
+
+    def _runtime(self):
+        if self.runtime_namespace is None:
+            return self.gateway.state.runtime
+        slots = self.gateway.state.runtime.setdefault('strategy_deployments', {})
+        return slots.setdefault(self.runtime_namespace, {})
+
+    def dispatch_cancellations(self, observed_at):
+        """Advance durable cancellation obligations without submitting new entries."""
+        pending = self._runtime()['pending']
+        if pending is None or not pending['cancellations']:
+            return None
+        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
+        pending = self._runtime()['pending']
+        if pending is None or not pending['cancellations']:
+            return None
+        cancellations = {offer['key']: offer for offer in pending['cancellations']
+                         if observed_at >= offer['eligible_at']}
+        if not cancellations:
+            return None
+        result, _ = self.execution.dispatch(
+            Decision(cancellations=tuple(cancellations)),
+            cancellation_attempts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
+                                   for key, offer in cancellations.items()},
+        )
+        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
+        return result
+
+    def has_unresolved_work(self):
+        """Report persisted unconfirmed dispatch attempts and pending cancellation obligations."""
+        state = self.gateway.state
+        pending = self._runtime().get('pending')
+        if pending is None:
+            return dict(unresolved_attempts=[], pending_cancellations=[])
+        unresolved_attempts = [
+            offer['intent'].client_order_id for offer in pending['orders']
+            if offer['intent'].client_order_id not in state.orders
+            and self.execution.attempted(offer['intent'].client_order_id)
+        ]
+        pending_cancellations = [
+            offer['key'] for offer in pending['cancellations']
+            if not self.execution.cancellation_confirmed(offer['key'])
+        ]
+        return dict(unresolved_attempts=unresolved_attempts,
+                    pending_cancellations=pending_cancellations)
+
+    def _save_pending(self, orders, cancellations):
+        pending = dict(orders=orders, cancellations=cancellations) if orders or cancellations else None
+        self._runtime()['pending'] = pending
+
+    def _prune_pending(self, at, *, withdraw=False):
+        state = self.gateway.state
+        pending = self._runtime()['pending']
+        if pending is None:
+            return
+        remaining = []
+        for offer in pending['orders']:
+            intent = offer['intent']
+            key = intent.client_order_id
+            if self.execution.retired(key, intent):
+                continue
+            expired = at >= offer['expires_at']
+            if expired or withdraw:
+                if key in state.orders:
+                    continue
+                if not self.execution.attempted(key):
+                    self.execution.retire(intent, 'EXPIRED' if expired else 'WITHDRAWN')
+                    continue
+            remaining.append(offer)
+        # Cancellation is a durable obligation for an existing order. Entry
+        # deadlines and withdrawal on pause apply only to unsubmitted orders.
+        cancellations = []
+        for offer in pending['cancellations']:
+            key = offer['key']
+            if self.execution.cancellation_confirmed(key):
+                order = state.orders[key].snapshot
+                receipt = self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at'])) + ':outcome'
+                if self.controller.store.event_payload(receipt) is None:
+                    self.controller.store.record_metadata(receipt, dict(client_order_id=key,
+                        status=order.status, filled_quantity=order.cumulative_filled_quantity,
+                        fee=order.cumulative_fee, at=self.controller.clock()))
+            else:
+                cancellations.append(offer)
+        self._save_pending(remaining, cancellations)
+
+    def _stop_pending(self, status):
+        def operation():
+            self._prune_pending(self.controller.clock(), withdraw=True)
+            self._runtime()['status'] = status
+        self.controller._atomic(operation)
+
+    def pause(self):
+        self._stop_pending('PAUSED')
+
+
+
+class OrderStrategyRuntime(OrderOutbox):
     """Event-driven orders; confirmations, not proposals, change inventory."""
     def __init__(self, journal, *, session=None, expect=None, preview=False,
                  max_notional=None, max_quantity=None, client_id_prefix=None,
@@ -281,11 +384,6 @@ class OrderStrategyRuntime:
             runtime.setdefault('bars', [])
         self.controller._atomic(initialize)
 
-    def _runtime(self):
-        if self.runtime_namespace is None:
-            return self.gateway.state.runtime
-        slots = self.gateway.state.runtime.setdefault('strategy_deployments', {})
-        return slots.setdefault(self.runtime_namespace, {})
 
     def _account(self):
         # The existing projection keeps base quantity separate from collateral.
@@ -364,44 +462,7 @@ class OrderStrategyRuntime:
             self.controller._atomic(decide_quote)
         return self._dispatch_pending(quote.observed_at)
 
-    def dispatch_cancellations(self, observed_at):
-        """Advance durable cancellation obligations without submitting new entries."""
-        pending = self._runtime()['pending']
-        if pending is None or not pending['cancellations']:
-            return None
-        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
-        pending = self._runtime()['pending']
-        if pending is None or not pending['cancellations']:
-            return None
-        cancellations = {offer['key']: offer for offer in pending['cancellations']
-                         if observed_at >= offer['eligible_at']}
-        if not cancellations:
-            return None
-        result, _ = self.execution.dispatch(
-            Decision(cancellations=tuple(cancellations)),
-            cancellation_attempts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
-                                   for key, offer in cancellations.items()},
-        )
-        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
-        return result
 
-    def has_unresolved_work(self):
-        """Report persisted unconfirmed dispatch attempts and pending cancellation obligations."""
-        state = self.gateway.state
-        pending = self._runtime().get('pending')
-        if pending is None:
-            return dict(unresolved_attempts=[], pending_cancellations=[])
-        unresolved_attempts = [
-            offer['intent'].client_order_id for offer in pending['orders']
-            if offer['intent'].client_order_id not in state.orders
-            and self.execution.attempted(offer['intent'].client_order_id)
-        ]
-        pending_cancellations = [
-            offer['key'] for offer in pending['cancellations']
-            if not self.execution.cancellation_confirmed(offer['key'])
-        ]
-        return dict(unresolved_attempts=unresolved_attempts,
-                    pending_cancellations=pending_cancellations)
 
     def _dispatch_pending(self, observed_at):
         if self._runtime()['pending'] is None:
@@ -507,53 +568,9 @@ class OrderStrategyRuntime:
                 cancellations.setdefault(key, dict(key=key, eligible_at=eligible, expires_at=expiry))
         self._save_pending(list(orders.values()), list(cancellations.values()))
 
-    def _save_pending(self, orders, cancellations):
-        pending = dict(orders=orders, cancellations=cancellations) if orders or cancellations else None
-        self._runtime()['pending'] = pending
 
-    def _prune_pending(self, at, *, withdraw=False):
-        state = self.gateway.state
-        pending = self._runtime()['pending']
-        if pending is None:
-            return
-        remaining = []
-        for offer in pending['orders']:
-            intent = offer['intent']
-            key = intent.client_order_id
-            if self.execution.retired(key, intent):
-                continue
-            expired = at >= offer['expires_at']
-            if expired or withdraw:
-                if key in state.orders:
-                    continue
-                if not self.execution.attempted(key):
-                    self.execution.retire(intent, 'EXPIRED' if expired else 'WITHDRAWN')
-                    continue
-            remaining.append(offer)
-        # Cancellation is a durable obligation for an existing order. Entry
-        # deadlines and withdrawal on pause apply only to unsubmitted orders.
-        cancellations = []
-        for offer in pending['cancellations']:
-            key = offer['key']
-            if self.execution.cancellation_confirmed(key):
-                order = state.orders[key].snapshot
-                receipt = self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at'])) + ':outcome'
-                if self.controller.store.event_payload(receipt) is None:
-                    self.controller.store.record_metadata(receipt, dict(client_order_id=key,
-                        status=order.status, filled_quantity=order.cumulative_filled_quantity,
-                        fee=order.cumulative_fee, at=self.controller.clock()))
-            else:
-                cancellations.append(offer)
-        self._save_pending(remaining, cancellations)
 
-    def _stop_pending(self, status):
-        def operation():
-            self._prune_pending(self.controller.clock(), withdraw=True)
-            self._runtime()['status'] = status
-        self.controller._atomic(operation)
 
-    def pause(self):
-        self._stop_pending('PAUSED')
 
     def resume(self):
         def operation():

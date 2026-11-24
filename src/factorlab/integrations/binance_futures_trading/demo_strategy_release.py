@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 from factorlab.errors import DataQualityError
-from factorlab.strategies.decision_runtime import DecisionJournal, OrderStrategyRuntime, SignalAdapter
+from factorlab.strategies.decision_runtime import DecisionJournal, OrderOutbox, OrderStrategyRuntime, SignalAdapter
 from factorlab.strategies.loader import LoadedStrategy, StrategyWorkerError
 from factorlab.trading import Side
 from factorlab.trading.control import RiskRejected
@@ -45,20 +45,13 @@ class DemoReleaseAdapter:
         unknown = list(s['unknown'])
         pending_cancellations = []
         active = self.router.store.snapshot()['active']
-        if active != LEGACY and self.router._is_decision_package(active):
-            runner = self.router._try_get_decision_runner(active)
-            if runner is not None:
-                if s['reconciled'] and not unknown:
-                    try:
-                        runner.sync_reconciled()
-                    except (StrategyWorkerError, ValueError, RuntimeError, TypeError):
-                        pass
-                if isinstance(runner, OrderStrategyRuntime):
-                    work = runner.has_unresolved_work()
-                    for key in work['unresolved_attempts']:
-                        if key not in unknown:
-                            unknown.append(key)
-                    pending_cancellations.extend(work['pending_cancellations'])
+        runner = self.router._maintenance_runner(active)
+        if isinstance(runner, OrderOutbox):
+            work = runner.has_unresolved_work()
+            for key in work['unresolved_attempts']:
+                if key not in unknown:
+                    unknown.append(key)
+            pending_cancellations.extend(work['pending_cancellations'])
         return dict(reconciled=s['reconciled'], unknown=unknown, positions=s['positions'],
             orders=[dict(client_id=k, status=v['status'], reduce_only=v['reduce_only'])
                     for k, v in s['orders'].items()], account_observed_at=str(s['account_observed_at']),
@@ -298,16 +291,42 @@ class ReleaseConsumer:
             return cached[2]
         return self._load_decision_runner(version)[2]
 
+    def _maintenance_runner(self, version):
+        cached = self._runners.get(version)
+        if cached is not None:
+            return cached[2]
+        binding = self.store.db.execute(
+            'SELECT deployment_id FROM deployment_bindings WHERE package_id=?', (version,)).fetchone()
+        if binding is None:
+            return None
+        deployment_id = binding['deployment_id']
+        runtime = self.bridge.gateway.state.runtime.get('strategy_deployments', {}).get(deployment_id)
+        if runtime is None or 'binding' in runtime['configuration']['strategy']:
+            return None
+        return OrderOutbox(self.bridge.controller, deployment_id=deployment_id,
+            runtime_namespace=deployment_id, session=self.bridge.session)
+
     def _quiesce_active_decision_runner(self):
         active = self.store.snapshot()['active']
-        if active == LEGACY or not self._is_decision_package(active):
+        runner = self._maintenance_runner(active)
+        if runner is not None:
+            runner.pause()
+            if isinstance(runner, DemoStrategyRuntime):
+                runner.clear_pending(freshness_boundary=self.bridge.controller.clock())
             return
-        runner = self._try_get_decision_runner(active)
-        if runner is None:
+        binding = self.store.db.execute(
+            'SELECT deployment_id FROM deployment_bindings WHERE package_id=?', (active,)).fetchone()
+        if binding is None:
             return
-        runner.pause()
-        if isinstance(runner, DemoStrategyRuntime):
-            runner.clear_pending(freshness_boundary=self.bridge.controller.clock())
+        def quiesce_target():
+            runtime = self.bridge.gateway.state.runtime.get('strategy_deployments', {}).get(binding['deployment_id'])
+            if runtime is not None:
+                if runtime['status'] != 'STOPPED':
+                    runtime.update(status='PAUSED', enabled=False)
+                runtime['pending'] = None
+                boundary = self.bridge.controller.clock()
+                runtime['freshness_boundary'] = max(runtime.get('freshness_boundary', boundary), boundary)
+        self.bridge.controller._atomic(quiesce_target)
 
     def _rollback_on_strategy_error(self, error, runner=None):
         if runner is not None:
@@ -386,13 +405,7 @@ class ReleaseConsumer:
         allowed = desired == 'RUNNING' and self.base.authority()
         if not allowed or not self.running:
             self.base.require_fresh_bar()
-            active = self.store.snapshot()['active']
-            if active != LEGACY and self._is_decision_package(active):
-                runner = self._try_get_decision_runner(active)
-                if runner is not None:
-                    runner.pause()
-                    if isinstance(runner, DemoStrategyRuntime):
-                        runner.clear_pending(freshness_boundary=self.base.eligible_after)
+            self._quiesce_active_decision_runner()
         self.running = allowed
         if not allowed:
             self.reason = desired if desired != 'RUNNING' else 'AUTHORIZATION_REQUIRED'
@@ -431,13 +444,9 @@ class ReleaseConsumer:
                 self.base.ensure_campaign()
             if not self._refresh_readiness():
                 return
-            if self.store.pending() and self._is_decision_package(state['active']):
-                try:
-                    runner = self._load_decision_runner(state['active'])[2]
-                except (StrategyWorkerError, ValueError, RuntimeError, TypeError) as error:
-                    self._rollback_on_strategy_error(error)
-                    return
-                if isinstance(runner, OrderStrategyRuntime):
+            if self.store.pending():
+                runner = self._maintenance_runner(state['active'])
+                if isinstance(runner, OrderOutbox):
                     self._maintain_cancellations(state['active'], runner)
             self.deployer.step()
             state = self.store.snapshot()
@@ -461,6 +470,8 @@ class ReleaseConsumer:
                         self.base.reason = None
                     else:
                         self.base.reason = None if self.base.live_bar else 'FRESH_CLOSED_BAR_REQUIRED'
+                except PackageLoadError:
+                    raise
                 except (StrategyWorkerError, ValueError, RuntimeError, TypeError) as error:
                     self._rollback_on_strategy_error(error, runner)
                     self.deployer.step()

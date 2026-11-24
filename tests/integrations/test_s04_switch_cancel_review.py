@@ -13,7 +13,8 @@ from test_binance_demo_network import wired
 
 @pytest.mark.parametrize('rollback', [False, True])
 @pytest.mark.parametrize('obligation', [False, True])
-def test_switch_services_persisted_reduce_only_cancel(tmp_path, harness, rollback, obligation):
+@pytest.mark.parametrize('broken_package', [False, True])
+def test_switch_services_persisted_reduce_only_cancel(tmp_path, harness, rollback, obligation, broken_package):
     manifest = install_cycle(tmp_path, harness)
     with harness.open() as router:
         router.store.request(manifest, promote_candidate(manifest, 'start'))
@@ -37,6 +38,9 @@ def test_switch_services_persisted_reduce_only_cancel(tmp_path, harness, rollbac
                 files=['limit_cycle.py'], configuration=dict(mode='hold'), execution_mode='orders')
             harness.install(archive)
             router.store.request(target, promote_candidate(target, 'next', expected_active=manifest['package_id']))
+        if broken_package:
+            (router.releases / manifest['package_id'] / 'manifest.json').unlink()
+            router._runners.clear()
         harness.set_time(1, 3)
         router.before_poll()
         assert len(writes(harness.requests)) == 2
