@@ -1,0 +1,4 @@
+pyqlib==0.9.7
+numpy==2.4.6
+pandas==2.3.3
+pyarrow==23.0.1

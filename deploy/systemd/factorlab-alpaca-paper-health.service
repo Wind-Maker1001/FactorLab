@@ -1,0 +1,14 @@
+[Unit]
+Description=FactorLab Alpaca Paper health
+After=factorlab-alpaca-paper.service
+
+[Service]
+Type=oneshot
+User=factorlab-alpaca
+Group=factorlab-alpaca
+ExecStart=/opt/factorlab-alpaca/current/venv/bin/python -m factorlab.integrations.alpaca.cloud_runtime health
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true

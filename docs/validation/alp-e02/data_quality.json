@@ -1,0 +1,2699 @@
+{
+  "calendar": {
+    "received_at": "2026-11-24T15:33:49.561811+00:00",
+    "missing_local": [],
+    "missing_vendor": [],
+    "time_mismatches": []
+  },
+  "clock": {
+    "is_open": true,
+    "next_close": "2026-11-24T16:00:00-05:00",
+    "next_open": "2026-11-25T09:30:00-05:00",
+    "timestamp": "2026-11-24T10:33:50.95940244-05:00"
+  },
+  "iex:minute": [
+    {
+      "symbol": "AAPL",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 831,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 51,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    },
+    {
+      "symbol": "SNDK",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 877,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 97,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    },
+    {
+      "symbol": "BA",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 624,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 0,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    },
+    {
+      "symbol": "C",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 734,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 1,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    },
+    {
+      "symbol": "JPM",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 727,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 4,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    },
+    {
+      "symbol": "GE",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 700,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 3,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    },
+    {
+      "symbol": "TQQQ",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 804,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 25,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    },
+    {
+      "symbol": "QQQ",
+      "feed": "iex",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 816,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 36,
+      "volume_scope": "IEX_SINGLE_EXCHANGE",
+      "status": "PASS"
+    }
+  ],
+  "sip:minute": [
+    {
+      "symbol": "AAPL",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 1772,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 992,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    },
+    {
+      "symbol": "SNDK",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 1920,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 1140,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    },
+    {
+      "symbol": "BA",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 1179,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 399,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    },
+    {
+      "symbol": "C",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 967,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 187,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    },
+    {
+      "symbol": "JPM",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 1088,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 308,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    },
+    {
+      "symbol": "GE",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 926,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 146,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    },
+    {
+      "symbol": "TQQQ",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 1920,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 1140,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    },
+    {
+      "symbol": "QQQ",
+      "feed": "sip",
+      "adjustment": "raw",
+      "timeframe": "1Min",
+      "first_valid_date": "2026-11-20",
+      "last_valid_date": "2026-11-23",
+      "rows": 1919,
+      "sessions": 2,
+      "expected_sessions": 2,
+      "missing_sessions": [],
+      "outside_calendar": [],
+      "duplicate_records": 0,
+      "invalid_ohlcv": [],
+      "extended_hour_rows": 1139,
+      "volume_scope": "SIP_CONSOLIDATED",
+      "status": "PASS"
+    }
+  ],
+  "corporate_actions": "RETRIEVED_PROCESS_DATE_FILTER_NOT_PIT_EVIDENCE",
+  "clock_diagnostic": {
+    "vendor_at": "2026-11-24 15:37:47.675055066+00:00",
+    "observed_at": "2026-11-24 15:37:47.841919+00:00",
+    "offset": "-1 days +23:59:59.833136066",
+    "reasons": []
+  },
+  "iex:rth_aggregates": [
+    {
+      "symbol": "AAPL",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 352.65,
+      "h": 354.29,
+      "l": 340.57,
+      "c": 343.4,
+      "v": 2264272,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 1409.0
+      }
+    },
+    {
+      "symbol": "AAPL",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 347.67,
+      "h": 352.6,
+      "l": 345.52,
+      "c": 349.4,
+      "v": 1892403,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 10871.0
+      }
+    },
+    {
+      "symbol": "BA",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 160.845,
+      "h": 164.705,
+      "l": 155.59,
+      "c": 155.94,
+      "v": 459082,
+      "observed_minutes": 343,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 3822.0
+      }
+    },
+    {
+      "symbol": "BA",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 160.17,
+      "h": 163.2,
+      "l": 159.15,
+      "c": 162.36,
+      "v": 191934,
+      "observed_minutes": 281,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 11167.0
+      }
+    },
+    {
+      "symbol": "C",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 114.18,
+      "h": 114.45,
+      "l": 110.17,
+      "c": 110.67,
+      "v": 850130,
+      "observed_minutes": 382,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 918.0
+      }
+    },
+    {
+      "symbol": "C",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 115.07,
+      "h": 115.36,
+      "l": 113.165,
+      "c": 114.41,
+      "v": 413833,
+      "observed_minutes": 351,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 3910.0
+      }
+    },
+    {
+      "symbol": "GE",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 318.59,
+      "h": 320.64,
+      "l": 307.405,
+      "c": 309.72,
+      "v": 252502,
+      "observed_minutes": 344,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 2595.0
+      }
+    },
+    {
+      "symbol": "GE",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 319.895,
+      "h": 323.24,
+      "l": 315.245,
+      "c": 321.2,
+      "v": 219111,
+      "observed_minutes": 353,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 1345.0
+      }
+    },
+    {
+      "symbol": "JPM",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 319.89,
+      "h": 320.79,
+      "l": 309.195,
+      "c": 310.755,
+      "v": 404570,
+      "observed_minutes": 375,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 1335.0
+      }
+    },
+    {
+      "symbol": "JPM",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 319.37,
+      "h": 321.565,
+      "l": 315.23,
+      "c": 316.49,
+      "v": 263369,
+      "observed_minutes": 348,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 2057.0
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 638.48,
+      "h": 643.21,
+      "l": 606.28,
+      "c": 609.75,
+      "v": 1587198,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 2830.0
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 655.96,
+      "h": 657.42,
+      "l": 642.04,
+      "c": 651.18,
+      "v": 1361767,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 2690.0
+      }
+    },
+    {
+      "symbol": "SNDK",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 90,
+      "h": 90.625,
+      "l": 78.26,
+      "c": 79.245,
+      "v": 3517696,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 6447.0
+      }
+    },
+    {
+      "symbol": "SNDK",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 98.49,
+      "h": 99,
+      "l": 86.965,
+      "c": 87.455,
+      "v": 3070413,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 9428.0
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 47.52,
+      "h": 48.53,
+      "l": 40.13,
+      "c": 41.01,
+      "v": 5890744,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 3106.0
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 50.125,
+      "h": 50.42,
+      "l": 47.36,
+      "c": 49.14,
+      "v": 2791345,
+      "observed_minutes": 389,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.0,
+        "v": 5988.0
+      }
+    }
+  ],
+  "sip:rth_aggregates": [
+    {
+      "symbol": "AAPL",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 352.865,
+      "h": 354.34,
+      "l": 340.56,
+      "c": 342.75,
+      "v": 55128106,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.18999999999999773,
+        "v": 25741470.0
+      }
+    },
+    {
+      "symbol": "AAPL",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 347.87,
+      "h": 352.6,
+      "l": 345.4421,
+      "c": 349.62,
+      "v": 36446330,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.5400000000000205,
+        "v": 22317912.0
+      }
+    },
+    {
+      "symbol": "BA",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 161,
+      "h": 164.8,
+      "l": 155.56,
+      "c": 156,
+      "v": 9612015,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.11000000000001364,
+        "v": 1550337.0
+      }
+    },
+    {
+      "symbol": "BA",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 160,
+      "h": 163.315,
+      "l": 159.1,
+      "c": 162.42,
+      "v": 6744653,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.030000000000001137,
+        "v": 900832.0
+      }
+    },
+    {
+      "symbol": "C",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 113.97,
+      "h": 114.69,
+      "l": 110.16,
+      "c": 110.7,
+      "v": 13907657,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.0799999999999983,
+        "v": 2815586.0
+      }
+    },
+    {
+      "symbol": "C",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 115,
+      "h": 115.37,
+      "l": 113.13,
+      "c": 114.41,
+      "v": 9632339,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.060000000000002274,
+        "v": 2048217.0
+      }
+    },
+    {
+      "symbol": "GE",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 318.8,
+      "h": 321.76,
+      "l": 307.38,
+      "c": 309.64,
+      "v": 3778851,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0999999999999659,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.01999999999998181,
+        "v": 1715526.0
+      }
+    },
+    {
+      "symbol": "GE",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 320,
+      "h": 323.51,
+      "l": 315.18,
+      "c": 321.3,
+      "v": 3280938,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.040000000000020464,
+        "v": 971494.0
+      }
+    },
+    {
+      "symbol": "JPM",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 320.76,
+      "h": 320.88,
+      "l": 309.18,
+      "c": 310.65,
+      "v": 8941236,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": -0.8700000000000045,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.12000000000000455,
+        "v": 3593688.0
+      }
+    },
+    {
+      "symbol": "JPM",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 319.19,
+      "h": 321.612,
+      "l": 315,
+      "c": 316.87,
+      "v": 5622513,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.20999999999997954,
+        "v": 3105148.0
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 638.82,
+      "h": 643.28,
+      "l": 606.2293,
+      "c": 610.04,
+      "v": 116887156,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.01999999999998181,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -1.5899999999999181,
+        "v": 18110511.0
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 655.98,
+      "h": 657.53,
+      "l": 641.9501,
+      "c": 650.87,
+      "v": 70399857,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.15999999999996817,
+        "v": 15167706.0
+      }
+    },
+    {
+      "symbol": "SNDK",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 89.98,
+      "h": 90.67,
+      "l": 78.25,
+      "c": 79.28,
+      "v": 110724630,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.04000000000000625,
+        "v": 17179770.0
+      }
+    },
+    {
+      "symbol": "SNDK",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 98.56,
+      "h": 99.07,
+      "l": 86.96,
+      "c": 87.38,
+      "v": 89246502,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.024999999999991473,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.3299999999999983,
+        "v": 24822654.0
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "session": "2026-11-20",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 47.52,
+      "h": 48.53,
+      "l": 40.115,
+      "c": 40.99,
+      "v": 227982298,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.00999999999999801,
+        "h": 0.0,
+        "l": 0.0,
+        "c": 0.21000000000000085,
+        "v": 27755538.0
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "session": "2026-11-23",
+      "scope": "OBSERVED_RTH_MINUTES",
+      "o": 50.135,
+      "h": 50.4374,
+      "l": 47.305,
+      "c": 49.13,
+      "v": 127233024,
+      "observed_minutes": 390,
+      "scheduled_minutes": 390,
+      "completeness": "NOT_INFERRED_FROM_MINUTE_COUNT",
+      "vendor_daily_minus_observed_rth": {
+        "o": 0.0,
+        "h": 0.0,
+        "l": 0.0,
+        "c": -0.030000000000001137,
+        "v": 28553202.0
+      }
+    }
+  ],
+  "acceptance_notes": [
+    "Initial minute query used UTC date start and included previous New York evening for SIP; corrected explicit NY boundary is recorded in final minute evidence. Initial responses preserved locally.",
+    "Minute observation gaps do not alone prove missing eligible trades.",
+    "Delayed SIP subscription observed but REST recovery unsupported; not accepted as recovered.",
+    "Original v69 equivalence unconfirmed; PIT/HFQ unverified."
+  ],
+  "streams": {
+    "iex": {
+      "status": "OBSERVED_ALL_SYMBOLS_AND_RECONNECTED",
+      "connections": [
+        "2026-11-24T15:34:25.722599+00:00",
+        "2026-11-24T15:34:38.328782+00:00"
+      ],
+      "gaps": [
+        {
+          "start": "2026-11-24T15:34:26.354142+00:00",
+          "end": "2026-11-24T15:34:39.253497+00:00",
+          "counts": {
+            "quotes": 31643,
+            "trades": 322
+          },
+          "status": "REST_BACKFILLED_SEQUENCE_COMPLETENESS_UNVERIFIED"
+        }
+      ],
+      "missing_symbols": [],
+      "observed_event_count": 851,
+      "observed_symbols": [
+        "AAPL",
+        "BA",
+        "C",
+        "GE",
+        "JPM",
+        "QQQ",
+        "SNDK",
+        "TQQQ"
+      ],
+      "timestamp_evidence": [
+        {
+          "symbol": "AAPL",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:34:39.867487354Z",
+          "received_at": "2026-11-24T15:34:49.378567+00:00",
+          "source": "iex"
+        },
+        {
+          "symbol": "BA",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:34:40.485166518Z",
+          "received_at": "2026-11-24T15:34:49.398682+00:00",
+          "source": "iex"
+        },
+        {
+          "symbol": "C",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:34:39.938386502Z",
+          "received_at": "2026-11-24T15:34:49.379757+00:00",
+          "source": "iex"
+        },
+        {
+          "symbol": "GE",
+          "channel": "trades",
+          "event_at": "2026-11-24T15:34:40.110937172Z",
+          "received_at": "2026-11-24T15:34:49.384621+00:00",
+          "source": "iex"
+        },
+        {
+          "symbol": "JPM",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:34:39.97178855Z",
+          "received_at": "2026-11-24T15:34:49.380660+00:00",
+          "source": "iex"
+        },
+        {
+          "symbol": "QQQ",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:34:26.173196408Z",
+          "received_at": "2026-11-24T15:34:26.354135+00:00",
+          "source": "iex"
+        },
+        {
+          "symbol": "SNDK",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:34:39.369239848Z",
+          "received_at": "2026-11-24T15:34:49.368095+00:00",
+          "source": "iex"
+        },
+        {
+          "symbol": "TQQQ",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:34:39.109977504Z",
+          "received_at": "2026-11-24T15:34:49.359400+00:00",
+          "source": "iex"
+        }
+      ]
+    },
+    "sip": {
+      "status": "StreamProtocolError",
+      "connections": [
+        "2026-11-24T15:35:00.347411+00:00"
+      ],
+      "gaps": [],
+      "missing_symbols": [
+        "AAPL",
+        "BA",
+        "C",
+        "GE",
+        "JPM",
+        "QQQ",
+        "SNDK",
+        "TQQQ"
+      ],
+      "observed_event_count": 0,
+      "observed_symbols": [],
+      "timestamp_evidence": []
+    },
+    "delayed_sip": {
+      "status": "StreamRecoveryError",
+      "connections": [
+        "2026-11-24T15:35:01.902486+00:00",
+        "2026-11-24T15:35:14.502867+00:00"
+      ],
+      "gaps": [
+        {
+          "status": "UNSUPPORTED_REST_FEED",
+          "feed": "delayed_sip"
+        }
+      ],
+      "missing_symbols": [
+        "AAPL",
+        "BA",
+        "C",
+        "GE",
+        "JPM",
+        "SNDK"
+      ],
+      "observed_event_count": 5,
+      "observed_symbols": [
+        "QQQ",
+        "TQQQ"
+      ],
+      "timestamp_evidence": [
+        {
+          "symbol": "QQQ",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:20:02.360159158Z",
+          "received_at": "2026-11-24T15:35:02.529256+00:00",
+          "source": "delayed_sip"
+        },
+        {
+          "symbol": "TQQQ",
+          "channel": "quotes",
+          "event_at": "2026-11-24T15:20:02.359885005Z",
+          "received_at": "2026-11-24T15:35:02.529257+00:00",
+          "source": "delayed_sip"
+        }
+      ]
+    },
+    "sip-confirmation": {
+      "status": "StreamProtocolError",
+      "error_code": 409,
+      "connections": [
+        "2026-11-24T15:37:58.968147+00:00"
+      ],
+      "gaps": [],
+      "missing_symbols": [
+        "AAPL",
+        "BA",
+        "C",
+        "GE",
+        "JPM",
+        "QQQ",
+        "SNDK",
+        "TQQQ"
+      ],
+      "observed_event_count": 0,
+      "observed_symbols": [],
+      "timestamp_evidence": []
+    }
+  },
+  "adjustments": {
+    "iex:adjustments": {
+      "split": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 0.12497924917589584,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.12498114725252626,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.12497953391911805,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.1249804228660924,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 8.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      },
+      "dividend": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 0.9965099014673838,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9965101282148546,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9965085233107415,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.996510289250252,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 0.9796964320914647,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9796937256972782,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9796964320914647,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9796963435450543,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 0.9946292855936496,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9946322306254395,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9946299768040419,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9946301474326383,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 0.9811060331871301,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9811029695333588,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9811030683492408,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9811039746811877,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 0.9953145152074184,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9953166131037934,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9953143869253683,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9953157809723793,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 0.9925076311164555,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9925076311164555,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9924878479893947,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9925065567628324,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      },
+      "spin-off": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      },
+      "all": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 0.9965099014673838,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9965101282148546,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9965085233107415,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.996510289250252,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 0.9796964320914647,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9796937256972782,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9796964320914647,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9796963435450543,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 0.9946292855936496,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9946322306254395,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9946299768040419,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9946301474326383,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 0.9811060331871301,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9811029695333588,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9811030683492408,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9811039746811877,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 0.9953145152074184,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9953166131037934,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9953143869253683,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9953157809723793,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 0.12497924917589584,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.12498114725252626,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.12497953391911805,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.1249804228660924,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 8.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 0.9925076311164555,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9925076311164555,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9924878479893947,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9925065567628324,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      }
+    },
+    "sip:adjustments": {
+      "split": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 0.12498188818281551,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.12498191623709799,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.1249863982453986,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.12498127527837419,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 8.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      },
+      "dividend": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 0.9965088282504014,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9965109223300971,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9965080930079698,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9965111678595836,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 0.9796985815602838,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9797001347708895,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9796964320914647,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.979695885509839,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 0.9946283783783785,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9946290239283869,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9946314732474398,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9946290810846001,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 0.9811029573871689,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9811040540967547,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9811029573871689,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9811034794105317,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 0.9953143622144944,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9953170606536871,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9953144387122053,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9953155622122017,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 0.9924960505529226,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.992506690454951,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9924845269672855,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9925014420303787,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      },
+      "spin-off": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      },
+      "all": {
+        "matched": 2016,
+        "raw_only": 0,
+        "adjusted_only": 0,
+        "pit": "UNVERIFIED",
+        "hfq": "UNVERIFIED",
+        "v69_equivalence": "UNCONFIRMED_ORIGINAL_SOURCE_REQUIRED",
+        "per_symbol": {
+          "AAPL": {
+            "o_ratio": {
+              "minimum": 0.9965088282504014,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9965109223300971,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9965080930079698,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9965111678595836,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "BA": {
+            "o_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "C": {
+            "o_ratio": {
+              "minimum": 0.9796985815602838,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9797001347708895,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9796964320914647,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.979695885509839,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "GE": {
+            "o_ratio": {
+              "minimum": 0.9946283783783785,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9946290239283869,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9946314732474398,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9946290810846001,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "JPM": {
+            "o_ratio": {
+              "minimum": 0.9811029573871689,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9811040540967547,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9811029573871689,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9811034794105317,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "QQQ": {
+            "o_ratio": {
+              "minimum": 0.9953143622144944,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.9953170606536871,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9953144387122053,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9953155622122017,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          },
+          "SNDK": {
+            "o_ratio": {
+              "minimum": 0.12498188818281551,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.12498191623709799,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.1249863982453986,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.12498127527837419,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 8.0
+            }
+          },
+          "TQQQ": {
+            "o_ratio": {
+              "minimum": 0.9924960505529226,
+              "maximum": 1.0
+            },
+            "h_ratio": {
+              "minimum": 0.992506690454951,
+              "maximum": 1.0
+            },
+            "l_ratio": {
+              "minimum": 0.9924845269672855,
+              "maximum": 1.0
+            },
+            "c_ratio": {
+              "minimum": 0.9925014420303787,
+              "maximum": 1.0
+            },
+            "volume_ratio": {
+              "minimum": 1.0,
+              "maximum": 1.0
+            }
+          }
+        }
+      }
+    }
+  },
+  "cache_online": {
+    "status": "PASS",
+    "symbol": "AAPL",
+    "scope": "TWO_SESSION_RAW_INCREMENTAL_CACHE_SMOKE_NOT_SECURITY_MASTER_CERTIFICATION",
+    "first_rows": 2,
+    "second_rows": 2,
+    "first_generation": "bd2383a5340636aaeea1bd1249c250ee332efe57c8a167ce665ef14f1727acae-0480599421324f37898a4787551d682e",
+    "second_generation": "bd2383a5340636aaeea1bd1249c250ee332efe57c8a167ce665ef14f1727acae-42c60ed9e2d64041b8f8cfc3dea3a302",
+    "requests": [
+      {
+        "path": "/v2/calendar",
+        "params": {
+          "start": "2025-11-01",
+          "end": "2026-12-08"
+        },
+        "requested_at": "2026-11-24T15:38:25.476579+00:00",
+        "received_at": "2026-11-24T15:38:26.662549+00:00",
+        "status": 200,
+        "request_id": "40769f776794c18cb5688a17f92b3261"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL",
+          "start": "2026-11-20T00:00:00-05:00",
+          "end": "2026-11-23T23:59:59.999999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:38:26.863489+00:00",
+        "received_at": "2026-11-24T15:38:28.782481+00:00",
+        "status": 200,
+        "request_id": "f81ccc139e1dfe8e2956b660e61d7ff2"
+      },
+      {
+        "path": "/v2/stocks/bars",
+        "params": {
+          "timeframe": "1Day",
+          "adjustment": "raw",
+          "asof": "2026-11-24",
+          "symbols": "AAPL",
+          "start": "2026-11-20T00:00:00-05:00",
+          "end": "2026-11-23T23:59:59.999999999-05:00",
+          "limit": 10000,
+          "sort": "asc",
+          "feed": "iex"
+        },
+        "requested_at": "2026-11-24T15:38:28.838775+00:00",
+        "received_at": "2026-11-24T15:38:29.763393+00:00",
+        "status": 200,
+        "request_id": "1dc2241a75fd01e0e55554f37b38a90a"
+      }
+    ],
+    "provider_read_rows": 2
+  },
+  "historical_status": "ALL_8_SYMBOLS_252_DAILY_SESSIONS_BOTH_FEEDS_ALL_5_ADJUSTMENTS",
+  "minute_scope": "LAST_TWO_COMPLETED_SESSIONS_NOT_252_DAYS_OF_MINUTES",
+  "identity_status": "ASOF_SYMBOL_MAPPING_RECORDED_LONG_HISTORY_SECURITY_CONTINUITY_NOT_CERTIFIED",
+  "unverified_capabilities": [
+    "Delayed SIP gap recovery",
+    "BOATS/overnight/OTC account permissions",
+    "Official opening-auction price",
+    "Original v69 adjustment equivalence",
+    "Strict PIT/HFQ research admission"
+  ]
+}

@@ -160,7 +160,7 @@ def test_workflow_pins_all_candidate_jobs_before_execution():
                    if 'pr_merge_ref.py' in step.get('run', ''))
     assert risk_steps[refresh]['run'] == 'python -I trusted/tools/ci/pr_merge_ref.py --repository candidate'
     assert 1 < refresh < positions['identity'] < positions['select'] < positions['seal']
-    for name in ('fast', 'current', 'locking', 'package'):
+    for name in ('fast', 'targeted', 'current', 'locking', 'package'):
         steps = jobs[name]['steps']
         assert steps[0]['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
         assert steps[0]['with']['path'] == 'candidate'
@@ -180,9 +180,22 @@ def test_workflow_pins_all_candidate_jobs_before_execution():
                      if step.get('uses', '').startswith('actions/download-artifact@')]
         assert downloads == [dict(name='pr-risk', path='trusted-risk')]
         assert steps[1]['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
-    targeted = next(step for step in jobs['fast']['steps'] if step.get('name') == 'Trusted targeted test execution')
+    assert jobs['fast']['needs'] == jobs['targeted']['needs'] == 'risk'
+    assert jobs['fast']['timeout-minutes'] == 15
+    assert jobs['targeted']['timeout-minutes'] == 30
+    assert not any('--suite targeted' in step.get('run', '') for step in jobs['fast']['steps'])
+    steps = jobs['targeted']['steps']
+    index = next(i for i, step in enumerate(steps)
+                 if step.get('name') == 'Trusted targeted test execution')
+    targeted = steps[index]
     assert targeted['if'] == '${{ success() }}'
     assert 'pr_identity.py verify' in targeted['run']
+    assert 'python -I ../trusted/tools/ci/integration_checks.py' in targeted['run']
+    assert '--suite targeted' in targeted['run']
+    assert steps[index - 2]['with']['path'] == 'trusted'
+    assert steps[index - 2]['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
+    assert steps[index - 1]['with'] == dict(name='pr-risk', path='trusted-risk')
+    assert steps[-1]['with']['name'] == 'targeted-pr-receipts'
 
 
 def test_issue_and_seal_cli(subject, tmp_path):

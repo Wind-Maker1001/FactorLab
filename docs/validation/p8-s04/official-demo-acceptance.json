@@ -1,0 +1,2921 @@
+{
+  "schema": "FACTORLAB_P8_S04_DEMO_ACCEPTANCE_V1",
+  "conformance_only": true,
+  "research_qualification": false,
+  "commit": "94b604bccdaa318ffbff52aa7e0350bac52cf54d",
+  "run_id": "p8s04-20261124-r2",
+  "started_at_utc": "2026-11-24T16:36:27Z",
+  "remaining_posts_before": 1,
+  "budget_profile": "SINGLE_POST_RESTING_CANCEL",
+  "real_fill_verified": false,
+  "real_fill_note": "Remaining existing global POST budget is 1/100; opening a fill without >=2 POSTs reserved for entry+exit would risk an uncloseable residual position under frozen risk limits. Using non-crossing resting LIMIT order lifecycle instead without expanding budget.",
+  "before": {
+    "health": {
+      "pid": 343417,
+      "heartbeat_at": 1795538186.9984026,
+      "started_at": 1795538111.275499,
+      "starts": 28,
+      "restart_count": 27,
+      "status": "RUNNING",
+      "reason": "FRESH_CLOSED_BAR_REQUIRED",
+      "mode": "EXECUTE",
+      "desired": "RUNNING",
+      "account_recovered": true,
+      "last_reconciled_at": "2026-11-24T16:36:26.775423+00:00",
+      "unknown_count": 0,
+      "unknown_orders": [],
+      "open_orders": [],
+      "positions": [],
+      "equity": {
+        "availableBalance": "4999.32325687",
+        "initialMargin": "0E-8",
+        "maintMargin": "0E-8",
+        "marginBalance": "4999.32325687",
+        "openOrderInitialMargin": "0E-8",
+        "positionInitialMargin": "0E-8",
+        "unrealizedProfit": "0E-8",
+        "walletBalance": "4999.32325687"
+      },
+      "nav_usdt": "4999.32325687",
+      "campaign": {
+        "enabled": true,
+        "expires_at": "2026-11-24T18:52:09.352226+00:00",
+        "limits": {
+          "max_loss_usdt": "1",
+          "max_notional_usdt": "7",
+          "max_open_orders": 1,
+          "max_quantity": "0.04",
+          "symbol": "NVDAUSDT"
+        },
+        "post_budget": 4,
+        "posts_consumed": 0,
+        "remaining_posts": 4
+      },
+      "global_budget": {
+        "consumed": {
+          "posts": 99,
+          "submitted_notional": "629.9972000"
+        },
+        "max_loss": "1",
+        "opening_equity": "4999.97114760",
+        "remaining_notional": "70.0028000",
+        "remaining_posts": 1,
+        "state": "RUNNING",
+        "total_notional": "700",
+        "total_orders": 100
+      },
+      "recent_orders": [
+        {
+          "client_order_id": "pfb68e582c161ab6898369deafc292b3",
+          "exchange_updated_at": "2026-11-24 15:46:59.243000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "636.54000",
+          "order_id": "65894902",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "pf55f2b7e7336bbd198e79cead7ddf6b",
+          "exchange_updated_at": "2026-11-24 15:50:20.935000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "716.55000",
+          "order_id": "65796009",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00035-00000013",
+          "exchange_updated_at": "2026-11-24 15:50:00.439000+00:00",
+          "filled_quantity": "0.04",
+          "limit_price": "151.87000",
+          "order_id": "195421988",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf5c4abdc5b7e285f667904fac814106",
+          "exchange_updated_at": "2026-11-24 15:50:52.115000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "631.03000",
+          "order_id": "65896503",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf4125dd63f464552d4f8d6d2540251c",
+          "exchange_updated_at": "2026-11-24 15:51:00.143000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "711.03000",
+          "order_id": "65796666",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00036-00000001",
+          "exchange_updated_at": "2026-11-24 16:24:59.081000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "151.01000",
+          "order_id": "195422478",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "pfc3c7eb670091b34cb65b827cc95560",
+          "exchange_updated_at": "2026-11-24 15:53:13.279000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "638.71000",
+          "order_id": "65897174",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf3f334626f754b5cac7957d3436cf88",
+          "exchange_updated_at": "2026-11-24 15:53:21.031000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "719.99000",
+          "order_id": "65797009",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf1520f690c471157f48f4779187bf8a",
+          "exchange_updated_at": "2026-11-24 15:55:04.039000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "633.06000",
+          "order_id": "65897750",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pff63984af94cf589d3236ac66959fc4",
+          "exchange_updated_at": "2026-11-24 15:55:12.467000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "712.90000",
+          "order_id": "65797260",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        }
+      ],
+      "grid": {
+        "breakout_exit": null,
+        "deployment_id": "fl-d7345f8795464a65-g-00036",
+        "effective": "PAUSED",
+        "grid_reason": null,
+        "inventory": "0",
+        "last_bar": "2026-11-24 16:36:00+00:00",
+        "live_bar": false,
+        "reason": "FRESH_CLOSED_BAR_REQUIRED",
+        "reservations_count": 0,
+        "running": true,
+        "state": "RUNNING"
+      },
+      "strategy_release": {
+        "active": "legacy-grid",
+        "active_identity": null,
+        "active_protocol": "legacy-grid",
+        "events": [
+          {
+            "at": 1795447509.7031322,
+            "event": "REQUESTED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "legacy-grid",
+            "seq": 1,
+            "switch_id": 1,
+            "watermark": null
+          },
+          {
+            "at": 1795447514.4451356,
+            "event": "QUIESCED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "legacy-grid",
+            "seq": 2,
+            "switch_id": 1,
+            "watermark": "{\"controller_event\": 23605, \"market\": \"2026-11-23 15:25:00+00:00\"}"
+          },
+          {
+            "at": 1795447515.5450265,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 3,
+            "switch_id": 1
+          },
+          {
+            "at": 1795447518.4588017,
+            "event": "READY_RESTART",
+            "seq": 4,
+            "switch_id": 1
+          },
+          {
+            "at": 1795447521.371223,
+            "event": "READY_RESTART",
+            "seq": 5,
+            "switch_id": 1
+          },
+          {
+            "at": 1795447526.6496449,
+            "event": "SUCCEEDED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "legacy-grid",
+            "seq": 6,
+            "switch_id": 1,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447531.3154697,
+            "event": "REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 7,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.4837162,
+            "event": "QUIESCED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 8,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.5354218,
+            "event": "SUCCEEDED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 9,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447536.4726553,
+            "event": "REQUESTED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 10,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.358302,
+            "event": "QUIESCED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 11,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.4102292,
+            "event": "SUCCEEDED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 12,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447562.134028,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 13,
+            "switch_id": 4
+          },
+          {
+            "at": 1795447565.3281448,
+            "event": "ROLLED_BACK",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "seq": 14,
+            "switch_id": 4,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447566.403148,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 15,
+            "switch_id": 5
+          },
+          {
+            "at": 1795447568.2968776,
+            "event": "ROLLED_BACK",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 16,
+            "switch_id": 5,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447568.6013386,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 17,
+            "switch_id": 6
+          },
+          {
+            "at": 1795447571.2460508,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 18,
+            "switch_id": 6,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537494.3631723,
+            "event": "REQUESTED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 19,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537497.7330132,
+            "event": "QUIESCED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 20,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27007, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537499.5806484,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 21,
+            "switch_id": 7
+          },
+          {
+            "at": 1795537513.383952,
+            "event": "SUCCEEDED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 22,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537517.503705,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 23,
+            "switch_id": 8
+          },
+          {
+            "at": 1795537520.7636561,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "seq": 24,
+            "switch_id": 8,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          }
+        ],
+        "id": 1,
+        "previous": null,
+        "stable": "legacy-grid",
+        "switch": {
+          "boot": "",
+          "created": 1795537517.503234,
+          "id": 8,
+          "mode": "hot",
+          "new": "legacy-grid",
+          "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+          "phase": "ROLLED_BACK",
+          "policy": "wait_flat",
+          "reason": null,
+          "selection": null,
+          "updated": 1795537520.7636275,
+          "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+        },
+        "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+      }
+    },
+    "pid": 343417,
+    "inodes": {
+      "grid-supervisor.sqlite3": 802208,
+      "strategy-dry-run.sqlite3": 802210,
+      "runtime.sqlite3": 802209,
+      "strategy-deployment.sqlite3": 802152,
+      "strategy-execute.sqlite3": 802211,
+      "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 802200,
+      "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 802201,
+      "grid-preview/grid-supervisor.sqlite3": 802206,
+      "grid-preview/runtime.sqlite3": 802207,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 802214,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 802215,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 802204,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 802205
+    },
+    "state": {
+      "active": "legacy-grid",
+      "checkpoint": {},
+      "id": 1,
+      "previous": null,
+      "stable": "legacy-grid",
+      "switch": {
+        "boot": "",
+        "created": 1795537517.503234,
+        "id": 8,
+        "mode": "hot",
+        "new": "legacy-grid",
+        "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+        "phase": "ROLLED_BACK",
+        "policy": "wait_flat",
+        "reason": null,
+        "selection": null,
+        "updated": 1795537520.7636275,
+        "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+      },
+      "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+    }
+  },
+  "phases": [
+    {
+      "name": "phase2_hot_switch_resting_order_and_restart_recovery",
+      "package_id": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+      "strategy_mode": "buy_then_cancel",
+      "switch_old_pid": 343417,
+      "switch_new_pid": 343417,
+      "same_pid_switch": true,
+      "resting_order_before_restart": {
+        "client_order_id": "fl-d7345f8795464a65-sa46d8-entry",
+        "filled_quantity": "0",
+        "order_id": "195433064",
+        "side": "BUY",
+        "status": "NEW",
+        "symbol": "NVDAUSDT"
+      },
+      "pre_restart_pid": 343417,
+      "post_restart_pid": 343968,
+      "pre_restart_posts": 100,
+      "post_restart_posts": 100,
+      "open_orders_after_restart": [
+        {
+          "client_order_id": "fl-d7345f8795464a65-sa46d8-entry",
+          "filled_quantity": "0",
+          "order_id": "195433064",
+          "side": "BUY",
+          "status": "NEW",
+          "symbol": "NVDAUSDT"
+        }
+      ],
+      "active_after_restart": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726"
+    },
+    {
+      "name": "phase3_hot_switch_cancel_and_automatic_fault_rollback",
+      "fault_package_id": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+      "expected_rollback_target": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+      "old_pid": 343968,
+      "after_pid": 343968,
+      "same_pid": true,
+      "rolled_back_state": {
+        "active": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+        "checkpoint": {},
+        "id": 1,
+        "previous": "legacy-grid",
+        "stable": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+        "switch": {
+          "boot": "",
+          "created": 1795538250.1787415,
+          "id": 11,
+          "mode": "hot",
+          "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+          "phase": "ROLLED_BACK",
+          "policy": "wait_flat",
+          "reason": null,
+          "selection": null,
+          "updated": 1795538254.2052362,
+          "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        },
+        "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+      },
+      "posts_after": 100,
+      "open_orders_after": [],
+      "positions_after": []
+    }
+  ],
+  "restore_to_legacy": [
+    {
+      "from_version": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+      "to_version": "legacy-grid",
+      "pid": 343968
+    }
+  ],
+  "after": {
+    "health": {
+      "pid": 343968,
+      "heartbeat_at": 1795538269.958161,
+      "started_at": 1795538211.0008912,
+      "starts": 29,
+      "restart_count": 28,
+      "status": "RUNNING",
+      "reason": "FRESH_CLOSED_BAR_REQUIRED",
+      "mode": "EXECUTE",
+      "desired": "RUNNING",
+      "account_recovered": true,
+      "last_reconciled_at": "2026-11-24T16:37:49.925458+00:00",
+      "unknown_count": 0,
+      "unknown_orders": [],
+      "open_orders": [],
+      "positions": [],
+      "equity": {
+        "availableBalance": "4999.32325687",
+        "initialMargin": "0E-8",
+        "maintMargin": "0E-8",
+        "marginBalance": "4999.32325687",
+        "openOrderInitialMargin": "0E-8",
+        "positionInitialMargin": "0E-8",
+        "unrealizedProfit": "0E-8",
+        "walletBalance": "4999.32325687"
+      },
+      "nav_usdt": "4999.32325687",
+      "campaign": {
+        "enabled": true,
+        "expires_at": "2026-11-24T18:52:09.352226+00:00",
+        "limits": {
+          "max_loss_usdt": "1",
+          "max_notional_usdt": "7",
+          "max_open_orders": 1,
+          "max_quantity": "0.04",
+          "symbol": "NVDAUSDT"
+        },
+        "post_budget": 4,
+        "posts_consumed": 1,
+        "remaining_posts": 3
+      },
+      "global_budget": {
+        "consumed": {
+          "posts": 100,
+          "submitted_notional": "635.9740000"
+        },
+        "max_loss": "1",
+        "opening_equity": "4999.97114760",
+        "remaining_notional": "64.0260000",
+        "remaining_posts": 0,
+        "state": "RUNNING",
+        "total_notional": "700",
+        "total_orders": 100
+      },
+      "recent_orders": [
+        {
+          "client_order_id": "pf55f2b7e7336bbd198e79cead7ddf6b",
+          "exchange_updated_at": "2026-11-24 15:50:20.935000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "716.55000",
+          "order_id": "65796009",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00035-00000013",
+          "exchange_updated_at": "2026-11-24 15:50:00.439000+00:00",
+          "filled_quantity": "0.04",
+          "limit_price": "151.87000",
+          "order_id": "195421988",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf5c4abdc5b7e285f667904fac814106",
+          "exchange_updated_at": "2026-11-24 15:50:52.115000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "631.03000",
+          "order_id": "65896503",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf4125dd63f464552d4f8d6d2540251c",
+          "exchange_updated_at": "2026-11-24 15:51:00.143000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "711.03000",
+          "order_id": "65796666",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00036-00000001",
+          "exchange_updated_at": "2026-11-24 16:24:59.081000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "151.01000",
+          "order_id": "195422478",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "pfc3c7eb670091b34cb65b827cc95560",
+          "exchange_updated_at": "2026-11-24 15:53:13.279000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "638.71000",
+          "order_id": "65897174",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf3f334626f754b5cac7957d3436cf88",
+          "exchange_updated_at": "2026-11-24 15:53:21.031000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "719.99000",
+          "order_id": "65797009",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pf1520f690c471157f48f4779187bf8a",
+          "exchange_updated_at": "2026-11-24 15:55:04.039000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "633.06000",
+          "order_id": "65897750",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "pff63984af94cf589d3236ac66959fc4",
+          "exchange_updated_at": "2026-11-24 15:55:12.467000+00:00",
+          "filled_quantity": "0.01",
+          "limit_price": "712.90000",
+          "order_id": "65797260",
+          "quantity": "0.01",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-sa46d8-entry",
+          "exchange_updated_at": "2026-11-24 16:37:10.599000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "149.42",
+          "order_id": "195433064",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "CANCELED"
+        }
+      ],
+      "grid": {
+        "breakout_exit": null,
+        "deployment_id": "fl-d7345f8795464a65-g-00036",
+        "effective": "PAUSED",
+        "grid_reason": null,
+        "inventory": "0",
+        "last_bar": "2026-11-24 16:37:00+00:00",
+        "live_bar": false,
+        "reason": "FRESH_CLOSED_BAR_REQUIRED",
+        "reservations_count": 0,
+        "running": true,
+        "state": "RUNNING"
+      },
+      "strategy_release": {
+        "active": "legacy-grid",
+        "active_identity": null,
+        "active_protocol": "legacy-grid",
+        "events": [
+          {
+            "at": 1795447526.6496449,
+            "event": "SUCCEEDED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "legacy-grid",
+            "seq": 6,
+            "switch_id": 1,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447531.3154697,
+            "event": "REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 7,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.4837162,
+            "event": "QUIESCED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 8,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.5354218,
+            "event": "SUCCEEDED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 9,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447536.4726553,
+            "event": "REQUESTED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 10,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.358302,
+            "event": "QUIESCED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 11,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.4102292,
+            "event": "SUCCEEDED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 12,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447562.134028,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 13,
+            "switch_id": 4
+          },
+          {
+            "at": 1795447565.3281448,
+            "event": "ROLLED_BACK",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "seq": 14,
+            "switch_id": 4,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447566.403148,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 15,
+            "switch_id": 5
+          },
+          {
+            "at": 1795447568.2968776,
+            "event": "ROLLED_BACK",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 16,
+            "switch_id": 5,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447568.6013386,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 17,
+            "switch_id": 6
+          },
+          {
+            "at": 1795447571.2460508,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 18,
+            "switch_id": 6,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537494.3631723,
+            "event": "REQUESTED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 19,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537497.7330132,
+            "event": "QUIESCED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 20,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27007, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537499.5806484,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 21,
+            "switch_id": 7
+          },
+          {
+            "at": 1795537513.383952,
+            "event": "SUCCEEDED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 22,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537517.503705,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 23,
+            "switch_id": 8
+          },
+          {
+            "at": 1795537520.7636561,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "seq": 24,
+            "switch_id": 8,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795538189.931718,
+            "event": "REQUESTED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 25,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795538195.5632102,
+            "event": "QUIESCED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 26,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27033, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538197.629599,
+            "event": "SUCCEEDED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 27,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538224.997697,
+            "event": "REQUESTED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 28,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538229.5226371,
+            "event": "QUIESCED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 29,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27053, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538230.9457643,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 30,
+            "switch_id": 10
+          },
+          {
+            "at": 1795538236.4945645,
+            "event": "SUCCEEDED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 31,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538250.2426474,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "reason": "STRATEGY_EXCEPTION:StrategyWorkerError",
+            "seq": 32,
+            "switch_id": 11
+          },
+          {
+            "at": 1795538254.2052615,
+            "event": "ROLLED_BACK",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "seq": 33,
+            "switch_id": 11,
+            "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538262.643538,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "reason": "P8_S04_RESTORE_LEGACY_1",
+            "seq": 34,
+            "switch_id": 12
+          },
+          {
+            "at": 1795538266.8944693,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 35,
+            "switch_id": 12,
+            "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          }
+        ],
+        "id": 1,
+        "previous": null,
+        "stable": "legacy-grid",
+        "switch": {
+          "boot": "",
+          "created": 1795538262.6431358,
+          "id": 12,
+          "mode": "hot",
+          "new": "legacy-grid",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "phase": "ROLLED_BACK",
+          "policy": "wait_flat",
+          "reason": null,
+          "selection": null,
+          "updated": 1795538266.8944473,
+          "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        },
+        "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+      }
+    },
+    "pid": 343968,
+    "inodes": {
+      "grid-supervisor.sqlite3": 802208,
+      "strategy-dry-run.sqlite3": 802210,
+      "runtime.sqlite3": 802209,
+      "strategy-deployment.sqlite3": 802152,
+      "strategy-execute.sqlite3": 802211,
+      "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 802200,
+      "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 802201,
+      "grid-preview/grid-supervisor.sqlite3": 802206,
+      "grid-preview/runtime.sqlite3": 802207,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 802214,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 802215,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 802204,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 802205
+    },
+    "inodes_preserved": true,
+    "state": {
+      "active": "legacy-grid",
+      "checkpoint": {},
+      "id": 1,
+      "previous": null,
+      "stable": "legacy-grid",
+      "switch": {
+        "boot": "",
+        "created": 1795538262.6431358,
+        "id": 12,
+        "mode": "hot",
+        "new": "legacy-grid",
+        "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+        "phase": "ROLLED_BACK",
+        "policy": "wait_flat",
+        "reason": null,
+        "selection": null,
+        "updated": 1795538266.8944473,
+        "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+      },
+      "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+    },
+    "recent_protocol_orders": {
+      "fl-d7345f8795464a65-sa46d8-entry": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "CANCELED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T16:37:10.599000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "149.42"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.00"
+              },
+              "exchange_order_id": "195433064",
+              "intent": {
+                "fields": {
+                  "client_order_id": "fl-d7345f8795464a65-sa46d8-entry",
+                  "instrument_id": "NVDAUSDT",
+                  "limit_price": {
+                    "decimal": "149.42"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.04"
+                  },
+                  "reduce_only": false,
+                  "side": {
+                    "enum": "Side",
+                    "value": "BUY"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "CANCELED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pff63984af94cf589d3236ac66959fc4": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:55:12.467000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "712.90000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0.00285844"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65797260",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pff63984af94cf589d3236ac66959fc4",
+                  "instrument_id": "SPYUSDT",
+                  "limit_price": {
+                    "decimal": "712.90000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pf1520f690c471157f48f4779187bf8a": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:55:04.039000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "633.06000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0.00254464"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65897750",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pf1520f690c471157f48f4779187bf8a",
+                  "instrument_id": "QQQUSDT",
+                  "limit_price": {
+                    "decimal": "633.06000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pf3f334626f754b5cac7957d3436cf88": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:53:21.031000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "719.99000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0.00286756"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65797009",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pf3f334626f754b5cac7957d3436cf88",
+                  "instrument_id": "SPYUSDT",
+                  "limit_price": {
+                    "decimal": "719.99000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": false,
+                  "side": {
+                    "enum": "Side",
+                    "value": "BUY"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pfc3c7eb670091b34cb65b827cc95560": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:53:13.279000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "638.71000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0.00254272"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65897174",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pfc3c7eb670091b34cb65b827cc95560",
+                  "instrument_id": "QQQUSDT",
+                  "limit_price": {
+                    "decimal": "638.71000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": false,
+                  "side": {
+                    "enum": "Side",
+                    "value": "BUY"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "fl-d7345f8795464a65-g-00036-00000001": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "CANCELED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T16:24:59.081000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "151.01000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.00"
+              },
+              "exchange_order_id": "195422478",
+              "intent": {
+                "fields": {
+                  "client_order_id": "fl-d7345f8795464a65-g-00036-00000001",
+                  "instrument_id": "NVDAUSDT",
+                  "limit_price": {
+                    "decimal": "151.01000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": null,
+                  "quantity": {
+                    "decimal": "0.04"
+                  },
+                  "reduce_only": false,
+                  "side": {
+                    "enum": "Side",
+                    "value": "BUY"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "CANCELED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pf4125dd63f464552d4f8d6d2540251c": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:51:00.143000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "711.03000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0.00285844"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65796666",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pf4125dd63f464552d4f8d6d2540251c",
+                  "instrument_id": "SPYUSDT",
+                  "limit_price": {
+                    "decimal": "711.03000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pf5c4abdc5b7e285f667904fac814106": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:50:52.115000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "631.03000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0.00253683"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65896503",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pf5c4abdc5b7e285f667904fac814106",
+                  "instrument_id": "QQQUSDT",
+                  "limit_price": {
+                    "decimal": "631.03000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "fl-d7345f8795464a65-g-00035-00000013": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:50:00.439000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "151.87000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0.00151870"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.04"
+              },
+              "exchange_order_id": "195421988",
+              "intent": {
+                "fields": {
+                  "client_order_id": "fl-d7345f8795464a65-g-00035-00000013",
+                  "instrument_id": "NVDAUSDT",
+                  "limit_price": {
+                    "decimal": "151.87000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": null,
+                  "quantity": {
+                    "decimal": "0.04"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pf55f2b7e7336bbd198e79cead7ddf6b": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "CANCELED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:50:20.935000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "716.55000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.00"
+              },
+              "exchange_order_id": "65796009",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pf55f2b7e7336bbd198e79cead7ddf6b",
+                  "instrument_id": "SPYUSDT",
+                  "limit_price": {
+                    "decimal": "716.55000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "CANCELED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pfb68e582c161ab6898369deafc292b3": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "CANCELED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:46:59.243000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "636.54000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.00"
+              },
+              "exchange_order_id": "65894902",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pfb68e582c161ab6898369deafc292b3",
+                  "instrument_id": "QQQUSDT",
+                  "limit_price": {
+                    "decimal": "636.54000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "CANCELED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pfb013a52e1401fffc7678a86411e5ae": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:39:06.979000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "717.55000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65794316",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pfb013a52e1401fffc7678a86411e5ae",
+                  "instrument_id": "SPYUSDT",
+                  "limit_price": {
+                    "decimal": "717.55000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": false,
+                  "side": {
+                    "enum": "Side",
+                    "value": "BUY"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "pf48efc06677634d1adc713f44fe6e97": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:38:59.919000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "638.40000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.01"
+              },
+              "exchange_order_id": "65893831",
+              "intent": {
+                "fields": {
+                  "client_order_id": "pf48efc06677634d1adc713f44fe6e97",
+                  "instrument_id": "QQQUSDT",
+                  "limit_price": {
+                    "decimal": "638.40000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": "BOTH",
+                  "quantity": {
+                    "decimal": "0.01"
+                  },
+                  "reduce_only": false,
+                  "side": {
+                    "enum": "Side",
+                    "value": "BUY"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "fl-d7345f8795464a65-g-00035-00000002": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "CANCELED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:45:37.887000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "155.47000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.00"
+              },
+              "exchange_order_id": "195416056",
+              "intent": {
+                "fields": {
+                  "client_order_id": "fl-d7345f8795464a65-g-00035-00000002",
+                  "instrument_id": "NVDAUSDT",
+                  "limit_price": {
+                    "decimal": "155.47000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": null,
+                  "quantity": {
+                    "decimal": "0.04"
+                  },
+                  "reduce_only": true,
+                  "side": {
+                    "enum": "Side",
+                    "value": "SELL"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "CANCELED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      },
+      "fl-d7345f8795464a65-g-00035-00000001": {
+        "fields": {
+          "confirmed_status": {
+            "enum": "OrderStatus",
+            "value": "FILLED"
+          },
+          "observed_at": {
+            "utc": "2026-11-24T15:28:22.943000+00:00"
+          },
+          "reservation_price": {
+            "decimal": "152.39000"
+          },
+          "snapshot": {
+            "fields": {
+              "cumulative_fee": {
+                "decimal": "0"
+              },
+              "cumulative_filled_quantity": {
+                "decimal": "0.04"
+              },
+              "exchange_order_id": "195410141",
+              "intent": {
+                "fields": {
+                  "client_order_id": "fl-d7345f8795464a65-g-00035-00000001",
+                  "instrument_id": "NVDAUSDT",
+                  "limit_price": {
+                    "decimal": "152.39000"
+                  },
+                  "market": {
+                    "enum": "Market",
+                    "value": "BINANCE_USDM"
+                  },
+                  "order_type": {
+                    "enum": "OrderType",
+                    "value": "LIMIT"
+                  },
+                  "position_side": null,
+                  "quantity": {
+                    "decimal": "0.04"
+                  },
+                  "reduce_only": false,
+                  "side": {
+                    "enum": "Side",
+                    "value": "BUY"
+                  },
+                  "time_in_force": "GTC"
+                },
+                "type": "OrderIntent"
+              },
+              "reconcile_required": false,
+              "status": {
+                "enum": "OrderStatus",
+                "value": "FILLED"
+              }
+            },
+            "type": "OrderSnapshot"
+          }
+        },
+        "type": "OrderRecord"
+      }
+    },
+    "c06_report": {
+      "alerts": {
+        "active_count": 2,
+        "active_keys": [
+          "budget_low",
+          "unexpected_restart"
+        ],
+        "external_webhook_configured": false,
+        "fired_24h": 34,
+        "maintenance_events_24h": 1,
+        "mobile_push_configured": false,
+        "resolved_24h": 29
+      },
+      "budget_summary": {
+        "consumption_24h": {
+          "budget_monotonic_anomaly": false,
+          "campaign_expires_at": "2026-11-24T18:52:09.352226+00:00",
+          "campaign_post_budget": 4,
+          "campaign_remaining_posts": 3,
+          "consumed_notional": "635.9740000",
+          "consumed_posts": 100,
+          "estimated_hours_until_exhausted": 0.0,
+          "notional_consumed_delta": "366.0000000",
+          "policy_note": "READ_ONLY_ACCOUNTING_NO_RESET_OR_EXPANSION",
+          "posts_consumed_delta": 57,
+          "posts_per_day": 57.0248,
+          "posts_per_hour": 2.376033,
+          "remaining_notional": "64.0260000",
+          "remaining_notional_ratio": 0.091466,
+          "remaining_posts": 0,
+          "remaining_posts_ratio": 0.0,
+          "total_notional": "700",
+          "total_orders": 100
+        },
+        "consumption_72h": {
+          "budget_monotonic_anomaly": false,
+          "campaign_expires_at": "2026-11-24T18:52:09.352226+00:00",
+          "campaign_post_budget": 4,
+          "campaign_remaining_posts": 3,
+          "consumed_notional": "635.9740000",
+          "consumed_posts": 100,
+          "estimated_hours_until_exhausted": 0.0,
+          "notional_consumed_delta": "594.6432000",
+          "policy_note": "READ_ONLY_ACCOUNTING_NO_RESET_OR_EXPANSION",
+          "posts_consumed_delta": 93,
+          "posts_per_day": 46.3064,
+          "posts_per_hour": 1.929434,
+          "remaining_notional": "64.0260000",
+          "remaining_notional_ratio": 0.091466,
+          "remaining_posts": 0,
+          "remaining_posts_ratio": 0.0,
+          "total_notional": "700",
+          "total_orders": 100
+        },
+        "consumption_7d": {
+          "budget_monotonic_anomaly": false,
+          "campaign_expires_at": "2026-11-24T18:52:09.352226+00:00",
+          "campaign_post_budget": 4,
+          "campaign_remaining_posts": 3,
+          "consumed_notional": "635.9740000",
+          "consumed_posts": 100,
+          "estimated_hours_until_exhausted": 0.0,
+          "notional_consumed_delta": "594.6432000",
+          "policy_note": "READ_ONLY_ACCOUNTING_NO_RESET_OR_EXPANSION",
+          "posts_consumed_delta": 93,
+          "posts_per_day": 46.3064,
+          "posts_per_hour": 1.929434,
+          "remaining_notional": "64.0260000",
+          "remaining_notional_ratio": 0.091466,
+          "remaining_posts": 0,
+          "remaining_posts_ratio": 0.0,
+          "total_notional": "700",
+          "total_orders": 100
+        },
+        "latest_campaign": {
+          "enabled": true,
+          "expires_at": "2026-11-24T18:52:09.352226+00:00",
+          "post_budget": 4,
+          "posts_consumed": 1,
+          "remaining_posts": 3
+        },
+        "latest_global_budget": {
+          "consumed_notional": "635.9740000",
+          "consumed_posts": 100,
+          "remaining_notional": "64.0260000",
+          "remaining_posts": 0,
+          "state": "RUNNING",
+          "total_notional": "700",
+          "total_orders": 100
+        },
+        "policy": "READ_ONLY_NEVER_RESET_OR_AUTO_EXPAND"
+      },
+      "environment": "BINANCE_USDM_DEMO_NO_LIVE_MONEY",
+      "generated_at_utc": "2026-11-24T16:37:56.699950+00:00",
+      "real_order_execution": {
+        "budget_notional_delta_24h": "366.0000000",
+        "budget_posts_delta_24h": 57,
+        "classification": "REAL_DEMO_ORDER_ACTIVITY_OBSERVED",
+        "current_open_orders_count": 0,
+        "current_positions_count": 0,
+        "delete_requests_delta_24h": 27,
+        "distinction_note": "Trading readiness does not prove new orders were posted or filled; check POST/budget deltas.",
+        "last_order_updated_at": "2026-11-24 16:37:10.599000+00:00",
+        "observed_real_order_activity_24h": true,
+        "post_requests_delta_24h": 66,
+        "recent_order_status_counts": {
+          "CANCELED": 3,
+          "FILLED": 7
+        }
+      },
+      "report_date_utc": "2026-11-24",
+      "service_liveness": {
+        "availability_24h_ratio": 0.996342,
+        "classification": "SERVICE_ALIVE",
+        "current_alive": true,
+        "current_pid": 343968,
+        "current_status": "RUNNING",
+        "restarts_24h": {
+          "pid_changes": 19,
+          "planned_maintenance_restarts": 1,
+          "process_segments": 20,
+          "starts_delta": 20,
+          "systemd_n_restarts_delta": 2,
+          "unexpected_restarts": 20
+        },
+        "systemd": {
+          "active_state": "active",
+          "available": true,
+          "exec_main_status": 0,
+          "main_pid": 343968,
+          "n_restarts": 0,
+          "result": "success",
+          "sub_state": "running",
+          "unit": "factorlab-demo-execute.service"
+        },
+        "uptime_seconds": 65.69209480285645
+      },
+      "storage": {
+        "database_bytes": 22753280,
+        "disk_bytes": 65445814272,
+        "disk_free_bytes": 29224505344,
+        "monitor_alert_events_bytes": 133262,
+        "monitor_samples_bytes": 12975158,
+        "sidecar_bytes": 226440,
+        "state_bytes": 23033933
+      },
+      "strategy_release": {
+        "active": "legacy-grid",
+        "active_identity": null,
+        "active_protocol": "legacy-grid",
+        "events": [
+          {
+            "at": 1795447526.6496449,
+            "event": "SUCCEEDED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "legacy-grid",
+            "seq": 6,
+            "switch_id": 1,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447531.3154697,
+            "event": "REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 7,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.4837162,
+            "event": "QUIESCED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 8,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.5354218,
+            "event": "SUCCEEDED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 9,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447536.4726553,
+            "event": "REQUESTED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 10,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.358302,
+            "event": "QUIESCED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 11,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.4102292,
+            "event": "SUCCEEDED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 12,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447562.134028,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 13,
+            "switch_id": 4
+          },
+          {
+            "at": 1795447565.3281448,
+            "event": "ROLLED_BACK",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "seq": 14,
+            "switch_id": 4,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447566.403148,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 15,
+            "switch_id": 5
+          },
+          {
+            "at": 1795447568.2968776,
+            "event": "ROLLED_BACK",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 16,
+            "switch_id": 5,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447568.6013386,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 17,
+            "switch_id": 6
+          },
+          {
+            "at": 1795447571.2460508,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 18,
+            "switch_id": 6,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537494.3631723,
+            "event": "REQUESTED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 19,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537497.7330132,
+            "event": "QUIESCED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 20,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27007, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537499.5806484,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 21,
+            "switch_id": 7
+          },
+          {
+            "at": 1795537513.383952,
+            "event": "SUCCEEDED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 22,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537517.503705,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 23,
+            "switch_id": 8
+          },
+          {
+            "at": 1795537520.7636561,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "seq": 24,
+            "switch_id": 8,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795538189.931718,
+            "event": "REQUESTED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 25,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795538195.5632102,
+            "event": "QUIESCED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 26,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27033, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538197.629599,
+            "event": "SUCCEEDED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 27,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538224.997697,
+            "event": "REQUESTED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 28,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538229.5226371,
+            "event": "QUIESCED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 29,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27053, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538230.9457643,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 30,
+            "switch_id": 10
+          },
+          {
+            "at": 1795538236.4945645,
+            "event": "SUCCEEDED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 31,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538250.2426474,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "reason": "STRATEGY_EXCEPTION:StrategyWorkerError",
+            "seq": 32,
+            "switch_id": 11
+          },
+          {
+            "at": 1795538254.2052615,
+            "event": "ROLLED_BACK",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "seq": 33,
+            "switch_id": 11,
+            "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538262.643538,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "reason": "P8_S04_RESTORE_LEGACY_1",
+            "seq": 34,
+            "switch_id": 12
+          },
+          {
+            "at": 1795538266.8944693,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 35,
+            "switch_id": 12,
+            "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          }
+        ],
+        "id": 1,
+        "previous": null,
+        "stable": "legacy-grid",
+        "switch": {
+          "boot": "",
+          "created": 1795538262.6431358,
+          "id": 12,
+          "mode": "hot",
+          "new": "legacy-grid",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "phase": "ROLLED_BACK",
+          "policy": "wait_flat",
+          "reason": null,
+          "selection": null,
+          "updated": 1795538266.8944473,
+          "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        },
+        "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+      },
+      "strategy_switch_events": [
+        {
+          "at": 1795537494.3631723,
+          "event": "REQUESTED",
+          "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+          "old": "legacy-grid",
+          "seq": 19,
+          "switch_id": 7,
+          "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+        },
+        {
+          "at": 1795537497.7330132,
+          "event": "QUIESCED",
+          "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+          "old": "legacy-grid",
+          "seq": 20,
+          "switch_id": 7,
+          "watermark": "{\"controller_event\": 27007, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+        },
+        {
+          "at": 1795537499.5806484,
+          "event": "DRAINING",
+          "reason": "WAIT_TERMINAL_ORDERS",
+          "seq": 21,
+          "switch_id": 7
+        },
+        {
+          "at": 1795537513.383952,
+          "event": "SUCCEEDED",
+          "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+          "old": "legacy-grid",
+          "seq": 22,
+          "switch_id": 7,
+          "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+        },
+        {
+          "at": 1795537517.503705,
+          "event": "ROLLBACK_REQUESTED",
+          "new": "legacy-grid",
+          "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+          "reason": "STRATEGY_EXCEPTION:ValueError",
+          "seq": 23,
+          "switch_id": 8
+        },
+        {
+          "at": 1795537520.7636561,
+          "event": "ROLLED_BACK",
+          "new": "legacy-grid",
+          "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+          "seq": 24,
+          "switch_id": 8,
+          "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+        },
+        {
+          "at": 1795538189.931718,
+          "event": "REQUESTED",
+          "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "old": "legacy-grid",
+          "seq": 25,
+          "switch_id": 9,
+          "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+        },
+        {
+          "at": 1795538195.5632102,
+          "event": "QUIESCED",
+          "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "old": "legacy-grid",
+          "seq": 26,
+          "switch_id": 9,
+          "watermark": "{\"controller_event\": 27033, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+        },
+        {
+          "at": 1795538197.629599,
+          "event": "SUCCEEDED",
+          "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "old": "legacy-grid",
+          "seq": 27,
+          "switch_id": 9,
+          "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+        },
+        {
+          "at": 1795538224.997697,
+          "event": "REQUESTED",
+          "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "seq": 28,
+          "switch_id": 10,
+          "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+        },
+        {
+          "at": 1795538229.5226371,
+          "event": "QUIESCED",
+          "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "seq": 29,
+          "switch_id": 10,
+          "watermark": "{\"controller_event\": 27053, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        },
+        {
+          "at": 1795538230.9457643,
+          "event": "DRAINING",
+          "reason": "WAIT_TERMINAL_ORDERS",
+          "seq": 30,
+          "switch_id": 10
+        },
+        {
+          "at": 1795538236.4945645,
+          "event": "SUCCEEDED",
+          "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "seq": 31,
+          "switch_id": 10,
+          "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        },
+        {
+          "at": 1795538250.2426474,
+          "event": "ROLLBACK_REQUESTED",
+          "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+          "reason": "STRATEGY_EXCEPTION:StrategyWorkerError",
+          "seq": 32,
+          "switch_id": 11
+        },
+        {
+          "at": 1795538254.2052615,
+          "event": "ROLLED_BACK",
+          "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+          "seq": 33,
+          "switch_id": 11,
+          "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        },
+        {
+          "at": 1795538262.643538,
+          "event": "ROLLBACK_REQUESTED",
+          "new": "legacy-grid",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "reason": "P8_S04_RESTORE_LEGACY_1",
+          "seq": 34,
+          "switch_id": 12
+        },
+        {
+          "at": 1795538266.8944693,
+          "event": "ROLLED_BACK",
+          "new": "legacy-grid",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "seq": 35,
+          "switch_id": 12,
+          "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        }
+      ],
+      "trading_readiness": {
+        "account_age_seconds": 3.2590236759861,
+        "account_recovered": true,
+        "classification": "NOT_TRADING_READY",
+        "current_desired": "RUNNING",
+        "current_dispatch_eligible": false,
+        "current_execute_healthy": false,
+        "current_ready": false,
+        "dispatch_eligible_24h_ratio": 0.657644,
+        "distinction_note": "Service liveness (systemd active/PID alive) does not imply trading readiness.",
+        "grid": {
+          "breakout_phase": null,
+          "deployment_id": "fl-d7345f8795464a65-g-00036",
+          "effective": "PAUSED",
+          "live_bar": false,
+          "reason": "FRESH_CLOSED_BAR_REQUIRED",
+          "running": true,
+          "state": "RUNNING"
+        },
+        "market_batch_age_seconds": 4.677310228347778,
+        "market_fresh": true,
+        "ready_24h_ratio": 0.893928,
+        "unknown_count": 0
+      },
+      "version": 1,
+      "windows": {
+        "24h": {
+          "account_recovery": {
+            "account_recovered_ratio": 0.940746,
+            "account_recovered_samples": 1286,
+            "account_recovery_failure_samples": 81,
+            "recovery_attempts_delta": 763,
+            "recovery_seconds_avg": 0.9347,
+            "recovery_seconds_max": 9.9148,
+            "recovery_seconds_p95": 1.3074,
+            "stale_account_delta": 3
+          },
+          "api_latency": {
+            "abrupt_segment_losses_possible": true,
+            "avg_request_seconds": 0.284596,
+            "clock_skew_delta": 6,
+            "errors_delta": 112,
+            "latency_boundary": "OBSERVED_TAIL_BOUND_NOT_FULL_P99",
+            "observed_max_request_seconds": 5.241656,
+            "requests_delta": 334706,
+            "round_p95_max_seconds": null,
+            "window_error_rate": 0.000335
+          },
+          "budget_consumption": {
+            "budget_monotonic_anomaly": false,
+            "campaign_expires_at": "2026-11-24T18:52:09.352226+00:00",
+            "campaign_post_budget": 4,
+            "campaign_remaining_posts": 3,
+            "consumed_notional": "635.9740000",
+            "consumed_posts": 100,
+            "estimated_hours_until_exhausted": 0.0,
+            "notional_consumed_delta": "366.0000000",
+            "policy_note": "READ_ONLY_ACCOUNTING_NO_RESET_OR_EXPANSION",
+            "posts_consumed_delta": 57,
+            "posts_per_day": 57.0248,
+            "posts_per_hour": 2.376033,
+            "remaining_notional": "64.0260000",
+            "remaining_notional_ratio": 0.091466,
+            "remaining_posts": 0,
+            "remaining_posts_ratio": 0.0,
+            "total_notional": "700",
+            "total_orders": 100
+          },
+          "first_sample_utc": "2026-11-23T16:38:00.835108+00:00",
+          "label": "24h",
+          "last_sample_utc": "2026-11-24T16:37:23.256613+00:00",
+          "market_freshness": {
+            "market_age_avg_seconds": 4.6519,
+            "market_age_max_seconds": 381.0214,
+            "market_age_p95_seconds": 5.4721,
+            "market_fresh_ratio": 0.923921,
+            "market_fresh_samples": 1263,
+            "market_stale_samples": 104,
+            "r13_quote_gap_delta": 0,
+            "stale_poll_delta": 0
+          },
+          "observed_span_seconds": 86362.42,
+          "order_execution": {
+            "budget_notional_delta": "366.0000000",
+            "budget_posts_delta": 57,
+            "delete_requests_delta": 27,
+            "latest_open_orders_count": null,
+            "latest_order_status_counts": {
+              "CANCELED": 3,
+              "FILLED": 7
+            },
+            "latest_positions_count": null,
+            "observed_real_order_activity": true,
+            "post_requests_delta": 66
+          },
+          "restarts": {
+            "pid_changes": 19,
+            "planned_maintenance_restarts": 1,
+            "process_segments": 20,
+            "starts_delta": 20,
+            "systemd_n_restarts_delta": 2,
+            "unexpected_restarts": 20
+          },
+          "sample_count": 1367,
+          "sample_coverage": {
+            "expected_interval_seconds": 60,
+            "expected_samples_full_window": 1440,
+            "expected_samples_observed_span": 1440,
+            "full_window_coverage_ratio": 0.949306,
+            "max_gap_seconds": 81.0,
+            "missing_intervals": 0,
+            "observed_span_coverage_ratio": 0.949306
+          },
+          "service_availability": {
+            "alive_ratio": 0.996342,
+            "alive_samples": 1362,
+            "dispatch_eligible_ratio": 0.657644,
+            "dispatch_eligible_samples": 899,
+            "execute_healthy_ratio": 0.893928,
+            "execute_healthy_samples": 1222,
+            "ready_ratio": 0.893928,
+            "ready_samples": 1222
+          },
+          "unknown_orders": {
+            "current_unknown_count": 0,
+            "max_unknown_count": 1,
+            "samples_with_unknown": 3,
+            "unknown_order_ids": [
+              "fl-d7345f8795464a65-g-00022-00000001",
+              "fl-d7345f8795464a65-g-00035-00000002"
+            ]
+          },
+          "window_complete": true,
+          "window_end_utc": "2026-11-24T16:37:56.699950+00:00",
+          "window_seconds": 86400,
+          "window_start_utc": "2026-11-23T16:37:56.699950+00:00"
+        },
+        "72h": {
+          "account_recovery": {
+            "account_recovered_ratio": 0.725872,
+            "account_recovered_samples": 1978,
+            "account_recovery_failure_samples": 747,
+            "recovery_attempts_delta": 1134,
+            "recovery_seconds_avg": 0.9414,
+            "recovery_seconds_max": 9.9148,
+            "recovery_seconds_p95": 1.1468,
+            "stale_account_delta": 6
+          },
+          "api_latency": {
+            "abrupt_segment_losses_possible": true,
+            "avg_request_seconds": 0.283851,
+            "clock_skew_delta": 15,
+            "errors_delta": 166,
+            "latency_boundary": "OBSERVED_TAIL_BOUND_NOT_FULL_P99",
+            "observed_max_request_seconds": 5.252977,
+            "requests_delta": 515828,
+            "round_p95_max_seconds": null,
+            "window_error_rate": 0.000322
+          },
+          "budget_consumption": {
+            "budget_monotonic_anomaly": false,
+            "campaign_expires_at": "2026-11-24T18:52:09.352226+00:00",
+            "campaign_post_budget": 4,
+            "campaign_remaining_posts": 3,
+            "consumed_notional": "635.9740000",
+            "consumed_posts": 100,
+            "estimated_hours_until_exhausted": 0.0,
+            "notional_consumed_delta": "594.6432000",
+            "policy_note": "READ_ONLY_ACCOUNTING_NO_RESET_OR_EXPANSION",
+            "posts_consumed_delta": 93,
+            "posts_per_day": 46.3064,
+            "posts_per_hour": 1.929434,
+            "remaining_notional": "64.0260000",
+            "remaining_notional_ratio": 0.091466,
+            "remaining_posts": 0,
+            "remaining_posts_ratio": 0.0,
+            "total_notional": "700",
+            "total_orders": 100
+          },
+          "first_sample_utc": "2026-11-22T16:25:20.839915+00:00",
+          "label": "72h",
+          "last_sample_utc": "2026-11-24T16:37:23.256613+00:00",
+          "market_freshness": {
+            "market_age_avg_seconds": 4897.9479,
+            "market_age_max_seconds": 41518.1083,
+            "market_age_p95_seconds": 32718.1098,
+            "market_fresh_ratio": 0.714495,
+            "market_fresh_samples": 1947,
+            "market_stale_samples": 778,
+            "r13_quote_gap_delta": 0,
+            "stale_poll_delta": 0
+          },
+          "observed_span_seconds": 173522.42,
+          "order_execution": {
+            "budget_notional_delta": "594.6432000",
+            "budget_posts_delta": 93,
+            "delete_requests_delta": 46,
+            "latest_open_orders_count": null,
+            "latest_order_status_counts": {
+              "CANCELED": 3,
+              "FILLED": 7
+            },
+            "latest_positions_count": null,
+            "observed_real_order_activity": true,
+            "post_requests_delta": 100
+          },
+          "restarts": {
+            "pid_changes": 27,
+            "planned_maintenance_restarts": 2,
+            "process_segments": 28,
+            "starts_delta": 28,
+            "systemd_n_restarts_delta": 2,
+            "unexpected_restarts": 27
+          },
+          "sample_count": 2725,
+          "sample_coverage": {
+            "expected_interval_seconds": 60,
+            "expected_samples_full_window": 4320,
+            "expected_samples_observed_span": 2893,
+            "full_window_coverage_ratio": 0.630787,
+            "max_gap_seconds": 81.0,
+            "missing_intervals": 0,
+            "observed_span_coverage_ratio": 0.941929
+          },
+          "service_availability": {
+            "alive_ratio": 0.762569,
+            "alive_samples": 2078,
+            "dispatch_eligible_ratio": 0.50789,
+            "dispatch_eligible_samples": 1384,
+            "execute_healthy_ratio": 0.691376,
+            "execute_healthy_samples": 1884,
+            "ready_ratio": 0.691376,
+            "ready_samples": 1884
+          },
+          "unknown_orders": {
+            "current_unknown_count": 0,
+            "max_unknown_count": 1,
+            "samples_with_unknown": 3,
+            "unknown_order_ids": [
+              "fl-d7345f8795464a65-g-00022-00000001",
+              "fl-d7345f8795464a65-g-00035-00000002"
+            ]
+          },
+          "window_complete": false,
+          "window_end_utc": "2026-11-24T16:37:56.699950+00:00",
+          "window_seconds": 259200,
+          "window_start_utc": "2026-11-21T16:37:56.699950+00:00"
+        },
+        "7d": {
+          "account_recovery": {
+            "account_recovered_ratio": 0.725872,
+            "account_recovered_samples": 1978,
+            "account_recovery_failure_samples": 747,
+            "recovery_attempts_delta": 1134,
+            "recovery_seconds_avg": 0.9414,
+            "recovery_seconds_max": 9.9148,
+            "recovery_seconds_p95": 1.1468,
+            "stale_account_delta": 6
+          },
+          "api_latency": {
+            "abrupt_segment_losses_possible": true,
+            "avg_request_seconds": 0.283851,
+            "clock_skew_delta": 15,
+            "errors_delta": 166,
+            "latency_boundary": "OBSERVED_TAIL_BOUND_NOT_FULL_P99",
+            "observed_max_request_seconds": 5.252977,
+            "requests_delta": 515828,
+            "round_p95_max_seconds": null,
+            "window_error_rate": 0.000322
+          },
+          "budget_consumption": {
+            "budget_monotonic_anomaly": false,
+            "campaign_expires_at": "2026-11-24T18:52:09.352226+00:00",
+            "campaign_post_budget": 4,
+            "campaign_remaining_posts": 3,
+            "consumed_notional": "635.9740000",
+            "consumed_posts": 100,
+            "estimated_hours_until_exhausted": 0.0,
+            "notional_consumed_delta": "594.6432000",
+            "policy_note": "READ_ONLY_ACCOUNTING_NO_RESET_OR_EXPANSION",
+            "posts_consumed_delta": 93,
+            "posts_per_day": 46.3064,
+            "posts_per_hour": 1.929434,
+            "remaining_notional": "64.0260000",
+            "remaining_notional_ratio": 0.091466,
+            "remaining_posts": 0,
+            "remaining_posts_ratio": 0.0,
+            "total_notional": "700",
+            "total_orders": 100
+          },
+          "first_sample_utc": "2026-11-22T16:25:20.839915+00:00",
+          "label": "7d",
+          "last_sample_utc": "2026-11-24T16:37:23.256613+00:00",
+          "market_freshness": {
+            "market_age_avg_seconds": 4897.9479,
+            "market_age_max_seconds": 41518.1083,
+            "market_age_p95_seconds": 32718.1098,
+            "market_fresh_ratio": 0.714495,
+            "market_fresh_samples": 1947,
+            "market_stale_samples": 778,
+            "r13_quote_gap_delta": 0,
+            "stale_poll_delta": 0
+          },
+          "observed_span_seconds": 173522.42,
+          "order_execution": {
+            "budget_notional_delta": "594.6432000",
+            "budget_posts_delta": 93,
+            "delete_requests_delta": 46,
+            "latest_open_orders_count": null,
+            "latest_order_status_counts": {
+              "CANCELED": 3,
+              "FILLED": 7
+            },
+            "latest_positions_count": null,
+            "observed_real_order_activity": true,
+            "post_requests_delta": 100
+          },
+          "restarts": {
+            "pid_changes": 27,
+            "planned_maintenance_restarts": 2,
+            "process_segments": 28,
+            "starts_delta": 28,
+            "systemd_n_restarts_delta": 2,
+            "unexpected_restarts": 27
+          },
+          "sample_count": 2725,
+          "sample_coverage": {
+            "expected_interval_seconds": 60,
+            "expected_samples_full_window": 10080,
+            "expected_samples_observed_span": 2893,
+            "full_window_coverage_ratio": 0.270337,
+            "max_gap_seconds": 81.0,
+            "missing_intervals": 0,
+            "observed_span_coverage_ratio": 0.941929
+          },
+          "service_availability": {
+            "alive_ratio": 0.762569,
+            "alive_samples": 2078,
+            "dispatch_eligible_ratio": 0.50789,
+            "dispatch_eligible_samples": 1384,
+            "execute_healthy_ratio": 0.691376,
+            "execute_healthy_samples": 1884,
+            "ready_ratio": 0.691376,
+            "ready_samples": 1884
+          },
+          "unknown_orders": {
+            "current_unknown_count": 0,
+            "max_unknown_count": 1,
+            "samples_with_unknown": 3,
+            "unknown_order_ids": [
+              "fl-d7345f8795464a65-g-00022-00000001",
+              "fl-d7345f8795464a65-g-00035-00000002"
+            ]
+          },
+          "window_complete": false,
+          "window_end_utc": "2026-11-24T16:37:56.699950+00:00",
+          "window_seconds": 604800,
+          "window_start_utc": "2026-11-17T16:37:56.699950+00:00"
+        }
+      }
+    }
+  },
+  "completed_at_utc": "2026-11-24T16:37:57Z",
+  "complete": true
+}

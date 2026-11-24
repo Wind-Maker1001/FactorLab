@@ -539,6 +539,7 @@ def main(argv=None):
     parser.add_argument('--write-report', action='store_true')
     parser.add_argument('--markdown', action='store_true')
     parser.add_argument('--destination', type=Path)
+    parser.add_argument('--task-mailbox', type=Path)
     parser.add_argument('--backup', type=Path)
     parser.add_argument('--package', type=Path)
     parser.add_argument('--target-machine-id')
@@ -629,7 +630,7 @@ def main(argv=None):
                        poll_seconds=args.poll_seconds, min_free_bytes=args.min_free_bytes)
         if args.destination is None:
             parser.error('backup requires --destination')
-        backup_state(root, args.destination)
+        backup_state(root, args.destination, task_mailbox=args.task_mailbox)
         return 0
     except (SafetyBlocked, DemoCredentialStoreError, ValueError, KeyError, TypeError, OSError, sqlite3.DatabaseError):
         print(json.dumps(dict(event='cloud_start_refused', reason='STATE_OR_CONFIGURATION_ERROR')), flush=True)

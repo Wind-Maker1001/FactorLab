@@ -54,7 +54,7 @@ class DemoMarketFeed:
     def __init__(self, client, consumer, *, state_path, consumer_id, interval='1m',
                  max_backfill=120, max_quote_age=5, initial_bars=1, catch_up=False,
                  clock=lambda: datetime.now(timezone.utc), timings: FeedTimings | None = None,
-                 exchange_time=None, receipt_clock=None):
+                 exchange_time=None, receipt_clock=None, symbol=SYMBOL):
         if client.environment is not Environment.DEMO:
             raise ValueError('Demo client required')
         if not isinstance(client.transport, ReadOnlyNetworkTransport):
@@ -71,6 +71,8 @@ class DemoMarketFeed:
             request_counts = getattr(client, 'request_counts', None)
             if isinstance(request_counts, RequestCounts):
                 timings = request_counts
+        from factorlab.integrations.binance.market import symbol_name
+        self.symbol = symbol_name(symbol)
         self.timings = timings
         self.commit_seconds = 0.
         self.commit_count = 0
@@ -89,7 +91,7 @@ class DemoMarketFeed:
         self.db = sqlite3.connect(path)
         self.db.execute('PRAGMA synchronous=FULL')
         self.db.execute('CREATE TABLE IF NOT EXISTS cursor (id TEXT PRIMARY KEY, bar INTEGER, quote INTEGER)')
-        self.identity = f'{SOURCE}:{SYMBOL}:{interval}:{consumer_id}'
+        self.identity = f'{SOURCE}:{self.symbol}:{interval}:{consumer_id}'
         with self._transaction():
             if 'initial_start' not in {row[1] for row in self.db.execute('PRAGMA table_info(cursor)')}:
                 self.db.execute('ALTER TABLE cursor ADD COLUMN initial_start INTEGER')
@@ -143,9 +145,13 @@ class DemoMarketFeed:
                 return self._poll(before_delivery)
         except FeedPaused as error:
             self.pause(str(error))
+            if hasattr(self.consumer, 'history_paused'):
+                self.consumer.history_paused(self.reason)
             raise
         except Exception:
             self.pause('POLL_OR_CONSUMER_FAILED')
+            if hasattr(self.consumer, 'history_paused'):
+                self.consumer.history_paused(self.reason)
             raise
 
     def _bars(self, start, page_boundary, server):
@@ -153,7 +159,7 @@ class DemoMarketFeed:
         count = (page_boundary - start) // width
         if count == 0:
             return [], [], None
-        rows = self.client.request('GET', '/fapi/v1/klines', dict(symbol=SYMBOL,
+        rows = self.client.request('GET', '/fapi/v1/klines', dict(symbol=self.symbol,
             interval=self.interval, startTime=start,
             endTime=page_boundary - 1, limit=count), signed=False)
         if not isinstance(rows, list) or len(rows) > count + 1:
@@ -182,7 +188,7 @@ class DemoMarketFeed:
             if any(not isinstance(v, str) for v in row[1:6]):
                 raise FeedPaused('DECIMAL_STRINGS_REQUIRED')
             try:
-                bars.append(ClosedBar(SYMBOL, timestamp(opened), timestamp(closed + 1),
+                bars.append(ClosedBar(self.symbol, timestamp(opened), timestamp(closed + 1),
                     *(Decimal(v) for v in row[1:6]), self.seconds, SOURCE))
             except (ValueError, InvalidOperation) as error:
                 raise FeedPaused('INVALID_OHLCV') from error
@@ -209,6 +215,32 @@ class DemoMarketFeed:
         self.pause('CATCHING_UP')
         return dict(bars=delivered, quotes=0)
 
+    def _recover_consumer(self, boundary, server):
+        watermark = getattr(self.consumer, 'history_watermark', lambda: None)()
+        if watermark is None:
+            return True
+        start = int(watermark.timestamp() * 1000)
+        width = self.seconds * 1000
+        end = boundary - width
+        if start >= end:
+            return True
+        self.consumer.history_paused('CATCHING_UP')
+        try:
+            for _ in range(CATCH_UP_PAGES):
+                page_end = min(end, start + self.max_backfill * width)
+                bars, _, _ = self._bars(start, page_end, server)
+                for bar in bars:
+                    if not self._closed_bar(bar, historical=True):
+                        raise FeedPaused('HISTORY_NOT_CONSUMED')
+                start = page_end
+                if start == end:
+                    return True
+        except Exception as error:
+            self.consumer.history_paused(str(error) if isinstance(error, FeedPaused) else 'HISTORY_READ_FAILED')
+            raise
+        self.pause('CATCHING_UP')
+        return False
+
     def _poll(self, before_delivery):
         anchor = self.exchange_time(min_valid_seconds=self.max_quote_age)
         server = int(anchor.lower_ms)
@@ -228,6 +260,8 @@ class DemoMarketFeed:
         if self.catch_up and boundary - start > width:
             if before_delivery is not None and not before_delivery():
                 return None
+            if not self._recover_consumer(boundary, server):
+                return dict(bars=0, quotes=0)
             return self._backfill(start, boundary, server, width)
         if boundary - start > self.max_backfill * width:
             raise FeedPaused('BACKFILL_LIMIT')
@@ -239,9 +273,11 @@ class DemoMarketFeed:
                 return None
             # The closed range stays fixed. Take a new anchor for the current quote.
             anchor = self.exchange_time(allow_refresh=False)
+        if not self._recover_consumer(boundary, server):
+            return dict(bars=0, quotes=0)
         # Request the book after the closed range so history cannot age the book.
         if self.collection is None:
-            raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=SYMBOL), signed=False)
+            raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=self.symbol), signed=False)
         else:
             # Acquisition can overlap klines. Apply the exchange age bound
             # below at delivery, using the current calibration.
@@ -259,7 +295,7 @@ class DemoMarketFeed:
             symbol = raw['symbol']
         except (KeyError, TypeError, ValueError, InvalidOperation) as error:
             raise FeedPaused('INVALID_BOOK') from error
-        if symbol != SYMBOL or raw['time'] < boundary:
+        if symbol != self.symbol or raw['time'] < boundary:
             raise FeedPaused('STALE_OR_FUTURE_QUOTE')
         self._validate_quote_age(raw['time'], received)
         if last_quote is not None and raw['time'] < last_quote:
@@ -283,11 +319,13 @@ class DemoMarketFeed:
             if hasattr(self.consumer, 'observe_bar_receipt'):
                 self.consumer.observe_bar_receipt(bar,
                     raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.receipt_clock())
-            self._closed_bar(bar)
+            historical = (hasattr(self.consumer, 'history_watermark')
+                          and bar.closed_at.timestamp() * 1000 < boundary)
+            self._closed_bar(bar, historical=historical)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
         delivered = 0
         if last_quote is None or raw['time'] > last_quote:
-            quote = Quote(SYMBOL, (bid + ask) / 2, observed)
+            quote = Quote(self.symbol, (bid + ask) / 2, observed)
             self._validate_quote_age(raw['time'], self.exchange_time(allow_refresh=False))
             if hasattr(self.consumer, 'set_latest_book'):
                 self.consumer.set_latest_book(raw)

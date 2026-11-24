@@ -1,0 +1,687 @@
+[
+  {
+    "stock": "AAPL",
+    "candidate_contract": "AAPLUSDT",
+    "identity_status": "EXCHANGE_METADATA_ONLY",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": {
+      "symbol": "AAPLUSDT",
+      "pair": "AAPLUSDT",
+      "contractType": "TRADIFI_PERPETUAL",
+      "deliveryDate": 4133404800000,
+      "onboardDate": 1775483400000,
+      "status": "TRADING",
+      "maintMarginPercent": "2.5000",
+      "requiredMarginPercent": "5.0000",
+      "baseAsset": "AAPL",
+      "quoteAsset": "USDT",
+      "marginAsset": "USDT",
+      "pricePrecision": 5,
+      "quantityPrecision": 2,
+      "baseAssetPrecision": 8,
+      "quotePrecision": 8,
+      "underlyingType": "EQUITY",
+      "underlyingSubType": [
+        "TradFi"
+      ],
+      "triggerProtect": "0.0300",
+      "liquidationFee": "0.015000",
+      "marketTakeBound": "0.03",
+      "maxMoveOrderLimit": 10000,
+      "filters": [
+        {
+          "tickSize": "0.01000",
+          "minPrice": "0.01000",
+          "maxPrice": "20000",
+          "filterType": "PRICE_FILTER"
+        },
+        {
+          "maxQty": "20000",
+          "minQty": "0.01",
+          "filterType": "LOT_SIZE",
+          "stepSize": "0.01"
+        },
+        {
+          "stepSize": "0.01",
+          "minQty": "0.01",
+          "maxQty": "2000",
+          "filterType": "MARKET_LOT_SIZE"
+        },
+        {
+          "filterType": "MAX_NUM_ORDERS",
+          "limit": 200
+        },
+        {
+          "filterType": "MIN_NOTIONAL",
+          "notional": "5"
+        },
+        {
+          "multiplierDecimal": "4",
+          "multiplierDown": "0.9700",
+          "multiplierUp": "1.0300",
+          "filterType": "PERCENT_PRICE"
+        },
+        {
+          "positionControlSide": "NONE",
+          "filterType": "POSITION_RISK_CONTROL"
+        }
+      ],
+      "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+      ],
+      "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+      ],
+      "permissionSets": [
+        "GRID",
+        "COPY",
+        "RPI",
+        "DCA",
+        "PSB"
+      ]
+    },
+    "demo": null,
+    "classification": "MAINNET_ONLY",
+    "market_coverage": {
+      "book": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "depth": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "klines": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "mark": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "funding": "NOT_REQUESTED_NO_DEMO_CONTRACT"
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": null,
+    "reason": "No corresponding EQUITY/TradFi contract in complete Demo identity index",
+    "rejected_collision": null
+  },
+  {
+    "stock": "SNDK",
+    "candidate_contract": "SNDKUSDT",
+    "identity_status": "EXCHANGE_METADATA_ONLY",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": {
+      "symbol": "SNDKUSDT",
+      "pair": "SNDKUSDT",
+      "contractType": "TRADIFI_PERPETUAL",
+      "deliveryDate": 4133404800000,
+      "onboardDate": 1775569200000,
+      "status": "TRADING",
+      "maintMarginPercent": "2.5000",
+      "requiredMarginPercent": "5.0000",
+      "baseAsset": "SNDK",
+      "quoteAsset": "USDT",
+      "marginAsset": "USDT",
+      "pricePrecision": 5,
+      "quantityPrecision": 2,
+      "baseAssetPrecision": 8,
+      "quotePrecision": 8,
+      "underlyingType": "EQUITY",
+      "underlyingSubType": [
+        "TradFi"
+      ],
+      "triggerProtect": "0.0300",
+      "liquidationFee": "0.015000",
+      "marketTakeBound": "0.03",
+      "maxMoveOrderLimit": 10000,
+      "filters": [
+        {
+          "tickSize": "0.01000",
+          "minPrice": "0.01000",
+          "filterType": "PRICE_FILTER",
+          "maxPrice": "20000"
+        },
+        {
+          "stepSize": "0.01",
+          "filterType": "LOT_SIZE",
+          "minQty": "0.01",
+          "maxQty": "28000"
+        },
+        {
+          "minQty": "0.01",
+          "maxQty": "5500",
+          "stepSize": "0.01",
+          "filterType": "MARKET_LOT_SIZE"
+        },
+        {
+          "filterType": "MAX_NUM_ORDERS",
+          "limit": 200
+        },
+        {
+          "filterType": "MIN_NOTIONAL",
+          "notional": "5"
+        },
+        {
+          "multiplierDecimal": "4",
+          "multiplierDown": "0.9700",
+          "multiplierUp": "1.0300",
+          "filterType": "PERCENT_PRICE"
+        },
+        {
+          "positionControlSide": "NONE",
+          "filterType": "POSITION_RISK_CONTROL"
+        }
+      ],
+      "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+      ],
+      "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+      ],
+      "permissionSets": [
+        "GRID",
+        "COPY",
+        "RPI",
+        "DCA",
+        "PSB"
+      ]
+    },
+    "demo": null,
+    "classification": "MAINNET_ONLY",
+    "market_coverage": {
+      "book": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "depth": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "klines": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "mark": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "funding": "NOT_REQUESTED_NO_DEMO_CONTRACT"
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": null,
+    "reason": "No corresponding EQUITY/TradFi contract in complete Demo identity index",
+    "rejected_collision": null
+  },
+  {
+    "stock": "BA",
+    "candidate_contract": null,
+    "identity_status": "NO_EQUITY_CONTRACT_FOUND",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": null,
+    "demo": null,
+    "classification": "NOT_LISTED",
+    "market_coverage": {
+      "book": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "depth": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "klines": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "mark": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "funding": "NOT_REQUESTED_NO_DEMO_CONTRACT"
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": null,
+    "reason": "No corresponding EQUITY/TradFi contract in either complete identity index",
+    "rejected_collision": null
+  },
+  {
+    "stock": "C",
+    "candidate_contract": null,
+    "identity_status": "NO_EQUITY_CONTRACT_FOUND",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": null,
+    "demo": null,
+    "classification": "NOT_LISTED",
+    "market_coverage": {
+      "book": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "depth": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "klines": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "mark": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "funding": "NOT_REQUESTED_NO_DEMO_CONTRACT"
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": null,
+    "reason": "No corresponding EQUITY/TradFi contract in either complete identity index",
+    "rejected_collision": "CUSDT is COIN, not Citigroup"
+  },
+  {
+    "stock": "JPM",
+    "candidate_contract": "JPMUSDT",
+    "identity_status": "EXCHANGE_METADATA_ONLY",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": {
+      "symbol": "JPMUSDT",
+      "pair": "JPMUSDT",
+      "contractType": "TRADIFI_PERPETUAL",
+      "deliveryDate": 4133404800000,
+      "onboardDate": 1779111600000,
+      "status": "TRADING",
+      "maintMarginPercent": "2.5000",
+      "requiredMarginPercent": "5.0000",
+      "baseAsset": "JPM",
+      "quoteAsset": "USDT",
+      "marginAsset": "USDT",
+      "pricePrecision": 5,
+      "quantityPrecision": 2,
+      "baseAssetPrecision": 8,
+      "quotePrecision": 8,
+      "underlyingType": "EQUITY",
+      "underlyingSubType": [
+        "TradFi"
+      ],
+      "triggerProtect": "0.0300",
+      "liquidationFee": "0.015000",
+      "marketTakeBound": "0.03",
+      "maxMoveOrderLimit": 10000,
+      "filters": [
+        {
+          "tickSize": "0.01000",
+          "maxPrice": "20000",
+          "minPrice": "0.01000",
+          "filterType": "PRICE_FILTER"
+        },
+        {
+          "stepSize": "0.01",
+          "filterType": "LOT_SIZE",
+          "minQty": "0.01",
+          "maxQty": "4000"
+        },
+        {
+          "filterType": "MARKET_LOT_SIZE",
+          "maxQty": "1500",
+          "stepSize": "0.01",
+          "minQty": "0.01"
+        },
+        {
+          "filterType": "MAX_NUM_ORDERS",
+          "limit": 200
+        },
+        {
+          "filterType": "MIN_NOTIONAL",
+          "notional": "5"
+        },
+        {
+          "multiplierDown": "0.9700",
+          "multiplierDecimal": "4",
+          "filterType": "PERCENT_PRICE",
+          "multiplierUp": "1.0300"
+        },
+        {
+          "positionControlSide": "NONE",
+          "filterType": "POSITION_RISK_CONTROL"
+        }
+      ],
+      "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+      ],
+      "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+      ],
+      "permissionSets": [
+        "GRID",
+        "COPY",
+        "RPI",
+        "DCA",
+        "PSB"
+      ]
+    },
+    "demo": null,
+    "classification": "MAINNET_ONLY",
+    "market_coverage": {
+      "book": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "depth": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "klines": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "mark": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "funding": "NOT_REQUESTED_NO_DEMO_CONTRACT"
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": null,
+    "reason": "No corresponding EQUITY/TradFi contract in complete Demo identity index",
+    "rejected_collision": null
+  },
+  {
+    "stock": "GE",
+    "candidate_contract": null,
+    "identity_status": "NO_EQUITY_CONTRACT_FOUND",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": null,
+    "demo": null,
+    "classification": "NOT_LISTED",
+    "market_coverage": {
+      "book": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "depth": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "klines": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "mark": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "funding": "NOT_REQUESTED_NO_DEMO_CONTRACT"
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": null,
+    "reason": "No corresponding EQUITY/TradFi contract in either complete identity index",
+    "rejected_collision": null
+  },
+  {
+    "stock": "TQQQ",
+    "candidate_contract": "TQQQUSDT",
+    "identity_status": "EXCHANGE_METADATA_ONLY",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": {
+      "symbol": "TQQQUSDT",
+      "pair": "TQQQUSDT",
+      "contractType": "TRADIFI_PERPETUAL",
+      "deliveryDate": 4133404800000,
+      "onboardDate": 1782740400000,
+      "status": "TRADING",
+      "maintMarginPercent": "2.5000",
+      "requiredMarginPercent": "5.0000",
+      "baseAsset": "TQQQ",
+      "quoteAsset": "USDT",
+      "marginAsset": "USDT",
+      "pricePrecision": 5,
+      "quantityPrecision": 2,
+      "baseAssetPrecision": 8,
+      "quotePrecision": 8,
+      "underlyingType": "EQUITY",
+      "underlyingSubType": [
+        "TradFi"
+      ],
+      "triggerProtect": "0.0300",
+      "liquidationFee": "0.015000",
+      "marketTakeBound": "0.03",
+      "maxMoveOrderLimit": 10000,
+      "filters": [
+        {
+          "filterType": "PRICE_FILTER",
+          "minPrice": "0.01000",
+          "tickSize": "0.01000",
+          "maxPrice": "20000"
+        },
+        {
+          "filterType": "LOT_SIZE",
+          "stepSize": "0.01",
+          "maxQty": "60000",
+          "minQty": "0.01"
+        },
+        {
+          "maxQty": "5000",
+          "stepSize": "0.01",
+          "minQty": "0.01",
+          "filterType": "MARKET_LOT_SIZE"
+        },
+        {
+          "filterType": "MAX_NUM_ORDERS",
+          "limit": 200
+        },
+        {
+          "filterType": "MIN_NOTIONAL",
+          "notional": "5"
+        },
+        {
+          "filterType": "PERCENT_PRICE",
+          "multiplierDecimal": "4",
+          "multiplierUp": "1.0300",
+          "multiplierDown": "0.9700"
+        },
+        {
+          "filterType": "POSITION_RISK_CONTROL",
+          "positionControlSide": "NONE"
+        }
+      ],
+      "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+      ],
+      "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+      ],
+      "permissionSets": [
+        "GRID",
+        "COPY",
+        "RPI",
+        "DCA",
+        "PSB"
+      ]
+    },
+    "demo": null,
+    "classification": "MAINNET_ONLY",
+    "market_coverage": {
+      "book": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "depth": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "klines": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "mark": "NOT_REQUESTED_NO_DEMO_CONTRACT",
+      "funding": "NOT_REQUESTED_NO_DEMO_CONTRACT"
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": null,
+    "reason": "No corresponding EQUITY/TradFi contract in complete Demo identity index",
+    "rejected_collision": null
+  },
+  {
+    "stock": "QQQ",
+    "candidate_contract": "QQQUSDT",
+    "identity_status": "EXCHANGE_METADATA_ONLY",
+    "identity_basis": "EQUITY/TradFi exchange metadata; issuer, legal underlying and ETF share class not independently confirmed",
+    "issuer_identity_verified": false,
+    "mainnet": {
+      "symbol": "QQQUSDT",
+      "pair": "QQQUSDT",
+      "contractType": "TRADIFI_PERPETUAL",
+      "deliveryDate": 4133404800000,
+      "onboardDate": 1775482200000,
+      "status": "TRADING",
+      "maintMarginPercent": "2.5000",
+      "requiredMarginPercent": "5.0000",
+      "baseAsset": "QQQ",
+      "quoteAsset": "USDT",
+      "marginAsset": "USDT",
+      "pricePrecision": 5,
+      "quantityPrecision": 2,
+      "baseAssetPrecision": 8,
+      "quotePrecision": 8,
+      "underlyingType": "EQUITY",
+      "underlyingSubType": [
+        "TradFi"
+      ],
+      "triggerProtect": "0.0300",
+      "liquidationFee": "0.015000",
+      "marketTakeBound": "0.03",
+      "maxMoveOrderLimit": 10000,
+      "filters": [
+        {
+          "filterType": "PRICE_FILTER",
+          "minPrice": "0.01000",
+          "maxPrice": "20000",
+          "tickSize": "0.01000"
+        },
+        {
+          "minQty": "0.01",
+          "filterType": "LOT_SIZE",
+          "stepSize": "0.01",
+          "maxQty": "20000"
+        },
+        {
+          "maxQty": "2000",
+          "stepSize": "0.01",
+          "filterType": "MARKET_LOT_SIZE",
+          "minQty": "0.01"
+        },
+        {
+          "filterType": "MAX_NUM_ORDERS",
+          "limit": 200
+        },
+        {
+          "filterType": "MIN_NOTIONAL",
+          "notional": "5"
+        },
+        {
+          "filterType": "PERCENT_PRICE",
+          "multiplierDown": "0.9700",
+          "multiplierUp": "1.0300",
+          "multiplierDecimal": "4"
+        },
+        {
+          "positionControlSide": "NONE",
+          "filterType": "POSITION_RISK_CONTROL"
+        }
+      ],
+      "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+      ],
+      "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+      ],
+      "permissionSets": [
+        "GRID",
+        "COPY",
+        "RPI",
+        "DCA",
+        "PSB"
+      ]
+    },
+    "demo": {
+      "symbol": "QQQUSDT",
+      "pair": "QQQUSDT",
+      "contractType": "TRADIFI_PERPETUAL",
+      "deliveryDate": 4133404800000,
+      "onboardDate": 1775482200000,
+      "status": "TRADING",
+      "maintMarginPercent": "2.5000",
+      "requiredMarginPercent": "5.0000",
+      "baseAsset": "QQQ",
+      "quoteAsset": "USDT",
+      "marginAsset": "USDT",
+      "pricePrecision": 5,
+      "quantityPrecision": 2,
+      "baseAssetPrecision": 8,
+      "quotePrecision": 8,
+      "underlyingType": "EQUITY",
+      "underlyingSubType": [
+        "TradFi"
+      ],
+      "triggerProtect": "0.0300",
+      "liquidationFee": "0.015000",
+      "marketTakeBound": "0.03",
+      "maxMoveOrderLimit": 10000,
+      "filters": [
+        {
+          "maxPrice": "20000",
+          "minPrice": "0.01000",
+          "tickSize": "0.01000",
+          "filterType": "PRICE_FILTER"
+        },
+        {
+          "minQty": "0.01",
+          "maxQty": "2000",
+          "filterType": "LOT_SIZE",
+          "stepSize": "0.01"
+        },
+        {
+          "maxQty": "200",
+          "stepSize": "0.01",
+          "filterType": "MARKET_LOT_SIZE",
+          "minQty": "0.01"
+        },
+        {
+          "filterType": "MAX_NUM_ORDERS",
+          "limit": 200
+        },
+        {
+          "notional": "5",
+          "filterType": "MIN_NOTIONAL"
+        },
+        {
+          "multiplierDecimal": "4",
+          "multiplierDown": "0.9700",
+          "filterType": "PERCENT_PRICE",
+          "multiplierUp": "1.0300"
+        },
+        {
+          "positionControlSide": "NONE",
+          "filterType": "POSITION_RISK_CONTROL"
+        }
+      ],
+      "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+      ],
+      "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+      ],
+      "permissionSets": [
+        "GRID",
+        "COPY",
+        "DCA",
+        "PSB"
+      ]
+    },
+    "classification": "DEMO_LISTED_NOT_EXECUTED",
+    "market_coverage": {
+      "book": true,
+      "depth": true,
+      "klines": true,
+      "mark": true,
+      "funding": true
+    },
+    "execution_status": "NOT_EXECUTED",
+    "fees": null,
+    "funding_rate": "0.00043091",
+    "reason": "Listed in Demo; execution acceptance owned by F03 PR #239",
+    "rejected_collision": null
+  }
+]

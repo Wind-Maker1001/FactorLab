@@ -1,0 +1,50 @@
+{
+  "batch": "v51-v55",
+  "parent": "v50/band",
+  "reference": "v49",
+  "design": "All five independent changes declared together before running their results; no feedback from a sibling or newer windows. Each before-fee signal is as-of previous close, execution Qlib weekly next open. No new money, shorts or borrowing. Starting capital USD 300000 per case.",
+  "hypotheses": {
+    "v51": "弱势环境收紧持仓退出线",
+    "v52": "同等总仓位下向中期强势标的小幅倾斜",
+    "v53": "多标的下行波动同步扩张时压低风险",
+    "v54": "新开仓信号需两个连续收盘确认",
+    "v55": "滚动岭回归预测五日市场调整收益并小幅倾斜"
+  },
+  "criteria": "Compare against v49 using v50 protocol on development, validation, main, stress and no_sndk. Also compare against parent v50 in every case. Historical cross-regime robustness requires 2 of 3 older eras with all three ratios and net return >= v49. Main annualized alpha must >=v49 and beta <= v49+0.08; average exposure >=90% v49 on normal windows. Candidates remain research only. If any pass use full-family simultaneous bootstrap before declaring evidence.",
+  "windows": {
+    "development": [
+      "2022-01-01",
+      "2023-12-31"
+    ],
+    "validation": [
+      "2024-01-01",
+      "2024-12-31"
+    ],
+    "main": [
+      "2025-01-01",
+      "2026-11-15"
+    ],
+    "smoke": [
+      "2026-11-16",
+      "2026-11-20"
+    ],
+    "older_a": [
+      "2013-01-01",
+      "2015-12-31"
+    ],
+    "older_b": [
+      "2016-01-01",
+      "2018-12-31"
+    ],
+    "older_c": [
+      "2019-01-01",
+      "2021-12-31"
+    ]
+  },
+  "old_data": "Newly acquired historical replay of today's chosen securities; SNDK absent. Not a prospective test; no fabricated SNDK predecessors or stitched adjustment levels. Older and recent accounts are separate.",
+  "costs": {
+    "normal": 0.001,
+    "stress": 0.003
+  },
+  "statistics": "252 sessions, cash and risk-free zero, 20-session paired circular blocks, familywise max-t 95% intervals across 5 sibling policies and three ratios for each evaluation window. Outlier attribution, drawdown dates, historical scenarios. No promotion based on choosing the best retrospective row."
+}
