@@ -38,7 +38,7 @@ class DemoPortfolioConsumer:
     def poll(self):
         try:
             self._poll()
-        except (SafetyBlocked, ValueError, OSError) as error:
+        except Exception as error:
             atomic_json(self.result,dict(status='PORTFOLIO_BLOCKED',reason=str(error)[:300]))
 
     def _poll(self):
@@ -89,7 +89,7 @@ class DemoPortfolioConsumer:
                 side = Side.SELL if current * book['bidPrice'] > budget * weights.get(symbol,D(0)) else Side.BUY
                 price = self.session.limit_price(self.session.gateway.rules, side, book)
                 prices[symbol] = price
-                steps[symbol] = self.session.gateway.rules.step_size
+                steps[symbol] = D(self.session.gateway.rules.filters['LOT_SIZE']['stepSize'])
                 self.session.controller.quote(Quote(symbol, price, book['time_utc']))
         portfolio = PortfolioRuntime(self.session.controller, allocation_id='tradfi-demo-acceptance',
             owned_symbols=SYMBOLS, recover=lambda:self.session.gateway.recover(self.session.controller))
