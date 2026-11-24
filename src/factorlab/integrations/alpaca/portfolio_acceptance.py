@@ -169,8 +169,15 @@ def run_acceptance(*, state_dir, phase, credentials_file=None, runtime_config=No
         report = runner.report(identity)
         final = adapter.read_account()
         baseline = decode(json.loads(store.event_payload(baseline_key)))
+        campaign_order_ids = {
+            order['record'].snapshot.intent.client_order_id
+            for plan_id, in store.db.execute('SELECT id FROM portfolio_plans').fetchall()
+            if store.plan(plan_id)['request']['rebalance_id'].startswith(campaign + ':')
+            for order in store.orders(plan_id)
+        }
         net_cash = sum((fill.notional * (D(-1) if fill.side.value == 'BUY' else D(1))
-                        - fill.fee for fill in report.fills), D(0))
+                        - fill.fee for fill in report.fills
+                        if fill.client_order_id in campaign_order_ids), D(0))
         expected_cash = baseline['cash'] + net_cash
         reconciliation = dict(official_cash=report.official_cash, expected_cash=expected_cash,
             cash_difference=report.official_cash - expected_cash, cash_tolerance=D('.01'),
