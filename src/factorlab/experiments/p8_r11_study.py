@@ -1604,11 +1604,21 @@ def derive_r11_conclusions(
         for role in ("A_FIXED", "B_WF", "C_WF")
     )
 
+    # Reused R10 historical windows cannot grant independent unseen OOS advantage.
+    windows_reused_from_r10 = True
+    conditional_risk_estimated = bool(
+        engineering_accepted
+        and historical.get("total_unique_window_runs", 0) > 0
+        and monte_carlo.get("total_unique_mc_runs", 0) > 0
+    )
+    oos_advantage_supported = False if windows_reused_from_r10 else any_pos_mainnet_l2
+    research_inconclusive = not (any_pos_mainnet_l2 and oos_advantage_supported)
+
     return {
         "ENGINEERING_ACCEPTED": engineering_accepted,
-        "CONDITIONAL_RISK_ESTIMATED": True,
-        "RESEARCH_INCONCLUSIVE": True,
-        "OOS_ADVANTAGE_SUPPORTED": False,  # Strictly forbidden on reused R10 historical windows!
+        "CONDITIONAL_RISK_ESTIMATED": conditional_risk_estimated,
+        "RESEARCH_INCONCLUSIVE": research_inconclusive,
+        "OOS_ADVANTAGE_SUPPORTED": oos_advantage_supported,  # Strictly forbidden on reused R10 historical windows!
         "invariants": {
             "all_zero_fifo_residual": all_zero_fifo,
             "single_authoritative_exit_order_verified": single_exit_invariant,

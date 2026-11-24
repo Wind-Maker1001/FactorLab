@@ -198,6 +198,7 @@ def cash_reference_result(
     return {
         "strategy_id": "CASH",
         "lifecycle_id": lifecycle_id,
+        "execution_model_version": UNIFIED_EXECUTION_MODEL_VERSION,
         "model_label": LIFECYCLE_LABELS[lifecycle_id],
         "execution_profile": execution_profile_name,
         "evidence_label": "ZERO_EXPOSURE_REFERENCE",

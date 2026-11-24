@@ -325,6 +325,7 @@ def test_cash_reference_holm_adjustment_and_s02_handoff_boundaries():
     assert cash["net_return_pct"] == 0.0
     assert cash["max_drawdown_pct"] == 0.0
     assert cash["reconciled_zero_residual"] is True
+    assert cash["execution_model_version"] == UNIFIED_EXECUTION_MODEL_VERSION
 
     adj = holm_bonferroni_adjust([0.01, 0.04, 0.20, 0.005])
     assert adj[3] == pytest.approx(0.02)
