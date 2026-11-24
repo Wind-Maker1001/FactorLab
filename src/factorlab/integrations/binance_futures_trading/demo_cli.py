@@ -182,7 +182,7 @@ def run_command(args, root, store, runtime, requests, smoke_id):
             if account['unknown'] or session.adapter.account_id != binding['account_id']:
                 raise SafetyBlocked('fresh bound Demo account reconciliation required')
             result = runtime.update_continuous_budget(binding, total_orders=args.total_orders,
-                total_notional=args.total_notional, max_loss=args.max_loss)
+                total_notional=args.total_notional, max_loss=args.max_loss, current_equity=equity(account))
             result['account'] = account
             return dict(status='DEMO_BUDGET_UPDATED', **result)
     if command == 'resume-continuous':

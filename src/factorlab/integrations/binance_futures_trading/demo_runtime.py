@@ -219,7 +219,7 @@ class DemoRuntime:
             self._set('active', '')
             return authorization
 
-    def update_continuous_budget(self, binding, *, total_orders, total_notional, max_loss):
+    def update_continuous_budget(self, binding, *, total_orders, total_notional, max_loss, current_equity):
         """Atomically migrate the cumulative budget without resuming or resetting the account."""
         if (binding['environment'] != DEMO.name or binding['host'] != DEMO.host):
             raise SafetyBlocked('official Demo account binding required')
@@ -240,6 +240,8 @@ class DemoRuntime:
             origin = next((campaign for (payload,) in self.db.execute('SELECT payload FROM campaigns ORDER BY rowid')
                 if (campaign := json.loads(payload))['journal_id'] == saved['journal_id']), None)
             opening_equity = saved['opening_equity'] if origin is None else origin['opening_equity']
+            if Decimal(opening_equity) - current_equity >= max_loss:
+                raise SafetyBlocked('new continuous Demo loss budget is already exhausted')
             requested = (total_orders, total_notional, max_loss, Decimal(opening_equity))
             current = (saved['total_orders'], Decimal(saved['total_notional']), Decimal(saved['max_loss']),
                 Decimal(saved['opening_equity']))
@@ -254,7 +256,8 @@ class DemoRuntime:
                 budget_version=saved.get('budget_version', 1) + 1)
             event = dict(action='UPDATE_CONTINUOUS_BUDGET', observed_at=now().isoformat(),
                 previous_authorization=previous, authorization=migrated, consumption=consumed,
-                original_equity_campaign=origin['id'] if origin is not None else None)
+                original_equity_campaign=origin['id'] if origin is not None else None,
+                observed_equity=str(current_equity))
             self._set('continuous', json.dumps(migrated))
             self._set('continuous_budget_migration:' + uuid4().hex, json.dumps(event))
             return dict(authorization=migrated, consumption=consumed, idempotent=False)

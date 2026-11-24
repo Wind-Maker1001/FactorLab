@@ -426,7 +426,7 @@ def test_budget_migration_preserves_identity_consumption_and_is_idempotent(netwo
         before = runtime.continuous_authorization()
         consumed = runtime.consumption(before)
         assert consumed == dict(posts=100, submitted_notional='635.974000')
-        migrated = runtime.update_continuous_budget(store.config, total_orders=100000,
+        migrated = runtime.update_continuous_budget(store.config, current_equity=D('1000'), total_orders=100000,
             total_notional=D('500000'), max_loss=D('250'))
         after = migrated['authorization']
         assert after['id'] == before['id']
@@ -434,7 +434,7 @@ def test_budget_migration_preserves_identity_consumption_and_is_idempotent(netwo
         assert after['opening_equity'] == before['opening_equity'] == '1000'
         assert (after['total_orders'], D(after['total_notional']), D(after['max_loss'])) == (100000, D('500000'), D('250'))
         assert migrated['consumption'] == consumed
-        repeated = runtime.update_continuous_budget(store.config, total_orders=100000,
+        repeated = runtime.update_continuous_budget(store.config, current_equity=D('1000'), total_orders=100000,
             total_notional=D('500000'), max_loss=D('250'))
         assert repeated['idempotent'] is True
         assert runtime.db.execute("SELECT count(*) FROM runtime WHERE key LIKE 'continuous_budget_migration:%'").fetchone()[0] == 1
@@ -445,10 +445,10 @@ def test_budget_migration_rejects_consumption_or_independent_state_changes(netwo
     authorization, _, _ = initialize(root, store)
     with closing(DemoRuntime(root)) as runtime:
         with pytest.raises(SafetyBlocked, match='invalid continuous Demo risk budget'):
-            runtime.update_continuous_budget(store.config, total_orders=0, total_notional=D('500000'), max_loss=D('250'))
+            runtime.update_continuous_budget(store.config, current_equity=D('1000'), total_orders=0, total_notional=D('500000'), max_loss=D('250'))
         runtime.stop()
         stopped = runtime.continuous_authorization()
-        migrated = runtime.update_continuous_budget(store.config, total_orders=100000,
+        migrated = runtime.update_continuous_budget(store.config, current_equity=D('1000'), total_orders=100000,
             total_notional=D('500000'), max_loss=D('250'))
         assert migrated['authorization']['state'] == stopped['state'] == 'STOPPED'
         assert runtime.continuous_authorization()['stop_epoch'] == stopped['stop_epoch']

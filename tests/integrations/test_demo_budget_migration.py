@@ -6,6 +6,7 @@ import json
 import pytest
 
 from test_binance_demo_grid_network import network_grid, writes
+from test_binance_demo_network import wired
 from test_demo_continuous_campaign import initialize, expire
 from factorlab.integrations.binance_futures_trading.demo_cli import parse_args, run_command
 from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, open_grid_session
@@ -33,7 +34,7 @@ def test_exact_exhausted_account_restart_and_original_equity_correction(network_
         runtime._set('continuous', json.dumps(dict(authorization, opening_equity='4999.97114760')))
         runtime.db.commit()
         history = runtime.db.execute('SELECT * FROM dispatches').fetchall()
-        result = runtime.update_continuous_budget(store.config, **LIMITS)
+        result = runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
         assert result['authorization']['opening_equity'] == '5000'
         assert result['consumption']['posts'] == 100
         assert D(result['consumption']['submitted_notional']) == D('635.974')
@@ -46,7 +47,7 @@ def test_exact_exhausted_account_restart_and_original_equity_correction(network_
     with closing(DemoRuntime(root)) as runtime:
         assert runtime.continuous_authorization() == result['authorization']
         assert runtime.db.execute('SELECT * FROM dispatches').fetchall() == history
-        assert runtime.update_continuous_budget(store.config, **LIMITS)['idempotent']
+        assert runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)['idempotent']
 
 
 @pytest.mark.parametrize('state', ['STOPPED', 'HALTED', 'PAUSED', 'UNKNOWN'])
@@ -59,7 +60,7 @@ def test_migration_does_not_clear_independent_controls(network_grid, state):
         runtime._set('continuous_recovery', 'UNKNOWN')
         runtime.db.commit()
         before = dict(runtime.db.execute('SELECT key, value FROM runtime'))
-        result = runtime.update_continuous_budget(store.config, **LIMITS)
+        result = runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
         assert result['authorization']['state'] == state
         for key, value in before.items():
             if key != 'continuous':
@@ -72,9 +73,19 @@ def test_limit_below_consumption_is_rejected_atomically(network_grid, limit):
     with closing(DemoRuntime(root)) as runtime:
         before = exhausted(runtime, store.config)
         with pytest.raises(SafetyBlocked, match='below historical consumption'):
-            runtime.update_continuous_budget(store.config, **(LIMITS | limit))
+            runtime.update_continuous_budget(store.config, current_equity=D('5000'), **(LIMITS | limit))
         assert runtime.continuous_authorization() == before
         assert not runtime.db.execute("SELECT value FROM runtime WHERE key LIKE 'continuous_budget_migration:%'").fetchall()
+
+
+@pytest.mark.parametrize('equity', [D('4750'), D('4749')])
+def test_migration_rejects_exhausted_original_equity_loss(network_grid, equity):
+    root, store, _, _, _, _ = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        before = exhausted(runtime, store.config)
+        with pytest.raises(SafetyBlocked, match='loss budget is already exhausted'):
+            runtime.update_continuous_budget(store.config, current_equity=equity, **LIMITS)
+        assert runtime.continuous_authorization() == before
 
 
 def test_interrupted_audit_write_rolls_back_budget(network_grid, monkeypatch):
@@ -88,12 +99,12 @@ def test_interrupted_audit_write_rolls_back_budget(network_grid, monkeypatch):
             original(key, value)
         monkeypatch.setattr(runtime, '_set', interrupt)
         with pytest.raises(RuntimeError, match='injected interruption'):
-            runtime.update_continuous_budget(store.config, **LIMITS)
+            runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
     with closing(DemoRuntime(root)) as runtime:
         assert runtime.continuous_authorization() == before
         assert runtime.consumption(before)['posts'] == 100
         assert not runtime.db.execute("SELECT value FROM runtime WHERE key LIKE 'continuous_budget_migration:%'").fetchall()
-        assert not runtime.update_continuous_budget(store.config, **LIMITS)['idempotent']
+        assert not runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)['idempotent']
 
 
 def test_window_and_gateway_use_new_loss_cap_without_rewriting_history(network_grid, monkeypatch):
@@ -101,7 +112,7 @@ def test_window_and_gateway_use_new_loss_cap_without_rewriting_history(network_g
     initialize(root, store)
     with open_grid_session(root, store, factory, continuous=True) as bridge:
         before = bridge.runtime.active_campaign()
-        bridge.runtime.update_continuous_budget(store.config, **LIMITS)
+        bridge.runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
         fake.cash = D('751')
         bridge.recover()
         current = bridge.ensure_campaign()
