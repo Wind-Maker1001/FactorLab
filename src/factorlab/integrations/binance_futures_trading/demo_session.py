@@ -195,7 +195,9 @@ class DemoSession:
     def _admit_write(self, method, params, plan):
         if self.receipt_error or self.write_uncertain:
             raise SafetyBlocked('previous Demo write requires GET-only recovery')
-        if any(receipt['http_status'] == 400 for receipt in self.receipts[self._recovered_receipt_count:]):
+        if any(receipt['http_status'] == 400
+               and receipt.get('request_parameters',{}).get('symbol',self.symbol) == self.symbol
+               for receipt in self.receipts[self._recovered_receipt_count:]):
             raise SafetyBlocked('Demo HTTP 400 stopped further writes')
         now = self._now()
         facts = self.adapter.facts

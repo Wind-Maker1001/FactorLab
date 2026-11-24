@@ -194,6 +194,7 @@ class DemoPortfolioConsumer:
         original = (s.symbol,s.configuration,s.gateway.rules,s.client.transport,
                     s._write_guard,s._receipt_sink,s.controller.limits,
                     getattr(s.adapter,'_rule_observation',None))
+        original_flags = (getattr(s,'write_uncertain',False),getattr(s,'receipt_error',False))
         campaign_key = 'portfolio-campaign:' + identity(task)
         raw = self.runtime._get(campaign_key)
         campaign = json.loads(raw) if raw else None
@@ -283,6 +284,10 @@ class DemoPortfolioConsumer:
             (s.symbol,s.configuration,s.gateway.rules,s.client.transport,s._write_guard,
              s._receipt_sink,s.controller.limits,s.adapter._rule_observation) = original
             s.controller.limits = replace(s.controller.limits,account_budget=ACCOUNT_BUDGET)
+            # Portfolio uncertainty remains authoritative in the original adapter
+            # journal. Do not poison Grid's transport flags; unresolved protocol
+            # identities still prevent controller risk admission until GET recovery.
+            s.write_uncertain,s.receipt_error = original_flags
 
     def record_receipt(self,campaign,receipt):
         with self.runtime.db:
