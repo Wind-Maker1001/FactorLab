@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import tempfile
+from uuid import uuid4
 
 
 def deploy(args):
@@ -14,7 +15,7 @@ def deploy(args):
         raise ValueError('full commit required')
     ssh = ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15', '-i', args.key,
            f'{args.user}@{args.host}']
-    remote = f'/tmp/factorlab-alpaca-{revision}'
+    remote = f'/tmp/factorlab-alpaca-{revision}-{uuid4().hex}'
     subprocess.run(ssh + [f'umask 077; mkdir {remote}'], check=True)
     with tempfile.TemporaryDirectory(prefix='factorlab-alpaca-') as directory:
         bundle = Path(directory) / 'release.tar'

@@ -32,5 +32,12 @@ def test_deploy_uses_committed_installer_not_working_tree(tmp_path, monkeypatch)
     assert len(scp) == 6
     assert all('install_alpaca_paper_runtime.sh' not in part for part in scp)
     install = next(command[-1] for command in commands if command[0] == 'ssh' and 'sudo sh' in command[-1])
-    assert f'tar -xf /tmp/factorlab-alpaca-{revision}/release.tar' in install
-    assert f'sudo sh /tmp/factorlab-alpaca-{revision}/tools/install_alpaca_paper_runtime.sh' in install
+    remote = scp[-1].split(':', 1)[1].rstrip('/')
+    assert remote.startswith(f'/tmp/factorlab-alpaca-{revision}-')
+    assert f'tar -xf {remote}/release.tar' in install
+    assert f'sudo sh {remote}/tools/install_alpaca_paper_runtime.sh' in install
+    commands.clear()
+    deploy(Namespace(repo=str(tmp_path), commit=revision, key='key', user='azureuser',
+                     host='example.invalid', credential_file=None))
+    second = next(command for command in commands if command[0] == 'scp')
+    assert second[-1] != scp[-1]
