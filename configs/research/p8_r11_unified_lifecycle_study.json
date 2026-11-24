@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "study_id": "P8-R11",
+  "title": "Funding-Sensitive and Volatility-Adaptive Grid under Unified F11/F08 Lifecycle",
+  "execution_model_version": "UNIFIED_F11_F08_LIFECYCLE_V1",
+  "lifecycles": {
+    "L0": {
+      "model_label": "NO_F11_NO_F08_STRANDED_POSITION_BASELINE",
+      "enable_f11": false,
+      "enable_f08": false,
+      "description": "Legacy stranded-position baseline without F11 limit exit or F08 auto-rotation (for direct reconciliation against PR #238 R10)."
+    },
+    "L1": {
+      "model_label": "F11_EXIT_ONLY_NO_ROTATION",
+      "enable_f11": true,
+      "enable_f08": false,
+      "description": "Unified F11 reduce-only LIMIT exit lifecycle without F08 automatic rotation."
+    },
+    "L2": {
+      "model_label": "F11_F08_FULL_LIFECYCLE",
+      "enable_f11": true,
+      "enable_f08": true,
+      "description": "Complete F11 reduce-only LIMIT exit + F08 automatic rotation lifecycle with shared PaperStore/Campaign budget continuity."
+    }
+  },
+  "strategy_configs": {
+    "A": "configs/research/p8_r10_strategy_a_fixed.json",
+    "B": "configs/research/p8_r10_strategy_b_funding_sensitive.json",
+    "C": "configs/research/p8_r10_strategy_c_vol_adaptive.json",
+    "CASH": "ZERO_EXPOSURE_CASH_BENCHMARK"
+  },
+  "representative_arms": {
+    "cash": "CASH",
+    "fixed": "A_FIXED",
+    "funding_entry_only": "B2",
+    "funding_entry_exit": "B5",
+    "vol_adaptive": "C5"
+  },
+  "execution_profiles": [
+    "IDEAL_LIMIT_FILL",
+    "DELAYED_EXIT_FILL",
+    "LIMITED_CAPACITY_PARTIAL",
+    "UNFILLED_EXIT_TIMEOUT",
+    "GAP_AND_CANCEL_FAULT"
+  ],
+  "funding_regimes": [
+    "EX_FUNDING",
+    "MAINNET_ACTUAL",
+    "NORMAL_SYNTHETIC_0.125BPS",
+    "DEMO_HIGH_FUNDING_22.97BPS",
+    "SWITCH_48H"
+  ],
+  "historical_protocol": {
+    "instrument_id": "NVDAUSDT",
+    "interval": "1h",
+    "window_hours": 168,
+    "warmup_hours": 96,
+    "expected_windows": 27,
+    "walk_forward_initial_train_windows": 9,
+    "walk_forward_step_windows": 3,
+    "walk_forward_folds": 6,
+    "walk_forward_oos_windows": 18,
+    "capital_basis_usdt": "10.00",
+    "opening_wallet_usdt": "5000.00000000",
+    "participation_rate": "0.01",
+    "fee_bps": 3.0,
+    "slippage_bps": 2.0,
+    "data_independence_status": "REUSED_R10_HISTORICAL_REVALIDATION_NOT_UNSEEN_OOS"
+  },
+  "monte_carlo_protocol": {
+    "anchor_price": 132.89,
+    "capital_basis_usdt": "7.00",
+    "horizon_hours": 168,
+    "screening_paths": 128,
+    "expanded_paths_key_scenarios": 1024,
+    "convergence_grid": [64, 128, 256, 512, 1024],
+    "primary_seed": 1100,
+    "cross_seed_check_seed": 2200,
+    "cross_seed_check_paths": 256,
+    "generators": [
+      "gbm_low_vol_0.5x",
+      "gbm_base_vol_1.0x",
+      "gbm_high_vol_2.0x",
+      "moving_block_bootstrap_24h",
+      "regime_bootstrap_24h",
+      "jump_stress_downside"
+    ]
+  },
+  "statistical_protocol": {
+    "bootstrap_resamples": 10000,
+    "alpha": 0.05,
+    "multiple_comparison_method": "Holm-Bonferroni and Bonferroni family-wise boundary",
+    "selection_objective": "mean_net_return_with_funding - 0.5 * cvar95_loss_with_funding (subject to mean_fills >= 0.2 per window)"
+  },
+  "boundaries": [
+    "NO_LIVE_MONEY",
+    "OFFLINE_RESEARCH_ONLY",
+    "ONLINE_AZURE_INSTANCE_UNTOUCHED",
+    "FROZEN_R08_R09_R10_ARTIFACTS_PRESERVED",
+    "HOURLY_OHLC_IS_NOT_EXECUTABLE_ORDERBOOK",
+    "DEMO_22.97BPS_IS_STRESS_CALIBRATION_NOT_MAINNET_NORM",
+    "REUSED_HISTORICAL_WINDOWS_CANNOT_GRANT_OOS_ADVANTAGE_SUPPORTED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ]
+}
