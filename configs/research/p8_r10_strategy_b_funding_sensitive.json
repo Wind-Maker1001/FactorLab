@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "study": "P8-R10",
+  "strategy_id": "B_FUNDING_SENSITIVE_GRID",
+  "name": "Funding-Sensitive Grid (Causal Funding Forecast & Gate)",
+  "execution_model": "NO_F11_NO_F08_STRANDED_POSITION_BASELINE",
+  "inherits_control": "configs/research/p8_r10_strategy_a_fixed.json",
+  "causality_contract": {
+    "information_set": "Only settled funding events with funding_time <= current_bar_close_utc",
+    "future_rate_forbidden": true,
+    "estimator": "Rolling causal hourly funding rate over lookback window (bps/h), using max(window_mean_bps_h, last_event_bps_h) when conservative=true"
+  },
+  "default_candidate": "B5",
+  "predeclared_candidates": [
+    {
+      "id": "B1",
+      "label": "Entry-only strict (<=0.25 bps/h)",
+      "lookback_hours": 24,
+      "conservative": true,
+      "entry_max_bps_h": 0.25,
+      "expected_hold_hours": 48.0,
+      "min_net_margin_bps": 100.0,
+      "exit_mode": "none",
+      "exit_bps_h": null,
+      "max_hold_hours": null
+    },
+    {
+      "id": "B2",
+      "label": "Entry-only moderate (<=0.50 bps/h)",
+      "lookback_hours": 24,
+      "conservative": true,
+      "entry_max_bps_h": 0.50,
+      "expected_hold_hours": 48.0,
+      "min_net_margin_bps": 100.0,
+      "exit_mode": "none",
+      "exit_bps_h": null,
+      "max_hold_hours": null
+    },
+    {
+      "id": "B3",
+      "label": "Entry-only high-spike (<=1.00 bps/h)",
+      "lookback_hours": 24,
+      "conservative": true,
+      "entry_max_bps_h": 1.00,
+      "expected_hold_hours": 48.0,
+      "min_net_margin_bps": 80.0,
+      "exit_mode": "none",
+      "exit_bps_h": null,
+      "max_hold_hours": null
+    },
+    {
+      "id": "B4",
+      "label": "Entry strict + bleed/age exit (0.25/0.50 bps/h, 72h)",
+      "lookback_hours": 24,
+      "conservative": true,
+      "entry_max_bps_h": 0.25,
+      "expected_hold_hours": 48.0,
+      "min_net_margin_bps": 100.0,
+      "exit_mode": "funding_bleed",
+      "exit_bps_h": 0.50,
+      "max_hold_hours": 72.0
+    },
+    {
+      "id": "B5",
+      "label": "Entry moderate + bleed/age exit (0.50/1.00 bps/h, 72h)",
+      "lookback_hours": 24,
+      "conservative": true,
+      "entry_max_bps_h": 0.50,
+      "expected_hold_hours": 48.0,
+      "min_net_margin_bps": 100.0,
+      "exit_mode": "funding_bleed",
+      "exit_bps_h": 1.00,
+      "max_hold_hours": 72.0
+    },
+    {
+      "id": "B6",
+      "label": "Net-margin gate + erosion exit (48h hold, >=120 bps margin)",
+      "lookback_hours": 24,
+      "conservative": false,
+      "entry_max_bps_h": 0.75,
+      "expected_hold_hours": 48.0,
+      "min_net_margin_bps": 120.0,
+      "exit_mode": "net_margin",
+      "exit_bps_h": 0.75,
+      "max_hold_hours": 96.0
+    }
+  ],
+  "selection_objective": "mean_net_return_with_funding - 0.5 * cvar95_loss_with_funding (subject to mean_fills >= 0.2 per window)",
+  "boundaries": [
+    "NO_LIVE_MONEY",
+    "OFFLINE_RESEARCH_ONLY",
+    "NO_F11_NO_F08_STRANDED_POSITION_BASELINE"
+  ]
+}

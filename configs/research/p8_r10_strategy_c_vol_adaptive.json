@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "study": "P8-R10",
+  "strategy_id": "C_VOL_ADAPTIVE_GRID",
+  "name": "Volatility-Adaptive Grid (Causal Realized-Vol Width & Regime Guard)",
+  "execution_model": "NO_F11_NO_F08_STRANDED_POSITION_BASELINE",
+  "inherits_control": "configs/research/p8_r10_strategy_a_fixed.json",
+  "causality_contract": {
+    "information_set": "Only completed historical bars with close_time <= current_bar_close_utc; reference volatility sigma_ref frozen from training window only",
+    "future_price_forbidden": true,
+    "validation_refit_forbidden": true,
+    "width_formula": "half_width = clip(k_mult * sigma_1h * sqrt(horizon_hours), min_half_width, max_half_width)"
+  },
+  "default_candidate": "C5",
+  "predeclared_candidates": [
+    {
+      "id": "C1",
+      "label": "24h RV compact static-entry (k=2.5, [0.5%, 3.0%])",
+      "vol_window_hours": 24,
+      "k_mult": 2.5,
+      "horizon_hours": 1.0,
+      "min_half_width": 0.005,
+      "max_half_width": 0.030,
+      "extreme_vol_mult": null,
+      "allow_flat_rebuild": false,
+      "min_rebuild_interval": 24,
+      "rebuild_width_delta": 0.25
+    },
+    {
+      "id": "C2",
+      "label": "48h RV balanced static-entry (k=3.0, [0.6%, 3.5%])",
+      "vol_window_hours": 48,
+      "k_mult": 3.0,
+      "horizon_hours": 1.0,
+      "min_half_width": 0.006,
+      "max_half_width": 0.035,
+      "extreme_vol_mult": null,
+      "allow_flat_rebuild": false,
+      "min_rebuild_interval": 24,
+      "rebuild_width_delta": 0.25
+    },
+    {
+      "id": "C3",
+      "label": "72h RV wide static-entry (k=3.5, [0.8%, 4.0%])",
+      "vol_window_hours": 72,
+      "k_mult": 3.5,
+      "horizon_hours": 1.0,
+      "min_half_width": 0.008,
+      "max_half_width": 0.040,
+      "extreme_vol_mult": null,
+      "allow_flat_rebuild": false,
+      "min_rebuild_interval": 24,
+      "rebuild_width_delta": 0.25
+    },
+    {
+      "id": "C4",
+      "label": "24h RV dynamic + 2.0x extreme-vol guard",
+      "vol_window_hours": 24,
+      "k_mult": 2.5,
+      "horizon_hours": 1.0,
+      "min_half_width": 0.005,
+      "max_half_width": 0.030,
+      "extreme_vol_mult": 2.0,
+      "allow_flat_rebuild": true,
+      "min_rebuild_interval": 24,
+      "rebuild_width_delta": 0.25
+    },
+    {
+      "id": "C5",
+      "label": "48h RV dynamic + 2.0x extreme-vol guard",
+      "vol_window_hours": 48,
+      "k_mult": 3.0,
+      "horizon_hours": 1.0,
+      "min_half_width": 0.006,
+      "max_half_width": 0.035,
+      "extreme_vol_mult": 2.0,
+      "allow_flat_rebuild": true,
+      "min_rebuild_interval": 24,
+      "rebuild_width_delta": 0.25
+    },
+    {
+      "id": "C6",
+      "label": "72h RV dynamic + 1.8x strict extreme-vol guard",
+      "vol_window_hours": 72,
+      "k_mult": 3.5,
+      "horizon_hours": 1.0,
+      "min_half_width": 0.008,
+      "max_half_width": 0.040,
+      "extreme_vol_mult": 1.8,
+      "allow_flat_rebuild": true,
+      "min_rebuild_interval": 24,
+      "rebuild_width_delta": 0.25
+    }
+  ],
+  "selection_objective": "mean_net_return_with_funding - 0.5 * cvar95_loss_with_funding (subject to mean_fills >= 0.2 per window)",
+  "boundaries": [
+    "NO_LIVE_MONEY",
+    "OFFLINE_RESEARCH_ONLY",
+    "NO_F11_NO_F08_STRANDED_POSITION_BASELINE"
+  ]
+}
