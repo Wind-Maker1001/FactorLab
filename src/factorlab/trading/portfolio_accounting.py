@@ -7,8 +7,39 @@ from decimal import Decimal
 
 from .contracts import (
     AccountSnapshot, OrderEvent, OrderIntent, Side, ZERO,
-    decimal_value, signed_decimal_value,
+    decimal_value, signed_decimal_value, utc,
 )
+
+
+def corporate_action_timeline(events, corporate_actions):
+    """Place official effective-time actions before fills in the new share basis."""
+    anchors, timed, identities = {}, [], set()
+    event_ids = {event.event_id for event in events}
+    for action in corporate_actions:
+        if action['id'] in identities:
+            raise ValueError('duplicate corporate action identity')
+        identities.add(action['id'])
+        if 'effective_at' in action:
+            utc(action['effective_at'])
+            timed.append(action)
+        else:
+            anchor = action['after_event_id']
+            if anchor is not None and anchor not in event_ids:
+                raise ValueError('corporate action lacks its confirmation boundary')
+            anchors.setdefault(anchor, []).append(action)
+    timeline = list(anchors.get(None, ()))
+    attached = set()
+    for event in events:
+        timeline.append(event)
+        if event.event_id not in attached:
+            timeline.extend(anchors.get(event.event_id, ()))
+            attached.add(event.event_id)
+    if not timed:
+        return timeline
+    if anchors:
+        raise ValueError('cannot mix effective-time and legacy anchored corporate actions')
+    return sorted([*events, *timed], key=lambda item:
+        (item['effective_at'], 0) if isinstance(item, Mapping) else (item.event_time, 1))
 
 
 @dataclass(frozen=True)
@@ -93,6 +124,7 @@ class PortfolioReport:
     turnover: Decimal
     tracking_error: Decimal
     initial_capital: Decimal | None
+    corporate_cash_flow: Decimal = ZERO
 
 
 def build_portfolio_report(
@@ -108,6 +140,7 @@ def build_portfolio_report(
     adjustments: Sequence[ResearchAdjustment] = (),
     economic_multipliers: Mapping[str, Decimal] | None = None,
     initial_capital: Decimal | None = None,
+    corporate_actions: Sequence[Mapping] = (),
 ) -> PortfolioReport:
     """Report one accounting interval from explicit owned basis and broker facts.
 
@@ -146,7 +179,30 @@ def build_portfolio_report(
     notionals = {}
     seen: dict[str, OrderEvent] = {}
     fills = []
-    for event in events:
+    timeline = corporate_action_timeline(events, corporate_actions)
+    corporate_cash = ZERO
+    for event in timeline:
+        if isinstance(event, Mapping):
+            symbol = event['symbol']
+            ratio, basis_ratio = event['quantity_ratio'], event['basis_ratio']
+            decimal_value(ratio, 'corporate share ratio', positive=True)
+            decimal_value(basis_ratio, 'corporate basis ratio')
+            signed_decimal_value(event['cash_flow'], 'corporate cash flow')
+            owned = inventory.get(symbol, OwnedPosition(ZERO, ZERO))
+            allocations = event.get('allocations', ())
+            if allocations and basis_ratio + sum((item['basis_fraction'] for item in allocations), ZERO) != 1:
+                raise ValueError('corporate cost allocation must preserve total basis')
+            for item in allocations:
+                if item['symbol'] == symbol:
+                    raise ValueError('corporate allocation must name a different security')
+                decimal_value(item['quantity'], 'allocated shares', positive=True)
+                decimal_value(item['basis_fraction'], 'allocated cost fraction')
+                child = inventory.get(item['symbol'], OwnedPosition(ZERO, ZERO))
+                inventory[item['symbol']] = OwnedPosition(child.quantity + item['quantity'],
+                    child.cost_basis + owned.cost_basis * item['basis_fraction'])
+            inventory[symbol] = OwnedPosition(owned.quantity * ratio, owned.cost_basis * basis_ratio)
+            corporate_cash += event['cash_flow']
+            continue
         if event.event_id in seen:
             if seen[event.event_id] != event:
                 raise ValueError("conflicting event identity")
@@ -238,5 +294,5 @@ def build_portfolio_report(
         notional, notional / official_equity,
         (sum(((row.actual_weight - row.target_weight) ** 2 for row in rows), ZERO)
          + (cash / official_equity - (Decimal(1) - sum(target_weights.values(), ZERO))) ** 2).sqrt(),
-        initial_capital,
+        initial_capital, corporate_cash,
     )

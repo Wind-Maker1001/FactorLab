@@ -1,14 +1,18 @@
 """Natural-week original V69 preparation over the shared E03 execution journal."""
 from datetime import timedelta
 from decimal import Decimal as D
+import json
+from uuid import uuid4
 
 import pandas as pd
 
 from factorlab.strategies.v69 import ASSETS, V69Strategy
 from factorlab.strategies.v69_alpaca import create_alpaca_plan, to_adjusted_holdings
 from factorlab.trading.contracts import TERMINAL
+from factorlab.trading.storage import decode, dumps
 from factorlab.trading.portfolio_execution import InstrumentRules, PortfolioStore
 from .adapter import OrderNotFound
+from .corporate_actions import CorporateReceiptJournal
 from .http import AlpacaError
 from .market_data.cache import MarketCache
 from .market_data.inputs import Instrument
@@ -19,17 +23,31 @@ class PreparationIncomplete(RuntimeError):
     """The market supplied no complete execution-basis preparation yet."""
 
 
-def execution_factors(prepared, announcements, session):
-    """Use unchanged overnight share bases; action days require explicit rebasing."""
-    relevant = [row for row in announcements if row['ex_date'] == session and
-                {row['initiating_symbol'], row['target_symbol']} & set(ASSETS)]
-    if relevant:
-        # TODO: reconcile split/dividend/spinoff execution-day units before enabling action-day plans.
-        raise PreparationIncomplete('EXECUTION_DAY_CORPORATE_ACTION')
+def execution_factors(prepared, announcements, session, *, execution_bars=None):
+    """Use official same-vintage raw/adjusted pairs, never guessed action ratios.
+
+    The previous session ratio is not the execution-session ratio on action days.
+    A same-session adjusted/raw pair supplies the composed factor, including
+    multiple actions, without applying their ratios twice to vendor adjustments.
+    """
+    affected = set().union(*(
+        {row['initiating_symbol'], row['target_symbol']} & set(ASSETS)
+        for row in announcements if row['ex_date'] == session))
     factors = {}
     for symbol in ASSETS:
-        bars = prepared.bars.loc[prepared.bars.instrument_id == symbol].sort_values('session')
-        last = bars.iloc[-1]
+        if symbol in affected:
+            if execution_bars is None:
+                raise PreparationIncomplete('EXECUTION_DAY_CORPORATE_ACTION:' + symbol)
+            bars = execution_bars.loc[execution_bars.instrument_id == symbol]
+            if bars.empty:
+                raise PreparationIncomplete('MISSING_EXECUTION_BASIS:' + symbol)
+            last = bars.sort_values('event_at').iloc[-1]
+            if (str(pd.Timestamp(last.session).date()) != session or
+                    not last.complete or not last.adjusted_bar_complete):
+                raise PreparationIncomplete('INCOMPLETE_EXECUTION_BASIS:' + symbol)
+        else:
+            bars = prepared.bars.loc[prepared.bars.instrument_id == symbol].sort_values('session')
+            last = bars.iloc[-1]
         factor = D(str(last.adjusted_close)) / D(str(last.raw_close))
         if not factor.is_finite() or factor <= 0:
             raise PreparationIncomplete('INVALID_ADJUSTMENT_FACTOR:' + symbol)
@@ -63,6 +81,22 @@ class WeeklyExecution:
 
     def prepare(self, service, window, at, facts):
         session, cutoff = window['execution_session'], window['signal_cutoff']
+        directory = self.root / 'signals'
+        directory.mkdir(mode=0o700, exist_ok=True)
+        frozen = directory / (session + '.json')
+        if frozen.exists():
+            inputs = decode(json.loads(frozen.read_text(encoding='utf-8')))
+            if inputs['account_id'] != facts.account_id:
+                raise ValueError('frozen preparation belongs to another account')
+            snapshot = self.adapter.recover()
+            if not snapshot.reconciled:
+                raise PreparationIncomplete('ACCOUNT_NOT_RECONCILED')
+            current = {p.instrument_id: p.quantity for p in snapshot.positions
+                       if p.instrument_id in ASSETS and p.quantity}
+            original = {symbol: quantity for symbol, quantity in inputs['raw_holdings'].items() if quantity}
+            if current != original:
+                raise PreparationIncomplete('FROZEN_PREPARATION_HOLDINGS_CHANGED')
+            return create_alpaca_plan(self.runner.executor, now=self.clock(), **inputs)
         sessions = service.calendar.schedule.index
         history_days = sessions[sessions <= pd.Timestamp(cutoff)][-252:]
         if len(history_days) != 252:
@@ -78,39 +112,83 @@ class WeeklyExecution:
         announcements = self.adapter.http.request('GET', '/v2/corporate_actions/announcements',
             params={'ca_types': 'dividend,merger,spinoff,split', 'since': cutoff,
                     'until': session, 'date_type': 'ex_date'})
-        # This API rejects a saturated result rather than proving absence of an action.
         if len(announcements) >= 1000:
             raise PreparationIncomplete('SATURATED_CORPORATE_ACTION_WINDOW')
-        factors = execution_factors(prepared, announcements, session)
+        receipts = self.adapter.read_corporate_activities(after=cutoff + 'T00:00:00Z')
+        blocked = CorporateReceiptJournal(self.store, facts.account_id).reconcile(
+            self.runner.executor, strategy_id='V69_CAUSAL',
+            announcements=announcements, receipts=receipts)
+        affected_blocks = {symbol: reason for symbol, reason in blocked.items() if symbol in ASSETS}
+        if affected_blocks:
+            raise PreparationIncomplete('CORPORATE_RECEIPTS:' + json.dumps(affected_blocks, sort_keys=True))
+        affected = set().union(*(
+            {row['initiating_symbol'], row['target_symbol']} & set(ASSETS)
+            for row in announcements if row['ex_date'] == session))
+        execution_frames = []
+        for instrument in instruments:
+            if instrument.symbol not in affected:
+                continue
+            raw = service.history(instrument, session, session, timeframe='1Min', adjustment='raw')
+            adjusted = service.history(instrument, session, session, timeframe='1Min', adjustment='all')
+            columns = ['instrument_id', 'event_at', 'adjusted_close', 'complete',
+                       'received_at', 'closed_at']
+            adjusted = adjusted[columns].rename(columns={name: 'adjusted_bar_' + name
+                for name in ('complete', 'received_at', 'closed_at')})
+            paired = raw.merge(adjusted, on=['instrument_id', 'event_at'],
+                               how='inner', validate='one_to_one')
+            acquired = pd.Timestamp(self.clock())
+            paired = paired.loc[paired.complete & paired.adjusted_bar_complete &
+                (paired.received_at <= acquired) & (paired.closed_at <= acquired) &
+                (paired.adjusted_bar_received_at <= acquired) &
+                (paired.adjusted_bar_closed_at <= acquired)]
+            execution_frames.append(paired)
+        execution_bars = pd.concat(execution_frames, ignore_index=True) if execution_frames else None
+        factors = execution_factors(prepared, announcements, session, execution_bars=execution_bars)
         snapshot = self.adapter.recover()
         if not snapshot.reconciled:
             raise PreparationIncomplete('ACCOUNT_NOT_RECONCILED')
         facts = self.adapter.read_account_details()
         holdings = {p.instrument_id: p.quantity for p in snapshot.positions if p.instrument_id in ASSETS}
-        if any(p.quantity for p in snapshot.positions if p.instrument_id not in ASSETS):
-            raise PreparationIncomplete('INVENTORY_OUTSIDE_ORIGINAL_UNIVERSE')
+        retained = {symbol: D(quantity) for symbol, quantity in self.store.db.execute(
+            'SELECT symbol,quantity FROM portfolio_claims WHERE account=? AND strategy=?',
+            (facts.account_id, 'V69_CAUSAL')) if symbol not in ASSETS}
+        external = {p.instrument_id: p.quantity for p in snapshot.positions
+                    if p.instrument_id not in ASSETS and p.quantity}
+        if any(retained.get(symbol, D(0)) != external.get(symbol, D(0))
+               for symbol in retained.keys() | external.keys()):
+            raise PreparationIncomplete('UNRECONCILED_EXTERNAL_CORPORATE_RIGHTS')
         rules = self.rules()
         last = self.last_plan(facts.account_id)
         checkpoint = {} if last is None else last['request']['signal_inputs']['checkpoint']
         decision = V69Strategy().decide(dict(session=session, calendar=service.calendar,
             close=prepared.adjusted_close, volume=prepared.adjusted_volume,
             holdings=to_adjusted_holdings(holdings, factors), cash=float(facts.cash)), checkpoint)
-        directory = self.root / 'signals'
-        directory.mkdir(mode=0o700, exist_ok=True)
-        # Retain the exact acquisition vintages; the E03 task is the commit point.
-        destination = directory / (session + '.parquet')
-        temporary = destination.with_suffix('.tmp')
-        prepared.bars.to_parquet(temporary, index=False)
-        temporary.replace(destination)
-        return create_alpaca_plan(self.runner.executor, decision=decision,
-            account_id=facts.account_id, session=session, now=self.clock(), raw_holdings=holdings,
-            factors=factors, quantity_steps={s: r.quantity_step for s, r in rules.items()},
+        # Publish the preparation before E03 create; a crash in between reuses
+        # its original holdings and decision, never a new data acquisition.
+        destination = directory / (session + '-' + uuid4().hex + '.parquet')
+        prepared.bars.to_parquet(destination, index=False)
+        execution_snapshot = None
+        if execution_bars is not None:
+            execution_snapshot = destination.with_suffix('.execution.parquet')
+            execution_bars.to_parquet(execution_snapshot, index=False)
+        inputs = dict(decision=decision, account_id=facts.account_id, session=session,
+            raw_holdings=holdings, factors=factors,
+            quantity_steps={s: r.quantity_step for s, r in rules.items()},
             initial_inventory={p.instrument_id: (p.quantity, p.entry_price)
                                for p in snapshot.positions if p.instrument_id in ASSETS},
             signal_provenance={'source': 'ALPACA:iex', 'signal_cutoff': cutoff,
                 'factor_session': session, 'adjustment_basis': prepared.adjustment_basis,
                 'prepared_at': prepared.prepared_at.isoformat(), 'snapshot': destination.name,
+                'execution_basis_snapshot': execution_snapshot.name if execution_snapshot else None,
+                'execution_basis_acquired_at': self.clock().isoformat(),
+                'announcements': announcements,
+                'corporate_receipt_ids': [row['id'] for row in receipts],
+                'corporate_receipts_after': cutoff + 'T00:00:00Z',
                 'action_ids': [row['id'] for row in announcements]})
+        temporary = frozen.with_suffix('.tmp')
+        temporary.write_text(dumps(inputs) + '\n', encoding='utf-8')
+        temporary.replace(frozen)
+        return create_alpaca_plan(self.runner.executor, now=self.clock(), **inputs)
 
     def rules(self):
         result = {}

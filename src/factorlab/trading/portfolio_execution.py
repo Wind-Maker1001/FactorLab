@@ -121,6 +121,9 @@ class PortfolioStore(PaperStore):
             CREATE TABLE IF NOT EXISTS portfolio_confirmations (
                 account TEXT NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL,
                 PRIMARY KEY(account, event));
+            CREATE TABLE IF NOT EXISTS portfolio_corporate_actions (
+                account TEXT NOT NULL, strategy TEXT NOT NULL, event TEXT NOT NULL,
+                payload TEXT NOT NULL, PRIMARY KEY(account, event));
         ''')
 
     def plan(self, identity):
@@ -281,6 +284,162 @@ class PortfolioExecutor:
                 [account_id, from_strategy, to_strategy, sorted(symbols)]).encode()).hexdigest()
             self.store.record_metadata(identity, dict(symbols=sorted(symbols),
                 previous=from_strategy, owner=to_strategy))
+
+    def record_corporate_action(self, *, account_id, strategy_id, event_id, symbol,
+                                quantity_ratio, basis_ratio, cash_flow, evidence, effective_at=None):
+        """Post an evidenced broker transformation, never send it to the broker.
+
+        Caller supplies verified action terms and account implementation evidence.
+        The confirmation boundary preserves pre-action fills in their original
+        units; subsequent fills are replayed in the resulting share basis.
+        """
+        terms = dict(id=event_id, symbol=symbol, quantity_ratio=quantity_ratio,
+                     basis_ratio=basis_ratio, cash_flow=cash_flow, evidence=evidence)
+        if effective_at is not None:
+            terms['effective_at'] = effective_at
+        self.record_corporate_actions(account_id=account_id, strategy_id=strategy_id,
+                                      actions=[terms])
+
+    def record_corporate_actions(self, *, account_id, strategy_id, actions):
+        """Atomically reconcile an ordered group of official transformations."""
+        from .contracts import decimal_value, signed_decimal_value
+        identities = set()
+        for terms in actions:
+            if not terms['id'] or not terms['evidence']:
+                raise ValueError('official corporate action identity and evidence required')
+            if terms['id'] in identities:
+                raise ValueError('duplicate corporate action identity')
+            identities.add(terms['id'])
+            decimal_value(terms['quantity_ratio'], 'corporate share ratio', positive=True)
+            decimal_value(terms['basis_ratio'], 'corporate basis ratio')
+            signed_decimal_value(terms['cash_flow'], 'corporate cash flow')
+            allocations = terms.get('allocations', ())
+            if allocations and terms['basis_ratio'] + sum((item['basis_fraction'] for item in allocations), ZERO) != 1:
+                raise ValueError('corporate cost allocation must preserve total basis')
+            for item in allocations:
+                if item['symbol'] == terms['symbol']:
+                    raise ValueError('corporate allocation must name a different security')
+                decimal_value(item['quantity'], 'allocated shares', positive=True)
+                decimal_value(item['basis_fraction'], 'allocated cost fraction')
+        with self.store.transaction():
+            pending = []
+            for terms in actions:
+                prior = self.store.db.execute(
+                    'SELECT strategy,payload FROM portfolio_corporate_actions WHERE account=? AND event=?',
+                    (account_id, terms['id'])).fetchone()
+                if prior is None:
+                    pending.append(dict(terms))
+                    continue
+                saved = decode(json.loads(prior[1]))
+                if prior[0] != strategy_id or any(saved[key] != value for key, value in terms.items()):
+                    raise ValueError('corporate action identity changed')
+            if not pending:
+                return
+            self._recover_account(account_id)
+            account = self.adapter.read_account()
+            if account.account_id != account_id or not account.reconciled:
+                raise ValueError('corporate action requires matching reconciled account')
+            children = {item['symbol'] for terms in pending for item in terms.get('allocations', ())}
+            symbols = {terms['symbol'] for terms in pending} | children
+            saved = [decode(json.loads(payload)) for payload, in self.store.db.execute(
+                'SELECT payload FROM portfolio_corporate_actions WHERE account=? AND strategy=? ORDER BY rowid',
+                (account_id, strategy_id))]
+            remaining = saved + pending
+            while remaining:
+                connected, unrelated = [], []
+                for terms in remaining:
+                    related = {terms['symbol']} | {item['symbol'] for item in terms.get('allocations', ())}
+                    if related & symbols:
+                        symbols.update(related)
+                        connected.append(terms)
+                    else:
+                        unrelated.append(terms)
+                if not connected:
+                    break
+                remaining = unrelated
+            for symbol in children:
+                claim = self.store.db.execute(
+                    'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
+                    (account_id, symbol)).fetchone()
+                if claim is None:
+                    self.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                        (account_id, symbol, strategy_id, '0', '0', '0'))
+                elif claim[0] != strategy_id:
+                    raise ValueError('corporate allocation conflicts with inventory ownership')
+            orders = [decode(json.loads(payload)) for payload, in self.store.db.execute(
+                'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
+                'WHERE p.account=? AND p.strategy=?', (account_id, strategy_id))]
+            orders = [order for order in orders
+                      if order['record'].snapshot.intent.instrument_id in symbols]
+            if any(order['uncertain'] or order['record'].snapshot.status not in TERMINAL for order in orders):
+                raise ValueError('corporate action requires settled original orders')
+            confirmations = [decode(json.loads(payload)) for payload, in self.store.db.execute(
+                'SELECT payload FROM portfolio_confirmations WHERE account=? ORDER BY rowid', (account_id,))]
+            quantities = {}
+            initial = {}
+            for symbol in symbols:
+                claim = self.store.db.execute(
+                    'SELECT quantity,initial_quantity FROM portfolio_claims WHERE account=? AND strategy=? AND symbol=?',
+                    (account_id, strategy_id, symbol)).fetchone()
+                if claim is None:
+                    raise ValueError('corporate action requires explicit inventory ownership')
+                quantities[symbol] = D(claim[0])
+                initial[symbol] = D(claim[1])
+            if any('effective_at' in terms for terms in pending):
+                from .portfolio_accounting import corporate_action_timeline
+                intents = {order['record'].snapshot.intent.client_order_id:
+                           order['record'].snapshot.intent for order in orders}
+                timeline = corporate_action_timeline(
+                    [event for event in confirmations if event.client_order_id in intents],
+                    [terms for terms in saved + pending if terms['symbol'] in symbols])
+                quantities = initial
+                cumulative, seen = {}, set()
+                for item in timeline:
+                    if isinstance(item, Mapping):
+                        quantities[item['symbol']] *= item['quantity_ratio']
+                        for allocation in item.get('allocations', ()):
+                            quantities[allocation['symbol']] += allocation['quantity']
+                    elif item.event_id not in seen:
+                        seen.add(item.event_id)
+                        intent = intents[item.client_order_id]
+                        previous = cumulative.get(item.client_order_id, ZERO)
+                        delta = item.cumulative_filled_quantity - previous
+                        if delta < ZERO:
+                            raise ValueError('regressing effective-time cumulative fill')
+                        quantities[intent.instrument_id] += delta if intent.side == Side.BUY else -delta
+                        cumulative[item.client_order_id] = item.cumulative_filled_quantity
+            else:
+                for terms in pending:
+                    quantities[terms['symbol']] *= terms['quantity_ratio']
+                    for allocation in terms.get('allocations', ()):
+                        quantities[allocation['symbol']] += allocation['quantity']
+            for symbol, quantity in quantities.items():
+                actual = next((p.quantity for p in account.positions if p.instrument_id == symbol), ZERO)
+                if actual != quantity:
+                    raise ValueError('corporate action does not reconcile to official shares')
+            for terms in pending:
+                if 'effective_at' not in terms:
+                    ids = {order['record'].snapshot.intent.client_order_id for order in orders
+                           if order['record'].snapshot.intent.instrument_id == terms['symbol']}
+                    terms['after_event_id'] = next((event.event_id for event in reversed(confirmations)
+                                                   if event.client_order_id in ids), None)
+                self.store.db.execute('INSERT INTO portfolio_corporate_actions VALUES (?,?,?,?)',
+                                      (account_id, strategy_id, terms['id'], dumps(terms)))
+            for symbol, quantity in quantities.items():
+                self.store.db.execute('UPDATE portfolio_claims SET quantity=? '
+                    'WHERE account=? AND strategy=? AND symbol=?',
+                    (str(quantity), account_id, strategy_id, symbol))
+            share_changes = {terms['symbol'] for terms in pending
+                             if terms['quantity_ratio'] != 1 or terms.get('allocations')}
+            if share_changes:
+                for identity, in self.store.db.execute(
+                        'SELECT id FROM portfolio_plans WHERE account=? AND strategy=?',
+                        (account_id, strategy_id)).fetchall():
+                    plan = self.store.plan(identity)
+                    if plan['phase'] != 'COMPLETE' and share_changes & set(plan['request']['owned']):
+                        plan['corporate_action_blocks'] = sorted(set(
+                            plan.get('corporate_action_blocks', ())) | {terms['id'] for terms in pending})
+                        self.store.save_plan(plan)
 
     def _accept(self, plan, order, event):
         account = plan['request']['account']
@@ -588,6 +747,13 @@ class PortfolioExecutor:
                 return RebalanceResult(identity, 'COMPLETE', dict(plan['reasons']),
                     dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
                                                 for o in self.store.orders(identity)))
+            if plan.get('corporate_action_blocks'):
+                plan['phase'] = 'WAITING'
+                plan['reasons'] = {'corporate_action': 'FROZEN_INTENT_REQUIRES_ACTION_RECONCILIATION'}
+                self.store.save_plan(plan)
+                return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
+                    dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
+                                                for o in self.store.orders(identity)))
             account = self.adapter.read_account()
             if self._account_uncertain(plan['request']['account']):
                 plan['phase'] = 'WAITING'
@@ -602,7 +768,7 @@ class PortfolioExecutor:
             send = False
             with self.store.transaction():
                 plan = self.store.plan(identity)
-                if self._account_uncertain(plan['request']['account']):
+                if plan.get('corporate_action_blocks') or self._account_uncertain(plan['request']['account']):
                     break
                 order = next(o for o in self.store.orders(identity)
                              if o['record'].snapshot.intent.client_order_id == client_id)
@@ -816,7 +982,10 @@ class PortfolioExecutor:
                 reference_prices={o['record'].snapshot.intent.client_order_id: o['reference_price'] for o in orders},
                 account=account, prices={p.instrument_id: p.mark_price for p in account.positions},
                 official_equity=official_equity, target_weights=request['weights'],
-                adjustments=adjustments, economic_multipliers=request['multipliers'], initial_capital=capital)
+                adjustments=adjustments, economic_multipliers=request['multipliers'], initial_capital=capital,
+                corporate_actions=[decode(json.loads(payload)) for payload, in self.store.db.execute(
+                    'SELECT payload FROM portfolio_corporate_actions WHERE account=? AND strategy=? ORDER BY rowid',
+                    (request['account'], request['strategy']))])
             plan['report'] = asdict(result)
             self.store.save_plan(plan)
             return result

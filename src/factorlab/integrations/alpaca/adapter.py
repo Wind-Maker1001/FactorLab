@@ -307,12 +307,20 @@ class AlpacaAdapter:
         return self._apply(row, activities=())
 
     def read_activities(self):
+        return self._activity_pages('/v2/account/activities/FILL', {})
+
+    def read_corporate_activities(self, *, after):
+        """Official nontrade receipts; dividend qty is eligibility, not new shares."""
+        return self._activity_pages('/v2/account/activities', {
+            'activity_types': 'DIV,DIVNRA,DIVFEE,SSP,SSO,REORG', 'after': after})
+
+    def _activity_pages(self, path, filters):
         rows, token = [], None
         for _ in range(10000):
-            params = {"direction": "asc", "page_size": 100}
+            params = {"direction": "asc", "page_size": 100, **filters}
             if token:
                 params["page_token"] = token
-            page = self.http.request("GET", "/v2/account/activities/FILL", params=params)
+            page = self.http.request("GET", path, params=params)
             rows.extend(page)
             if len(page) < 100:
                 return tuple(rows)
