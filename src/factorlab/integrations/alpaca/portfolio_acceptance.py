@@ -118,7 +118,16 @@ def run_acceptance(*, state_dir, phase, credentials_file):
             now = datetime.now(timezone.utc)
             if now - started > timedelta(minutes=4):
                 raise TimeoutError('Paper test phase exceeded its event-driven execution window')
-            result = runner.run_once(identity, quotes=fresh_quotes, rules=rule_map)
+            try:
+                result = runner.run_once(identity, quotes=fresh_quotes, rules=rule_map)
+            except ValueError as error:
+                if str(error) != 'out-of-order confirmation requires reconciliation':
+                    raise
+                # A broker update can race a REST snapshot. Reconcile the same
+                # original identities once, then continue without reposting.
+                adapter.reconciled = False
+                adapter.recover()
+                result = runner.run_once(identity, quotes=fresh_quotes, rules=rule_map)
             invocations.append(dict(phase=result.phase, reasons=dict(result.reasons),
                                     orders=list(result.order_ids), observed_at=now.isoformat()))
             if result.phase == 'BLOCKED':
