@@ -520,7 +520,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
         # Full notional reservation is conservative for the one-way supported path.
         reserved = sum(((o.intent.quantity - o.cumulative_filled_quantity)
                         * max(o.intent.limit_price or state.quotes[o.intent.instrument_id].price,
-                              state.quotes[o.intent.instrument_id].price) for o in pending), Decimal('0'))
+                              state.quotes[o.intent.instrument_id].price) for o in pending if not o.intent.reduce_only), Decimal('0'))
         collateral = sum((abs(p.quantity) * max(p.entry_price, p.mark_price)
                           for p in state.positions.values()), Decimal('0'))
         additional_margin = notional

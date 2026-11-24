@@ -79,6 +79,16 @@ class DemoPortfolioConsumer:
         if any(o['symbol'] in SYMBOLS and not o['clientOrderId'].startswith('pf')
                for o in self.session.adapter.facts.open_orders):
             raise SafetyBlocked('unowned portfolio symbol order')
+        if request.get('action') == 'cancel_pending':
+            from factorlab.trading.contracts import TERMINAL
+            for key,record in tuple(self.session.gateway.state.orders.items()):
+                if key.startswith('pf') and record.snapshot.intent.instrument_id in SYMBOLS and record.snapshot.status not in TERMINAL:
+                    with self.scope(task,record.snapshot.intent.instrument_id):
+                        self.session.cancel(key)
+            recovered = self.session.gateway.recover(self.session.controller)
+            if recovered.reconciled:
+                store.record_metadata(done,dict(task_id=task,outcome='CANCEL_RECONCILED'))
+            return
         prices, steps = {}, {}
         for symbol in sorted(SYMBOLS):
             with self.scope(task, symbol):
@@ -100,7 +110,20 @@ class DemoPortfolioConsumer:
         outcome = portfolio.advance(task, prices=prices, steps=steps, submit=submit)
         status = self.session.status()
         status['orders'] = {k:v for k,v in status['orders'].items() if k.startswith('pf')}
-        report = dict(task_id=task, outcome=outcome, account=status,
+        from .demo_fill_acceptance import receipt_mapping
+        mapping = [m for m in receipt_mapping(self.session.adapter)
+                   if m['client_order_id'].startswith('pf')]
+        actual_fees = sum((m['actual_fee'] for m in mapping),D(0))
+        realized = sum((D(t['realizedPnl']) for m in mapping for t in m['trades']),D(0))
+        funding = sum((e.amount for e in self.session.adapter.funding_events() if e.symbol in SYMBOLS),D(0))
+        funds = self.session.adapter.facts.usdt()
+        nav = funds['walletBalance'] + funds['unrealizedProfit']
+        accounting = dict(wallet=funds['walletBalance'], unrealized=funds['unrealizedProfit'],
+            nav=nav, margin_balance=funds['marginBalance'],
+            nav_difference=nav-funds['marginBalance'], portfolio_actual_fees=actual_fees,
+            portfolio_realized_pnl=realized, portfolio_funding=funding,
+            funding_event_observed=any(e.symbol in SYMBOLS for e in self.session.adapter.funding_events()))
+        report = dict(task_id=task, outcome=outcome, account=status, accounting=accounting,
                       orders=portfolio.batch_status(task), acceptance_only=True)
         # Reuse the established JSON encoder for Decimal and UTC evidence.
         atomic_json(self.result, json.loads(dumps(report)))
@@ -145,6 +168,17 @@ class DemoPortfolioConsumer:
                 raise SafetyBlocked('portfolio client identity mismatch')
             if 'leverage' in params and params['leverage'] != 1:
                 raise SafetyBlocked('portfolio leverage must be one')
+            if 'leverage' not in params and method == 'POST' and params.get('reduceOnly') == 'false':
+                state = s.gateway.state
+                exposure = sum((abs(p.quantity)*p.mark_price for p in state.positions.values()
+                                if p.instrument_id in SYMBOLS),D(0))
+                from factorlab.trading.contracts import TERMINAL
+                exposure += sum(((r.snapshot.intent.quantity-r.snapshot.cumulative_filled_quantity)
+                    * max(r.reservation_price,state.quotes[r.snapshot.intent.instrument_id].price)
+                    for r in state.orders.values() if r.snapshot.intent.instrument_id in SYMBOLS
+                    and r.snapshot.status not in TERMINAL),D(0))
+                if exposure + D(params['quantity'])*D(params['price']) > BUDGET:
+                    raise SafetyBlocked('portfolio shared allocation budget exhausted')
             with self.runtime.db:
                 self.runtime.db.execute('BEGIN IMMEDIATE')
                 if self.runtime.db.execute('SELECT count(*) FROM dispatches WHERE campaign=?',

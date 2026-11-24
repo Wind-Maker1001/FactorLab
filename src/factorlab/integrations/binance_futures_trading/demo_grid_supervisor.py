@@ -625,6 +625,9 @@ class GridSupervisorRuntime:
         if self._stop_if_requested():
             return
         self.account_recovered = False
+        if self.execute and self._effective_desired() == 'RUNNING':
+            from .demo_portfolio_consumer import DemoPortfolioConsumer
+            DemoPortfolioConsumer(self.bridge.session, self.runtime, self.directory).poll()
         try:
             self.consumer.before_poll()
         except ExchangeError as error:
@@ -637,9 +640,6 @@ class GridSupervisorRuntime:
                 self.last_exception = str(error)
                 return
             raise
-        if self.execute and self._effective_desired() == 'RUNNING':
-            from .demo_portfolio_consumer import DemoPortfolioConsumer
-            DemoPortfolioConsumer(self.bridge.session, self.runtime, self.directory).poll()
         account = self.bridge.session.status()
         self.account_recovered = bool(account['reconciled'] and not account['unknown'])
 
