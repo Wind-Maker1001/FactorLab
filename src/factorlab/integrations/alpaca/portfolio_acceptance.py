@@ -67,7 +67,9 @@ def run_acceptance(*, state_dir, phase, credentials_file=None, runtime_config=No
         task_key = f'{campaign}:task-id'
         with store.transaction():
             if store.event_payload(task_key) is None:
-                if store.db.execute('SELECT COUNT(*) FROM portfolio_plans').fetchone()[0]:
+                prior_ids = store.db.execute('SELECT id FROM portfolio_plans').fetchall()
+                if any(store.plan(row[0])['request']['rebalance_id'].startswith(campaign + ':')
+                       for row in prior_ids):
                     raise ValueError('legacy acceptance journal requires explicit identity-collision review')
                 store.record_metadata(task_key, uuid4().hex)
             task_id = decode(json.loads(store.event_payload(task_key)))

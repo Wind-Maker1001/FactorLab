@@ -1,5 +1,6 @@
 """Transfer stopped-owner SQLite snapshots without discarding cloud observation state."""
 import argparse
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import subprocess
@@ -17,8 +18,8 @@ def transfer(args):
         snapshots = []
         for name in ('broker.sqlite', 'portfolio.sqlite'):
             target = Path(directory) / name
-            with sqlite3.connect((source / name).as_uri() + '?mode=ro', uri=True) as original:
-                with sqlite3.connect(target) as snapshot:
+            with closing(sqlite3.connect((source / name).as_uri() + '?mode=ro', uri=True)) as original:
+                with closing(sqlite3.connect(target)) as snapshot:
                     original.backup(snapshot)
             snapshots.append(str(target))
         subprocess.run(['scp', '-q', '-i', args.key, *snapshots,
