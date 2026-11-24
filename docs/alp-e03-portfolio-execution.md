@@ -14,6 +14,10 @@ A complete weight vector is an immutable rebalance input. Weights are never norm
 
 The planner extends the foundation in PR #239 with explicit settlement currency while preserving its default USDT behavior and reduction-first API. `TradingController` retains its existing local-paper boundary. Broker networking and market-data acquisition are separate integrations.
 
+## Terminal replay and official portfolio acceptance
+
+The P1 terminal replay correction returns after original-order reconciliation whenever a plan was already COMPLETE or abandoned. Historical recovery still imports genuine late fills, but never prepares another child, changes the completed target or enters submission. Targeted QQQ-to-AAPL rotation/restart and terminal late-fill regressions are in progress. TODO: integrate the committed public v69 bridge and complete a new independent official two-instrument opening, sell-before-buy rotation, terminal replay and cleanup campaign; the earlier interrupted opening is not acceptance.
+
 ## Review corrections in progress
 
 Self-review of `27daded` found account-wide UNKNOWN admission, blocked-reduction ordering, interrupted-plan termination, unsubmitted cancellation, exact-notional recovery, stable rejection replay, recovered rule admission, delayed predecessor-fill sizing and iterable-consumption defects. The expanded execution, accounting, bridge, market-data and broker regression suite passed 134 tests after these corrections, then 140 tests after integrating ALP-E01 `5ff2cbc` and the shared main dependencies. The data boundary also preserves non-JSON HTTP status and supports HTTP-date Retry-After. Review corrections are committed in `5cda6e1`; official opening/rotation acceptance remains outstanding.

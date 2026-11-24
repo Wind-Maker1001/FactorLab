@@ -541,16 +541,17 @@ class PortfolioExecutor:
             plan = self.store.plan(identity)
             if plan is None:
                 raise KeyError(identity)
-            plan['reasons'] = {}
-            self.store.save_plan(plan)
+            complete = plan['phase'] == 'COMPLETE' or plan.get('abandoned', False)
+            if not complete:
+                plan['reasons'] = {}
+                self.store.save_plan(plan)
             self._recover_account(plan['request']['account'])
             plan = self.store.plan(identity)
-            account = self.adapter.read_account()
-            if plan.get('abandoned'):
-                self.store.save_plan(plan)
+            if complete:
                 return RebalanceResult(identity, 'COMPLETE', dict(plan['reasons']),
                     dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
                                                 for o in self.store.orders(identity)))
+            account = self.adapter.read_account()
             if self._account_uncertain(plan['request']['account']):
                 plan['phase'] = 'WAITING'
                 plan['reasons']['account'] = 'UNRESOLVED_ORDER_OUTCOME'

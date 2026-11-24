@@ -104,6 +104,66 @@ def run(executor, identity, prices=None, rules=None, **kwargs):
         rules=rules or {s: InstrumentRules(D('.001'), D(1)) for s in SYMBOLS}, now=NOW, **kwargs)
 
 
+@pytest.mark.parametrize('restart', [False, True])
+def test_complete_qqq_plan_cannot_trade_after_aapl_rotation(tmp_path, restart):
+    path = tmp_path / 'terminal.sqlite'
+    broker = Broker()
+    store = PortfolioStore(path)
+    executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+    original = create(executor, {'QQQ': D(1)}, symbols={'QQQ', 'AAPL'})
+    run(executor, original)
+    assert run(executor, original).phase == 'COMPLETE'
+    rotation = create(executor, {'AAPL': D(1)}, symbols={'QQQ', 'AAPL'}, rebalance_id='rotate')
+    run(executor, rotation)
+    run(executor, rotation)
+    assert run(executor, rotation).phase == 'COMPLETE'
+    assert broker.positions == {'QQQ': D(0), 'AAPL': D(10)}
+    before_posts = tuple(broker.posts)
+    before_ids = tuple(o['record'].snapshot.intent.client_order_id for o in store.orders(original))
+    if restart:
+        store.close()
+        store = PortfolioStore(path)
+        executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+    assert run(executor, original).phase == 'COMPLETE'
+    assert tuple(broker.posts) == before_posts
+    assert tuple(o['record'].snapshot.intent.client_order_id for o in store.orders(original)) == before_ids
+    assert broker.positions == {'QQQ': D(0), 'AAPL': D(10)}
+    store.close()
+
+
+def test_abandoned_empty_plan_does_not_trade_successor_inventory(setup):
+    broker, store, executor = setup
+    original = create(executor, {'QQQ': D(1)}, symbols={'QQQ', 'AAPL'})
+    executor.abandon(original)
+    successor = create(executor, {'AAPL': D(1)}, symbols={'QQQ', 'AAPL'}, rebalance_id='successor')
+    run(executor, successor)
+    run(executor, successor)
+    posts = tuple(broker.posts)
+    assert run(executor, original).phase == 'COMPLETE'
+    assert tuple(broker.posts) == posts
+    assert not store.orders(original)
+    assert broker.positions['AAPL'] == 10
+    assert store.plan(original)['reasons']['plan'] == 'ABANDONED_REBALANCE'
+
+
+def test_complete_replay_accounts_late_fill_without_new_children(setup):
+    broker, store, executor = setup
+    broker.mode = 'partial'
+    original = create(executor, {'QQQ': D('.5')}, symbols={'QQQ', 'AAPL'})
+    run(executor, original)
+    order = broker.posts[0]
+    executor.cancel(original, order.client_order_id)
+    assert run(executor, original).phase == 'COMPLETE'
+    broker.confirm(order.client_order_id, order.quantity, S.FILLED)
+    posts = tuple(broker.posts)
+    assert run(executor, original).phase == 'COMPLETE'
+    assert tuple(broker.posts) == posts
+    assert len(store.orders(original)) == 1
+    assert store.orders(original)[0]['record'].snapshot.cumulative_filled_quantity == order.quantity
+    quantity = store.db.execute('SELECT quantity FROM portfolio_claims WHERE symbol=?', ('QQQ',)).fetchone()[0]
+    assert D(quantity) == order.quantity
+
+
 def test_eight_symbols_share_one_cash_and_nav(setup):
     broker, store, executor = setup
     identity = create(executor, {s: D('.125') for s in SYMBOLS})
