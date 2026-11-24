@@ -24,6 +24,10 @@ from .strategy_runtime import DemoStrategyRuntime
 from .strategy_worker import invoke
 
 
+class PackageLoadError(FeedPaused):
+    """A release cannot be classified or loaded from its installed package."""
+
+
 class DemoReleaseAdapter:
     def __init__(self, router):
         self.router = router
@@ -165,6 +169,7 @@ class ReleaseConsumer:
         self.adapter = DemoReleaseAdapter(self)
         self.deployer = DeploymentController(self.store, self.adapter)
         self.maintenance = False
+        self._cancel_scope = None
         self._runners = {}
         self._expected = None
         self.bridge.session.strategy_write_guard = self.write_guard
@@ -219,18 +224,24 @@ class ReleaseConsumer:
         if cached is not None:
             return cached[0]
         path = self.releases / version
-        if not (path / 'manifest.json').exists():
-            return None
-        return load_package(path)
+        try:
+            manifest = load_package(path)
+            if manifest['package_id'] != version:
+                raise ValueError('installed package identity differs from release directory')
+            return manifest
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            reason = f'PACKAGE_LOAD_FAILED:{version}:{type(error).__name__}:{error}'
+            self.base.live_bar = False
+            self.base.reason = reason
+            if self.store.pending() is None:
+                self.store.rollback(reason)
+            raise PackageLoadError(reason) from error
 
     def _is_decision_package(self, version):
         if version == LEGACY:
             return False
-        try:
-            manifest = self._package_manifest(version)
-        except Exception:
-            return False
-        return manifest is not None and manifest.get('interface') == DECISION_INTERFACE
+        manifest = self._package_manifest(version)
+        return manifest['interface'] == DECISION_INTERFACE
 
     def _expect_s01(self, version, client_id, side, quantity):
         self.gate()
@@ -244,15 +255,23 @@ class ReleaseConsumer:
         if cached is not None:
             return cached
         path = self.releases / version
-        manifest = load_package(path) if manifest is None else manifest
+        manifest = self._package_manifest(version) if manifest is None else manifest
         if manifest['interface'] != DECISION_INTERFACE:
             raise ValueError('FACTORLAB_DECISION_V1 package required')
         interval_seconds = self._interval_seconds()
         if manifest.get('interval_seconds', 60) != interval_seconds:
             raise ValueError('strategy package interval does not match active feed')
-        loaded = LoadedStrategy.from_strategy_package(path, manifest, trusted=True)
-        loaded.spec.require(symbol='NVDAUSDT', interval_seconds=interval_seconds,
-                            data_types=['closed_bar', 'quote', 'order_event'])
+        try:
+            loaded = LoadedStrategy.from_strategy_package(path, manifest, trusted=True)
+            loaded.spec.require(symbol='NVDAUSDT', interval_seconds=interval_seconds,
+                                data_types=['closed_bar', 'quote', 'order_event'])
+        except (OSError, ValueError, TypeError, KeyError) as error:
+            reason = f'PACKAGE_LOAD_FAILED:{version}:{type(error).__name__}:{error}'
+            self.base.live_bar = False
+            self.base.reason = reason
+            if self.store.pending() is None:
+                self.store.rollback(reason)
+            raise PackageLoadError(reason) from error
         prefix = self._stable_prefix()
         deployment_id = self.store.deployment_id_for(version, prefix)
         data_types = (['closed_bar'] if loaded.spec.decision_kind == 'target'
@@ -277,10 +296,7 @@ class ReleaseConsumer:
         cached = self._runners.get(version)
         if cached is not None:
             return cached[2]
-        try:
-            return self._load_decision_runner(version)[2]
-        except Exception:
-            return None
+        return self._load_decision_runner(version)[2]
 
     def _quiesce_active_decision_runner(self):
         active = self.store.snapshot()['active']
@@ -337,6 +353,13 @@ class ReleaseConsumer:
         row = self.store.db.execute('SELECT * FROM strategy_orders WHERE client_id=?', (key,)).fetchone()
         if row is None:
             return False
+        if self._cancel_scope is not None:
+            version, deployment_id, keys, switch = self._cancel_scope
+            if (method != 'DELETE' or row['version'] != version or key not in keys
+                    or not key.startswith(deployment_id + '-')
+                    or self.store.snapshot()['active'] != version
+                    or switch is not None and not self.store.is_current(switch)):
+                raise SafetyBlocked('persistent cancellation ownership changed')
         effective_expected = expected
         if method == 'POST':
             state = self.store.snapshot()
@@ -375,7 +398,29 @@ class ReleaseConsumer:
             self.reason = desired if desired != 'RUNNING' else 'AUTHORIZATION_REQUIRED'
         return allowed
 
+    def _maintain_cancellations(self, version, runner):
+        status = self.bridge.session.status()
+        if not status['reconciled'] or status['unknown']:
+            return
+        keys = frozenset(runner.has_unresolved_work()['pending_cancellations'])
+        self._cancel_scope = (version, runner.execution.deployment_id, keys, self.store.pending())
+        self.maintenance = True
+        try:
+            runner.dispatch_cancellations(self.bridge.controller.clock())
+        finally:
+            self.maintenance = False
+            self._cancel_scope = None
+
     def before_poll(self):
+        try:
+            return self._before_poll()
+        except PackageLoadError as error:
+            self.base.live_bar = False
+            self.base.reason = str(error)
+            if self.store.pending() is None:
+                self.store.rollback(self.base.reason)
+
+    def _before_poll(self):
         state = self.store.snapshot()
         if self.store.pending() or state['active'] != LEGACY:
             if state['active'] == LEGACY:
@@ -386,6 +431,14 @@ class ReleaseConsumer:
                 self.base.ensure_campaign()
             if not self._refresh_readiness():
                 return
+            if self.store.pending() and self._is_decision_package(state['active']):
+                try:
+                    runner = self._load_decision_runner(state['active'])[2]
+                except (StrategyWorkerError, ValueError, RuntimeError, TypeError) as error:
+                    self._rollback_on_strategy_error(error)
+                    return
+                if isinstance(runner, OrderStrategyRuntime):
+                    self._maintain_cancellations(state['active'], runner)
             self.deployer.step()
             state = self.store.snapshot()
             if self.store.pending():
@@ -402,11 +455,7 @@ class ReleaseConsumer:
                         if runner._runtime()['status'] == 'PAUSED':
                             runner.controller._atomic(lambda: runner._runtime().update(status='STARTING'))
                         runner.sync_reconciled()
-                        self.maintenance = True
-                        try:
-                            runner.dispatch_cancellations(self.bridge.controller.clock())
-                        finally:
-                            self.maintenance = False
+                        self._maintain_cancellations(state['active'], runner)
                     if 'closed_bar' not in loaded.spec.data_types:
                         self.base.live_bar = True
                         self.base.reason = None

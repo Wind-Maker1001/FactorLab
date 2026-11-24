@@ -20,7 +20,8 @@ spec.loader.exec_module(validation)
 def planning_health(posts=2, notional='100'):
     return dict(global_budget=dict(state='RUNNING', remaining_posts=posts, remaining_notional=notional, opening_equity='100', max_loss='10'),
                 campaign=dict(remaining_posts=4), account_recovered=True, unknown_count=0,
-                open_orders=[], positions=[], equity='100')
+                open_orders=[], positions=[], nav_usdt='100',
+                equity=dict(walletBalance='100', unrealizedProfit='0', availableBalance='100'))
 
 
 RULES = dict(filters=[dict(filterType='PRICE_FILTER', tickSize='.01', minPrice='.01', maxPrice='1000'),
@@ -36,7 +37,10 @@ def test_budget_profiles(posts, mode):
 
 @pytest.mark.parametrize('change', [dict(global_budget=dict(state='RUNNING', remaining_posts=10, remaining_notional='7')),
     dict(positions=[dict(quantity='.01')]), dict(unknown_count=1), dict(account_recovered=False),
-    dict(equity='1'), dict(equity='90'), dict(campaign=dict(remaining_posts=1))])
+    dict(nav_usdt='1', equity=dict(walletBalance='1', unrealizedProfit='0', availableBalance='1')),
+    dict(nav_usdt='90', equity=dict(walletBalance='90', unrealizedProfit='0', availableBalance='90')),
+    dict(equity=dict(walletBalance='100', unrealizedProfit='0', availableBalance='1')),
+    dict(campaign=dict(remaining_posts=1))])
 def test_notional_risk_and_account_prevent_entry(change):
     health = planning_health(10)
     health.update(change)

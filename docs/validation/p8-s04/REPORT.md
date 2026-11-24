@@ -120,8 +120,8 @@
 - P1 旧代码复现：独立测试 `test_resume_after_skipped_bar` 在 Bar 4/5 返回 `False`，历史固定在 Bar 1，原因均为 `BAR_SEQUENCE_GAP`，末尾健康行为断言失败。
 - P2 旧代码复现：独立测试 `test_resting_validation_entry_can_exhaust_exit_budget` 通过，证明旧路径从 `99/100` 提交最后一笔 BUY；模拟完全成交后留下 `0.04` 持仓，回退停在 `WAIT_OLD_POSITIONS`。
 - P1 修复：行情全局游标仍独立持久化；每次生产 Feed 交付前按当前版本真实持久历史水位读取缺失闭合 Bar，复用原 REST 分页与连续性校验，每个历史 Bar 通过原 controller 原子事务持久化。分页未完成或读取失败时保持暂停，后续轮询及 SQLite 重启从真实历史水位继续。
-- target/orders 历史语义：只恢复有界历史窗口，不调用旧决策、不生成历史订单、不推进未执行的交易意图状态；下一新鲜事件仍携带恢复后的窗口和原策略状态。原有订单确认、资金、持仓、费用、FIFO 与撤单义务不被重建或清空。orders 已持久化撤单在行情回补之前推进，不依赖新鲜 Bar。
-- 正式生产 Feed 回归：`tests/integrations/test_s04_history_recovery.py`；正在执行暂停恢复、两种模式、分页重启、真实缺失/重复/乱序/API 失败、重新激活和故障回退覆盖。
+- target/orders 历史语义：恢复有界历史窗口，不生成历史订单、不推进未执行的交易意图状态；下一新鲜事件携带恢复后的窗口和原策略状态。默认不调用历史决策；第 8 节补充 Grid 显式历史观察以恢复 ATR/BREAKOUT。原有订单确认、资金、持仓、费用、FIFO 与撤单义务不被重建或清空。orders 已持久化撤单在行情回补之前推进，不依赖新鲜 Bar。
+- 正式生产 Feed 回归：`tests/integrations/test_s04_history_recovery.py`；暂停恢复、两种模式、分页重启、真实缺失/重复/乱序/API 失败、重新激活和故障回退覆盖均已完成，结果见下文。
 - P2 预算模式：剩余 0/1 POST 为 `ZERO_POST_SWITCH_ONLY`；剩余 2/3 或更多 POST 仅在完整规则、现有风险/权益、账户状态与 entry+exit 名义金额均可容纳时选择 `ROUNDTRIP_2_POST`。买卖闭环之后的重启、切换和回退统一零 POST，不再使用 `SINGLE_POST_RESTING_CANCEL`，也不执行第三笔潜在成交挂单。阶段重新读取真实预算；准入竞争后未成交且对账平坦时自动降级，有成交或 UNKNOWN 则保留恢复状态。
 - P2 原子准入：在原预算 SQLite `BEGIN IMMEDIATE` 事务中保留退出 POST/名义额度，所有其他开仓均受该预留约束；真实订单确认和累计消耗不重置。预留跨重启保留，仅终态、已对账、零成交 entry 可释放；有成交的 entry 只由匹配的 reduce-only exit 消耗预留。
 - P2 成交证据：离线桩分别模拟 `0.04` 完全成交及 `0.02` 部分成交后撤单，退出必须对应原版本 `-entry/-exit` ID、真实交易所订单 ID、BUY 与 reduce-only SELL、实际成交量及手续费，且最终库存为零才 `real_fill_verified=true`；两笔未成交订单不能通过。未成交退出与低于最小退出金额的残仓保持恢复状态，不报告已平仓或已回退。
@@ -129,5 +129,18 @@
 - Codex Review：原 PR 已有额度耗尽反馈，本轮不重复请求。独立复审请求随修复推送发布至原 PR，结论待复审。
 - P1 正式回归：13 项历史恢复用例均通过（其中 UNKNOWN 用例按新鲜边界修正后单独重跑通过）；覆盖 target/orders 暂停恢复、A→B→A、故障回退、SQLite 分页重启、缺失/重复/乱序/API 失败、部分成交及撤单、UNKNOWN 原订单恢复。历史回补阶段零新增 POST，DELETE 仅来自既有撤单义务；新鲜事件恢复正常决策。附加残仓切换阻断回归通过。
 - 集成回归：原 S04 13 项、Feed、Runtime、连续预算、通用策略及最新主分支多品种/共享账户集合 `126 passed`；另一个凭据子进程用例补齐显式源码 `PYTHONPATH` 后单独重跑通过，合计 127 项。最终 `compileall` 与工作区/暂存区 `git diff --check` 均通过。
-- 修复提交：本节所在修复提交（HEAD 可由 `git log -1` 精确定位）；可信 CI 与独立复审在推送后运行，尚未出具新 HEAD 结论。
-- TODO：补录可信 CI 及独立复审结果。新代码尚未进行官方 Demo 实机验证；本轮仅离线 HTTP 桩，无 Azure 操作或交易网络请求。原始历史证据文件保持不变。
+- 修复提交：`a58e73573369cff6b27f975b27ccbe9263efb84c`。该提交的第二轮独立复审新增四项发现，修复见第 8 节。
+- `a58e735` 可信 [PR validation](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45459900707) 与 [Demo 离线矩阵](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45459906002) 均为 **success**。第二轮复审发现仍需修复，不能以该 CI 代替后续 HEAD 的验证。新代码尚未进行官方 Demo 实机验证；本轮仅离线 HTTP 桩，无 Azure 操作或交易网络请求。原始历史证据文件保持不变。
+
+## 8. 第二轮独立复审修复（2026-11-25）
+
+- 复审基线：`a58e73573369cff6b27f975b27ccbe9263efb84c`；已无冲突合并 `origin/main` 的 `a74fec9`，合并提交 `9e0b0dc1188ecc18bf2d53f5a8bc9acdd9b720fd`。
+- P1 复现：旧版本 rollback 等待期间，持久化 reduce-only SELL 撤单义务未产生 DELETE。修复在原 `before_poll`/`dispatch_cancellations` 路径推进已持久义务，维护授权绑定旧版本、deployment ID、原 client ID 和当前切换身份；不运行旧策略决策、不提交新 POST、不无条件撤销 reduce-only 单。库存不因取消或切换被清空。
+- 撤单异常最终回归 **14 passed**：promotion/rollback、有/无持久义务、丢 DELETE 响应、HTTP 200 未确认、HTTP 400、部分成交、STOP/授权撤回、重启、并发切换、未对账与 UNKNOWN。每例总 POST 保持 2；无义务或阻断期间 DELETE 为 0；正常及交易所已取消但丢响应为 1；HTTP 200 活跃未确认及部分成交路径为 2，重试前必须有签名订单 GET。HTTP 400 保持单次 DELETE，拒绝重发并保留义务。退出部分成交后实际残仓为 0.02，其余取消场景为 0.04，均停在旧仓位阻断，不伪报完成。初轮错误重试预期及列表/元组断言已修正。最终 `compileall`、`git diff --check` 均通过。
+- P2 复现：将原始 `official-demo-acceptance.json` 的真实 health 剩余 POST 设为 2，旧规划器确定性抛出 `TypeError: conversion from dict to Decimal is not supported`。新规划使用 `walletBalance + unrealizedProfit` 与 `nav_usdt` 核对 NAV/亏损，使用 `availableBalance` 检查可用资金；缺失、非法、非有限或不完整资金状态降级零 POST。两 POST 退出预留和最后一 POST 禁止开仓保持不变。
+- P3 包分类：缺失/损坏 manifest、包目录身份不符、源码校验失败与文件读取失败均形成 `PACKAGE_LOAD_FAILED`，暂停并请求回退，不伪装为 legacy/evaluate 协议；包错误属于行情暂停异常，避免分类失败逃逸到未处理的进程异常。
+- P3 证据标签：后续工具阶段改为 `phase2_hold_hot_switch_and_restart_recovery` 和 `phase3_hot_switch_and_automatic_fault_rollback`；HOLD 重启不声称恢复活跃挂单，零订单回退不声称发生撤单，分别显式标记未验证并校验 `zero_post_verified`。`complete=true` 不替代 `real_fill_verified=true`。
+- 关联 Grid 缺陷：仅恢复 runtime Bar 窗口不能推进 GridAdapter 的 ATR/true_ranges 与 BREAKOUT 状态。新增默认关闭的历史观察能力；仅显式启用的 Grid 在历史输入推进内部状态、撤回未提交提案并保留真实订单及撤单。实时输入复用原 `reseed_withdrawn` 恢复播种，默认订单策略仍不执行历史决策。绑定序列化省略默认 False，保留显式 True；专用历史观察与原通用策略集合固定源码后 **28 passed**。
+- 包加载补充复现：活动版本重启时缺失 pinned dependency，原 readiness 路径泄漏 `StrategyWorkerError`；现已归入受控 `PACKAGE_LOAD_FAILED`。为纳入该修复，停止尚未完成的联合测试，统一固定源码重跑；中断运行不计为通过。
+- 最终固定源码联合回归 **207 passed in 951.37s**，覆盖真实 health、预算与退出预留重启、原 S04、版本历史恢复、S03、HTTP 200 撤单恢复、撤单 outbox、Grid 历史观察和通用策略；加上撤单矩阵 14 项及包故障 6 项，共 **227 项通过**。`compileall` 与 `git diff --check` 通过。
+- TODO：推送后补录修复 HEAD、可信 CI 与定向独立复审结果。原始历史 JSON/XML 不修改；历史实机真实成交判定保持 **PARTIAL_VERIFIED**，不操作 Azure、不发送交易网络请求、不调整全局预算。

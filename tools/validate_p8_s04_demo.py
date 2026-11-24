@@ -15,7 +15,7 @@ import sqlite3
 import subprocess
 import sys
 import time
-from decimal import Decimal as D, ROUND_CEILING
+from decimal import Decimal as D, InvalidOperation, ROUND_CEILING
 from urllib.request import urlopen
 
 
@@ -43,9 +43,27 @@ def acceptance_plan(health, symbol_info, book):
     budget, campaign = health.get('global_budget') or {}, health.get('campaign') or {}
     if (budget.get('state') != 'RUNNING' or budget.get('remaining_posts', 0) < 2
             or campaign.get('remaining_posts', 0) < 2 or not health.get('account_recovered')
-            or health.get('unknown_count') != 0 or health.get('open_orders') or health.get('positions')
-            or 'opening_equity' not in budget or 'max_loss' not in budget
-            or D(budget['opening_equity']) - D(health.get('equity') or '0') >= D(budget['max_loss'])):
+            or health.get('unknown_count') != 0
+            or health.get('open_orders') != [] or health.get('positions') != []):
+        return zero
+    funds = health.get('equity')
+    if not isinstance(funds, dict):
+        return zero
+    try:
+        values = (funds['walletBalance'], funds['unrealizedProfit'], funds['availableBalance'],
+                  health['nav_usdt'], budget['opening_equity'], budget['max_loss'],
+                  budget['remaining_notional'])
+        if any(isinstance(value, bool) for value in values):
+            return zero
+        wallet, unrealized, available, reported_nav, opening, max_loss, remaining_notional = map(D, values)
+    except (KeyError, TypeError, ValueError, InvalidOperation):
+        return zero
+    if not all(value.is_finite() for value in (
+            wallet, unrealized, available, reported_nav, opening, max_loss, remaining_notional)):
+        return zero
+    nav = wallet + unrealized
+    if (nav != reported_nav or nav <= 0 or available < 0
+            or opening <= 0 or max_loss <= 0 or opening - nav >= max_loss):
         return zero
     filters = {row['filterType']: row for row in symbol_info['filters']}
     tick = D(filters['PRICE_FILTER']['tickSize'])
@@ -63,8 +81,8 @@ def acceptance_plan(health, symbol_info, book):
     if (not D(filters['PRICE_FILTER']['minPrice']) <= cap <= D(filters['PRICE_FILTER']['maxPrice'])
             or notional < max(min_notional, D(notional_filter.get('minNotional', '0')))
             or notional > min(MAX_NOTIONAL, D(notional_filter.get('maxNotional', str(MAX_NOTIONAL))))
-            or D(budget.get('remaining_notional', '0')) < notional * 2
-            or D(health.get('equity') or '0') < notional):
+            or remaining_notional < notional * 2
+            or available < notional):
         return zero
     return dict(mode='ROUNDTRIP_2_POST', configuration=dict(quantity=str(quantity), tick=str(tick),
         max_entry_price=str(cap), max_exit_price=str(cap), exit_budget_notional=str(notional)))
@@ -360,9 +378,10 @@ def main():
     pid1 = service_pid()
     cur_health = health()
     results['phase2_budget'] = cur_health.get('global_budget')
+    phase2_posts_before = cur_health['global_budget']['consumed']['posts']
     a2_mode = 'hold'
     a2_man = publish_and_accept(
-        'a2-resting-buy', version='1.0.2',
+        'a2-hold', version='1.0.2',
         configuration=dict(
             symbol='NVDAUSDT', interval_seconds=60, quantity='.04', tick='.01',
             buy_offset='-2.00', sell_offset='-.30', mode=a2_mode,
@@ -375,7 +394,6 @@ def main():
         timeout=120,
     )
     posts_at_a2 = p2_active['health']['global_budget']['consumed']['posts']
-    resting_order = None
     pre_restart_posts = posts_at_a2
     pre_restart_pid = p2_active['pid']
 
@@ -395,13 +413,15 @@ def main():
     time.sleep(6)
     p2_settled = dict(state=cli('status'), health=health(), pid=service_pid())
     results['phases'].append(dict(
-        name='phase2_hot_switch_resting_order_and_restart_recovery',
+        name='phase2_hold_hot_switch_and_restart_recovery',
+        active_order_restart_verified=False,
+        zero_post_verified=(phase2_posts_before == posts_at_a2 == pre_restart_posts
+            == p2_settled['health']['global_budget']['consumed']['posts']),
         package_id=a2_man['package_id'],
         strategy_mode=a2_mode,
         switch_old_pid=pid1,
         switch_new_pid=p2_active['pid'],
         same_pid_switch=(pid1 == p2_active['pid']),
-        resting_order_before_restart=resting_order,
         pre_restart_pid=pre_restart_pid,
         post_restart_pid=p2_settled['pid'],
         pre_restart_posts=pre_restart_posts,
@@ -411,7 +431,7 @@ def main():
     ))
     save()
 
-    # --- Same-PID hot switch (cancels A2 resting order via DRAINING) + S01 fault auto-rollback ---
+    # HOLD hot switch and deliberate worker fault exercise rollback without orders.
     pid2 = service_pid()
     a3_man = publish_and_accept(
         'a3-fault', version='1.0.3',
@@ -433,7 +453,10 @@ def main():
     time.sleep(5)
     p3_after = dict(state=cli('status'), health=health(), pid=service_pid())
     results['phases'].append(dict(
-        name='phase3_hot_switch_cancel_and_automatic_fault_rollback',
+        name='phase3_hot_switch_and_automatic_fault_rollback',
+        cancellation_verified=False,
+        zero_post_verified=(p2_settled['health']['global_budget']['consumed']['posts']
+            == p3_after['health']['global_budget']['consumed']['posts']),
         fault_package_id=a3_man['package_id'],
         expected_rollback_target=a2_man['package_id'],
         old_pid=pid2,
@@ -478,6 +501,8 @@ def main():
         and results['after']['inodes_preserved']
         and not results['after']['health']['positions']
         and not results['after']['health']['open_orders']
+        and all(phase['zero_post_verified'] for phase in results['phases']
+                if 'zero_post_verified' in phase)
     )
     save()
     print(json.dumps(dict(

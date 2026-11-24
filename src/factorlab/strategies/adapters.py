@@ -45,7 +45,8 @@ class GridAdapter:
     def describe(self):
         p = self.parameters
         return StrategySpec('grid', '1', 'orders', [p['instrument_id']],
-            [p['interval_seconds']], ['closed_bar', 'quote', 'order_event'])
+            [p['interval_seconds']], ['closed_bar', 'quote', 'order_event'],
+            historical_observations=True)
 
     def _engine(self, event):
         p = self.parameters
@@ -82,14 +83,17 @@ class GridAdapter:
             value = dict(id=identity(event['event_id']), time=at.replace(tzinfo=None).isoformat(),
                 price=bar['close'] if bar else quote.price, volume=0)
             if bar:
-                value.update(completed_bar=True, high=bar['high'], low=bar['low'], close=bar['close'])
+                value.update(completed_bar=True, high=bar['high'], low=bar['low'], close=bar['close'],
+                    reseed_withdrawn=not event.get('historical', False))
         command = dict(kind=event['kind'], value=value, account=event['account'])
         self._apply(grid, command)
         commands.append(command)
         execution = event.get('execution', {})
         submitted = set(execution.get('submitted_order_ids', ()))
+        historical = event.get('historical', False)
         withdrawn = sorted(o.intent.client_order_id for o in grid.active
-            if o.status is OrderStatus.NEW and o.intent.client_order_id in grid.cancellations
+            if o.status is OrderStatus.NEW
+            and (historical or o.intent.client_order_id in grid.cancellations)
             and o.intent.client_order_id not in submitted)
         if withdrawn:
             command = dict(kind='withdraw', value=withdrawn, account=event['account'])
@@ -97,6 +101,6 @@ class GridAdapter:
             commands.append(command)
         pending = set(execution.get('pending_order_ids', ()))
         cancellations = grid.cancellations | pending.intersection(withdrawn)
-        return Decision(orders=tuple(o.intent for o in grid.active if o.status is OrderStatus.NEW
+        return Decision(orders=() if historical else tuple(o.intent for o in grid.active if o.status is OrderStatus.NEW
                                      and o.intent.client_order_id not in grid.cancellations),
             cancellations=tuple(sorted(cancellations)), state={'commands': dumps(commands)})

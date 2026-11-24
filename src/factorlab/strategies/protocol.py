@@ -25,6 +25,7 @@ class StrategySpec:
     data_types: list[str]
     history_limit: int = 1
     state_version: str = '1'
+    historical_observations: bool = False
 
     def __post_init__(self):
         if not all(isinstance(v, str) and v for v in (self.strategy_id, self.version, self.state_version)):
@@ -34,7 +35,10 @@ class StrategySpec:
         if (not self.symbols or not all(isinstance(s, str) and s for s in self.symbols)
                 or not self.intervals or any(type(i) is not int or i <= 0 for i in self.intervals)
                 or not self.data_types or any(t not in {'closed_bar', 'quote', 'order_event'} for t in self.data_types)
-                or type(self.history_limit) is not int or not 1 <= self.history_limit <= 1000):
+                or type(self.history_limit) is not int or not 1 <= self.history_limit <= 1000
+                or type(self.historical_observations) is not bool
+                or self.historical_observations and (self.decision_kind != 'orders'
+                    or 'closed_bar' not in self.data_types)):
             raise ValueError('invalid strategy data requirements')
 
     def require(self, *, symbol, interval_seconds, data_types):

@@ -20,6 +20,13 @@ def runtime_identity():
         for p in sorted((SOURCE_ROOT / 'factorlab').rglob('*.py'))).encode()).hexdigest()
 
 
+def _binding_spec(spec):
+    payload = asdict(spec)
+    if not spec.historical_observations:
+        del payload['historical_observations']
+    return payload
+
+
 class StrategyWorkerError(ValueError):
     pass
 
@@ -62,7 +69,7 @@ class LoadedStrategy:
         self.spec = StrategySpec(**self._call('describe'))
         if self.spec.version != manifest['version']:
             raise ValueError('strategy version differs from manifest')
-        self.binding = dict(protocol='FACTORLAB_DECISION_V1', spec=asdict(self.spec),
+        self.binding = dict(protocol='FACTORLAB_DECISION_V1', spec=_binding_spec(self.spec),
             configuration=manifest['parameters'], code_sha256=self.code_sha256,
             entrypoint=manifest['file'] + ':' + manifest['class'],
             runtime_sha256=runtime_identity())
@@ -119,7 +126,7 @@ class LoadedStrategy:
             protocol=DECISION_INTERFACE,
             package_id=installed['package_id'],
             code_commit=installed['code_commit'],
-            spec=asdict(instance.spec),
+            spec=_binding_spec(instance.spec),
             configuration=installed['configuration'],
             code_sha256=instance.code_sha256,
             entrypoint=installed['entrypoint'],

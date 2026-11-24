@@ -307,11 +307,7 @@ class OrderStrategyRuntime:
                                                     pending_order_ids=pending_ids), **value))
 
     def historical_bar(self, bar):
-        """Restore the input window without invoking decisions or changing order state.
-
-        Orders strategies receive this window on their next live event. Historical
-        proposals cannot safely advance strategy state: they were never submitted.
-        """
+        """Restore history; opted-in adapters observe without proposing entries."""
         return self.closed_bar(bar, historical=True)
 
     def closed_bar(self, bar, *, historical=False):
@@ -339,10 +335,15 @@ class OrderStrategyRuntime:
             if runtime['status'] == 'STOPPED':
                 return False
             runtime.pop('reason', None)
-            if not historical:
+            if not historical or self.journal.spec.historical_observations:
+                observation = dict(bar=asdict(bar), bars=bars)
+                if historical:
+                    observation['historical'] = True
                 decision = self._event('closed_bar', 'bar:' + bar.closed_at.isoformat(),
-                    bar=asdict(bar), bars=bars)
-                self._pending(decision, bar.closed_at)
+                    **observation)
+                if historical and decision.orders:
+                    raise ValueError('historical observation cannot propose orders')
+                self._pending(decision, bar.closed_at, historical=historical)
             return True
         return self.controller._atomic(operation)
 
@@ -471,7 +472,7 @@ class OrderStrategyRuntime:
             self.sync_reconciled()
         return result
 
-    def _pending(self, decision, after, on_quote=False):
+    def _pending(self, decision, after, on_quote=False, *, historical=False):
         state = self.gateway.state
         runtime = self._runtime()
         pending = runtime['pending'] or dict(orders=[], cancellations=[])
@@ -494,7 +495,7 @@ class OrderStrategyRuntime:
                 self.execution.retire(intent, 'WITHDRAWN', 'STRATEGY_PAUSED')
             elif not paused:
                 orders[key] = dict(intent=intent, eligible_at=eligible, expires_at=expiry, status='PENDING')
-        if not paused:
+        if historical or not paused:
             for key in decision.cancellations:
                 self.execution._owned(key)
                 if key not in state.orders and not self.execution.attempted(key):
