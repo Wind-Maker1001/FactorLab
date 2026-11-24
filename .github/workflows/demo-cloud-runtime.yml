@@ -8,6 +8,8 @@ on:
       - 'tests/integrations/test_demo_cloud*'
       - 'tests/integrations/test_demo_execute_systemd.py'
       - 'tests/integrations/test_strategy_deployment_s03.py'
+      - 'tests/integrations/test_unified_cloud_strategy_s04.py'
+      - 'src/factorlab/strategies/**'
       - 'deploy/systemd/**'
       - 'tools/ci/demo_cloud_systemd.py'
       - 'tools/ci/demo_execute_systemd.py'
@@ -48,6 +50,7 @@ jobs:
           tests/integrations/test_demo_grid_supervisor.py
           tests/integrations/test_demo_observability.py
           tests/integrations/test_strategy_deployment_s03.py
+          tests/integrations/test_unified_cloud_strategy_s04.py
           --junitxml=cloud-offline.xml
       - name: Install offline systemd acceptance unit
         if: runner.os == 'Linux'

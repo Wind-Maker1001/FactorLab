@@ -252,201 +252,66 @@ class ControllerExecution:
             raise ValueError('order identity outside strategy deployment')
 
 
-class OrderStrategyRuntime:
-    """Event-driven orders; confirmations, not proposals, change inventory."""
-    def __init__(self, journal, *, session=None, expect=None, preview=False,
-                 max_notional=None, max_quantity=None, client_id_prefix=None):
-        if journal.spec.decision_kind != 'orders':
-            raise ValueError('order strategy required')
-        self.journal, self.controller = journal, journal.controller
-        self.gateway = self.controller.broker
-        self.strategy = journal.strategy
-        self.session = session
-        self.execution = ControllerExecution(self.controller, deployment_id=journal.deployment_id,
-            session=session, expect=expect, preview=preview, max_notional=max_notional, max_quantity=max_quantity)
-        self.symbol = journal.symbol
-        def initialize():
-            configuration = dict(strategy=journal.strategy.binding,
-                client_id_prefix=client_id_prefix or journal.deployment_id + '-',
-                max_notional=max_notional, max_quantity=max_quantity, preview=preview)
-            saved = self.gateway.state.runtime.get('configuration')
-            if saved is not None and saved != configuration:
-                raise PersistenceConflict('strategy execution configuration changed')
-            self.gateway.state.runtime['configuration'] = configuration
-            self.gateway.state.runtime.setdefault('status', 'STARTING')
-            self.gateway.state.runtime.setdefault('pending', None)
-            self.gateway.state.runtime.setdefault('bars', [])
-        self.controller._atomic(initialize)
+class OrderOutbox:
+    """Maintain durable orders without loading or invoking strategy code."""
+    def __init__(self, controller, *, deployment_id, runtime_namespace, session=None):
+        self.controller = controller
+        self.gateway = controller.broker
+        self.runtime_namespace = runtime_namespace
+        self.execution = ControllerExecution(controller, deployment_id=deployment_id, session=session)
 
-    def _account(self):
-        # The existing projection keeps base quantity separate from collateral.
-        if self.controller.store.db.in_transaction:
-            return asdict(_project_paper_account(self.gateway, self.symbol,
-                _historical_turnover(self.controller.store)))
-        return asdict(project_paper_account(self.controller, self.symbol))
+    def _runtime(self):
+        if self.runtime_namespace is None:
+            return self.gateway.state.runtime
+        slots = self.gateway.state.runtime.setdefault('strategy_deployments', {})
+        return slots.setdefault(self.runtime_namespace, {})
 
-    def _event(self, kind, event_id, **value):
-        state = self.gateway.state
-        pending = state.runtime['pending']
-        pending_ids = [offer['intent'].client_order_id for offer in pending['orders']] if pending else []
-        submitted = {key for key in state.orders if key.startswith(self.execution.deployment_id + '-')}
-        submitted.update(key for key in pending_ids if self.execution.attempted(key))
-        return self.journal.decide(dict(kind=kind, event_id=event_id, symbol=self.symbol,
-            now=self.controller.clock(), deployment_id=self.journal.deployment_id,
-            account=self._account(), execution=dict(submitted_order_ids=sorted(submitted),
-                                                    pending_order_ids=pending_ids), **value))
-
-    def closed_bar(self, bar):
-        if (not isinstance(bar, ClosedBar) or bar.symbol != self.symbol
-                or bar.interval_seconds != self.journal.interval_seconds
-                or bar.closed_at > self.controller.clock()):
-            raise ValueError('confirmed deployment bar required')
-        if not bar.complete:
-            return False
-        if 'closed_bar' not in self.journal.spec.data_types:
-            return False
-        def operation():
-            runtime = self.gateway.state.runtime
-            bars = runtime['bars']
-            if bars and bar.closed_at <= bars[-1]['closed_at']:
-                if bar.closed_at == bars[-1]['closed_at'] and asdict(bar) != bars[-1]:
-                    raise PersistenceConflict('closed bar identity conflict')
-                return False
-            if bars and bar.opened_at != bars[-1]['closed_at']:
-                runtime.update(status='PAUSED', reason='BAR_SEQUENCE_GAP')
-                self._prune_pending(self.controller.clock(), withdraw=True)
-                return False
-            bars.append(asdict(bar))
-            del bars[:-self.journal.spec.history_limit]
-            if runtime['status'] == 'STOPPED':
-                return False
-            if 'closed_bar' in self.journal.spec.data_types:
-                decision = self._event('closed_bar', 'bar:' + bar.closed_at.isoformat(),
-                    bar=asdict(bar), bars=bars)
-                self._pending(decision, bar.closed_at)
-            return True
-        return self.controller._atomic(operation)
-
-    def quote(self, quote):
-        if quote.instrument_id != self.symbol:
-            raise ValueError('deployment quote required')
-        state = self.gateway.state
-        if state.runtime['status'] != 'RUNNING' or not state.reconciled or state.kill_switch:
-            return None
-        if not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5):
-            raise ValueError('fresh quote required')
-        self.controller.quote(quote)
-        if 'quote' in self.journal.spec.data_types:
-            def decide_quote():
-                decision = self._event('quote', 'quote:' + quote.observed_at.isoformat(), quote=quote)
-                self._pending(decision, quote.observed_at, True)
-            # Decision state and its dispatchable outbox commit together.
-            self.controller._atomic(decide_quote)
-        return self._dispatch_pending(quote.observed_at)
-
-    def _dispatch_pending(self, observed_at):
-        if self.gateway.state.runtime['pending'] is None:
+    def dispatch_cancellations(self, observed_at):
+        """Advance durable cancellation obligations without submitting new entries."""
+        pending = self._runtime()['pending']
+        if pending is None or not pending['cancellations']:
             return None
         self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
-        pending = self.gateway.state.runtime['pending']
-        if pending is None:
+        pending = self._runtime()['pending']
+        if pending is None or not pending['cancellations']:
             return None
-        state = self.gateway.state
-        for offer in pending['orders']:
-            key = offer['intent'].client_order_id
-            if key not in state.orders and self.execution.attempted(key):
-                raise PersistenceConflict('unresolved strategy dispatch attempt; reconcile before continuing')
-        orders = {offer['intent'].client_order_id: offer for offer in pending['orders']
-                  if observed_at >= offer['eligible_at']}
         cancellations = {offer['key']: offer for offer in pending['cancellations']
                          if observed_at >= offer['eligible_at']}
-        decision = Decision(orders=tuple(offer['intent'] for offer in orders.values()),
-                            cancellations=tuple(cancellations))
-        result, deferred = self.execution.dispatch(decision,
-            deadlines={key: offer['expires_at'] for key, offer in orders.items()},
+        if not cancellations:
+            return None
+        result, _ = self.execution.dispatch(
+            Decision(cancellations=tuple(cancellations)),
             cancellation_attempts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
-                                   for key, offer in cancellations.items()})
-
-        def checkpoint():
-            pending = self.gateway.state.runtime['pending']
-            remaining = []
-            for offer in pending['orders']:
-                key = offer['intent'].client_order_id
-                if key in deferred:
-                    remaining.append(dict(offer, status='DEFERRED'))
-                elif key not in orders:
-                    remaining.append(offer)
-            self._save_pending(remaining, pending['cancellations'])
-            self._prune_pending(self.controller.clock())
-        self.controller._atomic(checkpoint)
+                                   for key, offer in cancellations.items()},
+        )
+        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
         return result
 
-    def recover(self):
-        if self.session:
-            self.session.recover()
-            result = self.controller.account()
-        elif not hasattr(self.gateway, 'recover'):
-            result = self.controller.reconcile()
-        else:
-            result = self.gateway.recover(self.controller)
-        if result.reconciled:
-            self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
-            if 'order_event' in self.journal.spec.data_types:
-                # Deliver each immutable confirmation once, with the current
-                # reconciled account. Replays use the original saved receipt.
-                for _, event in list(self.controller.store.order_events()):
-                    if event.client_order_id.startswith(self.execution.deployment_id + '-'):
-                        key = self.journal.prefix + 'event:' + identity(event.event_id)
-                        if self.controller.store.event_payload(key) is None:
-                            def confirm():
-                                decision = self._event('order_event', event.event_id, order_event=event)
-                                self._pending(decision, self.controller.clock())
-                            self.controller._atomic(confirm)
-            self.controller._atomic(lambda: self.gateway.state.runtime.update(status='RUNNING')
-                if self.gateway.state.runtime['status'] == 'STARTING' else None)
-        return result
-
-    def _pending(self, decision, after, on_quote=False):
+    def has_unresolved_work(self):
+        """Report persisted unconfirmed dispatch attempts and pending cancellation obligations."""
         state = self.gateway.state
-        pending = state.runtime['pending'] or dict(orders=[], cancellations=[])
-        orders = {offer['intent'].client_order_id: offer for offer in pending['orders']}
-        cancellations = {offer['key']: offer for offer in pending['cancellations']}
-        expiry = after + timedelta(seconds=self.journal.interval_seconds)
-        eligible = after if on_quote else after + timedelta(microseconds=1)
-        paused = state.runtime['status'] in {'PAUSED', 'STOPPED'}
-        for intent in decision.orders:
-            key = intent.client_order_id
-            self.execution._owned(key)
-            if self.execution.retired(key, intent):
-                continue
-            existing = orders.get(key)
-            if existing is not None:
-                if existing['intent'] != intent:
-                    raise PersistenceConflict('strategy reused a pending order identity')
-                existing['eligible_at'] = min(existing['eligible_at'], eligible)
-            elif paused and key not in state.orders and not self.execution.attempted(key):
-                self.execution.retire(intent, 'WITHDRAWN', 'STRATEGY_PAUSED')
-            elif not paused:
-                orders[key] = dict(intent=intent, eligible_at=eligible, expires_at=expiry, status='PENDING')
-        if not paused:
-            for key in decision.cancellations:
-                self.execution._owned(key)
-                if key not in state.orders and not self.execution.attempted(key):
-                    if key in orders:
-                        self.execution.retire(orders.pop(key)['intent'], 'WITHDRAWN')
-                        continue
-                    if self.execution.retired(key):
-                        continue
-                cancellations.setdefault(key, dict(key=key, eligible_at=eligible, expires_at=expiry))
-        self._save_pending(list(orders.values()), list(cancellations.values()))
+        pending = self._runtime().get('pending')
+        if pending is None:
+            return dict(unresolved_attempts=[], pending_cancellations=[])
+        unresolved_attempts = [
+            offer['intent'].client_order_id for offer in pending['orders']
+            if offer['intent'].client_order_id not in state.orders
+            and self.execution.attempted(offer['intent'].client_order_id)
+        ]
+        pending_cancellations = [
+            offer['key'] for offer in pending['cancellations']
+            if not self.execution.cancellation_confirmed(offer['key'])
+        ]
+        return dict(unresolved_attempts=unresolved_attempts,
+                    pending_cancellations=pending_cancellations)
 
     def _save_pending(self, orders, cancellations):
         pending = dict(orders=orders, cancellations=cancellations) if orders or cancellations else None
-        self.gateway.state.runtime['pending'] = pending
+        self._runtime()['pending'] = pending
 
     def _prune_pending(self, at, *, withdraw=False):
         state = self.gateway.state
-        pending = state.runtime['pending']
+        pending = self._runtime()['pending']
         if pending is None:
             return
         remaining = []
@@ -482,15 +347,234 @@ class OrderStrategyRuntime:
     def _stop_pending(self, status):
         def operation():
             self._prune_pending(self.controller.clock(), withdraw=True)
-            self.gateway.state.runtime['status'] = status
+            self._runtime()['status'] = status
         self.controller._atomic(operation)
 
     def pause(self):
         self._stop_pending('PAUSED')
 
+
+
+class OrderStrategyRuntime(OrderOutbox):
+    """Event-driven orders; confirmations, not proposals, change inventory."""
+    def __init__(self, journal, *, session=None, expect=None, preview=False,
+                 max_notional=None, max_quantity=None, client_id_prefix=None,
+                 runtime_namespace=None):
+        if journal.spec.decision_kind != 'orders':
+            raise ValueError('order strategy required')
+        self.journal, self.controller = journal, journal.controller
+        self.gateway = self.controller.broker
+        self.strategy = journal.strategy
+        self.session = session
+        self.runtime_namespace = runtime_namespace
+        self.execution = ControllerExecution(self.controller, deployment_id=journal.deployment_id,
+            session=session, expect=expect, preview=preview, max_notional=max_notional, max_quantity=max_quantity)
+        self.symbol = journal.symbol
+        def initialize():
+            runtime = self._runtime()
+            configuration = dict(strategy=journal.strategy.binding,
+                client_id_prefix=client_id_prefix or journal.deployment_id + '-',
+                max_notional=max_notional, max_quantity=max_quantity, preview=preview)
+            saved = runtime.get('configuration')
+            if saved is not None and saved != configuration:
+                raise PersistenceConflict('strategy execution configuration changed')
+            runtime['configuration'] = configuration
+            runtime.setdefault('status', 'STARTING')
+            runtime.setdefault('pending', None)
+            runtime.setdefault('bars', [])
+        self.controller._atomic(initialize)
+
+
+    def _account(self):
+        # The existing projection keeps base quantity separate from collateral.
+        allow_shared = self.controller.store.event_payload('demo:static-shared-account:v1') is not None
+        if self.controller.store.db.in_transaction:
+            return asdict(_project_paper_account(self.gateway, self.symbol,
+                _historical_turnover(self.controller.store), allow_shared=allow_shared))
+        return asdict(project_paper_account(self.controller, self.symbol, allow_shared=allow_shared))
+
+    def _event(self, kind, event_id, **value):
+        state = self.gateway.state
+        pending = self._runtime()['pending']
+        pending_ids = [offer['intent'].client_order_id for offer in pending['orders']] if pending else []
+        submitted = {key for key in state.orders if key.startswith(self.execution.deployment_id + '-')}
+        submitted.update(key for key in pending_ids if self.execution.attempted(key))
+        return self.journal.decide(dict(kind=kind, event_id=event_id, symbol=self.symbol,
+            now=self.controller.clock(), deployment_id=self.journal.deployment_id,
+            account=self._account(), execution=dict(submitted_order_ids=sorted(submitted),
+                                                    pending_order_ids=pending_ids), **value))
+
+    def historical_bar(self, bar):
+        """Restore history; opted-in adapters observe without proposing entries."""
+        return self.closed_bar(bar, historical=True)
+
+    def closed_bar(self, bar, *, historical=False):
+        if (not isinstance(bar, ClosedBar) or bar.symbol != self.symbol
+                or bar.interval_seconds != self.journal.interval_seconds
+                or bar.closed_at > self.controller.clock()):
+            raise ValueError('confirmed deployment bar required')
+        if not bar.complete:
+            return False
+        if 'closed_bar' not in self.journal.spec.data_types:
+            return False
+        def operation():
+            runtime = self._runtime()
+            bars = runtime['bars']
+            if bars and bar.closed_at <= bars[-1]['closed_at']:
+                if bar.closed_at == bars[-1]['closed_at'] and asdict(bar) != bars[-1]:
+                    raise PersistenceConflict('closed bar identity conflict')
+                return False
+            if bars and bar.opened_at != bars[-1]['closed_at']:
+                runtime.update(status='PAUSED', reason='BAR_SEQUENCE_GAP')
+                self._prune_pending(self.controller.clock(), withdraw=True)
+                return False
+            bars.append(asdict(bar))
+            del bars[:-self.journal.spec.history_limit]
+            if runtime['status'] == 'STOPPED':
+                return False
+            runtime.pop('reason', None)
+            if not historical or self.journal.spec.historical_observations:
+                observation = dict(bar=asdict(bar), bars=bars)
+                if historical:
+                    observation['historical'] = True
+                decision = self._event('closed_bar', 'bar:' + bar.closed_at.isoformat(),
+                    **observation)
+                if historical and decision.orders:
+                    raise ValueError('historical observation cannot propose orders')
+                self._pending(decision, bar.closed_at, historical=historical)
+            return True
+        return self.controller._atomic(operation)
+
+    def quote(self, quote):
+        if quote.instrument_id != self.symbol:
+            raise ValueError('deployment quote required')
+        state = self.gateway.state
+        if self._runtime()['status'] != 'RUNNING' or not state.reconciled or state.kill_switch:
+            return None
+        if not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5):
+            raise ValueError('fresh quote required')
+        self.controller.quote(quote)
+        if 'quote' in self.journal.spec.data_types:
+            def decide_quote():
+                decision = self._event('quote', 'quote:' + quote.observed_at.isoformat(), quote=quote)
+                self._pending(decision, quote.observed_at, True)
+            # Decision state and its dispatchable outbox commit together.
+            self.controller._atomic(decide_quote)
+        return self._dispatch_pending(quote.observed_at)
+
+
+
+    def _dispatch_pending(self, observed_at):
+        if self._runtime()['pending'] is None:
+            return None
+        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
+        pending = self._runtime()['pending']
+        if pending is None:
+            return None
+        state = self.gateway.state
+        for offer in pending['orders']:
+            key = offer['intent'].client_order_id
+            if key not in state.orders and self.execution.attempted(key):
+                raise PersistenceConflict('unresolved strategy dispatch attempt; reconcile before continuing')
+        orders = {offer['intent'].client_order_id: offer for offer in pending['orders']
+                  if observed_at >= offer['eligible_at']}
+        cancellations = {offer['key']: offer for offer in pending['cancellations']
+                         if observed_at >= offer['eligible_at']}
+        decision = Decision(orders=tuple(offer['intent'] for offer in orders.values()),
+                            cancellations=tuple(cancellations))
+        result, deferred = self.execution.dispatch(decision,
+            deadlines={key: offer['expires_at'] for key, offer in orders.items()},
+            cancellation_attempts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
+                                   for key, offer in cancellations.items()})
+
+        def checkpoint():
+            pending = self._runtime()['pending']
+            remaining = []
+            for offer in pending['orders']:
+                key = offer['intent'].client_order_id
+                if key in deferred:
+                    remaining.append(dict(offer, status='DEFERRED'))
+                elif key not in orders:
+                    remaining.append(offer)
+            self._save_pending(remaining, pending['cancellations'])
+            self._prune_pending(self.controller.clock())
+        self.controller._atomic(checkpoint)
+        return result
+
+    def sync_reconciled(self):
+        """Sync confirmed order events and cancellation outcomes over an already reconciled account."""
+        result = self.controller.account()
+        if result.reconciled:
+            self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
+            if 'order_event' in self.journal.spec.data_types:
+                # Deliver each immutable confirmation once, with the current
+                # reconciled account. Replays use the original saved receipt.
+                for _, event in list(self.controller.store.order_events()):
+                    if event.client_order_id.startswith(self.execution.deployment_id + '-'):
+                        key = self.journal.prefix + 'event:' + identity(event.event_id)
+                        if self.controller.store.event_payload(key) is None:
+                            def confirm():
+                                decision = self._event('order_event', event.event_id, order_event=event)
+                                self._pending(decision, self.controller.clock())
+                            self.controller._atomic(confirm)
+            self.controller._atomic(lambda: self._runtime().update(status='RUNNING')
+                if self._runtime()['status'] == 'STARTING' else None)
+        return result
+
+    def recover(self):
+        if self.session:
+            self.session.recover()
+            result = self.controller.account()
+        elif not hasattr(self.gateway, 'recover'):
+            result = self.controller.reconcile()
+        else:
+            result = self.gateway.recover(self.controller)
+        if result.reconciled:
+            self.sync_reconciled()
+        return result
+
+    def _pending(self, decision, after, on_quote=False, *, historical=False):
+        state = self.gateway.state
+        runtime = self._runtime()
+        pending = runtime['pending'] or dict(orders=[], cancellations=[])
+        orders = {offer['intent'].client_order_id: offer for offer in pending['orders']}
+        cancellations = {offer['key']: offer for offer in pending['cancellations']}
+        expiry = after + timedelta(seconds=self.journal.interval_seconds)
+        eligible = after if on_quote else after + timedelta(microseconds=1)
+        paused = runtime['status'] in {'PAUSED', 'STOPPED'}
+        for intent in decision.orders:
+            key = intent.client_order_id
+            self.execution._owned(key)
+            if self.execution.retired(key, intent):
+                continue
+            existing = orders.get(key)
+            if existing is not None:
+                if existing['intent'] != intent:
+                    raise PersistenceConflict('strategy reused a pending order identity')
+                existing['eligible_at'] = min(existing['eligible_at'], eligible)
+            elif paused and key not in state.orders and not self.execution.attempted(key):
+                self.execution.retire(intent, 'WITHDRAWN', 'STRATEGY_PAUSED')
+            elif not paused:
+                orders[key] = dict(intent=intent, eligible_at=eligible, expires_at=expiry, status='PENDING')
+        if historical or not paused:
+            for key in decision.cancellations:
+                self.execution._owned(key)
+                if key not in state.orders and not self.execution.attempted(key):
+                    if key in orders:
+                        self.execution.retire(orders.pop(key)['intent'], 'WITHDRAWN')
+                        continue
+                    if self.execution.retired(key):
+                        continue
+                cancellations.setdefault(key, dict(key=key, eligible_at=eligible, expires_at=expiry))
+        self._save_pending(list(orders.values()), list(cancellations.values()))
+
+
+
+
+
     def resume(self):
         def operation():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime['status'] == 'STOPPED':
                 raise ValueError('stopped strategy cannot resume')
             runtime['status'] = 'STARTING'
@@ -502,7 +586,7 @@ class OrderStrategyRuntime:
 
     def disconnect(self):
         def operation():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime['status'] == 'RUNNING':
                 runtime['status'] = 'STARTING'
         self.controller._atomic(operation)

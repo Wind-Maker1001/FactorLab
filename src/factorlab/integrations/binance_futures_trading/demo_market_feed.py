@@ -145,9 +145,13 @@ class DemoMarketFeed:
                 return self._poll(before_delivery)
         except FeedPaused as error:
             self.pause(str(error))
+            if hasattr(self.consumer, 'history_paused'):
+                self.consumer.history_paused(self.reason)
             raise
         except Exception:
             self.pause('POLL_OR_CONSUMER_FAILED')
+            if hasattr(self.consumer, 'history_paused'):
+                self.consumer.history_paused(self.reason)
             raise
 
     def _bars(self, start, page_boundary, server):
@@ -211,6 +215,32 @@ class DemoMarketFeed:
         self.pause('CATCHING_UP')
         return dict(bars=delivered, quotes=0)
 
+    def _recover_consumer(self, boundary, server):
+        watermark = getattr(self.consumer, 'history_watermark', lambda: None)()
+        if watermark is None:
+            return True
+        start = int(watermark.timestamp() * 1000)
+        width = self.seconds * 1000
+        end = boundary - width
+        if start >= end:
+            return True
+        self.consumer.history_paused('CATCHING_UP')
+        try:
+            for _ in range(CATCH_UP_PAGES):
+                page_end = min(end, start + self.max_backfill * width)
+                bars, _, _ = self._bars(start, page_end, server)
+                for bar in bars:
+                    if not self._closed_bar(bar, historical=True):
+                        raise FeedPaused('HISTORY_NOT_CONSUMED')
+                start = page_end
+                if start == end:
+                    return True
+        except Exception as error:
+            self.consumer.history_paused(str(error) if isinstance(error, FeedPaused) else 'HISTORY_READ_FAILED')
+            raise
+        self.pause('CATCHING_UP')
+        return False
+
     def _poll(self, before_delivery):
         anchor = self.exchange_time(min_valid_seconds=self.max_quote_age)
         server = int(anchor.lower_ms)
@@ -230,6 +260,8 @@ class DemoMarketFeed:
         if self.catch_up and boundary - start > width:
             if before_delivery is not None and not before_delivery():
                 return None
+            if not self._recover_consumer(boundary, server):
+                return dict(bars=0, quotes=0)
             return self._backfill(start, boundary, server, width)
         if boundary - start > self.max_backfill * width:
             raise FeedPaused('BACKFILL_LIMIT')
@@ -241,6 +273,8 @@ class DemoMarketFeed:
                 return None
             # The closed range stays fixed. Take a new anchor for the current quote.
             anchor = self.exchange_time(allow_refresh=False)
+        if not self._recover_consumer(boundary, server):
+            return dict(bars=0, quotes=0)
         # Request the book after the closed range so history cannot age the book.
         if self.collection is None:
             raw = self.client.request('GET', '/fapi/v1/ticker/bookTicker', dict(symbol=self.symbol), signed=False)
@@ -285,7 +319,9 @@ class DemoMarketFeed:
             if hasattr(self.consumer, 'observe_bar_receipt'):
                 self.consumer.observe_bar_receipt(bar,
                     raw_by_open[int(bar.opened_at.timestamp() * 1000)], bars_received_at, self.receipt_clock())
-            self._closed_bar(bar)
+            historical = (hasattr(self.consumer, 'history_watermark')
+                          and bar.closed_at.timestamp() * 1000 < boundary)
+            self._closed_bar(bar, historical=historical)
             self._ack('bar', int(bar.closed_at.timestamp()) * 1000)
         delivered = 0
         if last_quote is None or raw['time'] > last_quote:

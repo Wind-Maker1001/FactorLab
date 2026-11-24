@@ -22,9 +22,10 @@ class DemoStrategyRuntime:
     only a subsequent quote can consume a causal pending signal.
     """
     def __init__(self, controller, strategy, *, client_id_prefix='sg', expect=None,
-                 max_notional=None, max_quantity=None, preview=False):
+                 max_notional=None, max_quantity=None, preview=False, runtime_namespace=None):
         self.session = controller if isinstance(controller, DemoSession) else None
         self.expect = expect
+        self.runtime_namespace = runtime_namespace
         if self.session is not None:
             controller = self.session.controller
         if not isinstance(controller.broker, DemoExecutionGateway):
@@ -48,13 +49,41 @@ class DemoStrategyRuntime:
         self.strategy_id = identity(strategy.describe())
         self.gateway.bind_controller(controller)
         def initialize():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime and runtime['configuration'] != self.configuration:
                 raise PersistenceConflict('Demo strategy deployment changed')
             if not runtime:
                 runtime.update(configuration=self.configuration, bars=[], pending=None, status='PAUSED')
                 runtime['enabled'] = True
         controller._atomic(initialize)
+
+    def _runtime(self):
+        if self.runtime_namespace is None:
+            return self.gateway.state.runtime
+        slots = self.gateway.state.runtime.setdefault('strategy_deployments', {})
+        return slots.setdefault(self.runtime_namespace, {})
+
+    def clear_pending(self, freshness_boundary=None):
+        """Drop any unsubmitted target signal and optionally advance the freshness watermark."""
+        def operation():
+            runtime = self._runtime()
+            runtime['pending'] = None
+            if freshness_boundary is not None:
+                previous = runtime.get('freshness_boundary')
+                if previous is None or freshness_boundary > previous:
+                    runtime['freshness_boundary'] = freshness_boundary
+        self.controller._atomic(operation)
+
+    def sync_reconciled(self):
+        """Promote status to RUNNING when the shared account is already reconciled."""
+        result = self.controller.account()
+        if result.reconciled:
+            def recovered():
+                runtime = self._runtime()
+                if runtime.get('enabled', True) and runtime['status'] != 'STOPPED':
+                    runtime['status'] = 'RUNNING'
+            self.controller._atomic(recovered)
+        return result
 
     def activate(self, *, client_id_prefix, max_notional=..., max_quantity=..., preview=...):
         """Start a fresh campaign on a stopped checkpoint, retaining its journal."""
@@ -76,7 +105,7 @@ class DemoStrategyRuntime:
         if preview:
             configuration['preview'] = True
         def activated():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime['status'] != 'STOPPED':
                 raise SafetyBlocked('campaign activation requires a stopped strategy')
             self.controller.store.record_metadata('strategy-activation:' + identity((
@@ -101,7 +130,7 @@ class DemoStrategyRuntime:
             if self.session is not None:
                 self.session.last_reconciled_at = self.session._now()
             def recovered():
-                runtime = self.gateway.state.runtime
+                runtime = self._runtime()
                 if runtime.get('enabled', True) and runtime['status'] != 'STOPPED':
                     runtime['status'] = 'RUNNING'
             self.controller._atomic(recovered)
@@ -109,41 +138,45 @@ class DemoStrategyRuntime:
 
     def pause(self):
         def paused():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime['status'] != 'STOPPED':
                 runtime.update(status='PAUSED', enabled=False)
         self.controller._atomic(paused)
 
     def resume(self):
-        if self.gateway.state.runtime['status'] == 'STOPPED':
+        if self._runtime()['status'] == 'STOPPED':
             raise SafetyBlocked('stopped strategy deployment cannot resume')
         result = self.recover()
         if result.reconciled:
-            self.controller._atomic(lambda: self.gateway.state.runtime.update(status='RUNNING', enabled=True))
+            self.controller._atomic(lambda: self._runtime().update(status='RUNNING', enabled=True))
         return result
 
     def stop(self):
         """Stop decisions without cancelling orders or liquidating positions."""
-        self.controller._atomic(lambda: self.gateway.state.runtime.update(status='STOPPED', enabled=False, pending=None))
+        self.controller._atomic(lambda: self._runtime().update(status='STOPPED', enabled=False, pending=None))
 
     def disconnect(self):
         self.gateway.adapter.disconnect()
         def pause():
             self.gateway.state.reconciled = False
-            if self.gateway.state.runtime['status'] != 'STOPPED':
-                self.gateway.state.runtime['status'] = 'PAUSED'
+            if self._runtime()['status'] != 'STOPPED':
+                self._runtime()['status'] = 'PAUSED'
         self.controller._atomic(pause)
 
     def kill(self):
         self.controller.set_kill_switch(True)
 
-    def closed_bar(self, bar):
+    def historical_bar(self, bar):
+        """Restore history without advancing target decisions or pending signals."""
+        return self.closed_bar(bar, historical=True)
+
+    def closed_bar(self, bar, *, historical=False):
         if not isinstance(bar, ClosedBar) or bar.symbol != self.symbol or bar.closed_at > self.controller.clock():
             raise ValueError('confirmed deployment bar required')
         if not bar.complete:
             return False
         def operation():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime['status'] == 'STOPPED':
                 return False
             bars, value = runtime['bars'], asdict(bar)
@@ -162,6 +195,8 @@ class DemoStrategyRuntime:
             runtime.pop('reason', None)
             bars.append(value)
             del bars[:-self.strategy.history_limit]
+            if historical:
+                return True
             signal = self.strategy.signal([ClosedBar(**v) for v in bars], self.controller.clock())
             runtime['last_signal'] = asdict(signal)
             runtime['pending'] = (asdict(signal) if signal.status == 'SIGNAL'
@@ -178,7 +213,7 @@ class DemoStrategyRuntime:
             raise ValueError('deployment quote required')
         received_at = self.controller.clock()
         state = self.gateway.state
-        runtime = state.runtime
+        runtime = self._runtime()
         if (runtime['pending'] is None or runtime['status'] != 'RUNNING' or state.kill_switch
                 or not self.gateway.read_account().reconciled
                 or any(r.snapshot.status not in TERMINAL for r in state.orders.values())):
@@ -188,7 +223,7 @@ class DemoStrategyRuntime:
         else:
             book = dict(askPrice=quote.price, bidPrice=quote.price, time_utc=quote.observed_at)
         def operation():
-            state, runtime = self.gateway.state, self.gateway.state.runtime
+            state, runtime = self.gateway.state, self._runtime()
             current = state.quotes.get(self.symbol)
             if current is not None:
                 if quote.observed_at < current.observed_at:
@@ -330,7 +365,7 @@ class DemoStrategyRuntime:
             return self.controller.submit(intent)
         except RiskRejected as error:
             def rejected():
-                outcome = self.gateway.state.runtime['last_order']
+                outcome = self._runtime()['last_order']
                 outcome.update(kind='TARGET_REJECTED', reason=error.decision.reason)
                 self.controller.store.record_metadata('target-rejection:' + outcome['signal_id'], outcome)
             self.controller._atomic(rejected)

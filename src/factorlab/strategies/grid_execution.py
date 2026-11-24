@@ -105,10 +105,12 @@ def _historical_turnover(store, *, after=0):
     return turnover
 
 
-def project_paper_account(controller, instrument_id):
+def project_paper_account(controller, instrument_id, *, allow_shared=False):
     """Project the controller's account with gross turnover since account inception."""
     with _paper_snapshot(controller) as (broker, store):
-        return _project_paper_account(broker, instrument_id, _historical_turnover(store))
+        return _project_paper_account(
+            broker, instrument_id, _historical_turnover(store), allow_shared=allow_shared,
+        )
 
 
 @contextmanager
@@ -120,9 +122,12 @@ def _paper_snapshot(controller):
         yield broker, store
 
 
-def _project_paper_account(broker, instrument_id, turnover):
+def _project_paper_account(broker, instrument_id, turnover, *, allow_shared=False):
     state = broker.state
-    if set(state.instruments) != {instrument_id}:
+    if allow_shared:
+        if instrument_id not in state.instruments:
+            raise ValueError('instrument missing from shared account')
+    elif set(state.instruments) != {instrument_id}:
         raise ValueError('dedicated single-instrument account required')
     snapshot = broker.read_account()
     instrument = state.instruments[instrument_id]

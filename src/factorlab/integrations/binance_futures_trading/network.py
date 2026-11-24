@@ -156,7 +156,9 @@ class DemoNetworkTransport:
         if request.method == 'GET':
             if request.path == '/fapi/v1/order':
                 params = parse_qs(request.query)
-                if (len(params.get('symbol', [])) != 1 or not re.fullmatch(r'[A-Z0-9]{2,30}USDT', params['symbol'][0])) or len(params.get('origClientOrderId', [])) != 1:
+                if (len(params.get('symbol', [])) != 1
+                        or not re.fullmatch(r'[A-Z0-9]{2,30}USDT', params['symbol'][0])
+                        or len(params.get('origClientOrderId', [])) != 1):
                     raise SafetyBlocked('recovery requires same Demo symbol and client ID')
             if request.path not in READ_PATHS:
                 raise SafetyBlocked('read endpoint not allowlisted')

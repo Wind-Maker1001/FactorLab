@@ -76,4 +76,3 @@ def publication_lock(root, key, timeout=10.0):
                     "cannot release cache writer lock for %s while handling %s: %s",
                     key, type(protected_error).__name__, exc,
                 )
-
