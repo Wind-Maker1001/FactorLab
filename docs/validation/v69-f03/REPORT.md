@@ -84,7 +84,10 @@ unchanged from #242; blob equality was checked against its current head. #239 ow
 the Execute consumer, shared Session/Grid admission and runtime recovery changes.
 #242 owns the observer, schedule/producer integration and observer service files.
 Merging identical shared blobs produces no second implementation. origin/main
-6c4df82 was merged into this branch without conflicts.
+9386a34 was merged into this branch without conflicts. Owner recovery fixes
+from #242 `87ee5d1` and `b5ae796` are reused; observer deployment files remain
+in #242. The subsequent review fixes bind equity before acceptance and scope
+Gateway leverage independently of the original NVDA configuration.
 
 Shared mailbox: /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3.
 Execute uses FACTORLAB_DEMO_TASK_DB and a narrow systemd ReadWritePaths grant;
