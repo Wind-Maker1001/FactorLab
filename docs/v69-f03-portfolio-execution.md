@@ -9,7 +9,12 @@ The Execute supervisor consumes PR #242 PortfolioTask/TaskMailbox directly.
 The producer has no order client. The owner derives a test capital ceiling from
 actual wallet/equity, preserves the Grid's 7 USDT allocation, and caps the test
 allocation at 20 USDT. Available margin and all existing reservations remain
-account-wide. A submitted equity_usdt value is not an account balance or grant.
+account-wide. A submitted equity_usdt value is not an account balance or grant;
+it is capped by the owner ceiling. The owner persists that target equity before
+ACCEPTED or exchange configuration, and reuses it after fees, unrealized P&L
+changes and restarts. Portfolio scope uses Gateway leverage/max_leverage=1 and
+the target symbol's confirmed margin configuration, restoring the original NVDA
+configuration on normal and exceptional exit.
 Maximum account allocation is 27 USDT; symbol and allocation admission remain
 separate. Orders use fresh official Demo rules and bounded marketable LIMITs
 with a 0.5% price cushion, plus all existing rule/filter checks.

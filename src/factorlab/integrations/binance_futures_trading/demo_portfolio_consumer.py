@@ -47,6 +47,7 @@ class DemoPortfolioConsumer:
                 self.receipt('RECONCILING',dict(reason=str(error)[:300]))
 
     def _poll(self):
+        self.active_mailbox_task = None
         if durable_control_state(self.runtime) is not None:
             return
         requests = [p for p in sorted(self.directory.glob('*.json'))
@@ -104,14 +105,14 @@ class DemoPortfolioConsumer:
                 else:
                     self.receipt('RECONCILING',dict(reason='EXPIRED_INFLIGHT'))
                 return
-            funds = self.session.adapter.read_facts().usdt()
-            budget = (decode(json.loads(saved_target))['equity'] if started else
-                max(D(0),min(D(task_payload['equity_usdt']),BUDGET,
-                    funds['walletBalance']+funds['unrealizedProfit']-D(7))))
+            if started:
+                budget = decode(json.loads(saved_target))['equity']
+            else:
+                funds = self.session.adapter.read_facts().usdt()
+                budget = max(D(0),min(D(task_payload['equity_usdt']),BUDGET,
+                    funds['walletBalance']+funds['unrealizedProfit']-D(7)))
             request = dict(task_id=task_payload['task_id'],budget_usdt=str(budget),
                            weights=task_payload['weights'])
-            if outstanding[0]['status'] == 'QUEUED':
-                self.receipt('ACCEPTED',dict(owner_budget_usdt=str(budget)))
         task = request['task_id']
         weights = {k:D(v) for k,v in request['weights'].items()}
         budget = D(request['budget_usdt'])
@@ -128,6 +129,12 @@ class DemoPortfolioConsumer:
                 self.receipt('COMPLETED' if saved['outcome'] == 'NO_EXECUTABLE_DELTA' else 'REJECTED',
                     dict(outcome=saved['outcome'],journal=done))
             return
+        portfolio = PortfolioRuntime(self.session.controller, allocation_id=(self.active_mailbox_task['allocation_id']
+            if self.active_mailbox_task is not None else 'tradfi-demo-acceptance'),
+            owned_symbols=SYMBOLS, recover=lambda:self.session.gateway.recover(self.session.controller))
+        portfolio.begin(task, weights=weights, equity=budget)
+        if self.active_mailbox_task is not None and outstanding[0]['status'] == 'QUEUED':
+            self.receipt('ACCEPTED',dict(owner_budget_usdt=str(budget)))
         self.session.shared_account = True
         store.record_metadata('demo:static-shared-account:v1',
             dict(grid=['NVDAUSDT'], portfolio=sorted(SYMBOLS), grid_budget=D(7), portfolio_budget=BUDGET))
@@ -172,10 +179,6 @@ class DemoPortfolioConsumer:
                 prices[symbol] = price
                 steps[symbol] = D(self.session.gateway.rules.filters['LOT_SIZE']['stepSize'])
                 self.session.controller.quote(Quote(symbol, price, book['time_utc']))
-        portfolio = PortfolioRuntime(self.session.controller, allocation_id=(self.active_mailbox_task['allocation_id']
-            if self.active_mailbox_task is not None else 'tradfi-demo-acceptance'),
-            owned_symbols=SYMBOLS, recover=lambda:self.session.gateway.recover(self.session.controller))
-        portfolio.begin(task, weights=weights, equity=budget)
         def submit(intent):
             if self.active_mailbox_task is not None:
                 from .tradfi_schedule import utc_instant
@@ -216,6 +219,7 @@ class DemoPortfolioConsumer:
         original = (s.symbol,s.configuration,s.gateway.rules,s.client.transport,
                     s._write_guard,s._receipt_sink,s.controller.limits,
                     getattr(s.adapter,'_rule_observation',None))
+        original_gateway = (s.gateway.leverage, s.gateway.max_leverage)
         original_flags = (getattr(s,'write_uncertain',False),getattr(s,'receipt_error',False))
         campaign_key = 'portfolio-campaign:' + identity(task)
         raw = self.runtime._get(campaign_key)
@@ -293,6 +297,8 @@ class DemoPortfolioConsumer:
         try:
             s.symbol = symbol
             s.configuration = demo_account_configuration(s.adapter.read_facts(),symbol)
+            s.gateway.leverage = 1
+            s.gateway.max_leverage = 1
             observation = observe_demo_rules(s.adapter,symbol,source_version='OFFICIAL_DEMO')
             s.gateway.rules = observation.rules
             s._write_guard = guard
@@ -305,6 +311,7 @@ class DemoPortfolioConsumer:
         finally:
             (s.symbol,s.configuration,s.gateway.rules,s.client.transport,s._write_guard,
              s._receipt_sink,s.controller.limits,s.adapter._rule_observation) = original
+            s.gateway.leverage, s.gateway.max_leverage = original_gateway
             s.controller.limits = replace(s.controller.limits,account_budget=ACCOUNT_BUDGET)
             # Portfolio uncertainty remains authoritative in the original adapter
             # journal. Do not poison Grid's transport flags; unresolved protocol
