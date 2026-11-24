@@ -19,7 +19,7 @@ def test_yahoo_projection_keeps_vendor_volume_and_late_adjustment_mask():
             timeframe='1Day', received_at='2026-11-24T14:00Z' if raw else '2026-11-24T14:01Z',
             feed='sip', adjustment=adjustment, source='ALPACA:sip')
     service.history = history
-    bundle = service.prepare_history([instrument], start='2026-11-20', end='2026-11-23',
+    bundle = service.prepare_history((i for i in [instrument]), start='2026-11-20', end='2026-11-23',
                                      now='2026-11-24T15:00Z', adjustment_basis='yahoo_ratio')
     assert bundle.adjusted_open.loc['2026-11-20', 'a'] == 5
     assert bundle.adjusted_volume.loc['2026-11-20', 'a'] == 200

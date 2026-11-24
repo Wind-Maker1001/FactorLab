@@ -1,0 +1,161 @@
+{
+  "strategy_entry": "v69.strategy:Strategy",
+  "pull_request": "https://github.com/Wind-Maker1001/FactorLab/pull/240",
+  "original_source": {
+    "origin": "https://github.com/cfu02669-lang/qlib-workbench",
+    "host_checkout_head": "c3f93e563ca981bd4a12502f799cc5a39fa09cdd",
+    "research_source_kind": "local research archive; v69 strategy is untracked; host commit does not authenticate these bytes",
+    "research_root_relative_to_qlib": "local/research/ai_grid_iterations_20261117/round12_us_equity"
+  },
+  "reference_account": {
+    "start_requested": "2023-01-01",
+    "first": "2023-01-03",
+    "last": "2026-11-23",
+    "sessions": 977,
+    "traded_fills": 371,
+    "archive_fixture": "fixture/v69_target_normal",
+    "market_fixture": "fixture/market"
+  },
+  "files": {
+    "LICENSE-QLIB": {
+      "sha256": "9906940f61b1f0b533fa7d99baf55178b2808fbe113ea51dfbfad8572ccd5f2b",
+      "bytes": 1162,
+      "original_file": true
+    },
+    "README.md": {
+      "sha256": "4e65971084edfd0afe055456349c91049f1df754dd5bfdb75a5ba2a2bd69d8af",
+      "bytes": 1732,
+      "original_file": false
+    },
+    "audit.py": {
+      "sha256": "ed21b3298e305952af8ec65c9286f9a4ffe6afd02a34e9af3e1401a2e8c8c5d4",
+      "bytes": 9608,
+      "original_file": true
+    },
+    "beta_research/engine.py": {
+      "sha256": "39727c7b8f204807c932a8bf008b41cb9acbd5306d58bd4c21cdd3719416ab32",
+      "bytes": 5378,
+      "original_file": true
+    },
+    "fixture/v69_target_normal/attribution.csv": {
+      "sha256": "efe2c12bd06f9076e2a0f38a5ffebadb76be19ffff619134396b58e16b8f8dd9",
+      "bytes": 197,
+      "original_file": true
+    },
+    "fixture/v69_target_normal/daily.parquet": {
+      "sha256": "5b6552b9f394b3073801bfcd3cb71fedfed5fc47e6c204207936514750cbe9f6",
+      "bytes": 75441,
+      "original_file": true
+    },
+    "fixture/v69_target_normal/fills.csv": {
+      "sha256": "632bb1b99bba4139d6fff695fe07242af0cea54855add1dbee1151356dd9c1a8",
+      "bytes": 41588,
+      "original_file": true
+    },
+    "fixture/v69_target_normal/result.json": {
+      "sha256": "e094e1a312e5a42c46826ab91511f7813591500e45995ea7d1514daf4c0a660a",
+      "bytes": 1266,
+      "original_file": true
+    },
+    "fixture/v69_target_normal/sp500_report.csv": {
+      "sha256": "de2dd43c114415bcc09d8efc4b1cba4aba8639b9ff9f5f3be02f8ae9ca117b5f",
+      "bytes": 446,
+      "original_file": false
+    },
+    "fixture/v69_target_normal/targets.csv": {
+      "sha256": "b3b23406bed7e0b06f19e8d7f49871f749f785e3712f1c065da18f20c9bc0c68",
+      "bytes": 26637,
+      "original_file": true
+    },
+    "original_configs/research_2023_2026/protocol.json": {
+      "sha256": "480d0411d07427eac862660d48063215ab8667af74508bb5ec2dc14255cd87b1",
+      "bytes": 1876,
+      "original_file": true
+    },
+    "original_configs/research_2023_2026/run.py": {
+      "sha256": "39530238bcff2b3d2fae586a534b086b3b33ebee8869c67467d344b4772c02ba",
+      "bytes": 6462,
+      "original_file": true
+    },
+    "protocol.json": {
+      "sha256": "5dc0e885b85312c3c7af360790a15d58fe0a3bd26ccbe6e9615a6d667e1ce524",
+      "bytes": 2200,
+      "original_file": true
+    },
+    "replay_v69.py": {
+      "sha256": "38f5f967266d3b745351bdc62211a9c7fcd6abbe0f708fe66fa31e5308385d93",
+      "bytes": 3682,
+      "original_file": false
+    },
+    "requirements.txt": {
+      "sha256": "a1e1445dfe143ecadb70b2a62f6d088393b7bcdafff9f0b079e59ba72387677d",
+      "bytes": 57,
+      "original_file": false
+    },
+    "risk_research/parent.py": {
+      "sha256": "0a40c08a9e44426ed6092cc0f80f3613ddadfedb39d10a90c72a0b6dc616ee4f",
+      "bytes": 966,
+      "original_file": true
+    },
+    "risk_research/protocol.json": {
+      "sha256": "aa4819be76ca5a68cf1cd37f85892a7b4c214cb98123db67c8d4324c2f7458f6",
+      "bytes": 2223,
+      "original_file": true
+    },
+    "risk_research/replay.py": {
+      "sha256": "2c9ee45bcde544425cf0af15cf51312f85ee559fc236a404b692f2ee18bd774c",
+      "bytes": 7931,
+      "original_file": true
+    },
+    "v48_strategy.py": {
+      "sha256": "97e680e531c05217098677613fe7d2975842e0b1be901cd6c657f0a0322c0503",
+      "bytes": 5066,
+      "original_file": true
+    },
+    "v49/strategy.py": {
+      "sha256": "8b2d4d0985a2f996c1764c150bdee31922af81432eb7865732f7f834dc20fdcd",
+      "bytes": 4562,
+      "original_file": true
+    },
+    "v50/experiment.py": {
+      "sha256": "3a78c147692c02efe45621ab8c74e4eb0c99b99cd7a66eaa1d3d150e4b2965da",
+      "bytes": 9473,
+      "original_file": true
+    },
+    "v50/protocol.json": {
+      "sha256": "08ef0aea97934f1eb98fb8cd677035e20b29862e5d14e150291821eb1c857526",
+      "bytes": 2985,
+      "original_file": true
+    },
+    "v50/selection.json": {
+      "sha256": "1c45e16b2b56dc219b50adc70850de70c34a8e2b6c6e2defed60deb8092bbe84",
+      "bytes": 1506,
+      "original_file": true
+    },
+    "v50/strategy.py": {
+      "sha256": "2752ed484951ee73478549f949f02251118555eae1610f23a625c2b3a1747212",
+      "bytes": 7684,
+      "original_file": true
+    },
+    "v51/strategy.py": {
+      "sha256": "54397e7f0d66e53055b753463475454e24193aa035d9f3e9dfe1af12943e3e31",
+      "bytes": 490,
+      "original_file": true
+    },
+    "v61/strategy.py": {
+      "sha256": "cfba63477b132e8b9664b8eac4ecacd26ca3ea1d5b110a262de4b705b34820ae",
+      "bytes": 204,
+      "original_file": true
+    },
+    "v69/strategy.py": {
+      "sha256": "91323547da41e64fdc75c61dbcac80463f9de4768aa93df5bfec005a32ffa9fb",
+      "bytes": 904,
+      "original_file": true
+    },
+    "verified_replay.json": {
+      "sha256": "5bb4ef8f727ebb49bff8370bf0743c360c65eedc5f72c6be720f670bebe16d1c",
+      "bytes": 1028,
+      "original_file": false
+    }
+  }
+}

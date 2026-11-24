@@ -1,0 +1,26 @@
+{
+  "target": [
+    "2023-01-01",
+    "2026-11-23"
+  ],
+  "selection": {
+    "dev_a": [
+      "2013-01-01",
+      "2018-12-31"
+    ],
+    "dev_b": [
+      "2019-01-01",
+      "2022-12-31"
+    ]
+  },
+  "versions": {
+    "v71": "强势市场加 1.5% QQQ 核心仓，需标普总回报站上 126 日均线且市场广度至少三分之二",
+    "v72": "按 42 日波动率排序，活跃低波部分目标乘 1.08，最高波四分位乘 0.90",
+    "v73": "强势市场中，把额外最多 1.2% 的现金均配给价格趋势得分最高的两个活跃标的",
+    "v74": "按月以 XGBoost 重训五日开盘收益预估，在目标整体增加 5% 后按预测小幅倾斜",
+    "v75": "弱市收紧新开仓条件，强市仅在标普 63 日趋势向上时将目标提高 6%"
+  },
+  "same_market": "Only the eight original instruments. Long only, no additional leverage. Same USD300k, 0.1% or 0.3% one-way. Strict ex-SNDK independent replay. Actual completed session cutoff tracked in every file. Signals use previous close. Total gross target cap 37.5%.",
+  "selection_rule": "On two dev windows, require cumulative and alpha >= v69, portfolio average exposure >=95% v69, beta increase <=0.04, and each of the three ratios >= v69 on at least one window. Select most passed windows, then lowest rank sum of Sortino, Calmar, Sharpe and Alpha; version as final tie. Later windows never select candidates. If zero windows pass, nominee is exploratory.",
+  "assessment": "Keep v49/v69/v70; on requested target window evaluate new candidates, but compare frozen nominee as primary. For historical acceptance require all three ratios and alpha >= v69, cumulative net >= v69, exposure >= v69 and beta increase in [0,0.04]; same main tests at 3x cost and strict no SNDK except exposure/beta with day-aligned control. Date history already used by earlier versions, not prospective."
+}
