@@ -48,13 +48,17 @@ from factorlab.trading.strategy import ClosedBar
 D = Decimal
 
 
-def _worker_read_blas_env(_: int) -> dict[str, str | None]:
+def _worker_read_blas_env(_: int) -> dict[str, object]:
     import os
+    import scipy.linalg  # noqa: F401
+    from factorlab.compute.parallel import inspect_threadpools
 
+    pools = inspect_threadpools()
     return {
         "OMP_NUM_THREADS": os.environ.get("OMP_NUM_THREADS"),
         "OPENBLAS_NUM_THREADS": os.environ.get("OPENBLAS_NUM_THREADS"),
         "MKL_NUM_THREADS": os.environ.get("MKL_NUM_THREADS"),
+        "pools": pools,
     }
 
 
@@ -346,44 +350,36 @@ def test_partition_tail_statistics_matches_full_sort_reference():
             assert res[str(conf)]["cvar_interval"]["upper"] == pytest.approx(float(hi), rel=0, abs=1e-15)
 
 
-def test_s01_persistent_worker_equivalence_and_isolation_enforcement(tmp_path: Path):
+def test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape(tmp_path: Path):
     pkg = tmp_path / "pkg"
     pkg.mkdir()
     (pkg / "strategy.py").write_text(
         "from decimal import Decimal as D\n"
         "from factorlab.strategies.protocol import Decision, StrategySpec\n"
-        "class SimpleTarget:\n"
-        "    def __init__(self, threshold='100'):\n"
-        "        self.threshold = D(threshold)\n"
+        "COUNT = 0\n"
+        "class StatelessTarget:\n"
         "    def describe(self):\n"
-        "        return StrategySpec('simple', '1', 'target', ['NVDAUSDT'], [3600], ['closed_bar'])\n"
+        "        return StrategySpec('stateless', '1', 'target', ['NVDAUSDT'], [3600], ['closed_bar'])\n"
         "    def decide(self, event, state):\n"
-        "        close = event['bars'][-1]['close']\n"
-        "        w = D('0.5') if close >= self.threshold else D('0')\n"
-        "        return Decision(target_weight=w, state={'seen': state.get('seen', 0) + 1})\n",
+        "        global COUNT\n"
+        "        COUNT += 1\n"
+        "        return Decision(target_weight=D(COUNT) / D('10'), state={'count': COUNT})\n",
         encoding="utf-8",
     )
     (pkg / "strategy.json").write_text(
-        json.dumps({"file": "strategy.py", "class": "SimpleTarget", "version": "1", "parameters": {"threshold": "100"}}),
+        json.dumps({"file": "strategy.py", "class": "StatelessTarget", "version": "1", "parameters": {}}),
         encoding="utf-8",
     )
-
     now = datetime(2026, 6, 1, 1, 0, tzinfo=timezone.utc)
-    ev1 = {"kind": "closed_bar", "symbol": "NVDAUSDT", "now": now, "event_id": "b1", "bars": [{"close": D("105")}]}
-    ev2 = {"kind": "closed_bar", "symbol": "NVDAUSDT", "now": now, "event_id": "b2", "bars": [{"close": D("95")}]}
+    ev = {"kind": "closed_bar", "symbol": "NVDAUSDT", "now": now, "event_id": "b1", "bars": [{"close": D("105")}]}
+    strat = LoadedStrategy(pkg, trusted=True)
+    # One-shot S04 execution must never carry module-global state across calls
+    d1 = strat.decide(ev, {})
+    d2 = strat.decide(ev, {})
+    assert d1.state == {"count": 1}
+    assert d2.state == {"count": 1}
 
-    one_shot = LoadedStrategy(pkg, trusted=True, persistent_worker=False)
-    with LoadedStrategy(pkg, trusted=True, persistent_worker=True, verify_runtime_each_call=False) as persistent:
-        assert persistent.spec == one_shot.spec
-        assert persistent.binding == one_shot.binding
-        d1_a = one_shot.decide(ev1, {})
-        d1_b = persistent.decide(ev1, {})
-        assert d1_a == d1_b
-        d2_a = one_shot.decide(ev2, d1_a.state)
-        d2_b = persistent.decide(ev2, d1_b.state)
-        assert d2_a == d2_b
-
-    # Verify audit hook still blocks unauthorized filesystem write in persistent mode
+    # Verify audit hook blocks unauthorized filesystem write
     bad_pkg = tmp_path / "bad_pkg"
     bad_pkg.mkdir()
     (bad_pkg / "strategy.py").write_text(
@@ -400,22 +396,120 @@ def test_s01_persistent_worker_equivalence_and_isolation_enforcement(tmp_path: P
         json.dumps({"file": "strategy.py", "class": "BadStrategy", "version": "1", "parameters": {}}),
         encoding="utf-8",
     )
-    with LoadedStrategy(bad_pkg, trusted=True, persistent_worker=True) as bad:
-        with pytest.raises(StrategyWorkerError, match="PermissionError"):
-            bad.decide(ev1, {})
+    bad = LoadedStrategy(bad_pkg, trusted=True)
+    with pytest.raises(StrategyWorkerError, match="PermissionError"):
+        bad.decide(ev, {})
 
 
-def test_parallel_helpers_and_blas_pinning():
+def test_parallel_helpers_and_real_blas_threadpool_limiting():
+    import os
+
     assert chunksize_for_tasks(100, 8) >= 1
     assert recommended_workers(1) == 1
     assert recommended_workers(64, cpu_count=28) <= 16
     assert recommended_workers(64, io_heavy=True, cpu_count=28) <= 8
+
+    # Ensure create_process_pool does not mutate parent process environment
+    parent_before = {k: os.environ.get(k) for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}
     with create_process_pool(2, single_thread_blas=True) as pool:
-        envs = list(pool.map(_worker_read_blas_env, [0, 1]))
-    assert all(e["OMP_NUM_THREADS"] == "1" and e["OPENBLAS_NUM_THREADS"] == "1" for e in envs)
+        results = list(pool.map(_worker_read_blas_env, [0, 1]))
+    parent_after = {k: os.environ.get(k) for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}
+    assert parent_after == parent_before
+
+    for res in results:
+        assert res["OMP_NUM_THREADS"] == "1"
+        assert res["OPENBLAS_NUM_THREADS"] == "1"
+        pools = res["pools"]
+        assert pools, "expected loaded BLAS/OpenMP threadpools to be inspected"
+        assert all(int(p["num_threads"]) == 1 for p in pools), f"uncontrolled pools: {pools}"
 
 
-def test_paper_store_funding_metadata_mutation_isolation_and_cache_invalidation():
+@pytest.mark.parametrize("initial_meta", [{}, {"rate": "1"}], ids=["empty", "nonempty"])
+@pytest.mark.parametrize("origin", ["load", "save", "runtime"])
+def test_paper_store_funding_metadata_isolation_all_paths(initial_meta, origin):
+    from factorlab.trading.paper import PaperState
+
+    now = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
+    broker = PaperBroker(Market.BINANCE_USDM, "acct-iso", (Instrument("NVDAUSDT", "USDT"),), {"USDT": D("1000")})
+    store = PaperStore(":memory:")
+    ctrl = TradingController(broker, store, clock=lambda: now, limits=RiskLimits(D("500"), D("500"), D("500"), 50))
+    ctrl.quote(Quote("NVDAUSDT", D("100"), now))
+    ev = FundingEvent("acct-iso", "tr-1", "NVDAUSDT", "USDT", "FUNDING_FEE", D("-1"), now, "test", "fe-1", dict(initial_meta))
+    ctrl.replay(ev)
+    try:
+        if origin == "runtime":
+            state = store.load()
+            nested_ev = FundingEvent("acct-iso", "tr-2", "NVDAUSDT", "USDT", "FUNDING_FEE", D("-1"), now, "test", "fe-2", dict(initial_meta))
+            state.runtime["nested"] = {"events": [nested_ev]}
+            state.runtime["alias"] = state.runtime["nested"]["events"][0]
+            store.save(state)
+            external = store.load().runtime["nested"]["events"][0]
+        elif origin == "save":
+            state = store.load()
+            store.save(state)
+            external = state.funding_events["fe-1"]
+        else:
+            external = store.load().funding_events["fe-1"]
+        external.metadata["uncommitted"] = "bad"
+        fresh = store.load()
+        actual = fresh.runtime["nested"]["events"][0] if origin == "runtime" else fresh.funding_events["fe-1"]
+        persisted = decode(json.loads(store.db.execute("SELECT payload FROM snapshot").fetchone()[0]))
+        disk_ev = persisted.runtime["nested"]["events"][0] if origin == "runtime" else persisted.funding_events["fe-1"]
+        assert actual.metadata == initial_meta
+        assert disk_ev.metadata == initial_meta
+    finally:
+        store.close()
+
+
+def test_paper_store_empty_metadata_not_persisted_by_unrelated_transaction_and_reopen(tmp_path: Path):
+    now = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
+    path = tmp_path / "acct.sqlite"
+    broker = PaperBroker(Market.BINANCE_USDM, "acct-iso", (Instrument("NVDAUSDT", "USDT"),), {"USDT": D("1000")})
+    store = PaperStore(path)
+    ctrl = TradingController(broker, store, clock=lambda: now, limits=RiskLimits(D("500"), D("500"), D("500"), 50))
+    ctrl.quote(Quote("NVDAUSDT", D("100"), now))
+    ctrl.replay(FundingEvent("acct-iso", "tr-1", "NVDAUSDT", "USDT", "FUNDING_FEE", D("-1"), now, "test", "fe-1", {}))
+    try:
+        store.load().funding_events["fe-1"].metadata["uncommitted"] = "bad"
+        ctrl.quote(Quote("NVDAUSDT", D("101"), now))
+        persisted = decode(json.loads(store.db.execute("SELECT payload FROM snapshot").fetchone()[0]))
+        assert persisted.funding_events["fe-1"].metadata == {}
+    finally:
+        store.close()
+
+    reopened = PaperStore(path)
+    try:
+        assert reopened.load().funding_events["fe-1"].metadata == {}
+    finally:
+        reopened.close()
+
+
+@pytest.mark.parametrize("exc_type", [RuntimeError, KeyboardInterrupt, SystemExit])
+def test_controller_atomic_rollback_isolates_empty_funding_metadata(exc_type):
+    from copy import deepcopy
+
+    now = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
+    broker = PaperBroker(Market.BINANCE_USDM, "acct-rb", (Instrument("NVDAUSDT", "USDT"),), {"USDT": D("1000")})
+    store = PaperStore(":memory:")
+    ctrl = TradingController(broker, store, clock=lambda: now, limits=RiskLimits(D("500"), D("500"), D("500"), 50))
+    ctrl.quote(Quote("NVDAUSDT", D("100"), now))
+    ctrl.replay(FundingEvent("acct-rb", "tr-1", "NVDAUSDT", "USDT", "FUNDING_FEE", D("-1"), now, "test", "fe-1", {}))
+    before = deepcopy(broker.state)
+    try:
+        def op():
+            broker.state.funding_events["fe-1"].metadata["uncommitted"] = "bad"
+            raise exc_type("injected")
+
+        with pytest.raises(exc_type):
+            ctrl._atomic(op)
+        assert broker.state == before
+        assert store.load() == before
+        assert decode(json.loads(store.db.execute("SELECT payload FROM snapshot").fetchone()[0])) == before
+    finally:
+        store.close()
+
+
+def test_paper_store_funding_metadata_bool_vs_int_and_mutation_cache_invalidation():
     from factorlab.trading.paper import PaperState
 
     now = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
@@ -431,36 +525,88 @@ def test_paper_store_funding_metadata_mutation_isolation_and_cache_invalidation(
         event_time=now,
         source="test",
         event_id="fe-1",
-        metadata={"mark_price": "130.0", "rate": "0.0001"},
+        metadata={"flag": 1},
     )
     state.funding_events[ev.event_id] = ev
 
     store = PaperStore(":memory:")
-    with store.transaction():
-        store.save(state)
+    try:
+        with store.transaction():
+            store.save(state)
+        for meta in ({"flag": True}, {"flag": False}, {"flag": 0}, {}, {"rate": "2"}):
+            cur = store.load()
+            cur.funding_events["fe-1"].metadata.clear()
+            cur.funding_events["fe-1"].metadata.update(meta)
+            with store.transaction():
+                store.save(cur)
+            row = store.db.execute("SELECT payload FROM snapshot WHERE id=1").fetchone()
+            assert row[0] == dumps(cur)
+            assert store.load().funding_events["fe-1"].metadata == meta
+    finally:
+        store.close()
 
-    # Mutating loaded event.metadata outside a transaction must not pollute cached state
-    loaded_a = store.load()
-    loaded_a.funding_events["fe-1"].metadata["mark_price"] = "999.0"
-    loaded_b = store.load()
-    assert loaded_b.funding_events["fe-1"].metadata["mark_price"] == "130.0"
 
-    # Saving a mutated metadata dict on the same FundingEvent object must invalidate fragment cache
-    loaded_a.funding_events["fe-1"].metadata["mark_price"] = "135.5"
-    with store.transaction():
-        store.save(loaded_a)
-    row = store.db.execute("SELECT payload FROM snapshot WHERE id=1").fetchone()
-    assert row[0] == dumps(loaded_a)
-    assert store.load().funding_events["fe-1"].metadata["mark_price"] == "135.5"
-    store.db.close()
+@pytest.mark.parametrize("field_name", ["rules", "config", "max_exit_quantity"])
+def test_grid_deployment_fingerprint_reflects_all_deployment_mutations(field_name):
+    from dataclasses import asdict, replace
+    from factorlab.strategies.grid_execution import _fingerprint
+
+    now = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
+    broker = PaperBroker(Market.BINANCE_USDM, "dep-fp", (Instrument("NVDAUSDT", "USDT"),), {"USDT": D("1000")}, fee_rate=D("0.0003"))
+    store = PaperStore(":memory:", continuous_capacity=True)
+    ctrl = TradingController(broker, store, clock=lambda: now, limits=RiskLimits(D("500"), D("500"), D("500"), 50))
+    cfg = GridConfig(mode="arithmetic", lower=131.56, upper=134.22, levels=1, initial_cash=1000.0, initial_inventory=0, initial_price=132.89, quantity=1, max_inventory=1, max_cash_committed=10.0, breakout="pause")
+    grid = GridExecution(cfg, default_demo_rules(), deployment_id="dep-fp", account_id="dep-fp", market=Market.BINANCE_USDM, instrument_id="NVDAUSDT", initial_equity=D("1000"), fee_rate=D("0.0003"), continuous_capacity=True)
+    obs = dict(id="b0", time=now.replace(tzinfo=None).isoformat(), price=D("132.89"), high=D("133"), low=D("132.5"), close=D("132.89"), volume=5000, completed_bar=True)
+    try:
+        grid.observe_paper(ctrl, obs, delivery=1, observed_at=now)
+        old_fp = grid._paper_deployment(ctrl)
+        if field_name == "rules":
+            grid.rules = replace(grid.rules, min_notional=grid.rules.min_notional + D("1"))
+        elif field_name == "config":
+            grid.config = replace(grid.config, max_turnover=11.0)
+        else:
+            grid.max_exit_quantity = D("0.01")
+        expected = _fingerprint([grid.deployment(), asdict(ctrl.limits)])
+        assert expected != old_fp
+        assert grid._paper_deployment(ctrl) == expected
+        with pytest.raises(ValueError, match="incompatible Grid checkpoint deployment"):
+            grid.observe_paper(ctrl, dict(obs, id="b1"), delivery=2, observed_at=now)
+    finally:
+        store.close()
+
+
+def test_forward_integrity_rejects_ancestor_junction_replacement(tmp_path: Path):
+    import os
+    import subprocess
+    from factorlab.forward import integrity
+
+    if os.name != "nt":
+        pytest.skip("Windows junction test")
+    repo = tmp_path / "repo"
+    original = repo / "src/factorlab"
+    original.mkdir(parents=True)
+    (repo / "pyproject.toml").write_text('[project]\nname="review"\n', encoding="utf-8")
+    (original / "x.py").write_text("REVISION = 1\n", encoding="utf-8")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "x.py").write_text("REVISION = 2\n", encoding="utf-8")
+    entries = integrity._source_entries(repo)
+    original.rename(repo / "src/original")
+    res = subprocess.run(["cmd.exe", "/c", "mklink", "/J", str(original), str(outside)], capture_output=True, text=True)
+    assert res.returncode == 0, res.stdout + res.stderr
+    target = next(p for name, p in entries if name.endswith("x.py"))
+    try:
+        with pytest.raises(integrity.ForwardIntegrityError, match="symlink or reparse point"):
+            integrity._read_regular_file(target)
+    finally:
+        original.rmdir()
 
 
 def test_slice_window_funding_preserves_predecessor_for_exact_gap_calculation():
     from factorlab.experiments.grid_r10_study import _slice_window_funding
 
     base = datetime(2026, 6, 1, 0, 0, tzinfo=timezone.utc)
-    # Sparse events where at win_start (h=48), lookback (24h..48h] has only h=25,
-    # while its immediate predecessor is at h=23 (gap_h = 2h, not default 8h).
     all_events = [
         (base + timedelta(hours=15), D("130"), D("0.0002"), "Sparse"),
         (base + timedelta(hours=23), D("130"), D("0.0004"), "Sparse"),
@@ -476,42 +622,7 @@ def test_slice_window_funding_preserves_predecessor_for_exact_gap_calculation():
             causal_funding_rate_bps_h(sliced, obs, lookback_hours=24, conservative=True)
             == causal_funding_rate_bps_h(all_events, obs, lookback_hours=24, conservative=True)
         )
-    # Specifically verify h=48 got gap_h=2h (last_bps_h = 6.0 / 2.0 = 3.0), not fallback 8h (0.75)
     est, cnt, last_bps_h = causal_funding_rate_bps_h(sliced, base + timedelta(hours=48), lookback_hours=24)
     assert cnt == 1
     assert last_bps_h == pytest.approx(3.0)
     assert est == pytest.approx(3.0)
-
-
-def test_s01_persistent_worker_recycles_cleanly_after_error(tmp_path: Path):
-    pkg = tmp_path / "err_pkg"
-    pkg.mkdir()
-    (pkg / "strategy.py").write_text(
-        "from decimal import Decimal as D\n"
-        "from factorlab.strategies.protocol import Decision, StrategySpec\n"
-        "DIRTY = 0\n"
-        "class FlakyStrategy:\n"
-        "    def describe(self):\n"
-        "        return StrategySpec('flaky', '1', 'target', ['NVDAUSDT'], [3600], ['closed_bar'])\n"
-        "    def decide(self, event, state):\n"
-        "        global DIRTY\n"
-        "        if event['event_id'] == 'boom':\n"
-        "            DIRTY = 999\n"
-        "            raise RuntimeError('injected failure')\n"
-        "        return Decision(target_weight=D('0'), state={'dirty': DIRTY})\n",
-        encoding="utf-8",
-    )
-    (pkg / "strategy.json").write_text(
-        json.dumps({"file": "strategy.py", "class": "FlakyStrategy", "version": "1", "parameters": {}}),
-        encoding="utf-8",
-    )
-    now = datetime(2026, 6, 1, 1, 0, tzinfo=timezone.utc)
-    ev_boom = {"kind": "closed_bar", "symbol": "NVDAUSDT", "now": now, "event_id": "boom", "bars": [{"close": D("100")}]}
-    ev_ok = {"kind": "closed_bar", "symbol": "NVDAUSDT", "now": now, "event_id": "ok", "bars": [{"close": D("100")}]}
-    with LoadedStrategy(pkg, trusted=True, persistent_worker=True, verify_runtime_each_call=False) as strat:
-        with pytest.raises(StrategyWorkerError, match="RuntimeError"):
-            strat.decide(ev_boom, {})
-        # Worker must have been recycled so DIRTY global state from the failed call is gone
-        assert strat._worker_proc is None
-        decision = strat.decide(ev_ok, {})
-        assert decision.state == {"dirty": 0}

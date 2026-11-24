@@ -74,15 +74,8 @@ def assert_no_link_components(path: Path) -> Path:
     return candidate
 
 
-def _read_regular_file(path: Path, *, _parent_checked: bool = False) -> bytes:
-    if _parent_checked:
-        checked = _absolute_without_resolving(Path(path))
-        if _is_link_or_reparse(checked):
-            raise ForwardIntegrityError(
-                "forward path contains a symlink or reparse point: %s" % checked
-            )
-    else:
-        checked = assert_no_link_components(path)
+def _read_regular_file(path: Path) -> bytes:
+    checked = assert_no_link_components(path)
     try:
         before = os.lstat(str(checked))
     except OSError as exc:
@@ -122,35 +115,21 @@ def _source_entries(repo_root: Path) -> List[Tuple[str, Path]]:
         raise ForwardIntegrityError(
             "research source directory is unavailable: %s" % source_root
         )
-    if os.path.lexists(str(requirements)) and _is_link_or_reparse(requirements):
-        raise ForwardIntegrityError(
-            "forward path contains a symlink or reparse point: %s" % requirements
-        )
 
     python_files = []
     for current_text, directories, filenames in os.walk(
         str(source_root), topdown=True, followlinks=False
     ):
         current = Path(current_text)
-        if _is_link_or_reparse(current):
-            raise ForwardIntegrityError(
-                "forward path contains a symlink or reparse point: %s" % current
-            )
+        assert_no_link_components(current)
         for name in list(directories):
-            child_dir = current / name
-            if _is_link_or_reparse(child_dir):
-                raise ForwardIntegrityError(
-                    "forward path contains a symlink or reparse point: %s" % child_dir
-                )
+            assert_no_link_components(current / name)
         directories[:] = sorted(
             name for name in directories if name != "__pycache__"
         )
         for name in filenames:
             entry = current / name
-            if _is_link_or_reparse(entry):
-                raise ForwardIntegrityError(
-                    "forward path contains a symlink or reparse point: %s" % entry
-                )
+            assert_no_link_components(entry)
             if name.endswith(".py"):
                 python_files.append(entry)
     if not python_files:
@@ -175,7 +154,7 @@ def research_source_sha256(repo_root: Path) -> str:
     digest.update(b"factorlab-independent-source-v1\0")
     for relative, path in _source_entries(Path(repo_root)):
         relative_bytes = relative.encode("utf-8")
-        content = _read_regular_file(path, _parent_checked=True)
+        content = _read_regular_file(path)
         digest.update(len(relative_bytes).to_bytes(8, "big"))
         digest.update(relative_bytes)
         digest.update(len(content).to_bytes(8, "big"))

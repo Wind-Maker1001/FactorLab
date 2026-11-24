@@ -12,8 +12,10 @@ from .backend import (
     resolve_compute,
 )
 from .parallel import (
+    apply_single_thread_blas_limits,
     chunksize_for_tasks,
     create_process_pool,
+    inspect_threadpools,
     recommended_workers,
     set_single_thread_blas_env,
     single_thread_blas_initializer,
@@ -22,6 +24,7 @@ from .parallel import (
 __all__ = [
     "BackendCapability", "BackendStatus", "ComputeConfig", "ComputeMemoryError",
     "ComputeUnavailableError", "Device", "ResolvedCompute", "probe_runtime",
-    "resolve_compute", "chunksize_for_tasks", "create_process_pool",
-    "recommended_workers", "set_single_thread_blas_env", "single_thread_blas_initializer",
+    "resolve_compute", "apply_single_thread_blas_limits", "chunksize_for_tasks",
+    "create_process_pool", "inspect_threadpools", "recommended_workers",
+    "set_single_thread_blas_env", "single_thread_blas_initializer",
 ]

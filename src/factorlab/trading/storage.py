@@ -97,6 +97,39 @@ def decode(value):
     return value
 
 
+def _clone_funding_event(ev: contracts.FundingEvent) -> contracts.FundingEvent:
+    """Clone FundingEvent with an isolated metadata dict (including when empty)."""
+    meta = {
+        k: (v if type(v) in _PRIMITIVE_TYPES else _clone_runtime(v))
+        for k, v in ev.metadata.items()
+    }
+    clone = object.__new__(contracts.FundingEvent)
+    object.__setattr__(clone, "account_id", ev.account_id)
+    object.__setattr__(clone, "tran_id", ev.tran_id)
+    object.__setattr__(clone, "symbol", ev.symbol)
+    object.__setattr__(clone, "asset", ev.asset)
+    object.__setattr__(clone, "income_type", ev.income_type)
+    object.__setattr__(clone, "amount", ev.amount)
+    object.__setattr__(clone, "event_time", ev.event_time)
+    object.__setattr__(clone, "source", ev.source)
+    object.__setattr__(clone, "event_id", ev.event_id)
+    object.__setattr__(clone, "metadata", meta)
+    return clone
+
+
+def _metadata_signature(meta):
+    """Typed signature for FundingEvent.metadata; returns None if values are non-primitive."""
+    if type(meta) is not dict:
+        return None
+    sig = []
+    for k, v in meta.items():
+        tv = type(v)
+        if tv not in _PRIMITIVE_TYPES:
+            return None
+        sig.append((k, tv, v))
+    return sig
+
+
 def _clone_runtime(value):
     """Fast copy for PaperState.runtime containers while sharing immutable values."""
     t = type(value)
@@ -114,12 +147,7 @@ def _clone_runtime(value):
              contracts.Position, Instrument, Quote, OrderRecord):
         return value
     if t is contracts.FundingEvent:
-        if not value.metadata:
-            return value
-        return contracts.FundingEvent(
-            value.account_id, value.tran_id, value.symbol, value.asset, value.income_type,
-            value.amount, value.event_time, value.source, value.event_id, dict(value.metadata),
-        )
+        return _clone_funding_event(value)
     from copy import deepcopy
     return deepcopy(value)
 
@@ -127,14 +155,7 @@ def _clone_runtime(value):
 def _clone_paper_state(state: PaperState) -> PaperState:
     """Create an isolated PaperState copy without recursing into immutable records."""
     funding_events = {
-        k: (
-            contracts.FundingEvent(
-                v.account_id, v.tran_id, v.symbol, v.asset, v.income_type,
-                v.amount, v.event_time, v.source, v.event_id, dict(v.metadata),
-            )
-            if type(v) is contracts.FundingEvent and v.metadata
-            else v
-        )
+        k: (_clone_funding_event(v) if type(v) is contracts.FundingEvent else _clone_runtime(v))
         for k, v in state.funding_events.items()
     }
     return PaperState(
@@ -262,27 +283,21 @@ class PaperStore:
         fund_cache = self._encoded_funding_json
         fund_parts = []
         for k, v in state.funding_events.items():
+            sig = _metadata_signature(v.metadata) if type(v) is contracts.FundingEvent else None
             cached = fund_cache.get(k)
             if (
                 cached is not None
-                and type(v) is contracts.FundingEvent
-                and cached[2] == v.metadata
-                and (cached[0] is v or cached[0] == v)
+                and sig is not None
+                and cached[2] == sig
+                and cached[0] == v
             ):
                 fund_parts.append(cached[1])
             else:
                 frag = "[" + enc(k) + "," + enc(encode(v)) + "]"
-                if type(v) is contracts.FundingEvent:
-                    meta_copy = dict(v.metadata)
-                    snap = (
-                        contracts.FundingEvent(
-                            v.account_id, v.tran_id, v.symbol, v.asset, v.income_type,
-                            v.amount, v.event_time, v.source, v.event_id, meta_copy,
-                        )
-                        if meta_copy
-                        else v
-                    )
-                    fund_cache[k] = (snap, frag, meta_copy)
+                if sig is not None:
+                    fund_cache[k] = (_clone_funding_event(v), frag, sig)
+                else:
+                    fund_cache.pop(k, None)
                 fund_parts.append(frag)
 
         # Keys in strictly alphabetical order to match sort_keys=True byte-for-byte.

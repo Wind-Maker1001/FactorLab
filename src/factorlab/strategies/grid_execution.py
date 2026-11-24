@@ -250,7 +250,6 @@ class GridExecution:
         self._turnover = ZERO
         self._revision = self._baseline = None
         self._authority_order_cache = {}
-        self._deployment_fp_cache = None
 
     def _stage(self):
         staged = copy(self)
@@ -754,13 +753,7 @@ class GridExecution:
         return digest.hexdigest()
 
     def _paper_deployment(self, controller):
-        cache_key = (self._deployment_continuous_capacity, controller.limits)
-        cached = self._deployment_fp_cache
-        if cached is not None and cached[0] == cache_key:
-            return cached[1]
-        fp = _fingerprint([self.deployment(), asdict(controller.limits)])
-        self._deployment_fp_cache = (cache_key, fp)
-        return fp
+        return _fingerprint([self.deployment(), asdict(controller.limits)])
 
     def _read_checkpoint(self, state, cursor, deployment):
         saved = state.runtime.get(_CHECKPOINT)

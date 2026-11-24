@@ -1,7 +1,9 @@
 """Shared multi-process execution helpers for offline FactorLab research.
 
-Prevents BLAS/OpenMP thread oversubscription across worker processes, computes
-sensible map chunksizes to amortize Windows spawn IPC overhead, and provides
+Prevents BLAS/OpenMP thread oversubscription across worker processes using both
+environment variables (for libraries imported lazily) and ``threadpoolctl``
+runtime threadpool limiting (for libraries already initialized during Windows
+``spawn`` bootstrap), computes balanced map chunksizes, and provides
 conservative worker-count recommendations based on workload size and CPU cores.
 """
 from __future__ import annotations
@@ -9,6 +11,7 @@ from __future__ import annotations
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import get_context
 import os
+from typing import Any
 
 _BLAS_THREAD_VARS = (
     "OMP_NUM_THREADS",
@@ -16,18 +19,63 @@ _BLAS_THREAD_VARS = (
     "MKL_NUM_THREADS",
     "VECLIB_MAXIMUM_THREADS",
     "NUMEXPR_NUM_THREADS",
+    "BLIS_NUM_THREADS",
 )
+
+# Keeps any threadpoolctl limiter handle alive for the worker process lifetime.
+_WORKER_THREADPOOL_LIMITER: Any = None
 
 
 def set_single_thread_blas_env() -> None:
-    """Pin numerical libraries to one thread per process to prevent oversubscription."""
+    """Pin numerical library thread env vars to 1 for libraries imported later."""
     for name in _BLAS_THREAD_VARS:
         os.environ[name] = "1"
 
 
-def single_thread_blas_initializer() -> None:
-    """Top-level ProcessPoolExecutor initializer for Windows spawn compatibility."""
+def inspect_threadpools() -> list[dict[str, Any]]:
+    """Return actual loaded BLAS/OpenMP threadpools reported by threadpoolctl."""
+    try:
+        from threadpoolctl import threadpool_info
+    except ImportError:
+        return []
+    return [dict(entry) for entry in threadpool_info()]
+
+
+def apply_single_thread_blas_limits() -> dict[str, Any]:
+    """Enforce single-thread BLAS/OpenMP limits in the current process and report status.
+
+    Sets thread env vars for any lazily imported libraries and applies
+    ``threadpoolctl.threadpool_limits(limits=1)`` to already-loaded BLAS/OpenMP
+    runtimes (critical under Windows ``spawn`` where NumPy/SciPy may initialize
+    before the pool initializer runs). Reports actual post-limit thread counts
+    without claiming success for any runtime that could not be limited.
+    """
+    global _WORKER_THREADPOOL_LIMITER
     set_single_thread_blas_env()
+    try:
+        from threadpoolctl import threadpool_info, threadpool_limits
+    except ImportError:
+        return {
+            "threadpoolctl_available": False,
+            "all_limited_to_one": False,
+            "pools": [],
+            "uncontrolled_pools": [],
+        }
+
+    _WORKER_THREADPOOL_LIMITER = threadpool_limits(limits=1)
+    pools = [dict(entry) for entry in threadpool_info()]
+    uncontrolled = [p for p in pools if int(p.get("num_threads", 0)) != 1]
+    return {
+        "threadpoolctl_available": True,
+        "all_limited_to_one": len(uncontrolled) == 0,
+        "pools": pools,
+        "uncontrolled_pools": uncontrolled,
+    }
+
+
+def single_thread_blas_initializer() -> None:
+    """Top-level ProcessPoolExecutor initializer for Windows spawn & Linux."""
+    apply_single_thread_blas_limits()
 
 
 def chunksize_for_tasks(n_tasks: int, max_workers: int, *, min_chunk: int = 1, max_chunk: int = 16) -> int:
@@ -66,7 +114,10 @@ def create_process_pool(
     single_thread_blas: bool = True,
     mp_start_method: str | None = "spawn",
 ) -> ProcessPoolExecutor:
-    """Create a ProcessPoolExecutor with optional BLAS single-thread pinning."""
+    """Create a ProcessPoolExecutor with optional single-thread BLAS/OpenMP limiting.
+
+    Does not mutate the parent process's environment variables or threadpools.
+    """
     kwargs: dict[str, object] = {"max_workers": max(1, int(max_workers))}
     if mp_start_method is not None:
         kwargs["mp_context"] = get_context(mp_start_method)
@@ -76,8 +127,10 @@ def create_process_pool(
 
 
 __all__ = [
+    "apply_single_thread_blas_limits",
     "chunksize_for_tasks",
     "create_process_pool",
+    "inspect_threadpools",
     "recommended_workers",
     "set_single_thread_blas_env",
     "single_thread_blas_initializer",

@@ -544,22 +544,12 @@ def _prepare_s01_grid_package(pkg_dir: Path) -> Path:
     return pkg_dir
 
 
-def _run_s01_replay_once(
-    n_bars: int = 8,
-    *,
-    persistent_worker: bool = False,
-    verify_runtime_each_call: bool = True,
-) -> dict[str, Any]:
+def _run_s01_replay_once(n_bars: int = 8) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="perf-s01-") as tmp:
         root = Path(tmp)
         pkg = _prepare_s01_grid_package(root / "pkg")
         t_load = perf_counter()
-        strategy = LoadedStrategy(
-            pkg,
-            trusted=True,
-            persistent_worker=persistent_worker,
-            verify_runtime_each_call=verify_runtime_each_call,
-        )
+        strategy = LoadedStrategy(pkg, trusted=True)
         load_s = perf_counter() - t_load
 
         base = datetime(2026, 8, 13, 0, 0, tzinfo=timezone.utc)
@@ -633,8 +623,6 @@ def _run_s01_replay_once(
             run_s = perf_counter() - t_run
             return {
                 "n_bars": n_bars,
-                "persistent_worker": persistent_worker,
-                "verify_runtime_each_call": verify_runtime_each_call,
                 "load_strategy_s": round(load_s, 6),
                 "replay_s": round(run_s, 6),
                 "total_s": round(load_s + run_s, 6),
@@ -646,7 +634,6 @@ def _run_s01_replay_once(
                 "orders_created": len(broker.state.orders),
             }
         finally:
-            strategy.close()
             store.close()
 
 
@@ -1455,27 +1442,13 @@ def run_bench_d(repeats: int = 3, workers: int = 8) -> dict[str, Any]:
                 "reason": rep["reason"],
             }
 
-    # D3: S01 isolated protocol replay (8 bars = 16 decide events)
+    # D3: S01 isolated protocol replay (8 bars = 16 decide events, one-shot S04 contract)
     d3_times = []
     d3_last = None
     for _ in range(repeats):
-        res_s01 = _run_s01_replay_once(n_bars=8, persistent_worker=False)
+        res_s01 = _run_s01_replay_once(n_bars=8)
         d3_times.append(res_s01["total_s"])
         d3_last = res_s01
-
-    d3_pers_verify_times = []
-    d3_pers_verify_last = None
-    for _ in range(repeats):
-        res_p1 = _run_s01_replay_once(n_bars=8, persistent_worker=True, verify_runtime_each_call=True)
-        d3_pers_verify_times.append(res_p1["total_s"])
-        d3_pers_verify_last = res_p1
-
-    d3_pers_fast_times = []
-    d3_pers_fast_last = None
-    for _ in range(repeats):
-        res_p2 = _run_s01_replay_once(n_bars=8, persistent_worker=True, verify_runtime_each_call=False)
-        d3_pers_fast_times.append(res_p2["total_s"])
-        d3_pers_fast_last = res_p2
 
     return {
         "suite": "BENCH-D",
@@ -1493,14 +1466,6 @@ def run_bench_d(repeats: int = 3, workers: int = 8) -> dict[str, Any]:
         "d3_s01_isolated_grid_8bars": {
             "timing": _summarize_runs(d3_times),
             "last_run_detail": d3_last,
-        },
-        "d3_s01_persistent_worker_verify_each": {
-            "timing": _summarize_runs(d3_pers_verify_times),
-            "last_run_detail": d3_pers_verify_last,
-        },
-        "d3_s01_persistent_worker_verify_once": {
-            "timing": _summarize_runs(d3_pers_fast_times),
-            "last_run_detail": d3_pers_fast_last,
         },
     }
 
