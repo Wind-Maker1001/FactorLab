@@ -511,7 +511,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
         equity = funds['walletBalance'] + funds['unrealizedProfit']
         if self._initial_equity is None:
             self._initial_equity = equity
-        local_pnl = sum((p.quantity * (reference - p.entry_price)
+        local_pnl = sum((p.quantity * (p.mark_price - p.entry_price)
                          for p in state.positions.values()), Decimal('0'))
         local_equity = (sum((a.total for a in self.read_account().assets), Decimal('0'))
                         + min(local_pnl, funds['unrealizedProfit']))
@@ -519,8 +519,9 @@ class DemoExecutionGateway(FuturesPaperGateway):
             raise SafetyBlocked('plan virtual loss limit')
         # Full notional reservation is conservative for the one-way supported path.
         reserved = sum(((o.intent.quantity - o.cumulative_filled_quantity)
-                        * max(o.intent.limit_price or quote.price, quote.price) for o in pending), Decimal('0'))
-        collateral = sum((abs(p.quantity) * max(p.entry_price, reference, quote.price)
+                        * max(o.intent.limit_price or state.quotes[o.intent.instrument_id].price,
+                              state.quotes[o.intent.instrument_id].price) for o in pending), Decimal('0'))
+        collateral = sum((abs(p.quantity) * max(p.entry_price, p.mark_price)
                           for p in state.positions.values()), Decimal('0'))
         additional_margin = notional
         if (transport.write_guard is not None and intent.reduce_only

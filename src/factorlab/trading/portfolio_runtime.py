@@ -2,6 +2,7 @@
 
 No adapter, order state machine, cash ledger or network authority is created here.
 """
+from dataclasses import replace
 from decimal import Decimal as D
 import json
 
@@ -61,8 +62,17 @@ class PortfolioRuntime:
             result = self._resume_batch(batch, submit)
             if result != 'TERMINAL':
                 return result
+            if any(self.gateway.state.orders[i.client_order_id].snapshot.status.value in {'REJECTED', 'CANCELED'} for i in batch):
+                return 'BATCH_TERMINATED'
             index += 1
-        legs = plan_targets(account=account, equity=target['equity'], weights=target['weights'],
+        account = self.recover_account()
+        if not account.reconciled:
+            return 'RECONCILE_REQUIRED'
+        # Available funds already include all account reservations; only owned
+        # orders constrain this allocation's rebalance sequencing.
+        planning_account = replace(account, open_orders=tuple(
+            o for o in account.open_orders if o.intent.instrument_id in self.owned_symbols))
+        legs = plan_targets(account=planning_account, equity=target['equity'], weights=target['weights'],
             prices=prices, steps=steps, owned_symbols=self.owned_symbols,
             fee_rate=self.gateway.state.fee_rate)
         intents = [OrderIntent(account.market, leg.symbol,

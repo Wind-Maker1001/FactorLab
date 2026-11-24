@@ -143,7 +143,14 @@ class DemoSession:
         if balance is None:
             raise SafetyBlocked('Demo wallet balance unavailable')
         leverage = configuration['leverage']
-        self.gateway = DemoExecutionGateway(self.adapter, observation, (Instrument(self.symbol, 'USDT'),),
+        instruments = (Instrument(self.symbol, 'USDT'),)
+        restored = controller_store.load()
+        if controller_store.event_payload('demo:static-shared-account:v1') is not None and restored is not None:
+            if set(restored.instruments) - {'NVDAUSDT', 'QQQUSDT', 'SPYUSDT'}:
+                raise SafetyBlocked('unexpected shared account instrument')
+            instruments = tuple(restored.instruments.values())
+        self.shared_account = controller_store.event_payload('demo:static-shared-account:v1') is not None
+        self.gateway = DemoExecutionGateway(self.adapter, observation, instruments,
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
@@ -196,7 +203,7 @@ class DemoSession:
             self.adapter._require_fresh_account_read(facts.observed_at, facts.read_started_monotonic, now)
         except AccountReadExpired:
             raise SafetyBlocked('STALE_ACCOUNT at Demo dispatch') from None
-        if method == 'POST':
+        if method == 'POST' and 'leverage' not in params:
             if not timedelta(0) <= now - self._order_quote_at <= timedelta(seconds=5):
                 raise SafetyBlocked('STALE_QUOTE at Demo dispatch')
         self._write_guard(method, params, plan)
@@ -325,11 +332,20 @@ class DemoSession:
 
     def _fresh_facts_for_submission(self):
         facts = self._fresh_bound_facts()
-        if facts.open_orders or self.gateway.read_account().open_orders:
+        if self.shared_account:
+            # Static symbol ownership; conflicts affect the requested symbol only.
+            for row in facts.open_orders:
+                if row['symbol'] == self.symbol:
+                    key = row['clientOrderId']
+                    if key not in self.gateway.state.orders:
+                        raise SafetyBlocked('unowned order conflicts with requested symbol')
+            if any(o.intent.instrument_id == self.symbol for o in self.gateway.read_account().open_orders):
+                raise SafetyBlocked('active owned order for requested symbol')
+        elif facts.open_orders or self.gateway.read_account().open_orders:
             raise SafetyBlocked('active Demo orders prevent adding another order')
         confirmed = {p.instrument_id: (p.quantity, p.entry_price) for p in facts.shared().positions}
         local = {p.instrument_id: (p.quantity, p.entry_price) for p in self.gateway.state.positions.values()}
-        if confirmed != local or any(symbol != self.symbol for symbol in confirmed):
+        if confirmed != local or (not self.shared_account and any(symbol != self.symbol for symbol in confirmed)):
             raise SafetyBlocked('Demo account position changed; use GET recovery')
 
     def prepare_limit_book(self):
