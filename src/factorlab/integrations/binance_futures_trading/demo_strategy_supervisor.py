@@ -6,15 +6,16 @@ import signal
 import sqlite3
 
 from factorlab.trading.realtime import PersistenceConflict
-from factorlab.trading.strategy import DualMAStrategy
+from factorlab.strategies.loader import LoadedStrategy
 from .demo_cli import open_session
 from .demo_credentials import DemoCredentialStore
-from .demo_market_feed import DemoMarketFeed, FeedPaused, INTERVALS, SOURCE
+from .demo_market_feed import DemoMarketFeed, FeedPaused, INTERVALS, SOURCE, SYMBOL
 from .demo_runtime import (DemoRuntime, MAX_NOTIONAL, MAX_QUANTITY, durable_control_state,
                            operator_lock, state_root)
 from .demo_supervisor import DemoSupervisor
 from .protocol import Environment, ReadOnlyNetworkTransport, SafetyBlocked
-from .strategy_runtime import DemoStrategyRuntime
+from .unified_strategy import strategy_runtime
+from factorlab.strategies.decision_runtime import OrderStrategyRuntime
 
 
 from .observability import ObservedClient, RequestCounts, worker_metrics
@@ -103,9 +104,14 @@ class StrategyConsumer:
         if not result.reconciled:
             self.reason = 'RECONCILE_REQUIRED'
             raise FeedPaused(self.reason)
+        if not allowed:
+            allowed = self._control()
+            if self.control.desired() == 'STOPPED':
+                return
         if allowed and not self.was_running:
             # Signals accumulated while paused cannot be executed on resume.
-            self.runner.controller._atomic(lambda: self.runner.gateway.state.runtime.update(pending=None))
+            if not isinstance(self.runner, OrderStrategyRuntime):
+                self.runner.controller._atomic(lambda: self.runner.gateway.state.runtime.update(pending=None))
             self.runner.resume()
             self.was_running = True
         self.reason = None if allowed else self.reason
@@ -137,6 +143,11 @@ class StrategyConsumer:
 def run_worker(args, root, store, runtime, requests):
     mode = 'execute' if args.execute else 'dry-run'
     configuration = dict(mode=mode, interval=args.interval, source=SOURCE, max_backfill=args.max_backfill)
+    selected = (LoadedStrategy(args.strategy, trusted=True) if getattr(args, 'strategy', None) else None)
+    if selected is not None:
+        selected.spec.require(symbol=SYMBOL, interval_seconds=INTERVALS[args.interval],
+                              data_types=['closed_bar', 'quote', 'order_event'])
+        configuration['strategy'] = selected.binding
     state = root / ('strategy-' + mode + '.sqlite3')
     if args.execute:
         runtime_stop = durable_control_state(runtime)
@@ -165,7 +176,6 @@ def run_worker(args, root, store, runtime, requests):
         journal_root = root if args.execute else root / 'strategy-preview'
         journal_root.mkdir(exist_ok=True)
         with open_session(journal_root, store, runtime, requests, campaign=campaign) as (session, expect):
-            strategy = DualMAStrategy(source=SOURCE, interval_seconds=INTERVALS[args.interval])
             checkpoint = session.gateway.state.runtime
             prefix = campaign['prefix'] + '-' if campaign is not None else 'preview-'
             old_prefix = checkpoint.get('configuration', {}).get('client_id_prefix', prefix)
@@ -177,23 +187,30 @@ def run_worker(args, root, store, runtime, requests):
                     raise SafetyBlocked('strategy paused or authorization lost before submission')
                 expect(client_id, side, quantity)
 
-            runner = DemoStrategyRuntime(session, strategy, client_id_prefix=old_prefix, expect=expect_order,
-                **previous_settings)
+            runner = strategy_runtime(session, strategy=selected, interval_seconds=INTERVALS[args.interval],
+                deployment_id=old_prefix.rstrip('-'), client_id_prefix=old_prefix,
+                expect=expect_order, **previous_settings)
             if checkpoint.get('status') == 'STOPPED' or old_prefix != prefix or previous_settings != settings:
                 runner.stop()
-                runner.activate(client_id_prefix=prefix, **settings)
+                if hasattr(runner, 'activate'):
+                    runner.activate(client_id_prefix=prefix, **settings)
+                else:
+                    raise SafetyBlocked('order strategy campaign changed; use a fresh deployment journal')
 
             def authority():
                 active = runtime.active_campaign()
                 return (not args.execute or active is not None and active['id'] == campaign['id']
                     and runtime.post_count(active['id']) < active['orders']
-                    and not session.write_uncertain and not session.receipt_error)
+                    and not session.write_uncertain and not session.receipt_error
+                    and not any(receipt['http_status'] == 400
+                                for receipt in session.receipts[session._recovered_receipt_count:]))
 
             consumer = StrategyConsumer(runner, control, authority)
             client = MarketClient(requests)
             with closing(DemoMarketFeed(client, consumer, state_path=state,
-                    consumer_id='dual-ma-' + mode, interval=args.interval,
-                    max_backfill=args.max_backfill, initial_bars=strategy.history_limit)) as feed:
+                    consumer_id=('dual-ma-' if selected is None else selected.spec.strategy_id + '-') + mode, interval=args.interval,
+                    max_backfill=args.max_backfill, initial_bars=(runner.strategy.history_limit if selected is None
+                        else selected.spec.history_limit))) as feed:
                 def report(raw):
                     payload = json.loads(raw)
                     checkpoint = runner.gateway.state.runtime
@@ -224,6 +241,7 @@ def main(argv=None):
     parser.add_argument('command', choices=('start', 'pause', 'resume', 'stop', 'status'))
     parser.add_argument('--execute', action='store_true', help='explicitly enable the existing persistent Demo authorization')
     parser.add_argument('--interval', choices=INTERVALS, default='1m')
+    parser.add_argument('--strategy', help='explicitly trusted local strategy JSON manifest or versioned package directory')
     parser.add_argument('--poll-seconds', type=float, default=2)
     parser.add_argument('--max-backfill', type=int, default=120)
     parser.add_argument('--seconds', type=float)

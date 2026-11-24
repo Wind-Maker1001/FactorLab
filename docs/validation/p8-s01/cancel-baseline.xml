@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="11" time="162.064" timestamp="2026-11-24T18:45:19.972948+08:00" hostname="Desktop"><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_crash_after_attempt_before_cancel_restarts_with_original_identity[False]" file="tests\integrations\test_protocol_cancel_outbox.py" line="118" time="14.997"><failure message="AttributeError: 'NoneType' object has no attribute 'status'">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_crash_after_attempt_befor0'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CC501400&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEA37230&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEA72060&gt;
+legacy_attempt = False
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1E8EC9440&gt;
+
+    @pytest.mark.parametrize('legacy_attempt', [False, True])
+    def test_crash_after_attempt_before_cancel_restarts_with_original_identity(
+            deployment, demo_clock, cancel_once, monkeypatch, legacy_attempt, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            demo_clock.at += timedelta(seconds=1)
+            if legacy_attempt:
+                def register_legacy(decision, **kwargs):
+                    marker = kwargs['cancellation_attempts'][key]
+                    with runner.controller.store.transaction():
+                        runner.controller.store.record_metadata(marker, dict(client_order_id=key, at=demo_clock.at))
+                    raise RuntimeError('crash before cancel')
+                monkeypatch.setattr(runner.execution, 'dispatch', register_legacy)
+            else:
+                monkeypatch.setattr(session, 'cancel', lambda _: (_ for _ in ()).throw(RuntimeError('crash before cancel')))
+            with pytest.raises(RuntimeError, match='crash before cancel'):
+                runner.quote(demo_clock.quote())
+            offer = pending_cancel(runner, key)
+            assert runner.controller.store.event_payload(attempt_id(runner, offer)) is not None
+            assert counts['DELETE'] == 0
+        recovery_start = len(exchange.calls)
+        with open_runner(deployment, cancel_once, counts, recover=False) as (_, runner):
+            assert pending_cancel(runner, key) == offer
+            assert runner.recover().reconciled
+&gt;           assert runner.quote(demo_clock.quote()).status is S.CANCELED
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'NoneType' object has no attribute 'status'
+
+tests\integrations\test_protocol_cancel_outbox.py:145: AttributeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_pre_delete_facts_failure_retries_after_get_past_entry_deadline" file="tests\integrations\test_protocol_cancel_outbox.py" line="154" time="15.498"><failure message="AttributeError: 'NoneType' object has no attribute 'status'">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_pre_delete_facts_failure_0'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEAA3250&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 1, 2, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEAA3610&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEA71F30&gt;
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEB7F100&gt;
+
+    def test_pre_delete_facts_failure_retries_after_get_past_entry_deadline(
+            deployment, demo_clock, cancel_once, monkeypatch, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            demo_clock.at += timedelta(seconds=1)
+            with monkeypatch.context() as patch:
+                def fail():
+                    raise OSError('bound facts unavailable before DELETE')
+                patch.setattr(session, '_fresh_bound_facts', fail)
+                with pytest.raises(OSError, match='bound facts unavailable'):
+                    runner.quote(demo_clock.quote())
+            pending_cancel(runner, key)
+            assert counts['DELETE'] == 0
+            recovery_start = len(exchange.calls)
+            demo_clock.at += timedelta(seconds=61)
+&gt;           assert runner.quote(demo_clock.quote()).status is S.CANCELED
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'NoneType' object has no attribute 'status'
+
+tests\integrations\test_protocol_cancel_outbox.py:172: AttributeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[False-True-False]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="13.540"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci0'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEAA2350&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEAA1E50&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CE9D3AC0&gt;
+apply_delete = True, partial = False, restart = False
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEAB6F20&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEA735C0&gt;
+key = 'fl-369485a9887246e7-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[False-True-True]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="14.073"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci1'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEA73E10&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEC143E0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEA9D550&gt;
+apply_delete = True, partial = True, restart = False
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEC2D300&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEC150F0&gt;
+key = 'fl-cf25e45f4d3b45da-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[False-False-False]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="13.240"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci2'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEC15480&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEC15E00&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEC295E0&gt;
+apply_delete = False, partial = False, restart = False
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEC2F2E0&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEC003B0&gt;
+key = 'fl-606ca867a86f46a2-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[False-False-True]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="14.649"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci3'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEAAE7B0&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEC01010&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEB9FE70&gt;
+apply_delete = False, partial = True, restart = False
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEC2CD60&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEBE19D0&gt;
+key = 'fl-72568b45858e4965-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[True-True-False]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="14.062"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci4'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEBE2250&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEBE2690&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEC097E0&gt;
+apply_delete = True, partial = False, restart = True
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEC2EB60&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEBE3240&gt;
+key = 'fl-246d38cfa0bf4022-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[True-True-True]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="16.278"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci5'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEBE3AC0&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEBE3F00&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEC58890&gt;
+apply_delete = True, partial = True, restart = True
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEC1C9A0&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CED3CA50&gt;
+key = 'fl-c8a2d3f1835c45fd-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[True-False-False]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="14.442"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci6'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEA9FC50&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEA9F150&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEC36D00&gt;
+apply_delete = False, partial = False, restart = True
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEAD2B60&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEA9D950&gt;
+key = 'fl-dbc780db4ac24cff-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active[True-False-True]" file="tests\integrations\test_protocol_cancel_outbox.py" line="180" time="15.630"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_lost_delete_reply_reconci7'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEA9EB50&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEA9D350&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEAD1450&gt;
+apply_delete = False, partial = True, restart = True
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEC2D4E0&gt;
+
+    @pytest.mark.parametrize(('apply_delete', 'partial'), [(True, False), (True, True), (False, False), (False, True)])
+    @pytest.mark.parametrize('restart', [False, True])
+    def test_lost_delete_reply_reconciles_terminal_or_retries_confirmed_active(
+            deployment, demo_clock, cancel_once, monkeypatch, apply_delete, partial, restart, record_property):
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            key = runner.quote(demo_clock.quote()).intent.client_order_id
+            if partial:
+                exchange.trade_update(key, '.01', '99')
+                assert runner.recover().reconciled
+            before = session.adapter.order(key)
+            economics = economic_state(runner)
+            original = NetworkFixture.__call__
+            with monkeypatch.context() as patch:
+                def lose_reply(self, request, timeout):
+                    if request.method == 'DELETE':
+                        if apply_delete:
+                            original(self, request, timeout)
+                        else:
+                            self.calls.append(('DELETE', request.path, parse_qs(request.query)))
+                        raise TimeoutError('DELETE outcome unknown')
+                    return original(self, request, timeout)
+                patch.setattr(NetworkFixture, '__call__', lose_reply)
+                demo_clock.at += timedelta(seconds=1)
+                assert runner.quote(demo_clock.quote()).status is S.UNKNOWN
+            assert session.write_uncertain
+&gt;           assert pending_cancel(runner, key)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\integrations\test_protocol_cancel_outbox.py:208:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEC28D70&gt;
+key = 'fl-b1a5a54cbbeb4535-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase><testcase classname="tests.integrations.test_protocol_cancel_outbox" name="test_cancel_survives_pause_disconnect_expiry_restart_without_reviving_entry" file="tests\integrations\test_protocol_cancel_outbox.py" line="264" time="13.526"><failure message="TypeError: 'NoneType' object is not subscriptable">deployment = (WindowsPath('C:/Users/qwe13/AppData/Local/Temp/pytest-of-unknown/pytest-15/test_cancel_survives_pause_dis0'), &lt;test_b...id': '3bba4ac8901d5f2ab08b9de73e548fdf', ...}, &lt;test_binance_demo_network.NetworkFixture object at 0x000001D1CEA92B70&gt;)
+demo_clock = QuoteClock(at=datetime.datetime(2026, 11, 11, 12, 0, 1, 2000, tzinfo=datetime.timezone.utc))
+cancel_once = &lt;factorlab.strategies.loader.LoadedStrategy object at 0x000001D1CEA92120&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001D1CEC72950&gt;
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x000001D1CEC2C540&gt;
+
+    def test_cancel_survives_pause_disconnect_expiry_restart_without_reviving_entry(
+            deployment, demo_clock, cancel_once, monkeypatch, record_property):
+        from dataclasses import replace
+        from factorlab.strategies.protocol import Decision
+        counts = dict(GET=0, POST=0, DELETE=0)
+        exchange = deployment[3]
+        with open_runner(deployment, cancel_once, counts) as (session, runner):
+            opened = runner.quote(demo_clock.quote())
+            key = opened.intent.client_order_id
+            # An entry waiting behind the active order must stay withdrawn on resume.
+            queued = replace(opened.intent, client_order_id=runner.journal.deployment_id + '-queued')
+            runner.controller._atomic(lambda: runner._pending(Decision(orders=(queued,)), demo_clock.at, True))
+            demo_clock.at += timedelta(seconds=1)
+            with monkeypatch.context() as patch:
+                patch.setattr(session, '_fresh_bound_facts', lambda: (_ for _ in ()).throw(OSError('offline')))
+                with pytest.raises(OSError, match='offline'):
+                    runner.quote(demo_clock.quote())
+            offer = pending_cancel(runner, key)
+            runner.pause()
+            runner.disconnect()
+&gt;           pending_cancel(runner, key)
+
+tests\integrations\test_protocol_cancel_outbox.py:285:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = &lt;factorlab.strategies.decision_runtime.OrderStrategyRuntime object at 0x000001D1CEA92D50&gt;
+key = 'fl-4c432448eb4d4a8b-cancel-entry'
+
+    def pending_cancel(runner, key):
+        pending = runner.gateway.state.runtime['pending']
+&gt;       assert [offer['key'] for offer in pending['cancellations']] == [key]
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests\integrations\test_protocol_cancel_outbox.py:64: TypeError</failure></testcase></testsuite></testsuites>

@@ -22,6 +22,10 @@ from factorlab.strategies.robustness import account_batch
 
 ROOT = Path(__file__).resolve().parents[3]
 
+# Decision-protocol research shares the immutable tracker and account engines;
+# the existing daily research configuration/replay contract remains supported.
+from .protocol_strategy import run_protocol_research
+
 
 def _now():
     return datetime.now(timezone.utc).isoformat()

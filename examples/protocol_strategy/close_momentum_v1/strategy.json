@@ -1,0 +1,7 @@
+{
+  "file": "__init__.py",
+  "class": "CloseMomentum",
+  "version": "1.0.0",
+  "package": true,
+  "parameters": {"symbol": "NVDAUSDT", "interval_seconds": 60, "weight": ".01"}
+}

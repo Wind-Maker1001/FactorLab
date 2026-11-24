@@ -1,0 +1,6 @@
+{
+  "file": "dual_ma.py",
+  "class": "DualMAAdapter",
+  "version": "1",
+  "parameters": {"interval_seconds": 60, "source": "BINANCE_USDM_DEMO_REST"}
+}

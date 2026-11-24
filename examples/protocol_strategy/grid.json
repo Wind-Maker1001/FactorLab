@@ -1,0 +1,13 @@
+{
+  "file": "grid.py",
+  "class": "GridAdapter",
+  "version": "1",
+  "parameters": {
+    "config": {"lower": 145, "upper": 155, "levels": 1, "initial_price": 150,
+      "initial_inventory": 0, "quantity": 1, "max_inventory": 1,
+      "max_cash_committed": 7, "breakout": "pause"},
+    "rules": {"quantity_unit": ".04", "step_size": ".01", "tick_size": ".01",
+      "min_quantity": ".01", "min_notional": "5"},
+    "instrument_id": "NVDAUSDT", "initial_equity": "1000", "interval_seconds": 60
+  }
+}

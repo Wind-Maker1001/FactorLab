@@ -1,0 +1,6 @@
+{
+  "file": "limit_once.py",
+  "class": "LimitOnce",
+  "version": "1.0.0",
+  "parameters": {"symbol": "NVDAUSDT", "interval_seconds": 60, "quantity": ".04", "offset": "5"}
+}
