@@ -143,4 +143,6 @@
 - 关联 Grid 缺陷：仅恢复 runtime Bar 窗口不能推进 GridAdapter 的 ATR/true_ranges 与 BREAKOUT 状态。新增默认关闭的历史观察能力；仅显式启用的 Grid 在历史输入推进内部状态、撤回未提交提案并保留真实订单及撤单。实时输入复用原 `reseed_withdrawn` 恢复播种，默认订单策略仍不执行历史决策。绑定序列化省略默认 False，保留显式 True；专用历史观察与原通用策略集合固定源码后 **28 passed**。
 - 包加载补充复现：活动版本重启时缺失 pinned dependency，原 readiness 路径泄漏 `StrategyWorkerError`；现已归入受控 `PACKAGE_LOAD_FAILED`。为纳入该修复，停止尚未完成的联合测试，统一固定源码重跑；中断运行不计为通过。
 - 最终固定源码联合回归 **207 passed in 951.37s**，覆盖真实 health、预算与退出预留重启、原 S04、版本历史恢复、S03、HTTP 200 撤单恢复、撤单 outbox、Grid 历史观察和通用策略；加上撤单矩阵 14 项及包故障 6 项，共 **227 项通过**。`compileall` 与 `git diff --check` 通过。
-- TODO：推送后补录修复 HEAD、可信 CI 与定向独立复审结果。原始历史 JSON/XML 不修改；历史实机真实成交判定保持 **PARTIAL_VERIFIED**，不操作 Azure、不发送交易网络请求、不调整全局预算。
+- 修复 HEAD：`8821c6120fcb6a009f0095bde106f1ad25e55ff6`；[Demo 四组合矩阵](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45468467989) 全通过。[可信 PR validation](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45468462949) 的 Fast 在基础 1,429 项通过后执行定向集合，触及整个 job 的 15 分钟上限被取消，并非已报告的测试断言失败。
+- CI 调整：定向集合拆为并行 `Targeted Python 3.13`，独立 30 分钟上限和回执；Fast 保持 15 分钟及原基础集合。固定版本 actions、不可变事件合并、可信工具/风险工件重取和身份校验均保留。可信身份/工作流契约 **31 passed**，`git diff --check` 通过。`pull_request_target` 使用可信 base 工作流，此调整需进入可信 base 后才能影响该入口；不以候选工作流替代受信执行。
+- TODO：补录拆分工作流生效后的可信 CI 与定向独立复审结果。原始历史 JSON/XML 不修改；历史实机真实成交判定保持 **PARTIAL_VERIFIED**，不操作 Azure、不发送交易网络请求、不调整全局预算。
