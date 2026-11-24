@@ -161,7 +161,8 @@ class InstrumentQuote:
 def execution_quote(row: Mapping, instrument: Instrument, *, calendar: AlpacaSessionCalendar,
                     received_at, now, feed: str, required_feed: str,
                     decision_window: tuple, opening: OpeningObservation | None = None,
-                    max_age=pd.Timedelta(seconds=30), source: str = 'alpaca') -> InstrumentQuote:
+                    max_age=pd.Timedelta(seconds=30), source: str = 'alpaca',
+                    decision_at=None) -> InstrumentQuote:
     if row.get('symbol', row.get('S', instrument.symbol)) != instrument.symbol:
         raise ValueError('quote instrument mismatch')
     event, received, now = instant(row['t']), instant(received_at), instant(now)
@@ -185,6 +186,8 @@ def execution_quote(row: Mapping, instrument: Instrument, *, calendar: AlpacaSes
         reasons.append('outside_regular_session')
     if not (start <= event < end and start <= received < end and start <= now < end):
         reasons.append('outside_decision_window')
+    if decision_at is not None and (event <= instant(decision_at) or received <= instant(decision_at)):
+        reasons.append('not_after_decision')
     if opening is not None:
         if opening.instrument != instrument or opening.session != session:
             reasons.append('opening_identity_mismatch')

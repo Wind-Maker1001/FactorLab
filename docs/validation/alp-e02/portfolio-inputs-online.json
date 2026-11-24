@@ -1,0 +1,99 @@
+{
+  "adjustment_basis": "yahoo_ratio",
+  "history_feed": "iex",
+  "quote_feed": "iex",
+  "history_reused_without_network": true,
+  "opening_required": false,
+  "decision_at": "2026-11-24T15:59:45.263860+00:00",
+  "shape": [
+    252,
+    8
+  ],
+  "fields": {
+    "adjusted_close": {
+      "AAPL": 252,
+      "SNDK": 252,
+      "BA": 252,
+      "C": 252,
+      "JPM": 252,
+      "GE": 252,
+      "TQQQ": 252,
+      "QQQ": 252
+    },
+    "adjusted_open": {
+      "AAPL": 252,
+      "SNDK": 252,
+      "BA": 252,
+      "C": 252,
+      "JPM": 252,
+      "GE": 252,
+      "TQQQ": 252,
+      "QQQ": 252
+    },
+    "adjusted_volume": {
+      "AAPL": 252,
+      "SNDK": 252,
+      "BA": 252,
+      "C": 252,
+      "JPM": 252,
+      "GE": 252,
+      "TQQQ": 252,
+      "QQQ": 252
+    }
+  },
+  "quotes": {
+    "AAPL": {
+      "event_at": "2026-11-24T15:59:46.040780943+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": true,
+      "reasons": []
+    },
+    "SNDK": {
+      "event_at": "2026-11-24T15:59:46.039790707+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": true,
+      "reasons": []
+    },
+    "BA": {
+      "event_at": "2026-11-24T15:59:27.390107688+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": false,
+      "reasons": [
+        "stale_event",
+        "not_after_decision"
+      ]
+    },
+    "C": {
+      "event_at": "2026-11-24T15:59:45.874440333+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": true,
+      "reasons": []
+    },
+    "JPM": {
+      "event_at": "2026-11-24T15:59:45.349303694+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": true,
+      "reasons": []
+    },
+    "GE": {
+      "event_at": "2026-11-24T15:59:41.544519451+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": false,
+      "reasons": [
+        "not_after_decision"
+      ]
+    },
+    "TQQQ": {
+      "event_at": "2026-11-24T15:59:46.043260018+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": true,
+      "reasons": []
+    },
+    "QQQ": {
+      "event_at": "2026-11-24T15:59:45.604359443+00:00",
+      "received_at": "2026-11-24T15:59:46.225791+00:00",
+      "valid": true,
+      "reasons": []
+    }
+  }
+}

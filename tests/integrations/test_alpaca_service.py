@@ -69,7 +69,7 @@ def test_strategy_bundle_acquires_opening_before_executable_quote(tmp_path):
     service = MarketDataService(client, MarketCache(tmp_path), cal)
     instrument = Instrument('asset-a', 'AAPL', pd.Timestamp('2026-11-24T12:00-05:00'))
     bundle = service.inputs([instrument], start='2026-11-20', end='2026-11-24', now=client.now(),
-                            decision_window=('2026-11-24T14:30Z', '2026-11-24T21:00Z'))
+                            decision_window=('2026-11-24T14:30Z', '2026-11-24T21:00Z'), use_opening=True)
     assert bundle.quotes['asset-a'].valid
     assert bundle.openings['asset-a'].kind == 'bar'
     assert bundle.history.index.max() == pd.Timestamp('2026-11-23')
