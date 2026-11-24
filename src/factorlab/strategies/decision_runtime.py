@@ -289,10 +289,11 @@ class OrderStrategyRuntime:
 
     def _account(self):
         # The existing projection keeps base quantity separate from collateral.
+        allow_shared = self.controller.store.event_payload('demo:static-shared-account:v1') is not None
         if self.controller.store.db.in_transaction:
             return asdict(_project_paper_account(self.gateway, self.symbol,
-                _historical_turnover(self.controller.store)))
-        return asdict(project_paper_account(self.controller, self.symbol))
+                _historical_turnover(self.controller.store), allow_shared=allow_shared))
+        return asdict(project_paper_account(self.controller, self.symbol, allow_shared=allow_shared))
 
     def _event(self, kind, event_id, **value):
         state = self.gateway.state

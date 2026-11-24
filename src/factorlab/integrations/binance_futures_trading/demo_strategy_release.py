@@ -543,6 +543,11 @@ class ReleaseConsumer:
             except RiskRejected:
                 return None
             except (StrategyWorkerError, ValueError, RuntimeError, TypeError, KeyError) as error:
+                if isinstance(error, ValueError) and str(error) in {
+                    'fresh quote required', 'future quote', 'quote time regression',
+                }:
+                    self.reason = str(error)
+                    raise FeedPaused(self.reason) from error
                 self._rollback_on_strategy_error(error, runner)
                 return None
         previous = self.bridge.gateway.state.quotes.get(quote.instrument_id)
