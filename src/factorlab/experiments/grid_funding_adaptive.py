@@ -66,6 +66,50 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def validate_hourly_timeline(
+    values: Any, *, start: datetime | None = None, end: datetime | None = None,
+) -> pd.DatetimeIndex:
+    """Reject malformed hours in source order; never sort, deduplicate or fill."""
+    stamps = [pd.Timestamp(v) for v in values]
+    if not stamps or any(pd.isna(t) or t.tzinfo is None for t in stamps):
+        raise ValueError("Complete timezone-aware UTC hourly timeline required")
+    times = pd.DatetimeIndex([t.tz_convert("UTC") for t in stamps])
+    if times.has_duplicates:
+        raise ValueError("Duplicate hourly timestamps")
+    if not times.is_monotonic_increasing:
+        raise ValueError("Hourly timestamps must be strictly increasing")
+    if not times.equals(times.floor("h")):
+        raise ValueError("UTC timestamps must align to whole hours")
+    expected = pd.date_range(
+        start if start is not None else times[0],
+        end if end is not None else times[-1] + pd.Timedelta(hours=1),
+        freq="h", inclusive="left",
+    )
+    if not times.equals(expected):
+        raise ValueError("Missing hourly bars or incorrect coverage boundary; no filling permitted")
+    return times
+
+
+def synthetic_hourly_funding_events(
+    dates: Any, closes: Any, *, constant_hourly_bps: float | None = None,
+    regime_switch_bps: tuple[int, float, float] | None = None,
+) -> list[tuple[datetime, Decimal, Decimal, str]]:
+    """One settlement per observed bar close, shared by signals and accounting."""
+    events = []
+    for i, (date, close) in enumerate(zip(dates, closes)):
+        if constant_hourly_bps is not None:
+            bps = constant_hourly_bps
+        else:
+            assert regime_switch_bps is not None
+            switch, pre, post = regime_switch_bps
+            bps = pre if i < switch else post
+        events.append((
+            parse_utc(date) + timedelta(hours=1, microseconds=-1),
+            D(str(close)), D(str(bps)) / D(10000), "SyntheticHourly",
+        ))
+    return events
+
+
 def demo_grid_rules() -> GridRules:
     return GridRules(
         quantity_unit=D("0.04"),
@@ -654,7 +698,7 @@ def load_and_audit_r10_dataset(
     r07_close_corroboration = {"checked": False}
     if supp_bars_path.is_file():
         df_supp = pd.read_parquet(supp_bars_path)
-        df_supp = df_supp.sort_values("open_time").drop_duplicates(subset=["open_time"]).reset_index(drop=True)
+        validate_hourly_timeline(df_supp["open_time"], start=r07_start, end=post_end)
         # Cross-verify R07 segment against repository R07-base-baseline-hourly.csv (2160 closes).
         r07_ref = pd.read_csv(r07_ref_hourly_path)
         r07_ref["ts"] = pd.to_datetime(r07_ref["date"], utc=True)
@@ -729,7 +773,9 @@ def load_and_audit_r10_dataset(
     all_funding = sorted(funding_map.values(), key=lambda e: e[0])
 
     # Run strict continuity & alignment checks on the combined timeline
-    bar_times = pd.to_datetime([b["time"] for b in all_bars], utc=True)
+    bar_times = validate_hourly_timeline(
+        [b["time"] for b in all_bars], start=parse_utc(r04b_identity["start"]), end=post_end,
+    )
     expected_range = pd.date_range(bar_times[0], bar_times[-1], freq="h", tz="UTC")
     missing_bars = len(expected_range) - len(bar_times)
     duplicate_bars = int(bar_times.duplicated().sum())
@@ -904,40 +950,27 @@ def compute_funding_overlay_series(
     - Constant hourly funding bps stress (e.g. Demo 22.9669 bps/h).
     - Dynamic regime-switch hourly funding ``(switch_hour, pre_bps_h, post_bps_h)``.
     """
-    n = len(nav_df)
-    if constant_hourly_bps is not None:
-        hourly_cost = (nav_df["inventory"] * nav_df["close"]) * (float(constant_hourly_bps) / 10_000.0)
-        cum_funding = -hourly_cost.cumsum()
-    elif regime_switch_bps is not None:
-        sw_h, pre_bps, post_bps = regime_switch_bps
-        bps_vec = np.where(np.arange(n) < sw_h, float(pre_bps), float(post_bps))
-        hourly_cost = (nav_df["inventory"].to_numpy(dtype=float) * nav_df["close"].to_numpy(dtype=float)) * (
-            bps_vec / 10_000.0
+    if constant_hourly_bps is not None or regime_switch_bps is not None:
+        events = synthetic_hourly_funding_events(
+            nav_df["date"], nav_df["close"], constant_hourly_bps=constant_hourly_bps,
+            regime_switch_bps=regime_switch_bps,
         )
-        cum_funding = pd.Series(-np.cumsum(hourly_cost), index=nav_df.index)
     else:
-        events = funding_events or []
-        trades_rows = trades_df.to_dict("records")
-        if events and trades_rows:
-            scaled_events = [
-                (t, px, rate * D(str(funding_scale)), kind) for t, px, rate, kind in events
-            ]
-            flows = position_settlements(trades_rows, scaled_events)
-        else:
-            flows = []
-        bar_close_times = [
-            parse_utc(d) + timedelta(hours=1, microseconds=-1) for d in nav_df["date"]
+        events = [
+            (t, px, rate * D(str(funding_scale)), kind) for t, px, rate, kind in (funding_events or [])
         ]
-        cum_vals = []
-        f_idx = 0
-        running = ZERO
-        flow_times = [parse_utc(f["time"]) for f in flows]
-        for obs in bar_close_times:
-            while f_idx < len(flows) and flow_times[f_idx] <= obs:
-                running += flows[f_idx]["funding"]
-                f_idx += 1
-            cum_vals.append(float(running))
-        cum_funding = pd.Series(cum_vals, index=nav_df.index)
+    flows = position_settlements(trades_df.to_dict("records"), events)
+    bar_close_times = [parse_utc(d) + timedelta(hours=1, microseconds=-1) for d in nav_df["date"]]
+    cum_vals = []
+    f_idx = 0
+    running = ZERO
+    flow_times = [parse_utc(f["time"]) for f in flows]
+    for obs in bar_close_times:
+        while f_idx < len(flows) and flow_times[f_idx] <= obs:
+            running += flows[f_idx]["funding"]
+            f_idx += 1
+        cum_vals.append(float(running))
+    cum_funding = pd.Series(cum_vals, index=nav_df.index)
 
     funded_equity = nav_df["equity"].astype(float) + cum_funding
     peak = funded_equity.cummax().clip(lower=float(capital))
@@ -959,12 +992,18 @@ def compute_equal_bh_benchmark(
     closes = np.asarray([float(b["close"]) for b in bars], dtype=float)
     p0 = closes[0]
     gross_series = qty * (closes - p0)
-    if constant_hourly_bps is not None:
-        cum_fund = -np.cumsum(qty * closes * (float(constant_hourly_bps) / 10_000.0))
-    elif regime_switch_bps is not None:
-        sw_h, pre_bps, post_bps = regime_switch_bps
-        bps_vec = np.where(np.arange(len(closes)) < sw_h, float(pre_bps), float(post_bps))
-        cum_fund = -np.cumsum(qty * closes * (bps_vec / 10_000.0))
+    if constant_hourly_bps is not None or regime_switch_bps is not None:
+        # B&H enters at the first close, just like its historical-event benchmark.
+        # The coincident first settlement therefore precedes that entry.
+        bh_nav = pd.DataFrame({"date": [b["time"] for b in bars], "close": closes,
+                               "equity": capital + gross_series})
+        entry = parse_utc(bars[0]["time"]) + timedelta(hours=1, microseconds=-1)
+        bh_trades = pd.DataFrame([{"event_time": entry.isoformat(), "side": "BUY", "executed_shares": str(qty)}])
+        _, _, funded = compute_funding_overlay_series(
+            bh_nav, bh_trades, capital=capital, constant_hourly_bps=constant_hourly_bps,
+            regime_switch_bps=regime_switch_bps,
+        )
+        cum_fund = funded.to_numpy() - bh_nav["equity"].to_numpy()
     else:
         events = funding_events or []
         bar_close_times = [parse_utc(b["time"]) + timedelta(hours=1, microseconds=-1) for b in bars]
@@ -1088,14 +1127,10 @@ def run_paired_window(
             for h_back in range(24, 0, -1):
                 t_pre = start_dt - timedelta(hours=h_back)
                 synth_events.append((t_pre, D(str(anchor)), D(str(init_bps / 10_000.0)), "SyntheticHourly"))
-            for idx, b in enumerate(bars):
-                t_ev = parse_utc(b["time"]) + timedelta(hours=1, microseconds=-1)
-                if constant_hourly_bps is not None:
-                    rate_bps = constant_hourly_bps
-                else:
-                    sw_h, pre_bps, post_bps = regime_switch_bps
-                    rate_bps = pre_bps if idx < sw_h else post_bps
-                synth_events.append((t_ev, D(str(b["close"])), D(str(rate_bps / 10_000.0)), "SyntheticHourly"))
+            synth_events.extend(synthetic_hourly_funding_events(
+                [b["time"] for b in bars], [b["close"] for b in bars],
+                constant_hourly_bps=constant_hourly_bps, regime_switch_bps=regime_switch_bps,
+            ))
             visible_funding = synth_events
         else:
             visible_funding = [

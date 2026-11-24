@@ -241,6 +241,23 @@ def test_strategy_b_exits_on_funding_spike_while_holding(tmp_path: Path):
     assert m_b["residual_inventory"] == 0.0
     assert m_b["final_state"] == "EXITED"
     assert m_b["final_net_pnl_usdt"] > m_a["final_net_pnl_usdt"]
+    nav = pd.read_csv(tmp_path / "b_spike" / "daily.csv")
+    trades = pd.read_csv(tmp_path / "b_spike" / "trades.csv")
+    # Independent event/fragment oracle, including the funding-driven SELL tie.
+    running = Decimal(0)
+    expected_equity = []
+    for i, row in nav.iterrows():
+        obs = pd.Timestamp(row["date"]) + pd.Timedelta(hours=1, microseconds=-1)
+        quantity = sum((Decimal(str(t.executed_shares)) * (1 if t.side == "BUY" else -1)
+                        for t in trades.itertuples() if pd.Timestamp(t.event_time) < obs), Decimal(0))
+        running -= quantity * Decimal(str(row["close"])) * (Decimal("0.10") if i < 10 else Decimal("22.97")) / 10000
+        expected_equity.append(float(row["equity"]) + float(running))
+    assert m_b["funding_pnl_usdt"] == pytest.approx(float(running), abs=1e-8)
+    assert m_b["final_net_pnl_usdt"] == pytest.approx(m_b["trade_net_pnl_usdt"] + float(running), abs=1e-8)
+    assert m_b["final_nav_with_funding_usdt"] == pytest.approx(expected_equity[-1], abs=1e-8)
+    peaks = np.maximum.accumulate(np.maximum(expected_equity, 10.0))
+    assert m_b["max_drawdown_with_funding_pct"] == pytest.approx(max(1 - np.array(expected_equity) / peaks) * 100, abs=5e-5)
+    assert m_b["fifo_reconciliation_residual"] == 0
 
 
 def test_strategy_c_extreme_vol_guard_blocks_entry(tmp_path: Path):
@@ -278,7 +295,7 @@ def test_strategy_c_extreme_vol_guard_blocks_entry(tmp_path: Path):
 def test_predeclared_configs_load_cleanly():
     from factorlab.experiments.grid_r10_study import load_strategy_configs
 
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = Path(__file__).resolve().parents[2]
     cfgs, b_policies, c_policies = load_strategy_configs(repo_root)
     assert cfgs["A"]["strategy_id"] == "A_FIXED_GRID"
     assert len(b_policies) == 6

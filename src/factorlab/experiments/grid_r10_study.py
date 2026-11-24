@@ -36,6 +36,7 @@ from factorlab.experiments.grid_funding_adaptive import (
     parse_utc,
     run_paired_window,
     run_paired_window_multi_overlay,
+    validate_hourly_timeline,
 )
 from factorlab.experiments.grid_monte_carlo import (
     SCENARIO as MC_SCENARIO,
@@ -113,7 +114,9 @@ def build_nonoverlapping_weekly_windows(
     warmup_hours: int = 96,
 ) -> list[dict[str, Any]]:
     """Slice continuous 1h bars into non-overlapping 7-day windows with strictly prior warmup closes."""
-    bar_times = [parse_utc(b["time"]) for b in bars]
+    if window_hours < 1 or warmup_hours < 0:
+        raise ValueError("Positive window hours and nonnegative warmup required")
+    bar_times = list(validate_hourly_timeline([b["time"] for b in bars]).to_pydatetime())
     time_to_idx = {t: i for i, t in enumerate(bar_times)}
     last_time = bar_times[-1] + timedelta(hours=1)
     windows: list[dict[str, Any]] = []
@@ -122,12 +125,15 @@ def build_nonoverlapping_weekly_windows(
     while cursor + timedelta(hours=window_hours) <= last_time:
         end_excl = cursor + timedelta(hours=window_hours)
         if cursor not in time_to_idx:
-            break
+            raise ValueError("Weekly window start missing from hourly timeline")
         start_i = time_to_idx[cursor]
         end_i = start_i + window_hours
         if end_i > len(bars):
             break
         w_bars = bars[start_i:end_i]
+        validate_hourly_timeline([b["time"] for b in w_bars], start=cursor, end=end_excl)
+        if windows and windows[-1]["end_exclusive_utc"] != cursor.isoformat():
+            raise ValueError("Weekly test windows must be adjacent and non-overlapping")
         warm_start = max(0, start_i - warmup_hours)
         warmup_closes = [float(b["close"]) for b in bars[warm_start:start_i]]
         idx += 1
@@ -146,6 +152,21 @@ def build_nonoverlapping_weekly_windows(
         )
         cursor = end_excl
     return windows
+
+
+def validate_research_windows(all_bars: list[dict[str, Any]], windows: list[dict[str, Any]]) -> None:
+    """Check caller-supplied windows too, before fitting any walk-forward arm."""
+    times = validate_hourly_timeline([b["time"] for b in all_bars])
+    previous_end = None
+    for w in windows:
+        start, end = parse_utc(w["start_utc"]), parse_utc(w["end_exclusive_utc"])
+        actual = validate_hourly_timeline([b["time"] for b in w["bars"]], start=start, end=end)
+        i = w["start_bar_index"]
+        if i < 0 or not actual.equals(times[i:i + len(actual)]):
+            raise ValueError("Research window differs from source timeline")
+        if previous_end is not None and start != previous_end:
+            raise ValueError("Research windows must be adjacent and non-overlapping")
+        previous_end = end
 
 
 def _compute_ref_vol_from_bars(bars: list[dict[str, Any]], end_idx_exclusive: int) -> float:
@@ -358,6 +379,7 @@ def precompute_ac_multi_regime(
     provenance: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run funding-independent arms (A and C) ONCE per (config, window) and compute all funding overlays."""
+    validate_research_windows(all_bars, windows)
     n_win = len(windows)
     init_cutoff_bar_idx = windows[initial_train_windows]["start_bar_index"]
     init_sigma_ref = _compute_ref_vol_from_bars(all_bars, init_cutoff_bar_idx)
@@ -452,6 +474,7 @@ def run_expanding_walk_forward(
     the fold's test start. Precomputed funding-independent A/C overlays are reused
     without any approximation (exact same Paper ledger).
     """
+    validate_research_windows(all_bars, windows)
     if precomputed_ac is None:
         overlays = [(regime_label, funding_scale, constant_hourly_bps, regime_switch_bps)]
         precomputed_ac = precompute_ac_multi_regime(
@@ -493,6 +516,8 @@ def run_expanding_walk_forward(
     for fold_id, train_end, test_end, fold_sigma_ref in fold_specs:
         train_wins = windows[:train_end]
         test_wins = windows[train_end:test_end]
+        if not train_wins or not test_wins or train_wins[-1]["end_exclusive_utc"] != test_wins[0]["start_utc"]:
+            raise ValueError("Walk-forward training/test boundary must be adjacent without overlap")
 
         # Select best B on train_wins ONLY
         b_scores: list[tuple[float, float, str, dict[str, Any]]] = []
@@ -1156,13 +1181,13 @@ def render_report_md(summary: dict[str, Any]) -> str:
     lines.append(
         f"1. **资金费过滤是否改善净收益？** **分体制与分机制结论**："
         f"(a) 在真实 Binance 主网历史资金费（均值 `0.73 bps/8h`，57.5% 为 `0`）下，资金费总额远小于方向性盈亏，策略 B（WF）相对控制组 A 的样本外净收益差为 `{m_b_st['mean_diff_pct']:+.4f}%`（95% CI `[{m_b_st['bootstrap_95ci_low_pct']:+.4f}%, {m_b_st['bootstrap_95ci_high_pct']:+.4f}%]`，Wilcoxon `p={m_b_st['wilcoxon_p_value']:.4f}`），**没有稳健统计证据表明其在主网常态费率下能创造稳定正超额收益**（主网下 B 与 A 均值净收益均为负，且纯入场过滤 `B2` 几乎与 A 无异）；"
-        f"(b) 但在**高资金费体制**（如官方 Demo 实测 `22.97 bps/h` 或 48h 突发高资金费切换体制）下，策略 B 显著削减了尾部失血与最大回撤（持续 Demo 资费下 OOS 改善 `{d_b_st['mean_diff_pct']:+.4f}%`，`p={d_b_st['wilcoxon_p_value']:.4f}`；48h 突发切换体制下改善 `{s_b_st['mean_diff_pct']:+.4f}%`，`p={s_b_st['wilcoxon_p_value']:.4f}`）。**核心拆解**：在突发高资费切换体制下，**仅靠开仓前入场过滤（`B2`，全期 `-27.01 USDT`）几乎无法挽救已建仓位**，真正起决定性保护作用的是**持仓期资金费/滞留退出时机控制（`B5`，全期收敛至 `-1.32 USDT`，CVaR95 从 `32.16%` 降至 `4.82%`）**；其本质是防御性风控护栏，而非主网常态下的 Alpha 来源。"
+        f"(b) 但在**高资金费体制**（如官方 Demo 实测 `22.97 bps/h` 或 48h 突发高资金费切换体制）下，策略 B 显著削减了尾部失血与最大回撤（持续 Demo 资费下 OOS 改善 `{d_b_st['mean_diff_pct']:+.4f}%`，`p={d_b_st['wilcoxon_p_value']:.4f}`；48h 突发切换体制下改善 `{s_b_st['mean_diff_pct']:+.4f}%`，`p={s_b_st['wilcoxon_p_value']:.4f}`）。**核心拆解**：在突发高资费切换体制下，**仅靠开仓前入场过滤（`B2`，全期 `{wf_s['full_summary']['B2']['total_final_net_pnl_usdt']:+.2f} USDT`）几乎无法挽救已建仓位**，真正起决定性保护作用的是**持仓期资金费/滞留退出时机控制（`B5`，全期收敛至 `{wf_s['full_summary']['B5']['total_final_net_pnl_usdt']:+.2f} USDT`，CVaR95 从 `{wf_s['full_summary']['A_FIXED']['cvar95_with_funding_pct']:.2f}%` 降至 `{wf_s['full_summary']['B5']['cvar95_with_funding_pct']:.2f}%`）**；其本质是防御性风控护栏，而非主网常态下的 Alpha 来源。"
     )
     lines.append(
-        f"2. **自适应网格是否优于固定网格？** **没有充分证据支持全面优于固定网格**。在主网样本外 18 窗中，策略 C（WF）相对固定网格 A 的均值净收益差为 `{m_c_st['mean_diff_pct']:+.4f}%`（95% CI `[{m_c_st['bootstrap_95ci_low_pct']:+.4f}%, {m_c_st['bootstrap_95ci_high_pct']:+.4f}%]`，Wilcoxon `p={m_c_st['wilcoxon_p_value']:.4f}`），CVaR95 从 `{wf_m['oos_summary']['A']['cvar95_with_funding_pct']:.2f}%` 变为 `{wf_m['oos_summary']['C_wf']['cvar95_with_funding_pct']:.2f}%`；在 Monte Carlo `moving_block_bootstrap_24h` 和 `jump_stress_downside` 下，`C5` 的均值收益与尾部回撤甚至略逊于固定网格 `A`。宽幅自适应在高波下跌期可通过延迟触发买单或极端波动保护降低部分残仓暴露，但同时降低成交率与资金利用率，且无法根本消除单边下跌或高资金费下的残仓风险。"
+        f"2. **自适应网格是否优于固定网格？** **没有充分证据支持全面优于固定网格**。在主网样本外 18 窗中，策略 C（WF）相对固定网格 A 的均值净收益差为 `{m_c_st['mean_diff_pct']:+.4f}%`（95% CI `[{m_c_st['bootstrap_95ci_low_pct']:+.4f}%, {m_c_st['bootstrap_95ci_high_pct']:+.4f}%]`，Wilcoxon `p={m_c_st['wilcoxon_p_value']:.4f}`），CVaR95 从 `{wf_m['oos_summary']['A']['cvar95_with_funding_pct']:.2f}%` 变为 `{wf_m['oos_summary']['C_wf']['cvar95_with_funding_pct']:.2f}%`；Monte Carlo 突发高资金费体制下，`moving_block_bootstrap_24h` 中 `C5` 的均值收益与 P95 最大回撤逊于 `A`，而 `jump_stress_downside` 中 C5 均值收益更差、P95 最大回撤略低，风险指标并非单向改善。宽幅自适应在高波下跌期可通过延迟触发买单或极端波动保护降低部分残仓暴露，但同时降低成交率与资金利用率，且无法根本消除单边下跌或高资金费下的残仓风险。"
     )
     lines.append(
-        f"3. **改善是否具有样本外支持？** 主网真实费率下，B 与 C 在净收益维度均**未**达到 `p < 0.05` 且 95% Bootstrap CI 严格大于 0 的样本外显著改善（仅 B 的滞留退出带来了样本外回撤缩减 `+1.15%`, `p=0.0312`，代价是在 Fold 2/Fold 3 反弹行情中因提前退出跑输 A `-2.07%` 与 `-1.67%`）；高资金费/突发切换体制下，策略 B 的**尾部风控改善**在全部 6 折 Walk-Forward（18 个 OOS 窗口）中稳定成立，但主要体现为及时空仓/止损减亏，而非提高正向盈利能力。"
+        f"3. **改善是否具有样本外支持？** 主网真实费率下，B 与 C 在净收益维度均**未**达到 `p < 0.05` 且 95% Bootstrap CI 严格大于 0 的样本外显著改善（仅 B 的滞留退出带来了样本外回撤缩减 `+1.15%`, `p=0.0312`，代价是在 Fold 2/Fold 3 反弹行情中因提前退出跑输 A `-2.07%` 与 `-1.67%`）；高资金费/突发切换体制下，策略 B 的**尾部风控改善**在 6 折 Walk-Forward 汇总（18 个 OOS 窗口）中仍有统计支持，但主要体现为及时空仓/止损减亏，而非提高正向盈利能力；这不表示每折单独达到显著性。"
     )
     lines.append(
         f"4. **是否存在明显过拟合？** 见第 6 节参数稳定性与 IS/OOS 对比。主网体制下全 12 个 B/C 预声明参数的 IS 与 OOS 排名 Spearman 相关系数仅 `{wf_m['stat_tests']['is_oos_spearman_rank_corr']:+.4f}`（`p={wf_m['stat_tests']['is_oos_spearman_p_value']:.4f}`，不显著），存在明显体制敏感性与样本外衰退信号：训练窗唯一正收益候选 `B4`（IS `+0.1340%`）在样本外转负（OOS `-0.2100%`，衰退 `-0.3440%`）；而策略 C 中 IS 最差之一的 `C4`（`-1.7243%`）在 OOS 反成最佳（`-0.0757%`）。虽然本实验已将搜索空间严格限制在每类 6 组预声明参数，参数排序仍难以跨市场体制保持稳定，若扩大调参自由度将有显著过拟合风险。"
@@ -1386,7 +1411,7 @@ def render_report_md(summary: dict[str, Any]) -> str:
     lines.append(
         "- **压力情景关键机制解读**："
         "`S1`（高资金费震荡）与 `S5`/`S9`（单边/慢跌+高资费）下，策略 B 的因果入口门控直接避免在 `22.97 bps/h` 高费率下接仓；"
-        "`S2`（48h 突发高资费切换）清晰区分了纯入场过滤 `B2`（已持仓无法逃离，仍亏 `-21.63%`）与含退出守卫 `B5`（及时止损退出，亏损收敛至 `-0.81%`）；"
+        f"`S2`（48h 突发高资费切换）清晰区分了纯入场过滤 `B2`（已持仓无法逃离，收益 `{next(r for r in det if r['scenario_id'] == 'S2_funding_regime_spike' and r['strategy_id'] == 'B_ENTRY_B2')['risk_budget_return_with_funding_pct']:+.2f}%`）与含退出守卫 `B5`（及时止损退出，收益 `{next(r for r in det if r['scenario_id'] == 'S2_funding_regime_spike' and r['strategy_id'] == 'B_EXIT_B5')['risk_budget_return_with_funding_pct']:+.2f}%`）；"
         "`S8`（`capacity=0.02/bar`）反映交易所真实微结构约束：`0.02 × 131 ≈ 2.62 USDT < min_notional (5 USDT)`，导致低于最小名义额的流动性无法产生任何合法部分成交。"
     )
     lines.append("")
@@ -1423,6 +1448,31 @@ def render_report_md(summary: dict[str, Any]) -> str:
     lines.append("python tools/research/run_p8_r10_study.py --r04b-snapshot \"D:\\Code\\p7-r04b-official-payloads\\certified\\runs\\bde00b2f948842e2b8c2a00465a9f8c6\" --cache-dir \"D:\\Code\\p8-r10-data-cache\" --output-dir \"docs/validation/p8-r10\" --mc-paths 64 --workers 4")
     lines.append("```")
     lines.append("")
+    if "review_recompute" in summary:
+        review = summary["review_recompute"]
+        lines.extend([
+            "## 10. PR #238 P2 修复及重算对照", "",
+            f"修复前基准：`{review['baseline_head']}`。归档数据审计完全一致：4632 根 UTC 小时 Bar、593 条资金费、0 缺失、0 重复；R07 2160/2160 精确交叉核验及原数据哈希保留，全程离线使用原快照。",
+            "",
+            "三种资金费统一使用 `grid_funding.position_settlements()` 的 `fill_time < settlement_time` 规则；同刻先对旧库存结算，再成交。合成费率信号与经济核算共享事件，资金费只叠加一次，收益、权益、回撤与尾部指标使用同一结果。等量 B&H 在首根收盘开仓，首笔同刻结算也不计入新仓。",
+            "",
+            "小时审计拒绝缺失、重复、乱序、非整点及覆盖边界错误，不排序去重或插值修复；168h 窗口核验实际起止和逐小时连续性，WF 训练/测试边界相邻且不重叠。正常数据的 27 窗及 6 折/18 个 OOS 窗边界不变。",
+            "",
+            "下表为修复前 → 修复后。OOS 的净收益与资金费是 18 窗总额，CVaR95 基于窗口收益，MaxDD 是窗口最大回撤的均值；MC 的金额为每路径均值，MaxDD 为路径最大回撤的 P95，不能与 OOS 均值直接比较。完整对照见 `review_comparison.csv`。",
+            "",
+            "| 范围 / 策略 | 净收益 USDT | 资金费 USDT | CVaR95 % | MaxDD % |",
+            "| --- | ---: | ---: | ---: | ---: |",
+        ])
+        for r in review["key_comparisons"]:
+            cells = [f"{r['before_' + k]:+.6f} → {r['after_' + k]:+.6f}" for k in
+                     ("net_pnl_usdt", "funding_pnl_usdt", "cvar95_pct", "max_drawdown_pct")]
+            lines.append(f"| {r['scope']} / `{r['strategy_id']}` | " + " | ".join(cells) + " |")
+        lines.extend(["", review["interpretation"], "",
+                      "重算复用未受影响的历史资金费 B 结果和六档历史敏感性，以及无成交的合成 B（重算其 B&H）；A/C 每本权威成交账本只回放一次并叠加多档资金费，重新选择各折参数并计算统计。9 组确定性压力、全部 6×64 条 MC 路径及两种资金费体制均重算；MC seed=810，路径长度 168h，Bootstrap/显著性标准均未修改。计算来源及输入哈希见 `review_recompute.json`。", "",
+                      "定向与关联回归在 Python 3.13 下通过；包括同刻 BUY/SELL、部分成交、不规则时刻、跳变精确金额、资金费退出的 FIFO/权益/回撤、零费率，以及缺口/重复/乱序拒绝和 6 折边界验证。", "",
+                      "```powershell",
+                      'python tools/research/recompute_p8_r10_review.py --r04b-snapshot "D:\\Code\\p7-r04b-official-payloads\\certified\\runs\\bde00b2f948842e2b8c2a00465a9f8c6" --cache-dir "D:\\Code\\p8-r10-data-cache" --output-dir "docs/validation/p8-r10" --stage-dir "D:\\Code\\p8-r10-review-stages" --workers 12',
+                      "```", ""])
     return "\n".join(lines)
 
 
